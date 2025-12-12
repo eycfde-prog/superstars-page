@@ -4,577 +4,360 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUPERSTARS PROGRAM - EYC Online</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     
-    <script>
-        // إعدادات Tailwind CSS مخصصة للألوان والظلال
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'gold-light': '#FFD700',
-                        'gold-dark': '#B8860B',
-                        // لون تليجرام ليتناسب مع قسم الروابط
-                        'telegram': '#0088CC', 
-                    },
-                    boxShadow: {
-                        'gold': '0 0 15px rgba(255, 215, 0, 0.6)',
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="/style.css" rel="stylesheet">
     
     <style>
         /* شريط التمرير مخصص لمتصفحات الويب كيت */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: #B8860B; border-radius: 4px; }
-        ::-webkit-webkit-scrollbar-track { background: #1f2937; }
+        /* [كوداك - تصحيح إملائي] - تم تصحيح الخطأ الإملائي في المحدد */
+        ::-webkit-scrollbar-track { background: #1f2937; } 
 
-        /* لضمان إظهار الأقسام المخفية بشكل تدريجي (اختياري) */
-        .page-content { transition: opacity 0.5s ease-in-out; }
+        /* لضمان إظهار الأقسام بشكل صحيح عند التبديل */
+        .hidden-page { display: none !important; }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col font-sans">
+<body class="bg-gray-900 text-gray-100 min-h-screen">
 
-    <header id="header-lock" class="relative bg-cover bg-center bg-gray-800 p-8 shadow-2xl border-b-4 border-gold-dark" 
-            style="background-image: url('الرابط المباشر لصورة خلفية الهيدر إن وجد'); background-blend-mode: multiply; background-color: rgba(0, 0, 0, 0.7);">
-        
-        <div class="container mx-auto text-center relative z-10">
-            <img src="assets/logo.png" alt="EYC Superstars Logo" 
-                onerror="this.onerror=null;this.src='https://via.placeholder.com/150x50?text=LOGO+NOT+FOUND';"
-                class="h-20 w-auto mx-auto mb-4 hover:scale-105 transition duration-300">
+    <div class="flex flex-col md:flex-row">
+        <div id="sidebar" class="bg-gray-800 w-full md:w-64 p-4 md:min-h-screen flex flex-col shadow-xl">
+            <div class="text-center mb-8">
+                <img src="./assets/logo.png" alt="Logo" class="w-24 h-24 mx-auto rounded-full shadow-gold mb-2">
+                <h1 class="text-2xl font-extrabold text-gold-light">SUPERSTARS</h1>
+                <p class="text-sm text-gray-400">برنامج EYC Online</p>
+            </div>
             
-            <p class="text-gold-light text-xl md:text-2xl font-black italic tracking-wide text-center">EYC Online</p> 
-            <h1 class="text-5xl md:text-6xl font-extrabold text-white mt-1 mb-2">SUPERSTARS PROGRAM</h1> 
-            <h2 id="variable-title" class="text-2xl font-semibold text-gold-light mt-2 border-t-2 border-b-2 inline-block px-4 py-1 border-gold-light/50 transition duration-500 ease-in-out transform hover:scale-105">Home</h2> 
+            <nav class="flex flex-col space-y-2">
+                <a href="#" onclick="showPage('home')" data-page="home" id="link-home" class="nav-link text-gray-300 hover:bg-gray-700 p-3 rounded-lg transition duration-150 flex items-center">
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l-2-2m2 2l-7-7m7 7v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="#" onclick="showPage('profiles')" data-page="profiles" id="link-profiles" class="nav-link text-gray-300 hover:bg-gray-700 p-3 rounded-lg transition duration-150 flex items-center">
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20v-2c0-.653-.189-1.3-.54-1.86m2.091-3.692c0-2.813-2.5-4.5-5-4.5S7.5 11.711 7.5 14.5c0 1.25.75 2.5 2.25 2.5h5c1.5 0 2.25-1.25 2.25-2.5zM12 4a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"></path></svg>
+                    <span>دليل الفريق</span>
+                </a>
+                <a href="#" onclick="showPage('student-card-template')" data-page="student-card-template" id="link-student-card-template" class="nav-link text-gray-300 hover:bg-gray-700 p-3 rounded-lg transition duration-150 flex items-center">
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-5m-7-5h2m-2 0h-2m-2-2v2m2-2h2m-2-2h-2m2 4h-2m2 0h2m-2 2v2m-2-2h-2m2-2h2m-2 4h-2m2 0h2"></path></svg>
+                    <span>بطاقة الطالب (تجربة)</span>
+                </a>
+            </nav>
+            
+            <div class="mt-auto pt-4 border-t border-gray-700">
+                <h3 class="text-sm font-bold text-gray-500 mb-2">روابط هامة</h3>
+                <a href="https://t.me/EYC_Online_Link" target="_blank" class="flex items-center text-gray-400 hover:text-telegram transition duration-150">
+                    <svg class="w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.18 8.44l-2.738 10.37c-.198.748-.68.93-1.3.57L9.944 15.6l-2.028 1.956c-.23.23-.42.42-.81.28l-.51-.31c-.4-.25-.3-.44-.3-.82V12c0-.3.12-.49.33-.67l6.75-6.24c.73-.65 1.05-.72 1.48-.12.42.6.09 1.15-.4 1.76L9.67 11.5c-.17.15-.3.27-.47.22l-2.88-.93c-.4-.14-.7-.03-1.03.35-.33.38-.4.7-.13 1.14l1.45 4.1c.14.4.45.65.86.68l.45 0c.23 0 .43-.1.6-.28l2.03-1.96 2.58 2.37c.36.33.68.5.9.5.42 0 .6-.2.72-.5.12-.3.1-.73-.02-1.12l-2.73-10.3c-.15-.55-.38-.95-.92-1.15-.54-.2-1.15-.05-1.4.5zm-3.87 2.53l-1.3 4.88c-.05.18-.08.3-.08.43 0 .38.16.48.47.16l2.12-2.04c.14-.14.28-.27.42-.4.4-.37.8-.75 1.2-1.1.18-.15.3-.23.47-.23.17 0 .3.08.43.23l2.87 2.76c.15.15.28.27.42.4.4.37.8.75 1.2 1.1.18.15.3.23.47.23.17 0 .3-.08.43-.23l2.87-2.76c.15-.15.28-.27.42-.4.4-.37.8-.75 1.2-1.1.18-.15.3-.23.47-.23.17 0 .3.08.43.23z"/></svg>
+                    <span>قناة التليجرام</span>
+                </a>
+            </div>
         </div>
-    </header>
-    
-    <div class="flex flex-1 flex-col lg:flex-row">
-        
-        <nav id="sidebar" class="w-full lg:w-64 bg-gray-800 p-4 lg:p-6 shadow-xl border-t border-gray-700 lg:border-t-0">
-            <ul class="flex flex-wrap lg:flex-col gap-2 lg:gap-4 justify-center">
-                
-                <li class="w-full lg:w-auto">
-                    <button data-page="home" class="nav-link w-full text-center lg:text-right bg-gold-dark/20 text-gold-light font-bold py-4 px-5 text-lg rounded-lg hover:bg-gold-dark/40 transition duration-300">All you need to know!</button>
-                </li>
-                
-                <li class="w-full lg:w-auto">
-                    <button data-page="profiles" class="nav-link w-full text-center lg:text-right text-gray-300 font-bold py-4 px-5 text-lg rounded-lg hover:bg-gray-700 transition duration-300">Profiles</button>
-                </li>
-                
-                <li class="w-full lg:w-auto">
-                    <button data-page="ranks" class="nav-link w-full text-center lg:text-right text-gray-300 font-bold py-4 px-5 text-lg rounded-lg hover:bg-gray-700 transition duration-300">Ranks</button>
-                </li>
-                
-                <li class="w-full lg:w-auto">
-                    <button data-page="guides" class="nav-link w-full text-center lg:text-right text-gray-300 font-bold py-4 px-5 text-lg rounded-lg hover:bg-gray-700 transition duration-300">Guides</button>
-                </li>
-                
-                <li class="w-full lg:w-auto">
-                    <button data-page="schedules" class="nav-link w-full text-center lg:text-right text-gray-300 font-bold py-4 px-5 text-lg rounded-lg hover:bg-gray-700 transition duration-300">Schedules</button>
-                </li>
-                
-                <li class="w-full lg:w-auto">
-                    <button data-page="links" class="nav-link w-full text-center lg:text-right text-gray-300 font-bold py-4 px-5 text-lg rounded-lg hover:bg-gray-700 transition duration-300">Links</button>
-                </li>
-                
-                <li class="w-full lg:w-auto">
-                    <button data-page="xbox-challenge" class="nav-link w-full text-center lg:text-right text-gray-300 font-bold py-4 px-5 text-lg rounded-lg hover:bg-gray-700 transition duration-300">XBoX Challenge</button>
-                </li>
-            </ul>
-        </nav>
-        
-        <main id="content-area" class="flex-1 p-6 lg:p-10">
-            
-            <section id="home" data-title="Home" class="page-content">
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">Welcome Champion</h3>
-                <p class="text-lg mb-8 text-gray-300 text-center">This is the main hub for the SUPERSTARS PROGRAM. Find all the latest updates and essential links here.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-gold/20 hover:shadow-gold transition duration-300 border-t-4 border-blue-500 text-center">
-                        <h4 class="text-xl font-semibold text-white mb-2">Latest News</h4>
-                        <p class="text-gray-400">Check out the newest announcements and program updates.</p>
-                        <a href="#" class="text-blue-400 hover:text-blue-300 mt-3 inline-block font-medium">Read More &raquo;</a>
-                    </div>
-                    
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-gold/20 hover:shadow-gold transition duration-300 border-t-4 border-green-500 text-center">
-                        <h4 class="text-xl font-semibold text-white mb-2">EYC Master Sheet</h4>
-                        <p class="text-gray-400">Direct access to the comprehensive master sheet.</p>
-                        <button onclick="showPage('eyc-master')" class="text-green-400 hover:text-green-300 mt-3 inline-block font-medium">Go to Master &raquo;</button>
-                    </div>
 
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-gold/20 hover:shadow-gold transition duration-300 border-t-4 border-purple-500 text-center">
-                        <h4 class="text-xl font-semibold text-white mb-2">Season Rank</h4>
-                        <p class="text-gray-400">View the current rankings for the season competition.</p>
-                        <button onclick="showPage('season-rank')" class="text-purple-400 hover:text-purple-300 mt-3 inline-block font-medium">View Ranks &raquo;</button>
-                    </div>
+        <div id="main-content" class="flex-grow p-4 md:p-8">
+            <header class="mb-8 p-4 bg-gray-800 rounded-xl shadow-lg border-b-2 border-gold-dark">
+                <h2 class="text-3xl font-extrabold text-white">منصة برنامج النجوم السوبر</h2>
+                <p class="text-gray-400 mt-2">مرحباً بك يا مستر في لوحة التحكم المركزية.</p>
+            </header>
 
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-gold/20 hover:shadow-gold transition duration-300 border-t-4 border-red-500 text-center">
-                        <h4 class="text-xl font-semibold text-white mb-2">Student Profile</h4>
-                        <p class="text-gray-400">Create or update your personal profile and subscription details.</p>
-                        <a href="#" class="text-red-400 hover:text-red-300 mt-3 inline-block font-medium">Manage Profile &raquo;</a>
+            <div id="home" class="p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl">
+                <h3 class="text-2xl font-bold text-gold-light mb-6 border-b border-gold-dark pb-2">لوحة الملخص والأخبار</h3>
+                <div class="bg-gray-700/50 p-6 rounded-lg mb-8 shadow-inner">
+                    <p class="text-lg text-gray-300">أهلاً بك في منصتك، حيث يمكنك الوصول إلى جميع الأدوات والمعلومات المتعلقة ببرنامج EYC Online.</p>
+                </div>
+                
+                <h3 class="text-xl font-bold text-gold-light mb-4 border-b border-gold-dark pb-2">دليل تحدي XBoX</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <button onclick="showPage('activity-01')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 01: الإعداد الأساسي</button>
+                    <button onclick="showPage('activity-02')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 02: تحدي المهارة</button>
+                    <button onclick="showPage('activity-03')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 03: الإنجازات السرية</button>
+                    <button onclick="showPage('activity-04')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 04: المعركة الجماعية</button>
+                    <button onclick="showPage('activity-05')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 05: التخصيص والعتاد</button>
+                    <button onclick="showPage('activity-06')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 06: اختبار السرعة</button>
+                    <button onclick="showPage('activity-07')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 07: الألغاز المخبأة</button>
+                    <button onclick="showPage('activity-08')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 08: الاستكشاف الحر</button>
+                    <button onclick="showPage('activity-09')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 09: التصميم الفني</button>
+                    <button onclick="showPage('activity-10')" class="bg-gold-dark/30 hover:bg-gold-dark/50 text-gold-light font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg shadow-gold-light/10">النشاط 10: ملخص التحدي</button>
+                </div>
+                
+                <h3 class="text-xl font-bold text-gold-light mt-8 mb-4 border-b border-gold-dark pb-2">حالة البرنامج الحالية</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
+                        <p class="text-sm text-gray-400">عدد المشتركين</p>
+                        <p class="text-3xl font-extrabold text-white">450</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
+                        <p class="text-sm text-gray-400">المهام المكتملة</p>
+                        <p class="text-3xl font-extrabold text-white">92%</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
+                        <p class="text-sm text-gray-400">التقييم العام</p>
+                        <p class="text-3xl font-extrabold text-gold-light">4.9 / 5</p>
                     </div>
                 </div>
-            </section>
-            
-            <section id="profiles" data-title="Profiles" class="page-content hidden">
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">Enrolled Superstars Profiles</h3>
-                <p class="text-lg mb-8 text-gray-300 text-center">Click on a name to view the Student Card (template).</p>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div onclick="showPage('student-card-template', 'Alex')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gold-dark/20 border-gold-light/50">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light to-gold-dark/80 tracking-wider">Alex</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: S-Tier Master</p>
+            <div id="profiles" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">أعضاء فريق Superstars</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-gray-700 p-5 rounded-lg shadow-xl hover:shadow-gold transition duration-300">
+                        <p class="text-xl font-bold text-white">Mister Ezz</p>
+                        <p class="text-gold-light">Team Leader</p>
+                        <p class="text-sm text-gray-400 mt-2">المسؤول عن القيادة الإستراتيجية وتوجيه الفريق نحو الأهداف العليا.</p>
                     </div>
-                    <div onclick="showPage('student-card-template', 'Maya')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gold-dark/20 border-gold-light/50">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light/90 to-gold-dark/70 tracking-wider">Maya</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: A-Class Ace</p>
+                    <div class="bg-gray-700 p-5 rounded-lg shadow-xl hover:shadow-gold transition duration-300">
+                        <p class="text-xl font-bold text-white">Jimi</p>
+                        <p class="text-gold-light">Team Assistant</p>
+                        <p class="text-sm text-gray-400 mt-2">المساعد الرئيسي للقائد، يدير المهام اليومية وجداول الأعمال.</p>
                     </div>
-                    <div onclick="showPage('student-card-template', 'Omar')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gold-dark/20 border-gold-light/50">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light/80 to-gold-dark/60 tracking-wider">Omar</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: B-Tier Pro</p>
+                    <div class="bg-gray-700 p-5 rounded-lg shadow-xl hover:shadow-gold transition duration-300">
+                        <p class="text-xl font-bold text-white">Victor</p>
+                        <p class="text-gold-light">Content Creator</p>
+                        <p class="text-sm text-gray-400 mt-2">متخصص في إنتاج وتصميم المحتوى الجذاب للبرنامج.</p>
                     </div>
-                    <div onclick="showPage('student-card-template', 'Liam')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gold-dark/20 border-gold-light/50">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light/70 to-gold-dark/50 tracking-wider">Liam</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: C-Tier Advanced</p>
+                    <div class="bg-gray-700 p-5 rounded-lg shadow-xl hover:shadow-gold transition duration-300">
+                        <p class="text-xl font-bold text-white">Score</p>
+                        <p class="text-gold-light">Grader & Auditor</p>
+                        <p class="text-sm text-gray-400 mt-2">المسؤول عن تقييم الأداء ومراجعة جودة النتائج.</p>
                     </div>
-                    <div onclick="showPage('student-card-template', 'Sara')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gold-dark/20 border-gold-light/50">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light/60 to-gold-dark/40 tracking-wider">Sara</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: D-Class</p>
+                    <div class="bg-gray-700 p-5 rounded-lg shadow-xl hover:shadow-gold transition duration-300">
+                        <p class="text-xl font-bold text-white">Prompet</p>
+                        <p class="text-gold-light">Agent Creator</p>
+                        <p class="text-sm text-gray-400 mt-2">يختص بإنشاء وتطوير الأدوات والوكلاء التفاعليين.</p>
                     </div>
-                    <div onclick="showPage('student-card-template', 'Ziad')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gold-dark/20 border-gold-light/50">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light/50 to-gold-dark/30 tracking-wider">Ziad</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: E-Class</p>
-                    </div>
-                    <div onclick="showPage('student-card-template', 'Nour')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gold-dark/20 border-gold-light/50">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light/40 to-gold-dark/20 tracking-wider">Nour</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: F-Class</p>
-                    </div>
-                    <div onclick="showPage('student-card-template', 'Ethan')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gold-dark/20 border-gold-light/50">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light/30 to-gold-dark/10 tracking-wider">Ethan</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: G-Class</p>
-                    </div>
-                    <div onclick="showPage('student-card-template', 'Haya')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gold-dark/20 border-gold-light/50">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light/20 to-gold-dark/0 tracking-wider">Haya</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: H-Class</p>
-                    </div>
-                    <div onclick="showPage('student-card-template', 'Adam')" class="p-6 rounded-xl shadow-lg border-2 cursor-pointer hover:scale-[1.02] transition duration-300 bg-gradient-to-r from-gold-light/10 to-gray-500 tracking-wider">
-                        <p class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold-light/10 to-gray-500 tracking-wider">Adam</p>
-                        <p class="text-center text-lg font-medium text-gray-300 mt-2">Rank: I-Class</p>
+                    <div class="bg-gray-700 p-5 rounded-lg shadow-xl hover:shadow-gold transition duration-300">
+                        <p class="text-xl font-bold text-white">Sheetos</p>
+                        <p class="text-gold-light">App Script Specialist</p>
+                        <p class="text-sm text-gray-400 mt-2">خبير في برمجة وتخصيص تطبيقات Google Workspace.</p>
                     </div>
                 </div>
-            </section>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للرئيسية
+                </button>
+            </div>
 
-            <section id="student-card-template" data-title="Student Card" class="page-content hidden">
-                <button onclick="showPage('profiles')" class="text-blue-400 hover:text-blue-300 mb-6 font-bold text-lg">&larr; Back to Profiles</button>
-                
-                <div class="max-w-xl mx-auto bg-gray-800 p-8 rounded-2xl shadow-xl border-t-8 border-gold-light">
-                    <h3 id="student-name-display" class="text-4xl font-black text-center mb-6 text-gold-light">Student Name</h3>
-                    
-                    <div class="text-center mb-6">
-                        <div class="w-32 h-32 rounded-full mx-auto bg-gray-600 flex items-center justify-center text-gray-300 text-6xl font-bold border-4 border-gold-dark">
-                            <span id="student-initials">S</span>
+            <div id="student-card-template" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">عرض بطاقة الطالب الديناميكية</h2>
+                <div class="flex flex-col items-center">
+                    <div class="w-full max-w-sm bg-gray-700 rounded-xl shadow-2xl overflow-hidden p-6 relative">
+                        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-700 opacity-70"></div>
+                        <div class="relative z-10 text-center">
+                            <div id="student-initials" class="w-20 h-20 mx-auto bg-gold-light text-gray-900 flex items-center justify-center text-4xl font-extrabold rounded-full mb-3 border-4 border-gold-dark shadow-lg">
+                                J
+                            </div>
+                            <h3 id="student-name-display" class="text-2xl font-bold text-white mb-1">اسم الطالب</h3>
+                            <p class="text-sm text-gold-light">مشارك في برنامج Superstars</p>
+                            <div class="mt-4 pt-4 border-t border-gray-600">
+                                <p class="text-xs text-gray-400">كود العضوية:</p>
+                                <p class="text-lg font-mono text-white">#007STAR</p>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center border-b border-gray-700 pb-2">
-                            <span class="text-gray-400 font-medium">Rank Status:</span>
-                            <span id="student-rank-display" class="text-green-400 font-bold text-xl">S-Tier Master</span>
-                        </div>
-                        <div class="flex justify-between items-center border-b border-gray-700 pb-2">
-                            <span class="text-gray-400 font-medium">Total Points:</span>
-                            <span class="text-white font-semibold">4500 Pts</span>
-                        </div>
-                        <div class="flex justify-between items-center border-b border-gray-700 pb-2">
-                            <span class="text-gray-400 font-medium">Enrollment Date:</span>
-                            <span class="text-white font-semibold">2025-11-01</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 font-medium">Active Challenges:</span>
-                            <span class="text-white font-semibold">3 (XBoX & Season)</span>
-                        </div>
+                    <div class="mt-6 w-full max-w-sm">
+                        <label for="studentNameInput" class="block text-sm font-medium text-gray-300 mb-2">جرب إدخال اسم لعرضه على البطاقة:</label>
+                        <input type="text" id="studentNameInput" placeholder="أدخل اسماً هنا..." class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:ring-gold-dark focus:border-gold-dark">
+                        <button onclick="showPage('student-card-template', document.getElementById('studentNameInput').value)" class="mt-3 w-full bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 rounded-lg shadow-md">
+                            تطبيق الاسم على البطاقة
+                        </button>
                     </div>
                 </div>
-            </section>
-            
-            <section id="ranks" data-title="Ranks" class="page-content hidden">
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">Ranks Overview</h3>
-                <p class="text-lg mb-8 text-gray-300 text-center">Choose the ranking sheet you wish to view.</p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للرئيسية
+                </button>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-yellow-500 cursor-pointer text-center" onclick="showPage('eyc-master')">
-                        <h4 class="text-2xl font-semibold text-white mb-3">1. EYC Master</h4>
-                        <p class="text-gray-400 mb-4">Access the main, comprehensive Master Sheet containing all student records and progress.</p>
-                    </div>
+            <div id="activity-01" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 01: الإعداد الأساسي</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> فهم إعدادات اللعبة وشروط الانضمام للتحدي. هذه الخطوة حاسمة لضمان تسجيل النقاط بشكل صحيح.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> يجب على كل مشارك التأكد من تفعيل خاصية "سجل اللعب" وتعديل إعدادات الخصوصية لتكون مرئية للفريق، بالإضافة إلى ربط حسابه بمنصة التتبع المخصصة للتحدي.
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-indigo-500 cursor-pointer text-center" onclick="showPage('season-rank')">
-                        <h4 class="text-2xl font-semibold text-white mb-3">2. Season Rank</h4>
-                        <p class="text-gray-400 mb-4">Check the current ranking specifically for the ongoing season challenges.</p>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="eyc-master" data-title="EYC Master" class="page-content hidden">
-                <button onclick="showPage('ranks')" class="text-blue-400 hover:text-blue-300 mb-6 font-bold text-lg">&larr; Back to Ranks</button>
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">EYC Master Sheet (Embed)</h3>
-                <p class="text-lg mb-8 text-red-400 text-center">**Note:** You will need to embed the actual Master Sheet (e.g., Google Sheet embed link) in the area below using an **Iframe**.</p>
-                <div class="bg-gray-800 h-96 flex items-center justify-center rounded-xl border-4 border-dashed border-gray-700">
-                    <p class="text-gray-500 text-xl font-mono">Iframe Placeholder: Master Sheet Goes Here</p>
-                </div>
-            </section>
-            
-            <section id="season-rank" data-title="Season Rank" class="page-content hidden">
-                <button onclick="showPage('ranks')" class="text-blue-400 hover:text-blue-300 mb-6 font-bold text-lg">&larr; Back to Ranks</button>
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">Season Rank (Embed)</h3>
-                <p class="text-lg mb-8 text-red-400 text-center">**Note:** You will need to embed the actual Season Rank Sheet (e.g., Google Sheet embed link) in the area below using an **Iframe**.</p>
-                
-                <div class="overflow-x-auto bg-gray-800 rounded-xl shadow-2xl">
-                    <table class="min-w-full divide-y divide-gray-700">
-                        <thead class="bg-gray-700">
-                            <tr>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gold-light uppercase tracking-wider">Rank</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gold-light uppercase tracking-wider">Student Name</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gold-light uppercase tracking-wider">Tokens</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gold-light uppercase tracking-wider">Progress</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-800">
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-black text-gold-light">#1</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-white">Alex</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-400">4500</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-400">100%</td>
-                            </tr>
-                            <tr class="hover:bg-gray-700 transition duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gold-light/90">#2</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-white">Maya</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-400">4100</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">92%</td>
-                            </tr>
-                            <tr class="hover:bg-gray-700 transition duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gold-light/80">#3</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-white">Omar</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-400">3800</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">85%</td>
-                            </tr>
-                            <tr class="hover:bg-gray-700 transition duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gold-light/70">#4</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-white">Liam</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-400">3400</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">75%</td>
-                            </tr>
-                            <tr class="hover:bg-gray-700 transition duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gold-light/60">#5</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-lg font-semibold text-white">Sara</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-400">2900</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">64%</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            
-            <section id="guides" data-title="Guides" class="page-content hidden">
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">Program Guides</h3>
-                <p class="text-lg mb-8 text-gray-300 text-center">Choose the guide you wish to review for full details.</p>
+            <div id="activity-02" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 02: تحدي المهارة</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> إظهار مستوى عالٍ من التحكم والمهارة في منطقة معينة من اللعبة خلال فترة زمنية محددة.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> سيتم تزويد المشاركين بكود خريطة تدريب خاصة، ويجب عليهم تحقيق نتيجة لا تقل عن 90% في تحدي التوقيت المحدد.
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-yellow-500 cursor-pointer text-center" onclick="showPage('season-guide-page')">
-                        <h4 class="text-2xl font-semibold text-white mb-3">Season Guide</h4>
-                        <p class="text-gray-400 mb-4">Detailed explanation of current season activities and assessments.</p>
-                    </div>
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-indigo-500 cursor-pointer text-center" onclick="showPage('xbox-guide-main')">
-                        <h4 class="text-2xl font-semibold text-white mb-3">XBoX Guide</h4>
-                        <p class="text-gray-400 mb-4">The complete guide for all XBoX activities and registration.</p>
-                    </div>
-                </div>
-            </section>
+            <div id="activity-03" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 03: الإنجازات السرية</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> اكتشاف وتنفيذ ثلاث إنجازات سرية مخفية في عالم اللعبة لا يعرفها إلا القليلون.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> سيتم نشر تلميحات مشفرة في قناة التليجرام. الإنجازات تتطلب تضافر الجهود بين أعضاء الفريق لفك شفرتها.
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-            <section id="season-guide-page" data-title="دليل أنشطة السيزون" class="page-content hidden">
-                
-                <button onclick="showPage('guides')" class="text-blue-400 hover:text-blue-300 mb-6 font-bold text-lg">&larr; العودة للأدلة</button>
-                
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">دليل أنشطة السيزون</h3>
-                <p class="text-lg mb-8 text-gray-300 text-center">اضغط على اسم النشاط لعرض الشرح المفصل (سيتم تجهيز صفحات الشرح التفصيلية لاحقاً).</p>
+            <div id="activity-04" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 04: المعركة الجماعية</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> العمل كفريق واحد للتغلب على تحدي رئيسي يتطلب تنسيقاً عالياً ومهارات فردية متكاملة.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> سيتم تقسيم المشاركين إلى فرق مكونة من 4 أفراد. كل فريق يجب أن يهزم "الزعيم" النهائي في وضع الصعوبة القصوى.
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            <div id="activity-05" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 05: التخصيص والعتاد</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> إنشاء مظهر فريد ومخصص لشخصية اللاعب يمثل روح برنامج Superstars.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> يجب استخدام ألوان الذهبي والأسود بشكل أساسي في زي الشخصية، ويجب أن تتضمن صورة "الشارة" الخاصة بالبرنامج.
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-                    <button onclick="showPage('vivid-guide')" class="bg-gray-800 p-4 rounded-xl shadow-lg border-r-4 border-yellow-500 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-yellow-400">Vivid</h4>
-                    </button>
-                    
-                    <button onclick="showPage('seeds-guide')" class="bg-gray-800 p-4 rounded-xl shadow-lg border-r-4 border-green-500 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-green-400">Seeds</h4>
-                    </button>
-                    
-                    <button onclick="showPage('golden-ear-guide')" class="bg-gray-800 p-4 rounded-xl shadow-lg border-r-4 border-blue-500 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-blue-400">Golden Ear</h4>
-                    </button>
-                    
-                    <button onclick="showPage('on-the-stage-guide')" class="bg-gray-800 p-4 rounded-xl shadow-lg border-r-4 border-red-500 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-red-400">On the stage</h4>
-                    </button>
-                    
-                    <button onclick="showPage('alike-guide')" class="bg-gray-800 p-4 rounded-xl shadow-lg border-r-4 border-indigo-500 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-indigo-400">Alike</h4>
-                    </button>
-                    
-                    <button onclick="showPage('lable-guide')" class="bg-gray-800 p-4 rounded-xl shadow-lg border-r-4 border-purple-500 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-purple-400">Lable</h4>
-                    </button>
-                </div>
-            </section>
-            <section id="xbox-guide-main" data-title="دليل تحدي XBoX" class="page-content hidden">
-                <button onclick="showPage('guides')" class="text-blue-400 hover:text-blue-300 mb-6 font-bold text-lg">&larr; العودة للأدلة</button>
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">دليل تحدي XBoX</h3>
-                
-                <div class="bg-gray-800 p-6 rounded-xl shadow-gold/30 border-r-4 border-yellow-500 mb-8">
-                    <h4 class="text-3xl font-extrabold text-white mb-4">دليل XBox: رفيقك الشخصي لتطوير اللغة الإنجليزية</h4>
-                    <p class="text-xl font-bold text-yellow-400 mb-2">🌟 مفاجأة: XBox ليس كورس... إنه مساعدك الشخصي الدائم!</p>
-                    <p class="text-gray-300 mb-4 leading-relaxed">يا بطل، XBox ليس مجرد كتاب هتخلصه أو كورس ليه نهاية. XBox هو مساعدك الشخصي الدائم (<span class="text-gold-light font-semibold">Personal Assistant</span>) المصمم خصيصاً ليرافقك في جيبك، لضمان شيئين أساسيين:</p>
-                    <ul class="list-disc list-inside text-gray-300 space-y-2 mr-4">
-                        <li><strong class="text-white">الاستمرارية:</strong> تضمن لك الأنشطة اليومية عدم انقطاعك عن ممارسة اللغة الإنجليزية.</li>
-                        <li><strong class="text-white">القياس والتطوير:</strong> كل نشاط مصمم لقياس وتطوير مهارة محددة، ويتم مكافأتك عليها بالتوكنز التي تؤهلك للجوائز.</li>
-                    </ul>
-                </div>
-                
-                <h3 class="text-2xl font-extrabold text-gold-light mb-4 border-b pb-2 border-gray-700">كيف تسجل وتنفذ النشاط؟ (بروتوكول التسجيل)</h3>
-                <ul class="list-decimal list-inside text-gray-300 space-y-2 mr-4">
-                    <li><strong class="text-white">استقبال النشاط:</strong> هتشوف النشاط اليومي بينزل على جروب التليجرام (كل نشاط بيكون له اسم مميز مثل "Vivid" أو "Golden Ear").</li>
-                    <li><strong class="text-white">الإجابة على النشاط:</strong> بعد ما تجهز إجابتك، هتعمل "رد" (<strong class="text-yellow-400">Reply</strong>) على بوست النشاط الأصلي في الديسكشن الخاصة بيه.</li>
-                    <li><strong class="text-white">التسجيل الأوتوماتيكي:</strong> لما تعمل رد، نظام Score بيشوف إجابتك، ولو حققت شروط النجاح الموضحة في هذا الدليل، بيسجل التوكنز في بروفايلك أوتوماتيك.</li>
-                </ul>
-                
-                <p class="text-2xl font-extrabold text-gold-light mt-8 mb-4 border-b pb-2 border-gray-700">✨ دليل الأنشطة المفصلة: (ماذا تستفيد؟ وكيف تقوم به؟)</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                    <button onclick="showPage('vivid-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-red-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-red-300">Vivid X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط Vivid X</p>
-                    </button>
-                    <button onclick="showPage('lable-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-white-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-white-300">Lable X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط Lable X</p>
-                    </button>
-                    <button onclick="showPage('dictation-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-yellow-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-yellow-300">Dictation X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط Dictation X</p>
+            <div id="activity-06" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 06: اختبار السرعة</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> إكمال سباق أو مسار زمني محدد في أسرع وقت ممكن وتسجيل النتيجة على لوحة الصدارة.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> سيتم احتساب أفضل 3 محاولات لكل مشارك. يجب توثيق المحاولة فيديو لضمان الشفافية.
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-                    </button>
-                    <button onclick="showPage('alike-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-sky-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-sky-300">Alike X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط Alike X</p>
-                    </button>
-                    <button onclick="showPage('elmgazine-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-indigo-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-indigo-300">ELMagazine X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط ELMagazine X</p>
-                    </button>
-                    <button onclick="showPage('figurative-focus-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-black-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-black-300">Figurative Focus X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط Figurative Focus X</p>
-                    </button>
-                    <button onclick="showPage('golden-ear-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-gold-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-gold-300">Golden Ear X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط Golden Ear X</p>
-                    </button>
-                    <button onclick="showPage('grammar-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-green-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-green-300">Grammar X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط Grammar X</p>
-                    </button>
-                    </button>
-                    <button onclick="showPage('sing-sang-sung-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-indigo-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-pink-300">Sing Sang Sung X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط Sing Sang Sung X</p>
-                    </button>
-                    <button onclick="showPage('seeds-x-guide')" class="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-indigo-400 text-center hover:bg-gray-700 transition duration-300">
-                        <h4 class="text-2xl font-black text-olive-300">Seeds X</h4>
-                        <p class="text-gray-400 mt-1">شرح نشاط Seeds X</p>
-                    </button>
+            <div id="activity-07" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 07: الألغاز المخبأة</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> حل مجموعة من الألغاز داخل اللعبة للوصول إلى موقع سري يحتوي على مكافأة.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> الألغاز تعتمد على استخدام البيئة المحيطة. الحل الصحيح يفتح بوابة إلى منطقة "غرفة الكنز".
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-                </div>
-            </section>
-            </section>
-            
-            <section id="schedules" data-title="Schedules" class="page-content hidden">
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">Program Schedules</h3>
-                <p class="text-lg mb-8 text-gray-300 text-center">Choose the schedule you wish to review for full details.</p>
+            <div id="activity-08" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 08: الاستكشاف الحر</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> اكتشاف 5 مواقع نادرة ومخفية في أطراف الخريطة لم يزرها معظم اللاعبين.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> يجب التقاط "لقطة شاشة" لكل موقع مع ظهور اسم المستخدم في اللقطة كدليل على الاكتشاف.
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-yellow-500 cursor-pointer text-center" onclick="showPage('season-schedule-page')">
-                        <h4 class="text-2xl font-semibold text-white mb-3">Season Schedules</h4>
-                        <p class="text-gray-400 mb-4">Detailed Season Schedule.</p>
-                    </div>
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-indigo-500 cursor-pointer text-center" onclick="showPage('xbox-schedule-main')">
-                        <h4 class="text-2xl font-semibold text-white mb-3">XBoX Schedules</h4>
-                        <p class="text-gray-400 mb-4">The complete schedule for all XBoX activities.</p>
-                    </div>
-                </div>
-            </section>
+            <div id="activity-09" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 09: التصميم الفني</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> استخدام أدوات البناء داخل اللعبة لتصميم شعار ثلاثي الأبعاد لبرنامج Superstars.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> يجب أن يكون التصميم بارتفاع لا يقل عن 10 كتل وأن يتضمن اسم البرنامج بوضوح.
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-            <section id="season-schedule-page" data-title="Season Schedules" class="page-content hidden">
-                <button onclick="showPage('schedules')" class="text-blue-400 hover:text-blue-300 mb-6 font-bold text-lg">&larr; العودة للجداول الزمنية</button>
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">جدول أنشطة السيزون</h3>
-                <p class="text-lg mb-8 text-gray-300 text-center">يحتوي هذا الجدول على الأنشطة اليومية المقررة للسيزون (الشهر).</p>
+            <div id="activity-10" class="hidden-page p-6 md:p-10 bg-gray-800/80 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-3xl font-extrabold text-gold-light mb-6 border-b border-gold-dark pb-3">النشاط 10: ملخص التحدي</h2>
+                <p class="text-gray-300 mb-4 leading-relaxed">
+                    <strong>الهدف:</strong> كتابة تقرير موجز عن التجربة المكتسبة خلال تحديات XBoX وكيف ساهمت في تطوير المهارات.
+                </p>
+                <p class="text-gray-400 border-r-4 border-gold-dark pr-4 py-2 bg-gray-700/50">
+                    <strong>الشرح التفصيلي:</strong> يجب أن يتضمن التقرير أهم ثلاث لحظات تعلمها المشارك وأكثر نشاط استمتع به، بحد أدنى 200 كلمة.
+                </p>
+                <button onclick="showPage('home')" class="mt-6 bg-gold-dark hover:bg-gold-light transition duration-300 text-gray-900 font-bold py-2 px-4 rounded-lg shadow-md">
+                    العودة للدليل الرئيسي
+                </button>
+            </div>
 
-                <div class="overflow-x-auto bg-gray-800 rounded-xl shadow-2xl">
-                    <table class="min-w-full divide-y divide-gray-700">
-                        <thead class="bg-gray-700">
-                            <tr>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gold-light uppercase tracking-wider">اليوم</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gold-light uppercase tracking-wider">النشاط الأول (2:00 PM)</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gold-light uppercase tracking-wider">النشاط الثاني (9:00 PM)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-800">
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">1</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 1</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 1</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">2</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 1</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 1</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">3</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 1</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 1</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">4</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 2</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 2</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">5</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 2</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 2</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">6</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 2</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 2</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">7</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 3</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 3</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">8</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 3</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 3</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">9</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 3</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 3</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">10</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 4</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 4</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">11</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 4</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 4</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">12</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 4</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 4</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">13</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 5</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 5</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">14</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 5</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 5</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">15</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 5</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 5</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">16</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 6</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 6</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">17</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 6</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 6</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">18</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 6</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 6</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">19</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 7</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 7</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">20</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 7</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 7</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">21</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 7</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 7</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">22</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 8</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 8</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">23</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 8</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 8</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">24</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 8</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 8</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">25</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 9</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 9</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">26</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 9</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 9</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">27</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 9</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 9</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">28</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Golden Ear 10</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Label 10</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">29</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Seeds 10</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike 10</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">30</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">Grammar 10</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine 10</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            
-            <section id="xbox-schedule-main" data-title="XBoX Schedules" class="page-content hidden">
-                <button onclick="showPage('schedules')" class="text-blue-400 hover:text-blue-300 mb-6 font-bold text-lg">&larr; العودة للجداول الزمنية</button>
-                <h3 class="text-3xl font-bold mb-6 text-gold-light border-b pb-3 border-gray-700 text-center">جدول أنشطة تحدي XBoX</h3>
-                <p class="text-lg mb-8 text-gray-300 text-center">يحتوي هذا الجدول على الأنشطة اليومية المقررة لتحدي XBoX.</p>
-
-                <div class="overflow-x-auto bg-gray-800 rounded-xl shadow-2xl">
-                    <table class="min-w-full divide-y divide-gray-700">
-                        <thead class="bg-gray-700">
-                            <tr>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gold-light uppercase tracking-wider">اليوم</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gold-light uppercase tracking-wider">الوقت (10:00 ص)</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gold-light uppercase tracking-wider">النشاط (1)</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gold-light uppercase tracking-wider">الوقت (6:00PM)</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gold-light uppercase tracking-wider">النشاط (2)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-800">
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">1</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Vivid X (1)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Lable X (1)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">2</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Seeds X (1)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Golden Ear X (1)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">3</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine X (1)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike X (1)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">4</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Dictation X (1)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Figurative Focus X (1)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">5</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">SSS X (1)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Grammar X (1)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">6</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Vivid X (2)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Lable X (2)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">7</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Seeds X (2)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Golden Ear X (2)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">8</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine X (2)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike X (2)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">9</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Dictation X (2)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Figurative Focus X (2)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">10</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">SSS X (2)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Grammar X (2)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">11</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Vivid X (3)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Lable X (3)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">12</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Seeds X (3)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Golden Ear X (3)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">13</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine X (3)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike X (3)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">14</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Dictation X (3)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Figurative Focus X (3)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">15</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">SSS X (3)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Grammar X (3)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">16</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Vivid X (4)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Lable X (4)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">17</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Seeds X (4)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Golden Ear X (4)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">18</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine (4)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike X (4)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">19</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Dictation X (4)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Figurative Focus X (4)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">20</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">SSS X (3)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Grammar X (4)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">21</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Vivid X (5)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Lable X (5)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">22</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Seeds X (5)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Golden Ear X (5)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">23</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine (5)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike X (5)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">24</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Dictation X (5)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Figurative Focus X (5)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">25</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">SSS X (5)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Grammar X (5)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">26</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Vivid X (6)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Lable X (6)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">27</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Seeds X (6)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Golden Ear X (6)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">28</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Elmgazine (6)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Alike X (6)</td></tr>
-                            <tr class="hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">29</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Dictation X (6)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Figurative Focus X (5)</td></tr>
-                            <tr class="bg-gray-900 hover:bg-gray-700 transition duration-150"><td class="px-6 py-2 whitespace-nowrap text-sm font-semibold text-white text-center">30</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">10:00 ص</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">SSS X (6)</td><td class="px-6 py-2 whitespace-nowrap text-sm text-yellow-400 text-center">6:00PM</td><td class="px-6 py-2 whitespace-nowrap text-sm text-green-400 text-center">Grammar X (6)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
-    
-    <footer class="bg-gray-800 p-4 text-center text-gray-400 text-sm border-t border-gray-700">
-        SUPERSTARS PROGRAM | EYC Online. All rights reserved &copy; 2025
-    </footer>
+        </div> </div>
 
     <script>
-        // دالة لعرض الصفحة المطلوبة وإخفاء البقية
-        function showPage(pageId, dynamicValue = null) {
-            // إخفاء جميع محتويات الصفحات
-            document.querySelectorAll('.page-content').forEach(section => {
-                section.classList.add('hidden', 'opacity-0');
+        /**
+         * [كوداك] - دالة التنقل بين الصفحات (تم تعديلها لدعم History API).
+         * @param {string} pageId - ID القسم المراد عرضه (مثل 'home', 'profiles', 'activity-01').
+         * @param {string|null} dynamicValue - قيمة ديناميكية (مثل اسم الطالب في Student Card).
+         * @param {boolean} [pushState=true] - لتجنب تحديث الرابط عند استخدام زر الرجوع.
+         */
+        function showPage(pageId, dynamicValue = null, pushState = true) {
+            // إخفاء جميع الأقسام أولاً
+            document.querySelectorAll('#main-content > div').forEach(page => {
+                page.classList.add('hidden-page');
             });
 
-            // عرض الصفحة المطلوبة
+            // إظهار القسم المطلوب
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
-                targetPage.classList.remove('hidden');
-                setTimeout(() => targetPage.classList.remove('opacity-0'), 10); // تأخير بسيط لتشغيل الانتقال
-                
-                // تحديث عنوان الصفحة في الهيدر
-                const titleElement = document.getElementById('variable-title');
-                const newTitle = targetPage.getAttribute('data-title') || 'Home';
-                if (titleElement) titleElement.textContent = newTitle;
+                targetPage.classList.remove('hidden-page');
             }
 
-            // تحديث حالة زر القائمة النشط
+            // تحديث شريط التنقل الجانبي
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('bg-gold-dark/20', 'text-gold-light');
                 link.classList.add('text-gray-300', 'hover:bg-gray-700');
             });
 
-            const activeLink = document.querySelector(`button[data-page=\"${pageId}\"]`);
-            
-            // إذا كانت الصفحة الفرعية جزءاً من صفحة رئيسية (مثل صفحة الأنشطة داخل دليل السيزون)، نضيء الزر الرئيسي
-            let activeLinkToHighlight = activeLink;
-            if (!activeLink) {
-                 // نحاول إضاءة الزر الرئيسي (guides) حتى لو كنا في صفحة فرعية له
-                if (['vivid-guide', 'seeds-guide', 'golden-ear-guide', 'on-the-stage-guide', 'alike-guide', 'lable-guide'].includes(pageId)) {
-                    activeLinkToHighlight = document.querySelector(`button[data-page=\"guides\"]`);
-                }
-                // *** تحديث إضافي: إضاءة زر Schedules عند عرض جداول المواعيد الفرعية ***
-                else if (['season-schedule-page', 'xbox-schedule-main'].includes(pageId)) {
-                    activeLinkToHighlight = document.querySelector(`button[data-page=\"schedules\"]`);
-                }
-            }
-            
+            const activeLinkToHighlight = document.getElementById(`link-${pageId}`);
             if (activeLinkToHighlight) {
                 activeLinkToHighlight.classList.remove('text-gray-300', 'hover:bg-gray-700');
                 activeLinkToHighlight.classList.add('bg-gold-dark/20', 'text-gold-light');
             }
             
             // #############################################################
+            // [كوداك - تطبيق History API] - تحديث الرابط في شريط العنوان
+            if (pushState) {
+                // إنشاء المسار المناسب (مثلاً: /profiles أو /activity-01)
+                let urlPath = (pageId === 'home' ? '/' : `/${pageId}`);
+                if (dynamicValue) {
+                    urlPath += `/${dynamicValue}`;
+                }
+
+                let pageTitle = "SUPERSTARS PROGRAM - EYC Online";
+                // تخصيص عنوان الصفحة حسب pageId
+                if (pageId === 'profiles') {
+                    pageTitle = "دليل الفريق - SUPERSTARS";
+                } else if (pageId.startsWith('activity-')) {
+                    const activityNum = pageId.split('-')[1];
+                    pageTitle = `النشاط ${activityNum} - تحدي XBox`;
+                }
+
+                // استخدام history.pushState لتحديث الرابط دون إعادة تحميل الصفحة
+                history.pushState({ pageId: pageId, dynamicValue: dynamicValue }, pageTitle, urlPath);
+                document.title = pageTitle;
+            }
+            // #############################################################
             
             // منطق خاص بصفحة بطاقة الطالب لتحديث الاسم (إذا كان موجوداً)
             if (pageId === 'student-card-template' && dynamicValue) {
                 const nameDisplay = document.getElementById('student-name-display');
                 const initialsDisplay = document.getElementById('student-initials');
+                // تحديث الاسم
                 if (nameDisplay) nameDisplay.textContent = dynamicValue;
+                // تحديث الحرف الأول
                 if (initialsDisplay) initialsDisplay.textContent = dynamicValue.charAt(0).toUpperCase();
             }
 
@@ -582,23 +365,51 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // إعداد الصفحة عند التحميل: عرض قسم Home
+        // إعداد الصفحة عند التحميل
         document.addEventListener('DOMContentLoaded', () => {
-            // إضافة مستمعي الأحداث لأزرار التنقل
+            // [كوداك - تطبيق History API] - معالج لزر الرجوع (Back Button)
+            window.addEventListener('popstate', (event) => {
+                // إذا كان هناك حالة مسجلة، نستخدمها لإظهار الصفحة بدون تحديث سجل المتصفح
+                if (event.state && event.state.pageId) {
+                    showPage(event.state.pageId, event.state.dynamicValue, false);
+                } else {
+                    // العودة للصفحة الرئيسية إذا لم تكن هناك حالة
+                    showPage('home', null, false);
+                }
+            });
+
+            // إضافة مستمعي الأحداث لأزرار التنقل الرئيسية (الجانبية)
             document.querySelectorAll('.nav-link').forEach(button => {
-                button.addEventListener('click', () => {
+                button.addEventListener('click', (e) => {
+                    // منع التنقل الافتراضي (لأزرار الـ <a>)
+                    e.preventDefault(); 
                     showPage(button.getAttribute('data-page'));
                 });
             });
 
-            // عرض الصفحة الرئيسية (Home) عند التحميل
-            showPage('home');
+            // =========================================================
+            // [كوداك - تطبيق History API] - تحديد الصفحة الابتدائية بناءً على URL
+            // =========================================================
+            const path = window.location.pathname.replace(/^\/|\/$/g, ''); // تنظيف المسار
+            const initialPath = path.replace('index.html', ''); 
+
+            if (initialPath && initialPath !== '') {
+                const parts = initialPath.split('/');
+                const pageId = parts[0];
+                const dynamicValue = parts[1] || null;
+
+                // التحقق من صلاحية pageId قبل العرض
+                if (document.getElementById(pageId)) {
+                    showPage(pageId, dynamicValue, false); // pushState = false
+                } else {
+                    // في حالة مسار غير صالح، نعود للرئيسية
+                    showPage('home', null, false);
+                }
+            } else {
+                // عرض الصفحة الرئيسية (Home) عند التحميل العادي
+                showPage('home', null, false);
+            }
         });
     </script>
 </body>
 </html>
-
-
-
-
-

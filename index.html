@@ -575,28 +575,29 @@
 
     <div class="mt-6 text-center text-gray-400 text-sm">
         <p>الجدول مصمم ليكون متجاوباً (Responsive) ويدعم التمرير الأفقي على شاشات الموبايل.</p>
-    </div>
 <div id="student-card-template" class="p-4 md:p-8 space-y-8 bg-gray-800 text-gray-100 hidden">
 
-    <h1 class="text-3xl font-extrabold text-gold-light border-b-2 border-gold-dark pb-2">ملف الطالب الشخصي</h1>
+    <h1 class="text-3xl font-extrabold text-gold-light border-b-2 border-gold-dark pb-2">
+        PROFILE # <span id="profile-title-name">اسم الطالب</span>
+    </h1>
     
     <div class="max-w-4xl mx-auto bg-gray-900 rounded-xl shadow-2xl p-6 md:p-10">
 
         <div class="flex flex-col items-center space-y-6 border-b border-gray-700 pb-8">
             
-            <div class="relative w-40 h-40">
-                <img class="w-full h-full object-cover rounded-full border-4 border-gold-light shadow-gold transition duration-300 ease-in-out hover:scale-105" 
-                     src="https://via.placeholder.com/150/FFD700/000000?text=صورة+الطالب" 
+            <div class="relative w-48 h-48 md:w-56 md:h-56">
+                <img class="w-full h-full object-cover rounded-full border-4 border-gold-light shadow-2xl shadow-gold transition duration-500 ease-in-out hover:scale-105" 
+                     src="https://via.placeholder.com/200/FFD700/000000?text=صورة+الطالب" 
                      alt="صورة الطالب الشخصية"
                 >
             </div>
 
             <div class="text-center">
-                <p id="profile-student-name" class="text-3xl font-bold text-gold-light">اسم الطالب كاملاً</p>
+                <p id="profile-student-name" class="text-4xl font-black text-gold-light mt-4">اسم الطالب كاملاً</p>
                 
-                <div class="flex items-center justify-center space-x-4 space-x-reverse mt-2">
-                    <span class="text-lg text-gray-300">الـ Tokens:</span>
-                    <span id="profile-tokens-count" class="text-2xl font-extrabold text-green-400">0000</span>
+                <div class="flex items-center justify-center space-x-4 space-x-reverse mt-4 p-2 bg-gray-800 rounded-lg">
+                    <span class="text-xl text-gray-300">الـ Tokens:</span>
+                    <span id="profile-tokens-count" class="text-3xl font-extrabold text-green-400">0000</span>
                 </div>
             </div>
         </div>
@@ -643,42 +644,25 @@
 
 </div>
 <script>
-    // هذه الدالة تساعدك في تحديث بيانات الطالب ديناميكيًا عند الدخول للصفحة
+    // هذه الدالة تساعدك في تحديث بيانات الطالب ديناميكيًا داخل البطاقة (يجب استدعاؤها يدوياً)
     function updateProfileData(name, tokens, masterRank, seasonRank, xboxRank) {
+        // تحديث الاسم في العنوان الرئيسي (البانر الداخلي)
+        document.getElementById('profile-title-name').textContent = name; 
+        
+        // تحديث الاسم داخل البطاقة
         document.getElementById('profile-student-name').textContent = name;
+        
+        // تحديث باقي البيانات
         document.getElementById('profile-tokens-count').textContent = tokens;
         document.getElementById('profile-master-rank').textContent = masterRank;
         document.getElementById('profile-season-rank').textContent = seasonRank;
         document.getElementById('profile-xbox-rank').textContent = xboxRank;
     }
     
-    // **ملاحظة هامة للمستر:**
-    // يجب عليك دمج دالة updateProfileData مع دالة showPage لديك لتحديث البيانات تلقائياً عند عرض هذه الصفحة.
-    // مثال: 
-    // showPage('student-card-template', () => { 
-    //     // هنا ضع الكود لجلب بيانات الطالب الحالية واستدعاء updateProfileData
-    //     updateProfileData("أحمد محمد", "1250", "المركز 5", "الذهبي", "الخبير");
-    // });
+    // مثال لاستدعاء الدالة عند عرض الصفحة:
+    // showPage('student-card-template'); 
+    // updateProfileData("أحمد محمد", "1250", "المركز 5", "الذهبي", "الخبير");
 </script>
-                    </div>
-                </div>
-
-                <!-- لوحة التحكم وتحديث الاسم -->
-                <div class="w-full md:w-1/2 p-6 bg-gray-800 rounded-xl border border-gray-700 shadow-lg">
-                    <h3 class="text-xl font-bold text-gold-light mb-4">تحديث اسم البطاقة</h3>
-                    <div class="mb-4">
-                        <label for="student-name-input" class="block text-sm font-medium text-gray-400 mb-2">الاسم الذي تريد عرضه:</label>
-                        <input type="text" id="student-name-input" placeholder="اكتب اسمك هنا" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-100 focus:ring-gold-dark focus:border-gold-dark">
-                    </div>
-                    <button id="update-name-btn" class="w-full bg-gold-dark hover:bg-gold-light text-gray-900 font-bold py-3 rounded-lg transition duration-300 shadow-md">
-                        تحديث البطاقة
-                    </button>
-                    <p class="text-sm text-gray-400 mt-4 p-3 bg-gray-700 rounded-lg">
-                        <span class="text-gold-light">ملاحظة:</span> هذا مجرد عرض تجريبي. في التطبيق الحقيقي، يتم سحب البيانات من Firestore.
-                    </p>
-                </div>
-            </div>
-        </div>
 
         <!-- 3. قسم الروابط السريعة (Links) -->
         <div id="links" class="content-section p-4 lg:p-8 bg-gray-900 shadow-2xl rounded-2xl">
@@ -1421,4 +1405,5 @@
     </script>
 </body>
 </html>
+
 

@@ -3,1049 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUPERSTARS PROGRAM - EYC Online (Vibrant Dark Redesign)</title>
+    <title>SUPERSTARS PROGRAM - EYC Online</title>
+    <!-- تضمين CDN الخاص بـ Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
+    
     <script>
-        // إعدادات Tailwind CSS مخصصة للثيم الجديد (Vibrant Dark - Teal Accent)
+        // إعدادات Tailwind CSS مخصصة للألوان والظلال لثيم الذهب الداكن
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'primary-bg': '#121212', // خلفية أساسية داكنة جداً
-                        'secondary-bg': '#1e1e1e', // خلفية للبطاقات/الأقسام
-                        'teal-accent': '#2dd4bf', // لون حيوي (Teal 400)
-                        'teal-dark': '#0f766e', // لون Teal أغمق
-                        'telegram': '#0088CC',
+                        'gold-light': '#FFD700', // ذهبي فاتح (للتوهج والنصوص)
+                        'gold-dark': '#B8860B', // ذهبي داكن (للأزرار والحواف)
+                        'telegram': '#0088CC', // لون تليجرام
+                        'background': '#0f172a', // خلفية داكنة جداً (Slate-900)
+                        'card-bg': '#1e293b', // خلفية البطاقات (Slate-800)
                     },
                     boxShadow: {
-                        'teal-glow': '0 0 20px rgba(45, 212, 191, 0.4)',
+                        // تعريف ظل ذهبي بارز لصورة البروفايل
+                        'gold-glow-lg': '0 0 25px rgba(255, 215, 0, 0.8), 0 0 50px rgba(184, 134, 11, 0.5)',
+                        'card-shadow': '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15)',
                     }
                 }
             }
         }
     </script>
-
+    
     <style>
-        /* شريط التمرير مخصص لمتصفحات الويب كيت */
+        /* شريط التمرير مخصص لثيم الذهب الداكن */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #0f766e; border-radius: 4px; } /* teal-dark */
-        ::-webkit-scrollbar-track { background: #121212; }
+        ::-webkit-scrollbar-thumb { background: #B8860B; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
 
-        /* لضمان إظهار الأقسام بشكل صحيح عند التحميل */
-        .content-section { display: none; }
-
-        /* خطوط عربية محسّنة */
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #121212; /* primary-bg */
-            color: #E5E7EB; /* text-gray-200 */
-            min-height: 100vh;
+        /* لضمان إظهار الأقسام بشكل صحيح مع تأثير التلاشي */
+        .page-content {
+            animation: fadeIn 0.5s ease-out;
+            min-height: 85vh; /* لضمان أن الخلفية تملأ الشاشة */
         }
 
-        /* -------------------------------------------------------------------------------- */
-        /* التنسيقات المخصصة للثيم الجديد */
-        /* -------------------------------------------------------------------------------- */
-        
-        /* إعادة تصميم بطاقات الأدلة */
-        .guide-card {
-            background-color: #262626; /* Darker secondary */
-            padding: 1.25rem;
-            border-radius: 0.75rem;
-            border-left: 4px solid #374151; /* Default dark border */
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .guide-card:hover {
-            border-color: #2dd4bf; /* teal-accent */
-            transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-        .guide-title {
-            color: #2dd4bf; /* teal-accent */
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-        }
-        .guide-content {
-            color: #D1D5DB; /* text-gray-300 */
-            line-height: 1.8;
-        }
-        .back-btn {
-            background-color: #262626;
-            color: #2dd4bf;
-            font-size: 0.875rem;
-            transition: all 0.3s;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .back-btn:hover {
-            color: #fff;
-            background-color: #374151;
-        }
-        
-        /* تنسيق خاص لأزرار التنقل في الشريط العلوي */
-        .nav-link-top {
-            border-bottom: 3px solid transparent;
-        }
-        .nav-link-top.active, .nav-link-top:hover {
-            border-color: #2dd4bf; /* teal-accent */
-            color: #2dd4bf;
-            background-color: #1e1e1e;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="p-0">
+<body class="bg-background text-white min-h-screen font-sans">
 
-    <header class="sticky top-0 w-full bg-primary-bg border-b border-gray-700 shadow-2xl z-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-            <div class="flex-shrink-0">
-                <h1 class="text-2xl font-black text-teal-accent">SUPERSTARS</h1>
+    <!-- ############################################################# -->
+    <!-- الهيكل الرئيسي للتطبيق (قائمة جانبية + المحتوى) -->
+    <!-- ############################################################# -->
+    <div class="flex h-screen">
+        
+        <!-- القائمة الجانبية (Sidebar) - ثابتة على سطح المكتب -->
+        <aside id="sidebar" class="hidden md:block w-64 bg-card-bg p-4 border-l border-gray-700 shadow-2xl overflow-y-auto">
+            <div class="text-center mb-10 pt-4">
+                <!-- شعار البرنامج بتصميم بارز -->
+                <div class="inline-block p-2 rounded-full bg-gold-dark/20 mb-2 shadow-gold-glow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gold-light" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm0-13l-2.4 4.8-5.6.8 4 3.9.9 5.5 5.7-3-.9-5.5 4-3.9-5.6-.8L12 7z"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-black text-gold-light tracking-wider">SUPERSTARS</h1>
+                <p class="text-xs text-gray-500 mt-1">لوحة التحكم</p>
             </div>
-            
-            <nav class="hidden lg:block">
-                <ul class="flex space-x-4 space-x-reverse">
-                    <li>
-                        <button data-page="home" class="nav-link nav-link-top px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-teal-accent transition duration-200">الرئيسية</button>
-                    </li>
-                    <li>
-                        <button data-page="student-card-template" class="nav-link nav-link-top px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-teal-accent transition duration-200">بطاقة الطالب</button>
-                    </li>
-                    <li>
-                        <button data-page="xbox-guide" class="nav-link nav-link-top px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-teal-accent transition duration-200">دليل XBoX</button>
-                    </li>
-                    <li>
-                        <button data-page="xbox-schedule" class="nav-link nav-link-top px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-teal-accent transition duration-200">جدول XBoX</button>
-                    </li>
-                    <li>
-                        <button data-page="season-guide" class="nav-link nav-link-top px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-teal-accent transition duration-200">دليل الموسم 3</button>
-                    </li>
-                    <li>
-                        <button data-page="season-schedule" class="nav-link nav-link-top px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-teal-accent transition duration-200">جدول الموسم 3</button>
-                    </li>
-                    <li>
-                        <button data-page="links" class="nav-link nav-link-top px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-teal-accent transition duration-200">روابط سريعة</button>
-                    </li>
-                    <li>
-                        <button data-page="team" class="nav-link nav-link-top px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-teal-accent transition duration-200">فريق الدعم</button>
-                    </li>
-                </ul>
+
+            <!-- روابط التنقل -->
+            <nav class="space-y-2">
+                
+                <!-- زر الصفحة الرئيسية -->
+                <a href="#" class="nav-link flex items-center p-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 transition duration-150" data-page="home">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-7-7v12"/></svg>
+                    <span>الصفحة الرئيسية</span>
+                </a>
+                
+                <!-- بطاقة الطالب الشخصية -->
+                <a href="#" class="nav-link flex items-center p-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 transition duration-150" data-page="student-card-template">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <span>بطاقة الطالب الشخصية</span>
+                </a>
+                
+                <!-- رانك الاكس بوكس -->
+                <a href="#" class="nav-link flex items-center p-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 transition duration-150" data-page="xbox-rank-page">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6m4 0a1 1 0 001-1V6a1 1 0 00-1-1H7a1 1 0 00-1 1v12a1 1 0 001 1zm4 0v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6m4 0a1 1 0 001-1V6a1 1 0 00-1-1H7a1 1 0 00-1 1v12a1 1 0 001 1z" /></svg>
+                    <span>رانك الاكس بوكس</span>
+                </a>
+
+                <!-- الترتيب العام -->
+                <a href="#" class="nav-link flex items-center p-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 transition duration-150" data-page="master-sheet-page">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V17a2 2 0 01-2 2z"/></svg>
+                    <span>الترتيب العام</span>
+                </a>
+                
+                <!-- قسم الروابط الهامة -->
+                <div class="mt-4 pt-4 border-t border-gray-700">
+                    <p class="text-xs text-gray-500 mb-2 px-3">روابط هامة</p>
+                    <a href="#" class="nav-link flex items-center p-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 transition duration-150" data-page="important-links-page">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.72a4 4 0 00-.758-.758l-.01.01zM19 14l-4 4-4-4"/></svg>
+                        <span>روابط الصفحات</span>
+                    </a>
+                </div>
+
+                <!-- تسجيل الخروج -->
+                <a href="#" class="nav-link flex items-center p-3 text-sm font-medium rounded-xl text-red-400 hover:bg-gray-700 transition duration-150 mt-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>تسجيل الخروج</span>
+                </a>
             </nav>
             
-            <button id="mobile-menu-btn" class="lg:hidden p-2 bg-secondary-bg rounded-lg text-teal-accent border border-teal-dark">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            </button>
-        </div>
-    </header>
+            <div class="mt-8 pt-4 border-t border-gray-700">
+                 <p class="text-xs text-gray-600 text-center">
+                    EYC Online Dashboard
+                </p>
+            </div>
+        </aside>
 
-    <div id="mobile-menu" class="fixed inset-0 bg-primary-bg/95 z-40 transform translate-y-full transition-transform duration-300 lg:hidden" style="backdrop-filter: blur(5px);">
-        <div class="p-8 h-full flex flex-col">
-            <h2 class="text-3xl font-bold text-teal-accent mb-10 border-b border-gray-700 pb-4">القائمة</h2>
-            <ul class="space-y-6 flex-grow">
-                <li><button data-page="home" class="nav-link-mobile text-2xl font-medium text-gray-300 hover:text-teal-accent transition duration-200 w-full text-right">الرئيسية</button></li>
-                <li><button data-page="student-card-template" class="nav-link-mobile text-2xl font-medium text-gray-300 hover:text-teal-accent transition duration-200 w-full text-right">بطاقة الطالب</button></li>
-                <li><button data-page="xbox-guide" class="nav-link-mobile text-2xl font-medium text-gray-300 hover:text-teal-accent transition duration-200 w-full text-right">دليل XBoX</button></li>
-                <li><button data-page="xbox-schedule" class="nav-link-mobile text-2xl font-medium text-gray-300 hover:text-teal-accent transition duration-200 w-full text-right">جدول XBoX</button></li>
-                <li><button data-page="season-guide" class="nav-link-mobile text-2xl font-medium text-gray-300 hover:text-teal-accent transition duration-200 w-full text-right">دليل الموسم 3</button></li>
-                <li><button data-page="season-schedule" class="nav-link-mobile text-2xl font-medium text-gray-300 hover:text-teal-accent transition duration-200 w-full text-right">جدول الموسم 3</button></li>
-                <li><button data-page="links" class="nav-link-mobile text-2xl font-medium text-gray-300 hover:text-teal-accent transition duration-200 w-full text-right">روابط سريعة</button></li>
-                <li><button data-page="team" class="nav-link-mobile text-2xl font-medium text-gray-300 hover:text-teal-accent transition duration-200 w-full text-right">فريق الدعم</button></li>
-            </ul>
-            <button id="close-mobile-menu" class="absolute top-4 left-4 p-3 text-teal-accent bg-secondary-bg rounded-full hover:bg-gray-700 transition">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
+        <!-- المحتوى الرئيسي (Main Content) -->
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+            
+            <!-- شريط التنقل العلوي للموبايل (Mobile Header) -->
+            <header class="md:hidden flex justify-between items-center mb-6 bg-background p-4 -mx-4 -mt-4 border-b border-gray-700 sticky top-0 z-40">
+                <h1 class="text-2xl font-black text-gold-light">EYC Stars</h1>
+                <!-- زر فتح قائمة الموبايل -->
+                <button id="mobile-menu-btn" class="text-gray-400 hover:text-white focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </header>
+
+            <!-- قائمة الموبايل المنزلقة (Mobile Menu) -->
+            <div id="mobile-menu" class="fixed top-0 right-0 h-full w-64 bg-card-bg z-50 transform translate-x-full transition duration-300 ease-in-out p-6 shadow-2xl">
+                <div class="flex justify-end mb-8">
+                    <!-- زر إغلاق القائمة -->
+                    <button id="close-mobile-menu-btn" class="text-gray-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <!-- روابط الموبايل -->
+                <nav class="space-y-2">
+                    <a href="#" class="nav-link-mobile flex items-center p-3 text-lg font-medium rounded-xl text-gray-300 hover:bg-gray-700" data-page="home">الصفحة الرئيسية</a>
+                    <a href="#" class="nav-link-mobile flex items-center p-3 text-lg font-medium rounded-xl text-gray-300 hover:bg-gray-700" data-page="student-card-template">بطاقة الطالب الشخصية</a>
+                    <a href="#" class="nav-link-mobile flex items-center p-3 text-lg font-medium rounded-xl text-gray-300 hover:bg-gray-700" data-page="xbox-rank-page">رانك الاكس بوكس</a>
+                    <a href="#" class="nav-link-mobile flex items-center p-3 text-lg font-medium rounded-xl text-gray-300 hover:bg-gray-700" data-page="master-sheet-page">الترتيب العام</a>
+                    <a href="#" class="nav-link-mobile flex items-center p-3 text-lg font-medium rounded-xl text-gray-300 hover:bg-gray-700" data-page="important-links-page">روابط الصفحات</a>
+                    <a href="#" class="nav-link-mobile flex items-center p-3 text-lg font-medium rounded-xl text-red-400 hover:bg-gray-700" data-page="logout-page">تسجيل الخروج</a>
+                </nav>
+            </div>
+
+            <!-- ############################################################# -->
+            <!-- 1. قسم الصفحة الرئيسية (Home) -->
+            <!-- ############################################################# -->
+            <div id="home" class="page-content">
+                <div class="p-4 md:p-8 rounded-2xl">
+                    <h2 class="text-4xl font-black text-gold-light mb-8 border-b border-gray-700 pb-3">لوحة معلومات البرنامج</h2>
+                    
+                    <!-- بطاقة الترحيب والبحث -->
+                    <div class="bg-card-bg p-8 rounded-2xl shadow-card-shadow border border-gold-dark/30 mb-8">
+                        <h3 class="text-3xl font-extrabold text-white mb-2">مرحباً بعودتك يا <span id="student-name-display-home" class="text-gold-light">... الطالب ...</span></h3>
+                        <p class="text-gray-400 mb-6">هنا يمكنك متابعة آخر تحديثاتك، نقاطك، وترتيبك العام في البرنامج.</p>
+                        
+                        <!-- بطاقات الإحصائيات الرئيسية -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                            
+                            <!-- التوكنز المتاحة -->
+                            <div class="bg-gray-700 p-5 rounded-xl border-b-4 border-gold-light flex items-center justify-between transition duration-300 hover:scale-[1.03]">
+                                <div>
+                                    <p class="text-sm text-gray-400">التوكنز المتاحة</p>
+                                    <span class="text-3xl font-extrabold text-white">5500</span>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gold-light opacity-50" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15.5V14h2v3.5h-2zm0-5V7h2v5.5h-2z"/></svg>
+                            </div>
+                            
+                            <!-- رانك الترتيب العام -->
+                            <div class="bg-gray-700 p-5 rounded-xl border-b-4 border-blue-400 flex items-center justify-between transition duration-300 hover:scale-[1.03]">
+                                <div>
+                                    <p class="text-sm text-gray-400">الترتيب العام (Master)</p>
+                                    <span class="text-3xl font-extrabold text-white">#3</span>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 00-2 2v5a2 2 0 002 2h14a2 2 0 002-2v-5a2 2 0 00-2-2M5 12a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 01-2 2M10 7a2 2 0 002 2M12 5a2 2 0 00-2 2"/></svg>
+                            </div>
+
+                             <!-- رانك السيزون -->
+                            <div class="bg-gray-700 p-5 rounded-xl border-b-4 border-green-500 flex items-center justify-between transition duration-300 hover:scale-[1.03]">
+                                <div>
+                                    <p class="text-sm text-gray-400">رانك السيزون</p>
+                                    <span class="text-3xl font-extrabold text-white">#5</span>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- قسم تحديث الاسم (للتجربة) -->
+                    <div class="bg-card-bg p-6 rounded-2xl shadow-card-shadow border border-gray-700/50">
+                        <label for="student-name-input" class="block text-sm font-medium text-gray-400 mb-2">تحديث اسم الطالب (تجريبي)</label>
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
+                            <input type="text" id="student-name-input" placeholder="أدخل اسمك الجديد هنا..." class="flex-1 p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:ring-gold-dark focus:border-gold-dark">
+                            <button id="update-name-btn" class="bg-gold-dark text-gray-900 font-bold p-3 rounded-lg hover:bg-gold-light transition duration-150 shadow-md">تحديث الاسم</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ############################################################# -->
+            <!-- 2. قسم بطاقة الطالب (البروفايل المُحسن) -->
+            <!-- ############################################################# -->
+            <div id="student-card-template" class="page-content hidden">
+                
+                <h2 class="text-4xl font-black text-gold-light mb-10 border-b border-gray-700 pb-3 text-center">
+                    بطاقة الطالب الشخصية
+                </h2>
+            
+                <div class="max-w-4xl mx-auto space-y-12">
+            
+                    <!-- قسم البروفايل الرئيسي (الصورة والاسم والتوكنز) -->
+                    <div class="bg-card-bg/80 backdrop-blur-sm p-10 rounded-3xl shadow-2xl border-2 border-gold-dark/50 text-center relative overflow-hidden transform hover:scale-[1.01] transition duration-500 ease-in-out">
+                        
+                        <!-- إضاءة خلفية خفيفة -->
+                        <div class="absolute inset-0 z-0 opacity-15" style="background: radial-gradient(circle at top, #FFD700 0%, transparent 60%);"></div>
+            
+                        <div class="relative z-10">
+                            
+                            <!-- الصورة الشخصية مع التوهج الذهبي البارز -->
+                            <div class="inline-block relative p-2 rounded-full mb-6 bg-gray-900/50" 
+                                style="box-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 40px rgba(184, 134, 11, 0.7);">
+                                <div id="student-initials" class="w-40 h-40 rounded-full object-cover border-4 border-gray-900 bg-gold-dark flex items-center justify-center text-7xl font-black text-gray-900 shadow-xl">
+                                    ط
+                                </div>
+                            </div>
+            
+                            <!-- الاسم وعدد التوكنز -->
+                            <h3 class="text-5xl font-extrabold text-white mb-3 tracking-wide" id="student-name-display">اسم الطالب (الإصدار الحالي)</h3>
+                            <p class="text-lg text-gold-light font-medium">قائد النخبة - المستوى الذهبي</p>
+            
+                            <!-- بطاقة التوكنز بتصميم مميز -->
+                            <div class="mt-8 inline-flex items-center space-x-3 space-x-reverse bg-gray-900 p-4 rounded-xl shadow-gold-glow-lg border border-gold-light/40">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-300 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-9.79 8h2.02A8 8 0 0112 4a8 8 0 018 8 8 8 0 01-8 8v-2.02A10 10 0 0012 22a10 10 0 009.79-8h-2.02A8 8 0 0112 20a8 8 0 01-8-8 8 8 0 018-8v2.02A10 10 0 0012 2z"/><circle cx="12" cy="12" r="3" fill="#FFD700"/></svg>
+                                <span class="text-3xl font-black text-white" id="card-tokens">5,500 توكنز</span>
+                                <span class="text-sm text-gray-400">متاحة حالياً</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- قسم الرانكات والإحصائيات والأزرار (شبكة ثلاثية) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- 1. رانك الاكس بوكس -->
+                        <div class="bg-card-bg p-6 rounded-2xl shadow-card-shadow border-t-4 border-green-500 flex flex-col justify-between transition duration-300 hover:scale-[1.02]">
+                            <div>
+                                <p class="text-lg font-medium text-gray-400 mb-2">رانك الاختبارات (Xbox)</p>
+                                <h4 class="text-4xl font-extrabold text-green-400 mb-3" id="rank-xbox">#12</h4>
+                                <p class="text-sm text-gray-500">معدل الأداء العام</p>
+                            </div>
+                            <a href="#" data-page="xbox-rank-page" class="nav-link-manual mt-4 block text-center bg-green-600 text-white p-3 rounded-lg font-bold hover:bg-green-700 transition duration-300">
+                                <span class="flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6m4 0a1 1 0 001-1V6a1 1 0 00-1-1H7a1 1 0 00-1 1v12a1 1 0 001 1zm4 0v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6m4 0a1 1 0 001-1V6a1 1 0 00-1-1H7a1 1 0 00-1 1v12a1 1 0 001 1z" /></svg> مشاهدة رانك Xbox</span>
+                            </a>
+                        </div>
+            
+                        <!-- 2. رانك السيزون -->
+                        <div class="bg-card-bg p-6 rounded-2xl shadow-card-shadow border-t-4 border-blue-500 flex flex-col justify-between transition duration-300 hover:scale-[1.02]">
+                            <div>
+                                <p class="text-lg font-medium text-gray-400 mb-2">رانك السيزون (الأنشطة)</p>
+                                <h4 class="text-4xl font-extrabold text-blue-400 mb-3" id="rank-season">#5</h4>
+                                <p class="text-sm text-gray-500">نقاط الأنشطة الحالية</p>
+                            </div>
+                            <a href="#" data-page="master-sheet-page" class="nav-link-manual mt-4 block text-center bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700 transition duration-300">
+                                <span class="flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2v5l-4-4-4 4v-5c0-1.105 1.343-2 3-2s3-.895 3-2z" /></svg> انتقل لرانك السيزون</span>
+                            </a>
+                        </div>
+            
+                        <!-- 3. رانك الماستر شيت -->
+                        <div class="bg-card-bg p-6 rounded-2xl shadow-card-shadow border-t-4 border-gold-light flex flex-col justify-between transition duration-300 hover:scale-[1.02]">
+                            <div>
+                                <p class="text-lg font-medium text-gray-400 mb-2">رانك الترتيب العام (Master)</p>
+                                <h4 class="text-4xl font-extrabold text-gold-light mb-3" id="rank-master-sheet">#3</h4>
+                                <p class="text-sm text-gray-500">المركز العام النهائي</p>
+                            </div>
+                            <a href="#" data-page="master-sheet-page" class="nav-link-manual mt-4 block text-center bg-gold-light text-gray-900 p-3 rounded-lg font-black hover:bg-gold-dark transition duration-300 shadow-lg">
+                                <span class="flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V17a2 2 0 01-2 2z"/></svg> اذهب للماستر شيت</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ############################################################# -->
+            <!-- 3. قسم رانك الاكس بوكس -->
+            <!-- ############################################################# -->
+            <div id="xbox-rank-page" class="page-content hidden">
+                <h2 class="text-4xl font-black text-white mb-6 border-b border-gray-700 pb-3">رانك الاكس بوكس (الاختبارات)</h2>
+                <div class="bg-card-bg p-8 rounded-2xl shadow-card-shadow border border-gray-700">
+                    <p class="text-gray-400 text-lg">
+                        هنا سيتم عرض جدول الترتيب التفصيلي لاختبارات الاكس بوكس. الجدول سيشمل النقاط الإجمالية، متوسط الأداء، ومركز الطالب الحالي.
+                    </p>
+                    <div class="mt-6 p-4 bg-gray-700/50 rounded-xl border border-green-500/50 text-center">
+                        <p class="text-green-400 font-bold">مكان جدول البيانات (Data Table Placeholder)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ############################################################# -->
+            <!-- 4. قسم الترتيب العام (الماستر شيت) -->
+            <!-- ############################################################# -->
+            <div id="master-sheet-page" class="page-content hidden">
+                <h2 class="text-4xl font-black text-white mb-6 border-b border-gray-700 pb-3">الترتيب العام (الماستر شيت)</h2>
+                <div class="bg-card-bg p-8 rounded-2xl shadow-card-shadow border border-gray-700">
+                    <p class="text-gray-400 text-lg">
+                        هذا هو الجدول العام لجميع الطلاب والذي يجمع بين نقاط الاختبارات والأنشطة.
+                        المركز #1 هو الهدف للجميع!
+                    </p>
+                    <div class="mt-6 p-4 bg-gray-700/50 rounded-xl border border-gold-light/50 text-center">
+                        <p class="text-gold-light font-bold">مكان جدول الماستر شيت (Master Sheet Table Placeholder)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ############################################################# -->
+            <!-- 5. قسم الروابط الهامة -->
+            <!-- ############################################################# -->
+            <div id="important-links-page" class="page-content hidden">
+                <h2 class="text-4xl font-black text-white mb-6 border-b border-gray-700 pb-3">الروابط الهامة</h2>
+                <div class="bg-card-bg p-8 rounded-2xl shadow-card-shadow border border-gray-700">
+                    <p class="text-gray-400 mb-6">يمكنك الوصول إلى جميع منصات البرنامج من خلال الروابط التالية:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- رابط مجموعة التليجرام -->
+                        <a href="https://t.me/eyc_channel_placeholder" target="_blank" class="flex items-center p-4 bg-telegram rounded-xl hover:bg-telegram/80 transition duration-150 shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.33 7.82l-2.48 1.96 1.48 4.78-3.41-2.43-3.41 2.43 1.48-4.78-2.48-1.96 4.96-.4 1.95-4.52 1.95 4.52 4.96.4z"/></svg>
+                            <span class="text-white font-bold text-lg">قناة التليجرام الرسمية</span>
+                        </a>
+
+                        <!-- رابط Google Classroom -->
+                        <a href="#classroom_link_placeholder" target="_blank" class="flex items-center p-4 bg-orange-600 rounded-xl hover:bg-orange-700 transition duration-150 shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.206 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.832 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.832 5 16.5 5S19.832 5.477 21 6.253v13C19.832 18.477 18.168 18 16.5 18s-3.332.477-4.5 1.253"/></svg>
+                            <span class="text-white font-bold text-lg">منصة Google Classroom</span>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ############################################################# -->
+            <!-- 6. قسم تسجيل الخروج (Logout) -->
+            <!-- ############################################################# -->
+            <div id="logout-page" class="page-content hidden">
+                <div class="bg-red-900/50 p-10 rounded-xl border border-red-700 text-center max-w-lg mx-auto mt-20 shadow-xl">
+                    <h2 class="text-3xl font-bold text-red-300 mb-4">تم تسجيل الخروج بنجاح!</h2>
+                    <p class="text-red-400">شكراً لاستخدامك لوحة تحكم برنامج النجوم.</p>
+                    <a href="#" data-page="home" class="nav-link-manual inline-block mt-6 bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition duration-150 shadow-md">العودة للصفحة الرئيسية</a>
+                </div>
+            </div>
+
+        </main>
     </div>
 
-    <main class="p-4 sm:p-8 max-w-7xl mx-auto">
-
-        <div id="home" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-teal-glow rounded-2xl border border-teal-dark">
-            <h2 class="text-3xl lg:text-5xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center">
-                SUPERSTARS PROGRAM
-            </h2>
-            <div class="text-lg text-gray-300 space-y-8">
-                <p class="text-xl leading-relaxed">هذه الصفحة هي بوابتك الشاملة لبرنامج Superstars. هنا تجد كل ما تحتاجه لتنظيم رحلتك التعليمية وتتبع تقدمك.</p>
-
-                <div class="bg-[#262626] p-6 rounded-xl border-r-4 border-teal-accent shadow-lg">
-                    <h3 class="text-2xl font-bold text-teal-accent mb-3 flex items-center">
-                        <span class="text-3xl ml-2">🚀</span> مهمتك الأولى
-                    </h3>
-                    <p class="text-gray-300">قم بزيارة قسم **بطاقة الطالب** لتخصيص بطاقتك والاطلاع على التوكنز (Tokens) الخاصة بك!</p>
-                    <h3 class="text-2xl font-bold text-teal-accent mt-4 mb-2 flex items-center">
-                        <span class="text-3xl ml-2">📌</span> Tip
-                    </h3>
-                    <p class="text-gray-300">Click on "Profiles to create or check profile!</p>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center mt-8">
-                    <div class="p-6 bg-secondary-bg rounded-xl border border-red-500 shadow-xl 
-                                cursor-pointer transform transition-all duration-300 hover:scale-[1.03] hover:border-teal-accent 
-                                nav-link" 
-                        data-page="student-card-template">
-                        <span class="text-5xl block mb-3">😎</span>
-                        <p class="font-bold text-xl text-teal-accent">Profiles</p>
-                        <p class="text-sm text-gray-400">Check or Create</p>
-                    </div>
-                    <div class="p-6 bg-secondary-bg rounded-xl border border-gray-700 shadow-xl 
-                                cursor-pointer transform transition-all duration-300 hover:scale-[1.03] hover:border-teal-accent 
-                                nav-link" 
-                        data-page="season-guide">
-                        <span class="text-5xl block mb-3">🔥</span>
-                        <p class="font-bold text-xl text-teal-accent">Season Guide</p>
-                        <p class="text-sm text-gray-400">كل ما تريد معرفته</p>
-                    </div>
-                    <div class="p-6 bg-secondary-bg rounded-xl border border-gray-700 shadow-xl 
-                                cursor-pointer transform transition-all duration-300 hover:scale-[1.03] hover:border-teal-accent 
-                                nav-link" 
-                        data-page="xbox-guide">
-                        <span class="text-5xl block mb-3">☢️</span>
-                        <p class="font-bold text-xl text-teal-accent">Xbox guide</p>
-                        <p class="text-sm text-gray-400">كل ما تريد معرفته</p>
-                    </div>
-                    <div class="p-6 bg-secondary-bg rounded-xl border border-gray-700 shadow-xl 
-                                cursor-pointer transform transition-all duration-300 hover:scale-[1.03] hover:border-teal-accent 
-                                nav-link" 
-                        data-page="xbox-schedule">
-                        <span class="text-5xl block mb-3">🗓️</span>
-                        <p class="font-bold text-xl text-teal-accent">Xbox Schedule</p>
-                        <p class="text-sm text-gray-400">جدول الـ 30 يوم!</p>
-                    </div>
-                    <div class="p-6 bg-secondary-bg rounded-xl border border-gray-700 shadow-xl 
-                                cursor-pointer transform transition-all duration-300 hover:scale-[1.03] hover:border-teal-accent 
-                                nav-link" 
-                        data-page="season-schedule">
-                        <span class="text-5xl block mb-3">📅</span>
-                        <p class="font-bold text-xl text-teal-accent">Season 3 schedule</p>
-                        <p class="text-sm text-gray-400">جدول الـ 30 يوم!</p>
-                    </div>
-                    <div class="p-6 bg-secondary-bg rounded-xl border border-gray-700 shadow-xl 
-                                cursor-pointer transform transition-all duration-300 hover:scale-[1.03] hover:border-teal-accent 
-                                nav-link" 
-                        data-page="links">
-                        <span class="text-5xl block mb-3">🔗</span>
-                        <p class="font-bold text-xl text-teal-accent">روابط سريعة</p>
-                        <p class="text-sm text-gray-400">للوصول السريع</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="student-card-template" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center">
-                بطاقة الطالب (Tokens & Level)
-            </h2>
-            <div class="flex flex-col md:flex-row gap-8 justify-center items-center">
-                <div class="w-full md:w-1/2 p-8 bg-gradient-to-br from-[#262626] to-[#1e1e1e] rounded-xl shadow-teal-glow border border-teal-accent transform hover:scale-[1.01] transition-transform duration-300">
-                    <div class="flex justify-between items-start mb-8">
-                        <div class="text-5xl font-black text-teal-accent" id="student-initials">E</div>
-                        <span class="text-xs font-mono text-gray-400 tracking-widest">SUPERSTARS CARD</span>
-                    </div>
-                    <div class="mb-10">
-                        <p class="text-sm text-gray-400">اسم الطالب</p>
-                        <p class="text-3xl font-bold text-gray-100 mt-1" id="student-name-display">Mister Ezz</p>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="text-sm text-gray-400">Tokens المكتسبة</p>
-                            <p class="text-4xl font-extrabold text-teal-accent mt-1">150</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm text-gray-400">المستوى</p>
-                            <p class="text-3xl font-extrabold text-lime-400 mt-1">Level 5</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full md:w-1/2 p-6 bg-primary-bg rounded-xl border border-gray-700 shadow-lg">
-                    <h3 class="text-xl font-bold text-teal-accent mb-4">تحديث اسم البطاقة</h3>
-                    <div class="mb-4">
-                        <label for="student-name-input" class="block text-sm font-medium text-gray-400 mb-2">الاسم الجديد</label>
-                        <input type="text" id="student-name-input" placeholder="اكتب اسمك هنا" class="w-full p-3 bg-[#262626] border border-gray-700 rounded-lg focus:ring-teal-accent focus:border-teal-accent text-gray-100">
-                    </div>
-                    <button id="update-name-btn" class="w-full bg-teal-accent text-primary-bg font-bold py-3 rounded-lg hover:bg-teal-dark transition duration-200 shadow-md">
-                        تحديث البطاقة
-                    </button>
-                    <p class="text-xs text-gray-500 mt-3 text-center">ملاحظة: هذه وظيفة تجريبية لتحديث الاسم والعرض.</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="xbox-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center">
-                دليل برنامج XBoX (الأنشطة المكثفة)
-            </h2>
-            <div class="space-y-6">
-                <h3 class="text-2xl font-bold text-teal-accent mb-6 border-b border-gray-700 pb-2">🔥 الأنشطة المكثفة (X-Activities)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="guide-card" onclick="showPage('vivid-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">🖼️</span> Vivid X</h3>
-                        <p class="text-gray-400 text-sm">بناء قصص الماضي (Past Narrative).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('lable-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">🏷️</span> Lable X</h3>
-                        <p class="text-gray-400 text-sm">التطبيق العملي للقواعد النحوية (Grammar Activation).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('dictation-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">✍️</span> Dictation X</h3>
-                        <p class="text-gray-400 text-sm">تدريب عالي الكثافة لتحسين سرعة الكتابة والإملاء.</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('alike-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">🔊</span> Alike X</h3>
-                        <p class="text-gray-400 text-sm">التمييز بين الكلمات المتشابهة في النطق (Homophones).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('elmgazine-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">📰</span> ELMagazine X</h3>
-                        <p class="text-gray-400 text-sm">تطوير مهارة التسجيل الصوتي والمشاركة على السوشيال ميديا.</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('figurative-focus-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">🎭</span> Figurative Focus X</h3>
-                        <p class="text-gray-400 text-sm">استخدام اللغة بشكل جذاب وغير حرفي (التعبيرات المجازية).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('golden-ear-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">👂</span> Golden Ear X</h3>
-                        <p class="text-gray-400 text-sm">اختبار قدرة الاستماع بتركيز وتكثيف المعلومات في 3 جمل.</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('grammar-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">📐</span> Grammar X</h3>
-                        <p class="text-gray-400 text-sm">الدقة المتناهية في تحديد العناصر اللغوية واستخراجها بالعدد المطلوب.</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('sss-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">🎤</span> Sing Sang Sung X</h3>
-                        <p class="text-gray-400 text-sm">تحويل الإنجليزي إلى أغنية (الإيقاع واللفظ).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('seeds-x-guide')">
-                        <h3 class="guide-title"><span class="ml-2">🌱</span> Seeds X</h3>
-                        <p class="text-gray-400 text-sm">الترابط المنطقي والقصصي (Cohesion) باستخدام 10 كلمات.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="links" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center">
-                روابط سريعة وهامة
-            </h2>
-            <div class="space-y-6">
-                <a href="#" target="_blank" class="block p-5 bg-[#262626] hover:bg-[#2d333b] rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.02] border border-gray-700 hover:border-teal-accent">
-                    <div class="flex items-center">
-                        <span class="text-4xl ml-3">👥</span>
-                        <div>
-                            <h3 class="text-xl font-bold text-teal-accent">مجموعة الفيسبوك الرسمية</h3>
-                            <p class="text-sm text-gray-300">المركز الرئيسي للتفاعل والتواصل.</p>
-                        </div>
-                    </div>
-                </a>
-                <a href="#" target="_blank" class="block p-5 bg-[#262626] hover:bg-[#2d333b] rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.02] border border-gray-700 hover:border-telegram">
-                    <div class="flex items-center">
-                        <span class="text-4xl ml-3" style="color: #0088CC;">✈️</span>
-                        <div>
-                            <h3 class="text-xl font-bold text-telegram">قناة التليجرام للمواد</h3>
-                            <p class="text-sm text-gray-300">يتم فيها نشر جميع مواد الأنشطة والملفات.</p>
-                        </div>
-                    </div>
-                </a>
-                <a href="#" target="_blank" class="block p-5 bg-[#262626] hover:bg-[#2d333b] rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.02] border border-gray-700 hover:border-teal-accent">
-                    <div class="flex items-center">
-                        <span class="text-4xl ml-3">📥</span>
-                        <div>
-                            <h3 class="text-xl font-bold text-teal-accent">نماذج تسليم المهام</h3>
-                            <p class="text-sm text-gray-300">الرابط الموحد لتسليم جميع الواجبات والأنشطة.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <div id="team" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center">
-                فريق الدعم والمسؤولون
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="p-6 bg-[#262626] rounded-xl border border-teal-dark shadow-lg text-center transform hover:scale-[1.03] transition duration-300">
-                    <p class="text-5xl mb-3">👑</p>
-                    <h3 class="text-2xl font-bold text-teal-accent">Mister Ezz</h3>
-                    <p class="text-md text-gray-400">Team Leader</p>
-                </div>
-                <div class="p-6 bg-[#262626] rounded-xl border border-gray-700 shadow-lg text-center transform hover:scale-[1.03] transition duration-300">
-                    <p class="text-5xl mb-3">💻</p>
-                    <h3 class="text-2xl font-bold text-gray-100">Jimi</h3>
-                    <p class="text-md text-gray-400">Team Assistant</p>
-                </div>
-                <div class="p-6 bg-[#262626] rounded-xl border border-gray-700 shadow-lg text-center transform hover:scale-[1.03] transition duration-300">
-                    <p class="text-5xl mb-3">✍️</p>
-                    <h3 class="text-2xl font-bold text-gray-100">Victor</h3>
-                    <p class="text-md text-gray-400">Content Creator</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="season-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center">
-                دليل أنشطة الموسم الثالث (The Core Activities)
-            </h2>
-            <div class="space-y-6">
-                <h3 class="text-2xl font-bold text-teal-accent mb-6 border-b border-gray-700 pb-2">✨ شرح مفصل للأنشطة وكيفية التنفيذ (6 أنشطة)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="guide-card" onclick="showPage('golden-ear-season-guide')">
-                        <h3 class="guide-title"><span class="ml-2">👂</span> Golden Ear</h3>
-                        <p class="text-gray-400 text-sm">الاختبار الدقيق للاستماع (اختيار من متعدد).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('label-season-guide')">
-                        <h3 class="guide-title"><span class="ml-2">🏷️</span> Label</h3>
-                        <p class="text-gray-400 text-sm">مخزون المفردات المرئية (10 صور).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('seeds-season-guide')">
-                        <h3 class="guide-title"><span class="ml-2">🌱</span> Seeds</h3>
-                        <p class="text-gray-400 text-sm">نواة القصة (بناء قصة بـ 6 كلمات مفتاحية).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('alike-season-guide')">
-                        <h3 class="guide-title"><span class="ml-2">🔊</span> Alike</h3>
-                        <p class="text-gray-400 text-sm">اختبار النطق المتشابه (ربط النطق بالصورة).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('grammar-season-guide')">
-                        <h3 class="guide-title"><span class="ml-2">📐</span> Grammar</h3>
-                        <p class="text-gray-400 text-sm">تصحيح الأخطاء الشائعة (خطأ نحوي واحد).</p>
-                    </div>
-                    <div class="guide-card" onclick="showPage('elmgazine-season-guide')">
-                        <h3 class="guide-title"><span class="ml-2">📰</span> Elmgazine</h3>
-                        <p class="text-gray-400 text-sm">مقالك الصوتي والفيديو (مشاركة الفيديو لـ 5 Tokens).</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="season-schedule" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-6 border-b-4 border-teal-dark pb-3 text-center">جدول أنشطة الموسم الثالث (30 يوماً)</h2>
-
-            <div class="bg-[#262626] p-4 rounded-xl shadow-lg overflow-x-auto border border-gray-700">
-                <table class="min-w-full divide-y divide-gray-700">
-                    <thead class="bg-primary-bg sticky top-0">
-                        <tr>
-                            <th scope="col" class="px-3 py-3 text-right text-xs font-medium text-teal-accent uppercase tracking-wider rounded-tr-xl w-1/6">اليوم</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-teal-accent uppercase tracking-wider w-5/12">النشاط الأول (2:00 PM)</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-teal-accent uppercase tracking-wider w-5/12">النشاط الثاني (9:00 PM)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-700 text-gray-200">
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 1</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Golden Ear 1</td>
-                            <td class="px-6 py-3 whitespace-nowrap text-gray-400">Label 1</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 2</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Seeds 1</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Alike 1</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 3</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Grammar 1</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Elmgazine 1</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 4</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Golden Ear 2</td>
-                            <td class="px-6 py-3 whitespace-nowrap text-gray-400">Label 2</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 5</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Seeds 2</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Alike 2</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 6</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Grammar 2</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Elmgazine 2</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 7</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Golden Ear 3</td>
-                            <td class="px-6 py-3 whitespace-nowrap text-gray-400">Label 3</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 8</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Seeds 3</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Alike 3</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 9</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Grammar 3</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Elmgazine 3</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 10</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Golden Ear 4</td>
-                            <td class="px-6 py-3 whitespace-nowrap text-gray-400">Label 4</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 11</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Seeds 4</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Alike 4</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 12</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Grammar 4</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Elmgazine 4</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 13</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Golden Ear 5</td>
-                            <td class="px-6 py-3 whitespace-nowrap text-gray-400">Label 5</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 14</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Seeds 5</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Alike 5</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 15</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Grammar 5</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Elmgazine 5</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 16</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Golden Ear 6</td>
-                            <td class="px-6 py-3 whitespace-nowrap text-gray-400">Label 6</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 17</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Seeds 6</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Alike 6</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-teal-accent">Day 18</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Grammar 6</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Elmgazine 6</td>
-                        </tr>
-                        </tbody>
-                </table>
-            </div>
-
-            <div class="mt-6 text-center text-gray-400 text-sm">
-                <p>الجدول مصمم ليكون متجاوباً (Responsive) ويدعم التمرير الأفقي على شاشات الموبايل.</p>
-            </div>
-        </div>
-        
-        <div id="xbox-schedule" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-blue-400 mb-6 border-b-4 border-blue-600 pb-3 text-center">جدول أنشطة XBoX (30 يوماً)</h2>
-
-            <div class="bg-[#262626] p-4 rounded-xl shadow-lg overflow-x-auto border border-gray-700">
-                <table class="min-w-full divide-y divide-gray-700">
-                    <thead class="bg-primary-bg sticky top-0">
-                        <tr>
-                            <th scope="col" class="px-3 py-3 text-right text-xs font-medium text-blue-400 uppercase tracking-wider rounded-tr-xl w-1/6">اليوم</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-blue-400 uppercase tracking-wider w-5/12">النشاط (1)</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-blue-400 uppercase tracking-wider w-5/12">النشاط (2)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-700 text-gray-200">
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 1</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Vivid (1)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Lable (1)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 2</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Seeds (1)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Golden Ear (1)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 3</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Elmgazine (1)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Alike HD (1)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 4</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Dictation (1)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Figurative Focus (1)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 5</td>
-                            <td class="px-6 py-3 whitespace-nowrap">SSS (1)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Grammar (1)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 6</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Vivid (2)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Lable (2)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 7</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Seeds (2)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Golden Ear (2)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 8</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Elmgazine (2)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Alike HD (2)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 9</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Dictation (2)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Figurative Focus (2)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 10</td>
-                            <td class="px-6 py-3 whitespace-nowrap">SSS (2)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Grammar (2)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 11</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Vivid (3)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Lable (3)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 12</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Seeds (3)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Golden Ear (3)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 13</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Elmgazine (3)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Alike HD (3)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150 bg-secondary-bg/50">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 14</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Dictation (3)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Figurative Focus (3)</td>
-                        </tr>
-                        <tr class="hover:bg-[#2d333b] transition duration-150">
-                            <td class="px-3 py-3 whitespace-nowrap font-bold text-blue-400">Day 15</td>
-                            <td class="px-6 py-3 whitespace-nowrap">SSS (3)</td>
-                            <td class="px-6 py-3 whitespace-nowrap">Grammar (3)</td>
-                        </tr>
-                         </tbody>
-                </table>
-            </div>
-
-            <div class="mt-6 text-center text-gray-400 text-sm">
-                <p>الجدول مصمم ليكون متجاوباً (Responsive) ويدعم التمرير الأفقي على شاشات الموبايل.</p>
-            </div>
-        </div>
-        
-        <div id="vivid-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Vivid X (بناء قصص الماضي) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">التركيز على مهارة الكتابة السردية (Narrative Writing)، والتزامك بزمن الماضي في السرد.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم بالنشاط؟</h3>
-                    <p class="guide-content">سيتم نشر صورة تحتوي على شخص ما في وضعية أو موقف معين. المطلوب هو كتابة قصة قصيرة تشرح كيف وصل هذا الشخص إلى هذه النقطة في الصورة.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 القواعد والالتزامات</h3>
-                    <p class="guide-content font-extrabold text-teal-accent">اكتب مقالاً قصصياً لا يقل عن 150 كلمة يصف الموقف كاملاً ويلتزم بالزمن المطلوب (الماضي).</p>
-                </div>
-            </div>
-        </div>
-        <div id="lable-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Lable X (تطبيق القواعد النحوية) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">يركز على التطبيق العملي للقواعد النحوية (Grammar Activation) ومرونة استخدام الأزمنة المختلفة في جمل بسيطة.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم بالنشاط؟</h3>
-                    <div class="guide-content space-y-3">
-                        <p>قم ببناء 10 جمل مستقلة.</p>
-                        <p>كل جملة يجب أن تحقق شرطاً نحوياً أو سياقياً مختلفاً يُطلب منك.</p>
-                    </div>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 أمثلة على الشروط</h3>
-                    <p class="guide-content">جملة باستخدام زمن المضارع التام، جملة باستخدام المبني للمجهول، إلخ. تأكد من تحقيق جميع الشروط المطلوبة لـ 10 جمل.</p>
-                </div>
-            </div>
-        </div>
-        <div id="dictation-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Dictation X (تدريب الإملاء) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">تدريب مكثف على دقة وسرعة الكتابة (الإملاء)، ومهارة الاستماع للتفاصيل اللغوية الدقيقة.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم بالنشاط؟</h3>
-                    <div class="guide-content space-y-3">
-                        <p>سيتم نشر مقال صوتي قصير (1-2 دقيقة).</p>
-                        <p>المطلوب هو كتابة المقال كاملاً حرفياً (Dictation) في تعليق على البوست.</p>
-                    </div>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 القواعد والالتزامات</h3>
-                    <p class="guide-content font-extrabold text-teal-accent">يجب أن يكون النص المكتوب مطابقاً تماماً للنص المسموع (بما في ذلك علامات الترقيم).</p>
-                </div>
-            </div>
-        </div>
-        <div id="alike-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Alike X (الكلمات المتشابهة في النطق) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">مخصص لمساعدتك في التمييز بين الكلمات المتشابهة في النطق (Homophones) واختبار قدرتك على ربط الصوت بالسياق المكتوب.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم بالنشاط؟</h3>
-                    <div class="guide-content space-y-3">
-                        <p>ستستمع إلى مجموعة من الجمل الصوتية.</p>
-                        <p>لكل جملة صوتية، ستجد 4 جمل مكتوبة كخيارات.</p>
-                    </div>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 المطلوب</h3>
-                    <p class="guide-content font-extrabold text-teal-accent">المطلوب منك هو تحديد أي جملة من الجمل الأربعة المكتوبة هي التي تم نطقها.</p>
-                </div>
-            </div>
-        </div>
-        <div id="elmgazine-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: ELMagazine X (التسجيل الصوتي والمشاركة) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">تطوير مهارة التسجيل الصوتي، وكسر حاجز الخوف من الظهور والمشاركة (Engagement) لزيادة تفاعلك على السوشيال ميديا.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 الخطوات الأساسية (5 Tokens)</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>سيتم إرسال مقال محدد لك لقراءته.</li>
-                        <li>قم بتسجيل صوتك وأنت تقرأ المقال بوضوح.</li>
-                        <li>فريق الديزاين سيأخذ تسجيلك ويصنع منه فيديو احترافي ويرفعه على صفحة الأكاديمية على الفيسبوك.</li>
-                        <li>للحصول على الـ 5 Tokens الأساسية، يجب عليك **مشاركة (Share) هذا الفيديو** على صفحتك الشخصية.</li>
-                    </ul>
-                </div>
-                <div class="guide-card border-l-4 border-green-500 bg-[#262626]">
-                    <h3 class="guide-title text-green-400">💰 توكنز البونص (في نهاية السيزون)</h3>
-                    <p class="guide-content">يتم حساب البونص بنفس طريقة Elmgazine:</p>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>الإعجابات (Likes): كل 10 إعجابات (ليس أقل) تساوي 2 Tokens.</li>
-                        <li>المشاركات (Shares): كل 5 مشاركات تساوي 2 Tokens.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div id="figurative-focus-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Figurative Focus X (التعبيرات المجازية) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">يهدف إلى تطوير قدرتك على استخدام اللغة بأسلوب جذاب وغير حرفي، مما يجعل كتاباتك أكثر احترافية وإثارة للاهتمام.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم بالنشاط؟</h3>
-                    <p class="guide-content">سيتم نشر جملة بسيطة جداً.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 المطلوب</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>المطلوب هو إعادة صياغة الجملة لتشتمل على تعبير مجازي (Metaphor, Simile, etc.).</li>
-                        <li>ضع التعبير المجازي **بخط غامق** ليكون ملفتاً وواضحاً.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div id="golden-ear-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Golden Ear X (التلخيص العميق) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">يختبر قدرتك على الاستماع بتركيز عميق وفهم المعلومات، ثم تكثيفها في أقل عدد من الكلمات.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم بالنشاط؟</h3>
-                    <p class="guide-content">استمع جيداً للمقال أو المادة المسموعة.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 القواعد والالتزامات</h3>
-                    <p class="guide-content font-extrabold text-teal-accent">قم بتلخيص المحتوى الذي فهمته في 3 جمل فقط لا غير. (ممنوع أقل أو أكثر).</p>
-                </div>
-            </div>
-        </div>
-        <div id="grammar-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Grammar X (التحديد النحوي الدقيق) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">يعلمك الدقة المتناهية في تحديد العناصر اللغوية. لا مجال هنا للخطأ في العدد أو النوع.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم بالنشاط؟</h3>
-                    <p class="guide-content">سيتم نشر نص قصير (جملة أو جملتين) وسيطلب منك تحديد عدد ونوع معين من العناصر النحوية (مثل: Verb To Be، أو Adverbs، إلخ).</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 المطلوب</h3>
-                    <p class="guide-content font-extrabold text-teal-accent">كتابة الكلمات أو العبارات المطلوبة بالعدد المطلوب بالضبط.</p>
-                </div>
-            </div>
-        </div>
-        <div id="sss-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Sing Sang Sung X (الغناء والإيقاع) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">يهدف إلى تطوير الإيقاع (Rhythm) واللفظ (Pronunciation) لديك وتحويل النص إلى أغنية.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم بالنشاط؟</h3>
-                    <p class="guide-content">يتم نشر كلمات أغنية إنجليزية أو مقطع صوتي بسيط. المطلوب هو تسجيل صوتك وأنت تغنيها أو تقرأها بإيقاع.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 القواعد والالتزامات</h3>
-                    <p class="guide-content font-extrabold text-teal-accent">جودة الصوت والالتزام بالإيقاع هما معايير التقييم.</p>
-                </div>
-            </div>
-        </div>
-        <div id="seeds-x-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('xbox-guide')">← العودة لدليل XBoX</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Seeds X (الترابط المنطقي والقصصي) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 الاستفادة والهدف</h3>
-                    <p class="guide-content">تطوير قدرتك على بناء قصص متكاملة وذات ترابط منطقي عالي (Cohesion and Coherence) باستخدام عدد أكبر من الكلمات المفتاحية.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم بالنشاط؟</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>يُنشر بوست بـ 10 كلمات مفتاحية.</li>
-                        <li>المطلوب كتابة قصة قصيرة (200-250 كلمة) تتضمن الكلمات العشرة، في تعليق على البوست.</li>
-                    </ul>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 شروط القبول</h3>
-                    <p class="guide-content font-extrabold text-teal-accent">الالتزام بعدد الكلمات، واستخدام جميع الكلمات الـ 10، والترابط القصصي العالي.</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="golden-ear-season-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('season-guide')">← العودة لدليل الموسم 3</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Golden Ear (اختبار الاستماع الدقيق) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 المهارة المستهدفة</h3>
-                    <p class="guide-content">التركيز على مهارة الاستماع التفصيلي والتقاط المعلومات الدقيقة.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم به؟</h3>
-                    <p class="guide-content">يُنشر لينك لـ Google Form به 10 أسئلة اختيار من متعدد بناءً على مقطع صوتي يتم نشره مسبقاً.</p>
-                </div>
-                <div class="guide-card border-l-4 border-green-500 bg-[#262626]">
-                    <h3 class="guide-title text-green-400">✅ القبول والتوكنز</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>اجتياز الاختبار في الفورم والحصول على نتيجتك.</li>
-                        <li>أخذ ScreenShot للنتيجة ووضعه في تعليق على بوست النشاط.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div id="label-season-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('season-guide')">← العودة لدليل الموسم 3</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Label (مخزون المفردات المرئية) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 المهارة المستهدفة</h3>
-                    <p class="guide-content">بناء وتنشيط مخزون المفردات (Vocabulary Activation) بشكل سريع وفعّال.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم به؟</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>يُنشر لينك لـ Google Form به 10 صور لأشياء مختلفة.</li>
-                        <li>المطلوب كتابة الاسم الإنجليزي الصحيح لكل شيء.</li>
-                    </ul>
-                </div>
-                <div class="guide-card border-l-4 border-green-500 bg-[#262626]">
-                    <h3 class="guide-title text-green-400">✅ القبول والتوكنز</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>اجتياز الاختبار في الفورم والحصول على نتيجتك.</li>
-                        <li>أخذ ScreenShot للنتيجة ووضعه في تعليق على بوست النشاط.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div id="seeds-season-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('season-guide')">← العودة لدليل الموسم 3</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Seeds (نواة القصة) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 المهارة المستهدفة</h3>
-                    <p class="guide-content">هذا النشاط يطور مهارة بناء قصص متكاملة وذات ترابط منطقي (Cohesion)، وهي مهارة مهمة جداً في الكتابة الأكاديمية والمهنية.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم به؟</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>يُنشر بوست بـ 6 كلمات مفتاحية.</li>
-                        <li>المطلوب كتابة قصة قصيرة (100-120 كلمة) تتضمن الكلمات الستة، في تعليق على البوست.</li>
-                    </ul>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 شروط القبول</h3>
-                    <p class="guide-content font-extrabold text-teal-accent">الالتزام بالحد الأدنى للكلمات واستخدام جميع الكلمات الستة بشكل منطقي وقصصي.</p>
-                </div>
-            </div>
-        </div>
-        <div id="alike-season-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('season-guide')">← العودة لدليل الموسم 3</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Alike (اختبار النطق المتشابه) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 المهارة المستهدفة</h3>
-                    <p class="guide-content">ربط النطق الصحيح للكلمات (Pronunciation) بصورتها المكتوبة.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم به؟</h3>
-                    <p class="guide-content">يُنشر لينك لـ Google Form به 10 أسئلة. في كل سؤال، تستمع إلى نطق كلمة، وتختار من بين 4 خيارات الكلمة الصحيحة التي سمعتها.</p>
-                </div>
-                <div class="guide-card border-l-4 border-green-500 bg-[#262626]">
-                    <h3 class="guide-title text-green-400">✅ القبول والتوكنز</h3>
-                    <p class="guide-content">اجتياز الاختبار والحصول على سكرين شوت للنتيجة ووضعه في تعليق على بوست النشاط.</p>
-                </div>
-            </div>
-        </div>
-        <div id="grammar-season-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('season-guide')">← العودة لدليل الموسم 3</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Grammar (تصحيح الأخطاء الشائعة) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 المهارة المستهدفة</h3>
-                    <p class="guide-content">إتقان تصحيح الأخطاء النحوية الشائعة.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم به؟</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>يُنشر بوست بجملة تحتوي على خطأ نحوي واحد.</li>
-                        <li>المطلوب إعادة كتابة الجملة الصحيحة في تعليق على البوست.</li>
-                    </ul>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">📝 شروط القبول</h3>
-                    <p class="guide-content font-extrabold text-teal-accent">الجملة الصحيحة الوحيدة التي تقوم بتصحيح الخطأ النحوي بدقة.</p>
-                </div>
-            </div>
-        </div>
-        <div id="elmgazine-season-guide" class="content-section p-4 lg:p-10 bg-secondary-bg shadow-xl rounded-2xl border border-gray-700">
-            <button class="back-btn" onclick="showPage('season-guide')">← العودة لدليل الموسم 3</button>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-teal-accent mb-8 border-b-4 border-teal-dark pb-3 text-center"> دليل النشاط: Elmgazine (مقالك الصوتي والفيديو) </h2>
-            <div class="space-y-6">
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🌟 المهارة المستهدفة</h3>
-                    <p class="guide-content">تطوير مهارة التسجيل الصوتي، والظهور، والمشاركة الفعالة لزيادة تفاعلك على السوشيال ميديا.</p>
-                </div>
-                <div class="guide-card border-l-4 border-teal-accent">
-                    <h3 class="guide-title">🚀 كيف تقوم به (5 Tokens أساسية)</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>سيتم إرسال مقال معين لك لقراءته.</li>
-                        <li>قم بتسجيل صوتك وأنت تقرأ المقال بوضوح (جودة الصوت مهمة).</li>
-                        <li>فريق الديزاين سيصنع فيديو احترافي ويرفعه على صفحة الأكاديمية على الفيسبوك.</li>
-                        <li>للحصول على الـ 5 Tokens الأساسية، يجب عليك **مشاركة (Share) هذا الفيديو** على صفحتك الشخصية.</li>
-                    </ul>
-                </div>
-                <div class="guide-card border-l-4 border-green-500 bg-[#262626]">
-                    <h3 class="guide-title text-green-400">💰 توكنز البونص (في نهاية السيزون)</h3>
-                    <ul class="guide-content list-disc list-inside space-y-2">
-                        <li>الإعجابات (Likes): كل 10 إعجابات (ليس أقل) تساوي 2 Tokens.</li>
-                        <li>المشاركات (Shares): كل 5 مشاركات تساوي 2 Tokens.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        </main>
-
+    <!-- ############################################################# -->
+    <!-- منطق JavaScript (التبديل بين الصفحات) -->
+    <!-- ############################################################# -->
     <script>
-        // دالة لعرض صفحة معينة وإخفاء الباقي
+        // دالة للتبديل بين الصفحات وعرض المحتوى المطلوب
+        // تقبل قيمة اختيارية لتحديث الاسم (dynamicValue)
         function showPage(pageId, dynamicValue = null) {
-            // إخفاء جميع الأقسام أولاً
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.style.display = 'none';
+            // إخفاء جميع أقسام المحتوى
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.add('hidden');
             });
 
-            // إزالة حالة التفعيل من أزرار التنقل
-            document.querySelectorAll('.nav-link-top').forEach(button => {
-                button.classList.remove('active');
-                button.classList.remove('text-teal-accent', 'font-bold', 'bg-secondary-bg');
-                button.classList.add('text-gray-300', 'hover:text-teal-accent');
-            });
-            
-            // إظهار القسم المطلوب
-            const page = document.getElementById(pageId);
-            if (page) {
-                page.style.display = 'block';
-
-                // تفعيل زر التنقل المقابل
-                document.querySelectorAll(`.nav-link[data-page="${pageId}"]`).forEach(button => {
-                    button.classList.add('active', 'text-teal-accent', 'font-bold', 'bg-[#1e1e1e]');
-                    button.classList.remove('text-gray-300');
-                });
+            // عرض القسم المطلوب
+            const activePage = document.getElementById(pageId);
+            if (activePage) {
+                activePage.classList.remove('hidden');
             }
 
-            // منطق خاص بصفحة بطاقة الطالب (Student Card)
-            if (pageId === 'student-card-template' && dynamicValue) {
-                const nameDisplay = document.getElementById('student-name-display');
-                const initialsDisplay = document.getElementById('student-initials');
+            // إزالة حالة التمييز من جميع روابط التنقل
+            document.querySelectorAll('.nav-link, .nav-link-mobile').forEach(link => {
+                link.classList.remove('bg-gold-dark/20', 'text-gold-light');
+                link.classList.add('text-gray-300', 'hover:bg-gray-700');
+            });
 
-                nameDisplay.textContent = dynamicValue;
-                // حساب الحرف الأول وعرضه
-                initialsDisplay.textContent = dynamicValue.charAt(0).toUpperCase();
+            // تمييز الرابط النشط في القائمة الجانبية والموبايل
+            const activeLinkToHighlight = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+            if (activeLinkToHighlight) {
+                activeLinkToHighlight.classList.remove('text-gray-300', 'hover:bg-gray-700');
+                activeLinkToHighlight.classList.add('bg-gold-dark/20', 'text-gold-light');
+            }
+            
+            // #############################################################
+            
+            // منطق خاص بصفحة بطاقة الطالب لتحديث الاسم (إذا كان موجوداً)
+            if (dynamicValue) {
+                const nameDisplayCard = document.getElementById('student-name-display');
+                const nameDisplayHome = document.getElementById('student-name-display-home');
+                const initialsDisplay = document.getElementById('student-initials'); 
+                
+                if (nameDisplayCard) nameDisplayCard.textContent = dynamicValue;
+                if (nameDisplayHome) nameDisplayHome.textContent = dynamicValue;
+                
+                // تحديث الأحرف الأولى للصورة البارزة
+                if (initialsDisplay) initialsDisplay.textContent = dynamicValue.charAt(0).toUpperCase();
             }
 
             // تمرير الصفحة للأعلى
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // منطق تحديث اسم الطالب (للعرض التجريبي)
-        document.getElementById('update-name-btn').addEventListener('click', () => {
-            const input = document.getElementById('student-name-input');
-            const newName = input.value.trim();
-            if (newName) {
-                // نستخدم showPage لتحديث الاسم وإعادة عرض الصفحة
-                showPage('student-card-template', newName);
-                input.value = ''; // مسح الإدخال بعد التحديث
-            }
-        });
-
-        // منطق فتح وإغلاق قائمة الموبايل
-        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
-            document.getElementById('mobile-menu').classList.remove('translate-y-full');
-        });
-        document.getElementById('close-mobile-menu').addEventListener('click', () => {
-            document.getElementById('mobile-menu').classList.add('translate-y-full');
-        });
-
         // إعداد الصفحة عند التحميل: عرض قسم Home
         document.addEventListener('DOMContentLoaded', () => {
-            // إضافة مستمعي الأحداث لأزرار التنقل (الشريط العلوي و Grid Cards)
+            // إضافة مستمعي الأحداث لأزرار التنقل (القائمة الجانبية)
             document.querySelectorAll('.nav-link').forEach(button => {
-                button.addEventListener('click', () => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault(); 
                     showPage(button.getAttribute('data-page'));
                 });
             });
 
             // إضافة مستمعي الأحداث لأزرار التنقل (قائمة الموبايل)
             document.querySelectorAll('.nav-link-mobile').forEach(button => {
-                button.addEventListener('click', () => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault(); 
                     showPage(button.getAttribute('data-page'));
-                    document.getElementById('mobile-menu').classList.add('translate-y-full'); // إغلاق قائمة الموبايل
+                    document.getElementById('mobile-menu').classList.add('translate-x-full'); // إغلاق قائمة الموبايل
                 });
             });
 
-            // عرض الصفحة الرئيسية (Home) عند التحميل
-            showPage('home');
+             // إضافة مستمعي الأحداث للأزرار داخل الصفحات الفرعية (مثل العودة للرئيسية)
+            document.querySelectorAll('.nav-link-manual').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showPage(button.getAttribute('data-page'));
+                });
+            });
+
+
+            // منطق تحديث اسم الطالب (للعرض التجريبي)
+            document.getElementById('update-name-btn').addEventListener('click', () => {
+                const input = document.getElementById('student-name-input');
+                const newName = input.value.trim();
+                if (newName) {
+                    // نستخدم showPage لتحديث الاسم وإعادة عرض الصفحة
+                    showPage('home', newName); 
+                    input.value = ''; // مسح الإدخال بعد التحديث
+                }
+            });
+
+            // منطق فتح قائمة الموبايل
+            document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('translate-x-full');
+            });
+
+            // منطق إغلاق قائمة الموبايل
+            document.getElementById('close-mobile-menu-btn').addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('translate-x-full');
+            });
+            
+            // عرض الصفحة الرئيسية (Home) عند التحميل وتحديث الاسم الافتراضي
+            showPage('home', 'Mister Ezz'); // تحديد اسم افتراضي لـ مستر عز
         });
     </script>
 </body>

@@ -4,254 +4,243 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EYC Superstars Program | Season & XBox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --gold-light: #D4AF37;
-            --gold-dark: #AA8439;
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --text-gray: #94a3b8;
-            --accent-blue: #38bdf8;
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--bg-dark);
-            color: white;
-            margin: 0;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Style */
-        .sidebar {
-            width: 260px;
-            background-color: #020617;
-            border-left: 1px solid rgba(212, 175, 55, 0.2);
-            padding: 20px;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .logo-area {
-            text-align: center;
-            padding-bottom: 30px;
-            border-bottom: 1px solid #1e293b;
-        }
-
-        .logo-area h1 {
-            color: var(--gold-light);
-            font-size: 24px;
-            font-weight: 900;
-            margin: 0;
-        }
-
-        .nav-menu {
-            margin-top: 30px;
-            list-style: none;
-            padding: 0;
-        }
-
-        .nav-item {
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-gray);
-            font-weight: 600;
-        }
-
-        .nav-item i { width: 20px; text-align: center; }
-
-        .nav-item:hover, .nav-item.active {
-            background: linear-gradient(45deg, var(--gold-dark), var(--gold-light));
-            color: #000;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-right: 260px;
-            flex: 1;
-            padding: 40px;
-        }
-
-        .page { display: none; animation: fadeIn 0.5s ease; }
-        .page.active { display: block; }
-
+        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; color: white; scroll-behavior: smooth; }
+        .gold-text { color: #D4AF37; }
+        .bg-gold { background-color: #D4AF37; }
+        .border-gold { border-color: #AA8439; }
+        .shadow-gold { box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+        .nav-item.active { background: linear-gradient(to left, #AA8439, #D4AF37); color: black; font-weight: bold; }
+        .sidebar { height: 100vh; overflow-y: auto; scrollbar-width: none; }
+        .page-content { display: none; }
+        .page-content.active { display: block; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Card Style */
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        /* Profile Card (Using your design) */
-        .profile-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .avatar-circle {
-            width: 100px; height: 100px;
-            background: var(--gold-light);
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 40px; font-weight: 900; color: #000;
-            box-shadow: 0 0 20px var(--gold-light);
-        }
-
-        .stat-row {
-            display: flex; justify-content: space-between;
-            background: rgba(15, 23, 42, 0.5);
-            padding: 15px; margin-bottom: 10px; border-radius: 12px;
-        }
-
-        /* Table Style */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #1e293b; border-radius: 12px; overflow: hidden; }
-        th { background: var(--gold-dark); color: #000; padding: 15px; text-align: center; }
-        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
-
-        /* Buttons */
-        .btn {
-            display: inline-block; padding: 12px 25px; border-radius: 12px;
-            text-decoration: none; font-weight: 700; cursor: pointer; border: none; transition: 0.3s;
-        }
-        .btn-gold { background: var(--gold-light); color: #000; }
-        .btn-gold:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(212,175,55,0.5); }
-
-        iframe { border-radius: 15px; border: 2px solid var(--gold-dark); width: 100%; height: 600px; }
+        iframe { border-radius: 12px; border: 1px solid #AA8439; width: 100%; height: 500px; }
+        .activity-card { background: #1e293b; padding: 20px; border-radius: 15px; border: 1px solid #334155; margin-bottom: 20px; }
     </style>
 </head>
-<body>
+<body class="flex">
 
-    <div class="sidebar">
-        <div class="logo-area">
-            <h1>EYC SUPERSTARS</h1>
-            <p style="color: var(--gold-light); font-size: 12px; margin-top: 5px;">Season III</p>
+    <aside class="sidebar w-64 bg-[#020617] border-l border-gray-800 fixed right-0 top-0 z-50">
+        <div class="p-6 text-center border-b border-gray-800">
+            <h1 class="text-2xl font-black gold-text leading-tight">EYC<br>SUPERSTARS</h1>
+            <p class="text-[10px] text-gray-500 mt-2 uppercase tracking-widest">Season & XBox Dashboard</p>
         </div>
-        <ul class="nav-menu">
-            <li class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i> الرئيسية</li>
-            <li class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i> البروفايل</li>
-            <li class="nav-item" onclick="showPage('master')"><i class="fas fa-table"></i> الماستر شييت</li>
-            <li class="nav-item" onclick="showPage('season-guide')"><i class="fas fa-book"></i> دليل السيزون</li>
-            <li class="nav-item" onclick="showPage('xbox-guide')"><i class="fas fa-gamepad"></i> دليل XBox</li>
-            <li class="nav-item" onclick="showPage('schedule')"><i class="fas fa-calendar-alt"></i> الجدول</li>
-            <li class="nav-item" onclick="showPage('create')"><i class="fas fa-user-plus"></i> إنشاء بروفايل</li>
-        </ul>
-    </div>
+        <nav class="p-4 space-y-2">
+            <div onclick="showPage('home')" class="nav-item flex items-center p-3 rounded-xl cursor-pointer hover:bg-gray-800 transition active">
+                <i class="fas fa-home ml-3 w-5"></i> الرئيسية
+            </div>
+            <div onclick="showPage('profile')" class="nav-item flex items-center p-3 rounded-xl cursor-pointer hover:bg-gray-800 transition">
+                <i class="fas fa-user-circle ml-3 w-5"></i> بروفايلي
+            </div>
+            <div onclick="showPage('master-sheet')" class="nav-item flex items-center p-3 rounded-xl cursor-pointer hover:bg-gray-800 transition">
+                <i class="fas fa-trophy ml-3 w-5"></i> الماستر شييت
+            </div>
+            <div onclick="showPage('season-guide')" class="nav-item flex items-center p-3 rounded-xl cursor-pointer hover:bg-gray-800 transition">
+                <i class="fas fa-star ml-3 w-5"></i> دليل السيزون
+            </div>
+            <div onclick="showPage('xbox-guide')" class="nav-item flex items-center p-3 rounded-xl cursor-pointer hover:bg-gray-800 transition">
+                <i class="fas fa-gamepad ml-3 w-5"></i> دليل XBox
+            </div>
+            <div onclick="showPage('schedules')" class="nav-item flex items-center p-3 rounded-xl cursor-pointer hover:bg-gray-800 transition">
+                <i class="fas fa-calendar-alt ml-3 w-5"></i> الجداول الزمنية
+            </div>
+            <div onclick="showPage('create-profile')" class="nav-item flex items-center p-3 rounded-xl cursor-pointer hover:bg-gray-800 transition border border-dashed border-gold/40">
+                <i class="fas fa-user-plus ml-3 w-5"></i> إنشاء بروفايل
+            </div>
+        </nav>
+    </aside>
 
-    <div class="main-content">
+    <main class="flex-1 mr-64 p-8 min-h-screen">
         
-        <div id="home" class="page active">
-            <div class="card" style="text-align: center;">
-                <h2 style="font-size: 40px; margin-bottom: 10px;">أهلاً بك في عالم <span style="color: var(--gold-light);">EYC</span></h2>
-                <p style="color: var(--text-gray); font-size: 18px;">المكان حيث يُصنع النجوم. الموسم الثالث ينطلق الآن!</p>
-                <div style="margin-top: 40px; display: flex; justify-content: center; gap: 20px;">
-                    <button class="btn btn-gold" onclick="showPage('create')">ابدأ رحلتك الآن</button>
-                    <button class="btn btn-gold" onclick="showPage('master')">عرض الترتيب العام</button>
+        <section id="home" class="page-content active">
+            <div class="bg-gray-800/50 rounded-3xl p-12 text-center border border-gray-700 shadow-2xl">
+                <h2 class="text-5xl font-black gold-text mb-4">EYC Superstars Program</h2>
+                <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">أهلاً بك أيها النجم! منصتك المتكاملة لمتابعة تقدمك في الموسم الثالث ونظام XBox المتطور.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="showPage('create-profile')" class="bg-gold text-black px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition shadow-gold">انضم الآن</button>
+                    <button onclick="showPage('master-sheet')" class="bg-gray-700 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-600 transition">عرض الترتيب</button>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="profile" class="page">
-            <div class="profile-container card">
-                <div class="avatar-circle">E</div>
-                <h2 style="text-align: center; color: var(--gold-light);">اسم الطالب يوضع هنا</h2>
-                <div class="stat-row"><span>المستوى الحالي</span><span style="color: var(--accent-blue);">المستوى الأول</span></div>
-                <div class="stat-row"><span>نقاط الإنجاز</span><span style="color: var(--gold-light);">1200 نقطة</span></div>
-                <div class="stat-row"><span>تاريخ الانضمام</span><span>أكتوبر 2025</span></div>
-                <div style="margin-top: 20px;">
-                    <p style="font-size: 14px; margin-bottom: 8px;">التقدم للمستوى التالي</p>
-                    <div style="width: 100%; height: 10px; background: #0f172a; border-radius: 10px;">
-                        <div style="width: 75%; height: 100%; background: var(--gold-light); border-radius: 10px;"></div>
+        <section id="profile" class="page-content max-w-2xl mx-auto">
+            <h2 class="text-3xl font-black mb-6 gold-text border-b border-gray-700 pb-3 text-center">بطاقتك الشخصية في البرنامج</h2>
+            <div class="bg-gray-800 p-8 rounded-2xl shadow-gold border border-gold/50 transform transition-all duration-500 hover:scale-[1.01]">
+                <div class="flex flex-col items-center mb-6">
+                    <div class="w-24 h-24 bg-gold rounded-full flex items-center justify-center text-gray-900 font-black text-4xl shadow-lg mb-3">
+                        <span id="card-initials">E</span>
+                    </div>
+                    <h3 class="text-3xl font-extrabold gold-text" id="card-student-name">... اسم الطالب ...</h3>
+                    <p class="text-sm text-gray-400">عضو برنامج Superstars</p>
+                </div>
+                <div class="space-y-4 pt-4 border-t border-gray-700 text-right">
+                    <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                        <span class="font-semibold text-gray-300">المستوى الحالي:</span>
+                        <span class="text-xl font-bold text-green-400">المستوى الأول</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                        <span class="font-semibold text-gray-300">نقاط الإنجاز:</span>
+                        <span class="text-xl font-bold gold-text">1200 نقطة</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                        <span class="font-semibold text-gray-300">معدل الإتمام:</span>
+                        <span class="text-xl font-bold text-blue-400">75%</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                        <span class="font-semibold text-gray-300">تاريخ الانضمام:</span>
+                        <span class="text-base text-gray-400">10 أكتوبر 2025</span>
                     </div>
                 </div>
+                <div class="mt-6 text-right">
+                    <h4 class="text-lg font-semibold mb-2 text-gray-300">التقدم نحو المستوى التالي:</h4>
+                    <div class="w-full bg-gray-700 rounded-full h-3">
+                        <div class="h-3 rounded-full bg-gold transition-all duration-500" style="width: 75%;"></div>
+                    </div>
+                    <p class="text-center text-sm mt-1 text-gray-400">باقي 25% للوصول للمستوى الثاني!</p>
+                </div>
             </div>
-        </div>
+            <p class="text-center text-gray-500 italic mt-6">"اجتهادك هو مفتاح نجاحك. استمر في التألق!"</p>
+        </section>
 
-        <div id="master" class="page">
-            <div class="card">
-                <h2 style="color: var(--gold-light); margin-bottom: 20px;">الماستر شييت المباشر</h2>
+        <section id="master-sheet" class="page-content">
+            <h2 class="text-3xl font-black mb-6 gold-text">الماستر شييت (Master Sheet)</h2>
+            <div class="bg-gray-800 rounded-2xl p-4 border border-gray-700">
                 <iframe src="https://docs.google.com/spreadsheets/d/1CcKoLEWSGz96GneKjCaJWsv_A6McqRnLfZ8MV7j7oXE/preview"></iframe>
             </div>
-        </div>
+        </section>
 
-        <div id="season-guide" class="page">
-            <div class="card">
-                <h2 style="color: var(--gold-light);">دليل المشاركة - الموسم الثالث</h2>
-                <p>اضغط على النشاط لمعرفة تفاصيل التنفيذ:</p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
-                    <button class="btn btn-gold" onclick="alert('شرح Golden Ear يوضع هنا')">Golden Ear</button>
-                    <button class="btn btn-gold" onclick="alert('شرح Label يوضع هنا')">Label</button>
-                    <button class="btn btn-gold" onclick="alert('شرح Seeds يوضع هنا')">Seeds</button>
-                    <button class="btn btn-gold" onclick="alert('شرح Alike يوضع هنا')">Alike</button>
+        <section id="season-guide" class="page-content">
+            <div class="mb-10 text-center">
+                <h2 class="text-3xl font-black gold-text mb-4">🔥 دليل المشاركة الكامل للسيزون 🔥</h2>
+                <div class="bg-blue-900/20 border border-blue-500/30 p-4 rounded-xl text-blue-300 mb-6">
+                    <i class="fas fa-info-circle ml-2"></i> الجديد: التوكنز تتسجل أوتوماتيك عبر نظام Score!
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <button onclick="showActivity('s1')" class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-gold transition">Golden Ear</button>
+                    <button onclick="showActivity('s2')" class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-gold transition">Label</button>
+                    <button onclick="showActivity('s3')" class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-gold transition">Seeds</button>
+                    <button onclick="showActivity('s4')" class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-gold transition">Alike</button>
+                    <button onclick="showActivity('s5')" class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-gold transition">Grammar</button>
+                    <button onclick="showActivity('s6')" class="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-gold transition">Elmgazine</button>
                 </div>
             </div>
-        </div>
 
-        <div id="xbox-guide" class="page">
-            <div class="card">
-                <h2 style="color: var(--accent-blue);">دليل XBox - المساعد الشخصي</h2>
-                <p>مجموعة التليجرام: <a href="https://t.me/+VTwuEQZJuRs1YzNk" style="color: var(--gold-light);">انضم الآن</a></p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 20px;">
-                    <button class="btn btn-gold" style="font-size: 12px;">Vivid X</button>
-                    <button class="btn btn-gold" style="font-size: 12px;">Dictation X</button>
-                    <button class="btn btn-gold" style="font-size: 12px;">SSS X</button>
+            <div id="season-details" class="space-y-6">
+                <div id="s1" class="activity-card hidden">
+                    <h3 class="text-xl font-bold gold-text mb-2">1. Golden Ear</h3>
+                    <p class="text-gray-300"><b>المهارة:</b> فهم المحتوى القصير والمُركز.</p>
+                    <p class="mt-2 text-sm text-gray-400"><b>كيفية التنفيذ:</b> استمع لمقال (100 كلمة) ثم أجب على 5 أسئلة MCQ غير مرقمة.</p>
+                </div>
+                </div>
+        </section>
+
+        <section id="xbox-guide" class="page-content">
+            <h2 class="text-3xl font-black gold-text mb-4 text-center">🌟 دليل XBox: رفيقك الشخصي 🌟</h2>
+            <div class="bg-indigo-900/20 border border-indigo-500/30 p-4 rounded-xl text-indigo-300 mb-8 text-center">
+                رابط التليجرام الإلزامي: <a href="https://t.me/+VTwuEQZJuRs1YzNk" class="underline font-bold">اضغط هنا للانضمام</a>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-10">
+                <button onclick="showActivity('x1')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">Vivid X</button>
+                <button onclick="showActivity('x2')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">Label X</button>
+                <button onclick="showActivity('x3')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">Dictation X</button>
+                <button onclick="showActivity('x4')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">Golden Ear X</button>
+                <button onclick="showActivity('x5')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">Alike HD</button>
+                <button onclick="showActivity('x6')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">Elmgazine X</button>
+                <button onclick="showActivity('x7')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">Seeds X</button>
+                <button onclick="showActivity('x8')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">Grammar X</button>
+                <button onclick="showActivity('x9')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">Figurative</button>
+                <button onclick="showActivity('x10')" class="bg-gray-800 py-3 rounded-lg border border-gray-700 hover:border-gold text-sm transition">SSS X</button>
+            </div>
+            
+            <div id="xbox-details">
+                <div id="x1" class="activity-card hidden">
+                    <h3 class="text-xl font-bold gold-text mb-2">Vivid X Guide</h3>
+                    <p class="text-gray-300"><b>الاستفادة:</b> التنقل بين الماضي، المضارع، والمستقبل بناءً على سياق بصري.</p>
+                    <p class="mt-2 text-sm text-gray-400 italic">اكتب مقالاً قصصياً (150 كلمة) يصف الصورة بالزمن المطلوب.</p>
+                </div>
+                </div>
+        </section>
+
+        <section id="schedules" class="page-content">
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold gold-text mb-4 text-center">جدول السيزون (30 يوم)</h3>
+                    <div class="overflow-x-auto bg-gray-800 rounded-xl">
+                        <table class="w-full text-right text-sm">
+                            <thead class="bg-gray-700 text-gold text-xs">
+                                <tr><th class="p-3">اليوم</th><th class="p-3">النشاط 1</th><th class="p-3">النشاط 2</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700">
+                                <tr><td class="p-3 text-gold">1</td><td class="p-3">Golden Ear 1</td><td class="p-3">Label 1</td></tr>
+                                <tr><td class="p-3 text-gold">2</td><td class="p-3">Seeds 1</td><td class="p-3">Alike 1</td></tr>
+                                </tbody>
+                        </table>
                     </div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-blue-400 mb-4 text-center">جدول XBox (30 يوم)</h3>
+                    <div class="overflow-x-auto bg-gray-800 rounded-xl">
+                        <table class="w-full text-right text-sm">
+                            <thead class="bg-gray-700 text-blue-300 text-xs">
+                                <tr><th class="p-3">اليوم</th><th class="p-3">النشاط 1</th><th class="p-3">النشاط 2</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700">
+                                <tr><td class="p-3 text-blue-300">Day 1</td><td class="p-3">Vivid X (1)</td><td class="p-3">Label X (1)</td></tr>
+                                <tr><td class="p-3 text-blue-300">Day 2</td><td class="p-3">Seeds X (1)</td><td class="p-3">Golden Ear (1)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div id="schedule" class="page">
-            <div class="card">
-                <h2 style="color: var(--gold-light);">جدول الـ 30 يوم</h2>
-                <table>
-                    <thead>
-                        <tr><th>اليوم</th><th>النشاط الأول</th><th>النشاط الثاني</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>1</td><td>Golden Ear 1</td><td>Label 1</td></tr>
-                        <tr><td>2</td><td>Seeds 1</td><td>Alike 1</td></tr>
-                        </tbody>
-                </table>
+        <section id="create-profile" class="page-content max-w-xl mx-auto">
+            <div class="bg-gray-800 p-10 rounded-3xl border border-gold/30">
+                <h2 class="text-3xl font-black gold-text mb-6 text-center">أنشئ بروفايلك الآن</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-400 mb-2">الاسم بالكامل</label>
+                        <input type="text" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 focus:border-gold outline-none" placeholder="أدخل اسمك كما في فيسبوك">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-2">رابط حساب فيسبوك</label>
+                        <input type="url" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 focus:border-gold outline-none" placeholder="https://facebook.com/...">
+                    </div>
+                    <button class="w-full bg-gold text-black font-black py-4 rounded-xl text-lg mt-4 shadow-gold">إرسال البيانات</button>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div id="create" class="page">
-            <div class="card" style="max-width: 500px; margin: 0 auto;">
-                <h2 style="text-align: center; color: var(--gold-light);">إنشاء بروفايل جديد</h2>
-                <form onsubmit="event.preventDefault(); alert('سيتم توجيهك لفورم التسجيل');">
-                    <input type="text" placeholder="الاسم الكامل" style="width: 100%; padding: 12px; margin-bottom: 15px; background: #0f172a; border: 1px solid var(--gold-dark); color: white; border-radius: 8px;">
-                    <input type="text" placeholder="رابط الفيسبوك" style="width: 100%; padding: 12px; margin-bottom: 15px; background: #0f172a; border: 1px solid var(--gold-dark); color: white; border-radius: 8px;">
-                    <button type="submit" class="btn btn-gold" style="width: 100%;">إرسال البيانات</button>
-                </form>
-            </div>
-        </div>
-
-    </div>
+    </main>
 
     <script>
         function showPage(pageId) {
-            // اخفاء كل الصفحات
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            // اظهار الصفحة المطلوبة
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            // Show requested page
             document.getElementById(pageId).classList.add('active');
             
-            // تحديث القائمة الجانبية
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            // Update sidebar UI
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if(item.textContent.includes(document.getElementById(pageId).querySelector('h2,h3').textContent.substring(0,4))) {
+                   // This is a simple logic to highlight sidebar, can be refined
+                }
+            });
+            // Manual highlight for simplicity
             event.currentTarget.classList.add('active');
+        }
+
+        function showActivity(id) {
+            const isSeason = id.startsWith('s');
+            const parentId = isSeason ? 'season-details' : 'xbox-details';
+            document.getElementById(parentId).querySelectorAll('.activity-card').forEach(card => card.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>

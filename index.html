@@ -1,166 +1,169 @@
-import React, { useState } from "react";
-import { Switch, Route, Link, useLocation } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYC SUPERSTARS | SEASON & XBOX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --accent: #3b82f6;
+            --text: #1e293b;
+            --bg: #f8fafc;
+            --white: #ffffff;
+        }
 
-// Icons
-import { 
-  Home as HomeIcon, User, BookOpen, BarChart2, Plus, 
-  Menu, X, ArrowRight, Trophy, Users, Award, 
-  TrendingUp, Gamepad2, Info, Calendar, ExternalLink 
-} from "lucide-react";
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-// UI Components (Shadcn-like)
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, #e0e7ff, transparent),
+                              radial-gradient(circle at bottom left, #e0e7ff, transparent);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-/* -------------------------------------------------------------------------- */
-/* COMPONENTS                                 */
-/* -------------------------------------------------------------------------- */
+        /* Container */
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            text-align: center;
+            padding: 50px 20px;
+            flex: 1;
+        }
 
-// Layout Component
-function Layout({ children }: { children: React.ReactNode }) {
-  const [location] = useLocation();
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+        /* Logo */
+        .logo-container img {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+        }
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
 
-  const navItems = [
-    { label: "Home", icon: HomeIcon, href: "/" },
-    { label: "Profile", icon: User, href: "/profile" },
-    { label: "Guides & Schedules", icon: BookOpen, href: "/guides" },
-    { label: "Data & Rankings", icon: BarChart2, href: "/data" },
-    { label: "Create Profile", icon: Plus, href: "/create-profile" },
-  ];
+        /* Title Section */
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
 
-  const NavContent = () => (
-    <div className="flex flex-col h-full py-8 space-y-8">
-      <div className="px-6">
-        <h1 className="text-2xl font-bold font-display tracking-wider bg-gradient-to-r from-blue-500 to-blue-300 bg-clip-text text-transparent">
-          EYC SUPERSTARS
-        </h1>
-      </div>
-      <nav className="flex-1 px-4 space-y-2">
-        {navItems.map((item) => {
-          const isActive = location === item.href;
-          return (
-            <Link key={item.href} href={item.href}>
-              <div className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer group",
-                isActive ? "bg-blue-500/20 text-blue-400 border border-blue-500/20" : "text-gray-400 hover:text-white hover:bg-white/5"
-              )} onClick={() => setIsMobileOpen(false)}>
-                <item.icon className={cn("w-5 h-5", isActive ? "text-blue-400" : "text-gray-400")} />
-                <span className="font-medium text-sm">{item.label}</span>
-              </div>
-            </Link>
-          );
-        })}
-      </nav>
-    </div>
-  );
+        .highlight {
+            color: var(--primary);
+            display: block;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+        }
 
-  return (
-    <div className="min-h-screen bg-[#0a0c10] text-white flex overflow-x-hidden">
-      <aside className="hidden md:block w-72 border-r border-white/5 bg-[#0d0f14] sticky top-0 h-screen">
-        <NavContent />
-      </aside>
-      <main className="flex-1 w-full p-4 md:p-8">
-        <div className="md:hidden flex justify-between items-center mb-8">
-            <h1 className="text-xl font-bold text-blue-400">EYC</h1>
-            <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
-                <SheetTrigger asChild><Button variant="ghost"><Menu /></Button></SheetTrigger>
-                <SheetContent side="left" className="bg-[#0d0f14] border-r border-white/5"><NavContent /></SheetContent>
-            </Sheet>
+        .subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        /* Buttons Grid */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 18px 30px;
+            border-radius: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--white);
+            color: var(--text);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Special Style for Create Profile */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            grid-column: 1 / -1; /* Stretch to full width on mobile */
+            font-size: 1.2rem;
+        }
+        
+        @media (min-width: 768px) {
+            .btn-primary {
+                grid-column: span 2; /* Stretch in grid for desktop */
+            }
+        }
+
+        /* Footer */
+        footer {
+            width: 100%;
+            padding: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            margin-top: 50px;
+        }
+
+        /* Animation */
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container fade-in">
+        <div class="logo-container">
+            <img src="logo.png" alt="EYC Logo">
         </div>
-        {children}
-      </main>
-    </div>
-  );
-}
 
-/* -------------------------------------------------------------------------- */
-/* PAGES                                    */
-/* -------------------------------------------------------------------------- */
+        <h1>EYC <span class="highlight">SUPERSTARS</span></h1>
+        <p class="subtitle">SEASON & XBOX COMPETITION</p>
 
-// Home Page
-function Home() {
-  return (
-    <div className="space-y-12">
-      <section className="relative rounded-3xl p-8 md:p-20 border border-white/10 bg-gradient-to-br from-blue-600/20 to-transparent overflow-hidden">
-        <div className="relative z-10 max-w-2xl space-y-6">
-          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">🏆 EYC Superstars 2025</Badge>
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight">Elevate Your <span className="text-blue-400">English</span> Excellence</h1>
-          <p className="text-gray-400 text-lg">Join the ultimate competition. Track your progress, win rewards, and become a superstar.</p>
-          <div className="flex gap-4">
-            <Link href="/create-profile"><Button className="bg-blue-600 hover:bg-blue-700 h-12 px-8">Join Now</Button></Link>
-          </div>
+        <div class="nav-grid">
+            <a href="Profiles" class="btn">Profiles</a>
+            <a href="Guides" class="btn">Guides</a>
+            <a href="Schedule" class="btn">Schedule</a>
+            <a href="Ranks" class="btn">Ranks</a>
+            <a href="Create Profiles" class="btn btn-primary">Create Profile</a>
         </div>
-      </section>
     </div>
-  );
-}
 
-// Profile Page
-function Profile() {
-  return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="glass-panel p-8 rounded-3xl border border-white/10 bg-white/5 flex items-center gap-6">
-        <div className="w-24 h-24 rounded-full bg-blue-500/20 border-2 border-blue-500/50 flex items-center justify-center text-3xl">👤</div>
-        <div>
-          <h2 className="text-3xl font-bold">Student Name</h2>
-          <p className="text-blue-400 font-mono text-sm">Level 5 Competitor</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-white/5 border-white/10 text-white"><CardHeader><CardTitle className="text-sm text-gray-400">Master Rank</CardTitle><div className="text-3xl font-bold">#42</div></CardHeader></Card>
-        <Card className="bg-white/5 border-white/10 text-white"><CardHeader><CardTitle className="text-sm text-gray-400">Season Rank</CardTitle><div className="text-3xl font-bold">#18</div></CardHeader></Card>
-        <Card className="bg-white/5 border-white/10 text-white"><CardHeader><CardTitle className="text-sm text-gray-400">XBox Points</CardTitle><div className="text-3xl font-bold">2,450</div></CardHeader></Card>
-      </div>
-    </div>
-  );
-}
+    <footer>
+        &copy; 2024 EYC Academy for Courses. All rights reserved.
+    </footer>
 
-/* -------------------------------------------------------------------------- */
-/* MAIN APP                                    */
-/* -------------------------------------------------------------------------- */
-
-export default function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Layout>
-          <Switch>
-            <Route path="/" component={Home} />
-            <Route path="/profile" component={Profile} />
-            <Route path="/guides">
-                <div className="p-4"><h1>Guides & Schedules Section</h1><p className="text-gray-400">Content coming soon...</p></div>
-            </Route>
-            <Route path="/data">
-                <div className="p-4"><h1>Live Data & Rankings</h1><p className="text-gray-400">Leaderboards are updating...</p></div>
-            </Route>
-            <Route path="/create-profile">
-                <div className="max-w-xl mx-auto p-8 glass-panel border border-white/10 rounded-2xl bg-white/5">
-                    <h2 className="text-2xl font-bold mb-6">Create Competitor Profile</h2>
-                    <Input className="mb-4 bg-black/20 border-white/10" placeholder="Full Name" />
-                    <Button className="w-full bg-blue-600">Register</Button>
-                </div>
-            </Route>
-            <Route>
-              <div className="flex flex-col items-center justify-center h-[60vh]">
-                <h1 className="text-4xl font-bold">404</h1>
-                <p className="text-gray-400">Page not found</p>
-              </div>
-            </Route>
-          </Switch>
-        </Layout>
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
-}
+</body>
+</html>

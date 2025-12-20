@@ -97,7 +97,7 @@
         /* Tables Style */
         .table-container {
             width: 100%;
-            overflow-x: auto; /* للموبايل */
+            overflow-x: auto;
             background: rgba(255, 255, 255, 0.02);
             border-radius: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -150,7 +150,6 @@
             font-size: 0.8rem;
         }
 
-        /* Scrollbar custom */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--primary-dark); }
         ::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 10px; }
@@ -168,7 +167,6 @@
     </header>
 
     <div class="container">
-
         <section id="xbox-table">
             <div class="section-header">
                 <h2>XBox Activities Schedule</h2>
@@ -182,8 +180,7 @@
                             <th>النشاط (2)</th>
                         </tr>
                     </thead>
-                    <tbody id="xbox-body">
-                        </tbody>
+                    <tbody id="xbox-body"></tbody>
                 </table>
             </div>
         </section>
@@ -201,12 +198,10 @@
                             <th><span class="time-badge">9:00 PM</span> النشاط الثاني</th>
                         </tr>
                     </thead>
-                    <tbody id="season-body">
-                        </tbody>
+                    <tbody id="season-body"></tbody>
                 </table>
             </div>
         </section>
-
     </div>
 
     <footer>
@@ -214,54 +209,51 @@
     </footer>
 
     <script>
-        // دالة لتحويل الرقم إلى صيغة 1st, 2nd, 3rd, 4th...
         function getOrdinal(n) {
             let s = ["th", "st", "nd", "rd"],
                 v = n % 100;
             return n + (s[(v - 20) % 10] || s[v] || s[0]);
         }
 
-        // بيانات جدول XBox
         const xboxActivities = [
             ["Vivid X(1)", "Label X (1)"], ["Seeds X(1)", "Golden Ear (1)"], ["Elmgazine X(1)", "Alike HD (1)"], ["Dictation X(1)", "Figurative FocusX (1)"], ["SSS X(1)", "Grammar (1)"],
             ["Vivid X(2)", "Label X (2)"], ["Seeds X(2)", "Golden Ear (2)"], ["Elmgazine X(2)", "Alike HD (2)"], ["Dictation X(2)", "Figurative FocusX (2)"], ["SSS X(2)", "Grammar (2)"],
             ["Vivid X(3)", "Label X (3)"], ["Seeds X(3)", "Golden Ear (3)"], ["Elmgazine X(3)", "Alike HD (3)"], ["Dictation X(3)", "Figurative FocusX (3)"], ["SSS X(3)", "Grammar (3)"],
             ["Vivid X(4)", "Label X (4)"], ["Seeds X(4)", "Golden Ear (4)"], ["Elmgazine X(4)", "Alike HD (4)"], ["Dictation X(4)", "Figurative FocusX (4)"], ["SSS X(4)", "Grammar (4)"],
             ["Vivid X(5)", "Label X(5)"], ["Seeds X(5)", "Golden Ear (5)"], ["Elmgazine X(5)", "Alike HD (5)"], ["Dictation X(5)", "Figurative FocusX (5)"], ["SSS X(5)", "Grammar (5)"],
-            ["Vivid X(6)", "Label X (6)"], ["Seeds X(6)", "Golden Ear (6)"], ["Elmgazine X(6)", "Alike HD (6)"], ["Dictation X(6)", "Figurative FocusX (6)"], ["SSS X(6)", "Grammar (6)"]
+            ["Vivid X(6)", "Label X (6)"], ["Seeds X(6)", "Golden Ear (6)"] 
         ];
 
-        // بيانات جدول Season 3
         const seasonActivities = [
             ["Golden Ear 1", "Label 1"], ["Seeds 1", "Alike 1"], ["Grammar 1", "Golden Ear 2"], ["Label 2", "Seeds 2"], ["Alike 2", "Grammar 2"],
             ["Golden Ear 3", "Label 3"], ["Seeds 3", "Alike 3"], ["Grammar 3", "Golden Ear 4"], ["Label 4", "Seeds 4"], ["Alike 4", "Grammar 4"],
             ["Golden Ear 5", "Label 5"], ["Seeds 5", "Alike 5"], ["Grammar 5", "Golden Ear 6"], ["Label 6", "Seeds 6"], ["Alike 6", "Grammar 6"],
             ["Golden Ear 7", "Label 7"], ["Seeds 7", "Alike 7"], ["Grammar 7", "Golden Ear 8"], ["Label 8", "Seeds 8"], ["Alike 8", "Grammar 8"],
             ["Golden Ear 9", "Label 9"], ["Seeds 9", "Alike 9"], ["Grammar 9", "Golden Ear 10"], ["Label 10", "Seeds 10"], ["Alike 10", "Grammar 10"],
-            ["Golden Ear 11", "Label 11"], ["Seeds 11", "Alike 11"], ["Grammar 11", "Golden Ear 12"], ["Label 12", "Seeds 12"], ["Alike 12", "Grammar 12"]
+            ["Golden Ear 11", "Label 11"], ["Seeds 11", "Alike 11"]
         ];
 
-        // ملء الجداول تلقائياً
         const xboxBody = document.getElementById('xbox-body');
         const seasonBody = document.getElementById('season-body');
 
-        for (let i = 0; i < 30; i++) {
+        // نستخدم طول المصفوفة لتجنب الأخطاء
+        const loopCount = Math.min(xboxActivities.length, seasonActivities.length);
+
+        for (let i = 0; i < loopCount; i++) {
             const dateStr = `${getOrdinal(i + 1)} Jan`;
             
-            // XBox Row
             let rowX = `<tr><td class="date-cell">${dateStr}</td><td>${xboxActivities[i][0]}</td><td>${xboxActivities[i][1]}</td></tr>`;
             xboxBody.innerHTML += rowX;
 
-            // Season Row
             let rowS = `<tr><td class="date-cell">${dateStr}</td><td>${seasonActivities[i][0]}</td><td>${seasonActivities[i][1]}</td></tr>`;
             seasonBody.innerHTML += rowS;
         }
 
-        // Smooth Scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) target.scrollIntoView({ behavior: 'smooth' });
             });
         });
     </script>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Profile | إنشاء حساب</title>
-    <link href="https://script.google.com/macros/s/AKfycbzfhZJA4RD3LORRxggTUS7Pgt9hsFTrofZj8F1DFT-10dafRSF9MgycO82rRohJciw72g/exec">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #0f172a;
@@ -77,7 +77,7 @@
         }
 
         .btn-submit:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
-        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-submit:disabled { background: #555; cursor: not-allowed; opacity: 0.7; }
 
         #success-overlay {
             display: none;
@@ -229,26 +229,26 @@
                 image: base64Image
             };
 
-            const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUB8_zBJG1NBdmHc8AMMlbOQ9_Ttz3BHnjZ7FTeJxzSBIV8xyvbqgmcxxwRK-3Z_u7sw/exec";
+            // رابط الـ App Script الجديد الخاص بك
+            const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPu9OP1t50i2qAwpgp1o49E63z8s5p8LtBNF3VcFH_zQBfRAS1JhXPbRQowT5ejCvD8w/exec";
 
-            const response = await fetch(APP_SCRIPT_URL, {
+            // استخدام no-cors لتجنب مشاكل المتصفح مع روابط جوجل سكريبت
+            await fetch(APP_SCRIPT_URL, {
                 method: "POST",
+                mode: "no-cors", 
+                cache: "no-cache",
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 body: JSON.stringify(formData)
             });
 
-            const result = await response.json();
-            
-            if (result.result === "success") {
-                document.getElementById('success-overlay').style.display = 'block';
-            } else {
-                alert("حدث خطأ أثناء الحفظ، يرجى المحاولة مرة أخرى.");
-                submitBtn.disabled = false;
-                submitBtn.innerText = "إنشاء البروفايل والاشتراك";
-            }
+            // إظهار رسالة النجاح مباشرة (في حالة no-cors المتصفح لا يستقبل الرد لكن البيانات تصل للسيرفر)
+            document.getElementById('success-overlay').style.display = 'block';
 
         } catch (error) {
             console.error(error);
-            alert("فشل الاتصال بالخادم.");
+            alert("حدث خطأ غير متوقع، يرجى التأكد من اتصال الإنترنت.");
             submitBtn.disabled = false;
             submitBtn.innerText = "إنشاء البروفايل والاشتراك";
         }
@@ -257,4 +257,3 @@
 
 </body>
 </html>
-

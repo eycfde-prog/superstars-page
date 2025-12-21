@@ -35,7 +35,6 @@
             overflow-x: hidden;
         }
 
-        /* Container */
         .container {
             width: 90%;
             max-width: 600px;
@@ -43,19 +42,18 @@
             padding: 40px 20px;
         }
 
-        /* Logo Styling */
-        .logo-container {
-            margin-bottom: 20px;
-            animation: fadeInDown 1s ease-out;
-        }
-
         .logo-container img {
             width: 150px;
             height: auto;
-            filter: drop-shadow(var(--glow));
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Title Styling */
+        .logo-container img:hover {
+            transform: scale(1.1) rotate(2deg);
+        }
+
         h1 {
             font-size: 2.5rem;
             font-weight: 800;
@@ -76,7 +74,35 @@
             opacity: 0.8;
         }
 
-        /* Navigation Buttons */
+        /* Form Styling for Create Profile Section */
+        .profile-form {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            text-align: left;
+            display: none; /* مخفي افتراضياً ويظهر عند الحاجة */
+        }
+
+        .profile-form.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; color: var(--gold-light); margin-bottom: 5px; font-size: 0.9rem; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+
         .nav-menu {
             display: flex;
             flex-direction: column;
@@ -96,8 +122,7 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
             display: block;
-            position: relative;
-            overflow: hidden;
+            cursor: pointer;
         }
 
         .nav-btn:hover {
@@ -108,20 +133,12 @@
             color: var(--gold-light);
         }
 
-        /* Special style for Create Profile */
         .btn-highlight {
             background: linear-gradient(45deg, var(--gold), #b8860b);
             color: var(--dark-bg);
             border: none;
         }
 
-        .btn-highlight:hover {
-            background: linear-gradient(45deg, var(--gold-light), var(--gold));
-            color: #000;
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
-        }
-
-        /* Footer */
         footer {
             margin-top: 50px;
             font-size: 0.85rem;
@@ -132,20 +149,12 @@
             text-align: center;
         }
 
-        footer b {
-            color: var(--gold);
-        }
+        footer b { color: var(--gold); }
 
-        /* Animations */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Mobile Optimization */
         @media (max-width: 480px) {
             h1 { font-size: 1.8rem; }
-            .subtitle { font-size: 1rem; }
             .nav-btn { padding: 15px 20px; font-size: 1rem; }
         }
     </style>
@@ -154,18 +163,43 @@
 
     <div class="container">
         <div class="logo-container">
-            <img src="assets/logo.png" alt="EYC Logo">
+            <img src="logo.png" alt="EYC Logo">
         </div>
 
         <h1>EYC SUPERSTARS</h1>
         <p class="subtitle">SEASON & XBOX</p>
 
-        <nav class="nav-menu">
+        <!-- قسم الفورم اللي هيظهر لما نضغط على Create Profile -->
+        <div id="create-profile-section" class="profile-form">
+            <h2 style="color: var(--gold); margin-bottom: 20px; text-align: center;">New Superstar Profile</h2>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="student-name" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label>Student Code</label>
+                <input type="text" id="student-code" placeholder="EYC-XXXXX">
+            </div>
+            <div class="form-group">
+                <label>Governorate</label>
+                <select id="student-gov">
+                    <option value="Cairo">Cairo</option>
+                    <option value="Giza">Giza</option>
+                    <option value="Alexandria">Alexandria</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <button id="create-profile-btn" onclick="handleProfileCreation()" class="nav-btn btn-highlight" style="width: 100%;">Confirm & Create</button>
+            <button onclick="toggleForm()" style="background:none; border:none; color:gray; margin-top:10px; cursor:pointer; width:100%">Cancel</button>
+        </div>
+
+        <nav id="main-nav" class="nav-menu">
             <a href="Profiles" class="nav-btn">Profiles</a>
             <a href="Guides" class="nav-btn">Guides</a>
-            <a href="Schedules" class="nav-btn">Schedules</a>
+            <a href="Schedule" class="nav-btn">Schedule</a>
             <a href="Ranks" class="nav-btn">Ranks</a>
-            <a href="create profile" class="nav-btn btn-highlight">Create Profile</a>
+            <!-- زرار يفتح الفورم -->
+            <div onclick="toggleForm()" class="nav-btn btn-highlight">Create Profile</div>
         </nav>
 
         <footer>
@@ -174,8 +208,65 @@
         </footer>
     </div>
 
+    <script>
+        // رابط الأب سكريبت الخاص بك يا مستر
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKMPg9_IJprfERuDHsgrhZoxr3kbiU7-bcTiR2q0Ixnl-aSVFJIpEIFzssS6b9RA9vlQ/exec";
+
+        // إظهار وإخفاء الفورم
+        function toggleForm() {
+            const form = document.getElementById('create-profile-section');
+            const nav = document.getElementById('main-nav');
+            if (form.style.display === 'block') {
+                form.style.display = 'none';
+                nav.style.display = 'flex';
+            } else {
+                form.style.display = 'block';
+                nav.style.display = 'none';
+            }
+        }
+
+        // الوظيفة الأساسية للحفظ في جوجل شيت
+        async function handleProfileCreation() {
+            const submitBtn = document.getElementById('create-profile-btn');
+            const name = document.getElementById('student-name').value;
+            const code = document.getElementById('student-code').value;
+            const gov = document.getElementById('student-gov').value;
+
+            if (!name || !code) {
+                alert("Please fill in all fields!");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Connecting to Fins...";
+
+            const formData = {
+                name: name,
+                code: code,
+                governorate: gov
+            };
+
+            try {
+                // الإرسال للجوجل شيت
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                alert("Success! Your profile has been created in the Fins Network.");
+                toggleForm(); // إغلاق الفورم والعودة للمنيو
+                
+            } catch (error) {
+                console.error('Error!', error.message);
+                alert("Connection error. Please try again.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Confirm & Create";
+            }
+        }
+    </script>
 </body>
 </html>
-
-
-

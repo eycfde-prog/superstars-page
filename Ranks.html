@@ -1,28 +1,24 @@
 <script>
-    // الرابط الصحيح بعد عمل Publish to Web واختيار CSV
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSyhJZX8I6ORcAAeVHbxP7e878guVSBQlwGwpIeTXET5kSuPoZ3KFnut_nu5O-_7_TAE33khAwC4OMi/pubhtml';
+    // الرابط المباشر للملف (تأكد من عمل Publish to Web كـ CSV)
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1FrURjUbaWGVvS5p7JPRan7AKLpGDUrij/pub?output=csv';
 
     async function loadAllRanks() {
         try {
-            console.log("Starting to fetch data...");
             const response = await fetch(SHEET_URL);
-            if (!response.ok) throw new Error("فشل الوصول للرابط - تأكد من عمل Publish to web");
+            if (!response.ok) throw new Error("Could not fetch data");
             
             const csvData = await response.text();
             const rows = csvToJson(csvData);
-            console.log("Data loaded successfully:", rows);
 
-            // تصفية البيانات لكل قسم (نفترض وجود عمود يحدد نوع الرانك أو تحميل الشيت كاملاً)
-            // ملاحظة: بما أنك طلبت 3 صفحات مختلفة، الأفضل جلب كل صفحة برابطها الخاص
-            // أو جلب الشيت الرئيسي وتوزيعه
-            
+            // تشغيل دوال العرض
             renderMaster(rows);
             renderXbox(rows);
             renderSeason(rows);
 
         } catch (error) {
-            console.error("خطأ في التحميل:", error);
-            document.body.innerHTML += `<div style="color:red; text-align:center; padding:20px;">حدث خطأ في جلب البيانات: ${error.message}</div>`;
+            console.error("Error:", error);
+            // إظهار رسالة خطأ للمستخدم في حال فشل الإنترنت أو الرابط
+            document.getElementById('master-body').innerHTML = `<tr><td colspan="5" style="text-align:center; color:orange;">جاري تحديث البيانات أو هناك مشكلة في الاتصال...</td></tr>`;
         }
     }
 
@@ -31,20 +27,22 @@
         const headers = lines[0].split(',').map(h => h.trim());
         return lines.slice(1).map(line => {
             const values = line.split(',');
-            return headers.reduce((obj, header, i) => {
+            const obj = {};
+            headers.forEach((header, i) => {
                 obj[header] = values[i] ? values[i].trim() : '';
-                return obj;
-            }, {});
+            });
+            return obj;
         });
     }
 
+    // 1. عرض الماستر شيت
     function renderMaster(data) {
         const body = document.getElementById('master-body');
         if(!body) return;
         body.innerHTML = data.map(st => `
             <tr>
                 <td class="rank-number">#${st['الترتيب'] || '-'}</td>
-                <td>${st['اسم الطالب'] || 'بدون اسم'}</td>
+                <td>${st['اسم الطالب'] || 'Student'}</td>
                 <td>${st['اللقب'] || '-'}</td>
                 <td>${st['عدد التوكينز'] || '0'}</td>
                 <td class="stars-count">${st['عدد النجوم'] || '0'}</td>
@@ -52,7 +50,50 @@
         `).join('');
     }
 
-    // استدعاء الوظيفة عند تحميل الصفحة
+    // 2. عرض إكسبوكس رانك
+    function renderXbox(data) {
+        const body = document.getElementById('xbox-body');
+        if(!body) return;
+        body.innerHTML = data.map(st => {
+            let badges = '';
+            for(let i=0; i<10; i++) badges += `<div class="logo-placeholder"></div>`;
+            return `
+                <tr>
+                    <td class="rank-number">#${st['الترتيب'] || '-'}</td>
+                    <td>${st['اسم الطالب'] || 'Student'}</td>
+                    <td>${st['عدد التوكينز'] || '0'}</td>
+                    <td><div class="logo-grid xbox-logos">${badges}</div></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // 3. عرض السيزون رانك
+    function renderSeason(data) {
+        const body = document.getElementById('season-body');
+        if(!body) return;
+        body.innerHTML = data.map(st => {
+            let badges = '';
+            for(let i=0; i<5; i++) badges += `<div class="logo-placeholder"></div>`;
+            return `
+                <tr>
+                    <td class="rank-number">#${st['الترتيب'] || '-'}</td>
+                    <td>${st['اسم الطالب'] || 'Student'}</td>
+                    <td>${st['عدد التوكينز'] || '0'}</td>
+                    <td><div class="logo-grid season-logos">${badges}</div></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // دالة التنقل بين الأقسام
+    function showRank(id) {
+        document.querySelectorAll('.rank-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
+    }
+
+    // بدء التحميل عند فتح الصفحة
     window.addEventListener('DOMContentLoaded', loadAllRanks);
 </script>
-

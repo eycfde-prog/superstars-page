@@ -117,7 +117,7 @@
 
         .rank-number { font-weight: 900; color: var(--accent-gold); font-size: 1.1rem; }
         .stars-count { color: #ffd700; font-weight: bold; }
-        .loading { text-align: center; padding: 40px; color: var(--accent-gold); font-weight: bold; }
+        .loading-msg { text-align: center; padding: 40px; color: var(--accent-gold); font-style: italic; }
 
         .logo-grid { display: grid; gap: 5px; }
         .xbox-logos { grid-template-columns: repeat(10, 1fr); min-width: 250px; }
@@ -156,7 +156,7 @@
     <!-- Master Sheet Section -->
     <section id="master" class="rank-section active">
         <div class="table-wrapper">
-            <div id="master-loading" class="loading text-center">Loading Master Data...</div>
+            <div id="master-status" class="loading-msg">جاري تحميل البيانات الحية...</div>
             <table id="master-table" style="display:none;">
                 <thead>
                     <tr>
@@ -175,7 +175,7 @@
     <!-- XBox Rank Section -->
     <section id="xbox" class="rank-section">
         <div class="table-wrapper">
-            <div id="xbox-loading" class="loading text-center">Loading XBox Data...</div>
+            <div id="xbox-status" class="loading-msg">جاري التحميل...</div>
             <table id="xbox-table" style="display:none;">
                 <thead>
                     <tr>
@@ -194,7 +194,7 @@
     <!-- Season Rank Section -->
     <section id="season" class="rank-section">
         <div class="table-wrapper">
-            <div id="season-loading" class="loading text-center">Loading Season Data...</div>
+            <div id="season-status" class="loading-msg">جاري التحميل...</div>
             <table id="season-table" style="display:none;">
                 <thead>
                     <tr>
@@ -216,17 +216,11 @@
 </footer>
 
 <script>
-    // الإعدادات: رابط الشييت ومعرفات الصفحات
-    const SHEET_ID = '1FrURjUbaWGVvS5p7JPRan7AKLpGDUrij'; // معرف المجلد/الشييت المذكور
-    // ملاحظة: لجعل هذا يعمل، يجب أن يكون الشييت نفسه "Anyone with the link can view"
-    // الرابط المباشر لكل ورقة عمل بصيغة CSV لسهولة المعالجة
-    const base_url = `https://docs.google.com/spreadsheets/d/1FrURjUbaWGVvS5p7JPRan7AKLpGDUrij/gviz/tq?tqx=out:csv&sheet=`;
+    // معرف الشيت المحدث بناءً على المعلومات المتاحة
+    const SHEET_ID = '1FrURjUbaWGVvS5p7JPRan7AKLpGDUrij'; 
     
-    const URLS = {
-        master: base_url + encodeURIComponent('Master Sheet'),
-        xbox: base_url + encodeURIComponent('XBox Rank'),
-        season: base_url + encodeURIComponent('Season Rank')
-    };
+    // استخدام رابط gviz المباشر لتجنب بعض مشاكل CORS
+    const getSheetUrl = (sheetName) => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
 
     function showRank(id, btn) {
         document.querySelectorAll('.rank-section').forEach(s => s.classList.remove('active'));
@@ -235,41 +229,67 @@
         btn.classList.add('active');
     }
 
-    // دالة لتحويل بيانات CSV إلى مصفوفة كائنات
-    function parseCSV(csv) {
-        const lines = csv.split('\n');
-        const result = [];
-        // نبدأ من 1 لتجاوز الهيدر
+    // دالة تحليل CSV محسنة
+    function parseCSV(text) {
+        if (!text) return [];
+        const rows = [];
+        // تقسيم الأسطر مع مراعاة الأسطر الفارغة
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
+        
         for (let i = 1; i < lines.length; i++) {
-            const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if (currentline.length > 1) {
-                // إزالة علامات الاقتباس الزائدة إن وجدت
-                result.push(currentline.map(cell => cell.replace(/^"|"$/g, '').trim()));
-            }
+            const line = lines[i];
+            // regex لمعالجة الفواصل داخل الاقتباسات
+            const cells = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            rows.push(cells.map(c => c.replace(/^"|"$/g, '').trim()));
         }
-        return result;
+        return rows;
     }
 
-    async function fetchData() {
+    async function loadAllData() {
+        // تحميل كل الأقسام بالتوازي
+        Promise.all([
+            fetchAndRender('Master Sheet', 'master', renderMaster),
+            fetchAndRender('XBox Rank', 'xbox', renderXbox),
+            fetchAndRender('Season Rank', 'season', renderSeason)
+        ]);
+    }
+
+    async function fetchAndRender(sheetName, idPrefix, renderFn) {
+        const statusEl = document.getElementById(`${idPrefix}-status`);
+        const tableEl = document.getElementById(`${idPrefix}-table`);
+        
         try {
-            // 1. جلب بيانات Master Sheet
-            const masterRes = await fetch(URLS.master);
-            const masterData = parseCSV(await masterRes.text());
-            renderMaster(masterData);
+            const url = getSheetUrl(sheetName);
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+            
+            const csvText = await response.text();
+            
+            // تحقق إذا كان الرد عبارة عن صفحة HTML (يعني الملف غير منشور للعلن)
+            if (csvText.includes("<!DOCTYPE html>") || csvText.includes("google-signin")) {
+                throw new Error("PRIVATE_FILE");
+            }
 
-            // 2. جلب بيانات XBox Rank
-            const xboxRes = await fetch(URLS.xbox);
-            const xboxData = parseCSV(await xboxRes.text());
-            renderXbox(xboxData);
+            const data = parseCSV(csvText);
+            
+            if (data.length === 0) {
+                statusEl.innerText = "الجدول فارغ حالياً.";
+                return;
+            }
 
-            // 3. جلب بيانات Season Rank
-            const seasonRes = await fetch(URLS.season);
-            const seasonData = parseCSV(await seasonRes.text());
-            renderSeason(seasonData);
-
+            renderFn(data);
+            statusEl.style.display = 'none';
+            tableEl.style.display = 'table';
         } catch (error) {
-            console.error("Error fetching sheet data:", error);
-            document.querySelectorAll('.loading').forEach(el => el.innerHTML = "Error loading data. Please check sheet permissions.");
+            console.error(`Error loading ${sheetName}:`, error);
+            if (error.message === "PRIVATE_FILE") {
+                statusEl.innerHTML = "❌ الملف غير متاح للوصول العام.<br><small>يرجى اختيار File > Share > Publish to web في Google Sheets.</small>";
+            } else {
+                statusEl.innerText = "❌ حدث خطأ في الاتصال بالبيانات.";
+            }
         }
     }
 
@@ -277,67 +297,58 @@
         const body = document.getElementById('master-body');
         body.innerHTML = '';
         data.forEach(row => {
-            // الهيكل: A:الاسم, B:الايميل, C:التوكنز, D:النجوم, E:الترتيب, F:اللقب
+            // الترتيب المتوقع للأعمدة: Name, Email, Tokens, Stars, Rank, Title
             body.innerHTML += `
                 <tr>
                     <td class="rank-number">#${row[4] || '-'}</td>
-                    <td>${row[0] || 'Unknown'}</td>
-                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[5] || 'Student'}</td>
+                    <td>${row[0] || '---'}</td>
+                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[5] || '-'}</td>
                     <td>${row[2] || '0'}</td>
                     <td class="stars-count">${row[3] || '0'}</td>
                 </tr>
             `;
         });
-        document.getElementById('master-loading').style.display = 'none';
-        document.getElementById('master-table').style.display = 'table';
     }
 
     function renderXbox(data) {
         const body = document.getElementById('xbox-body');
         body.innerHTML = '';
         data.forEach(row => {
-            // الهيكل: A:الاسم, B:الايميل, C:التوكنز, D:الترتيب, E:اللقب
             let badges = '';
             for(let i=0; i<10; i++) badges += `<div class="logo-placeholder"></div>`;
             
             body.innerHTML += `
                 <tr>
                     <td class="rank-number">#${row[3] || '-'}</td>
-                    <td>${row[0] || 'Unknown'}</td>
+                    <td>${row[0] || '---'}</td>
                     <td>${row[2] || '0'}</td>
-                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[4] || 'Player'}</td>
+                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[4] || '-'}</td>
                     <td><div class="logo-grid xbox-logos">${badges}</div></td>
                 </tr>
             `;
         });
-        document.getElementById('xbox-loading').style.display = 'none';
-        document.getElementById('xbox-table').style.display = 'table';
     }
 
     function renderSeason(data) {
         const body = document.getElementById('season-body');
         body.innerHTML = '';
         data.forEach(row => {
-            // الهيكل: A:الاسم, B:الايميل, C:التوكنز, D:الترتيب, E:اللقب
             let badges = '';
             for(let i=0; i<5; i++) badges += `<div class="logo-placeholder"></div>`;
             
             body.innerHTML += `
                 <tr>
                     <td class="rank-number">#${row[3] || '-'}</td>
-                    <td>${row[0] || 'Unknown'}</td>
+                    <td>${row[0] || '---'}</td>
                     <td>${row[2] || '0'}</td>
-                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[4] || 'Challenger'}</td>
+                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[4] || '-'}</td>
                     <td><div class="logo-grid season-logos">${badges}</div></td>
                 </tr>
             `;
         });
-        document.getElementById('season-loading').style.display = 'none';
-        document.getElementById('season-table').style.display = 'table';
     }
 
-    // تشغيل الجلب عند التحميل
-    window.onload = fetchData;
+    window.onload = loadAllData;
 </script>
 
 </body>

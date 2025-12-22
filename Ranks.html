@@ -26,7 +26,6 @@
             padding-bottom: 50px;
         }
 
-        /* Header */
         header {
             text-align: center;
             padding: 60px 20px;
@@ -42,7 +41,6 @@
 
         header p { font-size: 1.1rem; opacity: 0.8; letter-spacing: 2px; }
 
-        /* Navigation Buttons */
         .rank-nav {
             display: flex;
             justify-content: center;
@@ -69,7 +67,6 @@
             transform: translateY(-3px);
         }
 
-        /* Container & Tables */
         .container {
             max-width: 1100px;
             margin: 0 auto;
@@ -90,6 +87,7 @@
             border: 1px solid var(--glass-border);
             overflow-x: auto;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            min-height: 200px;
         }
 
         table {
@@ -117,39 +115,20 @@
 
         tr:hover { background: rgba(255, 255, 255, 0.03); }
 
-        /* Status & Badges */
-        .rank-number {
-            font-weight: 900;
-            color: var(--accent-gold);
-            font-size: 1.1rem;
-        }
-
+        .rank-number { font-weight: 900; color: var(--accent-gold); font-size: 1.1rem; }
         .stars-count { color: #ffd700; font-weight: bold; }
-        
-        /* Logos Grid Cells */
-        .logo-grid {
-            display: grid;
-            gap: 5px;
-        }
+        .loading { text-align: center; padding: 40px; color: var(--accent-gold); font-weight: bold; }
+
+        .logo-grid { display: grid; gap: 5px; }
         .xbox-logos { grid-template-columns: repeat(10, 1fr); min-width: 250px; }
         .season-logos { grid-template-columns: repeat(5, 1fr); min-width: 130px; }
 
         .logo-placeholder {
-            width: 22px;
-            height: 22px;
+            width: 22px; height: 22px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            border: 1px dashed rgba(212, 175, 55, 0.3);
-        }
-        
-        .logo-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; border: 1px dashed rgba(212, 175, 55, 0.3);
         }
 
         @keyframes fadeIn {
@@ -169,14 +148,16 @@
 
 <div class="container">
     <div class="rank-nav">
-        <button class="nav-btn active" onclick="showRank('master')">EYC Master Sheet</button>
-        <button class="nav-btn" onclick="showRank('xbox')">XBox Rank</button>
-        <button class="nav-btn" onclick="showRank('season')">Tokens Race (Season)</button>
+        <button class="nav-btn active" onclick="showRank('master', this)">EYC Master Sheet</button>
+        <button class="nav-btn" onclick="showRank('xbox', this)">XBox Rank</button>
+        <button class="nav-btn" onclick="showRank('season', this)">Tokens Race (Season)</button>
     </div>
 
+    <!-- Master Sheet Section -->
     <section id="master" class="rank-section active">
         <div class="table-wrapper">
-            <table>
+            <div id="master-loading" class="loading text-center">Loading Master Data...</div>
+            <table id="master-table" style="display:none;">
                 <thead>
                     <tr>
                         <th>Global Rank</th>
@@ -186,42 +167,45 @@
                         <th>Stars ⭐</th>
                     </tr>
                 </thead>
-                <tbody id="master-body">
-                    </tbody>
+                <tbody id="master-body"></tbody>
             </table>
         </div>
     </section>
 
+    <!-- XBox Rank Section -->
     <section id="xbox" class="rank-section">
         <div class="table-wrapper">
-            <table>
+            <div id="xbox-loading" class="loading text-center">Loading XBox Data...</div>
+            <table id="xbox-table" style="display:none;">
                 <thead>
                     <tr>
                         <th>Rank</th>
                         <th>Student Name</th>
                         <th>Tokens</th>
+                        <th>Title</th>
                         <th>Activity Badges (10)</th>
                     </tr>
                 </thead>
-                <tbody id="xbox-body">
-                    </tbody>
+                <tbody id="xbox-body"></tbody>
             </table>
         </div>
     </section>
 
+    <!-- Season Rank Section -->
     <section id="season" class="rank-section">
         <div class="table-wrapper">
-            <table>
+            <div id="season-loading" class="loading text-center">Loading Season Data...</div>
+            <table id="season-table" style="display:none;">
                 <thead>
                     <tr>
                         <th>Rank</th>
                         <th>Student Name</th>
                         <th>Tokens</th>
+                        <th>Title</th>
                         <th>Activity Badges (5)</th>
                     </tr>
                 </thead>
-                <tbody id="season-body">
-                    </tbody>
+                <tbody id="season-body"></tbody>
             </table>
         </div>
     </section>
@@ -232,69 +216,129 @@
 </footer>
 
 <script>
-    // الدالة المسؤولة عن التنقل بين الرانكات
-    function showRank(id) {
+    // الإعدادات: رابط الشييت ومعرفات الصفحات
+    const SHEET_ID = '1FrURjUbaWGVvS5p7JPRan7AKLpGDUrij'; // معرف المجلد/الشييت المذكور
+    // ملاحظة: لجعل هذا يعمل، يجب أن يكون الشييت نفسه "Anyone with the link can view"
+    // الرابط المباشر لكل ورقة عمل بصيغة CSV لسهولة المعالجة
+    const base_url = `https://docs.google.com/spreadsheets/d/1FrURjUbaWGVvS5p7JPRan7AKLpGDUrij/gviz/tq?tqx=out:csv&sheet=`;
+    
+    const URLS = {
+        master: base_url + encodeURIComponent('Master Sheet'),
+        xbox: base_url + encodeURIComponent('XBox Rank'),
+        season: base_url + encodeURIComponent('Season Rank')
+    };
+
+    function showRank(id, btn) {
         document.querySelectorAll('.rank-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        event.currentTarget.classList.add('active');
+        btn.classList.add('active');
     }
 
-    // بيانات وهمية للتجربة (Mock Data)
-    const mockStudents = [
-        { name: "Ahmed Mansour", rank: 1, programs: "XBox, Season 3", tokens: 1250, stars: 45 },
-        { name: "Sara El-Sayed", rank: 2, programs: "XBox", tokens: 1100, stars: 38 },
-        { name: "Omar Khaled", rank: 3, programs: "Season 3", tokens: 950, stars: 32 },
-        { name: "Layla Hassan", rank: 4, programs: "XBox, Season 3", tokens: 880, stars: 29 }
-    ];
+    // دالة لتحويل بيانات CSV إلى مصفوفة كائنات
+    function parseCSV(csv) {
+        const lines = csv.split('\n');
+        const result = [];
+        // نبدأ من 1 لتجاوز الهيدر
+        for (let i = 1; i < lines.length; i++) {
+            const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (currentline.length > 1) {
+                // إزالة علامات الاقتباس الزائدة إن وجدت
+                result.push(currentline.map(cell => cell.replace(/^"|"$/g, '').trim()));
+            }
+        }
+        return result;
+    }
 
-    // ملء بيانات الماستر شيت
-    const masterBody = document.getElementById('master-body');
-    mockStudents.forEach(st => {
-        masterBody.innerHTML += `
-            <tr>
-                <td class="rank-number">#${st.rank}</td>
-                <td>${st.name}</td>
-                <td>${st.programs}</td>
-                <td>${st.tokens}</td>
-                <td class="stars-count">${st.stars}</td>
-            </tr>
-        `;
-    });
+    async function fetchData() {
+        try {
+            // 1. جلب بيانات Master Sheet
+            const masterRes = await fetch(URLS.master);
+            const masterData = parseCSV(await masterRes.text());
+            renderMaster(masterData);
 
-    // ملء بيانات إكسبوكس
-    const xboxBody = document.getElementById('xbox-body');
-    mockStudents.forEach(st => {
-        let badges = '';
-        for(let i=0; i<10; i++) badges += `<div class="logo-placeholder"></div>`; // مكان صور اللوجوهات
-        
-        xboxBody.innerHTML += `
-            <tr>
-                <td class="rank-number">#${st.rank}</td>
-                <td>${st.name}</td>
-                <td>${st.tokens}</td>
-                <td><div class="logo-grid xbox-logos">${badges}</div></td>
-            </tr>
-        `;
-    });
+            // 2. جلب بيانات XBox Rank
+            const xboxRes = await fetch(URLS.xbox);
+            const xboxData = parseCSV(await xboxRes.text());
+            renderXbox(xboxData);
 
-    // ملء بيانات السيزون
-    const seasonBody = document.getElementById('season-body');
-    mockStudents.forEach(st => {
-        let badges = '';
-        for(let i=0; i<5; i++) badges += `<div class="logo-placeholder"></div>`; 
-        
-        seasonBody.innerHTML += `
-            <tr>
-                <td class="rank-number">#${st.rank}</td>
-                <td>${st.name}</td>
-                <td>${st.tokens}</td>
-                <td><div class="logo-grid season-logos">${badges}</div></td>
-            </tr>
-        `;
-    });
+            // 3. جلب بيانات Season Rank
+            const seasonRes = await fetch(URLS.season);
+            const seasonData = parseCSV(await seasonRes.text());
+            renderSeason(seasonData);
+
+        } catch (error) {
+            console.error("Error fetching sheet data:", error);
+            document.querySelectorAll('.loading').forEach(el => el.innerHTML = "Error loading data. Please check sheet permissions.");
+        }
+    }
+
+    function renderMaster(data) {
+        const body = document.getElementById('master-body');
+        body.innerHTML = '';
+        data.forEach(row => {
+            // الهيكل: A:الاسم, B:الايميل, C:التوكنز, D:النجوم, E:الترتيب, F:اللقب
+            body.innerHTML += `
+                <tr>
+                    <td class="rank-number">#${row[4] || '-'}</td>
+                    <td>${row[0] || 'Unknown'}</td>
+                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[5] || 'Student'}</td>
+                    <td>${row[2] || '0'}</td>
+                    <td class="stars-count">${row[3] || '0'}</td>
+                </tr>
+            `;
+        });
+        document.getElementById('master-loading').style.display = 'none';
+        document.getElementById('master-table').style.display = 'table';
+    }
+
+    function renderXbox(data) {
+        const body = document.getElementById('xbox-body');
+        body.innerHTML = '';
+        data.forEach(row => {
+            // الهيكل: A:الاسم, B:الايميل, C:التوكنز, D:الترتيب, E:اللقب
+            let badges = '';
+            for(let i=0; i<10; i++) badges += `<div class="logo-placeholder"></div>`;
+            
+            body.innerHTML += `
+                <tr>
+                    <td class="rank-number">#${row[3] || '-'}</td>
+                    <td>${row[0] || 'Unknown'}</td>
+                    <td>${row[2] || '0'}</td>
+                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[4] || 'Player'}</td>
+                    <td><div class="logo-grid xbox-logos">${badges}</div></td>
+                </tr>
+            `;
+        });
+        document.getElementById('xbox-loading').style.display = 'none';
+        document.getElementById('xbox-table').style.display = 'table';
+    }
+
+    function renderSeason(data) {
+        const body = document.getElementById('season-body');
+        body.innerHTML = '';
+        data.forEach(row => {
+            // الهيكل: A:الاسم, B:الايميل, C:التوكنز, D:الترتيب, E:اللقب
+            let badges = '';
+            for(let i=0; i<5; i++) badges += `<div class="logo-placeholder"></div>`;
+            
+            body.innerHTML += `
+                <tr>
+                    <td class="rank-number">#${row[3] || '-'}</td>
+                    <td>${row[0] || 'Unknown'}</td>
+                    <td>${row[2] || '0'}</td>
+                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[4] || 'Challenger'}</td>
+                    <td><div class="logo-grid season-logos">${badges}</div></td>
+                </tr>
+            `;
+        });
+        document.getElementById('season-loading').style.display = 'none';
+        document.getElementById('season-table').style.display = 'table';
+    }
+
+    // تشغيل الجلب عند التحميل
+    window.onload = fetchData;
 </script>
 
 </body>
-
 </html>

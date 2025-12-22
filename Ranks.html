@@ -1,96 +1,57 @@
 <script>
-    // 1. ضع هنا رابط الـ CSV الذي نسخته بعد عمل Publish to Web
-    // تأكد أن الرابط ينتهي بـ output=csv
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSyhJZX8I6ORcAAeVHbxP7e878guVSBQlwGwpIeTXET5kSuPoZ3KFnut_nu5O-_7_TAE33khAwC4OMi/pub?output=csv';
+    // الرابط الصحيح بعد عمل Publish to Web واختيار CSV
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1FrURjUbaWGVvS5p7JPRan7AKLpGDUrij/pub?output=csv';
 
-    // دالة لجلب البيانات من صفحة معينة في الشيت
-    async function fetchSheetData(sheetName) {
+    async function loadAllRanks() {
         try {
-            // نضيف اسم الصفحة للرابط (نستخدم gid لو أردت دقة أكثر، لكن هنا سنستخدم اسم الصفحة)
-            const response = await fetch(`${SHEET_URL}&sheet=${encodeURIComponent(sheetName)}`);
-            const data = await response.text();
-            return csvToJson(data);
+            console.log("Starting to fetch data...");
+            const response = await fetch(SHEET_URL);
+            if (!response.ok) throw new Error("فشل الوصول للرابط - تأكد من عمل Publish to web");
+            
+            const csvData = await response.text();
+            const rows = csvToJson(csvData);
+            console.log("Data loaded successfully:", rows);
+
+            // تصفية البيانات لكل قسم (نفترض وجود عمود يحدد نوع الرانك أو تحميل الشيت كاملاً)
+            // ملاحظة: بما أنك طلبت 3 صفحات مختلفة، الأفضل جلب كل صفحة برابطها الخاص
+            // أو جلب الشيت الرئيسي وتوزيعه
+            
+            renderMaster(rows);
+            renderXbox(rows);
+            renderSeason(rows);
+
         } catch (error) {
-            console.error("Error loading data: ", error);
+            console.error("خطأ في التحميل:", error);
+            document.body.innerHTML += `<div style="color:red; text-align:center; padding:20px;">حدث خطأ في جلب البيانات: ${error.message}</div>`;
         }
     }
 
-    // محول الـ CSV إلى JSON مبسط
     function csvToJson(csv) {
         const lines = csv.split('\n');
-        const result = [];
-        const headers = lines[0].split(',');
-
-        for (let i = 1; i < lines.length; i++) {
-            if (!lines[i]) continue;
-            const obj = {};
-            const currentline = lines[i].split(',');
-
-            headers.forEach((header, index) => {
-                obj[header.trim()] = currentline[index]?.trim();
-            });
-            result.push(obj);
-        }
-        return result;
+        const headers = lines[0].split(',').map(h => h.trim());
+        return lines.slice(1).map(line => {
+            const values = line.split(',');
+            return headers.reduce((obj, header, i) => {
+                obj[header] = values[i] ? values[i].trim() : '';
+                return obj;
+            }, {});
+        });
     }
 
-    // دالة عرض البيانات
-    async function loadAllRanks() {
-        // تحميل بيانات الماستر
-        const masterData = await fetchSheetData('Master Sheet');
-        const masterBody = document.getElementById('master-body');
-        masterBody.innerHTML = masterData.map(st => `
+    function renderMaster(data) {
+        const body = document.getElementById('master-body');
+        if(!body) return;
+        body.innerHTML = data.map(st => `
             <tr>
-                <td class="rank-number">#${st['الترتيب'] || ''}</td>
-                <td>${st['اسم الطالب'] || ''}</td>
-                <td>${st['اللقب'] || ''}</td>
+                <td class="rank-number">#${st['الترتيب'] || '-'}</td>
+                <td>${st['اسم الطالب'] || 'بدون اسم'}</td>
+                <td>${st['اللقب'] || '-'}</td>
                 <td>${st['عدد التوكينز'] || '0'}</td>
                 <td class="stars-count">${st['عدد النجوم'] || '0'}</td>
             </tr>
         `).join('');
-
-        // تحميل بيانات إكسبوكس
-        const xboxData = await fetchSheetData('XBox Rank');
-        const xboxBody = document.getElementById('xbox-body');
-        xboxBody.innerHTML = xboxData.map(st => {
-            let badges = '';
-            for(let i=0; i<10; i++) badges += `<div class="logo-placeholder"></div>`;
-            return `
-                <tr>
-                    <td class="rank-number">#${st['الترتيب'] || ''}</td>
-                    <td>${st['اسم الطالب'] || ''}</td>
-                    <td>${st['عدد التوكينز'] || '0'}</td>
-                    <td><div class="logo-grid xbox-logos">${badges}</div></td>
-                </tr>
-            `;
-        }).join('');
-
-        // تحميل بيانات السيزون
-        const seasonData = await fetchSheetData('Season Rank');
-        const seasonBody = document.getElementById('season-body');
-        seasonBody.innerHTML = seasonData.map(st => {
-            let badges = '';
-            for(let i=0; i<5; i++) badges += `<div class="logo-placeholder"></div>`;
-            return `
-                <tr>
-                    <td class="rank-number">#${st['الترتيب'] || ''}</td>
-                    <td>${st['اسم الطالب'] || ''}</td>
-                    <td>${st['عدد التوكينز'] || '0'}</td>
-                    <td><div class="logo-grid season-logos">${badges}</div></td>
-                </tr>
-            `;
-        }).join('');
     }
 
-    // التنقل بين التبويبات
-    function showRank(id) {
-        document.querySelectorAll('.rank-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
-
-    // تشغيل الجلب عند فتح الصفحة
-    window.onload = loadAllRanks;
+    // استدعاء الوظيفة عند تحميل الصفحة
+    window.addEventListener('DOMContentLoaded', loadAllRanks);
 </script>
-

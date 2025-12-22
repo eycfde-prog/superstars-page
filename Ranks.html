@@ -1,355 +1,95 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Ranks | لوحة الشرف</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #020617;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --accent-gold: #d4af37;
-            --text-silver: #e2e8f0;
-            --glass-border: rgba(212, 175, 55, 0.2);
-            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--bg-color);
-            background-image: radial-gradient(circle at top right, #1e293b, #020617);
-            color: var(--text-silver);
-            min-height: 100vh;
-            padding-bottom: 50px;
-        }
-
-        header {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            color: var(--accent-gold);
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-            margin-bottom: 10px;
-        }
-
-        header p { font-size: 1.1rem; opacity: 0.8; letter-spacing: 2px; }
-
-        .rank-nav {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 50px;
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            padding: 12px 25px;
-            border: 1px solid var(--glass-border);
-            background: var(--card-bg);
-            color: var(--text-silver);
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: var(--transition);
-        }
-
-        .nav-btn:hover, .nav-btn.active {
-            background: var(--accent-gold);
-            color: var(--bg-color);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-            transform: translateY(-3px);
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-
-        .rank-section {
-            display: none;
-            animation: fadeIn 0.6s ease;
-        }
-
-        .rank-section.active { display: block; }
-
-        .table-wrapper {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            overflow-x: auto;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            min-height: 200px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--accent-gold);
-            padding: 20px;
-            font-family: 'Playfair Display', serif;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            border-bottom: 2px solid var(--glass-border);
-        }
-
-        td {
-            padding: 18px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.95rem;
-        }
-
-        tr:hover { background: rgba(255, 255, 255, 0.03); }
-
-        .rank-number { font-weight: 900; color: var(--accent-gold); font-size: 1.1rem; }
-        .stars-count { color: #ffd700; font-weight: bold; }
-        .loading-msg { text-align: center; padding: 40px; color: var(--accent-gold); font-style: italic; }
-
-        .logo-grid { display: grid; gap: 5px; }
-        .xbox-logos { grid-template-columns: repeat(10, 1fr); min-width: 250px; }
-        .season-logos { grid-template-columns: repeat(5, 1fr); min-width: 130px; }
-
-        .logo-placeholder {
-            width: 22px; height: 22px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; border: 1px dashed rgba(212, 175, 55, 0.3);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        footer { text-align: center; margin-top: 50px; opacity: 0.5; font-size: 0.8rem; }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>The Elite Hall</h1>
-    <p>EYC ACADEMY HONOR ROLL</p>
-</header>
-
-<div class="container">
-    <div class="rank-nav">
-        <button class="nav-btn active" onclick="showRank('master', this)">EYC Master Sheet</button>
-        <button class="nav-btn" onclick="showRank('xbox', this)">XBox Rank</button>
-        <button class="nav-btn" onclick="showRank('season', this)">Tokens Race (Season)</button>
-    </div>
-
-    <!-- Master Sheet Section -->
-    <section id="master" class="rank-section active">
-        <div class="table-wrapper">
-            <div id="master-status" class="loading-msg">جاري تحميل البيانات الحية...</div>
-            <table id="master-table" style="display:none;">
-                <thead>
-                    <tr>
-                        <th>Global Rank</th>
-                        <th>Student Name</th>
-                        <th>Title</th>
-                        <th>Tokens</th>
-                        <th>Stars ⭐</th>
-                    </tr>
-                </thead>
-                <tbody id="master-body"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- XBox Rank Section -->
-    <section id="xbox" class="rank-section">
-        <div class="table-wrapper">
-            <div id="xbox-status" class="loading-msg">جاري التحميل...</div>
-            <table id="xbox-table" style="display:none;">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Student Name</th>
-                        <th>Tokens</th>
-                        <th>Title</th>
-                        <th>Activity Badges (10)</th>
-                    </tr>
-                </thead>
-                <tbody id="xbox-body"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- Season Rank Section -->
-    <section id="season" class="rank-section">
-        <div class="table-wrapper">
-            <div id="season-status" class="loading-msg">جاري التحميل...</div>
-            <table id="season-table" style="display:none;">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Student Name</th>
-                        <th>Tokens</th>
-                        <th>Title</th>
-                        <th>Activity Badges (5)</th>
-                    </tr>
-                </thead>
-                <tbody id="season-body"></tbody>
-            </table>
-        </div>
-    </section>
-</div>
-
-<footer>
-    &copy; 2026 EYC Academy | Journey to Mastery
-</footer>
-
 <script>
-    // معرف الشيت المحدث بناءً على المعلومات المتاحة
-    const SHEET_ID = '1FrURjUbaWGVvS5p7JPRan7AKLpGDUrij'; 
-    
-    // استخدام رابط gviz المباشر لتجنب بعض مشاكل CORS
-    const getSheetUrl = (sheetName) => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+    // 1. ضع هنا رابط الـ CSV الذي نسخته بعد عمل Publish to Web
+    // تأكد أن الرابط ينتهي بـ output=csv
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1FrURjUbaWGVvS5p7JPRan7AKLpGDUrij/pub?output=csv';
 
-    function showRank(id, btn) {
-        document.querySelectorAll('.rank-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-    }
-
-    // دالة تحليل CSV محسنة
-    function parseCSV(text) {
-        if (!text) return [];
-        const rows = [];
-        // تقسيم الأسطر مع مراعاة الأسطر الفارغة
-        const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
-        
-        for (let i = 1; i < lines.length; i++) {
-            const line = lines[i];
-            // regex لمعالجة الفواصل داخل الاقتباسات
-            const cells = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            rows.push(cells.map(c => c.replace(/^"|"$/g, '').trim()));
-        }
-        return rows;
-    }
-
-    async function loadAllData() {
-        // تحميل كل الأقسام بالتوازي
-        Promise.all([
-            fetchAndRender('Master Sheet', 'master', renderMaster),
-            fetchAndRender('XBox Rank', 'xbox', renderXbox),
-            fetchAndRender('Season Rank', 'season', renderSeason)
-        ]);
-    }
-
-    async function fetchAndRender(sheetName, idPrefix, renderFn) {
-        const statusEl = document.getElementById(`${idPrefix}-status`);
-        const tableEl = document.getElementById(`${idPrefix}-table`);
-        
+    // دالة لجلب البيانات من صفحة معينة في الشيت
+    async function fetchSheetData(sheetName) {
         try {
-            const url = getSheetUrl(sheetName);
-            const response = await fetch(url);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP Error: ${response.status}`);
-            }
-            
-            const csvText = await response.text();
-            
-            // تحقق إذا كان الرد عبارة عن صفحة HTML (يعني الملف غير منشور للعلن)
-            if (csvText.includes("<!DOCTYPE html>") || csvText.includes("google-signin")) {
-                throw new Error("PRIVATE_FILE");
-            }
-
-            const data = parseCSV(csvText);
-            
-            if (data.length === 0) {
-                statusEl.innerText = "الجدول فارغ حالياً.";
-                return;
-            }
-
-            renderFn(data);
-            statusEl.style.display = 'none';
-            tableEl.style.display = 'table';
+            // نضيف اسم الصفحة للرابط (نستخدم gid لو أردت دقة أكثر، لكن هنا سنستخدم اسم الصفحة)
+            const response = await fetch(`${SHEET_URL}&sheet=${encodeURIComponent(sheetName)}`);
+            const data = await response.text();
+            return csvToJson(data);
         } catch (error) {
-            console.error(`Error loading ${sheetName}:`, error);
-            if (error.message === "PRIVATE_FILE") {
-                statusEl.innerHTML = "❌ الملف غير متاح للوصول العام.<br><small>يرجى اختيار File > Share > Publish to web في Google Sheets.</small>";
-            } else {
-                statusEl.innerText = "❌ حدث خطأ في الاتصال بالبيانات.";
-            }
+            console.error("Error loading data: ", error);
         }
     }
 
-    function renderMaster(data) {
-        const body = document.getElementById('master-body');
-        body.innerHTML = '';
-        data.forEach(row => {
-            // الترتيب المتوقع للأعمدة: Name, Email, Tokens, Stars, Rank, Title
-            body.innerHTML += `
-                <tr>
-                    <td class="rank-number">#${row[4] || '-'}</td>
-                    <td>${row[0] || '---'}</td>
-                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[5] || '-'}</td>
-                    <td>${row[2] || '0'}</td>
-                    <td class="stars-count">${row[3] || '0'}</td>
-                </tr>
-            `;
-        });
+    // محول الـ CSV إلى JSON مبسط
+    function csvToJson(csv) {
+        const lines = csv.split('\n');
+        const result = [];
+        const headers = lines[0].split(',');
+
+        for (let i = 1; i < lines.length; i++) {
+            if (!lines[i]) continue;
+            const obj = {};
+            const currentline = lines[i].split(',');
+
+            headers.forEach((header, index) => {
+                obj[header.trim()] = currentline[index]?.trim();
+            });
+            result.push(obj);
+        }
+        return result;
     }
 
-    function renderXbox(data) {
-        const body = document.getElementById('xbox-body');
-        body.innerHTML = '';
-        data.forEach(row => {
+    // دالة عرض البيانات
+    async function loadAllRanks() {
+        // تحميل بيانات الماستر
+        const masterData = await fetchSheetData('Master Sheet');
+        const masterBody = document.getElementById('master-body');
+        masterBody.innerHTML = masterData.map(st => `
+            <tr>
+                <td class="rank-number">#${st['الترتيب'] || ''}</td>
+                <td>${st['اسم الطالب'] || ''}</td>
+                <td>${st['اللقب'] || ''}</td>
+                <td>${st['عدد التوكينز'] || '0'}</td>
+                <td class="stars-count">${st['عدد النجوم'] || '0'}</td>
+            </tr>
+        `).join('');
+
+        // تحميل بيانات إكسبوكس
+        const xboxData = await fetchSheetData('XBox Rank');
+        const xboxBody = document.getElementById('xbox-body');
+        xboxBody.innerHTML = xboxData.map(st => {
             let badges = '';
             for(let i=0; i<10; i++) badges += `<div class="logo-placeholder"></div>`;
-            
-            body.innerHTML += `
+            return `
                 <tr>
-                    <td class="rank-number">#${row[3] || '-'}</td>
-                    <td>${row[0] || '---'}</td>
-                    <td>${row[2] || '0'}</td>
-                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[4] || '-'}</td>
+                    <td class="rank-number">#${st['الترتيب'] || ''}</td>
+                    <td>${st['اسم الطالب'] || ''}</td>
+                    <td>${st['عدد التوكينز'] || '0'}</td>
                     <td><div class="logo-grid xbox-logos">${badges}</div></td>
                 </tr>
             `;
-        });
-    }
+        }).join('');
 
-    function renderSeason(data) {
-        const body = document.getElementById('season-body');
-        body.innerHTML = '';
-        data.forEach(row => {
+        // تحميل بيانات السيزون
+        const seasonData = await fetchSheetData('Season Rank');
+        const seasonBody = document.getElementById('season-body');
+        seasonBody.innerHTML = seasonData.map(st => {
             let badges = '';
             for(let i=0; i<5; i++) badges += `<div class="logo-placeholder"></div>`;
-            
-            body.innerHTML += `
+            return `
                 <tr>
-                    <td class="rank-number">#${row[3] || '-'}</td>
-                    <td>${row[0] || '---'}</td>
-                    <td>${row[2] || '0'}</td>
-                    <td style="font-size: 0.8rem; opacity: 0.7;">${row[4] || '-'}</td>
+                    <td class="rank-number">#${st['الترتيب'] || ''}</td>
+                    <td>${st['اسم الطالب'] || ''}</td>
+                    <td>${st['عدد التوكينز'] || '0'}</td>
                     <td><div class="logo-grid season-logos">${badges}</div></td>
                 </tr>
             `;
-        });
+        }).join('');
     }
 
-    window.onload = loadAllData;
-</script>
+    // التنقل بين التبويبات
+    function showRank(id) {
+        document.querySelectorAll('.rank-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
 
-</body>
-</html>
+    // تشغيل الجلب عند فتح الصفحة
+    window.onload = loadAllRanks;
+</script>

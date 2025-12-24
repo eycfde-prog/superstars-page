@@ -3,272 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Superstars | الرانكس والبروفايل</title>
+    <title>نظام سوبر ستارز - EYC Online</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0d1117;
-            --card-dark: #161b22;
-            --border-dark: #30363d;
-            --gold: #f1c40f;
-        }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--bg-dark);
-            color: #c9d1d9;
-        }
+        body { font-family: 'Cairo', sans-serif; background-color: #0d1117; color: #c9d1d9; overflow-x: hidden; }
         .gold-gradient-text {
             background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        /* تجميل الجدول */
-        .rank-row { transition: all 0.2s; cursor: pointer; border-bottom: 1px solid var(--border-dark); }
-        .rank-row:hover { background: rgba(241, 196, 15, 0.05); transform: scale(1.01); }
+        .profile-card { background: linear-gradient(145deg, #161b22, #0d1117); border: 1px solid #30363d; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        .stat-box { background: rgba(48, 54, 61, 0.4); border-bottom: 2px solid #30363d; transition: all 0.3s ease; }
+        .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 12px; }
+        .slot { aspect-ratio: 1/1; background: #161b22; border: 2px dashed #30363d; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .slot img { width: 80%; height: 80%; object-fit: contain; }
+        .rank-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
         
-        /* مودال البروفايل */
-        #profile-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .profile-card {
-            background: linear-gradient(145deg, #161b22, #0d1117);
-            border: 1px solid var(--border-dark);
-            max-width: 800px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            border-radius: 2rem;
-        }
-        .stat-box {
-            background: rgba(48, 54, 61, 0.4);
-            border-bottom: 2px solid var(--border-dark);
-        }
-        .empty-slot {
-            aspect-ratio: 1/1;
-            background: #161b22;
-            border: 2px dashed var(--border-dark);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .achievement-icon { width: 80%; height: 80%; object-fit: contain; }
+        /* Modal Animation */
+        #profileModal { transition: opacity 0.3s ease, visibility 0.3s ease; }
+        #profileModal.hidden { opacity: 0; visibility: hidden; display: none; }
+        #profileModal.flex { opacity: 1; visibility: visible; }
+
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #f1c40f; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(241, 196, 15, 0.2); }
-            50% { box-shadow: 0 0 20px rgba(241, 196, 15, 0.5); }
-        }
-        .avatar-glow { animation: glow 3s infinite; }
+        tr:hover { background-color: rgba(241, 196, 15, 0.05); cursor: pointer; }
     </style>
 </head>
 <body class="p-4">
 
-    <!-- قسم الرانكس الرئيسي -->
-    <div class="max-w-5xl mx-auto py-10">
-        <header class="text-center mb-12">
-            <h1 class="text-5xl font-black gold-gradient-text mb-4">The Elite Hall</h1>
-            <p class="text-gray-400">لوحة شرف أكاديمية EYC - اضغط على اسمك لرؤية بروفايلك</p>
-        </header>
+    <!-- Header -->
+    <header class="max-w-6xl mx-auto text-center py-10">
+        <h1 class="text-5xl font-black gold-gradient-text mb-4">SUPERSTARS RANKS</h1>
+        <p class="text-gray-400">انقر على اسم الطالب لعرض ملفه الشخصي وإنجازاته</p>
+    </header>
 
-        <div class="bg-[#161b22] border border-[#30363d] rounded-2xl overflow-hidden shadow-2xl">
-            <table class="w-full text-right">
-                <thead class="bg-[#0d1117] text-[#f1c40f]">
-                    <tr>
-                        <th class="p-5">الترتيب</th>
-                        <th class="p-5">اسم السوبر ستار</th>
-                        <th class="p-5">التوكنز</th>
-                        <th class="p-5">النجوم</th>
+    <!-- Ranks Table Section -->
+    <main class="max-w-6xl mx-auto mb-20">
+        <div class="overflow-x-auto bg-[#161b22] rounded-3xl border border-[#30363d] shadow-2xl">
+            <table class="w-full text-right border-collapse">
+                <thead>
+                    <tr class="bg-[#0d1117] border-bottom border-[#30363d] text-[#f1c40f]">
+                        <th class="p-5">الطالب</th>
+                        <th class="p-5">Master Rank</th>
+                        <th class="p-5">Season Rank</th>
+                        <th class="p-5">Xbox Rank</th>
+                        <th class="p-5 text-center">التفاصيل</th>
                     </tr>
                 </thead>
-                <tbody id="ranks-body">
-                    <!-- سيتم ملء البيانات هنا -->
-                    <tr><td colspan="4" class="p-10 text-center">جاري تحميل لوحة الشرف...</td></tr>
+                <tbody id="ranksBody">
+                    <!-- البيانات سيتم تحميلها هنا -->
+                    <tr>
+                        <td colspan="5" class="p-20 text-center">
+                            <div class="flex flex-col items-center gap-4">
+                                <div class="loader"></div>
+                                <p>جاري سحب البيانات من السحابة...</p>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-    </div>
+    </main>
 
-    <!-- مودال البروفايل (الذي يظهر عند الضغط) -->
-    <div id="profile-modal" onclick="closeProfile(event)">
-        <div class="profile-card p-6 md:p-10 relative" onclick="event.stopPropagation()">
-            <button onclick="closeProfile(null)" class="absolute top-5 left-5 text-gray-500 hover:text-white text-2xl">✕</button>
-            
-            <div class="flex flex-col md:flex-row items-center gap-8 mb-8">
-                <div class="relative">
-                    <div class="w-40 h-40 md:w-48 md:h-48 rounded-full border-4 border-[#f1c40f] overflow-hidden avatar-glow shadow-2xl">
-                        <img id="p-avatar" src="" alt="صورة الطالب" class="w-full h-full object-cover">
-                    </div>
-                    <div id="p-tag" class="absolute -bottom-2 right-1/2 translate-x-1/2 bg-[#f1c40f] text-black px-4 py-1 rounded-full text-xs font-black whitespace-nowrap">
-                        LOADING...
-                    </div>
-                </div>
+    <!-- Profile Modal (The Popup) -->
+    <div id="profileModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div class="max-w-3xl w-full relative">
+            <!-- Close Button -->
+            <button onclick="closeProfile()" class="absolute -top-12 left-0 text-white hover:text-[#f1c40f] flex items-center gap-2 font-bold transition-all">
+                <span>إغلاق النافذة</span>
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
 
-                <div class="flex-1 text-center md:text-right">
-                    <h1 id="p-name" class="text-4xl font-black gold-gradient-text mb-2">اسم الطالب</h1>
-                    <p class="text-gray-400 mb-6">عضو مميز في مجتمع EYC Online</p>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="stat-box p-3 rounded-xl flex items-center justify-between">
-                            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="w-8 h-8">
-                            <div class="text-left">
-                                <span id="p-stars" class="block text-xl font-bold text-white">0</span>
-                                <span class="text-[10px] text-gray-400 uppercase">النجوم</span>
-                            </div>
-                        </div>
-                        <div class="stat-box p-3 rounded-xl flex items-center justify-between">
-                            <img src="https://cdn-icons-png.flaticon.com/512/2164/2164102.png" class="w-8 h-8">
-                            <div class="text-left">
-                                <span id="p-tokens" class="block text-xl font-bold text-white">0</span>
-                                <span class="text-[10px] text-gray-400 uppercase">التوكنز</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- رانكات الطالب -->
-            <div class="grid grid-cols-3 gap-4 mb-8">
-                <div class="bg-[#0d1117] p-4 rounded-xl border border-[#30363d] text-center">
-                    <span class="text-gray-500 block text-[10px] mb-1">MASTER RANK</span>
-                    <span id="p-rank-master" class="text-xl font-black text-white">#0</span>
-                </div>
-                <div id="xbox-rank-container" class="bg-[#0d1117] p-4 rounded-xl border border-[#30363d] text-center">
-                    <span class="text-gray-500 block text-[10px] mb-1">XBOX RANK</span>
-                    <span id="p-rank-xbox" class="text-xl font-black text-green-500">#0</span>
-                </div>
-                <div id="season-rank-container" class="bg-[#0d1117] p-4 rounded-xl border border-[#30363d] text-center">
-                    <span class="text-gray-500 block text-[10px] mb-1">SEASON RANK</span>
-                    <span id="p-rank-season" class="text-xl font-black text-yellow-500">#0</span>
-                </div>
-            </div>
-
-            <!-- الإنجازات -->
-            <h3 class="text-lg font-bold mb-4 flex items-center gap-2 italic">
-                <span class="w-1 h-6 bg-[#f1c40f] rounded-full"></span>
-                إنجازات الأنشطة (تخطي 30 توكن)
-            </h3>
-            <div id="achievement-grid" class="grid grid-cols-5 md:grid-cols-10 gap-3">
-                <!-- سيتم توليد المربعات هنا -->
+            <div id="modalContent">
+                <!-- محتوى البروفايل سيتم حقنه هنا -->
             </div>
         </div>
     </div>
 
-<script>
-    const SHEET_ID = '1P2cj3TFjjzhNY1QB7jF9L05gzgqS8ZQ9ebm1bVQ2XEI';
-    const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Master%20Sheet`;
+    <script>
+        // رابط الشيت بصيغة JSON
+        const SHEET_ID = '1qe_Kn2Rs6SVCHyacOGFXyFwUtQ5-2ElFynxm7hNOq7k';
+        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
 
-    let allStudentsData = [];
+        let studentsData = [];
 
-    // قائمة الأنشطة واللوجوهات الخاصة بها (يمكنك تغيير الروابط والأسماء)
-    const activities = [
-        { name: "Reading", icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" },
-        { name: "Coding", icon: "https://cdn-icons-png.flaticon.com/512/606/606226.png" },
-        { name: "Math", icon: "https://cdn-icons-png.flaticon.com/512/2436/2436633.png" },
-        { name: "Speaking", icon: "https://cdn-icons-png.flaticon.com/512/3050/3050525.png" }
-        // أضف المزيد حسب الأعمدة في الشيت
-    ];
+        // خريطة أسماء الأنشطة واللوجوهات المقترحة (يمكنك تغيير الروابط لصورك الفعلية)
+        const activityLogos = {
+            'Golden Ear': 'https://cdn-icons-png.flaticon.com/512/3233/3233004.png',
+            'Label': 'https://cdn-icons-png.flaticon.com/512/1043/1043431.png',
+            'Seeds': 'https://cdn-icons-png.flaticon.com/512/3133/3133930.png',
+            'Alike': 'https://cdn-icons-png.flaticon.com/512/2910/2910795.png',
+            'Grammar': 'https://cdn-icons-png.flaticon.com/512/3534/3534033.png',
+            'Vivid': 'https://cdn-icons-png.flaticon.com/512/4144/4144434.png',
+            'Xbox': 'https://cdn-icons-png.flaticon.com/512/588/588298.png'
+        };
 
-    async function loadData() {
-        try {
-            const res = await fetch(GVIZ_URL);
-            const csvText = await res.text();
-            allStudentsData = parseCSV(csvText);
-            renderRanksTable(allStudentsData);
-        } catch (e) {
-            document.getElementById('ranks-body').innerHTML = '<tr><td colspan="4" class="p-10 text-center text-red-500">حدث خطأ في سحب البيانات. تأكد من Publish to web.</td></tr>';
-        }
-    }
+        async function fetchRanks() {
+            try {
+                const response = await fetch(SHEET_URL);
+                const text = await response.text();
+                const json = JSON.parse(text.substr(47).slice(0, -2));
+                const rows = json.table.rows;
 
-    function parseCSV(text) {
-        const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
-        return lines.slice(1).map(line => {
-            const cells = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            return cells.map(c => c.replace(/^"|"$/g, '').trim());
-        });
-    }
+                // تحويل الصفوف إلى كائنات بيانات سهلة الاستخدام
+                studentsData = rows.map((row, index) => {
+                    const c = row.c;
+                    return {
+                        id: index,
+                        name: c[0]?.v || '',
+                        passcode: c[1]?.v || '',
+                        masterTokens: c[2]?.v || 0,
+                        masterStars: c[3]?.v || 0,
+                        masterRank: c[4]?.v || '---',
+                        masterTitle: c[5]?.v || 'Junior',
+                        photo: c[6]?.v || `https://ui-avatars.com/api/?name=${c[0]?.v}&background=161b22&color=f1c40f&size=256`,
+                        
+                        // رانكات الموسم والإكس بوكس
+                        seasonRank: c[15]?.v || '---',
+                        seasonTitle: c[16]?.v || '',
+                        xboxRank: c[28]?.v || '---',
+                        xboxLevel: c[29]?.v || 'Lv. 1',
+                        
+                        // سجل الإنجازات (لأخذ القيم وتحديد ما إذا كان سيظهر اللوجو)
+                        achievements: [
+                            { name: 'Golden Ear', val: (c[7]?.v || 0) + (c[17]?.v || 0) },
+                            { name: 'Label', val: (c[8]?.v || 0) + (c[18]?.v || 0) },
+                            { name: 'Seeds', val: (c[9]?.v || 0) + (c[19]?.v || 0) },
+                            { name: 'Alike', val: (c[10]?.v || 0) + (c[20]?.v || 0) },
+                            { name: 'Grammar', val: (c[11]?.v || 0) + (c[21]?.v || 0) },
+                            { name: 'Vivid', val: (c[12]?.v || 0) + (c[22]?.v || 0) }
+                        ]
+                    };
+                }).filter(s => s.name && s.name !== 'Name'); // استثناء العنوان
 
-    function renderRanksTable(data) {
-        const body = document.getElementById('ranks-body');
-        body.innerHTML = '';
-        data.forEach((row, index) => {
-            // A:Name[0], C:Tokens[2], D:Stars[3], E:Rank[4]
-            const tr = document.createElement('tr');
-            tr.className = 'rank-row';
-            tr.onclick = () => openProfile(index);
-            tr.innerHTML = `
-                <td class="p-5 font-black text-[#f1c40f]">#${row[4] || (index+1)}</td>
-                <td class="p-5 font-bold text-white text-lg">${row[0]}</td>
-                <td class="p-5">${row[2] || 0}</td>
-                <td class="p-5 text-yellow-400 font-bold">${row[3] || 0} ⭐</td>
-            `;
-            body.appendChild(tr);
-        });
-    }
-
-    function openProfile(index) {
-        const student = allStudentsData[index];
-        if (!student) return;
-
-        // تعبئة البيانات الأساسية
-        document.getElementById('p-name').innerText = student[0]; // الاسم (A)
-        document.getElementById('p-tokens').innerText = student[2]; // توكنز (C)
-        document.getElementById('p-stars').innerText = student[3]; // نجوم (D)
-        document.getElementById('p-rank-master').innerText = '#' + (student[4] || '-'); // رانك (E)
-        
-        // الصورة (G) - عمود G هو الفهرس 6
-        const avatarImg = student[6] || `https://ui-avatars.com/api/?name=${encodeURIComponent(student[0])}&background=random&color=fff&size=512`;
-        document.getElementById('p-avatar').src = avatarImg;
-        
-        // اللقب (F) - عمود F هو الفهرس 5
-        document.getElementById('p-tag').innerText = student[5] || 'ELITE PLAYER';
-
-        // رانك السيزون والاكس بوكس (سأفترض وجودهما في أعمدة لاحقة أو نتركهم كـ #1 مؤقتاً)
-        // إذا كانت الأعمدة متوفرة، قم بتغيير الفهرس هنا:
-        document.getElementById('p-rank-xbox').innerText = '#' + (student[7] || '1'); 
-        document.getElementById('p-rank-season').innerText = '#' + (student[8] || '1');
-
-        // توليد الإنجازات بناءً على الشرط (القيمة > 30)
-        // لنفترض أن قيم الأنشطة تبدأ من العمود 9 (فهرس 8)
-        const grid = document.getElementById('achievement-grid');
-        grid.innerHTML = '';
-        
-        // توليد 20 مربع
-        for (let i = 0; i < 20; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'empty-slot';
-            
-            // فحص إذا كان لهذا المربع نشاط مقابل في الشيت وقيمته > 30
-            // هنا نربط i بالأنشطة المتاحة في مصفوفة activities
-            if (activities[i]) {
-                const activityValue = parseInt(student[8 + i]) || 0; 
-                if (activityValue >= 30) {
-                    slot.innerHTML = `<img src="${activities[i].icon}" class="achievement-icon" title="${activities[i].name}: ${activityValue} Tokens">`;
-                    slot.style.borderColor = '#f1c40f';
-                    slot.style.background = 'rgba(241, 196, 15, 0.1)';
-                } else {
-                    slot.innerHTML = `<span class="text-[8px] text-gray-700">${activityValue}/30</span>`;
-                }
-            } else {
-                slot.innerHTML = `<span class="text-gray-800 text-xs">+</span>`;
+                renderRanksTable(studentsData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('ranksBody').innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500">حدث خطأ في الاتصال بالبيانات</td></tr>`;
             }
-            grid.appendChild(slot);
         }
 
-        document.getElementById('profile-modal').style.display = 'flex';
-    }
+        function renderRanksTable(data) {
+            const body = document.getElementById('ranksBody');
+            body.innerHTML = data.map(student => `
+                <tr onclick="openProfile(${student.id})" class="border-b border-[#30363d] transition-colors">
+                    <td class="p-5 flex items-center gap-4">
+                        <img src="${student.photo}" class="w-12 h-12 rounded-full border-2 border-[#f1c40f] object-cover">
+                        <div>
+                            <div class="font-bold text-white">${student.name}</div>
+                            <div class="text-xs text-gray-400">${student.masterTitle}</div>
+                        </div>
+                    </td>
+                    <td class="p-5 font-black text-xl">#${student.masterRank}</td>
+                    <td class="p-5 text-gray-300 font-bold">${student.seasonRank}</td>
+                    <td class="p-5 text-gray-300 font-bold">${student.xboxRank}</td>
+                    <td class="p-5 text-center">
+                        <button class="bg-[#30363d] hover:bg-[#f1c40f] hover:text-black p-2 rounded-lg transition-all">
+                            عرض البروفايل
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
 
-    function closeProfile(event) {
-        document.getElementById('profile-modal').style.display = 'none';
-    }
+        function openProfile(id) {
+            const student = studentsData.find(s => s.id === id);
+            if (!student) return;
 
-    window.onload = loadData;
-</script>
+            const modal = document.getElementById('profileModal');
+            const content = document.getElementById('modalContent');
+
+            // منطق الإنجازات: فلترة الأنشطة التي تزيد عن 30 توكن
+            const activeAchievements = student.achievements.filter(a => a.val > 30);
+            
+            // بناء شبكة المربعات (20 مربع)
+            let achievementHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const ach = activeAchievements[i];
+                if (ach) {
+                    achievementHTML += `
+                        <div class="slot border-solid border-[#f1c40f]/30 bg-[#1c2128]">
+                            <img src="${activityLogos[ach.name] || 'https://cdn-icons-png.flaticon.com/512/1041/1041914.png'}" title="${ach.name}: ${ach.val} Tokens">
+                            <div class="absolute bottom-0 inset-x-0 bg-[#f1c40f] text-black text-[8px] font-bold text-center">ACTIVE</div>
+                        </div>
+                    `;
+                } else {
+                    achievementHTML += `
+                        <div class="slot opacity-20">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        </div>
+                    `;
+                }
+            }
+
+            content.innerHTML = `
+                <div class="profile-card rounded-3xl p-6 md:p-8 animate-in fade-in zoom-in duration-300">
+                    <div class="flex flex-col md:flex-row items-center gap-8 mb-8">
+                        <div class="relative">
+                            <div class="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-[#f1c40f] overflow-hidden shadow-2xl">
+                                <img src="${student.photo}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="absolute -bottom-2 right-1/2 translate-x-1/2 bg-[#f1c40f] text-black px-4 py-1 rounded-full text-xs font-black whitespace-nowrap">
+                                ${student.masterTitle.toUpperCase()}
+                            </div>
+                        </div>
+
+                        <div class="flex-1 text-center md:text-right">
+                            <h2 class="text-3xl md:text-4xl font-black gold-gradient-text mb-1">${student.name}</h2>
+                            <p class="text-gray-400 mb-6">برنامج SUPERSTARS - كود الطالب: ${student.passcode}</p>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="stat-box p-3 rounded-xl flex items-center justify-between">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="w-8 h-8">
+                                    <div class="text-left">
+                                        <span class="block text-xl font-bold text-white">${student.masterStars.toLocaleString()}</span>
+                                        <span class="text-[10px] text-gray-400">النجوم</span>
+                                    </div>
+                                </div>
+                                <div class="stat-box p-3 rounded-xl flex items-center justify-between">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/2164/2164102.png" class="w-8 h-8">
+                                    <div class="text-left">
+                                        <span class="block text-xl font-bold text-white">${student.masterTokens.toLocaleString()}</span>
+                                        <span class="text-[10px] text-gray-400">التوكنز</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 mb-8 text-center">
+                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d]">
+                            <span class="text-[10px] text-gray-500 block">Master Rank</span>
+                            <span class="text-xl font-black text-white">#${student.masterRank}</span>
+                        </div>
+                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d]">
+                            <span class="text-[10px] text-gray-500 block">Season Rank</span>
+                            <span class="text-xl font-black text-[#f1c40f]">#${student.seasonRank}</span>
+                        </div>
+                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d]">
+                            <span class="text-[10px] text-gray-500 block">Xbox Level</span>
+                            <span class="text-xl font-black text-white">${student.xboxLevel}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h3 class="text-sm font-bold mb-4 flex items-center gap-2">
+                            <span class="w-1.5 h-4 bg-[#f1c40f] rounded-full"></span>
+                            الإنجازات المفتوحة (Tokens > 30)
+                        </h3>
+                        <div class="achievement-grid">
+                            ${achievementHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // منع السكرول خلف المودال
+        }
+
+        function closeProfile() {
+            const modal = document.getElementById('profileModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        // إغلاق النافذة عند الضغط خارجها
+        window.onclick = function(event) {
+            const modal = document.getElementById('profileModal');
+            if (event.target == modal) {
+                closeProfile();
+            }
+        }
+
+        // بدء تحميل البيانات
+        window.onload = fetchRanks;
+    </script>
 </body>
 </html>

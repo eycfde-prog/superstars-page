@@ -17,9 +17,7 @@
         .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 12px; }
         .slot { aspect-ratio: 1/1; background: #161b22; border: 2px dashed #30363d; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .slot img { width: 80%; height: 80%; object-fit: contain; }
-        .rank-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
         
-        /* Modal Animation */
         #profileModal { transition: opacity 0.3s ease, visibility 0.3s ease; }
         #profileModal.hidden { opacity: 0; visibility: hidden; display: none; }
         #profileModal.flex { opacity: 1; visibility: visible; }
@@ -28,6 +26,7 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         tr:hover { background-color: rgba(241, 196, 15, 0.05); cursor: pointer; }
+        .student-img { object-fit: cover; background-color: #1c2128; }
     </style>
 </head>
 <body class="p-4">
@@ -38,7 +37,7 @@
         <p class="text-gray-400">انقر على اسم الطالب لعرض ملفه الشخصي وإنجازاته</p>
     </header>
 
-    <!-- Ranks Table Section -->
+    <!-- Table Section -->
     <main class="max-w-6xl mx-auto mb-20">
         <div class="overflow-x-auto bg-[#161b22] rounded-3xl border border-[#30363d] shadow-2xl">
             <table class="w-full text-right border-collapse">
@@ -52,51 +51,51 @@
                     </tr>
                 </thead>
                 <tbody id="ranksBody">
-                    <!-- البيانات سيتم تحميلها هنا -->
-                    <tr>
-                        <td colspan="5" class="p-20 text-center">
-                            <div class="flex flex-col items-center gap-4">
-                                <div class="loader"></div>
-                                <p>جاري سحب البيانات من السحابة...</p>
-                            </div>
-                        </td>
-                    </tr>
+                    <tr><td colspan="5" class="p-20 text-center"><div class="flex flex-col items-center gap-4"><div class="loader"></div><p>جاري سحب البيانات المحدثة...</p></div></td></tr>
                 </tbody>
             </table>
         </div>
     </main>
 
-    <!-- Profile Modal (The Popup) -->
-    <div id="profileModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+    <!-- Popup Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
         <div class="max-w-3xl w-full relative">
-            <!-- Close Button -->
-            <button onclick="closeProfile()" class="absolute -top-12 left-0 text-white hover:text-[#f1c40f] flex items-center gap-2 font-bold transition-all">
-                <span>إغلاق النافذة</span>
+            <button onclick="closeProfile()" class="absolute -top-12 left-0 text-white hover:text-[#f1c40f] flex items-center gap-2 font-bold">
+                <span>إغلاق</span>
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-
-            <div id="modalContent">
-                <!-- محتوى البروفايل سيتم حقنه هنا -->
-            </div>
+            <div id="modalContent"></div>
         </div>
     </div>
 
     <script>
-        // رابط الشيت بصيغة JSON
         const SHEET_ID = '1qe_Kn2Rs6SVCHyacOGFXyFwUtQ5-2ElFynxm7hNOq7k';
         const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
 
         let studentsData = [];
 
-        // خريطة أسماء الأنشطة واللوجوهات المقترحة (يمكنك تغيير الروابط لصورك الفعلية)
+        // دالة سحرية لإصلاح روابط الصور (خاصة جوجل درايف)
+        function fixImageUrl(url) {
+            if (!url) return 'https://ui-avatars.com/api/?background=333&color=fff&name=User';
+            let fixedUrl = url.trim();
+            
+            // تحويل روابط جوجل درايف للمعاينة إلى روابط مباشرة
+            if (fixedUrl.includes('drive.google.com')) {
+                const fileId = fixedUrl.match(/[-\w]{25,}/);
+                if (fileId) {
+                    return `https://lh3.googleusercontent.com/u/0/d/${fileId[0]}`;
+                }
+            }
+            return fixedUrl;
+        }
+
         const activityLogos = {
             'Golden Ear': 'https://cdn-icons-png.flaticon.com/512/3233/3233004.png',
             'Label': 'https://cdn-icons-png.flaticon.com/512/1043/1043431.png',
             'Seeds': 'https://cdn-icons-png.flaticon.com/512/3133/3133930.png',
             'Alike': 'https://cdn-icons-png.flaticon.com/512/2910/2910795.png',
             'Grammar': 'https://cdn-icons-png.flaticon.com/512/3534/3534033.png',
-            'Vivid': 'https://cdn-icons-png.flaticon.com/512/4144/4144434.png',
-            'Xbox': 'https://cdn-icons-png.flaticon.com/512/588/588298.png'
+            'Vivid': 'https://cdn-icons-png.flaticon.com/512/4144/4144434.png'
         };
 
         async function fetchRanks() {
@@ -106,7 +105,6 @@
                 const json = JSON.parse(text.substr(47).slice(0, -2));
                 const rows = json.table.rows;
 
-                // تحويل الصفوف إلى كائنات بيانات سهلة الاستخدام
                 studentsData = rows.map((row, index) => {
                     const c = row.c;
                     return {
@@ -115,17 +113,12 @@
                         passcode: c[1]?.v || '',
                         masterTokens: c[2]?.v || 0,
                         masterStars: c[3]?.v || 0,
-                        masterRank: c[4]?.v || '---',
-                        masterTitle: c[5]?.v || 'Junior',
-                        photo: c[6]?.v || `https://ui-avatars.com/api/?name=${c[0]?.v}&background=161b22&color=f1c40f&size=256`,
-                        
-                        // رانكات الموسم والإكس بوكس
-                        seasonRank: c[15]?.v || '---',
-                        seasonTitle: c[16]?.v || '',
-                        xboxRank: c[28]?.v || '---',
+                        masterRank: c[4]?.v || '-',
+                        masterTitle: c[5]?.v || 'Member',
+                        photo: fixImageUrl(c[6]?.v), // هنا نستخدم الفلتر الجديد للصور
+                        seasonRank: c[15]?.v || '-',
+                        xboxRank: c[28]?.v || '-',
                         xboxLevel: c[29]?.v || 'Lv. 1',
-                        
-                        // سجل الإنجازات (لأخذ القيم وتحديد ما إذا كان سيظهر اللوجو)
                         achievements: [
                             { name: 'Golden Ear', val: (c[7]?.v || 0) + (c[17]?.v || 0) },
                             { name: 'Label', val: (c[8]?.v || 0) + (c[18]?.v || 0) },
@@ -135,33 +128,31 @@
                             { name: 'Vivid', val: (c[12]?.v || 0) + (c[22]?.v || 0) }
                         ]
                     };
-                }).filter(s => s.name && s.name !== 'Name'); // استثناء العنوان
+                }).filter(s => s.name && s.name !== 'Name');
 
                 renderRanksTable(studentsData);
             } catch (error) {
-                console.error('Error fetching data:', error);
-                document.getElementById('ranksBody').innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500">حدث خطأ في الاتصال بالبيانات</td></tr>`;
+                console.error('Fetch Error:', error);
+                document.getElementById('ranksBody').innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500">تأكد من أن الشيت "Anyone with the link can view"</td></tr>`;
             }
         }
 
         function renderRanksTable(data) {
             const body = document.getElementById('ranksBody');
             body.innerHTML = data.map(student => `
-                <tr onclick="openProfile(${student.id})" class="border-b border-[#30363d] transition-colors">
+                <tr onclick="openProfile(${student.id})" class="border-b border-[#30363d]">
                     <td class="p-5 flex items-center gap-4">
-                        <img src="${student.photo}" class="w-12 h-12 rounded-full border-2 border-[#f1c40f] object-cover">
+                        <img src="${student.photo}" class="w-12 h-12 rounded-full border border-[#f1c40f] student-img" onerror="this.src='https://ui-avatars.com/api/?name=${student.name}'">
                         <div>
                             <div class="font-bold text-white">${student.name}</div>
                             <div class="text-xs text-gray-400">${student.masterTitle}</div>
                         </div>
                     </td>
-                    <td class="p-5 font-black text-xl">#${student.masterRank}</td>
-                    <td class="p-5 text-gray-300 font-bold">${student.seasonRank}</td>
-                    <td class="p-5 text-gray-300 font-bold">${student.xboxRank}</td>
+                    <td class="p-5 font-black text-xl text-white">#${student.masterRank}</td>
+                    <td class="p-5 text-gray-300">#${student.seasonRank}</td>
+                    <td class="p-5 text-gray-300">#${student.xboxRank}</td>
                     <td class="p-5 text-center">
-                        <button class="bg-[#30363d] hover:bg-[#f1c40f] hover:text-black p-2 rounded-lg transition-all">
-                            عرض البروفايل
-                        </button>
+                        <button class="bg-[#30363d] px-4 py-2 rounded-lg text-sm hover:bg-[#f1c40f] hover:text-black transition-all">الملف</button>
                     </td>
                 </tr>
             `).join('');
@@ -171,115 +162,67 @@
             const student = studentsData.find(s => s.id === id);
             if (!student) return;
 
-            const modal = document.getElementById('profileModal');
-            const content = document.getElementById('modalContent');
-
-            // منطق الإنجازات: فلترة الأنشطة التي تزيد عن 30 توكن
-            const activeAchievements = student.achievements.filter(a => a.val > 30);
-            
-            // بناء شبكة المربعات (20 مربع)
+            const activeAch = student.achievements.filter(a => a.val > 30);
             let achievementHTML = '';
             for (let i = 0; i < 20; i++) {
-                const ach = activeAchievements[i];
-                if (ach) {
-                    achievementHTML += `
-                        <div class="slot border-solid border-[#f1c40f]/30 bg-[#1c2128]">
-                            <img src="${activityLogos[ach.name] || 'https://cdn-icons-png.flaticon.com/512/1041/1041914.png'}" title="${ach.name}: ${ach.val} Tokens">
-                            <div class="absolute bottom-0 inset-x-0 bg-[#f1c40f] text-black text-[8px] font-bold text-center">ACTIVE</div>
-                        </div>
-                    `;
-                } else {
-                    achievementHTML += `
-                        <div class="slot opacity-20">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        </div>
-                    `;
-                }
+                const ach = activeAch[i];
+                achievementHTML += ach ? `
+                    <div class="slot border-solid border-[#f1c40f]/30 bg-[#1c2128]">
+                        <img src="${activityLogos[ach.name]}" title="${ach.name}: ${ach.val}">
+                    </div>` : `<div class="slot opacity-10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg></div>`;
             }
 
-            content.innerHTML = `
-                <div class="profile-card rounded-3xl p-6 md:p-8 animate-in fade-in zoom-in duration-300">
-                    <div class="flex flex-col md:flex-row items-center gap-8 mb-8">
-                        <div class="relative">
-                            <div class="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-[#f1c40f] overflow-hidden shadow-2xl">
-                                <img src="${student.photo}" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute -bottom-2 right-1/2 translate-x-1/2 bg-[#f1c40f] text-black px-4 py-1 rounded-full text-xs font-black whitespace-nowrap">
-                                ${student.masterTitle.toUpperCase()}
-                            </div>
+            document.getElementById('modalContent').innerHTML = `
+                <div class="profile-card rounded-3xl p-6 md:p-8 animate-in fade-in duration-300">
+                    <div class="flex flex-col md:flex-row items-center gap-8 mb-8 text-center md:text-right">
+                        <div class="w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-[#f1c40f] overflow-hidden shadow-2xl bg-black">
+                            <img src="${student.photo}" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=${student.name}&size=256'">
                         </div>
-
-                        <div class="flex-1 text-center md:text-right">
-                            <h2 class="text-3xl md:text-4xl font-black gold-gradient-text mb-1">${student.name}</h2>
-                            <p class="text-gray-400 mb-6">برنامج SUPERSTARS - كود الطالب: ${student.passcode}</p>
-                            
+                        <div class="flex-1">
+                            <h2 class="text-3xl md:text-4xl font-black gold-gradient-text mb-2">${student.name}</h2>
+                            <p class="text-gray-400 mb-6 font-bold">PASSCODE: ${student.passcode}</p>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="stat-box p-3 rounded-xl flex items-center justify-between">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="w-8 h-8">
-                                    <div class="text-left">
-                                        <span class="block text-xl font-bold text-white">${student.masterStars.toLocaleString()}</span>
-                                        <span class="text-[10px] text-gray-400">النجوم</span>
-                                    </div>
+                                    <span class="text-white font-bold text-xl">${student.masterStars}</span>
+                                    <span class="text-[10px] text-gray-400 uppercase">Stars</span>
                                 </div>
                                 <div class="stat-box p-3 rounded-xl flex items-center justify-between">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2164/2164102.png" class="w-8 h-8">
-                                    <div class="text-left">
-                                        <span class="block text-xl font-bold text-white">${student.masterTokens.toLocaleString()}</span>
-                                        <span class="text-[10px] text-gray-400">التوكنز</span>
-                                    </div>
+                                    <span class="text-white font-bold text-xl">${student.masterTokens}</span>
+                                    <span class="text-[10px] text-gray-400 uppercase">Tokens</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-3 gap-4 mb-8 text-center">
-                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d]">
-                            <span class="text-[10px] text-gray-500 block">Master Rank</span>
-                            <span class="text-xl font-black text-white">#${student.masterRank}</span>
+                    <div class="grid grid-cols-3 gap-4 mb-8">
+                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d] text-center">
+                            <div class="text-[10px] text-gray-500 mb-1">MASTER</div>
+                            <div class="text-xl font-black text-white">#${student.masterRank}</div>
                         </div>
-                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d]">
-                            <span class="text-[10px] text-gray-500 block">Season Rank</span>
-                            <span class="text-xl font-black text-[#f1c40f]">#${student.seasonRank}</span>
+                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d] text-center">
+                            <div class="text-[10px] text-gray-500 mb-1">SEASON</div>
+                            <div class="text-xl font-black text-[#f1c40f]">#${student.seasonRank}</div>
                         </div>
-                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d]">
-                            <span class="text-[10px] text-gray-500 block">Xbox Level</span>
-                            <span class="text-xl font-black text-white">${student.xboxLevel}</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h3 class="text-sm font-bold mb-4 flex items-center gap-2">
-                            <span class="w-1.5 h-4 bg-[#f1c40f] rounded-full"></span>
-                            الإنجازات المفتوحة (Tokens > 30)
-                        </h3>
-                        <div class="achievement-grid">
-                            ${achievementHTML}
+                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d] text-center">
+                            <div class="text-[10px] text-gray-500 mb-1">XBOX</div>
+                            <div class="text-xl font-black text-white">${student.xboxLevel}</div>
                         </div>
                     </div>
+                    <h3 class="text-sm font-bold mb-4">الأوسمة المحققة</h3>
+                    <div class="achievement-grid">${achievementHTML}</div>
                 </div>
             `;
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden'; // منع السكرول خلف المودال
+            const modal = document.getElementById('profileModal');
+            modal.classList.replace('hidden', 'flex');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeProfile() {
             const modal = document.getElementById('profileModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            modal.classList.replace('flex', 'hidden');
             document.body.style.overflow = 'auto';
         }
 
-        // إغلاق النافذة عند الضغط خارجها
-        window.onclick = function(event) {
-            const modal = document.getElementById('profileModal');
-            if (event.target == modal) {
-                closeProfile();
-            }
-        }
-
-        // بدء تحميل البيانات
+        window.onclick = e => { if (e.target.id === 'profileModal') closeProfile(); }
         window.onload = fetchRanks;
     </script>
 </body>

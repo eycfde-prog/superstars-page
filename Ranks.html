@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Ranks | لوحة الشرف</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <title>EYC Ranks | Honor Roll</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #020617;
@@ -24,6 +24,7 @@
             color: var(--text-silver);
             min-height: 100vh;
             padding-bottom: 50px;
+            direction: ltr; /* اتجاه الصفحة من اليسار لليمين */
         }
 
         header {
@@ -57,7 +58,6 @@
             cursor: pointer;
             border-radius: 8px;
             font-weight: bold;
-            font-family: 'Cairo', sans-serif;
             transition: var(--transition);
         }
 
@@ -94,14 +94,16 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            text-align: right;
+            text-align: left; /* المحاذاة لليسار */
         }
 
         th {
             background: rgba(212, 175, 55, 0.1);
             color: var(--accent-gold);
             padding: 20px;
-            font-size: 0.9rem;
+            font-family: 'Playfair Display', serif;
+            text-transform: uppercase;
+            font-size: 0.85rem;
             letter-spacing: 1px;
             border-bottom: 2px solid var(--glass-border);
         }
@@ -133,15 +135,6 @@
         }
 
         footer { text-align: center; margin-top: 50px; opacity: 0.5; font-size: 0.8rem; }
-        
-        .title-badge {
-            background: rgba(212, 175, 55, 0.15);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            color: var(--accent-gold);
-            border: 1px solid var(--glass-border);
-        }
     </style>
 </head>
 <body>
@@ -153,9 +146,9 @@
 
 <div class="container">
     <div class="rank-nav">
-        <button class="nav-btn active" onclick="showRank('master', this)">EYC Master Sheet</button>
+        <button class="nav-btn active" onclick="showRank('master', this)">Master Sheet</button>
         <button class="nav-btn" onclick="showRank('xbox', this)">XBox Rank</button>
-        <button class="nav-btn" onclick="showRank('season', this)">Tokens Race (Season)</button>
+        <button class="nav-btn" onclick="showRank('season', this)">Season Rank</button>
     </div>
 
     <!-- Master Section -->
@@ -164,34 +157,34 @@
             <table>
                 <thead>
                     <tr>
-                        <th>المركز</th>
-                        <th>اسم الطالب</th>
-                        <th>اللقب</th>
-                        <th>التوكينز</th>
-                        <th>النجوم ⭐</th>
+                        <th>Rank</th>
+                        <th>Student Name</th>
+                        <th>Title</th>
+                        <th>Tokens</th>
+                        <th>Stars ⭐</th>
                     </tr>
                 </thead>
                 <tbody id="master-body">
-                    <tr><td colspan="5" class="loader">جاري سحب بيانات الأبطال...</td></tr>
+                    <tr><td colspan="5" class="loader">Loading Master Data...</td></tr>
                 </tbody>
             </table>
         </div>
     </section>
 
-    <!-- Xbox Section -->
+    <!-- XBox Section -->
     <section id="xbox" class="rank-section">
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>المركز</th>
-                        <th>اسم الطالب</th>
-                        <th>اللقب</th>
-                        <th>التوكينز</th>
+                        <th>Rank</th>
+                        <th>Student Name</th>
+                        <th>Title</th>
+                        <th>Tokens</th>
                     </tr>
                 </thead>
                 <tbody id="xbox-body">
-                    <tr><td colspan="4" class="loader">جاري سحب بيانات الأبطال...</td></tr>
+                    <tr><td colspan="4" class="loader">Loading XBox Data...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -203,14 +196,14 @@
             <table>
                 <thead>
                     <tr>
-                        <th>المركز</th>
-                        <th>اسم الطالب</th>
-                        <th>اللقب</th>
-                        <th>التوكينز</th>
+                        <th>Rank</th>
+                        <th>Student Name</th>
+                        <th>Title</th>
+                        <th>Tokens</th>
                     </tr>
                 </thead>
                 <tbody id="season-body">
-                    <tr><td colspan="4" class="loader">جاري سحب بيانات الأبطال...</td></tr>
+                    <tr><td colspan="4" class="loader">Loading Season Data...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -223,19 +216,87 @@
 
 <script>
     const SHEET_ID = '1qe_Kn2Rs6SVCHyacOGFXyFwUtQ5-2ElFynxm7hNOq7k';
-    const TAB_NAME = 'Sheet1'; // الصفحة المحددة في الشيت
-    
-    async function fetchSheet() {
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(TAB_NAME)}`;
+    const GIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+
+    async function loadData() {
         try {
-            const response = await fetch(url);
+            const response = await fetch(GIZ_URL);
             const text = await response.text();
-            const jsonData = JSON.parse(text.substring(47).slice(0, -2));
-            return jsonData.table.rows;
+            const json = JSON.parse(text.substring(47).slice(0, -2));
+            const rows = json.table.rows;
+
+            // تصفية الصفوف الفارغة (نتأكد أن خانة الاسم ليست فارغة)
+            const validRows = rows.filter(r => r.c[0] && r.c[0].v);
+
+            renderMaster(validRows);
+            renderXbox(validRows);
+            renderSeason(validRows);
+
         } catch (error) {
             console.error("Error:", error);
-            return null;
+            const msg = "<tr><td colspan='5' class='loader'>Error loading data. Check Sheet access.</td></tr>";
+            document.getElementById('master-body').innerHTML = msg;
+            document.getElementById('xbox-body').innerHTML = msg;
+            document.getElementById('season-body').innerHTML = msg;
         }
+    }
+
+    // 1. Master Sheet: Name(A=0), Tokens(C=2), Stars(D=3), Rank(E=4), Title(F=5)
+    function renderMaster(rows) {
+        const body = document.getElementById('master-body');
+        body.innerHTML = rows.map(row => {
+            const name = row.c[0]?.v || '---';
+            const tokens = row.c[2]?.v || 0;
+            const stars = row.c[3]?.v || 0;
+            const rank = row.c[4]?.v || '-';
+            const title = row.c[5]?.v || 'Member';
+            return `
+                <tr>
+                    <td class="rank-number">#${rank}</td>
+                    <td style="font-weight:bold;">${name}</td>
+                    <td style="color:#94a3b8; font-style:italic;">${title}</td>
+                    <td>${tokens}</td>
+                    <td style="color:#ffd700; font-weight:bold;">${stars}</td>
+                </tr>`;
+        }).join('');
+    }
+
+    // 2. Xbox Rank: Name(AB=27), Tokens(AC=28), Rank(AD=29), Title(AE=30)
+    function renderXbox(rows) {
+        const body = document.getElementById('xbox-body');
+        // ملاحظة: الحروف في جوجل شيت تبدأ من 0 (A=0, B=1...)
+        // AB هو العمود رقم 27
+        body.innerHTML = rows.map(row => {
+            const name = row.c[27]?.v || '---';
+            const tokens = row.c[28]?.v || 0;
+            const rank = row.c[29]?.v || '-';
+            const title = row.c[30]?.v || '-';
+            return `
+                <tr>
+                    <td class="rank-number">#${rank}</td>
+                    <td style="font-weight:bold;">${name}</td>
+                    <td style="color:#94a3b8;">${title}</td>
+                    <td>${tokens}</td>
+                </tr>`;
+        }).join('');
+    }
+
+    // 3. Season Rank: Name(N=13), Tokens(O=14), Rank(P=15), Title(Q=16)
+    function renderSeason(rows) {
+        const body = document.getElementById('season-body');
+        body.innerHTML = rows.map(row => {
+            const name = row.c[13]?.v || '---';
+            const tokens = row.c[14]?.v || 0;
+            const rank = row.c[15]?.v || '-';
+            const title = row.c[16]?.v || '-';
+            return `
+                <tr>
+                    <td class="rank-number">#${rank}</td>
+                    <td style="font-weight:bold;">${name}</td>
+                    <td style="color:#94a3b8;">${title}</td>
+                    <td>${tokens}</td>
+                </tr>`;
+        }).join('');
     }
 
     function showRank(id, btn) {
@@ -243,73 +304,6 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
-    }
-
-    async function loadData() {
-        const rows = await fetchSheet();
-        if (!rows) return;
-
-        // نبدأ من الصف التالت (Index 2 في البرمجة)
-        const dataRows = rows.slice(2);
-
-        // 1. معالجة Master Sheet
-        const masterBody = document.getElementById('master-body');
-        masterBody.innerHTML = '';
-        dataRows.forEach(row => {
-            const name = row.c[0]?.v; // A
-            if (!name) return; // تخطي الصفوف الفارغة
-            const tokens = row.c[2]?.v || 0; // C
-            const stars = row.c[3]?.v || 0; // D
-            const rank = row.c[4]?.v || '-'; // E
-            const title = row.c[5]?.v || 'Member'; // F
-            
-            masterBody.innerHTML += `
-                <tr>
-                    <td class="rank-number">#${rank}</td>
-                    <td style="font-weight:bold;">${name}</td>
-                    <td><span class="title-badge">${title}</span></td>
-                    <td>${tokens}</td>
-                    <td style="color:#ffd700; font-weight:bold;">${stars}</td>
-                </tr>`;
-        });
-
-        // 2. معالجة XBox Rank
-        const xboxBody = document.getElementById('xbox-body');
-        xboxBody.innerHTML = '';
-        dataRows.forEach(row => {
-            const name = row.c[27]?.v; // AB (Index 27)
-            if (!name) return;
-            const tokens = row.c[28]?.v || 0; // AC (Index 28)
-            const rank = row.c[29]?.v || '-'; // AD (Index 29)
-            const title = row.c[30]?.v || '-'; // AE (Index 30)
-            
-            xboxBody.innerHTML += `
-                <tr>
-                    <td class="rank-number">#${rank}</td>
-                    <td style="font-weight:bold;">${name}</td>
-                    <td><span class="title-badge">${title}</span></td>
-                    <td>${tokens}</td>
-                </tr>`;
-        });
-
-        // 3. معالجة Season Rank
-        const seasonBody = document.getElementById('season-body');
-        seasonBody.innerHTML = '';
-        dataRows.forEach(row => {
-            const name = row.c[13]?.v; // N (Index 13)
-            if (!name) return;
-            const tokens = row.c[14]?.v || 0; // O (Index 14)
-            const rank = row.c[15]?.v || '-'; // P (Index 15)
-            const title = row.c[16]?.v || '-'; // Q (Index 16)
-            
-            seasonBody.innerHTML += `
-                <tr>
-                    <td class="rank-number">#${rank}</td>
-                    <td style="font-weight:bold;">${name}</td>
-                    <td><span class="title-badge">${title}</span></td>
-                    <td>${tokens}</td>
-                </tr>`;
-        });
     }
 
     window.onload = loadData;

@@ -88,6 +88,7 @@
             border: 1px solid var(--glass-border);
             overflow-x: auto;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            min-height: 200px;
         }
 
         table {
@@ -108,27 +109,27 @@
         }
 
         td {
-            padding: 15px 20px;
+            padding: 18px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 0.95rem;
-            vertical-align: middle;
         }
 
-        /* تنسيق صورة الطالب */
-        .student-profile {
+        tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+        /* تنسيق اسم الطالب مع الصورة */
+        .student-cell {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .student-avatar {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--accent-gold);
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
-            background-color: #1e293b;
+            background: #1e293b;
         }
 
         .rank-number {
@@ -166,14 +167,13 @@
         <button class="nav-btn" onclick="showRank('season', this)">Season Rank</button>
     </div>
 
-    <!-- Master Section -->
     <section id="master" class="rank-section active">
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
                         <th>Rank</th>
-                        <th>Student Profile</th>
+                        <th>Student Name</th>
                         <th>Title</th>
                         <th>Tokens</th>
                         <th>Stars ⭐</th>
@@ -186,14 +186,13 @@
         </div>
     </section>
 
-    <!-- XBox Section -->
     <section id="xbox" class="rank-section">
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
                         <th>Rank</th>
-                        <th>Student Profile</th>
+                        <th>Student Name</th>
                         <th>Title</th>
                         <th>Tokens</th>
                     </tr>
@@ -205,14 +204,13 @@
         </div>
     </section>
 
-    <!-- Season Section -->
     <section id="season" class="rank-section">
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
                         <th>Rank</th>
-                        <th>Student Profile</th>
+                        <th>Student Name</th>
                         <th>Title</th>
                         <th>Tokens</th>
                     </tr>
@@ -232,8 +230,8 @@
 <script>
     const SHEET_ID = '1qe_Kn2Rs6SVCHyacOGFXyFwUtQ5-2ElFynxm7hNOq7k';
     const GIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
-    
-    // صورة افتراضية في حال لم يرفع الطالب صورة
+
+    // صورة افتراضية في حال عدم وجود صورة للطالب
     const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=1e293b&color=d4af37&name=";
 
     async function loadData() {
@@ -253,38 +251,36 @@
             console.error("Error:", error);
             const msg = "<tr><td colspan='5' class='loader'>Error loading data. Check Sheet access.</td></tr>";
             document.getElementById('master-body').innerHTML = msg;
+            document.getElementById('xbox-body').innerHTML = msg;
+            document.getElementById('season-body').innerHTML = msg;
         }
     }
 
-    // دالة لاستخراج رابط الصورة أو إنشاء افتراضي
-    function getPhoto(url, name) {
-        if (!url || url === "" || url === "---") return DEFAULT_AVATAR + encodeURIComponent(name);
-        // تحويل روابط جوجل درايف لتكون قابلة للعرض المباشر
-        if (url.includes("drive.google.com")) {
-            return url.replace("/view?usp=drivesdk", "").replace("file/d/", "uc?export=view&id=");
-        }
-        return url;
+    // وظيفة مساعدة لعرض الاسم مع الصورة
+    function getStudentHtml(name, photoUrl) {
+        const finalPhoto = photoUrl && photoUrl !== "" ? photoUrl : (DEFAULT_AVATAR + name);
+        return `
+            <div class="student-cell">
+                <img src="${finalPhoto}" class="student-avatar" alt="${name}" onerror="this.src='${DEFAULT_AVATAR + name}'">
+                <span style="font-weight:bold;">${name}</span>
+            </div>
+        `;
     }
 
     function renderMaster(rows) {
         const body = document.getElementById('master-body');
         body.innerHTML = rows.map(row => {
             const name = row.c[0]?.v || '---';
-            const photo = getPhoto(row.c[6]?.v, name); // عمود G هو الـ Photo
+            const photoUrl = row.c[6]?.v || ''; // عمود G هو الـ Index 6
             const tokens = row.c[2]?.v || 0;
             const stars = row.c[3]?.v || 0;
             const rank = row.c[4]?.v || '-';
             const title = row.c[5]?.v || 'Member';
-
+            
             return `
                 <tr>
                     <td class="rank-number">#${rank}</td>
-                    <td>
-                        <div class="student-profile">
-                            <img src="${photo}" class="student-avatar" alt="profile" onerror="this.src='${DEFAULT_AVATAR+name}'">
-                            <span style="font-weight:bold;">${name}</span>
-                        </div>
-                    </td>
+                    <td>${getStudentHtml(name, photoUrl)}</td>
                     <td style="color:#94a3b8; font-style:italic;">${title}</td>
                     <td>${tokens}</td>
                     <td style="color:#ffd700; font-weight:bold;">${stars}</td>
@@ -296,24 +292,14 @@
         const body = document.getElementById('xbox-body');
         body.innerHTML = rows.map(row => {
             const name = row.c[27]?.v || '---';
-            // في قسم الاكس بوكس، لو الاسم مش موجود بنستخدم اسم الطالب الأساسي من عمود A
-            const photoName = name !== '---' ? name : row.c[0]?.v;
-            const photo = getPhoto(row.c[6]?.v, photoName); 
+            const photoUrl = row.c[6]?.v || ''; // نستخدم نفس الصورة من عمود G
             const tokens = row.c[28]?.v || 0;
             const rank = row.c[29]?.v || '-';
             const title = row.c[30]?.v || '-';
-            
-            if (name === '---') return ''; // إخفاء الصفوف غير المشتركة في اكس بوكس
-
             return `
                 <tr>
                     <td class="rank-number">#${rank}</td>
-                    <td>
-                        <div class="student-profile">
-                            <img src="${photo}" class="student-avatar" alt="profile">
-                            <span style="font-weight:bold;">${name}</span>
-                        </div>
-                    </td>
+                    <td>${getStudentHtml(name, photoUrl)}</td>
                     <td style="color:#94a3b8;">${title}</td>
                     <td>${tokens}</td>
                 </tr>`;
@@ -324,20 +310,14 @@
         const body = document.getElementById('season-body');
         body.innerHTML = rows.map(row => {
             const name = row.c[13]?.v || '---';
-            const photo = getPhoto(row.c[6]?.v, name);
+            const photoUrl = row.c[6]?.v || ''; // نستخدم نفس الصورة من عمود G
             const tokens = row.c[14]?.v || 0;
             const rank = row.c[15]?.v || '-';
             const title = row.c[16]?.v || '-';
-            
             return `
                 <tr>
                     <td class="rank-number">#${rank}</td>
-                    <td>
-                        <div class="student-profile">
-                            <img src="${photo}" class="student-avatar" alt="profile">
-                            <span style="font-weight:bold;">${name}</span>
-                        </div>
-                    </td>
+                    <td>${getStudentHtml(name, photoUrl)}</td>
                     <td style="color:#94a3b8;">${title}</td>
                     <td>${tokens}</td>
                 </tr>`;

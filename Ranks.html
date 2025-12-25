@@ -1,286 +1,377 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام سوبر ستارز - EYC Online</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>EYC Elite Hall | لوحة الشرف</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #0d1117; color: #c9d1d9; overflow-x: hidden; }
-        .gold-gradient-text {
-            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        :root {
+            --bg-color: #020617;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --accent-gold: #d4af37;
+            --text-silver: #e2e8f0;
+            --glass-border: rgba(212, 175, 55, 0.3);
+            --transition: all 0.3s ease;
         }
-        .profile-card { background: linear-gradient(145deg, #161b22, #0d1117); border: 1px solid #30363d; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        .stat-box { background: rgba(48, 54, 61, 0.4); border-bottom: 2px solid #30363d; transition: all 0.3s ease; }
-        .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 12px; }
-        .slot { aspect-ratio: 1/1; background: #161b22; border: 2px dashed #30363d; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-        .slot img { width: 80%; height: 80%; object-fit: contain; }
-        .rank-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
-        
-        /* Modal Animation */
-        #profileModal { transition: opacity 0.3s ease, visibility 0.3s ease; }
-        #profileModal.hidden { opacity: 0; visibility: hidden; display: none; }
-        #profileModal.flex { opacity: 1; visibility: visible; }
 
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #f1c40f; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        tr:hover { background-color: rgba(241, 196, 15, 0.05); cursor: pointer; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg-color) radial-gradient(circle at top, #1e293b, #020617);
+            color: var(--text-silver);
+            min-height: 100vh;
+            padding-bottom: 50px;
+            direction: ltr;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            color: var(--accent-gold);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            margin-bottom: 10px;
+        }
+
+        header p { font-size: 1.1rem; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase; }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .rank-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-silver);
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--accent-gold);
+            color: #000;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .table-wrapper {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--accent-gold);
+            padding: 20px;
+            font-family: 'Playfair Display', serif;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.95rem;
+        }
+
+        tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .student-photo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-gold);
+            object-fit: cover;
+            background: #000;
+            flex-shrink: 0;
+        }
+
+        .rank-num {
+            font-weight: 900;
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+            width: 35px;
+        }
+
+        /* Modal Styles */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 30px;
+            border: 2px solid var(--accent-gold);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            animation: modalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-photo {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 4px solid var(--accent-gold);
+            margin-bottom: 20px;
+            object-fit: cover;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card small { display: block; color: var(--accent-gold); margin-bottom: 5px; text-transform: uppercase; font-size: 0.7rem; }
+        .stat-card strong { font-size: 1.3rem; }
+
+        .close-btn {
+            margin-top: 30px;
+            padding: 12px 40px;
+            background: var(--accent-gold);
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover { filter: brightness(1.2); transform: scale(1.05); }
+
+        .loader { padding: 80px; text-align: center; color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; }
+
+        footer { text-align: center; margin-top: 60px; opacity: 0.4; font-size: 0.8rem; }
     </style>
 </head>
-<body class="p-4">
+<body>
 
-    <!-- Header -->
-    <header class="max-w-6xl mx-auto text-center py-10">
-        <h1 class="text-5xl font-black gold-gradient-text mb-4">SUPERSTARS RANKS</h1>
-        <p class="text-gray-400">انقر على اسم الطالب لعرض ملفه الشخصي وإنجازاته</p>
-    </header>
+<header>
+    <h1>The Elite Hall</h1>
+    <p>EYC Academy Honor Roll</p>
+</header>
 
-    <!-- Ranks Table Section -->
-    <main class="max-w-6xl mx-auto mb-20">
-        <div class="overflow-x-auto bg-[#161b22] rounded-3xl border border-[#30363d] shadow-2xl">
-            <table class="w-full text-right border-collapse">
-                <thead>
-                    <tr class="bg-[#0d1117] border-bottom border-[#30363d] text-[#f1c40f]">
-                        <th class="p-5">الطالب</th>
-                        <th class="p-5">Master Rank</th>
-                        <th class="p-5">Season Rank</th>
-                        <th class="p-5">Xbox Rank</th>
-                        <th class="p-5 text-center">التفاصيل</th>
-                    </tr>
-                </thead>
-                <tbody id="ranksBody">
-                    <!-- البيانات سيتم تحميلها هنا -->
-                    <tr>
-                        <td colspan="5" class="p-20 text-center">
-                            <div class="flex flex-col items-center gap-4">
-                                <div class="loader"></div>
-                                <p>جاري سحب البيانات من السحابة...</p>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <!-- Profile Modal (The Popup) -->
-    <div id="profileModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
-        <div class="max-w-3xl w-full relative">
-            <!-- Close Button -->
-            <button onclick="closeProfile()" class="absolute -top-12 left-0 text-white hover:text-[#f1c40f] flex items-center gap-2 font-bold transition-all">
-                <span>إغلاق النافذة</span>
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-
-            <div id="modalContent">
-                <!-- محتوى البروفايل سيتم حقنه هنا -->
-            </div>
-        </div>
+<div class="container">
+    <div class="rank-nav">
+        <button class="nav-btn active" onclick="switchTab('master', this)">Master Sheet</button>
+        <button class="nav-btn" onclick="switchTab('season', this)">Season Rank</button>
+        <button class="nav-btn" onclick="switchTab('xbox', this)">XBox Rank</button>
     </div>
 
-    <script>
-        // رابط الشيت بصيغة JSON
-        const SHEET_ID = '1qe_Kn2Rs6SVCHyacOGFXyFwUtQ5-2ElFynxm7hNOq7k';
-        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+    <div id="content" class="table-wrapper">
+        <div class="loader">Gathering Legend Data...</div>
+    </div>
+</div>
 
-        let studentsData = [];
+<div id="modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <img id="m-photo" class="modal-photo" src="" alt="Student Profile">
+        <h2 id="m-name" style="color:var(--accent-gold); font-size: 1.8rem; margin-bottom: 5px;"></h2>
+        <p id="m-title" style="font-style:italic; opacity:0.8; font-size: 1rem;"></p>
+        
+        <div class="modal-stats">
+            <div class="stat-card">
+                <small>Total Tokens</small>
+                <strong id="m-tokens"></strong>
+            </div>
+            <div id="m-star-box" class="stat-card">
+                <small>Stars Earned</small>
+                <strong id="m-stars"></strong>
+            </div>
+        </div>
 
-        // خريطة أسماء الأنشطة واللوجوهات المقترحة (يمكنك تغيير الروابط لصورك الفعلية)
-        const activityLogos = {
-            'Golden Ear': 'https://cdn-icons-png.flaticon.com/512/3233/3233004.png',
-            'Label': 'https://cdn-icons-png.flaticon.com/512/1043/1043431.png',
-            'Seeds': 'https://cdn-icons-png.flaticon.com/512/3133/3133930.png',
-            'Alike': 'https://cdn-icons-png.flaticon.com/512/2910/2910795.png',
-            'Grammar': 'https://cdn-icons-png.flaticon.com/512/3534/3534033.png',
-            'Vivid': 'https://cdn-icons-png.flaticon.com/512/4144/4144434.png',
-            'Xbox': 'https://cdn-icons-png.flaticon.com/512/588/588298.png'
-        };
+        <button class="close-btn" onclick="closeModal()">Close Profile</button>
+    </div>
+</div>
 
-        async function fetchRanks() {
-            try {
-                const response = await fetch(SHEET_URL);
-                const text = await response.text();
-                const json = JSON.parse(text.substr(47).slice(0, -2));
-                const rows = json.table.rows;
+<footer>
+    &copy; 2026 EYC Academy | Journey to Mastery
+</footer>
 
-                // تحويل الصفوف إلى كائنات بيانات سهلة الاستخدام
-                studentsData = rows.map((row, index) => {
-                    const c = row.c;
-                    return {
-                        id: index,
-                        name: c[0]?.v || '',
-                        passcode: c[1]?.v || '',
-                        masterTokens: c[2]?.v || 0,
-                        masterStars: c[3]?.v || 0,
-                        masterRank: c[4]?.v || '---',
-                        masterTitle: c[5]?.v || 'Junior',
-                        photo: c[6]?.v || `https://ui-avatars.com/api/?name=${c[0]?.v}&background=161b22&color=f1c40f&size=256`,
-                        
-                        // رانكات الموسم والإكس بوكس
-                        seasonRank: c[15]?.v || '---',
-                        seasonTitle: c[16]?.v || '',
-                        xboxRank: c[28]?.v || '---',
-                        xboxLevel: c[29]?.v || 'Lv. 1',
-                        
-                        // سجل الإنجازات (لأخذ القيم وتحديد ما إذا كان سيظهر اللوجو)
-                        achievements: [
-                            { name: 'Golden Ear', val: (c[7]?.v || 0) + (c[17]?.v || 0) },
-                            { name: 'Label', val: (c[8]?.v || 0) + (c[18]?.v || 0) },
-                            { name: 'Seeds', val: (c[9]?.v || 0) + (c[19]?.v || 0) },
-                            { name: 'Alike', val: (c[10]?.v || 0) + (c[20]?.v || 0) },
-                            { name: 'Grammar', val: (c[11]?.v || 0) + (c[21]?.v || 0) },
-                            { name: 'Vivid', val: (c[12]?.v || 0) + (c[22]?.v || 0) }
-                        ]
-                    };
-                }).filter(s => s.name && s.name !== 'Name'); // استثناء العنوان
+<script>
+    const SHEET_ID = '1qe_Kn2Rs6SVCHyacOGFXyFwUtQ5-2ElFynxm7hNOq7k';
+    const GIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+    let globalData = [];
 
-                renderRanksTable(studentsData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                document.getElementById('ranksBody').innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500">حدث خطأ في الاتصال بالبيانات</td></tr>`;
-            }
+    // دالة تحويل روابط جوجل درايف للصور
+    function getDirectImgUrl(url) {
+        if (!url || typeof url !== 'string') return '';
+        if (url.includes('drive.google.com')) {
+            const id = url.split('id=')[1] || url.split('/d/')[1]?.split('/')[0];
+            return `https://lh3.googleusercontent.com/u/0/d/${id}`;
         }
+        return url;
+    }
 
-        function renderRanksTable(data) {
-            const body = document.getElementById('ranksBody');
-            body.innerHTML = data.map(student => `
-                <tr onclick="openProfile(${student.id})" class="border-b border-[#30363d] transition-colors">
-                    <td class="p-5 flex items-center gap-4">
-                        <img src="${student.photo}" class="w-12 h-12 rounded-full border-2 border-[#f1c40f] object-cover">
-                        <div>
-                            <div class="font-bold text-white">${student.name}</div>
-                            <div class="text-xs text-gray-400">${student.masterTitle}</div>
-                        </div>
-                    </td>
-                    <td class="p-5 font-black text-xl">#${student.masterRank}</td>
-                    <td class="p-5 text-gray-300 font-bold">${student.seasonRank}</td>
-                    <td class="p-5 text-gray-300 font-bold">${student.xboxRank}</td>
-                    <td class="p-5 text-center">
-                        <button class="bg-[#30363d] hover:bg-[#f1c40f] hover:text-black p-2 rounded-lg transition-all">
-                            عرض البروفايل
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+    async function loadData() {
+        try {
+            const res = await fetch(GIZ_URL);
+            const text = await res.text();
+            const json = JSON.parse(text.substring(47).slice(0, -2));
+            globalData = json.table.rows;
+            renderTable('master');
+        } catch (e) {
+            document.getElementById('content').innerHTML = '<div class="loader">Connection Error. Please refresh.</div>';
         }
+    }
 
-        function openProfile(id) {
-            const student = studentsData.find(s => s.id === id);
-            if (!student) return;
+    function renderTable(type) {
+        let headers = `<th>Rank</th><th>Student</th><th>Title</th><th>Tokens</th>`;
+        if (type === 'master') headers += `<th>Stars ⭐</th>`;
+        
+        let html = `<table><thead><tr>${headers}</tr></thead><tbody>`;
 
-            const modal = document.getElementById('profileModal');
-            const content = document.getElementById('modalContent');
-
-            // منطق الإنجازات: فلترة الأنشطة التي تزيد عن 30 توكن
-            const activeAchievements = student.achievements.filter(a => a.val > 30);
+        globalData.forEach((row) => {
+            let student = {};
             
-            // بناء شبكة المربعات (20 مربع)
-            let achievementHTML = '';
-            for (let i = 0; i < 20; i++) {
-                const ach = activeAchievements[i];
-                if (ach) {
-                    achievementHTML += `
-                        <div class="slot border-solid border-[#f1c40f]/30 bg-[#1c2128]">
-                            <img src="${activityLogos[ach.name] || 'https://cdn-icons-png.flaticon.com/512/1041/1041914.png'}" title="${ach.name}: ${ach.val} Tokens">
-                            <div class="absolute bottom-0 inset-x-0 bg-[#f1c40f] text-black text-[8px] font-bold text-center">ACTIVE</div>
-                        </div>
-                    `;
-                } else {
-                    achievementHTML += `
-                        <div class="slot opacity-20">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        </div>
-                    `;
-                }
+            // الربط مع الأعمدة بناءً على شرحك يا مستر
+            if (type === 'master') {
+                student = {
+                    rank: row.c[4]?.v, 
+                    name: row.c[0]?.v, 
+                    tokens: row.c[2]?.v, 
+                    stars: row.c[3]?.v, 
+                    title: row.c[5]?.v, 
+                    photo: getDirectImgUrl(row.c[6]?.v)
+                };
+            } else if (type === 'season') {
+                student = {
+                    rank: row.c[15]?.v, 
+                    name: row.c[13]?.v, 
+                    tokens: row.c[14]?.v, 
+                    title: row.c[16]?.v, 
+                    photo: getDirectImgUrl(row.c[6]?.v)
+                };
+            } else if (type === 'xbox') {
+                student = {
+                    rank: row.c[29]?.v, 
+                    name: row.c[27]?.v, 
+                    tokens: row.c[28]?.v, 
+                    title: row.c[30]?.v, 
+                    photo: getDirectImgUrl(row.c[6]?.v)
+                };
             }
 
-            content.innerHTML = `
-                <div class="profile-card rounded-3xl p-6 md:p-8 animate-in fade-in zoom-in duration-300">
-                    <div class="flex flex-col md:flex-row items-center gap-8 mb-8">
-                        <div class="relative">
-                            <div class="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-[#f1c40f] overflow-hidden shadow-2xl">
-                                <img src="${student.photo}" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute -bottom-2 right-1/2 translate-x-1/2 bg-[#f1c40f] text-black px-4 py-1 rounded-full text-xs font-black whitespace-nowrap">
-                                ${student.masterTitle.toUpperCase()}
-                            </div>
-                        </div>
+            // تخطي الصفوف الفارغة أو صف العناوين
+            if (!student.name || student.name === 'Name') return;
 
-                        <div class="flex-1 text-center md:text-right">
-                            <h2 class="text-3xl md:text-4xl font-black gold-gradient-text mb-1">${student.name}</h2>
-                            <p class="text-gray-400 mb-6">برنامج SUPERSTARS - كود الطالب: ${student.passcode}</p>
-                            
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="stat-box p-3 rounded-xl flex items-center justify-between">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="w-8 h-8">
-                                    <div class="text-left">
-                                        <span class="block text-xl font-bold text-white">${student.masterStars.toLocaleString()}</span>
-                                        <span class="text-[10px] text-gray-400">النجوم</span>
-                                    </div>
-                                </div>
-                                <div class="stat-box p-3 rounded-xl flex items-center justify-between">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2164/2164102.png" class="w-8 h-8">
-                                    <div class="text-left">
-                                        <span class="block text-xl font-bold text-white">${student.masterTokens.toLocaleString()}</span>
-                                        <span class="text-[10px] text-gray-400">التوكنز</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random&color=fff`;
 
-                    <div class="grid grid-cols-3 gap-4 mb-8 text-center">
-                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d]">
-                            <span class="text-[10px] text-gray-500 block">Master Rank</span>
-                            <span class="text-xl font-black text-white">#${student.masterRank}</span>
+            html += `
+                <tr>
+                    <td class="rank-num">#${student.rank || '-'}</td>
+                    <td>
+                        <div class="student-info" onclick='openModal(${JSON.stringify(student).replace(/'/g, "&apos;")})'>
+                            <img class="student-photo" src="${student.photo}" onerror="this.onerror=null; this.src='${fallback}';">
+                            <span style="font-weight:700">${student.name}</span>
                         </div>
-                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d]">
-                            <span class="text-[10px] text-gray-500 block">Season Rank</span>
-                            <span class="text-xl font-black text-[#f1c40f]">#${student.seasonRank}</span>
-                        </div>
-                        <div class="bg-[#0d1117] p-4 rounded-2xl border border-[#30363d]">
-                            <span class="text-[10px] text-gray-500 block">Xbox Level</span>
-                            <span class="text-xl font-black text-white">${student.xboxLevel}</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h3 class="text-sm font-bold mb-4 flex items-center gap-2">
-                            <span class="w-1.5 h-4 bg-[#f1c40f] rounded-full"></span>
-                            الإنجازات المفتوحة (Tokens > 30)
-                        </h3>
-                        <div class="achievement-grid">
-                            ${achievementHTML}
-                        </div>
-                    </div>
-                </div>
+                    </td>
+                    <td style="color:#94a3b8">${student.title || 'Greeny'}</td>
+                    <td style="font-weight:bold; color:var(--accent-gold)">${student.tokens || 0}</td>
+                    ${type === 'master' ? `<td style="color:#ffd700; font-weight:bold">⭐ ${Number(student.stars || 0).toFixed(1)}</td>` : ''}
+                </tr>
             `;
+        });
 
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden'; // منع السكرول خلف المودال
+        html += '</tbody></table>';
+        document.getElementById('content').innerHTML = html;
+    }
+
+    function switchTab(type, btn) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderTable(type);
+    }
+
+    function openModal(data) {
+        const modal = document.getElementById('modal');
+        const img = document.getElementById('m-photo');
+        const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=random&size=200`;
+
+        img.src = data.photo || fallback;
+        img.onerror = () => img.src = fallback;
+
+        document.getElementById('m-name').innerText = data.name;
+        document.getElementById('m-title').innerText = "Honorary Title: " + (data.title || "Greeny");
+        document.getElementById('m-tokens').innerText = data.tokens || 0;
+
+        const starBox = document.getElementById('m-star-box');
+        if (data.stars !== undefined) {
+            starBox.style.display = 'block';
+            document.getElementById('m-stars').innerText = "⭐ " + Number(data.stars).toFixed(1);
+        } else {
+            starBox.style.display = 'none';
         }
 
-        function closeProfile() {
-            const modal = document.getElementById('profileModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = 'auto';
-        }
+        modal.style.display = 'flex';
+    }
 
-        // إغلاق النافذة عند الضغط خارجها
-        window.onclick = function(event) {
-            const modal = document.getElementById('profileModal');
-            if (event.target == modal) {
-                closeProfile();
-            }
-        }
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
-        // بدء تحميل البيانات
-        window.onload = fetchRanks;
-    </script>
+    window.onload = loadData;
+</script>
+
 </body>
 </html>

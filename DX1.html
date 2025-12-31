@@ -1,4 +1,39 @@
-     
+import React, { useState, useRef } from 'react';
+import { User, Play, Lock, AlertTriangle, CheckCircle } from 'lucide-react';
+
+export default function DictationTest() {
+  // الحالات (States) - تأكد من تعريفها ليعمل الكود
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [studentName, setStudentName] = useState("");
+  const [message, setMessage] = useState("");
+  const [stats, setStats] = useState({ slowHeard: false, normalHeard: false });
+  const [timers, setTimers] = useState({ slow: 0, normal: 0 });
+
+  // مراجع الصوت (Refs)
+  const slowAudioRef = useRef(null);
+  const normalAudioRef = useRef(null);
+
+  // الدوال المساعدة (Placeholder functions)
+  const handleLogin = () => {
+    if (studentName.trim()) setIsRegistered(true);
+    else setMessage("يرجى إدخال الاسم");
+  };
+
+  const startPlayback = (type) => {
+    // منطق التشغيل هنا
+    console.log(`Starting ${type} playback`);
+  };
+
+  const formatTime = (time) => "00:00";
+  const handleTimeUpdate = (type) => {};
+  
+  const slowAudioUrl = "your-audio-url-here";
+  const normalAudioUrl = "your-audio-url-here";
+
+  return (
+    <div className="min-h-screen bg-black text-white p-4">
+      <div className="max-w-6xl mx-auto border-4 border-zinc-800 rounded-[3rem] overflow-hidden shadow-2xl">
+        
         {/* Header Section */}
         <div className="bg-zinc-900 p-8 border-b-4 border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
@@ -22,7 +57,7 @@
               <input 
                 type="text" 
                 placeholder="اسم الطالب بالكامل"
-                className="w-full bg-zinc-900 border-2 border-zinc-800 p-5 rounded-2xl text-xl text-center focus:border-green-500 outline-none transition-all"
+                className="w-full bg-zinc-900 border-2 border-zinc-800 p-5 rounded-2xl text-xl text-center focus:border-green-500 outline-none transition-all text-white"
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
               />
@@ -133,5 +168,3 @@
     </div>
   );
 }
-
-

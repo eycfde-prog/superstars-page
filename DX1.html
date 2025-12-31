@@ -3,259 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Superstars Dictation</title>
+    <title>Superstars Dictation - Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-
-        // Firebase Configuration
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'superstars-dictation';
-
-        // State Management
-        let currentUser = null;
-        let isAuthReady = false;
-        let studentName = "";
-        let studentStats = { slowHeard: false, normalHeard: false };
-
-        // Audio Elements - Updated with more robust loading
-        const slowAudio = new Audio();
-        slowAudio.src = "D%20X%201%20S.wav";
-        const normalAudio = new Audio();
-        normalAudio.src = "D%20X%201%20N.wav";
-
-        // UI Elements
-        const loginPage = document.getElementById('login-page');
-        const dictationPage = document.getElementById('dictation-page');
-        const nameInput = document.getElementById('name-input');
-        const displayName = document.getElementById('display-name');
-        const messageBox = document.getElementById('message-box');
-        const messageText = document.getElementById('message-text');
-
-        // Auth Logic (Rule 3)
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (err) {
-                console.error("Auth initialization failed:", err);
-            }
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            isAuthReady = !!user;
-            if (!user) {
-                initAuth();
-            }
-        });
-
-        // Functions
-        window.handleLogin = async (e) => {
-            e.preventDefault();
-            
-            if (!isAuthReady || !currentUser) {
-                showMsg("جاري تجهيز النظام... انتظر لحظة وجرب ثانية.");
-                return;
-            }
-
-            studentName = nameInput.value.trim();
-            if (!studentName) return;
-
-            const studentId = studentName.toLowerCase().replace(/\s+/g, '_');
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
-
-            try {
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    studentStats = docSnap.data();
-                } else {
-                    studentStats = { 
-                        slowHeard: false, 
-                        normalHeard: false, 
-                        studentName: studentName,
-                        createdAt: new Date().toISOString()
-                    };
-                    await setDoc(docRef, studentStats);
-                }
-                
-                renderStats();
-                displayName.innerText = studentName;
-                loginPage.classList.add('hidden');
-                dictationPage.classList.remove('hidden');
-            } catch (err) {
-                console.error("Firestore Error:", err);
-                showMsg("خطأ في الصلاحيات. يرجى تحديث الصفحة.");
-            }
-        };
-
-        window.playAudio = async (type) => {
-            if (!currentUser) return;
-
-            const isSlow = type === 'slow';
-            const audio = isSlow ? slowAudio : normalAudio;
-            const alreadyHeard = isSlow ? studentStats.slowHeard : studentStats.normalHeard;
-
-            if (alreadyHeard) {
-                showMsg("عفواً يا بطل، لقد استمعت لهذا المقطع بالفعل!");
-                return;
-            }
-
-            const studentId = studentName.toLowerCase().replace(/\s+/g, '_');
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
-            const updateData = isSlow ? { slowHeard: true } : { normalHeard: true };
-
-            try {
-                // Update Firestore first to prevent double-play
-                await updateDoc(docRef, updateData);
-                studentStats = { ...studentStats, ...updateData };
-                renderStats();
-
-                // Safe Audio Playback
-                audio.load(); // Refresh source
-                const playPromise = audio.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        showMsg(`جاري التشغيل (${isSlow ? 'بطيء' : 'عادي'})...`);
-                    }).catch(error => {
-                        console.error("Playback failed:", error);
-                        showMsg("خطأ: المتصفح منع التشغيل أو الملف غير مدعوم.");
-                    });
-                }
-            } catch (err) {
-                console.error("Update Error:", err);
-                showMsg("فشل تحديث البيانات. حاول مرة أخرى.");
-            }
-        };
-
-        function renderStats() {
-            const btnSlow = document.getElementById('btn-slow');
-            const btnNormal = document.getElementById('btn-normal');
-            
-            if (studentStats.slowHeard) {
-                btnSlow.classList.add('opacity-60', 'grayscale');
-                document.getElementById('icon-slow').innerHTML = '✅';
-            }
-            if (studentStats.normalHeard) {
-                btnNormal.classList.add('opacity-60', 'grayscale');
-                document.getElementById('icon-normal').innerHTML = '✅';
-            }
-        }
-
-        function showMsg(text) {
-            messageBox.classList.remove('hidden');
-            messageText.innerText = text;
-            setTimeout(() => messageBox.classList.add('hidden'), 4000);
-        }
-
-        window.logout = () => {
-            location.reload();
-        };
-
-        initAuth();
-
-    </script>
     <style>
         body { font-family: 'Cairo', sans-serif; background-color: #020617; }
         .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-bounce-slow { animation: bounce 3s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
 </head>
 <body class="text-white min-h-screen flex items-center justify-center p-4">
 
-    <!-- PAGE 1: LOGIN -->
-    <div id="login-page" class="w-full max-w-md animate-fade-in">
-        <div class="text-center mb-8">
-            <div class="inline-block p-4 bg-yellow-500 rounded-3xl shadow-lg shadow-yellow-500/20 mb-4 rotate-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+    <div class="w-full max-w-md">
+        <!-- Header Section -->
+        <div class="text-center mb-10">
+            <div class="inline-block p-5 bg-yellow-500 rounded-[2rem] shadow-2xl shadow-yellow-500/20 mb-6 rotate-2 animate-bounce-slow">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                </svg>
             </div>
-            <h1 class="text-4xl font-black italic tracking-tight">Superstars</h1>
-            <p class="text-yellow-500 text-sm font-bold tracking-widest uppercase">Dictation Activity Portal</p>
+            <h1 class="text-5xl font-black italic tracking-tighter text-white">SUPERSTARS</h1>
+            <div class="h-1 w-20 bg-yellow-500 mx-auto mt-2 rounded-full"></div>
+            <p class="text-yellow-500 text-xs font-bold tracking-[0.3em] uppercase mt-3">Dictation Player</p>
         </div>
 
-        <div class="glass p-8 rounded-[2.5rem] shadow-2xl">
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-6 text-right">
+        <!-- Warning Card -->
+        <div class="glass p-5 rounded-3xl border-r-4 border-r-red-500 mb-8 text-right">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">📢</span>
                 <div>
-                    <label class="block text-slate-400 text-sm mb-2 mr-2">اسم الطالب بالكامل</label>
-                    <input id="name-input" type="text" required placeholder="ادخل اسمك هنا..." 
-                        class="w-full bg-slate-800 border border-slate-700 p-4 rounded-2xl focus:outline-none focus:border-yellow-500 text-center text-lg font-bold placeholder:font-normal">
-                </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-slate-900 font-black py-4 rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all text-xl">
-                    بدأ الاختبار
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- PAGE 2: DICTATION -->
-    <div id="dictation-page" class="w-full max-w-md hidden animate-fade-in">
-        <!-- Header -->
-        <div class="glass p-4 rounded-2xl flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center text-slate-900 font-bold">S</div>
-                <div class="text-right">
-                    <p class="text-[10px] text-slate-500 uppercase font-bold">المتسابق</p>
-                    <p id="display-name" class="text-sm font-bold text-yellow-500">اسم الطالب</p>
+                    <h3 class="font-bold text-red-400 mb-1">تعليمات الاستماع</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        استعد جيداً قبل الضغط على أي زر. يفضل استخدام سماعات الأذن لتركيز أفضل أثناء الإملاء.
+                    </p>
                 </div>
             </div>
-            <button onclick="logout()" class="text-xs text-slate-500 hover:text-white transition-colors bg-slate-800 px-3 py-1 rounded-md">خروج</button>
         </div>
 
-        <!-- Warning -->
-        <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl mb-6 flex gap-3 text-right">
-            <p class="text-xs text-red-200 leading-relaxed">
-                <strong class="text-red-500 block text-sm mb-1">⚠️ تنبيه هام!</strong>
-                مسموح بالاستماع <span class="underline decoration-red-500 font-bold">مرة واحدة فقط</span> لكل وضع. تأكد من هدوء المكان حولك وجاهزيتك التامة قبل البدء.
-            </p>
-        </div>
-
-        <!-- Audio Cards -->
-        <div class="space-y-4">
-            <button id="btn-slow" onclick="playAudio('slow')" class="w-full text-right glass p-6 rounded-[2rem] flex items-center justify-between hover:bg-slate-800/50 transition-all border-r-4 border-r-blue-500 group">
-                <div class="flex items-center gap-4">
-                    <div id="icon-slow" class="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center text-blue-500 text-2xl group-hover:scale-110 transition-transform">▶</div>
+        <!-- Audio Control Buttons -->
+        <div class="space-y-6">
+            <!-- Slow Mode -->
+            <button onclick="playTrack('slow', this)" class="w-full text-right glass p-6 rounded-[2.5rem] flex items-center justify-between hover:bg-slate-800/80 active:scale-95 transition-all border-b-4 border-b-blue-600 group relative overflow-hidden">
+                <div class="flex items-center gap-5 z-10">
+                    <div class="play-icon w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg shadow-blue-600/30 group-hover:rotate-12 transition-transform">
+                        ▶
+                    </div>
                     <div>
-                        <p class="text-xl font-black">الوضع البطيء</p>
-                        <p class="text-xs text-slate-500">للمراجعة الدقيقة والمخارج</p>
+                        <p class="text-2xl font-black mb-1">وضع السلحفاة</p>
+                        <p class="text-xs text-blue-400 font-bold uppercase tracking-wider">Slow Motion Mode</p>
                     </div>
                 </div>
-                <span class="text-3xl opacity-30">🐢</span>
+                <span class="text-4xl opacity-10 group-hover:opacity-30 transition-opacity z-10">🐢</span>
+                <div class="absolute inset-0 bg-blue-600/5 translate-y-full group-hover:translate-y-0 transition-transform"></div>
             </button>
 
-            <button id="btn-normal" onclick="playAudio('normal')" class="w-full text-right glass p-6 rounded-[2rem] flex items-center justify-between hover:bg-slate-800/50 transition-all border-r-4 border-r-green-500 group">
-                <div class="flex items-center gap-4">
-                    <div id="icon-normal" class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center text-green-500 text-2xl group-hover:scale-110 transition-transform">▶</div>
+            <!-- Normal Mode -->
+            <button onclick="playTrack('normal', this)" class="w-full text-right glass p-6 rounded-[2.5rem] flex items-center justify-between hover:bg-slate-800/80 active:scale-95 transition-all border-b-4 border-b-green-600 group relative overflow-hidden">
+                <div class="flex items-center gap-5 z-10">
+                    <div class="play-icon w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg shadow-green-600/30 group-hover:rotate-12 transition-transform">
+                        ▶
+                    </div>
                     <div>
-                        <p class="text-xl font-black">الوضع الطبيعي</p>
-                        <p class="text-xs text-slate-500">السرعة الأصلية للجملة</p>
+                        <p class="text-2xl font-black mb-1">الوضع الطبيعي</p>
+                        <p class="text-xs text-green-400 font-bold uppercase tracking-wider">Normal Speed Mode</p>
                     </div>
                 </div>
-                <span class="text-3xl opacity-30">⚡</span>
+                <span class="text-4xl opacity-10 group-hover:opacity-30 transition-opacity z-10">⚡</span>
+                <div class="absolute inset-0 bg-green-600/5 translate-y-full group-hover:translate-y-0 transition-transform"></div>
             </button>
         </div>
 
-        <!-- Message Box -->
-        <div id="message-box" class="hidden mt-8 p-4 bg-slate-900 border border-yellow-500/30 rounded-2xl text-center">
-            <p id="message-text" class="text-yellow-500 text-sm font-bold animate-pulse"></p>
+        <!-- Status Message -->
+        <div id="status-msg" class="mt-8 text-center opacity-0 transition-opacity duration-500">
+            <span id="status-text" class="bg-slate-800 text-yellow-500 px-6 py-2 rounded-full text-sm font-bold border border-yellow-500/20 shadow-xl">
+                جاري التحميل...
+            </span>
         </div>
 
-        <footer class="mt-12 text-center opacity-30">
-            <p class="text-[10px] font-mono uppercase tracking-widest">Activity ID: D X 1</p>
-            <p class="text-[9px] mt-1 italic">Designed for Superstars</p>
+        <!-- Footer -->
+        <footer class="mt-12 text-center">
+            <p class="text-[10px] text-slate-600 font-mono tracking-widest uppercase mb-1">System Code: DX1-STARS</p>
+            <p class="text-[11px] text-slate-500">Made with ❤️ for the little stars</p>
         </footer>
     </div>
+
+    <script>
+        // Define audio files
+        const tracks = {
+            slow: "D%20X%201%20S.wav",
+            normal: "D%20X%201%20N.wav"
+        };
+
+        const audioPlayer = new Audio();
+        const statusMsg = document.getElementById('status-msg');
+        const statusText = document.getElementById('status-text');
+
+        function playTrack(type, btn) {
+            const source = tracks[type];
+            
+            // Show loading status
+            statusText.innerText = type === 'slow' ? "🐢 جاري تشغيل النطق البطيء..." : "⚡ جاري تشغيل النطق الطبيعي...";
+            statusMsg.classList.remove('opacity-0');
+            statusMsg.classList.add('opacity-100');
+
+            // Set source and play
+            audioPlayer.src = source;
+            audioPlayer.load();
+
+            const playPromise = audioPlayer.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Start success
+                }).catch(error => {
+                    console.error("Error playing audio:", error);
+                    statusText.innerText = "❌ تعذر العثور على ملف الصوت!";
+                    statusText.classList.replace('text-yellow-500', 'text-red-500');
+                    
+                    // Auto-hide error after 3s
+                    setTimeout(() => {
+                        statusMsg.classList.replace('opacity-100', 'opacity-0');
+                        statusText.classList.replace('text-red-500', 'text-yellow-500');
+                    }, 3000);
+                });
+            }
+        }
+
+        // Hide message when audio ends
+        audioPlayer.onended = () => {
+            statusMsg.classList.replace('opacity-100', 'opacity-0');
+        };
+    </script>
 
 </body>
 </html>

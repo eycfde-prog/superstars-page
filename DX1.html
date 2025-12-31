@@ -9,10 +9,10 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-        // Firebase Configuration - Fixed JSON Parsing
+        // Firebase Configuration
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -21,6 +21,7 @@
 
         // State Management
         let currentUser = null;
+        let isAuthReady = false;
         let studentName = "";
         let studentStats = { slowHeard: false, normalHeard: false };
 
@@ -31,23 +32,43 @@
         // UI Elements
         const loginPage = document.getElementById('login-page');
         const dictationPage = document.getElementById('dictation-page');
-        const loginForm = document.getElementById('login-form');
         const nameInput = document.getElementById('name-input');
         const displayName = document.getElementById('display-name');
         const messageBox = document.getElementById('message-box');
         const messageText = document.getElementById('message-text');
 
-        // Auth Listener
+        // Auth Logic (Rule 3)
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth initialization failed:", err);
+            }
+        };
+
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
-            if (!user) signInAnonymously(auth);
+            isAuthReady = !!user;
+            if (!user) {
+                initAuth();
+            }
         });
 
         // Functions
         window.handleLogin = async (e) => {
             e.preventDefault();
+            
+            if (!isAuthReady || !currentUser) {
+                showMsg("جاري تجهيز النظام... انتظر لحظة وجرب ثانية.");
+                return;
+            }
+
             studentName = nameInput.value.trim();
-            if (!studentName || !currentUser) return;
+            if (!studentName) return;
 
             const studentId = studentName.toLowerCase().replace(/\s+/g, '_');
             // Path Rule 1 compliant
@@ -58,7 +79,12 @@
                 if (docSnap.exists()) {
                     studentStats = docSnap.data();
                 } else {
-                    studentStats = { slowHeard: false, normalHeard: false, studentName: studentName };
+                    studentStats = { 
+                        slowHeard: false, 
+                        normalHeard: false, 
+                        studentName: studentName,
+                        createdAt: new Date().toISOString()
+                    };
                     await setDoc(docRef, studentStats);
                 }
                 
@@ -67,12 +93,14 @@
                 loginPage.classList.add('hidden');
                 dictationPage.classList.remove('hidden');
             } catch (err) {
-                console.error(err);
-                showMsg("خطأ في الاتصال بالقاعدة. تأكد من إعدادات Firebase.");
+                console.error("Firestore Error:", err);
+                showMsg("خطأ في الصلاحيات. يرجى تحديث الصفحة.");
             }
         };
 
         window.playAudio = async (type) => {
+            if (!currentUser) return;
+
             const isSlow = type === 'slow';
             const audio = isSlow ? slowAudio : normalAudio;
             const alreadyHeard = isSlow ? studentStats.slowHeard : studentStats.normalHeard;
@@ -93,7 +121,8 @@
                 audio.play();
                 showMsg(`جاري التشغيل (${isSlow ? 'بطيء' : 'عادي'})...`);
             } catch (err) {
-                showMsg("فشل تحديث البيانات في القاعدة.");
+                console.error("Update Error:", err);
+                showMsg("فشل تحديث البيانات. حاول مرة أخرى.");
             }
         };
 
@@ -120,6 +149,9 @@
         window.logout = () => {
             location.reload();
         };
+
+        // Start Auth on load
+        initAuth();
 
     </script>
     <style>

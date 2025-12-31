@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { Volume2, AlertTriangle, User, Play, Lock, CheckCircle } from 'lucide-react';
 
-// Firebase Configuration - تأكد من تعريف هذه المتغيرات في البيئة
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+// Configuration placeholder - environment will provide these
+const firebaseConfig = JSON.parse(__firebase_config);
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'xbox-dictation-v1';
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'superstars-dictation';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -17,24 +16,19 @@ export default function App() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [stats, setStats] = useState({ slowHeard: false, normalHeard: false });
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState(null);
-  const [timers, setTimers] = useState({ slow: 0, normal: 0 });
-  const [isPlaying, setIsPlaying] = useState(false); // لمنع النقر المتعدد
+  const [message, setMessage] = useState('');
 
   const slowAudioRef = useRef(null);
   const normalAudioRef = useRef(null);
 
-  const slowAudioUrl = "D X 1 S.wav"; 
-  const normalAudioUrl = "D X 1 N.wav";
+  // URLs للمقاطع الصوتية (أمثلة)
+  const slowAudioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; 
+  const normalAudioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3";
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
+        await signInAnonymously(auth);
       } catch (err) {
         console.error("Auth error", err);
       }
@@ -50,213 +44,116 @@ export default function App() {
   const handleLogin = async () => {
     if (!studentName.trim()) return;
     setLoading(true);
-    const studentId = studentName.toLowerCase().trim().replace(/\s+/g, '_');
-    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'attempts', studentId);
-    
-    try {
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setStats(docSnap.data());
-      } else {
-        const initialData = { slowHeard: false, normalHeard: false, timestamp: new Date().toISOString() };
-        await setDoc(docRef, initialData);
-        setStats(initialData);
-      }
-      setIsRegistered(true);
-    } catch (e) {
-      console.error(e);
-      setMessage("خطأ في الوصول لقاعدة البيانات");
+    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentName.toLowerCase().trim());
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      setStats(docSnap.data());
+    } else {
+      const initialData = { slowHeard: false, normalHeard: false, lastActive: new Date().toISOString() };
+      await setDoc(docRef, initialData);
+      setStats(initialData);
     }
+    setIsRegistered(true);
     setLoading(false);
   };
 
-  const startPlayback = async (type) => {
-    if (!user || isPlaying) return;
+  const playAudio = async (type) => {
+    if (!user) return;
     
-    const isSlow = type === 'slow';
-    const currentStatus = isSlow ? stats.slowHeard : stats.normalHeard;
-    
-    if (currentStatus) return;
-
-    setIsPlaying(true);
-    const studentId = studentName.toLowerCase().trim().replace(/\s+/g, '_');
-    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'attempts', studentId);
-    const updateData = isSlow ? { slowHeard: true } : { normalHeard: true };
-    
-    try {
-      // 1. التحديث في قاعدة البيانات أولاً (أمان)
-      await updateDoc(docRef, updateData);
-      setStats(prev => ({ ...prev, ...updateData }));
-      
-      // 2. تشغيل الصوت
-      const audio = isSlow ? slowAudioRef.current : normalAudioRef.current;
-      if (audio) {
-        await audio.play();
-      }
-    } catch (e) {
-      console.error(e);
-      setMessage("حدث خطأ. تأكد من اتصال الإنترنت.");
-      setIsPlaying(false);
-    }
-  };
-
-  const handleTimeUpdate = (type) => {
     const audio = type === 'slow' ? slowAudioRef.current : normalAudioRef.current;
-    if (audio) {
-      setTimers(prev => ({ ...prev, [type]: Math.floor(audio.currentTime) }));
+    const isHeard = type === 'slow' ? stats.slowHeard : stats.normalHeard;
+
+    if (isHeard) {
+      setMessage("عفواً يا بطل، لقد استمعت لهذا المقطع بالفعل!");
+      return;
     }
+
+    audio.play();
+    
+    // بمجرد البدء، نحدث قاعدة البيانات فوراً لمنع التلاعب
+    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentName.toLowerCase().trim());
+    const updateData = type === 'slow' ? { slowHeard: true } : { normalHeard: true };
+    
+    await updateDoc(docRef, updateData);
+    setStats(prev => ({ ...prev, ...updateData }));
+    setMessage(`جاري تشغيل المقطع (${type === 'slow' ? 'بطيء' : 'عادي'})... ركز جيداً!`);
   };
 
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-  };
-
-  if (loading) return (
-    <div className="flex h-screen items-center justify-center bg-black text-green-500 font-mono text-xl animate-pulse">
-      INITIALIZING SYSTEM...
-    </div>
-  );
+  if (loading) return <div className="flex h-screen items-center justify-center bg-slate-900 text-white text-2xl font-bold">جاري التحميل...</div>;
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 md:p-10 font-sans selection:bg-green-500">
-      <div className="max-w-4xl mx-auto border-4 border-zinc-800 rounded-[2rem] overflow-hidden shadow-2xl">
+    <div className="min-h-screen bg-slate-950 text-white font-sans p-4 flex flex-col items-center justify-center">
+      <div className="max-w-md w-full bg-slate-900 rounded-3xl p-8 shadow-2xl border border-slate-800">
+        <h1 className="text-3xl font-extrabold text-center mb-6 text-yellow-500">Superstars Dictation</h1>
         
-        {/* Header Section */}
-        <div className="bg-zinc-900 p-8 border-b-4 border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-center md:text-left">
-            <h1 className="text-5xl font-black tracking-tighter text-white">XBox <span className="text-green-500">Dictation X</span></h1>
-            <p className="text-zinc-500 font-bold mt-2">Activity ID: D X 1</p>
+        {!isRegistered ? (
+          <div className="space-y-4">
+            <p className="text-center text-slate-400">من فضلك أدخل اسمك لبدء الاختبار</p>
+            <input 
+              type="text" 
+              placeholder="اسم الطالب بالكامل"
+              className="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:border-yellow-500 transition-all text-center"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+            />
+            <button 
+              onClick={handleLogin}
+              className="w-full py-4 bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold rounded-xl transition-all shadow-lg active:scale-95"
+            >
+              دخول
+            </button>
           </div>
-          <div className="bg-green-500/10 border border-green-500/30 px-6 py-2 rounded-full flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-green-500 font-mono text-sm tracking-widest uppercase">System Online</span>
-          </div>
-        </div>
-
-        <div className="p-8 md:p-12 bg-zinc-950">
-          {!isRegistered ? (
-            <div className="max-w-md mx-auto space-y-6">
-              <div className="text-center space-y-2">
-                <User className="w-16 h-16 mx-auto text-zinc-700" />
-                <h2 className="text-2xl font-bold">تسجيل الدخول</h2>
-                <p className="text-zinc-500">أدخل اسمك كما هو مسجل في الكورس</p>
-              </div>
-              <input 
-                type="text" 
-                placeholder="اسم الطالب بالكامل"
-                className="w-full bg-zinc-900 border-2 border-zinc-800 p-5 rounded-2xl text-xl text-center focus:border-green-500 outline-none transition-all text-white"
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
-              />
-              <button 
-                onClick={handleLogin}
-                className="w-full bg-white text-black font-black py-5 rounded-2xl text-xl hover:bg-green-500 transition-all active:scale-95"
-              >
-                بدء الاختبار الآن
-              </button>
+        ) : (
+          <div className="space-y-8 text-center">
+            <div className="bg-slate-800 p-4 rounded-2xl border border-slate-700">
+              <p className="text-sm text-slate-400">أهلاً بك يا بطل</p>
+              <p className="text-xl font-bold text-yellow-500 uppercase">{studentName}</p>
             </div>
-          ) : (
-            <div className="space-y-12">
-              <div className="bg-red-600/10 border-2 border-red-600/30 p-6 rounded-3xl flex items-center gap-6">
-                <div className="bg-red-600 p-4 rounded-2xl hidden md:block">
-                  <AlertTriangle className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-red-500 font-black text-xl">تحذير هام جداً!</h3>
-                  <p className="text-zinc-400 text-sm md:text-base leading-relaxed">
-                    يُسمح لك بسماع كل مقطع صوتي <span className="text-white font-bold underline">مرة واحدة فقط</span>. 
-                    بمجرد التشغيل، لا يمكنك الإيقاف.
-                  </p>
-                </div>
+
+            <div className="space-y-6">
+              {/* Slow Motion Section */}
+              <div className="flex flex-col items-center gap-2">
+                <button 
+                  disabled={stats.slowHeard}
+                  onClick={() => playAudio('slow')}
+                  className={`w-full py-6 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg transition-all ${
+                    stats.slowHeard ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/40 shadow-xl'
+                  }`}
+                >
+                  {stats.slowHeard ? 'تم الاستماع للبطيء' : 'تشغيل (Slow Motion)'}
+                  {!stats.slowHeard && <span className="text-2xl">🐢</span>}
+                </button>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-8">
-                {/* Slow Motion Card */}
-                <div className={`relative p-8 rounded-[2rem] border-4 transition-all ${stats.slowHeard ? 'border-zinc-800 bg-zinc-900/50' : 'border-blue-600 bg-blue-600/5'}`}>
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <span className="text-blue-500 font-bold text-sm tracking-widest uppercase">Version 1.0</span>
-                      <h4 className="text-3xl font-black mt-1">Slow 🐢</h4>
-                    </div>
-                    <div className="text-4xl font-mono font-black text-blue-500 bg-blue-500/10 p-3 rounded-xl">
-                      {formatTime(timers.slow)}
-                    </div>
-                  </div>
-                  <button 
-                    disabled={stats.slowHeard || isPlaying}
-                    onClick={() => startPlayback('slow')}
-                    className={`w-full py-10 rounded-2xl flex flex-col items-center gap-4 transition-all ${
-                      stats.slowHeard ? 'bg-zinc-800 opacity-50' : 'bg-blue-600 hover:bg-blue-500'
-                    }`}
-                  >
-                    {stats.slowHeard ? <Lock className="w-12 h-12" /> : <Play className="w-12 h-12 fill-current" />}
-                    <span className="font-black text-xl">{stats.slowHeard ? 'تم الاستهلاك' : 'إضغط للتشغيل'}</span>
-                  </button>
-                  <audio 
-                    ref={slowAudioRef} 
-                    src={slowAudioUrl} 
-                    onTimeUpdate={() => handleTimeUpdate('slow')} 
-                    onEnded={() => setIsPlaying(false)}
-                    className="hidden" 
-                  />
-                </div>
-
-                {/* Normal Speed Card */}
-                <div className={`relative p-8 rounded-[2rem] border-4 transition-all ${stats.normalHeard ? 'border-zinc-800 bg-zinc-900/50' : 'border-green-600 bg-green-600/5'}`}>
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <span className="text-green-500 font-bold text-sm tracking-widest uppercase">Version 1.0</span>
-                      <h4 className="text-3xl font-black mt-1">Normal ⚡</h4>
-                    </div>
-                    <div className="text-4xl font-mono font-black text-green-500 bg-green-500/10 p-3 rounded-xl">
-                      {formatTime(timers.normal)}
-                    </div>
-                  </div>
-                  <button 
-                    disabled={stats.normalHeard || isPlaying}
-                    onClick={() => startPlayback('normal')}
-                    className={`w-full py-10 rounded-2xl flex flex-col items-center gap-4 transition-all ${
-                      stats.normalHeard ? 'bg-zinc-800 opacity-50' : 'bg-green-600 hover:bg-green-500'
-                    }`}
-                  >
-                    {stats.normalHeard ? <Lock className="w-12 h-12" /> : <Play className="w-12 h-12 fill-current" />}
-                    <span className="font-black text-xl">{stats.normalHeard ? 'تم الاستهلاك' : 'إضغط للتشغيل'}</span>
-                  </button>
-                  <audio 
-                    ref={normalAudioRef} 
-                    src={normalAudioUrl} 
-                    onTimeUpdate={() => handleTimeUpdate('normal')} 
-                    onEnded={() => setIsPlaying(false)}
-                    className="hidden" 
-                  />
-                </div>
-              </div>
-
-              {/* Status Footer */}
-              <div className="flex flex-col md:flex-row gap-4 justify-between items-center text-zinc-500 font-bold border-t border-zinc-800 pt-8">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className={`w-5 h-5 ${stats.slowHeard ? 'text-green-500' : 'text-zinc-700'}`} />
-                  <span>Slow: {stats.slowHeard ? 'DONE' : 'READY'}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className={`w-5 h-5 ${stats.normalHeard ? 'text-green-500' : 'text-zinc-700'}`} />
-                  <span>Normal: {stats.normalHeard ? 'DONE' : 'READY'}</span>
-                </div>
-                <p>User: <span className="text-green-500 uppercase">{studentName}</span></p>
+              {/* Normal Speed Section */}
+              <div className="flex flex-col items-center gap-2">
+                <button 
+                  disabled={stats.normalHeard}
+                  onClick={() => playAudio('normal')}
+                  className={`w-full py-6 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg transition-all ${
+                    stats.normalHeard ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 shadow-green-900/40 shadow-xl'
+                  }`}
+                >
+                  {stats.normalHeard ? 'تم الاستماع للعادي' : 'تشغيل (Normal Speed)'}
+                  {!stats.normalHeard && <span className="text-2xl">⚡</span>}
+                </button>
               </div>
             </div>
-          )}
-        </div>
+
+            {message && (
+              <div className="p-4 bg-slate-800/50 rounded-xl text-yellow-200 text-sm animate-pulse border border-yellow-900/30">
+                {message}
+              </div>
+            )}
+
+            <audio ref={slowAudioRef} src={slowAudioUrl} className="hidden" onEnded={() => setMessage("انتهى المقطع البطيء.")} />
+            <audio ref={normalAudioRef} src={normalAudioUrl} className="hidden" onEnded={() => setMessage("انتهى المقطع العادي.")} />
+
+            <p className="text-xs text-slate-500 pt-4">تنبيه: يمكنك سماع كل مقطع مرة واحدة فقط.</p>
+          </div>
+        )}
       </div>
-      
-      {message && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-red-600 text-white px-8 py-4 rounded-full font-bold shadow-2xl z-50">
-          {message}
-          <button onClick={() => setMessage(null)} className="ml-4 underline text-sm">إغلاق</button>
-        </div>
-      )}
     </div>
   );
 }

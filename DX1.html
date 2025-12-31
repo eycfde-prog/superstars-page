@@ -25,9 +25,11 @@
         let studentName = "";
         let studentStats = { slowHeard: false, normalHeard: false };
 
-        // Audio Elements
-        const slowAudio = new Audio("D%20X%201%20S.wav");
-        const normalAudio = new Audio("D%20X%201%20N.wav");
+        // Audio Elements - Updated with more robust loading
+        const slowAudio = new Audio();
+        slowAudio.src = "D%20X%201%20S.wav";
+        const normalAudio = new Audio();
+        normalAudio.src = "D%20X%201%20N.wav";
 
         // UI Elements
         const loginPage = document.getElementById('login-page');
@@ -71,7 +73,6 @@
             if (!studentName) return;
 
             const studentId = studentName.toLowerCase().replace(/\s+/g, '_');
-            // Path Rule 1 compliant
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
 
             try {
@@ -115,11 +116,23 @@
             const updateData = isSlow ? { slowHeard: true } : { normalHeard: true };
 
             try {
+                // Update Firestore first to prevent double-play
                 await updateDoc(docRef, updateData);
                 studentStats = { ...studentStats, ...updateData };
                 renderStats();
-                audio.play();
-                showMsg(`جاري التشغيل (${isSlow ? 'بطيء' : 'عادي'})...`);
+
+                // Safe Audio Playback
+                audio.load(); // Refresh source
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        showMsg(`جاري التشغيل (${isSlow ? 'بطيء' : 'عادي'})...`);
+                    }).catch(error => {
+                        console.error("Playback failed:", error);
+                        showMsg("خطأ: المتصفح منع التشغيل أو الملف غير مدعوم.");
+                    });
+                }
             } catch (err) {
                 console.error("Update Error:", err);
                 showMsg("فشل تحديث البيانات. حاول مرة أخرى.");
@@ -150,7 +163,6 @@
             location.reload();
         };
 
-        // Start Auth on load
         initAuth();
 
     </script>

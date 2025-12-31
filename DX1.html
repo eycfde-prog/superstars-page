@@ -6,139 +6,145 @@
     <title>Superstars Dictation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <!-- Firebase SDKs -->
-   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-
-    // Firebase Configuration
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-        // ضع هنا بيانات الكونسول إذا كنت تختبر محلياً
-    };
     
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'superstars-dictation';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-    let currentUser = null;
-    let studentName = "";
-    let studentStats = { slowHeard: false, normalHeard: false };
-
-    // تعريف ملفات الصوت
-    const audioFiles = {
-        slow: new Audio("D%20X%201%20S.wav"),
-        normal: new Audio("D%20X%201%20N.wav")
-    };
-
-    // دالة لجلب العناصر وقت الحاجة لتجنب مشكلة الـ null
-    const getEl = (id) => document.getElementById(id);
-
-    // Auth Logic
-    onAuthStateChanged(auth, (user) => {
-        currentUser = user;
-        if (!user) {
-            signInAnonymously(auth).catch(console.error);
-        }
-    });
-
-    // Login Function
-    window.handleLogin = async (e) => {
-        e.preventDefault();
+        // Firebase Configuration
+        // ملاحظة: تأكد من وضع بياناتك الحقيقية هنا ليعمل الربط بنجاح
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSy...",
+            authDomain: "your-app.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-app.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:12345:web:abc123"
+        };
         
-        if (!currentUser) {
-            showMsg("جاري الاتصال بالسيرفر.. انتظر لحظة");
-            return;
-        }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'superstars-dictation';
 
-        studentName = getEl('name-input').value.trim();
-        if (!studentName) return;
+        let currentUser = null;
+        let studentName = "";
+        let studentStats = { slowHeard: false, normalHeard: false };
 
-        const studentId = studentName.toLowerCase().replace(/\s+/g, '_');
-        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
+        const audioFiles = {
+            slow: new Audio("D%20X%201%20S.wav"),
+            normal: new Audio("D%20X%201%20N.wav")
+        };
 
-        try {
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                studentStats = docSnap.data();
-            } else {
-                studentStats = { 
-                    slowHeard: false, 
-                    normalHeard: false, 
-                    studentName: studentName,
-                    createdAt: new Date().toISOString()
-                };
-                await setDoc(docRef, studentStats);
+        const getEl = (id) => document.getElementById(id);
+
+        // Auth Logic
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (!user) {
+                signInAnonymously(auth).catch(err => console.error("Auth Error:", err));
             }
+        });
+
+        // Login Function - المصححة
+        window.handleLogin = async (e) => {
+            if (e) e.preventDefault(); // منع إعادة تحميل الصفحة فوراً
             
-            renderStats();
-            getEl('display-name').innerText = studentName;
-            getEl('login-page').classList.add('hidden');
-            getEl('dictation-page').classList.remove('hidden');
-        } catch (err) {
-            console.error(err);
-            showMsg("خطأ في الاتصال. تأكد من إعدادات Firebase");
-        }
-    };
+            if (!currentUser) {
+                showMsg("جاري الاتصال بالسيرفر.. انتظر لحظة");
+                return;
+            }
 
-    // Play Function
-    window.playAudio = async (type) => {
-        if (!currentUser || !studentName) return;
-
-        const isSlow = type === 'slow';
-        const alreadyHeard = isSlow ? studentStats.slowHeard : studentStats.normalHeard;
-
-        if (alreadyHeard) {
-            showMsg("لقد استمعت لهذا المقطع بالفعل!");
-            return;
-        }
-
-        const studentId = studentName.toLowerCase().replace(/\s+/g, '_');
-        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
-        
-        try {
-            // تحديث الداتابيز أولاً لمنع الغش (Rule 1)
-            const updateData = isSlow ? { slowHeard: true } : { normalHeard: true };
-            await updateDoc(docRef, updateData);
+            const inputField = getEl('name-input');
+            studentName = inputField.value.trim();
             
-            // تحديث الحالة المحلية والواجهة
-            studentStats = { ...studentStats, ...updateData };
-            renderStats();
+            if (!studentName) {
+                showMsg("يرجى إدخال الاسم أولاً");
+                return;
+            }
 
-            // تشغيل الصوت
-            const audio = audioFiles[type];
-            audio.play().catch(err => {
-                showMsg("المتصفح منع التشغيل. اضغط مرة أخرى.");
-                console.error(err);
-            });
+            const studentId = studentName.toLowerCase().replace(/\s+/g, '_');
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
 
-            showMsg(`جاري تشغيل الوضع ${isSlow ? 'البطيء' : 'الطبيعي'}...`);
-        } catch (err) {
-            showMsg("حدث خطأ. حاول مجدداً.");
+            try {
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    studentStats = docSnap.data();
+                } else {
+                    studentStats = { 
+                        slowHeard: false, 
+                        normalHeard: false, 
+                        studentName: studentName,
+                        createdAt: new Date().toISOString()
+                    };
+                    await setDoc(docRef, studentStats);
+                }
+                
+                renderStats();
+                getEl('display-name').innerText = studentName;
+                getEl('login-page').classList.add('hidden');
+                getEl('dictation-page').classList.remove('hidden');
+            } catch (err) {
+                console.error("Firestore Error:", err);
+                showMsg("خطأ في الاتصال بالقاعدة. تأكد من إعدادات الـ Config");
+            }
+        };
+
+        // Play Function - المصححة
+        window.playAudio = async (type) => {
+            if (!currentUser || !studentName) return;
+
+            const isSlow = type === 'slow';
+            const alreadyHeard = isSlow ? studentStats.slowHeard : studentStats.normalHeard;
+
+            if (alreadyHeard) {
+                showMsg("لقد استمعت لهذا المقطع بالفعل!");
+                return;
+            }
+
+            const studentId = studentName.toLowerCase().replace(/\s+/g, '_');
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
+            
+            try {
+                const updateData = isSlow ? { slowHeard: true } : { normalHeard: true };
+                await updateDoc(docRef, updateData);
+                
+                studentStats = { ...studentStats, ...updateData };
+                renderStats();
+
+                const audio = audioFiles[type];
+                audio.play().catch(err => {
+                    showMsg("المتصفح منع التشغيل. اضغط مرة أخرى.");
+                });
+
+                showMsg(`جاري تشغيل الوضع ${isSlow ? 'البطيء' : 'الطبيعي'}...`);
+            } catch (err) {
+                showMsg("حدث خطأ أثناء تحديث البيانات.");
+            }
+        };
+
+        function renderStats() {
+            if (studentStats.slowHeard) {
+                getEl('btn-slow').classList.add('opacity-40', 'grayscale', 'pointer-events-none');
+                getEl('icon-slow').innerHTML = '✅';
+            }
+            if (studentStats.normalHeard) {
+                getEl('btn-normal').classList.add('opacity-40', 'grayscale', 'pointer-events-none');
+                getEl('icon-normal').innerHTML = '✅';
+            }
         }
-    };
 
-    function renderStats() {
-        if (studentStats.slowHeard) {
-            getEl('btn-slow').classList.add('opacity-60', 'grayscale', 'pointer-events-none');
-            getEl('icon-slow').innerHTML = '✅';
+        function showMsg(text) {
+            const box = getEl('message-box');
+            getEl('message-text').innerText = text;
+            box.classList.remove('hidden');
+            setTimeout(() => box.classList.add('hidden'), 4000);
         }
-        if (studentStats.normalHeard) {
-            getEl('btn-normal').classList.add('opacity-60', 'grayscale', 'pointer-events-none');
-            getEl('icon-normal').innerHTML = '✅';
-        }
-    }
 
-    function showMsg(text) {
-        const box = getEl('message-box');
-        getEl('message-text').innerText = text;
-        box.classList.remove('hidden');
-        setTimeout(() => box.classList.add('hidden'), 4000);
-    }
+        window.logout = () => location.reload();
+    </script>
 
-    window.logout = () => location.reload();
-</script>
     <style>
         body { font-family: 'Cairo', sans-serif; background-color: #020617; }
         .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
@@ -148,7 +154,6 @@
 </head>
 <body class="text-white min-h-screen flex items-center justify-center p-4">
 
-    <!-- PAGE 1: LOGIN -->
     <div id="login-page" class="w-full max-w-md animate-fade-in">
         <div class="text-center mb-8">
             <div class="inline-block p-4 bg-yellow-500 rounded-3xl shadow-lg shadow-yellow-500/20 mb-4 rotate-3">
@@ -163,7 +168,7 @@
                 <div>
                     <label class="block text-slate-400 text-sm mb-2 mr-2">اسم الطالب بالكامل</label>
                     <input id="name-input" type="text" required placeholder="ادخل اسمك هنا..." 
-                        class="w-full bg-slate-800 border border-slate-700 p-4 rounded-2xl focus:outline-none focus:border-yellow-500 text-center text-lg font-bold placeholder:font-normal">
+                        class="w-full bg-slate-800 border border-slate-700 p-4 rounded-2xl focus:outline-none focus:border-yellow-500 text-center text-lg font-bold placeholder:font-normal text-white">
                 </div>
                 <button type="submit" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-slate-900 font-black py-4 rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all text-xl">
                     بدأ الاختبار
@@ -172,9 +177,7 @@
         </div>
     </div>
 
-    <!-- PAGE 2: DICTATION -->
     <div id="dictation-page" class="w-full max-w-md hidden animate-fade-in">
-        <!-- Header -->
         <div class="glass p-4 rounded-2xl flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center text-slate-900 font-bold">S</div>
@@ -186,7 +189,6 @@
             <button onclick="logout()" class="text-xs text-slate-500 hover:text-white transition-colors bg-slate-800 px-3 py-1 rounded-md">خروج</button>
         </div>
 
-        <!-- Warning -->
         <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl mb-6 flex gap-3 text-right">
             <p class="text-xs text-red-200 leading-relaxed">
                 <strong class="text-red-500 block text-sm mb-1">⚠️ تنبيه هام!</strong>
@@ -194,7 +196,6 @@
             </p>
         </div>
 
-        <!-- Audio Cards -->
         <div class="space-y-4">
             <button id="btn-slow" onclick="playAudio('slow')" class="w-full text-right glass p-6 rounded-[2rem] flex items-center justify-between hover:bg-slate-800/50 transition-all border-r-4 border-r-blue-500 group">
                 <div class="flex items-center gap-4">
@@ -219,15 +220,13 @@
             </button>
         </div>
 
-        <!-- Message Box -->
         <div id="message-box" class="hidden mt-8 p-4 bg-slate-900 border border-yellow-500/30 rounded-2xl text-center">
             <p id="message-text" class="text-yellow-500 text-sm font-bold animate-pulse"></p>
         </div>
 
         <footer class="mt-12 text-center opacity-30">
             <p class="text-[10px] font-mono uppercase tracking-widest">Activity ID: D X 1</p>
-            <p class="text-[9px] mt-1 italic">Designed for Superstars</p>
-        </footer>
+        </div>
     </div>
 
 </body>

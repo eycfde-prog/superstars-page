@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 // Configuration placeholder - environment will provide these
@@ -21,14 +21,18 @@ export default function App() {
   const slowAudioRef = useRef(null);
   const normalAudioRef = useRef(null);
 
-  // URLs للمقاطع الصوتية (أمثلة)
-  const slowAudioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; 
-  const normalAudioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3";
+  // تأكد من وضع الملفات في نفس المسار أو استخدام رابط مباشر كامل
+  const slowAudioUrl = "D%20X%201%20S.wav"; 
+  const normalAudioUrl = "D%20X%201%20N.wav";
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        await signInAnonymously(auth);
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
       } catch (err) {
         console.error("Auth error", err);
       }
@@ -42,45 +46,78 @@ export default function App() {
   }, []);
 
   const handleLogin = async () => {
-    if (!studentName.trim()) return;
+    if (!studentName.trim() || !user) return;
     setLoading(true);
-    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentName.toLowerCase().trim());
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      setStats(docSnap.data());
-    } else {
-      const initialData = { slowHeard: false, normalHeard: false, lastActive: new Date().toISOString() };
-      await setDoc(docRef, initialData);
-      setStats(initialData);
+    
+    const studentId = studentName.toLowerCase().trim().replace(/\s+/g, '_');
+    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
+    
+    try {
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setStats(docSnap.data());
+      } else {
+        const initialData = { 
+          slowHeard: false, 
+          normalHeard: false, 
+          lastActive: new Date().toISOString(),
+          studentName: studentName.trim()
+        };
+        await setDoc(docRef, initialData);
+        setStats(initialData);
+      }
+      setIsRegistered(true);
+    } catch (err) {
+      console.error("Firestore Error:", err);
+      setMessage("حدث خطأ في الاتصال بالقاعدة.");
     }
-    setIsRegistered(true);
     setLoading(false);
   };
 
   const playAudio = async (type) => {
-    if (!user) return;
+    if (!user || !isRegistered) return;
     
-    const audio = type === 'slow' ? slowAudioRef.current : normalAudioRef.current;
-    const isHeard = type === 'slow' ? stats.slowHeard : stats.normalHeard;
+    const isSlow = type === 'slow';
+    const audio = isSlow ? slowAudioRef.current : normalAudioRef.current;
+    const isHeard = isSlow ? stats.slowHeard : stats.normalHeard;
 
     if (isHeard) {
       setMessage("عفواً يا بطل، لقد استمعت لهذا المقطع بالفعل!");
       return;
     }
 
-    audio.play();
-    
-    // بمجرد البدء، نحدث قاعدة البيانات فوراً لمنع التلاعب
-    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentName.toLowerCase().trim());
-    const updateData = type === 'slow' ? { slowHeard: true } : { normalHeard: true };
-    
-    await updateDoc(docRef, updateData);
-    setStats(prev => ({ ...prev, ...updateData }));
-    setMessage(`جاري تشغيل المقطع (${type === 'slow' ? 'بطيء' : 'عادي'})... ركز جيداً!`);
+    // محاولة التشغيل مع معالجة الخطأ
+    try {
+      const studentId = studentName.toLowerCase().trim().replace(/\s+/g, '_');
+      const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
+      const updateData = isSlow ? { slowHeard: true } : { normalHeard: true };
+      
+      await updateDoc(docRef, updateData);
+      setStats(prev => ({ ...prev, ...updateData }));
+      
+      // نتحقق من جاهزية الملف قبل التشغيل
+      audio.load();
+      const playPromise = audio.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Playback failed:", error);
+          setMessage("خطأ: تعذر تشغيل الملف. تأكد من وجود ملف الصوت بنفس الاسم.");
+        });
+      }
+      
+      setMessage(`جاري تشغيل المقطع (${isSlow ? 'بطيء' : 'عادي'})... ركز جيداً!`);
+    } catch (err) {
+      console.error("Update Error:", err);
+      setMessage("فشل تحديث البيانات.");
+    }
   };
 
-  if (loading) return <div className="flex h-screen items-center justify-center bg-slate-900 text-white text-2xl font-bold">جاري التحميل...</div>;
+  if (loading) return (
+    <div className="flex h-screen items-center justify-center bg-slate-900 text-white text-2xl font-bold font-sans">
+      جاري التحميل...
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans p-4 flex flex-col items-center justify-center">
@@ -89,11 +126,11 @@ export default function App() {
         
         {!isRegistered ? (
           <div className="space-y-4">
-            <p className="text-center text-slate-400">من فضلك أدخل اسمك لبدء الاختبار</p>
+            <p className="text-center text-slate-400">أدخل اسمك لبدء الاختبار</p>
             <input 
               type="text" 
               placeholder="اسم الطالب بالكامل"
-              className="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:border-yellow-500 transition-all text-center"
+              className="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:border-yellow-500 transition-all text-center text-white"
               value={studentName}
               onChange={(e) => setStudentName(e.target.value)}
             />
@@ -111,34 +148,32 @@ export default function App() {
               <p className="text-xl font-bold text-yellow-500 uppercase">{studentName}</p>
             </div>
 
-            <div className="space-y-6">
-              {/* Slow Motion Section */}
-              <div className="flex flex-col items-center gap-2">
-                <button 
-                  disabled={stats.slowHeard}
-                  onClick={() => playAudio('slow')}
-                  className={`w-full py-6 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg transition-all ${
-                    stats.slowHeard ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/40 shadow-xl'
-                  }`}
-                >
-                  {stats.slowHeard ? 'تم الاستماع للبطيء' : 'تشغيل (Slow Motion)'}
-                  {!stats.slowHeard && <span className="text-2xl">🐢</span>}
-                </button>
-              </div>
+            <div className="bg-red-900/20 border border-red-900/50 p-3 rounded-xl mb-4">
+              <p className="text-xs text-red-400 font-bold uppercase">⚠️ Warning: Single Play Only</p>
+            </div>
 
-              {/* Normal Speed Section */}
-              <div className="flex flex-col items-center gap-2">
-                <button 
-                  disabled={stats.normalHeard}
-                  onClick={() => playAudio('normal')}
-                  className={`w-full py-6 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg transition-all ${
-                    stats.normalHeard ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 shadow-green-900/40 shadow-xl'
-                  }`}
-                >
-                  {stats.normalHeard ? 'تم الاستماع للعادي' : 'تشغيل (Normal Speed)'}
-                  {!stats.normalHeard && <span className="text-2xl">⚡</span>}
-                </button>
-              </div>
+            <div className="space-y-6">
+              <button 
+                disabled={stats.slowHeard}
+                onClick={() => playAudio('slow')}
+                className={`w-full py-6 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg transition-all ${
+                  stats.slowHeard ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/40 shadow-xl'
+                }`}
+              >
+                {stats.slowHeard ? 'Used (Slow)' : 'Play (Slow Motion)'}
+                {!stats.slowHeard && <span className="text-2xl">🐢</span>}
+              </button>
+
+              <button 
+                disabled={stats.normalHeard}
+                onClick={() => playAudio('normal')}
+                className={`w-full py-6 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg transition-all ${
+                  stats.normalHeard ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 shadow-green-900/40 shadow-xl'
+                }`}
+              >
+                {stats.normalHeard ? 'Used (Normal)' : 'Play (Normal Speed)'}
+                {!stats.normalHeard && <span className="text-2xl">⚡</span>}
+              </button>
             </div>
 
             {message && (
@@ -147,15 +182,17 @@ export default function App() {
               </div>
             )}
 
-            <audio ref={slowAudioRef} src={slowAudioUrl} className="hidden" onEnded={() => setMessage("انتهى المقطع البطيء.")} />
-            <audio ref={normalAudioRef} src={normalAudioUrl} className="hidden" onEnded={() => setMessage("انتهى المقطع العادي.")} />
+            <audio ref={slowAudioRef} preload="auto">
+              <source src={slowAudioUrl} type="audio/wav" />
+            </audio>
+            <audio ref={normalAudioRef} preload="auto">
+              <source src={normalAudioUrl} type="audio/wav" />
+            </audio>
 
-            <p className="text-xs text-slate-500 pt-4">تنبيه: يمكنك سماع كل مقطع مرة واحدة فقط.</p>
+            <p className="text-xs text-slate-500 pt-4 font-mono">ACTIVITY_ID: D X 1</p>
           </div>
         )}
       </div>
     </div>
   );
 }
-
-

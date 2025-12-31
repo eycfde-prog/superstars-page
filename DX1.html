@@ -1,88 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
-// Configuration placeholder - environment will provide these
-const firebaseConfig = JSON.parse(__firebase_config);
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'superstars-dictation';
-
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [studentName, setStudentName] = useState('');
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [stats, setStats] = useState({ slowHeard: false, normalHeard: false });
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('');
-
-  const slowAudioRef = useRef(null);
-  const normalAudioRef = useRef(null);
-
-  // URLs للمقاطع الصوتية (أمثلة)
-  const slowAudioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; 
-  const normalAudioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3";
-
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        await signInAnonymously(auth);
-      } catch (err) {
-        console.error("Auth error", err);
-      }
-    };
-    initAuth();
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const handleLogin = async () => {
-    if (!studentName.trim()) return;
-    setLoading(true);
-    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentName.toLowerCase().trim());
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      setStats(docSnap.data());
-    } else {
-      const initialData = { slowHeard: false, normalHeard: false, lastActive: new Date().toISOString() };
-      await setDoc(docRef, initialData);
-      setStats(initialData);
-    }
-    setIsRegistered(true);
-    setLoading(false);
-  };
-
-  const playAudio = async (type) => {
-    if (!user) return;
-    
-    const audio = type === 'slow' ? slowAudioRef.current : normalAudioRef.current;
-    const isHeard = type === 'slow' ? stats.slowHeard : stats.normalHeard;
-
-    if (isHeard) {
-      setMessage("عفواً يا بطل، لقد استمعت لهذا المقطع بالفعل!");
-      return;
-    }
-
-    audio.play();
-    
-    // بمجرد البدء، نحدث قاعدة البيانات فوراً لمنع التلاعب
-    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentName.toLowerCase().trim());
-    const updateData = type === 'slow' ? { slowHeard: true } : { normalHeard: true };
-    
-    await updateDoc(docRef, updateData);
-    setStats(prev => ({ ...prev, ...updateData }));
-    setMessage(`جاري تشغيل المقطع (${type === 'slow' ? 'بطيء' : 'عادي'})... ركز جيداً!`);
-  };
-
-  if (loading) return <div className="flex h-screen items-center justify-center bg-slate-900 text-white text-2xl font-bold">جاري التحميل...</div>;
-
-  return (
     <div className="min-h-screen bg-slate-950 text-white font-sans p-4 flex flex-col items-center justify-center">
       <div className="max-w-md w-full bg-slate-900 rounded-3xl p-8 shadow-2xl border border-slate-800">
         <h1 className="text-3xl font-extrabold text-center mb-6 text-yellow-500">Superstars Dictation</h1>
@@ -157,3 +73,4 @@ export default function App() {
     </div>
   );
 }
+

@@ -22,7 +22,7 @@
     <div class="max-w-2xl w-full">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl golden-text mb-2 tracking-tighter">Golden Ear X 👂</h1>
-            <p class="text-gray-400 text-lg uppercase tracking-widest">الأذن الذهبية - أنشطة إكس بوكس</p>
+            <p class="text-gray-400 text-lg uppercase tracking-widest text-sm md:text-base">الأذن الذهبية - أنشطة إكس بوكس</p>
         </header>
 
         <div class="glass-card p-6 md:p-10 text-center shadow-2xl">
@@ -40,9 +40,10 @@
                     <svg id="playIcon" class="w-16 h-16 text-black ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4.5 3.5v13l11-6.5-11-6.5z"></path></svg>
                     <svg id="pauseIcon" class="w-16 h-16 text-black hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"></path></svg>
                 </div>
-                <p id="statusText" class="text-yellow-500 font-bold animate-pulse hidden">جاري الاستماع الآن...</p>
-                <p id="limitNote" class="text-gray-500 text-sm mt-2">تنبيه: يمكنك الاستماع للمقطع مرة واحدة فقط.</p>
-                <audio id="mainAudio" src="GEX1.Wav"></audio>
+                <p id="statusText" class="text-yellow-500 font-bold animate-pulse hidden text-sm">جاري الاستماع الآن...</p>
+                <p id="limitNote" class="text-gray-500 text-sm mt-2 font-bold">تنبيه: يمكنك الاستماع للمقطع مرة واحدة فقط.</p>
+                <!-- هام: تأكد من صحة هذا الرابط -->
+                <audio id="mainAudio" src="https://raw.githubusercontent.com/YourUsername/YourRepo/main/GEX1.Wav"></audio>
             </div>
 
             <div class="space-y-4">
@@ -56,6 +57,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -68,34 +70,62 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
+    const appId = "eyc-superstars";
 
     const audio = document.getElementById('mainAudio');
     const playContainer = document.getElementById('playContainer');
     const statusText = document.getElementById('statusText');
     const submitBtn = document.getElementById('submitBtn');
 
-    let studentId = localStorage.getItem('gex_uid') || 'std_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('gex_uid', studentId);
+    let currentUser = null;
+    let localUid = localStorage.getItem('gex_local_id') || 'local_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('gex_local_id', localUid);
 
-    // التحقق من حالة الطالب عند تحميل الصفحة
-    async function checkStatus() {
-        const docSnap = await getDoc(doc(db, "listening_stats", studentId));
-        if (docSnap.exists() && docSnap.data().listened) {
-            disableAudioControl("لقد استمعت للمقطع مسبقاً!");
+    // التحقق من الاستماع محلياً أولاً لسرعة الاستجابة
+    if (localStorage.getItem('gex1_listened') === 'true') {
+        setTimeout(() => disableAudioControl("لقد استمعت للمقطع مسبقاً!"), 500);
+    }
+
+    const initAuth = async () => {
+        try {
+            const result = await signInAnonymously(auth);
+            currentUser = result.user;
+            checkCloudStatus();
+        } catch (error) {
+            console.error("Auth Error:", error.code);
+            // إذا فشل Auth (مثل خطأ config)، سنعتمد على الهوية المحلية فقط
+            currentUser = { uid: localUid, isLocal: true };
+        }
+    };
+
+    async function checkCloudStatus() {
+        if (!currentUser || currentUser.isLocal) return;
+        try {
+            const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'activity_status', 'gex1');
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().listened) {
+                disableAudioControl("لقد استمعت للمقطع مسبقاً!");
+                localStorage.setItem('gex1_listened', 'true');
+            }
+        } catch (e) {
+            console.error("Firestore Check Error:", e);
         }
     }
-    checkStatus();
 
-    window.toggleAudio = async function() {
+    window.toggleAudio = function() {
         if (playContainer.classList.contains('disabled')) return;
 
         if (audio.paused) {
             audio.play().then(() => {
+                statusText.innerText = "جاري الاستماع الآن...";
                 statusText.classList.remove('hidden');
                 document.getElementById('playIcon').classList.add('hidden');
                 document.getElementById('pauseIcon').classList.remove('hidden');
-            }).catch(err => alert("تأكد من وجود ملف GEX1.Wav في نفس المجلد على GitHub"));
+            }).catch(err => {
+                alert("يرجى التأكد من رابط ملف الصوت GEX1.Wav");
+            });
         } else {
             audio.pause();
             statusText.classList.add('hidden');
@@ -106,10 +136,14 @@
 
     audio.onended = async function() {
         disableAudioControl("انتهت محاولة الاستماع.");
-        await setDoc(doc(db, "listening_stats", studentId), {
-            listened: true,
-            time: serverTimestamp()
-        }, { merge: true });
+        localStorage.setItem('gex1_listened', 'true');
+        
+        if (currentUser && !currentUser.isLocal) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'activity_status', 'gex1');
+                await setDoc(docRef, { listened: true, timestamp: serverTimestamp() }, { merge: true });
+            } catch (e) { console.error("Save Error:", e); }
+        }
     };
 
     function disableAudioControl(msg) {
@@ -120,29 +154,30 @@
         statusText.classList.remove('hidden');
         document.getElementById('playIcon').classList.remove('hidden');
         document.getElementById('pauseIcon').classList.add('hidden');
+        playContainer.onclick = null;
     }
 
     window.submitAnswer = async function() {
         const answer = document.getElementById('studentAnswer').value.trim();
         if (!answer) return alert("من فضلك اكتب الإجابة أولاً.");
-
+        
         submitBtn.disabled = true;
         submitBtn.innerText = "جاري الإرسال...";
 
         try {
-            await setDoc(doc(db, "student_answers", studentId), {
-                answer: answer,
-                time: serverTimestamp()
-            }, { merge: true });
-            
+            if (currentUser && !currentUser.isLocal) {
+                const answerRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'answers', 'gex1');
+                await setDoc(answerRef, { answer: answer, activity: "Golden Ear X", timestamp: serverTimestamp() }, { merge: true });
+            }
             alert("تم تسجيل إجابتك بنجاح!");
-            // التحويل لجوجل فورم (اختياري)
             window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform";
         } catch (e) {
-            alert("حدث خطأ في الإرسال، حاول ثانية.");
-            submitBtn.disabled = false;
+            alert("سيتم توجيهك للفورم مباشرة لتسجيل الإجابة.");
+            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform";
         }
     };
+
+    initAuth();
 </script>
 </body>
 </html>

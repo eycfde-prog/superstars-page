@@ -37,12 +37,14 @@
             transition: all 0.3s ease;
             box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
         }
-        .play-btn:hover {
+        .play-btn:hover:not(.disabled) {
             transform: scale(1.1);
             box-shadow: 0 0 50px rgba(241, 196, 15, 0.5);
         }
-        .play-btn:active {
-            transform: scale(0.95);
+        .play-btn.disabled {
+            filter: grayscale(1);
+            cursor: not-allowed;
+            opacity: 0.5;
         }
         .instruction-badge {
             background: rgba(243, 156, 18, 0.2);
@@ -56,78 +58,49 @@
             color: white;
             resize: none;
         }
-        textarea:focus {
-            border-color: #f1c40f;
-            outline: none;
-            box-shadow: 0 0 10px rgba(241, 196, 15, 0.2);
-        }
     </style>
 </head>
 <body class="p-4 md:p-8 flex items-center justify-center">
 
     <div class="max-w-2xl w-full">
-        <!-- Header -->
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl golden-text mb-2 tracking-tighter">Golden Ear X 👂</h1>
             <p class="text-gray-400 text-lg uppercase tracking-widest">الأذن الذهبية - أنشطة إكس بوكس</p>
         </header>
 
-        <!-- Activity Card -->
         <div class="glass-card p-6 md:p-10 text-center shadow-2xl">
-            
-            <!-- Instructions -->
             <div class="text-right mb-8">
                 <div class="instruction-badge">
-                    <span class="font-bold text-yellow-500">الاستفادة:</span>
-                    تطوير التركيز العميق وفهم المعلومات وتلخيصها (Cohesion).
+                    <span class="font-bold text-yellow-500">الاستفادة:</span> تطوير التركيز العميق وفهم المعلومات وتلخيصها.
                 </div>
                 <div class="instruction-badge">
-                    <span class="font-bold text-yellow-500">المطلوب:</span>
-                    استمع جيداً ثم لخص ما فهمته في <span class="text-white underline">3 جمل فقط لا غير</span> (ممنوع أقل أو أكثر).
+                    <span class="font-bold text-yellow-500">المطلوب:</span> استمع جيداً ثم لخص ما فهمته في <span class="text-white underline">3 جمل فقط</span>.
                 </div>
             </div>
 
-            <!-- Audio Player Section -->
             <div class="flex flex-col items-center justify-center mb-10">
                 <div id="playContainer" class="play-btn mb-4" onclick="toggleAudio()">
-                    <svg id="playIcon" class="w-16 h-16 text-black ml-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M4.5 3.5v13l11-6.5-11-6.5z"></path>
-                    </svg>
-                    <svg id="pauseIcon" class="w-16 h-16 text-black hidden" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"></path>
-                    </svg>
+                    <svg id="playIcon" class="w-16 h-16 text-black ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4.5 3.5v13l11-6.5-11-6.5z"></path></svg>
+                    <svg id="pauseIcon" class="w-16 h-16 text-black hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"></path></svg>
                 </div>
                 <p id="statusText" class="text-yellow-500 font-bold animate-pulse hidden">جاري الاستماع الآن...</p>
-                <p class="text-gray-500 text-sm mt-2">ملف النشاط: GEX1.Wav</p>
-                
-                <!-- Audio Element -->
+                <p id="limitNote" class="text-gray-500 text-sm mt-2">تنبيه: يمكنك الاستماع للمقطع مرة واحدة فقط.</p>
                 <audio id="mainAudio" src="https://raw.githubusercontent.com/YourUsername/YourRepo/main/GEX1.Wav"></audio>
             </div>
 
-            <!-- Answer Section -->
             <div class="space-y-4">
-                <textarea id="studentAnswer" 
-                    placeholder="اكتب الجمل الثلاث هنا..." 
-                    rows="4" 
-                    class="w-full p-4 rounded-xl text-lg text-right"
-                ></textarea>
-                
-                <button onclick="submitAnswer()" class="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-black py-4 rounded-xl text-xl transition duration-300 shadow-lg transform hover:-translate-y-1">
+                <textarea id="studentAnswer" placeholder="اكتب الجمل الثلاث هنا..." rows="4" class="w-full p-4 rounded-xl text-lg text-right"></textarea>
+                <button id="submitBtn" onclick="submitAnswer()" class="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-black py-4 rounded-xl text-xl shadow-lg transition transform hover:-translate-y-1">
                     إرسال الإجابة النهائية
                 </button>
             </div>
-
         </div>
-
-        <footer class="mt-8 text-center text-gray-600 text-xs">
-            &copy; 2024 EYC Superstars - Xbox Activities Division
-        </footer>
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyCpRchvIeq-ElvFxYaFUGgiTZB6Z3Gqa4s",
             authDomain: "eyc-superstars.firebaseapp.com",
@@ -138,56 +111,83 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        console.log("Firebase Connected!");
-    </script>
+        const db = getFirestore(app);
 
-    <script>
+        // بصمة الطالب (Student ID)
+        let studentId = localStorage.getItem('gex_uid');
+        if (!studentId) {
+            studentId = 'std_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('gex_uid', studentId);
+        }
+
         const audio = document.getElementById('mainAudio');
-        const playIcon = document.getElementById('playIcon');
-        const pauseIcon = document.getElementById('pauseIcon');
+        const playContainer = document.getElementById('playContainer');
         const statusText = document.getElementById('statusText');
 
-        function toggleAudio() {
+        // 1. فحص هل سمع الطالب المقطع مسبقاً عند تحميل الصفحة
+        async function checkStatus() {
+            const docRef = doc(db, "listening_stats", studentId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().listened) {
+                disableAudio("نعتذر، لقد استمعت لهذا المقطع مسبقاً.");
+            }
+        }
+        checkStatus();
+
+        window.toggleAudio = function() {
             if (audio.paused) {
                 audio.play();
-                playIcon.classList.add('hidden');
-                pauseIcon.classList.remove('hidden');
                 statusText.classList.remove('hidden');
+                document.getElementById('playIcon').classList.add('hidden');
+                document.getElementById('pauseIcon').classList.remove('hidden');
             } else {
                 audio.pause();
-                playIcon.classList.remove('hidden');
-                pauseIcon.classList.add('hidden');
                 statusText.classList.add('hidden');
+                document.getElementById('playIcon').classList.remove('hidden');
+                document.getElementById('pauseIcon').classList.add('hidden');
             }
-        }
-
-        audio.onended = function() {
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
-            statusText.classList.add('hidden');
         };
 
-        function submitAnswer() {
-            const text = document.getElementById('studentAnswer').value.trim();
-            
-            if (text === "") {
-                alert("برجاء كتابة الملخص أولاً!");
-                return;
-            }
+        // 2. عند انتهاء الصوت: سجل في Firebase وامنع الطالب من الإعادة
+        audio.onended = async function() {
+            disableAudio("تمت محاولة الاستماع الوحيدة المتاحة.");
+            await setDoc(doc(db, "listening_stats", studentId), {
+                listened: true,
+                time: serverTimestamp()
+            }, { merge: true });
+        };
 
-            // Simple validation for 3 sentences (looking for full stops)
-            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-            
-            if (sentences.length !== 3) {
-                if(!confirm(`لقد كتبت ${sentences.length} جمل. تذكر أن النشاط يتطلب 3 جمل فقط لا غير. هل تريد الإرسال على أي حال؟`)) {
-                    return;
-                }
-            }
-
-            // Redirect to Google Form
-            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform?usp=publish-editor";
-            window.open(formUrl, '_blank');
+        function disableAudio(msg) {
+            audio.pause();
+            audio.src = ""; // حذف المصدر
+            playContainer.onclick = null;
+            playContainer.classList.add('disabled');
+            statusText.innerText = msg;
+            statusText.classList.remove('hidden');
         }
+
+        // 3. إرسال الإجابة وحفظها في Firestore
+        window.submitAnswer = async function() {
+            const answerText = document.getElementById('studentAnswer').value.trim();
+            if (!answerText) return alert("اكتب الإجابة أولاً!");
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "جاري الحفظ...";
+
+            try {
+                await setDoc(doc(db, "student_answers", studentId), {
+                    answer: answerText,
+                    timestamp: serverTimestamp()
+                }, { merge: true });
+                
+                alert("تم حفظ إجابتك بنجاح!");
+                window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform";
+            } catch (e) {
+                alert("حدث خطأ أثناء الحفظ، حاول مرة أخرى.");
+                submitBtn.disabled = false;
+            }
+        };
     </script>
 </body>
 </html>

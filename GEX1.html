@@ -85,7 +85,7 @@
                 </div>
                 <p id="statusText" class="text-yellow-500 font-bold animate-pulse hidden">جاري الاستماع الآن...</p>
                 <p id="limitNote" class="text-gray-500 text-sm mt-2">تنبيه: يمكنك الاستماع للمقطع مرة واحدة فقط.</p>
-                <audio id="mainAudio" src="https://raw.githubusercontent.com/YourUsername/YourRepo/main/GEX1.Wav"></audio>
+                <audio id="mainAudio" src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/GEX1.Wav"></audio>
             </div>
 
             <div class="space-y-4">
@@ -97,97 +97,65 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCpRchvIeq-ElvFxYaFUGgiTZB6Z3Gqa4s",
-            authDomain: "eyc-superstars.firebaseapp.com",
-            projectId: "eyc-superstars",
-            storageBucket: "eyc-superstars.firebasestorage.app",
-            messagingSenderId: "369178728426",
-            appId: "1:369178728426:web:e03a4ec70b50d2644a4493"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyCpRchvIeq-ElvFxYaFUGgiTZB6Z3Gqa4s",
+        authDomain: "eyc-superstars.firebaseapp.com",
+        projectId: "eyc-superstars",
+        storageBucket: "eyc-superstars.firebasestorage.app",
+        messagingSenderId: "369178728426",
+        appId: "1:369178728426:web:e03a4ec70b50d2644a4493"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // بصمة الطالب (Student ID)
-        let studentId = localStorage.getItem('gex_uid');
-        if (!studentId) {
-            studentId = 'std_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('gex_uid', studentId);
+    const audio = document.getElementById('mainAudio');
+    const playContainer = document.getElementById('playContainer');
+    const statusText = document.getElementById('statusText');
+
+    let studentId = localStorage.getItem('gex_uid') || 'std_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('gex_uid', studentId);
+
+    // دالة التشغيل جعلناها تابعة للـ window لتعمل مع onclick
+    window.toggleAudio = async function() {
+        // فحص سريع قبل التشغيل
+        const docSnap = await getDoc(doc(db, "listening_stats", studentId));
+        if (docSnap.exists() && docSnap.data().listened) {
+            alert("لقد استمعت للمقطع مسبقاً!");
+            return;
         }
 
-        const audio = document.getElementById('mainAudio');
-        const playContainer = document.getElementById('playContainer');
-        const statusText = document.getElementById('statusText');
-
-        // 1. فحص هل سمع الطالب المقطع مسبقاً عند تحميل الصفحة
-        async function checkStatus() {
-            const docRef = doc(db, "listening_stats", studentId);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists() && docSnap.data().listened) {
-                disableAudio("نعتذر، لقد استمعت لهذا المقطع مسبقاً.");
-            }
-        }
-        checkStatus();
-
-        window.toggleAudio = function() {
-            if (audio.paused) {
-                audio.play();
+        if (audio.paused) {
+            audio.play().then(() => {
                 statusText.classList.remove('hidden');
                 document.getElementById('playIcon').classList.add('hidden');
                 document.getElementById('pauseIcon').classList.remove('hidden');
-            } else {
-                audio.pause();
-                statusText.classList.add('hidden');
-                document.getElementById('playIcon').classList.remove('hidden');
-                document.getElementById('pauseIcon').classList.add('hidden');
-            }
-        };
-
-        // 2. عند انتهاء الصوت: سجل في Firebase وامنع الطالب من الإعادة
-        audio.onended = async function() {
-            disableAudio("تمت محاولة الاستماع الوحيدة المتاحة.");
-            await setDoc(doc(db, "listening_stats", studentId), {
-                listened: true,
-                time: serverTimestamp()
-            }, { merge: true });
-        };
-
-        function disableAudio(msg) {
+            }).catch(err => alert("خطأ في تشغيل الملف: تأكد من وجود GEX1.Wav في نفس المجلد"));
+        } else {
             audio.pause();
-            audio.src = ""; // حذف المصدر
-            playContainer.onclick = null;
-            playContainer.classList.add('disabled');
-            statusText.innerText = msg;
-            statusText.classList.remove('hidden');
+            statusText.classList.add('hidden');
+            document.getElementById('playIcon').classList.remove('hidden');
+            document.getElementById('pauseIcon').classList.add('hidden');
         }
+    };
 
-        // 3. إرسال الإجابة وحفظها في Firestore
-        window.submitAnswer = async function() {
-            const answerText = document.getElementById('studentAnswer').value.trim();
-            if (!answerText) return alert("اكتب الإجابة أولاً!");
-
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "جاري الحفظ...";
-
-            try {
-                await setDoc(doc(db, "student_answers", studentId), {
-                    answer: answerText,
-                    timestamp: serverTimestamp()
-                }, { merge: true });
-                
-                alert("تم حفظ إجابتك بنجاح!");
-                window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform";
-            } catch (e) {
-                alert("حدث خطأ أثناء الحفظ، حاول مرة أخرى.");
-                submitBtn.disabled = false;
-            }
-        };
-    </script>
+    audio.onended = async function() {
+        // حجب التشغيل وحفظ الحالة
+        audio.src = ""; 
+        playContainer.style.opacity = "0.5";
+        playContainer.onclick = null;
+        statusText.innerText = "انتهت محاولة الاستماع.";
+        
+        await setDoc(doc(db, "listening_stats", studentId), {
+            listened: true,
+            time: serverTimestamp()
+        });
+    };
+</script>
 </body>
 </html>
+

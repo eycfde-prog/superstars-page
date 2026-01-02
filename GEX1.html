@@ -42,8 +42,8 @@
                 </div>
                 <p id="statusText" class="text-yellow-500 font-bold animate-pulse hidden text-sm">جاري الاستماع الآن...</p>
                 <p id="limitNote" class="text-gray-500 text-sm mt-2 font-bold">تنبيه: يمكنك الاستماع للمقطع مرة واحدة فقط.</p>
-                <!-- هام: تأكد من صحة هذا الرابط -->
-                <audio id="mainAudio" src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/GE1.Wav"></audio>
+                <!-- تم تحديث الرابط وإضافة crossorigin لضمان التشغيل -->
+                <audio id="mainAudio" crossorigin="anonymous" src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/GE1.Wav"></audio>
             </div>
 
             <div class="space-y-4">
@@ -83,7 +83,6 @@
     let localUid = localStorage.getItem('gex_local_id') || 'local_' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('gex_local_id', localUid);
 
-    // التحقق من الاستماع محلياً أولاً لسرعة الاستجابة
     if (localStorage.getItem('gex1_listened') === 'true') {
         setTimeout(() => disableAudioControl("لقد استمعت للمقطع مسبقاً!"), 500);
     }
@@ -94,8 +93,6 @@
             currentUser = result.user;
             checkCloudStatus();
         } catch (error) {
-            console.error("Auth Error:", error.code);
-            // إذا فشل Auth (مثل خطأ config)، سنعتمد على الهوية المحلية فقط
             currentUser = { uid: localUid, isLocal: true };
         }
     };
@@ -109,9 +106,7 @@
                 disableAudioControl("لقد استمعت للمقطع مسبقاً!");
                 localStorage.setItem('gex1_listened', 'true');
             }
-        } catch (e) {
-            console.error("Firestore Check Error:", e);
-        }
+        } catch (e) { console.error(e); }
     }
 
     window.toggleAudio = function() {
@@ -124,7 +119,9 @@
                 document.getElementById('playIcon').classList.add('hidden');
                 document.getElementById('pauseIcon').classList.remove('hidden');
             }).catch(err => {
-                alert("يرجى التأكد من رابط ملف الصوت GEX1.Wav");
+                console.error("Audio Error:", err);
+                // تم تعديل الرسالة لتناسب الملف الجديد GE1.Wav
+                alert("تعذر تشغيل الصوت. يرجى التأكد من أن ملف GE1.Wav متاح على GitHub بصيغة صحيحة.");
             });
         } else {
             audio.pause();
@@ -142,7 +139,7 @@
             try {
                 const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'activity_status', 'gex1');
                 await setDoc(docRef, { listened: true, timestamp: serverTimestamp() }, { merge: true });
-            } catch (e) { console.error("Save Error:", e); }
+            } catch (e) { }
         }
     };
 
@@ -172,7 +169,6 @@
             alert("تم تسجيل إجابتك بنجاح!");
             window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform";
         } catch (e) {
-            alert("سيتم توجيهك للفورم مباشرة لتسجيل الإجابة.");
             window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform";
         }
     };
@@ -181,5 +177,3 @@
 </script>
 </body>
 </html>
-
-

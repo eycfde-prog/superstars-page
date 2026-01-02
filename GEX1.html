@@ -7,57 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
-            color: #fff;
-            min-height: 100vh;
-        }
-        .golden-text {
-            background: linear-gradient(to bottom, #f1c40f, #f39c12);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-        }
-        .play-btn {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
-        }
-        .play-btn:hover:not(.disabled) {
-            transform: scale(1.1);
-            box-shadow: 0 0 50px rgba(241, 196, 15, 0.5);
-        }
-        .play-btn.disabled {
-            filter: grayscale(1);
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-        .instruction-badge {
-            background: rgba(243, 156, 18, 0.2);
-            border-right: 4px solid #f39c12;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-        }
-        textarea {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(241, 196, 15, 0.3);
-            color: white;
-            resize: none;
-        }
+        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); color: #fff; min-height: 100vh; }
+        .golden-text { background: linear-gradient(to bottom, #f1c40f, #f39c12); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
+        .play-btn { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 30px rgba(241, 196, 15, 0.3); }
+        .play-btn:hover:not(.disabled) { transform: scale(1.1); box-shadow: 0 0 50px rgba(241, 196, 15, 0.5); }
+        .play-btn.disabled { filter: grayscale(1); cursor: not-allowed; opacity: 0.5; }
+        .instruction-badge { background: rgba(243, 156, 18, 0.2); border-right: 4px solid #f39c12; padding: 10px 15px; margin-bottom: 15px; }
+        textarea { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(241, 196, 15, 0.3); color: white; resize: none; }
     </style>
 </head>
 <body class="p-4 md:p-8 flex items-center justify-center">
@@ -85,7 +42,7 @@
                 </div>
                 <p id="statusText" class="text-yellow-500 font-bold animate-pulse hidden">جاري الاستماع الآن...</p>
                 <p id="limitNote" class="text-gray-500 text-sm mt-2">تنبيه: يمكنك الاستماع للمقطع مرة واحدة فقط.</p>
-                <audio id="mainAudio" src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/GEX1.Wav"></audio>
+                <audio id="mainAudio" src="GEX1.Wav"></audio>
             </div>
 
             <div class="space-y-4">
@@ -97,7 +54,7 @@
         </div>
     </div>
 
-   <script type="module">
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
@@ -116,25 +73,29 @@
     const audio = document.getElementById('mainAudio');
     const playContainer = document.getElementById('playContainer');
     const statusText = document.getElementById('statusText');
+    const submitBtn = document.getElementById('submitBtn');
 
     let studentId = localStorage.getItem('gex_uid') || 'std_' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('gex_uid', studentId);
 
-    // دالة التشغيل جعلناها تابعة للـ window لتعمل مع onclick
-    window.toggleAudio = async function() {
-        // فحص سريع قبل التشغيل
+    // التحقق من حالة الطالب عند تحميل الصفحة
+    async function checkStatus() {
         const docSnap = await getDoc(doc(db, "listening_stats", studentId));
         if (docSnap.exists() && docSnap.data().listened) {
-            alert("لقد استمعت للمقطع مسبقاً!");
-            return;
+            disableAudioControl("لقد استمعت للمقطع مسبقاً!");
         }
+    }
+    checkStatus();
+
+    window.toggleAudio = async function() {
+        if (playContainer.classList.contains('disabled')) return;
 
         if (audio.paused) {
             audio.play().then(() => {
                 statusText.classList.remove('hidden');
                 document.getElementById('playIcon').classList.add('hidden');
                 document.getElementById('pauseIcon').classList.remove('hidden');
-            }).catch(err => alert("خطأ في تشغيل الملف: تأكد من وجود GEX1.Wav في نفس المجلد"));
+            }).catch(err => alert("تأكد من وجود ملف GEX1.Wav في نفس المجلد على GitHub"));
         } else {
             audio.pause();
             statusText.classList.add('hidden');
@@ -144,18 +105,44 @@
     };
 
     audio.onended = async function() {
-        // حجب التشغيل وحفظ الحالة
-        audio.src = ""; 
-        playContainer.style.opacity = "0.5";
-        playContainer.onclick = null;
-        statusText.innerText = "انتهت محاولة الاستماع.";
-        
+        disableAudioControl("انتهت محاولة الاستماع.");
         await setDoc(doc(db, "listening_stats", studentId), {
             listened: true,
             time: serverTimestamp()
-        });
+        }, { merge: true });
+    };
+
+    function disableAudioControl(msg) {
+        audio.pause();
+        audio.src = ""; 
+        playContainer.classList.add('disabled');
+        statusText.innerText = msg;
+        statusText.classList.remove('hidden');
+        document.getElementById('playIcon').classList.remove('hidden');
+        document.getElementById('pauseIcon').classList.add('hidden');
+    }
+
+    window.submitAnswer = async function() {
+        const answer = document.getElementById('studentAnswer').value.trim();
+        if (!answer) return alert("من فضلك اكتب الإجابة أولاً.");
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "جاري الإرسال...";
+
+        try {
+            await setDoc(doc(db, "student_answers", studentId), {
+                answer: answer,
+                time: serverTimestamp()
+            }, { merge: true });
+            
+            alert("تم تسجيل إجابتك بنجاح!");
+            // التحويل لجوجل فورم (اختياري)
+            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform";
+        } catch (e) {
+            alert("حدث خطأ في الإرسال، حاول ثانية.");
+            submitBtn.disabled = false;
+        }
     };
 </script>
 </body>
 </html>
-

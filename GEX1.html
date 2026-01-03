@@ -28,6 +28,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1); 
             border-radius: 32px; 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s ease;
         }
         .giant-play-btn { 
             width: 160px; 
@@ -68,6 +69,16 @@
             70% { box-shadow: 0 0 0 20px rgba(241, 196, 15, 0); }
             100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
         }
+        .fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+            display: none;
+        }
+        .final-step-active {
+            border: 2px solid #f1c40f;
+            background: rgba(241, 196, 15, 0.05);
+        }
     </style>
 </head>
 <body class="p-6">
@@ -78,10 +89,10 @@
             <p class="text-yellow-500/80 font-bold text-lg tracking-widest uppercase">التدريب على مهارة الاستماع والتلخيص</p>
         </header>
 
-        <div class="glass-container p-8 md:p-12 text-center">
+        <div id="mainContainer" class="glass-container p-8 md:p-12 text-center">
             
-            <!-- زر التشغيل الكبير -->
-            <div class="flex flex-col items-center mb-10">
+            <!-- قسم المشغل (سيختفي عند الانتهاء) -->
+            <div id="audioSection" class="flex flex-col items-center mb-10 transition-all duration-500">
                 <div id="playBtn" class="giant-play-btn" onclick="toggleAudio()">
                     <svg id="playIcon" class="w-20 h-20 text-black fill-current" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
@@ -96,12 +107,13 @@
                 <audio id="audioPlayer" src="GEX1.wav"></audio>
             </div>
 
-            <!-- مساحة الملاحظات -->
-            <div class="text-right mb-8">
+            <!-- مساحة الملاحظات (ستختفي عند الانتهاء) -->
+            <div id="notesSection" class="text-right mb-8 transition-all duration-500">
                 <label class="block text-gray-400 text-sm mb-2 mr-2 font-bold">
                     📝 مساحة تدوين الملاحظات (مسودة):
                 </label>
                 <textarea 
+                    id="userNotes"
                     class="notes-area w-full p-4 h-32 text-right" 
                     placeholder="اكتب ملاحظاتك هنا لتساعدك في التلخيص..."
                 ></textarea>
@@ -110,9 +122,14 @@
                 </p>
             </div>
 
-            <!-- زر الانتقال للفورم -->
-            <div class="pt-4 border-t border-white/10">
-                <p class="text-gray-300 mb-4 text-sm">جاهز لإرسال إجابتك النهائية؟</p>
+            <!-- زر الانتقال للفورم (سيبقى ويصبح بارزاً) -->
+            <div id="formSection" class="pt-4 border-t border-white/10">
+                <div id="completionMessage" class="hidden mb-6 animate-fade-in">
+                    <h3 class="text-2xl font-bold text-green-400 mb-2">🎉 أحسنت يا بطل!</h3>
+                    <p class="text-gray-300">لقد انتهيت من الاستماع. الآن قم بنقل ملخصك النهائي إلى النموذج بالأسفل.</p>
+                </div>
+
+                <p id="readyText" class="text-gray-300 mb-4 text-sm">جاهز لإرسال إجابتك النهائية؟</p>
                 <a 
                     href="https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform?usp=sharing&ouid=113957597991374549511" 
                     target="_blank"
@@ -138,6 +155,14 @@
         const playIcon = document.getElementById('playIcon');
         const pauseIcon = document.getElementById('pauseIcon');
         const statusLabel = document.getElementById('statusLabel');
+        
+        // عناصر التحكم في الإخفاء
+        const audioSection = document.getElementById('audioSection');
+        const notesSection = document.getElementById('notesSection');
+        const completionMessage = document.getElementById('completionMessage');
+        const readyText = document.getElementById('readyText');
+        const mainContainer = document.getElementById('mainContainer');
+        const formSection = document.getElementById('formSection');
 
         function toggleAudio() {
             if (audio.paused) {
@@ -145,7 +170,7 @@
                     updateUI(true);
                 }).catch(err => {
                     console.error("Error playing audio:", err);
-                    alert("عذراً مستر، تعذر تشغيل ملف GEX.wav. تأكد من وجوده في نفس المجلد.");
+                    alert("عذراً مستر، تعذر تشغيل ملف GEX1.wav. تأكد من وجوده في نفس المجلد.");
                 });
             } else {
                 audio.pause();
@@ -167,10 +192,26 @@
             }
         }
 
+        // الوظيفة السحرية عند انتهاء الأوديو
         audio.onended = () => {
-            updateUI(false);
+            // 1. إخفاء العناصر غير المطلوبة بحركة ناعمة
+            audioSection.classList.add('fade-out');
+            notesSection.classList.add('fade-out');
+            readyText.classList.add('hidden');
+
+            // 2. إظهار رسالة التهنئة
+            completionMessage.classList.remove('hidden');
+
+            // 3. تمييز الحاوية وزر الفورم
+            mainContainer.classList.add('final-step-active');
+            formSection.classList.remove('border-t');
+            
+            // 4. حذف العناصر تماماً من التصميم بعد الأنيميشن
+            setTimeout(() => {
+                audioSection.style.display = 'none';
+                notesSection.style.display = 'none';
+            }, 500);
         };
     </script>
 </body>
 </html>
-

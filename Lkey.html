@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة تسجيل الدخول | Golden Ear X</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); 
+            color: #fff; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .golden-text { 
+            background: linear-gradient(to bottom, #f1c40f, #f39c12); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            font-weight: 900; 
+        }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+        .input-field {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(241, 196, 15, 0.2);
+            border-radius: 16px;
+            color: #fff;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #f1c40f;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.2);
+            background: rgba(0, 0, 0, 0.6);
+        }
+        .btn-glow {
+            background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%);
+            color: #000;
+            font-weight: 900;
+            transition: all 0.3s ease;
+        }
+        .btn-glow:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(241, 196, 15, 0.4);
+            filter: brightness(1.1);
+        }
+        .btn-glow:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .error-box {
+            background: rgba(231, 76, 60, 0.1);
+            border-right: 4px solid #e74c3c;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-md w-full animate-fade-in">
+        <header class="text-center mb-8">
+            <h1 class="text-5xl golden-text mb-2">Golden Ear X</h1>
+            <p class="text-gray-400 tracking-widest text-sm uppercase">بوابة التحقق من هوية الطالب</p>
+        </header>
+
+        <div class="glass-card p-8 md:p-10 text-center">
+            <div class="mb-8">
+                <div class="w-20 h-20 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/30">
+                    <svg class="w-10 h-10 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-white mb-2">تسجيل الدخول</h2>
+                <p class="text-gray-400 text-sm">ادخل البريد الإلكتروني الذي تستخدمه في الأنشطة</p>
+            </div>
+
+            <div class="space-y-4">
+                <input 
+                    type="email" 
+                    id="emailInput" 
+                    class="input-field w-full py-4 px-6 text-lg" 
+                    placeholder="example@email.com"
+                    autocomplete="off"
+                >
+                
+                <div id="errorMessage" class="error-box p-3 text-red-400 text-sm font-bold hidden"></div>
+
+                <button 
+                    onclick="handleLogin()" 
+                    id="loginBtn" 
+                    class="btn-glow w-full py-4 rounded-2xl text-xl shadow-lg flex items-center justify-center space-x-2 space-x-reverse"
+                >
+                    <span id="btnText">دخول للنشاط</span>
+                    <svg id="loadingSpinner" class="animate-spin h-5 w-5 text-black hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mt-8 text-xs text-gray-500 leading-relaxed">
+                إذا واجهت مشكلة في الدخول، تأكد من اشتراكك في الصفحة الرئيسية أو تواصل مع الدعم الفني لمستر Xbox.
+            </div>
+        </div>
+
+        <footer class="mt-8 text-center text-gray-600 text-xs">
+            &copy; 2026 Xbox Educational System
+        </footer>
+    </div>
+
+    <script>
+        // --- إعدادات مستر الهامة ---
+        // استبدل الرابط أدناه برابط الـ Web App الذي ستحصل عليه من Google Apps Script
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+
+        async function handleLogin() {
+            const email = document.getElementById('emailInput').value.trim();
+            const btn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('loadingSpinner');
+            const errorDiv = document.getElementById('errorMessage');
+
+            // إخفاء الأخطاء السابقة
+            errorDiv.classList.add('hidden');
+
+            if (!email || !email.includes('@')) {
+                showError("يرجى إدخال بريد إلكتروني صحيح.");
+                return;
+            }
+
+            // حالة التحميل
+            btn.disabled = true;
+            btnText.innerText = "جاري التحقق...";
+            spinner.classList.remove('hidden');
+
+            try {
+                // استدعاء الأب سكريبت للتحقق
+                const response = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=check`);
+                const data = await response.json();
+
+                if (data.status === "authorized") {
+                    // إذا كان مسموحاً له، نقوم بتخزين الإيميل محلياً وننتقل لصفحة النشاط
+                    localStorage.setItem('student_email', email);
+                    // هنا نضع رابط صفحة النشاط على جيت هب
+                    window.location.href = "activity.html"; 
+                } 
+                else if (data.status === "already_listened") {
+                    showError("عفواً، لقد قمت بالاستماع لهذا النشاط مسبقاً.");
+                } 
+                else if (data.status === "not_registered") {
+                    showError("هذا الإيميل غير مسجل. تأكد من الإيميل أو اشترك من الصفحة الرئيسية.");
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                showError("حدث خطأ في الاتصال بالخادم. يرجى المحاولة لاحقاً.");
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = "دخول للنشاط";
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function showError(msg) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerText = msg;
+            errorDiv.classList.remove('hidden');
+        }
+
+        // تفعيل زر الإنتر للكيبورد
+        document.getElementById('emailInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+    </script>
+</body>
+</html>

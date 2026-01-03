@@ -41,9 +41,7 @@
             background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%);
             color: #000;
             font-weight: 900;
-            transition: all 0.3s ease;
         }
-        /* أزرار الصوت الجديدة */
         .audio-btn {
             display: flex;
             align-items: center;
@@ -64,7 +62,7 @@
             margin-top: 20px;
         }
         .disabled-audio {
-            opacity: 0.3 !important;
+            opacity: 0.2 !important;
             pointer-events: none !important;
             filter: grayscale(1);
         }
@@ -98,8 +96,8 @@
         </div>
         <div class="space-y-4">
             <input type="email" id="emailInput" class="input-field w-full py-4 px-6 text-lg" placeholder="example@email.com" dir="ltr">
-            <div id="errorMessage" class="p-3 text-red-400 text-sm font-bold hidden bg-red-400/10 rounded-lg border-r-4 border-red-500"></div>
-            <button onclick="handleLogin()" id="loginBtn" class="btn-glow w-full py-4 rounded-2xl text-xl shadow-lg flex items-center justify-center space-x-2 space-x-reverse">
+            <div id="errorMessage" class="p-3 text-red-400 text-sm font-bold hidden bg-red-400/10 rounded-lg border-r-4 border-red-500 text-right"></div>
+            <button onclick="handleLogin()" id="loginBtn" class="btn-glow w-full py-4 rounded-2xl text-xl shadow-lg flex items-center justify-center">
                 <span id="btnText">تحقق من بياناتي</span>
             </button>
         </div>
@@ -107,37 +105,39 @@
 
     <div id="activitySection" class="glass-card p-8 md:p-10 text-center hidden-section">
         <div class="mb-6">
-            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-bounce inline-block">تحذير: بمجرد الضغط على أي زر سيتم تعطيل الآخر</span>
+            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-bounce inline-block">تنبيه: يمكنك اختيار وضع واحد فقط للبدء</span>
         </div>
 
         <div class="flex flex-col items-center mb-8">
-            <div class="flex flex-col items-center mb-6">
-                <p class="text-yellow-500 font-bold mb-2">Slow Motion (عادي)</p>
-                <div id="slowBtn" class="audio-btn slow-btn" onclick="startAudio('slow')">
-                    <svg class="w-12 h-12 text-black fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <!-- Slow Mode -->
+            <div class="flex flex-col items-center mb-10">
+                <p class="text-yellow-500 font-bold mb-2">Slow Motion (فرصة واحدة)</p>
+                <div id="slowBtn" class="audio-btn slow-btn" onclick="toggleAudio('slow')">
+                    <span id="slowIcon" class="text-black text-4xl">▶</span>
                 </div>
                 <div id="slowTimer" class="timer-display">00:00</div>
             </div>
 
+            <!-- Normal Mode -->
             <div class="flex flex-col items-center">
-                <p class="text-gray-400 font-bold mb-2">Normal Speed (سريع)</p>
-                <div id="normalBtn" class="audio-btn normal-btn" onclick="startAudio('normal')">
-                    <svg class="w-8 h-8 text-black fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <p class="text-gray-400 font-bold mb-2">Normal Speed (فرصة واحدة)</p>
+                <div id="normalBtn" class="audio-btn normal-btn" onclick="toggleAudio('normal')">
+                    <span id="normalIcon" class="text-black text-2xl">▶</span>
                 </div>
                 <div id="normalTimer" class="timer-display">00:00</div>
             </div>
         </div>
 
-        <audio id="audioSlow" src="DX1S.wav"></audio>
-        <audio id="audioNormal" src="DX1N.wav"></audio>
+        <audio id="audioSlow" preload="auto"><source src="DX1S.wav" type="audio/wav"></audio>
+        <audio id="audioNormal" preload="auto"><source src="DX1N.wav" type="audio/wav"></audio>
 
-        <div class="pt-6 border-t border-white/10">
+        <div class="pt-6 border-t border-white/10 mt-4">
             <a id="formLink" href="https://docs.google.com/forms/d/e/1FAIpQLSfxkQ84ua_bAiwzeiHXjq9J2XoTEfwGs9ZHcWiGEQ_NXwKhjg/viewform?usp=publish-editor"
                target="_blank" 
-               class="inline-flex items-center justify-center w-full bg-white text-black font-black py-4 rounded-2xl text-lg opacity-30 pointer-events-none transition-all duration-500">
+               class="inline-flex items-center justify-center w-full bg-white text-black font-black py-4 rounded-2xl text-lg opacity-20 pointer-events-none transition-all duration-500">
                 <span>فتح نموذج الإجابة</span>
             </a>
-            <p id="lockMsg" class="text-[10px] text-yellow-500 mt-2 font-bold italic">* يفتح الزر تلقائياً فور انتهاء الاستماع</p>
+            <p id="lockMsg" class="text-[10px] text-yellow-500 mt-2 font-bold italic">* سيفتح الزر بعد إنهاء الاستماع للمقطع المختار</p>
         </div>
     </div>
 
@@ -148,11 +148,15 @@
 
 <script>
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqh-epMLaLDrGObeTn7iknfJuM21ZuLuRLKosHCGdZYLcBJiAuC1qCl9yEs5ja5pY_/exec";
-let currentAudio = null;
+
+let slowUsed = false;
+let normalUsed = false;
+let activeType = null;
 
 async function handleLogin() {
     const email = document.getElementById('emailInput').value.trim();
     const btn = document.getElementById('loginBtn');
+    const btnText = document.getElementById('btnText');
     const errorDiv = document.getElementById('errorMessage');
 
     if (!email || !email.includes('@')) {
@@ -160,27 +164,27 @@ async function handleLogin() {
         return;
     }
 
+    errorDiv.classList.add('hidden');
     btn.disabled = true;
-    btn.innerText = "جاري التحقق...";
+    btnText.innerText = "جاري التحقق...";
 
     try {
         const response = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=check`);
         const data = await response.json();
 
         if (data.status === "authorized") {
-            // تسجيل الدخول وحرق الفرصة فوراً
             await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=mark_listened`);
             showActivity();
         } else if (data.status === "already_listened") {
-            showError("عفواً، لقد استخدمت فرصتك في الاستماع مسبقاً.");
+            showError("عفواً، لقد استخدمت فرصتك مسبقاً.");
         } else {
-            showError("هذا الإيميل غير مسجل في الكشوف.");
+            showError("هذا الإيميل غير مسجل.");
         }
     } catch (e) {
-        showError("حدث خطأ في الاتصال بالسيرفر.");
+        showError("خطأ في الاتصال بالسيرفر.");
     } finally {
         btn.disabled = false;
-        btn.innerText = "تحقق من بياناتي";
+        btnText.innerText = "تحقق من بياناتي";
     }
 }
 
@@ -196,57 +200,65 @@ function showActivity() {
     document.getElementById('subHeader').innerText = "استمع بدقة - فرصة واحدة فقط";
 }
 
-function startAudio(type) {
-    const slowBtn = document.getElementById('slowBtn');
-    const normalBtn = document.getElementById('normalBtn');
-    const slowAudio = document.getElementById('audioSlow');
-    const normalAudio = document.getElementById('audioNormal');
+async function toggleAudio(type) {
+    const audio = (type === 'slow') ? document.getElementById('audioSlow') : document.getElementById('audioNormal');
+    const btn = document.getElementById(type + 'Btn');
+    const icon = document.getElementById(type + 'Icon');
+    const otherType = (type === 'slow') ? 'normal' : 'slow';
+    const otherBtn = document.getElementById(otherType + 'Btn');
 
-    // تعطيل الأزرار فوراً لمنع التلاعب
-    slowBtn.classList.add('disabled-audio');
-    normalBtn.classList.add('disabled-audio');
+    if (activeType && activeType !== type) return; // منع تشغيل الاثنين معاً
 
-    if (type === 'slow') {
-        currentAudio = slowAudio;
-        slowBtn.classList.add('pulse-ring');
-        slowBtn.classList.remove('disabled-audio'); // استثناء الزر الذي يعمل
+    if (audio.paused) {
+        try {
+            activeType = type;
+            otherBtn.classList.add('disabled-audio');
+            btn.classList.add('pulse-ring');
+            icon.innerText = "⏸";
+            await audio.play();
+        } catch (err) {
+            console.error(err);
+            if (err.name !== 'AbortError') alert("خطأ في تشغيل الصوت. تأكد من وجود ملف " + (type === 'slow' ? "DX1S.wav" : "DX1N.wav"));
+        }
     } else {
-        currentAudio = normalAudio;
-        normalBtn.classList.add('pulse-ring');
-        normalBtn.classList.remove('disabled-audio');
+        // يسمح بالإيقاف فقط في الوضع الطبيعي حسب طلبك السابق
+        if (type === 'normal') {
+            audio.pause();
+            icon.innerText = "▶";
+            btn.classList.remove('pulse-ring');
+        }
     }
 
-    currentAudio.play().catch(() => alert("ملف الصوت غير موجود على السيرفر"));
-
-    // تحديث التايمر كل ثانية
-    currentAudio.ontimeupdate = () => {
-        const remaining = Math.ceil(currentAudio.duration - currentAudio.currentTime);
-        const minutes = Math.floor(remaining / 60);
-        const seconds = remaining % 60;
-        const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        
-        document.getElementById(type + 'Timer').innerText = timeStr;
+    audio.ontimeupdate = () => {
+        const remaining = Math.ceil(audio.duration - audio.currentTime);
+        if (!isNaN(remaining) && isFinite(remaining)) {
+            document.getElementById(type + 'Timer').innerText = formatTime(remaining);
+        }
     };
 
-    // عند الانتهاء
-    currentAudio.onended = () => {
-        currentAudio.parentElement.style.opacity = "0.5";
-        slowBtn.classList.add('disabled-audio');
-        normalBtn.classList.add('disabled-audio');
-        slowBtn.classList.remove('pulse-ring');
-        normalBtn.classList.remove('pulse-ring');
-        
-        // فتح نموذج الإجابة
-        const formLink = document.getElementById('formLink');
-        formLink.classList.remove('opacity-30', 'pointer-events-none');
-        formLink.classList.add('bg-gradient-to-r', 'from-yellow-500', 'to-orange-600', 'hover:scale-105');
-        document.getElementById('lockMsg').innerText = "تم فتح الرابط بنجاح ✅";
+    audio.onended = () => {
+        btn.classList.remove('pulse-ring');
+        btn.classList.add('disabled-audio');
+        icon.innerText = "✅";
+        unlockForm();
     };
 }
 
-// تحذير عند محاولة إغلاق الصفحة
+function unlockForm() {
+    const formLink = document.getElementById('formLink');
+    formLink.classList.remove('opacity-20', 'pointer-events-none');
+    formLink.classList.add('bg-gradient-to-r', 'from-yellow-400', 'to-orange-500');
+    document.getElementById('lockMsg').innerText = "تم فتح الرابط بنجاح ✅";
+}
+
+function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+}
+
 window.onbeforeunload = function() {
-    return "إذا خرجت الآن ستفقد فرصتك في الإملاء!";
+    return "تحذير: ستفقد فرصتك إذا غادرت الصفحة!";
 };
 </script>
 </body>

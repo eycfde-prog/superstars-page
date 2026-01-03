@@ -12,8 +12,8 @@
         .animate-fade-in { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .timer-font { font-family: 'monospace'; font-variant-numeric: tabular-nums; }
-        /* منع إظهار عناصر التحكم الافتراضية */
         audio { display: none; }
+        .btn-disabled { opacity: 0.4; grayscale: 100%; pointer-events: none; }
     </style>
 </head>
 <body class="text-white min-h-screen flex items-center justify-center p-4">
@@ -61,50 +61,56 @@
             <button onclick="location.reload()" class="text-xs text-slate-500 hover:text-white transition-colors bg-slate-800 px-3 py-1 rounded-md">خروج</button>
         </div>
 
+        <div id="interaction-nudge" class="hidden bg-yellow-500/20 border border-yellow-500/50 p-4 rounded-2xl mb-6 text-center animate-bounce">
+             <button onclick="unlockAudioContext()" class="text-yellow-500 font-bold text-sm">⚠️ اضغط هنا لتفعيل تشغيل الصوت أولاً</button>
+        </div>
+
         <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl mb-8 flex gap-3 text-right">
             <p class="text-xs text-red-200 leading-relaxed">
                 <strong class="text-red-500 block text-sm mb-1">⚠️ قواعد هامة:</strong>
-                الوضع البطيء <span class="font-bold">لا يمكن إيقافه</span> بمجرد البدء. مسموح لك بجلسة استماع واحدة فقط لكل وضع.
+                الوضع البطيء <span class="font-bold underline">لا يمكن إيقافه</span>. تأكد من جاهزيتك قبل الضغط.
             </p>
         </div>
 
         <div class="space-y-6">
-            <!-- Slow Motion - BIG BUTTON -->
+            <!-- Slow Motion - BIG -->
             <div class="relative group">
                 <button id="btn-slow" onclick="startAudio('slow')" class="w-full text-right glass p-8 rounded-[2.5rem] flex items-center justify-between hover:bg-slate-800/40 transition-all border-r-8 border-r-blue-500">
                     <div class="flex items-center gap-6">
-                        <div id="icon-slow" class="w-20 h-20 bg-blue-500/20 rounded-3xl flex items-center justify-center text-blue-500 text-4xl group-hover:scale-110 transition-transform shadow-inner">▶</div>
+                        <div id="icon-slow" class="w-20 h-20 bg-blue-500/20 rounded-3xl flex items-center justify-center text-blue-500 text-4xl group-hover:scale-110 transition-transform">▶</div>
                         <div>
                             <p class="text-2xl font-black">الوضع البطيء</p>
-                            <p class="text-sm text-slate-500">تركيز كامل - استماع لمرة واحدة</p>
+                            <p class="text-sm text-slate-500">استماع واحد - بدون إيقاف</p>
                         </div>
                     </div>
                     <div id="timer-slow" class="timer-font text-3xl font-bold text-blue-500/50">00:00</div>
                 </button>
-                <div id="lock-slow" class="hidden absolute inset-0 bg-slate-950/60 rounded-[2.5rem] flex items-center justify-center backdrop-blur-[2px]">
-                    <span class="text-4xl">✅</span>
+                <div id="lock-slow" class="hidden absolute inset-0 bg-slate-950/80 rounded-[2.5rem] flex flex-col items-center justify-center backdrop-blur-sm z-10">
+                    <span class="text-4xl mb-2">✅</span>
+                    <span class="text-xs font-bold text-slate-400">انتهى الاستماع</span>
                 </div>
             </div>
 
-            <!-- Normal Motion - SMALLER BUTTON -->
+            <!-- Normal Motion - SMALLER -->
             <div class="relative group">
                 <button id="btn-normal" onclick="startAudio('normal')" class="w-full text-right glass p-5 rounded-[2rem] flex items-center justify-between hover:bg-slate-800/40 transition-all border-r-4 border-r-green-500">
                     <div class="flex items-center gap-4">
                         <div id="icon-normal" class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center text-green-500 text-2xl group-hover:scale-110 transition-transform">▶</div>
                         <div>
                             <p class="text-lg font-black">الوضع الطبيعي</p>
-                            <p class="text-xs text-slate-500 italic">يمكنك الإيقاف المؤقت هنا</p>
+                            <p class="text-xs text-slate-500">يمكنك الإيقاف المؤقت</p>
                         </div>
                     </div>
                     <div id="timer-normal" class="timer-font text-xl font-bold text-green-500/50">00:00</div>
                 </button>
-                <div id="lock-normal" class="hidden absolute inset-0 bg-slate-950/60 rounded-[2rem] flex items-center justify-center backdrop-blur-[2px]">
-                    <span class="text-2xl">✅</span>
+                <div id="lock-normal" class="hidden absolute inset-0 bg-slate-950/80 rounded-[2rem] flex items-center justify-center backdrop-blur-sm z-10">
+                    <span class="text-2xl ml-2">✅</span>
+                    <span class="text-[10px] font-bold text-slate-400">تم الاستماع</span>
                 </div>
             </div>
         </div>
 
-        <div id="status-msg" class="hidden mt-8 p-4 bg-slate-900 border border-yellow-500/30 rounded-2xl text-center animate-pulse">
+        <div id="status-msg" class="hidden mt-8 p-4 bg-slate-900 border border-yellow-500/30 rounded-2xl text-center">
             <p id="status-text" class="text-yellow-500 text-sm font-bold"></p>
         </div>
     </div>
@@ -123,12 +129,22 @@
             normal: { playing: false, finished: false }
         };
 
-        // --- Auth Logic ---
+        // تفعيل الصوت من أول نقرة في الصفحة
+        function unlockAudioContext() {
+            Object.values(audioFiles).forEach(audio => {
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }).catch(() => {});
+            });
+            document.getElementById('interaction-nudge').classList.add('hidden');
+        }
+
         async function handleAuth(e) {
             e.preventDefault();
-            const emailInput = document.getElementById('email-input');
-            userEmail = emailInput.value.trim().toLowerCase();
-
+            unlockAudioContext(); // محاولة فك الحظر عند الضغط على Login
+            
+            userEmail = document.getElementById('email-input').value.trim().toLowerCase();
             if (!userEmail) return;
 
             showLoading(true);
@@ -139,12 +155,12 @@
                 if (result.status === "authorized") {
                     startApp();
                 } else if (result.status === "already_listened") {
-                    alert("عذراً يا مستر، هذا الإيميل استنفذ محاولات الاستماع بالفعل.");
+                    alert("يا مستر، هذا الطالب استمع بالفعل للمقطع.");
                 } else {
-                    alert("هذا الإيميل غير مسجل في قائمة المشتركين.");
+                    alert("الإيميل غير مسجل.");
                 }
             } catch (err) {
-                alert("حدث خطأ في الاتصال بالسيرفر. حاول مرة أخرى.");
+                alert("خطأ في الاتصال. حاول مرة أخرى.");
             } finally {
                 showLoading(false);
             }
@@ -156,7 +172,6 @@
             document.getElementById('display-email').innerText = userEmail;
         }
 
-        // --- Audio Core ---
         function startAudio(type) {
             const audio = audioFiles[type];
             const isSlow = type === 'slow';
@@ -164,8 +179,7 @@
             if (state[type].finished) return;
 
             if (state[type].playing) {
-                // الوضع الطبيعي فقط يسمح بالإيقاف
-                if (!isSlow) {
+                if (!isSlow) { // الطبيعي فقط يقبل الإيقاف
                     audio.pause();
                     state[type].playing = false;
                     document.getElementById(`icon-${type}`).innerText = "▶";
@@ -173,26 +187,28 @@
                 return;
             }
 
-            // بدء التشغيل
-            audio.play().catch(() => alert("برجاء التفاعل مع الصفحة أولاً لتشغيل الصوت"));
-            state[type].playing = true;
-            document.getElementById(`icon-${type}`).innerText = isSlow ? "⏳" : "⏸";
+            // محاولة التشغيل مع معالجة حظر المتصفح
+            audio.play().then(() => {
+                state[type].playing = true;
+                document.getElementById(`icon-${type}`).innerText = isSlow ? "⏳" : "⏸";
+                document.getElementById('interaction-nudge').classList.add('hidden');
+            }).catch(err => {
+                console.error("Playback blocked", err);
+                document.getElementById('interaction-nudge').classList.remove('hidden');
+            });
             
-            // تحديث التوقيت
             audio.ontimeupdate = () => {
-                const remaining = Math.ceil(audio.duration - audio.currentTime);
+                const remaining = Math.max(0, Math.ceil(audio.duration - audio.currentTime));
                 if (!isNaN(remaining)) {
                     document.getElementById(`timer-${type}`).innerText = formatTime(remaining);
                 }
             };
 
-            // عند الانتهاء
-            audio.onended = async () => {
+            audio.onended = () => {
                 state[type].finished = true;
                 state[type].playing = false;
                 document.getElementById(`lock-${type}`).classList.remove('hidden');
                 
-                // لو المقطعين خلصوا نحدث الشيت
                 if (state.slow.finished && state.normal.finished) {
                     updateSheetStatus();
                 }
@@ -200,16 +216,15 @@
         }
 
         async function updateSheetStatus() {
-            showStatus("جاري حفظ التقدم في السجل...");
+            showStatus("جاري حفظ النتيجة في الشيت...");
             try {
                 await fetch(`${SCRIPT_URL}?email=${userEmail}&action=mark_listened&activity=dict`);
-                showStatus("تم تسجيل الجلسة بنجاح ✅");
+                showStatus("تم التسجيل بنجاح ✅");
             } catch (e) {
-                console.error("Sync error");
+                showStatus("خطأ في التزامن، ولكن تم إنهاء الاختبار.");
             }
         }
 
-        // --- Helpers ---
         function formatTime(seconds) {
             const m = Math.floor(seconds / 60);
             const s = seconds % 60;

@@ -178,6 +178,8 @@
         let userEmail = "";
         let slowDone = false;
         let normalDone = false;
+        let isPlayingS = false;
+        let isPlayingN = false;
 
         const audioS = document.getElementById('audioSlow');
         const audioN = document.getElementById('audioNormal');
@@ -241,17 +243,29 @@
             document.getElementById('activitySection').classList.remove('hidden-section');
             document.getElementById('subHeader').innerText = "اختبار مهارة الإملاء";
         }
-
-        function playSlow() {
-            if (slowDone) return;
-            if (audioS.paused) {
-                audioS.play().then(() => {
-                    document.getElementById('iconSlow').innerText = "⏳";
-                    document.getElementById('btnNormal').classList.add('disabled-btn');
-                }).catch(err => {
-                    console.error("Playback failed:", err);
-                    alert("تعذر تشغيل الصوت. تأكد من أن المتصفح يسمح بالصوت ومن وجود الملف.");
-                });
+function showActivity() {
+    // إجبار المتصفح على تحميل الملفات فور الدخول
+    audioS.load(); 
+    audioN.load();
+    
+    document.getElementById('loginSection').classList.add('hidden-section');
+    document.getElementById('activitySection').classList.remove('hidden-section');
+    document.getElementById('subHeader').innerText = "اختبار مهارة الإملاء";
+}
+        async function playSlow() {
+            if (slowDone || isPlayingS) return;
+            
+            try {
+                isPlayingS = true;
+                await audioS.play();
+                document.getElementById('iconSlow').innerText = "⏳";
+                document.getElementById('btnNormal').classList.add('disabled-btn');
+            } catch (err) {
+                isPlayingS = false;
+                console.error("Playback failed:", err);
+                if (err.name !== 'AbortError') {
+                    alert("تعذر تشغيل الصوت. تأكد من السماح بالصوت في المتصفح.");
+                }
             }
         }
 
@@ -264,24 +278,29 @@
 
         audioS.onended = () => {
             slowDone = true;
+            isPlayingS = false;
             document.getElementById('btnSlow').classList.add('disabled-btn');
             document.getElementById('iconSlow').innerText = "✅";
             document.getElementById('btnNormal').classList.remove('disabled-btn');
             checkBothDone();
         };
 
-        function playNormal() {
+        async function playNormal() {
             if (normalDone) return;
+            
             if (audioN.paused) {
-                audioN.play().then(() => {
+                try {
+                    await audioN.play();
+                    isPlayingN = true;
                     document.getElementById('iconNormal').innerText = "⏸";
                     document.getElementById('btnSlow').classList.add('disabled-btn');
-                }).catch(err => {
+                } catch (err) {
                     console.error("Playback failed:", err);
-                    alert("تعذر تشغيل الصوت.");
-                });
+                    if (err.name !== 'AbortError') alert("تعذر تشغيل الصوت.");
+                }
             } else {
                 audioN.pause();
+                isPlayingN = false;
                 document.getElementById('iconNormal').innerText = "▶";
             }
         }
@@ -295,6 +314,7 @@
 
         audioN.onended = () => {
             normalDone = true;
+            isPlayingN = false;
             document.getElementById('btnNormal').classList.add('disabled-btn');
             document.getElementById('iconNormal').innerText = "✅";
             if (!slowDone) document.getElementById('btnSlow').classList.remove('disabled-btn');

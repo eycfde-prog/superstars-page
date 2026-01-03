@@ -120,8 +120,8 @@
 
     <script>
         // --- إعدادات مستر الهامة ---
-        // استبدل الرابط أدناه برابط الـ Web App الذي ستحصل عليه من Google Apps Script
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKEPJ0epg5omGXXXOgNVNNTz57dSGqU70aQxP5uAfoCiLxdE8LeR9Ze6UjG-qdFZPswg/exec";
+        // تأكد أن هذا الرابط هو رابط الـ Web App الأخير بعد عمل Deploy
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygNAtVjspgUsSY_QtByFreeasUzEZLvRXSqGaHZcm6V7JeYTC7ua0UORozWaQB2w43EA/exec";
 
         async function handleLogin() {
             const email = document.getElementById('emailInput').value.trim();
@@ -130,7 +130,6 @@
             const spinner = document.getElementById('loadingSpinner');
             const errorDiv = document.getElementById('errorMessage');
 
-            // إخفاء الأخطاء السابقة
             errorDiv.classList.add('hidden');
 
             if (!email || !email.includes('@')) {
@@ -138,20 +137,22 @@
                 return;
             }
 
-            // حالة التحميل
             btn.disabled = true;
             btnText.innerText = "جاري التحقق...";
             spinner.classList.remove('hidden');
 
             try {
-                // استدعاء الأب سكريبت للتحقق
+                // الخطوة 1: التحقق من الحالة
                 const response = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=check`);
                 const data = await response.json();
 
                 if (data.status === "authorized") {
-                    // إذا كان مسموحاً له، نقوم بتخزين الإيميل محلياً وننتقل لصفحة النشاط
+                    // الخطوة 2: تحديث الحالة في الشيت إلى "Yes" قبل التحويل
+                    btnText.innerText = "جاري تسجيل الدخول...";
+                    await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=mark_listened`);
+                    
+                    // الخطوة 3: التحويل لصفحة النشاط
                     localStorage.setItem('student_email', email);
-                    // هنا نضع رابط صفحة النشاط على جيت هب
                     window.location.href = "https://superstars-page.pages.dev/GEX1"; 
                 } 
                 else if (data.status === "already_listened") {
@@ -176,7 +177,6 @@
             errorDiv.classList.remove('hidden');
         }
 
-        // تفعيل زر الإنتر للكيبورد
         document.getElementById('emailInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 handleLogin();
@@ -184,9 +184,4 @@
         });
     </script>
 </body>
-
 </html>
-
-
-
-

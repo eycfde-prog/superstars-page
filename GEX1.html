@@ -3,177 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Ear X 👂 | الأذن الذهبية</title>
+    <title>Golden Ear X 👂 | النسخة المطورة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); color: #fff; min-height: 100vh; }
-        .golden-text { background: linear-gradient(to bottom, #f1c40f, #f39c12); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
-        .play-btn { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 30px rgba(241, 196, 15, 0.3); }
-        .play-btn:hover:not(.disabled) { transform: scale(1.1); box-shadow: 0 0 50px rgba(241, 196, 15, 0.5); }
-        .play-btn.disabled { filter: grayscale(1); cursor: not-allowed; opacity: 0.5; }
-        .instruction-badge { background: rgba(243, 156, 18, 0.2); border-right: 4px solid #f39c12; padding: 10px 15px; margin-bottom: 15px; }
-        textarea { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(241, 196, 15, 0.3); color: white; resize: none; }
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: radial-gradient(circle at center, #111 0%, #000 100%); 
+            color: #fff; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .golden-gradient-text { 
+            background: linear-gradient(to bottom, #f1c40f, #f39c12); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            font-weight: 900; 
+        }
+        .glass-container { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 32px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .giant-play-btn { 
+            width: 160px; 
+            height: 160px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #f1c40f 0%, #e67e22 100%); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 0 40px rgba(241, 196, 15, 0.4);
+            border: 8px solid rgba(0,0,0,0.1);
+        }
+        .giant-play-btn:hover { 
+            transform: scale(1.1); 
+            box-shadow: 0 0 60px rgba(241, 196, 15, 0.6); 
+        }
+        .giant-play-btn:active { transform: scale(0.95); }
+        
+        .notes-area {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px dashed rgba(241, 196, 15, 0.3);
+            border-radius: 18px;
+            color: #ecf0f1;
+            transition: border 0.3s ease;
+        }
+        .notes-area:focus {
+            outline: none;
+            border-color: #f1c40f;
+            background: rgba(0, 0, 0, 0.6);
+        }
+        .pulse-ring {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(241, 196, 15, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
+        }
     </style>
 </head>
-<body class="p-4 md:p-8 flex items-center justify-center">
+<body class="p-6">
 
-    <div class="max-w-2xl w-full">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl golden-text mb-2 tracking-tighter">Golden Ear X 👂</h1>
-            <p class="text-gray-400 text-lg uppercase tracking-widest text-sm md:text-base">الأذن الذهبية - أنشطة إكس بوكس</p>
+    <div class="max-w-xl w-full">
+        <header class="text-center mb-10">
+            <h1 class="text-5xl golden-gradient-text mb-3 tracking-tight">Golden Ear X 👂</h1>
+            <p class="text-yellow-500/80 font-bold text-lg tracking-widest uppercase">التدريب على مهارة الاستماع والتلخيص</p>
         </header>
 
-        <div class="glass-card p-6 md:p-10 text-center shadow-2xl">
+        <div class="glass-container p-8 md:p-12 text-center">
+            
+            <!-- زر التشغيل الكبير -->
+            <div class="flex flex-col items-center mb-10">
+                <div id="playBtn" class="giant-play-btn" onclick="toggleAudio()">
+                    <svg id="playIcon" class="w-20 h-20 text-black fill-current" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <svg id="pauseIcon" class="w-20 h-20 text-black fill-current hidden" viewBox="0 0 24 24">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                    </svg>
+                </div>
+                <div id="statusLabel" class="mt-4 text-yellow-500 font-bold hidden animate-bounce">
+                    جاري الاستماع الآن... 🎧
+                </div>
+                <audio id="audioPlayer" src="GEX.wav"></audio>
+            </div>
+
+            <!-- مساحة الملاحظات -->
             <div class="text-right mb-8">
-                <div class="instruction-badge">
-                    <span class="font-bold text-yellow-500">الاستفادة:</span> تطوير التركيز العميق وفهم المعلومات وتلخيصها.
-                </div>
-                <div class="instruction-badge">
-                    <span class="font-bold text-yellow-500">المطلوب:</span> استمع جيداً ثم لخص ما فهمته في <span class="text-white underline">3 جمل فقط</span>.
-                </div>
+                <label class="block text-gray-400 text-sm mb-2 mr-2 font-bold">
+                    📝 مساحة تدوين الملاحظات (مسودة):
+                </label>
+                <textarea 
+                    class="notes-area w-full p-4 h-32 text-right" 
+                    placeholder="اكتب ملاحظاتك هنا لتساعدك في التلخيص..."
+                ></textarea>
+                <p class="text-xs text-red-400 mt-2 font-bold mr-1">
+                    * تنبيه: هذه المساحة للملاحظات فقط، لن يتم إرسال ما يكتب هنا كإجابة.
+                </p>
             </div>
 
-            <div class="flex flex-col items-center justify-center mb-10">
-                <div id="playContainer" class="play-btn mb-4" onclick="toggleAudio()">
-                    <svg id="playIcon" class="w-16 h-16 text-black ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4.5 3.5v13l11-6.5-11-6.5z"></path></svg>
-                    <svg id="pauseIcon" class="w-16 h-16 text-black hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"></path></svg>
-                </div>
-                <p id="statusText" class="text-yellow-500 font-bold animate-pulse hidden text-sm">جاري الاستماع الآن...</p>
-                <p id="limitNote" class="text-gray-500 text-sm mt-2 font-bold">تنبيه: يمكنك الاستماع للمقطع مرة واحدة فقط.</p>
-                <!-- تم تحديث الرابط وإضافة crossorigin لضمان التشغيل -->
-                <audio id="mainAudio" crossorigin="anonymous" src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/GE1.Wav"></audio>
+            <!-- زر الانتقال للفورم -->
+            <div class="pt-4 border-t border-white/10">
+                <p class="text-gray-300 mb-4 text-sm">جاهز لإرسال إجابتك النهائية؟</p>
+                <a 
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform?usp=sharing&ouid=113957597991374549511" 
+                    target="_blank"
+                    class="inline-flex items-center justify-center w-full bg-gradient-to-r from-yellow-500 to-orange-600 text-black font-black py-4 px-8 rounded-2xl text-xl transition transform hover:-translate-y-1 hover:shadow-2xl active:scale-95"
+                >
+                    <span>تسجيل الإجابة في الفورم</span>
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
             </div>
 
-            <div class="space-y-4">
-                <textarea id="studentAnswer" placeholder="اكتب الجمل الثلاث هنا..." rows="4" class="w-full p-4 rounded-xl text-lg text-right"></textarea>
-                <button id="submitBtn" onclick="submitAnswer()" class="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-black py-4 rounded-xl text-xl shadow-lg transition transform hover:-translate-y-1">
-                    إرسال الإجابة النهائية
-                </button>
-            </div>
         </div>
+
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            نظام Xbox التعليمي - جميع الحقوق محفوظة
+        </footer>
     </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+    <script>
+        const audio = document.getElementById('audioPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const statusLabel = document.getElementById('statusLabel');
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCpRchvIeq-ElvFxYaFUGgiTZB6Z3Gqa4s",
-        authDomain: "eyc-superstars.firebaseapp.com",
-        projectId: "eyc-superstars",
-        storageBucket: "eyc-superstars.firebasestorage.app",
-        messagingSenderId: "369178728426",
-        appId: "1:369178728426:web:e03a4ec70b50d2644a4493"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const appId = "eyc-superstars";
-
-    const audio = document.getElementById('mainAudio');
-    const playContainer = document.getElementById('playContainer');
-    const statusText = document.getElementById('statusText');
-    const submitBtn = document.getElementById('submitBtn');
-
-    let currentUser = null;
-    let localUid = localStorage.getItem('gex_local_id') || 'local_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('gex_local_id', localUid);
-
-    if (localStorage.getItem('gex1_listened') === 'true') {
-        setTimeout(() => disableAudioControl("لقد استمعت للمقطع مسبقاً!"), 500);
-    }
-
-    const initAuth = async () => {
-        try {
-            const result = await signInAnonymously(auth);
-            currentUser = result.user;
-            checkCloudStatus();
-        } catch (error) {
-            currentUser = { uid: localUid, isLocal: true };
-        }
-    };
-
-    async function checkCloudStatus() {
-        if (!currentUser || currentUser.isLocal) return;
-        try {
-            const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'activity_status', 'gex1');
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists() && docSnap.data().listened) {
-                disableAudioControl("لقد استمعت للمقطع مسبقاً!");
-                localStorage.setItem('gex1_listened', 'true');
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    updateUI(true);
+                }).catch(err => {
+                    console.error("Error playing audio:", err);
+                    alert("عذراً مستر، تعذر تشغيل ملف GEX.wav. تأكد من وجوده في نفس المجلد.");
+                });
+            } else {
+                audio.pause();
+                updateUI(false);
             }
-        } catch (e) { console.error(e); }
-    }
-
-    window.toggleAudio = function() {
-        if (playContainer.classList.contains('disabled')) return;
-
-        if (audio.paused) {
-            audio.play().then(() => {
-                statusText.innerText = "جاري الاستماع الآن...";
-                statusText.classList.remove('hidden');
-                document.getElementById('playIcon').classList.add('hidden');
-                document.getElementById('pauseIcon').classList.remove('hidden');
-            }).catch(err => {
-                console.error("Audio Error:", err);
-                // تم تعديل الرسالة لتناسب الملف الجديد GE1.Wav
-                alert("تعذر تشغيل الصوت. يرجى التأكد من أن ملف GE1.Wav متاح على GitHub بصيغة صحيحة.");
-            });
-        } else {
-            audio.pause();
-            statusText.classList.add('hidden');
-            document.getElementById('playIcon').classList.remove('hidden');
-            document.getElementById('pauseIcon').classList.add('hidden');
         }
-    };
 
-    audio.onended = async function() {
-        disableAudioControl("انتهت محاولة الاستماع.");
-        localStorage.setItem('gex1_listened', 'true');
-        
-        if (currentUser && !currentUser.isLocal) {
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'activity_status', 'gex1');
-                await setDoc(docRef, { listened: true, timestamp: serverTimestamp() }, { merge: true });
-            } catch (e) { }
-        }
-    };
-
-    function disableAudioControl(msg) {
-        audio.pause();
-        audio.src = ""; 
-        playContainer.classList.add('disabled');
-        statusText.innerText = msg;
-        statusText.classList.remove('hidden');
-        document.getElementById('playIcon').classList.remove('hidden');
-        document.getElementById('pauseIcon').classList.add('hidden');
-        playContainer.onclick = null;
-    }
-
-    window.submitAnswer = async function() {
-        const answer = document.getElementById('studentAnswer').value.trim();
-        if (!answer) return alert("من فضلك اكتب الإجابة أولاً.");
-        
-        submitBtn.disabled = true;
-        submitBtn.innerText = "جاري الإرسال...";
-
-        try {
-            if (currentUser && !currentUser.isLocal) {
-                const answerRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'answers', 'gex1');
-                await setDoc(answerRef, { answer: answer, activity: "Golden Ear X", timestamp: serverTimestamp() }, { merge: true });
+        function updateUI(isPlaying) {
+            if (isPlaying) {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+                statusLabel.classList.remove('hidden');
+                playBtn.classList.add('pulse-ring');
+            } else {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                statusLabel.classList.add('hidden');
+                playBtn.classList.remove('pulse-ring');
             }
-            alert("تم تسجيل إجابتك بنجاح!");
-            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform";
-        } catch (e) {
-            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSfSYFTHqzC877xdKtStR1kHHPekvvRCy5wy1-STNZ7duE0UZQ/viewform";
         }
-    };
 
-    initAuth();
-</script>
+        audio.onended = () => {
+            updateUI(false);
+        };
+    </script>
 </body>
 </html>

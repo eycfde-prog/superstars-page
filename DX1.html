@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Superstars Dictation ✍️ | بوابة النشاط</title>
+    <title>Dictation X ✍️ | منصة الإملاء الذكية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Cairo', sans-serif; 
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); 
-            color: #fff; 
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            color: #fff;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow-x: hidden;
         }
-        .golden-text { 
-            background: linear-gradient(to bottom, #f1c40f, #f39c12); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            font-weight: 900; 
+        .golden-text {
+            background: linear-gradient(to bottom, #f1c40f, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
         }
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(25px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 32px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         }
@@ -37,310 +37,217 @@
             color: #fff;
             text-align: center;
         }
-        .input-field:focus {
-            outline: none;
-            border-color: #f1c40f;
-        }
         .btn-glow {
             background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%);
             color: #000;
             font-weight: 900;
+            transition: all 0.3s ease;
         }
+        /* أزرار الصوت الجديدة */
         .audio-btn {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 1.5rem;
-            border-radius: 24px;
-            transition: all 0.3s ease;
+            justify-content: center;
             cursor: pointer;
-            margin-bottom: 1rem;
+            transition: all 0.4s ease;
             position: relative;
-            overflow: hidden;
+            border: 4px solid rgba(0,0,0,0.2);
         }
         .slow-btn {
-            background: rgba(59, 130, 246, 0.1);
-            border: 2px solid rgba(59, 130, 246, 0.3);
-            min-height: 120px;
+            width: 140px; height: 140px; border-radius: 50%;
+            background: linear-gradient(135deg, #f1c40f 0%, #e67e22 100%);
+            box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
         }
         .normal-btn {
-            background: rgba(16, 185, 129, 0.1);
-            border: 2px solid rgba(16, 185, 129, 0.3);
-            min-height: 90px;
+            width: 90px; height: 90px; border-radius: 50%;
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            margin-top: 20px;
         }
-        .play-icon {
-            width: 50px;
-            height: 50px;
-            background: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
+        .disabled-audio {
+            opacity: 0.3 !important;
+            pointer-events: none !important;
+            filter: grayscale(1);
         }
         .timer-display {
             font-family: monospace;
-            font-size: 1.5rem;
             font-weight: bold;
+            color: #f1c40f;
+            margin-top: 8px;
         }
-        .disabled-btn {
-            opacity: 0.3;
-            pointer-events: none;
-            filter: grayscale(1);
+        .pulse-ring { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(241, 196, 15, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
         }
         .hidden-section { display: none; }
     </style>
 </head>
 <body class="p-4">
-    <div class="max-w-xl w-full">
-        <header class="text-center mb-8">
-            <h1 class="text-5xl golden-text mb-2 tracking-tighter">Superstars</h1>
-            <p id="subHeader" class="text-gray-400 tracking-widest text-sm uppercase font-bold">بوابة الإملاء الذكي</p>
-        </header>
 
-        <!-- 1. واجهة تسجيل الدخول -->
-        <div id="loginSection" class="glass-card p-8 text-center">
-            <div class="mb-8">
-                <div class="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/30">
-                    <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                </div>
-                <h2 class="text-xl font-bold text-white mb-2">سجل دخولك لبدء النشاط</h2>
-            </div>
-            <div class="space-y-4">
-                <input type="email" id="emailInput" class="input-field w-full py-4 px-6 text-lg" placeholder="example@email.com" dir="ltr">
-                <div id="errorMessage" class="p-3 text-red-400 text-sm font-bold hidden bg-red-400/10 rounded-lg border-r-4 border-red-500 text-right"></div>
-                <button onclick="handleLogin()" id="loginBtn" class="btn-glow w-full py-4 rounded-2xl text-xl shadow-lg flex items-center justify-center space-x-2 space-x-reverse">
-                    <span id="btnText">تحقق وابدأ الآن</span>
-                </button>
-            </div>
+<div class="max-w-xl w-full">
+    <header class="text-center mb-8">
+        <h1 class="text-5xl golden-text mb-2">Dictation X</h1>
+        <p id="subHeader" class="text-gray-400 tracking-widest text-sm uppercase font-bold">نظام الإملاء الموحد</p>
+    </header>
+
+    <div id="loginSection" class="glass-card p-8 md:p-10 text-center">
+        <div class="mb-6">
+            <h2 class="text-xl font-bold text-white mb-2">أدخل بريدك الإلكتروني للبدء</h2>
+            <p class="text-red-500 text-xs font-bold underline">⚠️ تنبيه: مسموح لك بالاستماع مرة واحدة فقط!</p>
         </div>
-
-        <!-- 2. واجهة النشاط -->
-        <div id="activitySection" class="glass-card p-8 text-center hidden-section">
-            <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-xl mb-6 text-right">
-                <p class="text-xs text-red-400 leading-relaxed font-bold">
-                    ⚠️ تنبيه: مسموح بالاستماع مرة واحدة فقط لكل وضع. <br>
-                    الوضع البطيء (الكبير) لا يمكن إيقافه، الطبيعي (الصغير) يمكن إيقافه.
-                </p>
-            </div>
-
-            <!-- Slow Motion Button (Large) -->
-            <div id="btnSlow" class="audio-btn slow-btn text-right" onclick="playSlow()">
-                <div class="flex items-center gap-4">
-                    <div id="iconSlow" class="play-icon">▶</div>
-                    <div>
-                        <p class="text-xl font-black text-blue-400">Slow Motion</p>
-                        <p class="text-[10px] text-gray-400">الوضع البطيء - لا يمكن إيقافه</p>
-                    </div>
-                </div>
-                <div id="timerSlow" class="timer-display text-blue-500">00:00</div>
-            </div>
-
-            <!-- Normal Motion Button (Small) -->
-            <div id="btnNormal" class="audio-btn normal-btn text-right" onclick="playNormal()">
-                <div class="flex items-center gap-4">
-                    <div id="iconNormal" class="play-icon">▶</div>
-                    <div>
-                        <p class="text-lg font-black text-green-400">Normal Speed</p>
-                        <p class="text-[10px] text-gray-400">الوضع الطبيعي - مسموح بالإيقاف</p>
-                    </div>
-                </div>
-                <div id="timerNormal" class="timer-display text-green-500">00:00</div>
-            </div>
-
-            <audio id="audioSlow" preload="auto">
-                <source src="DX1S.wav" type="audio/wav">
-            </audio>
-            <audio id="audioNormal" preload="auto">
-                <source src="DX1N.wav" type="audio/wav">
-            </audio>
-
-            <div class="pt-6 border-t border-white/10 mt-6">
-                <a id="formLink" href="https://docs.google.com/forms/d/e/1FAIpQLSfxkQ84ua_bAiwzeiHXjq9J2XoTEfwGs9ZHcWiGEQ_NXwKhjg/viewform?usp=publish-editor" 
-                   target="_blank" 
-                   class="inline-flex items-center justify-center w-full bg-white text-black font-black py-4 rounded-2xl text-lg opacity-40 pointer-events-none">
-                    <span>فتح نموذج الإجابة</span>
-                </a>
-                <p id="lockMsg" class="text-[10px] text-yellow-500 mt-2 font-bold italic">* سيفتح الزر بعد إنهاء الاستماع للمقاطع</p>
-            </div>
+        <div class="space-y-4">
+            <input type="email" id="emailInput" class="input-field w-full py-4 px-6 text-lg" placeholder="example@email.com" dir="ltr">
+            <div id="errorMessage" class="p-3 text-red-400 text-sm font-bold hidden bg-red-400/10 rounded-lg border-r-4 border-red-500"></div>
+            <button onclick="handleLogin()" id="loginBtn" class="btn-glow w-full py-4 rounded-2xl text-xl shadow-lg flex items-center justify-center space-x-2 space-x-reverse">
+                <span id="btnText">تحقق من بياناتي</span>
+            </button>
         </div>
-
-        <footer class="mt-8 text-center text-gray-600 text-[10px] uppercase tracking-tighter">
-            &copy; 2026 Superstars Educational System - Dictation DX1
-        </footer>
     </div>
 
-    <script>
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqh-epMLaLDrGObeTn7iknfJuM21ZuLuRLKosHCGdZYLcBJiAuC1qCl9yEs5ja5pY_/exec";
-        
-        let userEmail = "";
-        let slowDone = false;
-        let normalDone = false;
-        let isPlayingS = false;
-        let isPlayingN = false;
+    <div id="activitySection" class="glass-card p-8 md:p-10 text-center hidden-section">
+        <div class="mb-6">
+            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-bounce inline-block">تحذير: بمجرد الضغط على أي زر سيتم تعطيل الآخر</span>
+        </div>
 
-        const audioS = document.getElementById('audioSlow');
-        const audioN = document.getElementById('audioNormal');
+        <div class="flex flex-col items-center mb-8">
+            <div class="flex flex-col items-center mb-6">
+                <p class="text-yellow-500 font-bold mb-2">Slow Motion (عادي)</p>
+                <div id="slowBtn" class="audio-btn slow-btn" onclick="startAudio('slow')">
+                    <svg class="w-12 h-12 text-black fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div id="slowTimer" class="timer-display">00:00</div>
+            </div>
 
-        // Error handling for audio loading
-        const handleAudioError = (e) => {
-            console.error("Audio Load Error:", e);
-            const status = document.getElementById('lockMsg');
-            status.innerText = "❌ خطأ: لم يتم العثور على ملفات الصوت. تأكد من وجود DX1S.wav و DX1N.wav بجانب الصفحة.";
-            status.classList.remove('text-yellow-500');
-            status.classList.add('text-red-500');
-        };
+            <div class="flex flex-col items-center">
+                <p class="text-gray-400 font-bold mb-2">Normal Speed (سريع)</p>
+                <div id="normalBtn" class="audio-btn normal-btn" onclick="startAudio('normal')">
+                    <svg class="w-8 h-8 text-black fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div id="normalTimer" class="timer-display">00:00</div>
+            </div>
+        </div>
 
-        audioS.onerror = handleAudioError;
-        audioN.onerror = handleAudioError;
+        <audio id="audioSlow" src="DX1S.wav"></audio>
+        <audio id="audioNormal" src="DX1N.wav"></audio>
 
-        async function handleLogin() {
-            const email = document.getElementById('emailInput').value.trim();
-            const btn = document.getElementById('loginBtn');
-            const btnText = document.getElementById('btnText');
-            const errorDiv = document.getElementById('errorMessage');
+        <div class="pt-6 border-t border-white/10">
+            <a id="formLink" href="https://docs.google.com/forms/d/e/1FAIpQLSfxkQ84ua_bAiwzeiHXjq9J2XoTEfwGs9ZHcWiGEQ_NXwKhjg/viewform?usp=publish-editor"
+               target="_blank" 
+               class="inline-flex items-center justify-center w-full bg-white text-black font-black py-4 rounded-2xl text-lg opacity-30 pointer-events-none transition-all duration-500">
+                <span>فتح نموذج الإجابة</span>
+            </a>
+            <p id="lockMsg" class="text-[10px] text-yellow-500 mt-2 font-bold italic">* يفتح الزر تلقائياً فور انتهاء الاستماع</p>
+        </div>
+    </div>
 
-            if (!email || !email.includes('@')) {
-                showError("يرجى إدخال بريد إلكتروني صحيح.");
-                return;
-            }
+    <footer class="mt-8 text-center text-gray-600 text-[10px] uppercase tracking-tighter">
+        &copy; 2026 Dictation X System - Advanced Audio Proctoring
+    </footer>
+</div>
 
-            errorDiv.classList.add('hidden');
-            btn.disabled = true;
-            btnText.innerText = "جاري التحقق...";
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqh-epMLaLDrGObeTn7iknfJuM21ZuLuRLKosHCGdZYLcBJiAuC1qCl9yEs5ja5pY_/exec";
+let currentAudio = null;
 
-            try {
-                const response = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=check`);
-                const data = await response.json();
+async function handleLogin() {
+    const email = document.getElementById('emailInput').value.trim();
+    const btn = document.getElementById('loginBtn');
+    const errorDiv = document.getElementById('errorMessage');
 
-                if (data.status === "authorized") {
-                    userEmail = email;
-                    await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=mark_listened`);
-                    showActivity();
-                } else if (data.status === "already_listened") {
-                    showError("عفواً، لقد استنفذت محاولاتك لهذا النشاط.");
-                } else {
-                    showError("هذا الإيميل غير مسجل.");
-                }
-            } catch (error) {
-                showError("خطأ في الاتصال بالسيرفر.");
-            } finally {
-                btn.disabled = false;
-                btnText.innerText = "تحقق وابدأ الآن";
-            }
+    if (!email || !email.includes('@')) {
+        showError("يرجى إدخال بريد إلكتروني صحيح.");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "جاري التحقق...";
+
+    try {
+        const response = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=check`);
+        const data = await response.json();
+
+        if (data.status === "authorized") {
+            // تسجيل الدخول وحرق الفرصة فوراً
+            await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=mark_listened`);
+            showActivity();
+        } else if (data.status === "already_listened") {
+            showError("عفواً، لقد استخدمت فرصتك في الاستماع مسبقاً.");
+        } else {
+            showError("هذا الإيميل غير مسجل في الكشوف.");
         }
+    } catch (e) {
+        showError("حدث خطأ في الاتصال بالسيرفر.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "تحقق من بياناتي";
+    }
+}
 
-        function showError(msg) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.innerText = msg;
-            errorDiv.classList.remove('hidden');
-        }
+function showError(msg) {
+    const errorDiv = document.getElementById('errorMessage');
+    errorDiv.innerText = msg;
+    errorDiv.classList.remove('hidden');
+}
 
-        function showActivity() {
-            document.getElementById('loginSection').classList.add('hidden-section');
-            document.getElementById('activitySection').classList.remove('hidden-section');
-            document.getElementById('subHeader').innerText = "اختبار مهارة الإملاء";
-        }
 function showActivity() {
-    // إجبار المتصفح على تحميل الملفات فور الدخول
-    audioS.load(); 
-    audioN.load();
-    
     document.getElementById('loginSection').classList.add('hidden-section');
     document.getElementById('activitySection').classList.remove('hidden-section');
-    document.getElementById('subHeader').innerText = "اختبار مهارة الإملاء";
+    document.getElementById('subHeader').innerText = "استمع بدقة - فرصة واحدة فقط";
 }
-        async function playSlow() {
-            if (slowDone || isPlayingS) return;
-            
-            try {
-                isPlayingS = true;
-                await audioS.play();
-                document.getElementById('iconSlow').innerText = "⏳";
-                document.getElementById('btnNormal').classList.add('disabled-btn');
-            } catch (err) {
-                isPlayingS = false;
-                console.error("Playback failed:", err);
-                if (err.name !== 'AbortError') {
-                    alert("تعذر تشغيل الصوت. تأكد من السماح بالصوت في المتصفح.");
-                }
-            }
-        }
 
-        audioS.ontimeupdate = () => {
-            const remain = Math.ceil(audioS.duration - audioS.currentTime);
-            if (!isNaN(remain) && isFinite(remain)) {
-                document.getElementById('timerSlow').innerText = formatTime(remain);
-            }
-        };
+function startAudio(type) {
+    const slowBtn = document.getElementById('slowBtn');
+    const normalBtn = document.getElementById('normalBtn');
+    const slowAudio = document.getElementById('audioSlow');
+    const normalAudio = document.getElementById('audioNormal');
 
-        audioS.onended = () => {
-            slowDone = true;
-            isPlayingS = false;
-            document.getElementById('btnSlow').classList.add('disabled-btn');
-            document.getElementById('iconSlow').innerText = "✅";
-            document.getElementById('btnNormal').classList.remove('disabled-btn');
-            checkBothDone();
-        };
+    // تعطيل الأزرار فوراً لمنع التلاعب
+    slowBtn.classList.add('disabled-audio');
+    normalBtn.classList.add('disabled-audio');
 
-        async function playNormal() {
-            if (normalDone) return;
-            
-            if (audioN.paused) {
-                try {
-                    await audioN.play();
-                    isPlayingN = true;
-                    document.getElementById('iconNormal').innerText = "⏸";
-                    document.getElementById('btnSlow').classList.add('disabled-btn');
-                } catch (err) {
-                    console.error("Playback failed:", err);
-                    if (err.name !== 'AbortError') alert("تعذر تشغيل الصوت.");
-                }
-            } else {
-                audioN.pause();
-                isPlayingN = false;
-                document.getElementById('iconNormal').innerText = "▶";
-            }
-        }
+    if (type === 'slow') {
+        currentAudio = slowAudio;
+        slowBtn.classList.add('pulse-ring');
+        slowBtn.classList.remove('disabled-audio'); // استثناء الزر الذي يعمل
+    } else {
+        currentAudio = normalAudio;
+        normalBtn.classList.add('pulse-ring');
+        normalBtn.classList.remove('disabled-audio');
+    }
 
-        audioN.ontimeupdate = () => {
-            const remain = Math.ceil(audioN.duration - audioN.currentTime);
-            if (!isNaN(remain) && isFinite(remain)) {
-                document.getElementById('timerNormal').innerText = formatTime(remain);
-            }
-        };
+    currentAudio.play().catch(() => alert("ملف الصوت غير موجود على السيرفر"));
 
-        audioN.onended = () => {
-            normalDone = true;
-            isPlayingN = false;
-            document.getElementById('btnNormal').classList.add('disabled-btn');
-            document.getElementById('iconNormal').innerText = "✅";
-            if (!slowDone) document.getElementById('btnSlow').classList.remove('disabled-btn');
-            checkBothDone();
-        };
+    // تحديث التايمر كل ثانية
+    currentAudio.ontimeupdate = () => {
+        const remaining = Math.ceil(currentAudio.duration - currentAudio.currentTime);
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+        const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        document.getElementById(type + 'Timer').innerText = timeStr;
+    };
 
-        function checkBothDone() {
-            if (slowDone && normalDone) {
-                const formLink = document.getElementById('formLink');
-                formLink.classList.remove('opacity-40', 'pointer-events-none');
-                formLink.style.opacity = "1";
-                formLink.classList.add('bg-gradient-to-r', 'from-yellow-400', 'to-orange-500');
-                document.getElementById('lockMsg').innerText = "🎉 تم الاستماع! يمكنك الآن فتح الفورم";
-            }
-        }
+    // عند الانتهاء
+    currentAudio.onended = () => {
+        currentAudio.parentElement.style.opacity = "0.5";
+        slowBtn.classList.add('disabled-audio');
+        normalBtn.classList.add('disabled-audio');
+        slowBtn.classList.remove('pulse-ring');
+        normalBtn.classList.remove('pulse-ring');
+        
+        // فتح نموذج الإجابة
+        const formLink = document.getElementById('formLink');
+        formLink.classList.remove('opacity-30', 'pointer-events-none');
+        formLink.classList.add('bg-gradient-to-r', 'from-yellow-500', 'to-orange-600', 'hover:scale-105');
+        document.getElementById('lockMsg').innerText = "تم فتح الرابط بنجاح ✅";
+    };
+}
 
-        function formatTime(s) {
-            if (isNaN(s) || !isFinite(s)) return "00:00";
-            const m = Math.floor(s / 60);
-            const sec = s % 60;
-            return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-        }
-
-        window.onbeforeunload = function() {
-            return "تحذير: إذا خرجت لن تتمكن من الدخول مرة أخرى!";
-        };
-    </script>
+// تحذير عند محاولة إغلاق الصفحة
+window.onbeforeunload = function() {
+    return "إذا خرجت الآن ستفقد فرصتك في الإملاء!";
+};
+</script>
 </body>
 </html>

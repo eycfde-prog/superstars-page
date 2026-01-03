@@ -46,7 +46,6 @@
             color: #000;
             font-weight: 900;
         }
-        /* Buttons Design */
         .audio-btn {
             display: flex;
             align-items: center;
@@ -151,8 +150,12 @@
                 <div id="timerNormal" class="timer-display text-green-500">00:00</div>
             </div>
 
-            <audio id="audioSlow" src="DX1S.wav"></audio>
-            <audio id="audioNormal" src="DX1N.wav"></audio>
+            <audio id="audioSlow" preload="auto">
+                <source src="DX1S.wav" type="audio/wav">
+            </audio>
+            <audio id="audioNormal" preload="auto">
+                <source src="DX1N.wav" type="audio/wav">
+            </audio>
 
             <div class="pt-6 border-t border-white/10 mt-6">
                 <a id="formLink" href="https://docs.google.com/forms/d/e/1FAIpQLSfxkQ84ua_bAiwzeiHXjq9J2XoTEfwGs9ZHcWiGEQ_NXwKhjg/viewform?usp=publish-editor" 
@@ -179,6 +182,18 @@
         const audioS = document.getElementById('audioSlow');
         const audioN = document.getElementById('audioNormal');
 
+        // Error handling for audio loading
+        const handleAudioError = (e) => {
+            console.error("Audio Load Error:", e);
+            const status = document.getElementById('lockMsg');
+            status.innerText = "❌ خطأ: لم يتم العثور على ملفات الصوت. تأكد من وجود DX1S.wav و DX1N.wav بجانب الصفحة.";
+            status.classList.remove('text-yellow-500');
+            status.classList.add('text-red-500');
+        };
+
+        audioS.onerror = handleAudioError;
+        audioN.onerror = handleAudioError;
+
         async function handleLogin() {
             const email = document.getElementById('emailInput').value.trim();
             const btn = document.getElementById('loginBtn');
@@ -195,13 +210,11 @@
             btnText.innerText = "جاري التحقق...";
 
             try {
-                // التحقق من عمود C (المرتبط بالديكتايشن)
                 const response = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=check`);
                 const data = await response.json();
 
                 if (data.status === "authorized") {
                     userEmail = email;
-                    // حرق المحاولة فوراً عند الدخول
                     await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=mark_listened`);
                     showActivity();
                 } else if (data.status === "already_listened") {
@@ -229,20 +242,24 @@
             document.getElementById('subHeader').innerText = "اختبار مهارة الإملاء";
         }
 
-        // منطق السلو موشن (كبير - لا يتوقف)
         function playSlow() {
             if (slowDone) return;
             if (audioS.paused) {
                 audioS.play().then(() => {
                     document.getElementById('iconSlow').innerText = "⏳";
                     document.getElementById('btnNormal').classList.add('disabled-btn');
+                }).catch(err => {
+                    console.error("Playback failed:", err);
+                    alert("تعذر تشغيل الصوت. تأكد من أن المتصفح يسمح بالصوت ومن وجود الملف.");
                 });
             }
         }
 
         audioS.ontimeupdate = () => {
             const remain = Math.ceil(audioS.duration - audioS.currentTime);
-            if (!isNaN(remain)) document.getElementById('timerSlow').innerText = formatTime(remain);
+            if (!isNaN(remain) && isFinite(remain)) {
+                document.getElementById('timerSlow').innerText = formatTime(remain);
+            }
         };
 
         audioS.onended = () => {
@@ -253,13 +270,16 @@
             checkBothDone();
         };
 
-        // منطق النورمال (صغير - مسموح بالإيقاف)
         function playNormal() {
             if (normalDone) return;
             if (audioN.paused) {
-                audioN.play();
-                document.getElementById('iconNormal').innerText = "⏸";
-                document.getElementById('btnSlow').classList.add('disabled-btn');
+                audioN.play().then(() => {
+                    document.getElementById('iconNormal').innerText = "⏸";
+                    document.getElementById('btnSlow').classList.add('disabled-btn');
+                }).catch(err => {
+                    console.error("Playback failed:", err);
+                    alert("تعذر تشغيل الصوت.");
+                });
             } else {
                 audioN.pause();
                 document.getElementById('iconNormal').innerText = "▶";
@@ -267,8 +287,10 @@
         }
 
         audioN.ontimeupdate = () => {
-            const remain = Math.ceil(audioNormal.duration - audioNormal.currentTime);
-            if (!isNaN(remain)) document.getElementById('timerNormal').innerText = formatTime(remain);
+            const remain = Math.ceil(audioN.duration - audioN.currentTime);
+            if (!isNaN(remain) && isFinite(remain)) {
+                document.getElementById('timerNormal').innerText = formatTime(remain);
+            }
         };
 
         audioN.onended = () => {
@@ -290,6 +312,7 @@
         }
 
         function formatTime(s) {
+            if (isNaN(s) || !isFinite(s)) return "00:00";
             const m = Math.floor(s / 60);
             const sec = s % 60;
             return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;

@@ -57,9 +57,10 @@
             background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
         }
         .disabled-audio {
-            opacity: 0.2 !important;
+            opacity: 0.1 !important;
             pointer-events: none !important;
             filter: grayscale(1);
+            cursor: not-allowed;
         }
         .timer-display {
             font-family: monospace;
@@ -84,7 +85,7 @@
         <p id="subHeader" class="text-gray-400 tracking-widest text-sm uppercase font-bold">نظام الإملاء الموحد</p>
     </header>
 
-    <!-- Login -->
+    <!-- Login Section -->
     <div id="loginSection" class="glass-card p-8 text-center">
         <h2 class="text-xl font-bold mb-4">أدخل بريدك الإلكتروني للبدء</h2>
         <input type="email" id="emailInput" class="w-full bg-black/40 border-2 border-yellow-500/20 rounded-xl py-4 px-6 mb-4 text-center text-white" placeholder="example@email.com">
@@ -92,23 +93,23 @@
         <button onclick="handleLogin()" id="loginBtn" class="btn-glow w-full py-4 rounded-2xl text-xl">تحقق من بياناتي</button>
     </div>
 
-    <!-- Activity -->
+    <!-- Activity Section -->
     <div id="activitySection" class="glass-card p-8 text-center hidden-section">
-        <p class="text-xs text-red-500 font-bold mb-6 animate-pulse">⚠️ تنبيه: لا يمكنك تشغيل الملفين معاً، اختر سرعة واحدة للبدء.</p>
+        <p class="text-xs text-red-500 font-bold mb-6 animate-pulse">⚠️ تنبيه: لا يمكن إيقاف الـ Slow Motion بمجرد البدء.</p>
 
         <div class="flex flex-col items-center gap-8">
-            <!-- Slow -->
+            <!-- Slow Audio -->
             <div class="flex flex-col items-center">
-                <p class="text-yellow-500 font-bold text-sm mb-2">Slow Motion (عادي)</p>
+                <p class="text-yellow-500 font-bold text-sm mb-2">Slow Motion</p>
                 <div id="slowBtn" class="audio-btn slow-btn" onclick="playAudio('slow')">
                     <span id="slowIcon" class="text-black text-4xl">▶</span>
                 </div>
                 <div id="slowTimer" class="timer-display">00:00</div>
             </div>
 
-            <!-- Normal -->
+            <!-- Normal Audio -->
             <div class="flex flex-col items-center">
-                <p class="text-gray-400 font-bold text-sm mb-2">Normal Speed (سريع)</p>
+                <p class="text-gray-400 font-bold text-sm mb-2">Normal Speed</p>
                 <div id="normalBtn" class="audio-btn normal-btn" onclick="playAudio('normal')">
                     <span id="normalIcon" class="text-black text-2xl">▶</span>
                 </div>
@@ -137,6 +138,8 @@
 <script>
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqh-epMLaLDrGObeTn7iknfJuM21ZuLuRLKosHCGdZYLcBJiAuC1qCl9yEs5ja5pY_/exec";
 let activeAudio = null;
+let slowFinished = false;
+let normalFinished = false;
 
 async function handleLogin() {
     const email = document.getElementById('emailInput').value.trim();
@@ -170,8 +173,10 @@ async function playAudio(type) {
     const btn = document.getElementById(type + 'Btn');
     const icon = document.getElementById(type + 'Icon');
 
-    // إذا كان هناك صوت آخر يعمل، نمنع التداخل
+    // منع تشغيل الملف إذا كان قد انتهى سابقاً أو إذا كان هناك ملف آخر يعمل حالياً
     if (activeAudio && activeAudio !== audio) return;
+    if (type === 'slow' && slowFinished) return;
+    if (type === 'normal' && normalFinished) return;
 
     if (audio.paused) {
         try {
@@ -180,7 +185,7 @@ async function playAudio(type) {
             btn.classList.add('pulse-ring');
             icon.innerText = "⏸";
             await audio.play();
-        } catch (e) { alert("تأكد من وجود ملفات الصوت بالسيرفر"); }
+        } catch (e) { console.error(e); }
     } else {
         // يسمح بالـ Pause فقط للسرعة العادية
         if (type === 'normal') {
@@ -188,7 +193,12 @@ async function playAudio(type) {
             icon.innerText = "▶";
             btn.classList.remove('pulse-ring');
             activeAudio = null;
-            otherBtn.classList.remove('disabled-audio');
+            // لا نفتح الزر الآخر إلا لو كان لم ينتهِ بعد
+            if (otherType === 'slow' && !slowFinished) {
+                otherBtn.classList.remove('disabled-audio');
+            } else if (otherType === 'normal' && !normalFinished) {
+                 otherBtn.classList.remove('disabled-audio');
+            }
         }
     }
 
@@ -199,12 +209,20 @@ async function playAudio(type) {
 
     audio.onended = () => {
         btn.classList.remove('pulse-ring');
-        btn.classList.add('disabled-audio');
+        btn.classList.add('disabled-audio'); // تعطيل الزر الحالي للأبد
         icon.innerText = "✅";
         activeAudio = null;
+
+        if (type === 'slow') slowFinished = true;
+        if (type === 'normal') normalFinished = true;
         
-        // الآن نفتح الزر الآخر ونفتح زر الإجابة
-        otherBtn.classList.remove('disabled-audio');
+        // فتح الزر الآخر فقط إذا لم يكن قد انتهى من قبل
+        if (otherType === 'slow' && !slowFinished) {
+            otherBtn.classList.remove('disabled-audio');
+        } else if (otherType === 'normal' && !normalFinished) {
+            otherBtn.classList.remove('disabled-audio');
+        }
+
         unlockForm();
     };
 }

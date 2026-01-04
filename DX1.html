@@ -37,7 +37,6 @@
             transition: transform 0.2s;
         }
         .btn-glow:active { transform: scale(0.95); }
-        
         .audio-btn {
             display: flex;
             align-items: center;
@@ -75,6 +74,10 @@
             100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
         }
         .hidden-section { display: none; }
+        .welcome-badge {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.1), rgba(211, 84, 0, 0.1));
+            border: 1px border rgba(241, 196, 15, 0.2);
+        }
     </style>
 </head>
 <body class="p-4">
@@ -87,14 +90,21 @@
 
     <!-- Login Section -->
     <div id="loginSection" class="glass-card p-8 text-center">
-        <h2 class="text-xl font-bold mb-4">أدخل بريدك الإلكتروني للبدء</h2>
-        <input type="email" id="emailInput" class="w-full bg-black/40 border-2 border-yellow-500/20 rounded-xl py-4 px-6 mb-4 text-center text-white" placeholder="example@email.com">
+        <h2 class="text-xl font-bold mb-4">أهلاً بك يا بطل! ادخل بياناتك</h2>
+        <input type="text" id="emailInput" class="w-full bg-black/40 border-2 border-yellow-500/20 rounded-xl py-4 px-6 mb-4 text-center text-white text-lg" placeholder="اكتب إيميلك أو كود الطالب الخاص بك">
         <div id="errorMessage" class="mb-4 text-red-400 text-sm font-bold hidden bg-red-900/20 p-2 rounded"></div>
-        <button onclick="handleLogin()" id="loginBtn" class="btn-glow w-full py-4 rounded-2xl text-xl">تحقق من بياناتي</button>
+        <button onclick="handleLogin()" id="loginBtn" class="btn-glow w-full py-4 rounded-2xl text-xl">دخول للمنصة</button>
     </div>
 
     <!-- Activity Section -->
-    <div id="activitySection" class="glass-card p-8 text-center hidden-section">
+    <div id="activitySection" class="glass-card p-8 text-center hidden-section relative overflow-hidden">
+        <!-- Welcome Note -->
+        <div class="welcome-badge p-4 rounded-2xl mb-6 border border-yellow-500/20">
+            <p class="text-yellow-500 text-sm">مرحباً بك مجدداً 😊</p>
+            <p class="text-white text-xs mt-1">كود الطالب الخاص بك هو: <span id="displayCode" class="font-bold text-lg block mt-1 tracking-widest text-yellow-400">---</span></p>
+            <p class="text-[9px] text-gray-400 mt-2 italic">يمكنك استخدام هذا الكود بدلاً من الإيميل في المرة القادمة!</p>
+        </div>
+
         <p class="text-xs text-red-500 font-bold mb-6 animate-pulse">⚠️ تنبيه: لا يمكن إيقاف الـ Slow Motion بمجرد البدء.</p>
 
         <div class="flex flex-col items-center gap-8">
@@ -134,35 +144,37 @@
 </div>
 
 <script>
-// الرابط الخاص بك
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqh-epMLaLDrGObeTn7iknfJuM21ZuLuRLKosHCGdZYLcBJiAuC1qCl9yEs5ja5pY_/exec";
 let activeAudio = null;
 let slowFinished = false;
 let normalFinished = false;
+let currentUserKey = "";
 
-// دالة الدخول المعدلة لإرسال نشاط "ديكتايشن"
 async function handleLogin() {
-    const email = document.getElementById('emailInput').value.trim();
+    const input = document.getElementById('emailInput').value.trim();
     const btn = document.getElementById('loginBtn');
-    if (!email.includes('@')) { showError("البريد غير صحيح"); return; }
+    if (input.length < 3) { showError("البيانات المدخلة قصيرة جداً"); return; }
     
     btn.disabled = true; btn.innerText = "جاري التحقق...";
     try {
-        // تم إضافة &activity=dict هنا للتحقق
-        const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=check&activity=dict`);
+        // نرسل النشاط dict لضمان التحقق من العمود الصحيح
+        const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(input)}&action=check&activity=dict`);
         const data = await res.json();
         
         if (data.status === "authorized") {
-            // تم إضافة &activity=dict هنا للتعديل في العمود C
-            await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=mark_listened&activity=dict`);
+            currentUserKey = data.email || input; // نحفظ الإيميل للأكشن القادم
+            document.getElementById('displayCode').innerText = data.studentCode || "N/A";
+            
+            // تسجيل الدخول وتحديد "تم الاستماع" في عمود Dictation (C)
+            await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(currentUserKey)}&action=mark_listened&activity=dict`);
             
             document.getElementById('loginSection').classList.add('hidden-section');
             document.getElementById('activitySection').classList.remove('hidden-section');
         } else {
-            showError(data.status === "already_listened" ? "استنفدت فرصتك" : "الإيميل غير مسجل");
+            showError(data.status === "already_listened" ? "لقد استنفدت فرصتك لهذا النشاط" : "هذه البيانات غير مسجلة لدينا");
         }
-    } catch (e) { showError("خطأ في الاتصال"); }
-    btn.disabled = false; btn.innerText = "تحقق من بياناتي";
+    } catch (e) { showError("حدث خطأ في الاتصال بالسيرفر"); }
+    btn.disabled = false; btn.innerText = "دخول للمنصة";
 }
 
 function showError(m) {
@@ -195,8 +207,7 @@ async function playAudio(type) {
             icon.innerText = "▶";
             btn.classList.remove('pulse-ring');
             activeAudio = null;
-            if (otherType === 'slow' && !slowFinished) otherBtn.classList.remove('disabled-audio');
-            else if (otherType === 'normal' && !normalFinished) otherBtn.classList.remove('disabled-audio');
+            if (!slowFinished) otherBtn.classList.remove('disabled-audio');
         }
     }
 
@@ -213,7 +224,7 @@ async function playAudio(type) {
         if (type === 'slow') slowFinished = true;
         if (type === 'normal') normalFinished = true;
         if (otherType === 'slow' && !slowFinished) otherBtn.classList.remove('disabled-audio');
-        else if (otherType === 'normal' && !normalFinished) otherBtn.classList.remove('disabled-audio');
+        if (otherType === 'normal' && !normalFinished) otherBtn.classList.remove('disabled-audio');
         unlockForm();
     };
 }

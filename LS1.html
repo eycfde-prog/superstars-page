@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Label Activity 🏷️ | منصة مستر EYC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #0f172a 0%, #000 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .golden-text {
+            background: linear-gradient(to bottom, #f1c40f, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-submit:disabled {
+            background: #34495e;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .image-container {
+            border: 2px solid rgba(241, 196, 15, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+        }
+        .hidden-section { display: none; }
+        input:disabled {
+            background: rgba(255,255,255,0.05) !important;
+            color: #94a3b8 !important;
+            border-color: transparent !important;
+        }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center">
+
+    <div class="max-w-4xl w-full">
+        <header class="text-center my-10">
+            <h1 class="text-5xl golden-text mb-2">Label Activity</h1>
+            <p class="text-gray-400 tracking-widest text-sm uppercase font-bold">الموسم الجديد - اكتشف المسميات</p>
+        </header>
+
+        <!-- Login Section -->
+        <div id="loginSection" class="glass-card p-8 text-center max-w-md mx-auto">
+            <h2 class="text-xl font-bold mb-6 text-yellow-500">سجل دخولك لبدء التحدي</h2>
+            <input type="text" id="emailInput" 
+                   class="w-full bg-black/40 border-2 border-yellow-500/20 rounded-xl py-4 px-6 mb-4 text-center text-white text-lg focus:border-yellow-500 outline-none transition-all" 
+                   placeholder="الإيميل أو كود الطالب">
+            <div id="errorMessage" class="mb-4 text-red-400 text-sm font-bold hidden bg-red-900/20 p-3 rounded-lg"></div>
+            <button onclick="handleLogin()" id="loginBtn" class="w-full py-4 rounded-xl text-xl font-black bg-gradient-to-r from-yellow-500 to-orange-600 text-black shadow-lg shadow-yellow-500/20 active:scale-95 transition-transform">
+                دخول النشاط
+            </button>
+        </div>
+
+        <!-- Activity Grid -->
+        <div id="activitySection" class="hidden-section">
+            <div class="glass-card p-4 rounded-lg mb-8 flex justify-between items-center border-r-4 border-yellow-500">
+                <div>
+                    <p class="text-yellow-500 text-xs font-bold">أهلاً بك يا بطل!</p>
+                    <p class="text-white text-sm">كود الطالب: <span id="displayCode" class="font-bold text-yellow-400">---</span></p>
+                </div>
+                <div class="text-[10px] text-gray-500 italic">نشاط الصور التفاعلي</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="imagesGrid">
+                <!-- الصور هيتم انشائها هنا -->
+            </div>
+
+            <div class="mt-12 text-center p-8 glass-card border-yellow-500/30">
+                <p class="text-yellow-500 font-bold">هل انتهيت من جميع الصور؟</p>
+                <button onclick="window.location.reload()" class="mt-4 text-xs text-gray-500 underline">خروج من النشاط</button>
+            </div>
+        </div>
+
+        <footer class="my-10 text-center text-gray-600 text-[10px] tracking-widest uppercase">
+            &copy; 2026 EYC SYSTEMS | LABEL ACTIVITY
+        </footer>
+    </div>
+
+<script>
+    // الإعدادات - يا مستر حط اللينك بتاعك هنا
+    const APPS_SCRIPT_URL = "رابط_الأب_سكريبت_الخاص_بك"; 
+    // رابط الصور من جيت هب
+    const GITHUB_BASE = "https://raw.githubusercontent.com/رابط_حسابك/رابط_المستودع/main/ESSL/"; 
+    
+    let studentInfo = { email: "", code: "" };
+
+    async function handleLogin() {
+        const input = document.getElementById('emailInput').value.trim();
+        const btn = document.getElementById('loginBtn');
+        if (input.length < 3) { showError("برجاء إدخال بيانات صحيحة"); return; }
+        
+        btn.disabled = true; btn.innerText = "جاري التحقق...";
+        try {
+            const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(input)}&action=check`);
+            const data = await res.json();
+            
+            if (data.status === "authorized") {
+                studentInfo.email = data.email;
+                studentInfo.code = data.studentCode;
+                document.getElementById('displayCode').innerText = data.studentCode;
+                
+                initActivity();
+                document.getElementById('loginSection').classList.add('hidden-section');
+                document.getElementById('activitySection').classList.remove('hidden-section');
+            } else {
+                showError(data.status === "already_done" ? "لقد قمت بهذا النشاط مسبقاً" : "عفواً، بياناتك غير مسجلة");
+            }
+        } catch (e) { showError("خطأ في الاتصال بالسيرفر"); }
+        btn.disabled = false; btn.innerText = "دخول النشاط";
+    }
+
+    function showError(m) {
+        const e = document.getElementById('errorMessage');
+        e.innerText = m; e.classList.remove('hidden');
+    }
+
+    function initActivity() {
+        const grid = document.getElementById('imagesGrid');
+        for (let i = 1; i <= 10; i++) {
+            const id = `SL${i}`;
+            const card = document.createElement('div');
+            card.className = "glass-card p-4 flex flex-col gap-4";
+            card.innerHTML = `
+                <div class="image-container aspect-square flex items-center justify-center relative">
+                    <img src="${GITHUB_BASE}${id}.jpg" alt="Picture ${i}" class="max-h-full object-contain" onerror="this.src='https://via.placeholder.com/400?text=Image+Not+Found'">
+                    <span class="absolute top-2 right-2 bg-black/60 px-3 py-1 rounded-full text-[10px] border border-white/10">IMG #${i}</span>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="input-${id}" 
+                           class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-yellow-500 transition-all" 
+                           placeholder="اكتب الإجابة هنا...">
+                    <button onclick="submitLabel('${id}')" id="btn-${id}" 
+                            class="btn-submit px-6 rounded-xl font-bold text-sm shadow-lg active:scale-90">
+                        إرسال
+                    </button>
+                </div>
+                <p id="msg-${id}" class="text-[10px] hidden text-center"></p>
+            `;
+            grid.appendChild(card);
+        }
+    }
+
+    async function submitLabel(id) {
+        const input = document.getElementById(`input-${id}`);
+        const btn = document.getElementById(`btn-${id}`);
+        const msg = document.getElementById(`msg-${id}`);
+        const val = input.value.trim();
+
+        if (!val) return;
+
+        btn.disabled = true;
+        btn.innerText = "...";
+        input.disabled = true;
+
+        try {
+            const url = `${APPS_SCRIPT_URL}?action=submit_answer&studentEmail=${encodeURIComponent(studentInfo.email)}&studentCode=${encodeURIComponent(studentInfo.code)}&imageId=${id}&answer=${encodeURIComponent(val)}`;
+            const res = await fetch(url);
+            const data = await res.json();
+
+            if (data.status === "success") {
+                btn.innerText = "✓";
+                msg.innerText = "تم الحفظ بنجاح";
+                msg.classList.remove('hidden', 'text-red-400');
+                msg.classList.add('text-green-400');
+            } else {
+                throw new Error();
+            }
+        } catch (e) {
+            btn.disabled = false;
+            btn.innerText = "إرسال";
+            input.disabled = false;
+            msg.innerText = "فشل الإرسال، حاول ثانية";
+            msg.classList.remove('hidden');
+            msg.classList.add('text-red-400');
+        }
+    }
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Label Activity 🏷️ | منصة مستر EYC</title>
+    <title>Label Activity  | اكتشف المسميات الصحيحة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -12,6 +12,9 @@
             background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
             color: #fff;
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow-x: hidden;
         }
         .golden-text {
@@ -24,55 +27,74 @@
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         }
         .btn-glow {
             background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%);
             color: #000;
             font-weight: 900;
-            transition: all 0.3s;
+            transition: transform 0.2s;
         }
-        .btn-glow:disabled {
+        .btn-glow:active { transform: scale(0.95); }
+        .audio-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            border: 4px solid rgba(0,0,0,0.2);
+        }
+        .slow-btn {
+            width: 130px; height: 130px; border-radius: 50%;
+            background: linear-gradient(135deg, #f1c40f 0%, #e67e22 100%);
+            box-shadow: 0 0 30px rgba(241, 196, 15, 0.2);
+        }
+        .normal-btn {
+            width: 90px; height: 90px; border-radius: 50%;
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+        .disabled-audio {
+            opacity: 0.1 !important;
+            pointer-events: none !important;
             filter: grayscale(1);
-            opacity: 0.5;
             cursor: not-allowed;
         }
-        .btn-glow:active:not(:disabled) { transform: scale(0.95); }
-        
-        .image-card {
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
+        .timer-display {
+            font-family: monospace;
+            font-weight: bold;
+            color: #f1c40f;
+            margin-top: 8px;
         }
-        .image-card:hover {
-            border-color: rgba(241, 196, 15, 0.3);
-            background: rgba(255, 255, 255, 0.05);
+        .pulse-ring { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(241, 196, 15, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
         }
         .hidden-section { display: none; }
-        
-        input:disabled {
-            background: rgba(0,0,0,0.5) !important;
-            border-color: #27ae60 !important;
-            color: #27ae60 !important;
-            cursor: not-allowed;
+        .welcome-badge {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.1), rgba(211, 84, 0, 0.1));
+            border: 1px border rgba(241, 196, 15, 0.2);
         }
     </style>
 </head>
-<body class="p-4 flex items-center justify-center">
+<body class="p-4">
 
-<div class="max-w-4xl w-full">
-    <header class="text-center mb-12">
-        <h1 class="text-5xl golden-text mb-2">Label Activity</h1>
-        <p class="text-gray-400 tracking-widest text-sm uppercase font-bold italic">اكتشف المسميات الصحيحة</p>
+<div class="max-w-xl w-full">
+    <header class="text-center mb-8">
+        <h1 class="text-5xl golden-text mb-2">Dictation X</h1>
+        <p id="subHeader" class="text-gray-400 tracking-widest text-sm uppercase font-bold">Label Activity</p>
     </header>
 
     <!-- Login Section -->
-    <div id="loginSection" class="glass-card p-8 text-center max-w-md mx-auto shadow-2xl">
-        <h2 class="text-xl font-bold mb-6 text-yellow-500">سجل دخولك للبدء</h2>
-        <input type="text" id="emailInput" class="w-full bg-black/40 border-2 border-yellow-500/20 rounded-xl py-4 px-6 mb-4 text-center text-white text-lg outline-none focus:border-yellow-500 transition-all" placeholder="اكتب إيميلك أو كود الطالب">
-        <div id="errorMessage" class="mb-4 text-red-400 text-sm font-bold hidden bg-red-900/20 p-3 rounded-lg"></div>
-        <button onclick="handleLogin()" id="loginBtn" class="btn-glow w-full py-4 rounded-xl text-xl">دخول النشاط</button>
+    <div id="loginSection" class="glass-card p-8 text-center">
+        <h2 class="text-xl font-bold mb-4">أهلاً بك يا بطل! ادخل بياناتك</h2>
+        <input type="text" id="emailInput" class="w-full bg-black/40 border-2 border-yellow-500/20 rounded-xl py-4 px-6 mb-4 text-center text-white text-lg" placeholder="اكتب إيميلك أو كود الطالب الخاص بك">
+        <div id="errorMessage" class="mb-4 text-red-400 text-sm font-bold hidden bg-red-900/20 p-2 rounded"></div>
+        <button onclick="handleLogin()" id="loginBtn" class="btn-glow w-full py-4 rounded-2xl text-xl">دخول للمنصة</button>
     </div>
-
     <!-- Activity Section -->
     <div id="activitySection" class="hidden-section">
         <!-- Student Info Header -->
@@ -216,4 +238,5 @@
 
 </body>
 </html>
+
 

@@ -70,7 +70,8 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="labelGrid">
-            </div>
+            <!-- سيتم توليد الصور هنا -->
+        </div>
 
         <div class="mt-12 text-center border-t border-white/10 pt-8">
             <button onclick="submitAnswers()" id="submitBtn" class="btn-glow px-12 py-4 rounded-2xl text-xl shadow-xl">إرسال جميع الإجابات</button>
@@ -84,12 +85,14 @@
 </div>
 
 <script>
+// تأكد أن هذا الرابط هو رابط الـ Exec المحدث للـ Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKGyqyfIydevxR4tVaCryuOinOsf-BHa7JtZ90lLFLWPLXLZ4uChuZo8VwvpjtXeGbuQ/exec";
-let currentUser = "";
+let currentUserKey = ""; // لتخزين الايميل أو الكود الذي دخل به المستخدم
 
-// 1. توليد محتوى النشاط (الصور والخانات)
+// 1. توليد محتوى النشاط
 function generateActivity() {
     const grid = document.getElementById('labelGrid');
+    grid.innerHTML = ''; // مسح المحتوى القديم
     for (let i = 1; i <= 10; i++) {
         grid.innerHTML += `
             <div class="glass-card p-4 flex flex-col items-center gap-4 transition-transform hover:scale-[1.02]">
@@ -106,64 +109,88 @@ function generateActivity() {
 async function handleLogin() {
     const input = document.getElementById('userInput').value.trim();
     const btn = document.getElementById('loginBtn');
+    const errDiv = document.getElementById('errorMessage');
+
     if (input.length < 3) return;
 
-    btn.disabled = true; btn.innerText = "جاري التحقق...";
+    btn.disabled = true; 
+    btn.innerText = "جاري التحقق...";
+    errDiv.classList.add('hidden');
     
     try {
+        // نرسل الايميل في خانة email للتشيك
         const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(input)}&action=check`);
         const data = await res.json();
 
         if (data.status === "authorized") {
-            currentUser = input;
+            currentUserKey = input; // نحفظ الكود اللي دخل بيه عشان نستخدمه في الحفظ
             document.getElementById('displayCode').innerText = data.studentCode || input;
             document.getElementById('loginSection').classList.add('hidden-section');
             document.getElementById('activitySection').classList.remove('hidden-section');
             generateActivity();
-        } else if (data.status === "already_submitted") {
-            alert("لقد قمت بحل هذا النشاط مسبقاً!");
+        } else if (data.status === "already_done") {
+            alert("يا بطل، أنت حليت النشاط ده قبل كده! 💪");
         } else {
-            showError("هذه البيانات غير مسجلة لدينا.");
+            showError("البيانات دي مش موجودة، اتأكد من الكود أو الإيميل يا مستر.");
         }
-    } catch (e) { showError("خطأ في الاتصال بالسيرفر"); }
-    btn.disabled = false; btn.innerText = "دخول للنشاط";
+    } catch (e) { 
+        showError("فيه مشكلة في الاتصال بالسيرفر، جرب تاني."); 
+    }
+    btn.disabled = false; 
+    btn.innerText = "دخول للنشاط";
 }
 
 // 3. إرسال الإجابات
 async function submitAnswers() {
     const btn = document.getElementById('submitBtn');
     let answers = [];
+    
     for (let i = 1; i <= 10; i++) {
         const val = document.getElementById(`ans${i}`).value.trim();
-        if (!val) { alert(`يرجى كتابة الإجابة رقم ${i}`); return; }
+        if (!val) { 
+            alert(`يا بطل، لسه فيه خانة فاضية (رقم ${i})، كملها الأول!`); 
+            return; 
+        }
         answers.push(val);
     }
 
-    const finalAnswer = answers.join(" , "); // دمج الإجابات بفاصلة
-    btn.disabled = true; btn.innerText = "جاري الحفظ...";
+    const finalAnswerString = answers.join(" , ");
+    btn.disabled = true; 
+    btn.innerText = "جاري الحفظ النهائي...";
 
     try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(currentUser)}&action=submit&answers=${encodeURIComponent(finalAnswer)}`);
+        // التعديل المهم هنا: استخدام action=submit_all و userKey و answers
+        const url = `${APPS_SCRIPT_URL}?action=submit_all&userKey=${encodeURIComponent(currentUserKey)}&answers=${encodeURIComponent(finalAnswerString)}`;
+        
+        const res = await fetch(url);
         const data = await res.json();
         
         if (data.status === "success") {
-            alert("تم إرسال إجاباتك بنجاح!");
-            window.location.href = "https://docs.google.com/spreadsheets/d/16sgIiPB-Di_sgiZN-uKDBkNs8rPF_DfHZ6W0alifENI/edit?usp=drive_link";
+            alert("عاش يا وحش! تم إرسال إجاباتك بنجاح.");
+            // توجيه لصفحة الشيت للتأكد (اختياري)
+            window.location.href = "https://docs.google.com/spreadsheets/d/16sgIiPB-Di_sgiZN-uKDBkNs8rPF_DfHZ6W0alifENI/edit";
         } else {
-            alert("حدث خطأ أثناء الحفظ، حاول مرة أخرى.");
+            alert("السيرفر رد بخطأ: " + (data.message || "حاول مرة ثانية"));
         }
-    } catch (e) { alert("فشل الاتصال بالسيرفر"); }
-    btn.disabled = false; btn.innerText = "إرسال جميع الإجابات";
+    } catch (e) { 
+        alert("فشل الإرسال، اتأكد من النت عندك يا مستر."); 
+    }
+    btn.disabled = false; 
+    btn.innerText = "إرسال جميع الإجابات";
 }
 
 function showError(m) {
     const e = document.getElementById('errorMessage');
-    e.innerText = m; e.classList.remove('hidden');
+    e.innerText = m; 
+    e.classList.remove('hidden');
 }
 
-window.onbeforeunload = () => "سيتم فقدان تقدمك، هل أنت متأكد؟";
+window.onbeforeunload = (e) => {
+    if (currentUserKey !== "") {
+        return "لو قفلت دلوقتي تعبك هيروح، متأكد؟";
+    }
+};
 </script>
 
 </body>
 </html>
-

@@ -32,8 +32,10 @@
         }
 
         .gold-button:disabled {
-            opacity: 0.5;
+            background: #444;
+            color: #888;
             cursor: not-allowed;
+            border-color: #555;
         }
 
         .glass-card {
@@ -44,7 +46,8 @@
 
         #answerModal {
             display: none;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
         }
 
         .lyrics-box {
@@ -63,9 +66,9 @@
 
         /* Loading Spinner */
         .loader {
-            border: 3px solid rgba(243, 207, 122, 0.3);
+            border: 3px solid #f3f3f3;
             border-radius: 50%;
-            border-top: 3px solid #f3cf7a;
+            border-top: 3px solid #b8860b;
             width: 20px;
             height: 20px;
             animation: spin 1s linear infinite;
@@ -79,20 +82,20 @@
 </head>
 <body class="p-4 md:p-8">
 
-    <!-- شاشة تسجيل الدخول -->
+    <!-- Login Section -->
     <div id="loginSection" class="max-w-md mx-auto mt-20">
         <div class="glass-card p-8 rounded-3xl gold-border text-center">
             <h1 class="text-3xl font-bold mb-6">مرحباً بك في نشاط<br><span class="text-4xl">Sing Sang Sung</span></h1>
             <p class="mb-6 text-gray-400">برجاء إدخال الإيميل أو الكود الخاص بك للمتابعة</p>
             <input type="text" id="userInput" placeholder="الإيميل أو الكود" class="w-full p-4 rounded-xl bg-black/50 border border-[#f3cf7a]/30 text-[#f3cf7a] focus:outline-none focus:border-[#f3cf7a] mb-4 text-center">
-            <button onclick="handleLogin()" id="loginBtn" class="gold-button w-full py-4 rounded-xl text-lg flex items-center justify-center gap-2">
+            <button onclick="handleLogin()" id="loginBtn" class="gold-button w-full py-4 rounded-xl text-lg flex justify-center items-center gap-2">
                 <span id="loginText">دخول</span>
                 <div id="loginLoader" class="loader hidden"></div>
             </button>
         </div>
     </div>
 
-    <!-- قسم النشاط -->
+    <!-- Activity Section -->
     <div id="activitySection" class="hidden max-w-4xl mx-auto">
         <header class="text-center mb-10">
             <h1 class="text-5xl font-bold mb-4 text-[#f3cf7a]" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Sing Sang Sung</h1>
@@ -111,16 +114,17 @@
                     امتى هترجع وتطمني؟
                 </div>
 
-                <button onclick="openAnswerModal()" class="gold-button w-full md:w-auto px-10 py-4 rounded-full text-xl flex items-center justify-center gap-3 mx-auto">
-                    <span>ترجم الأغنية الآن</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6 6-6"/></svg>
+                <button id="openModalBtn" onclick="openAnswerModal()" class="gold-button w-full md:w-auto px-10 py-4 rounded-full text-xl flex items-center justify-center gap-3 mx-auto">
+                    <span id="btnMainText">ترجم الأغنية الآن</span>
+                    <svg id="btnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6 6-6"/></svg>
                 </button>
+                <p id="alreadySubmittedMsg" class="text-center mt-4 text-green-400 hidden font-bold">لقد قمت بإرسال ترجمتك لهذه الأغنية بنجاح! ✅</p>
             </div>
         </div>
     </div>
 
-    <!-- الفلاش سكرين للإجابة -->
-    <div id="answerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Answer Modal -->
+    <div id="answerModal" class="fixed inset-0 flex items-center justify-center p-4">
         <div class="modal-content glass-card w-full max-w-2xl p-6 md:p-8 rounded-3xl border-2 border-[#f3cf7a]">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">ترجمتك للإنجليزي</h2>
@@ -129,11 +133,8 @@
                 </button>
             </div>
 
-            <p class="text-gray-400 mb-4 text-sm">اكتب ترجمتك هنا، أو استخدم زر اللصق (Paste).</p>
-            
             <div class="relative mb-6">
                 <textarea id="answerTextarea" placeholder="Write your English translation here..." class="w-full h-64 p-4 rounded-xl bg-black/40 border border-[#f3cf7a]/20 text-white focus:outline-none focus:border-[#f3cf7a] text-left" dir="ltr"></textarea>
-                
                 <button onclick="pasteContent()" class="absolute bottom-4 right-4 bg-white/10 hover:bg-white/20 text-[#f3cf7a] px-4 py-2 rounded-lg flex items-center gap-2 text-sm border border-[#f3cf7a]/30 transition-all">
                     <span>Paste</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -147,44 +148,52 @@
         </div>
     </div>
 
-    <!-- رسائل التنبيه -->
+    <!-- Custom Alert -->
     <div id="customAlert" class="fixed top-10 left-1/2 -translate-x-1/2 z-[100] hidden">
-        <div id="alertBox" class="bg-[#1a1a1a] border-2 border-[#f3cf7a] px-8 py-4 rounded-2xl shadow-2xl text-[#f3cf7a] font-bold text-center min-w-[300px]">
-        </div>
+        <div id="alertBox" class="bg-[#1a1a1a] border-2 border-[#f3cf7a] px-8 py-4 rounded-2xl shadow-2xl text-[#f3cf7a] font-bold text-center"></div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfAarxthk0ZPpBgXgGyC3VL2zwCjbL0nEPL-5_RkGlnEo3TkspeBjnkLXLYbA0D6CZOQ/exec";
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfAarxthk0ZPpBgXgGyC3VL2zwCjbL0nEPL-5_RkGlnEo3TkspeBjnkLXLYbA0D6CZOQ/exec';
         let currentUser = null;
+        let hasSubmitted = false;
 
-        function handleLogin() {
+        async function handleLogin() {
             const input = document.getElementById('userInput').value.trim();
             if (!input) {
                 showAlert("برجاء إدخال البيانات أولاً");
                 return;
             }
 
-            toggleLoading('loginBtn', 'loginText', 'loginLoader', true);
+            setLoading('loginBtn', 'loginText', 'loginLoader', true);
 
-            // إرسال طلب التأكد من المستخدم (أو مجرد تسجيله)
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "login", user: input })
-            }).then(() => {
+            try {
+                // إرسال طلب تسجيل دخول للتأكد من المستخدم أو تسجيله
+                const response = await fetch(scriptURL + `?action=login&user=${encodeURIComponent(input)}`);
+                const data = await response.json();
+
                 currentUser = input;
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('activitySection').classList.remove('hidden');
-                showAlert("تم تسجيل الدخول بنجاح يا مستر!");
-            }).catch(err => {
-                showAlert("حدث خطأ في الاتصال");
-            }).finally(() => {
-                toggleLoading('loginBtn', 'loginText', 'loginLoader', false);
-            });
+                showAlert(`أهلاً بك يا مستر ${input}!`);
+                
+                // التأكد إذا كان المستخدم قد أجاب مسبقاً (هذا يعتمد على منطق الأب سكريبت لديك)
+                if(data.alreadySubmitted) {
+                    disableSubmission();
+                }
+            } catch (error) {
+                // في حالة فشل الاتصال، نسمح بالدخول أوفلاين مؤقتاً
+                currentUser = input;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('activitySection').classList.remove('hidden');
+                console.error("Login Fetch Error:", error);
+            } finally {
+                setLoading('loginBtn', 'loginText', 'loginLoader', false);
+            }
         }
 
         function openAnswerModal() {
+            if(hasSubmitted) return;
             document.getElementById('answerModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
@@ -198,56 +207,66 @@
             try {
                 const text = await navigator.clipboard.readText();
                 document.getElementById('answerTextarea').value += text;
-                showAlert("تم اللصق!");
             } catch (err) {
                 showAlert("استخدم Ctrl+V للصق");
             }
         }
 
-        function submitAnswer() {
+        async function submitAnswer() {
             const answer = document.getElementById('answerTextarea').value.trim();
-            
             if (!answer) {
-                showAlert("الخانة فاضية! اكتب ترجمتك الأول");
+                showAlert("لا توجد إجابة! اكتب ترجمتك أولاً.");
                 return;
             }
 
-            toggleLoading('submitBtn', 'submitText', 'submitLoader', true);
+            setLoading('submitBtn', 'submitText', 'submitLoader', true);
 
-            const payload = {
-                action: "submit",
-                user: currentUser,
-                answer: answer,
-                song: "Ya Mosafer Wahdak" // اسم الأغنية الحالية
-            };
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors', // لضمان الإرسال لـ Google Apps Script
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user: currentUser,
+                        answer: answer,
+                        timestamp: new Date().toISOString()
+                    })
+                });
 
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            }).then(() => {
-                showAlert("تم إرسال إجابتك بنجاح!");
+                // بما أننا نستخدم no-cors، لا يمكننا قراءة الاستجابة مباشرة، 
+                // لكننا نفترض النجاح إذا لم يحدث Error
+                showAlert("عاش يا بطل! تم استلام ترجمتك بنجاح.");
+                disableSubmission();
                 closeAnswerModal();
-                document.getElementById('answerTextarea').value = "";
-            }).catch(err => {
-                showAlert("خطأ في الإرسال، حاول تاني");
-            }).finally(() => {
-                toggleLoading('submitBtn', 'submitText', 'submitLoader', false);
-            });
+            } catch (error) {
+                showAlert("حدث خطأ في الاتصال، حاول مرة أخرى.");
+                console.error("Submit Error:", error);
+            } finally {
+                setLoading('submitBtn', 'submitText', 'submitLoader', false);
+            }
         }
 
-        function toggleLoading(btnId, textId, loaderId, isLoading) {
+        function disableSubmission() {
+            hasSubmitted = true;
+            const mainBtn = document.getElementById('openModalBtn');
+            mainBtn.disabled = true;
+            document.getElementById('btnMainText').innerText = "تم إرسال الإجابة";
+            document.getElementById('btnIcon').innerHTML = '<path d="M20 6L9 17l-5-5"/>'; // Check icon
+            document.getElementById('alreadySubmittedMsg').classList.remove('hidden');
+        }
+
+        function setLoading(btnId, textId, loaderId, isLoading) {
             const btn = document.getElementById(btnId);
             const text = document.getElementById(textId);
             const loader = document.getElementById(loaderId);
-            
-            btn.disabled = isLoading;
             if (isLoading) {
-                text.style.display = 'none';
+                btn.disabled = true;
+                text.classList.add('hidden');
                 loader.classList.remove('hidden');
             } else {
-                text.style.display = 'inline';
+                btn.disabled = false;
+                text.classList.remove('hidden');
                 loader.classList.add('hidden');
             }
         }

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sing Sang Sung - Activity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d240d 100%);
+            color: #f3cf7a;
+            min-height: 100vh;
+        }
+
+        .gold-border {
+            border: 2px solid #f3cf7a;
+            box-shadow: 0 0 15px rgba(243, 207, 122, 0.3);
+        }
+
+        .gold-button {
+            background: linear-gradient(180deg, #f3cf7a 0%, #b8860b 100%);
+            color: #1a1a1a;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .gold-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(243, 207, 122, 0.5);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(243, 207, 122, 0.2);
+        }
+
+        #answerModal {
+            display: none;
+            background: rgba(0, 0, 0, 0.85);
+        }
+
+        .lyrics-box {
+            white-space: pre-line;
+            line-height: 1.8;
+            font-size: 1.2rem;
+        }
+
+        /* الانيميشن الخاص بالفلاش سكرين */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-content {
+            animation: fadeIn 0.4s ease-out;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- شاشة تسجيل الدخول -->
+    <div id="loginSection" class="max-w-md mx-auto mt-20">
+        <div class="glass-card p-8 rounded-3xl gold-border text-center">
+            <h1 class="text-3xl font-bold mb-6">مرحباً بك في نشاط<br><span class="text-4xl">Sing Sang Sung</span></h1>
+            <p class="mb-6 text-gray-400">برجاء إدخال الإيميل أو الكود الخاص بك للمتابعة</p>
+            <input type="text" id="userInput" placeholder="الإيميل أو الكود" class="w-full p-4 rounded-xl bg-black/50 border border-[#f3cf7a]/30 text-[#f3cf7a] focus:outline-none focus:border-[#f3cf7a] mb-4 text-center">
+            <button onclick="handleLogin()" id="loginBtn" class="gold-button w-full py-4 rounded-xl text-lg">دخول</button>
+        </div>
+    </div>
+
+    <!-- قسم النشاط (يظهر بعد اللوج إن) -->
+    <div id="activitySection" class="hidden max-w-4xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-5xl font-bold mb-4 text-[#f3cf7a]" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Sing Sang Sung</h1>
+            <div class="h-1 w-24 bg-[#f3cf7a] mx-auto mb-6 rounded-full"></div>
+            <p class="text-xl text-gray-300">اقرأ كلمات الأغنية بالعربي، وترجمها بأسلوبك للإنجليزي!</p>
+        </header>
+
+        <div class="grid grid-cols-1 gap-8">
+            <!-- كارت الأغنية -->
+            <div class="glass-card p-6 md:p-8 rounded-3xl gold-border relative">
+                <div class="absolute -top-4 right-6 bg-[#f3cf7a] text-[#1a1a1a] px-4 py-1 rounded-full font-bold text-sm">أغنية النشاط</div>
+                
+                <div id="lyricsContainer" class="lyrics-box text-right mb-8 text-white/90">
+                    <!-- نص الأغنية (يمكنك تعديله من هنا) -->
+                    يا مسافر وحدك وفايتني.. ليه تبعد عني وتشغلني؟
+                    ودعتك الله في حطك وترحالك.. 
+                    عقلي في غيابك بيسألني..
+                    امتى هترجع وتطمني؟
+                </div>
+
+                <button onclick="openAnswerModal()" class="gold-button w-full md:w-auto px-10 py-4 rounded-full text-xl flex items-center justify-center gap-3 mx-auto">
+                    <span>ترجم الأغنية الآن</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6 6-6"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- الفلاش سكرين (Modal) للإجابة -->
+    <div id="answerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-content glass-card w-full max-w-2xl p-6 md:p-8 rounded-3xl border-2 border-[#f3cf7a]">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">ترجمتك للإنجليزي</h2>
+                <button onclick="closeAnswerModal()" class="text-[#f3cf7a] hover:text-white transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <p class="text-gray-400 mb-4 text-sm">اكتب ترجمتك هنا، أو استخدم زر اللصق (Paste) إذا كنت قد جهزت الإجابة مسبقاً.</p>
+            
+            <div class="relative mb-6">
+                <textarea id="answerTextarea" placeholder="Write your English translation here..." class="w-full h-64 p-4 rounded-xl bg-black/40 border border-[#f3cf7a]/20 text-white focus:outline-none focus:border-[#f3cf7a] text-left" dir="ltr"></textarea>
+                
+                <!-- زر Paste -->
+                <button onclick="pasteContent()" class="absolute bottom-4 right-4 bg-white/10 hover:bg-white/20 text-[#f3cf7a] px-4 py-2 rounded-lg flex items-center gap-2 text-sm border border-[#f3cf7a]/30 transition-all">
+                    <span>Paste</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+            </div>
+
+            <button onclick="submitAnswer()" id="submitBtn" class="gold-button w-full py-4 rounded-xl text-xl flex items-center justify-center gap-2">
+                <span>إرسال الإجابة</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- رسائل التنبيه (Custom Alert) -->
+    <div id="customAlert" class="fixed top-10 left-1/2 -translate-x-1/2 z-[100] hidden">
+        <div id="alertBox" class="bg-[#1a1a1a] border-2 border-[#f3cf7a] px-8 py-4 rounded-2xl shadow-2xl text-[#f3cf7a] font-bold text-center">
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // وظيفة تسجيل الدخول (محاكاة حتى نركب الأب سكريبت)
+        function handleLogin() {
+            const input = document.getElementById('userInput').value.trim();
+            if (!input) {
+                showAlert("برجاء إدخال البيانات أولاً");
+                return;
+            }
+            
+            // هنا سيتم استدعاء الأب سكريبت لاحقاً
+            currentUser = input;
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('activitySection').classList.remove('hidden');
+            showAlert("أهلاً بك يا فنان! تم الدخول بنجاح.");
+        }
+
+        // فتح الفلاش سكرين
+        function openAnswerModal() {
+            document.getElementById('answerModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // منع التمرير في الخلفية
+        }
+
+        // إغلاق الفلاش سكرين
+        function closeAnswerModal() {
+            document.getElementById('answerModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // وظيفة اللصق Paste
+        async function pasteContent() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('answerTextarea').value += text;
+                showAlert("تم اللصق من الحافظة!");
+            } catch (err) {
+                // في حالة عدم دعم المتصفح أو رفض الإذن
+                const fallback = document.execCommand('paste');
+                if (!fallback) {
+                    showAlert("عذراً، المتصفح يمنع الوصول التلقائي. استخدم Ctrl+V");
+                }
+            }
+        }
+
+        // إرسال الإجابة
+        function submitAnswer() {
+            const answer = document.getElementById('answerTextarea').value.trim();
+            
+            if (!answer) {
+                showAlert("لا توجد إجابة! اكتب ترجمتك أولاً.");
+                return;
+            }
+
+            // محاكاة إرسال البيانات
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerText = "جاري الإرسال...";
+
+            setTimeout(() => {
+                showAlert("عاش يا بطل! تم استلام ترجمتك بنجاح.");
+                closeAnswerModal();
+                // هنا سنضيف كود الأب سكريبت لإرسال الإجابة للشيت
+            }, 1500);
+        }
+
+        // نظام تنبيه مخصص بديل لـ Alert
+        function showAlert(msg) {
+            const alertDiv = document.getElementById('customAlert');
+            const alertBox = document.getElementById('alertBox');
+            alertBox.innerText = msg;
+            alertDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                alertDiv.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

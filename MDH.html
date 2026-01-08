@@ -22,14 +22,70 @@
             text-align: center;
             color: var(--text-blue);
             overflow-x: hidden;
+            position: relative; /* مهم للبلالين */
         }
 
-        header { padding: 20px; }
+        /* تنسيقات البلالين */
+        .balloon-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none; /* لتسمح بالضغط على العناصر الأخرى */
+            z-index: 0; /* خلف المحتوى الأساسي */
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -150px; /* تبدأ من أسفل الشاشة */
+            width: 80px;
+            height: 100px;
+            background-color: rgba(var(--balloon-color-rgb), 0.7);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: inset -10px -10px 0 rgba(0,0,0,0.1);
+            animation: floatUp var(--float-duration) ease-in forwards;
+            opacity: 0;
+        }
+        .balloon::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 40px;
+            background-color: rgba(0,0,0,0.2);
+            top: 95%;
+            left: calc(50% - 1px);
+        }
+
+        /* ألوان البلالين */
+        .balloon.color1 { --balloon-color-rgb: 255,100,150; } /* Pink */
+        .balloon.color2 { --balloon-color-rgb: 100,150,255; } /* Blue */
+        .balloon.color3 { --balloon-color-rgb: 255,200,80; }  /* Yellow */
+        .balloon.color4 { --balloon-color-rgb: 100,255,150; } /* Green */
+
+        /* تحريك البلالين */
+        @keyframes floatUp {
+            0% { 
+                transform: translateY(0) scale(0.5); 
+                opacity: 0; 
+            }
+            50% { 
+                opacity: 0.8; 
+            }
+            100% { 
+                transform: translateY(-120vh) scale(1.2); 
+                opacity: 0; 
+            }
+        }
+
+        header { padding: 20px; z-index: 1; position: relative; } /* لجعل المحتوى فوق البلالين */
 
         .logo {
             width: 120px;
             filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
-            animation: bounce 2s infinite;
+            animation: bounce 2s infinite ease-in-out;
+            display: inline-block;
         }
 
         h1 { 
@@ -53,7 +109,7 @@
             margin-top: 10px;
         }
 
-        .teacher-section { margin: 20px 0; }
+        .teacher-section { margin: 20px 0; z-index: 1; position: relative; }
 
         .teacher-img {
             width: 140px;
@@ -72,6 +128,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 1; /* لجعل المحتوى فوق البلالين */
         }
 
         .outer-frame {
@@ -89,7 +146,7 @@
             border-radius: 50%;
             background: #fff;
             border: 8px solid #FFF;
-            z-index: 2;
+            z-index: 2; 
             object-fit: cover;
             box-shadow: 0 0 20px rgba(0,0,0,0.2);
         }
@@ -98,10 +155,10 @@
             position: absolute;
             width: 65px; 
             height: 65px;
-            z-index: 3;
+            z-index: 3; 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-            display: none; /* مخفي افتراضياً ويظهر بالكود */
+            display: none; 
         }
         
         .sticker.show { display: block; }
@@ -111,6 +168,8 @@
             color: #2E7D32;
             margin-top: 20px;
             text-shadow: 2px 2px #FFF;
+            z-index: 1;
+            position: relative;
         }
 
         footer {
@@ -119,11 +178,21 @@
             background: #E64A19;
             color: white;
             font-size: 1.1rem;
+            z-index: 1;
+            position: relative;
         }
 
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        /* كود الحركات */
+        @keyframes bounce { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-15px); } 
+        }
+        @keyframes rotate { 
+            from { transform: rotate(0deg); } 
+            to { transform: rotate(360deg); } 
+        }
 
+        /* مواقع الاستيكرز */
         .st1  { transform: translate(0, -165px); }
         .st2  { transform: translate(100px, -135px); }
         .st3  { transform: translate(160px, -55px); }
@@ -139,25 +208,27 @@
 <body>
 
     <audio id="bgMusic" loop>
-        <source src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/PAMD/WVM.wav" type="audio/wav">
+        <source src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/WVM.wav" type="audio/wav">
     </audio>
 
+    <div class="balloon-container"></div>
+
     <header>
-        <img src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/PAMD/Logo.png" alt="Pioneers Academy Logo" class="logo">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/Logo.png" alt="Logo" class="logo">
         <h1>Pioneers Academy</h1>
         <h2>Miss Dina Online Classes</h2>
         <h3>Heroes Of Level 1</h3>
     </header>
 
     <section class="teacher-section">
-        <img src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/PAMD/MD.jpg" alt="Miss Dina" class="teacher-img">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/MD.jpg" alt="Miss Dina" class="teacher-img">
     </section>
 
     <div class="hero-container">
         <div class="outer-frame"></div>
 
         <? for (var i = 1; i <= 10; i++) { ?>
-          <img src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/PAMD/ST<?= i ?>.png" 
+          <img src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/ST<?= i ?>.png" 
                class="sticker st<?= i ?> <?= (i <= studentData.rank) ? 'show' : '' ?>" 
                alt="Sticker <?= i ?>">
         <? } ?>
@@ -172,10 +243,42 @@
     </footer>
 
     <script>
+        // تشغيل الصوت عند أول تفاعل مع الصفحة
         document.addEventListener('click', function() {
             var audio = document.getElementById('bgMusic');
             audio.play();
         }, { once: true });
+
+        // كود JavaScript لإنشاء البلالين وتحريكها
+        document.addEventListener('DOMContentLoaded', function() {
+            const balloonContainer = document.querySelector('.balloon-container');
+            const colors = ['color1', 'color2', 'color3', 'color4'];
+
+            function createBalloon() {
+                const balloon = document.createElement('div');
+                balloon.classList.add('balloon', colors[Math.floor(Math.random() * colors.length)]);
+                
+                // تحديد موقع بداية عشوائي للبالون
+                balloon.style.left = Math.random() * 100 + 'vw';
+                // تحديد مدة طيران عشوائية
+                balloon.style.setProperty('--float-duration', (Math.random() * 10 + 10) + 's'); // 10-20 ثانية
+                // تحديد تأخير عشوائي
+                balloon.style.animationDelay = (Math.random() * 5) + 's'; 
+
+                balloonContainer.appendChild(balloon);
+
+                // إزالة البالون بعد انتهاء الحركة لتجنب تراكم العناصر
+                balloon.addEventListener('animationend', () => {
+                    balloon.remove();
+                });
+            }
+
+            // إنشاء عدد من البلالين بشكل مستمر
+            for (let i = 0; i < 20; i++) { // ابدئي بـ 20 بالوناً
+                setTimeout(createBalloon, i * 500); // كل نصف ثانية يظهر بالون جديد
+            }
+            setInterval(createBalloon, 2000); // بعد ذلك، يظهر بالون جديد كل ثانيتين
+        });
     </script>
 </body>
 </html>

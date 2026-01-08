@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Miss Dina Heroes</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --primary-orange: #FFCC80; --deep-orange: #FF8A65;
@@ -16,6 +17,7 @@
             margin: 0; padding: 0; background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%);
             min-height: 100vh; font-family: 'Fredoka One', cursive; text-align: center;
             color: var(--text-blue); overflow-x: hidden; position: relative; cursor: pointer;
+            touch-action: manipulation;
         }
 
         .balloon-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0; }
@@ -52,11 +54,15 @@
         /* حاوية الاستيكر الأساسية */
         .sticker-wrapper {
             position: absolute; width: 100px; height: 100px;
-            z-index: 4; display: flex; justify-content: center; align-items: center;
-            opacity: 0; transform: scale(0); transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 10; display: flex; justify-content: center; align-items: center;
+            opacity: 0; transform: scale(0); 
+            transition: opacity 1s, transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: grab; touch-action: none; /* لمنع التعليق في الموبايل */
         }
 
-        .sticker-img { width: 100%; height: 100%; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.3)); }
+        .sticker-wrapper:active { cursor: grabbing; }
+
+        .sticker-img { width: 100%; height: 100%; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.3)); pointer-events: none; }
 
         .student-name { font-size: 3rem; color: #2E7D32; text-shadow: 2px 2px #FFF; margin: 25px 0; opacity: 0; transition: 1s; }
 
@@ -69,7 +75,7 @@
         .pos6  { bottom: 40px; left: 20px; }
         .pos7  { top: 175px; left: -40px; }
         .pos8  { top: 40px;  left: 20px; }
-        .pos9  { top: 80px;  left: 80px; } /* أماكن إضافية للـ 10 استيكرات */
+        .pos9  { top: 80px;  left: 80px; } 
         .pos10 { top: 80px;  right: 80px; }
 
         .show-sticker { opacity: 1 !important; transform: scale(1.2) !important; }
@@ -120,7 +126,7 @@
                         <div class="student-card">
                             <div class="hero-container" id="container-${index}">
                                 <div class="outer-frame"></div>
-                                <img src="${formatDriveUrl(student.imageUrl)}" class="student-img" id="img-${index}">
+                                <img src="${formatDriveUrl(student.imageUrl)}" class="student-img" id="img-${index}" onclick="celebrate()">
                             </div>
                             <h2 class="student-name" id="name-${index}">${student.name}</h2>
                         </div>
@@ -150,7 +156,6 @@
         function renderStickers(containerId, count) {
             const container = document.getElementById(containerId);
             for (let i = 1; i <= 10; i++) {
-                // إنشاء حاوية للاستيكر لتحديد مكانه
                 const wrapper = document.createElement('div');
                 wrapper.className = `sticker-wrapper pos${i}`;
                 
@@ -164,9 +169,77 @@
                 if (i <= count) {
                     setTimeout(() => {
                         wrapper.classList.add('show-sticker');
+                        makeDraggable(wrapper);
                     }, 1000 + (i * 500));
                 }
             }
+        }
+
+        // دالة السحب والإفلات التفاعلية
+        function makeDraggable(el) {
+            let isDragging = false;
+            let startX, startY;
+
+            el.addEventListener('mousedown', startDrag);
+            el.addEventListener('touchstart', startDrag, {passive: false});
+
+            function startDrag(e) {
+                isDragging = true;
+                el.style.transition = 'none'; // إلغاء الترانزيشن أثناء السحب
+                el.style.zIndex = "1000";
+                
+                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+                
+                const rect = el.getBoundingClientRect();
+                startX = clientX - rect.left;
+                startY = clientY - rect.top;
+
+                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('touchmove', onDrag, {passive: false});
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchend', endDrag);
+            }
+
+            function onDrag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+                
+                // تحريك العنصر
+                el.style.position = 'fixed';
+                el.style.left = (clientX - startX) + 'px';
+                el.style.top = (clientY - startY) + 'px';
+            }
+
+            function endDrag() {
+                isDragging = false;
+                el.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                el.style.position = 'absolute';
+                // العودة للمكان الأصلي في الـ CSS
+                el.style.left = '';
+                el.style.top = '';
+                el.style.zIndex = "10";
+                
+                // تشغيل مدفع القصاصات عند العودة للمكان
+                setTimeout(() => {
+                    celebrate();
+                }, 300);
+
+                document.removeEventListener('mousemove', onDrag);
+                document.removeEventListener('touchmove', onDrag);
+            }
+        }
+
+        // دالة مدافعة القصاصات الورقية (Confetti)
+        function celebrate() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#FF4081', '#FFCC80', '#3F51B5', '#ffd54f']
+            });
         }
 
         function playMusic() { document.getElementById('bgMusic').play().catch(()=>{}); }

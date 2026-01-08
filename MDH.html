@@ -18,7 +18,6 @@
             color: var(--text-blue); overflow-x: hidden; position: relative; cursor: pointer;
         }
 
-        /* البلالين */
         .balloon-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0; }
         .balloon { position: absolute; bottom: -150px; width: 80px; height: 100px; background-color: rgba(var(--balloon-color-rgb), 0.7); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: floatUp var(--float-duration) ease-in forwards; }
 
@@ -35,11 +34,11 @@
         }
         h3 { font-size: 1.3rem; color: #FFF; background: var(--deep-orange); padding: 8px 25px; border-radius: 50px; margin-top: -15px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-        .student-card { margin-bottom: 200px; position: relative; }
+        .student-card { margin-bottom: 250px; position: relative; }
 
         .hero-container { 
             position: relative; width: 450px; height: 450px; 
-            margin: 40px auto; display: flex; justify-content: center; 
+            margin: 50px auto; display: flex; justify-content: center; 
             align-items: center; z-index: 2; 
         }
         .outer-frame { position: absolute; width: 100%; height: 100%; border: 12px dotted var(--accent-pink); border-radius: 50%; animation: rotate 25s linear infinite; }
@@ -50,33 +49,35 @@
             transform: scale(0); transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* تعديل حجم الاستيكر وحركته */
-        .sticker { 
-            position: absolute; width: 95px; height: 95px; z-index: 4; 
-            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.3));
-            transform: translate(0, 0) scale(0); /* تبدأ من المنتصف وصغيرة */
-            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        /* حاوية الاستيكر الأساسية */
+        .sticker-wrapper {
+            position: absolute; width: 100px; height: 100px;
+            z-index: 4; display: flex; justify-content: center; align-items: center;
+            opacity: 0; transform: scale(0); transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .student-name { font-size: 2.8rem; color: #2E7D32; text-shadow: 2px 2px #FFF; margin: 20px 0; opacity: 0; transition: 1s; }
+        .sticker-img { width: 100%; height: 100%; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.3)); }
+
+        .student-name { font-size: 3rem; color: #2E7D32; text-shadow: 2px 2px #FFF; margin: 25px 0; opacity: 0; transition: 1s; }
+
+        /* الأماكن الثابتة حول الصورة */
+        .pos1  { top: -20px; left: 175px; }
+        .pos2  { top: 40px;  right: 20px; }
+        .pos3  { top: 175px; right: -40px; }
+        .pos4  { bottom: 40px; right: 20px; }
+        .pos5  { bottom: -20px; left: 175px; }
+        .pos6  { bottom: 40px; left: 20px; }
+        .pos7  { top: 175px; left: -40px; }
+        .pos8  { top: 40px;  left: 20px; }
+        .pos9  { top: 80px;  left: 80px; } /* أماكن إضافية للـ 10 استيكرات */
+        .pos10 { top: 80px;  right: 80px; }
+
+        .show-sticker { opacity: 1 !important; transform: scale(1.2) !important; }
 
         @keyframes glow { from { box-shadow: 0 0 10px var(--glow-color); } to { box-shadow: 0 0 30px var(--glow-color), 0 0 50px var(--accent-pink); } }
         @keyframes floatUp { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: translateY(-120vh) scale(1.2); opacity: 0; } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* الأماكن النهائية للاستيكرات (موزعة حول الصورة الكبيرة) */
-        .st1.fly  { transform: translate(0, -210px) scale(1.1); }
-        .st2.fly  { transform: translate(120px, -170px) scale(1.1); }
-        .st3.fly  { transform: translate(190px, -70px) scale(1.1); }
-        .st4.fly  { transform: translate(190px, 70px) scale(1.1); }
-        .st5.fly  { transform: translate(120px, 170px) scale(1.1); }
-        .st6.fly  { transform: translate(0, 210px) scale(1.1); }
-        .st7.fly  { transform: translate(-120px, 170px) scale(1.1); }
-        .st8.fly  { transform: translate(-190px, 70px) scale(1.1); }
-        .st9.fly  { transform: translate(-190px, -70px) scale(1.1); }
-        .st10.fly { transform: translate(-120px, -170px) scale(1.1); }
-        
     </style>
 </head>
 <body onclick="playMusic()">
@@ -135,7 +136,6 @@
                         renderStickers(`container-${index}`, student.rank);
                     };
 
-                    // fallback في حال كانت الصورة مخزنة مسبقاً
                     setTimeout(() => {
                         if(img.style.transform != "scale(1)") {
                             img.style.transform = "scale(1)";
@@ -144,30 +144,27 @@
                         }
                     }, 1000);
                 });
-
             } catch (e) { console.error(e); }
         }
 
         function renderStickers(containerId, count) {
             const container = document.getElementById(containerId);
             for (let i = 1; i <= 10; i++) {
+                // إنشاء حاوية للاستيكر لتحديد مكانه
+                const wrapper = document.createElement('div');
+                wrapper.className = `sticker-wrapper pos${i}`;
+                
                 const img = document.createElement('img');
                 img.src = `https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/ST${i}.png`;
-                img.className = `sticker st${i}`;
-                container.appendChild(img);
+                img.className = 'sticker-img';
+                
+                wrapper.appendChild(img);
+                container.appendChild(wrapper);
 
                 if (i <= count) {
-                    // المرحلة الأولى: تظهر في المنتصف
                     setTimeout(() => {
-                        img.style.transform = "scale(1.5)"; // تكبير لحظي عند الظهور
-                        img.style.zIndex = "10";
-                    }, 1000 + (i * 600));
-
-                    // المرحلة الثانية: "تطير" لمكانها المخصص
-                    setTimeout(() => {
-                        img.classList.add('fly');
-                        img.style.zIndex = "4";
-                    }, 1500 + (i * 600));
+                        wrapper.classList.add('show-sticker');
+                    }, 1000 + (i * 500));
                 }
             }
         }

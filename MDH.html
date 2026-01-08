@@ -33,13 +33,13 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            pointer-events: none; /* لتسمح بالضغط على العناصر الأخرى */
-            z-index: 0; /* خلف المحتوى الأساسي */
+            pointer-events: none;
+            z-index: 0;
         }
 
         .balloon {
             position: absolute;
-            bottom: -150px; /* تبدأ من أسفل الشاشة */
+            bottom: -150px;
             width: 80px;
             height: 100px;
             background-color: rgba(var(--balloon-color-rgb), 0.7);
@@ -58,28 +58,18 @@
             left: calc(50% - 1px);
         }
 
-        /* ألوان البلالين */
-        .balloon.color1 { --balloon-color-rgb: 255,100,150; } /* Pink */
-        .balloon.color2 { --balloon-color-rgb: 100,150,255; } /* Blue */
-        .balloon.color3 { --balloon-color-rgb: 255,200,80; }  /* Yellow */
-        .balloon.color4 { --balloon-color-rgb: 100,255,150; } /* Green */
+        .balloon.color1 { --balloon-color-rgb: 255,100,150; }
+        .balloon.color2 { --balloon-color-rgb: 100,150,255; }
+        .balloon.color3 { --balloon-color-rgb: 255,200,80; }
+        .balloon.color4 { --balloon-color-rgb: 100,255,150; }
 
-        /* تحريك البلالين */
         @keyframes floatUp {
-            0% { 
-                transform: translateY(0) scale(0.5); 
-                opacity: 0; 
-            }
-            50% { 
-                opacity: 0.8; 
-            }
-            100% { 
-                transform: translateY(-120vh) scale(1.2); 
-                opacity: 0; 
-            }
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
         }
 
-        header { padding: 20px; z-index: 1; position: relative; } /* لجعل المحتوى فوق البلالين */
+        header { padding: 20px; z-index: 1; position: relative; }
 
         .logo {
             width: 120px;
@@ -128,7 +118,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1; /* لجعل المحتوى فوق البلالين */
+            z-index: 1;
         }
 
         .outer-frame {
@@ -149,7 +139,7 @@
             z-index: 2; 
             object-fit: cover;
             box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            display: none; /* مخفية حتى يتم التحميل */
+            display: none; 
         }
 
         .sticker {
@@ -183,17 +173,10 @@
             position: relative;
         }
 
-        /* كود الحركات */
-        @keyframes bounce { 
-            0%, 100% { transform: translateY(0); } 
-            50% { transform: translateY(-15px); } 
-        }
-        @keyframes rotate { 
-            from { transform: rotate(0deg); } 
-            to { transform: rotate(360deg); } 
-        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* مواقع الاستيكرز */
+        /* مواقع الاستيكرز المظبوطة في تصميمك */
         .st1  { transform: translate(0, -165px); }
         .st2  { transform: translate(100px, -135px); }
         .st3  { transform: translate(160px, -55px); }
@@ -225,23 +208,21 @@
         <img src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/MD.jpg" alt="Miss Dina" class="teacher-img">
     </section>
 
-    <div class="hero-container">
+    <div id="heroContainer" class="hero-container">
         <div class="outer-frame"></div>
-        <div id="stickersContainer"></div>
         <img id="studentPhoto" src="" alt="Student Hero" class="student-img">
     </div>
 
     <h2 id="studentNameDisplay" class="student-name">Loading...</h2>
 
     <footer>
-        All Rights Reserved &copy; 2026 - Pioneers Academy | Essra Youssry
+        All Rights Reserved © 2026 - Pioneers Academy | Essra Youssry
     </footer>
 
     <script>
-        // 1. إعدادات الربط
         const DEPLOY_URL = "https://script.google.com/macros/s/AKfycbx1DFvYqd1EcJH3iNmp8cd-1ybB-VX7MmreWy6AMZwoc8iP_4hPOHO-41TMBgnUX1oY/exec";
 
-        // 2. وظيفة تحويل لينك جوجل درايف إلى لينك مباشر
+        // وظيفة تحويل لينك درايف
         function formatDriveUrl(url) {
             if (url && url.includes('drive.google.com')) {
                 const fileId = url.match(/[-\w]{25,}/);
@@ -250,50 +231,43 @@
             return url;
         }
 
-        // 3. جلب البيانات من الدبلوي وتوزيعها على التصميم
         async function loadData() {
             try {
                 const response = await fetch(DEPLOY_URL);
                 const studentData = await response.json();
 
-                // عرض الاسم
                 document.getElementById('studentNameDisplay').innerText = studentData.name;
 
-                // عرض الصورة بعد معالجة لينك درايف
                 const imgTag = document.getElementById('studentPhoto');
                 imgTag.src = formatDriveUrl(studentData.imageUrl);
-                imgTag.style.display = 'block';
+                imgTag.onload = () => { imgTag.style.display = 'block'; };
 
-                // إنشاء الـ 10 استيكرز بنفس تصميمك الأصلي
-                const container = document.getElementById('stickersContainer');
+                const container = document.getElementById('heroContainer');
                 for (let i = 1; i <= 10; i++) {
                     const img = document.createElement('img');
                     img.src = `https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/ST${i}.png`;
-                    img.alt = `Sticker ${i}`;
-                    // إضافة الكلاسات الأصلية (sticker, st1, show)
                     img.className = `sticker st${i} ${i <= studentData.rank ? 'show' : ''}`;
+                    // نستخدم prepend للتأكد من أنها خلف الصورة أو بجانبها في الترتيب الصحيح
                     container.appendChild(img);
                 }
             } catch (e) {
                 console.error("Error:", e);
-                document.getElementById('studentNameDisplay').innerText = "Error Loading Data";
+                document.getElementById('studentNameDisplay').innerText = "Data Not Found";
             }
         }
 
-        // تشغيل الوظائف عند فتح الصفحة
-        window.onload = loadData;
+        window.onload = () => {
+            loadData();
+            startBalloons();
+        };
 
-        // تشغيل الصوت عند أول تفاعل
-        document.addEventListener('click', function() {
-            var audio = document.getElementById('bgMusic');
-            audio.play();
+        document.addEventListener('click', () => {
+            document.getElementById('bgMusic').play();
         }, { once: true });
 
-        // كود البلالين الأصلي الخاص بك
-        document.addEventListener('DOMContentLoaded', function() {
+        function startBalloons() {
             const balloonContainer = document.querySelector('.balloon-container');
             const colors = ['color1', 'color2', 'color3', 'color4'];
-
             function createBalloon() {
                 const balloon = document.createElement('div');
                 balloon.classList.add('balloon', colors[Math.floor(Math.random() * colors.length)]);
@@ -303,10 +277,9 @@
                 balloonContainer.appendChild(balloon);
                 balloon.addEventListener('animationend', () => { balloon.remove(); });
             }
-
             for (let i = 0; i < 20; i++) { setTimeout(createBalloon, i * 500); }
             setInterval(createBalloon, 2000);
-        });
+        }
     </script>
 </body>
 </html>

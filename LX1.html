@@ -1,0 +1,267 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Gamepad2, 
+  User, 
+  Send, 
+  CheckCircle2, 
+  AlertCircle, 
+  Sparkles,
+  Plus,
+  Equal
+} from 'lucide-react';
+
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvKO0-DIfEcjnd5AQ395uEM8q64NDxZ6ULARDa3RCWqXwj4cw0uhZoD3A3f2a0k04U/exec";
+
+const CONTENT = [
+  { verb: "Run", tense: "Present Simple" },
+  { verb: "Write", tense: "Past Continuous" },
+  { verb: "Build", tense: "Present Perfect" },
+  { verb: "Speak", tense: "Passive Voice (Past)" },
+  { verb: "Go", tense: "First Conditional (If)" },
+  { verb: "Eat", tense: "Reported Speech" },
+  { verb: "Think", tense: "Future Perfect" },
+  { verb: "Study", tense: "Second Conditional (If)" },
+  { verb: "Break", tense: "Past Perfect" },
+  { verb: "Fly", tense: "Modals (Must have)" },
+];
+
+const App = () => {
+  const [step, setStep] = useState('login'); // login, activity, success
+  const [userInput, setUserInput] = useState('');
+  const [studentData, setStudentData] = useState(null);
+  const [answers, setAnswers] = useState(Array(10).fill(''));
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Styles
+  const glassStyle = "bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-[2rem]";
+  const goldenGradient = "bg-gradient-to-br from-[#f1c40f] via-[#f39c12] to-[#d35400]";
+  const xboxGreen = "bg-[#107C10]";
+
+  const handleLogin = async () => {
+    if (userInput.length < 3) {
+      setError("يرجى إدخال بيانات صحيحة");
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch(`${APPS_SCRIPT_URL}?user=${encodeURIComponent(userInput)}&action=login`);
+      const data = await response.json();
+
+      if (data.status === "authorized") {
+        if (data.alreadySubmitted) {
+          setError("لقد قمت بإتمام هذا النشاط مسبقاً يا بطل!");
+        } else {
+          setStudentData({ email: data.user });
+          setStep('activity');
+        }
+      } else {
+        setError("هذه البيانات غير مسجلة لدينا في نظام Xbox");
+      }
+    } catch (err) {
+      setError("حدث خطأ في الاتصال بالسيرفر");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    const isComplete = answers.every(ans => ans.trim().length > 5);
+    if (!isComplete) {
+      setError("يرجى كتابة جمل كاملة في جميع الخانات");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const payload = {
+        user: studentData.email,
+        answer: JSON.stringify(answers)
+      };
+
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      setStep('success');
+    } catch (err) {
+      setError("حدث خطأ أثناء الحفظ، حاول مرة أخرى");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (step === 'success') {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center p-6 font-['Cairo']">
+        <div className={`${glassStyle} p-12 text-center max-w-md w-full border-yellow-500/30`}>
+          <div className="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(241,196,15,0.4)]">
+            <CheckCircle2 size={48} className="text-black" />
+          </div>
+          <h2 className="text-3xl font-black mb-4 text-yellow-500">تم الإرسال بنجاح!</h2>
+          <p className="text-gray-400">عاش يا بطل! تم تسجيل جملك العشرة في نظام Label X بنجاح.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white p-4 md:p-8 font-['Cairo'] selection:bg-yellow-500/30" dir="rtl">
+      {/* Background Decor */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-20 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-yellow-600 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-[#107C10] rounded-full blur-[100px]" />
+      </div>
+
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <header className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-1 rounded-full mb-4">
+            <Gamepad2 size={16} className="text-yellow-500" />
+            <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400">Xbox Academy Season</span>
+          </div>
+          <h1 className="text-6xl font-black mb-2 tracking-tighter">
+            LABEL <span className="text-yellow-500 italic">X</span>
+          </h1>
+          <p className="text-gray-500 font-bold uppercase text-xs tracking-[0.3em]">Grammar Challenge System</p>
+        </header>
+
+        {step === 'login' ? (
+          <div className={`${glassStyle} p-8 md:p-12 relative overflow-hidden group`}>
+            <div className="relative z-10">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <User className="text-yellow-500" />
+                هوية اللاعب
+              </h2>
+              <p className="text-gray-400 mb-8 text-sm leading-relaxed">
+                مرحباً بك في تحدي Label X. للبدء، يرجى إدخال بريدك الإلكتروني أو كود الطالب الخاص بك.
+              </p>
+              
+              <div className="space-y-4">
+                <input 
+                  type="text"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  placeholder="الإيميل أو الكود الشخصي..."
+                  className="w-full bg-black/50 border-2 border-white/5 rounded-2xl py-5 px-6 text-xl focus:border-yellow-500/50 outline-none transition-all placeholder:text-gray-700 text-center"
+                />
+                
+                {error && (
+                  <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm flex items-center gap-2 animate-shake">
+                    <AlertCircle size={18} />
+                    {error}
+                  </div>
+                )}
+
+                <button 
+                  onClick={handleLogin}
+                  disabled={loading}
+                  className={`w-full py-5 rounded-2xl text-xl font-black transition-all flex items-center justify-center gap-3 ${loading ? 'opacity-50' : 'hover:scale-[1.02]'} ${goldenGradient} text-black shadow-[0_10px_30px_rgba(241,196,15,0.2)]`}
+                >
+                  {loading ? 'جاري التحقق...' : 'بدء التحدي'}
+                  {!loading && <Sparkles size={20} />}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-8 pb-20">
+            {/* Welcome User */}
+            <div className={`${glassStyle} p-6 flex items-center justify-between border-yellow-500/20`}>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">لاعب نشط الآن</p>
+                <p className="text-yellow-500 font-bold tracking-wide">{studentData.email}</p>
+              </div>
+              <div className="h-10 w-10 rounded-full bg-yellow-500 flex items-center justify-center text-black font-black">
+                X
+              </div>
+            </div>
+
+            {/* Questions Loop */}
+            {CONTENT.map((item, index) => (
+              <div key={index} className={`${glassStyle} p-6 md:p-8 relative`}>
+                <div className="absolute top-4 left-4 text-[40px] font-black text-white/5 pointer-events-none">
+                  #{String(index + 1).padStart(2, '0')}
+                </div>
+                
+                {/* Visual Task Layout */}
+                <div className="flex flex-col items-center gap-6">
+                  {/* Top Row: Verb + Tense */}
+                  <div className="flex items-center gap-4 md:gap-8 flex-wrap justify-center">
+                    <div className="bg-white/10 px-6 py-3 rounded-xl border border-white/20 min-w-[120px] text-center">
+                      <p className="text-[10px] text-gray-500 uppercase mb-1">Verb</p>
+                      <span className="text-2xl font-black text-white italic">{item.verb}</span>
+                    </div>
+
+                    <Plus size={24} className="text-yellow-500 animate-pulse" />
+
+                    <div className="bg-yellow-500/10 px-6 py-3 rounded-xl border border-yellow-500/20 min-w-[150px] text-center">
+                      <p className="text-[10px] text-yellow-500 uppercase mb-1">Grammar/Tense</p>
+                      <span className="text-lg font-bold text-yellow-400">{item.tense}</span>
+                    </div>
+                  </div>
+
+                  {/* Equal Sign */}
+                  <Equal size={28} className="text-gray-600" />
+
+                  {/* Answer Input */}
+                  <div className="w-full">
+                    <textarea 
+                      value={answers[index]}
+                      onChange={(e) => {
+                        const newAnswers = [...answers];
+                        newAnswers[index] = e.target.value;
+                        setAnswers(newAnswers);
+                      }}
+                      placeholder="اكتب جملتك هنا..."
+                      className="w-full bg-black/40 border border-white/10 rounded-2xl p-5 text-lg min-h-[100px] focus:border-yellow-500/50 outline-none transition-all resize-none text-right"
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Final Error Msg */}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-center">
+                {error}
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button 
+              onClick={handleSubmit}
+              disabled={loading}
+              className={`w-full py-6 rounded-[2rem] text-2xl font-black transition-all flex items-center justify-center gap-4 ${loading ? 'opacity-50' : 'hover:scale-[1.02] shadow-[0_20px_40px_rgba(241,196,15,0.2)]'} ${goldenGradient} text-black`}
+            >
+              {loading ? 'جاري إرسال البيانات...' : 'إرسال الجمل العشرة'}
+              <Send size={24} />
+            </button>
+          </div>
+        )}
+
+        <footer className="text-center py-10">
+          <p className="text-[10px] text-gray-600 tracking-[0.5em] uppercase font-bold">
+            Powered by Xbox Academy System &copy; 2026
+          </p>
+        </footer>
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.2s ease-in-out 0s 2; }
+      `}} />
+    </div>
+  );
+};
+
+export default App;

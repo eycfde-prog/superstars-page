@@ -1,185 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miss Dina Heroes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-orange: #FFCC80; 
-            --deep-orange: #FF8A65;
-            --accent-pink: #FF4081;
-            --text-blue: #3F51B5;
-            --frame-size: 420px; 
-            --img-size: 220px;   
-        }
+<div class="hero-container" id="mainHero">
+    <div class="outer-frame"></div>
+    <img id="studentPhoto" src="" alt="Student Hero" class="student-img">
+</div>
 
-        body {
-            margin: 0; padding: 0;
-            background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%);
-            min-height: 100vh;
-            font-family: 'Fredoka One', cursive;
-            text-align: center;
-            color: var(--text-blue);
-            overflow-x: hidden;
-        }
+<script>
+    // تعديل بسيط داخل دالة loadData لضمان الترتيب الصحيح
+    async function loadData() {
+        try {
+            const response = await fetch(DEPLOY_URL);
+            const studentData = await response.json();
 
-        /* --- البلالين --- */
-        .balloon-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0;
-        }
-        .balloon {
-            position: absolute; bottom: -150px; width: 60px; height: 80px;
-            background: rgba(255, 255, 255, 0.6); border-radius: 50%;
-            animation: floatUp var(--d) ease-in infinite;
-        }
+            document.getElementById('studentNameDisplay').innerText = studentData.name;
 
-        /* --- الحاوية المركزية --- */
-        .hero-container {
-            position: relative;
-            width: var(--frame-size);
-            height: var(--frame-size);
-            margin: 40px auto;
-            display: flex; justify-content: center; align-items: center;
-        }
+            const imgTag = document.getElementById('studentPhoto');
+            imgTag.src = formatDriveUrl(studentData.imageUrl);
+            imgTag.style.display = 'block';
 
-        .outer-frame {
-            position: absolute;
-            width: 100%; height: 100%;
-            border: 12px dotted var(--accent-pink);
-            border-radius: 50%;
-            animation: rotate 40s linear infinite;
-        }
-
-        .student-img {
-            width: var(--img-size);
-            height: var(--img-size);
-            border-radius: 50%;
-            border: 8px solid #fff;
-            object-fit: cover;
-            z-index: 5;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        /* --- تأثير اللمعان على الاستيكرز --- */
-        .sticker-wrapper {
-            position: absolute;
-            width: 65px; height: 65px;
-            z-index: 10;
-            display: none;
-        }
-        .sticker-wrapper.show { display: block; }
-
-        .sticker-img {
-            width: 100%; height: 100%;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-            transition: transform 0.3s;
-        }
-
-        /* طبقة اللمعان */
-        .sticker-wrapper::after {
-            content: '';
-            position: absolute; top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { left: -100%; }
-            20% { left: 200%; }
-            100% { left: 200%; }
-        }
-
-        /* توزيع الاستيكرز في المسافة الفارغة */
-        .st1  { transform: translate(0, -160px); }
-        .st2  { transform: translate(95px, -130px); }
-        .st3  { transform: translate(155px, -50px); }
-        .st4  { transform: translate(155px, 50px); }
-        .st5  { transform: translate(95px, 130px); }
-        .st6  { transform: translate(0, 160px); }
-        .st7  { transform: translate(-95px, 130px); }
-        .st8  { transform: translate(-155px, 50px); }
-        .st9  { transform: translate(-155px, -50px); }
-        .st10 { transform: translate(-95px, -130px); }
-
-        .logo { width: 120px; animation: bounce 2s infinite ease-in-out; margin-top: 20px; }
-        .student-name { font-size: 3rem; color: #2E7D32; text-shadow: 2px 2px #fff; }
-
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        @keyframes floatUp { 
-            0% { transform: translateY(0) scale(0.5); opacity: 0; }
-            50% { opacity: 0.7; }
-            100% { transform: translateY(-120vh) scale(1); opacity: 0; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="balloon-container" id="balloons"></div>
-
-    <header>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/Logo.png" class="logo">
-        <h1 style="color: #E64A19; text-shadow: 3px 3px #fff; margin:0;">Pioneers Academy</h1>
-        <h2 style="color: #1976D2; margin: 5px 0;">Heroes Of Level 1</h2>
-    </header>
-
-    <div class="hero-container">
-        <div class="outer-frame"></div>
-        
-        <div id="stickers-area">
-            </div>
-
-        <img src="" id="student-pic" class="student-img">
-    </div>
-
-    <h2 id="student-name" class="student-name">Loading...</h2>
-
-    <script>
-        const SCRIPT_URL = "رابط_الديبلوي_الخاص_بك_هنا";
-        const ASSETS_BASE = "https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/";
-
-        // 1. إنشاء الاستيكرز برمجياً لضمان التنسيق
-        const stickersArea = document.getElementById('stickers-area');
-        for(let i=1; i<=10; i++) {
-            const div = document.createElement('div');
-            div.className = `sticker-wrapper st${i}`;
-            div.id = `sw${i}`;
-            div.innerHTML = `<img src="${ASSETS_BASE}ST${i}.png" class="sticker-img">`;
-            stickersArea.appendChild(div);
-        }
-
-        // 2. جلب البيانات
-        async function loadHeroData() {
-            try {
-                const response = await fetch(SCRIPT_URL);
-                const data = await response.json();
-
-                document.getElementById('student-name').innerText = data.name;
-                document.getElementById('student-pic').src = data.imageUrl;
-
-                const rank = parseInt(data.rank);
-                for (let i = 1; i <= 10; i++) {
-                    if (i <= rank) {
-                        document.getElementById('sw' + i).classList.add('show');
-                    }
-                }
-            } catch (err) {
-                document.getElementById('student-name').innerText = "Student Not Found";
+            // إضافة الاستيكرز كأبناء مباشرين لـ hero-container
+            const container = document.getElementById('mainHero');
+            for (let i = 1; i <= 10; i++) {
+                const img = document.createElement('img');
+                img.src = `https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/ST${i}.png`;
+                img.alt = `Sticker ${i}`;
+                // الكلاسات الأصلية التي تعتمد عليها الـ CSS (st1, st2...)
+                img.className = `sticker st${i} ${i <= studentData.rank ? 'show' : ''}`;
+                
+                // نستخدم insertBefore لنضع الاستيكرز قبل صورة الطالب أو في البداية
+                container.appendChild(img);
             }
+        } catch (e) {
+            console.error("Error:", e);
+            document.getElementById('studentNameDisplay').innerText = "Error Loading Data";
         }
-
-        // 3. إنشاء البلالين
-        function createBalloons() {
-            const container = document.getElementById('balloons');
-            const colors = ['#FF6496', '#6496FF', '#FFC850', '#64FF96'];
-            for(let i=0; i<15; i++) {
-                const b = document.createElement('div');
-                b.className = 'balloon';
-                b.style.left = Math.random() * 100 + 'vw';
-                b.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                b.style.setProperty('--d', (Math.random() * 10 + 1
+    }
+</script>

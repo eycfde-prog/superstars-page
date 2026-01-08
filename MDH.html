@@ -10,6 +10,7 @@
             --primary-orange: #FFCC80; --deep-orange: #FF8A65;
             --accent-pink: #FF4081; --text-blue: #3F51B5;
             --glow-color: #ffd54f;
+            --level-green: #2E7D32; /* لون افتراضي للمستوى */
         }
 
         body {
@@ -70,7 +71,14 @@
 
         .sticker-img { width: 100%; height: 100%; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2)); pointer-events: none; }
         
-        .student-name { font-size: 2rem; color: #2E7D32; text-shadow: 2px 2px #FFF; margin: 15px 0; opacity: 0; transition: 1s; }
+        .student-name { font-size: 2.2rem; color: #2E7D32; text-shadow: 2px 2px #FFF; margin: 10px 0 5px 0; opacity: 0; transition: 1s; }
+        
+        /* تنسيق المستوى الجديد */
+        .student-level { 
+            font-size: 1.3rem; color: #D81B60; background: rgba(255, 255, 255, 0.6); 
+            display: inline-block; padding: 4px 15px; border-radius: 20px; 
+            margin-bottom: 20px; opacity: 0; transition: 1.2s; 
+        }
 
         .show-sticker { opacity: 1 !important; transform: scale(1) !important; }
 
@@ -132,23 +140,25 @@
                                 <img src="${formatDriveUrl(student.imageUrl)}" class="student-img" id="img-${index}" onclick="startMusicOnce()">
                             </div>
                             <h2 class="student-name" id="name-${index}">${student.name}</h2>
+                            <div class="student-level" id="level-${index}">${student.level}</div>
                         </div>
                     `;
                     listContainer.insertAdjacentHTML('beforeend', studentHtml);
 
                     const img = document.getElementById(`img-${index}`);
                     const name = document.getElementById(`name-${index}`);
+                    const level = document.getElementById(`level-${index}`);
                     
                     const triggerReveal = () => {
                         if (img.dataset.loaded) return;
                         img.dataset.loaded = "true";
                         img.style.transform = "scale(1)";
                         name.style.opacity = "1";
+                        level.style.opacity = "1";
                         renderStickers(`container-${index}`, student.rank);
                     };
 
                     img.onload = triggerReveal;
-                    // Safe fallback if image fails or is cached
                     setTimeout(triggerReveal, 3000);
                 });
             } catch (e) { console.error("Data fetch error:", e); }
@@ -184,27 +194,20 @@
         function makeDraggable(el) {
             let isDragging = false;
             let startX, startY, initialLeft, initialTop;
-            const originalAnimation = el.style.animation;
 
             const startDrag = (e) => {
                 isDragging = true;
                 startMusicOnce();
-                
                 const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
                 const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-                
                 const rect = el.getBoundingClientRect();
-                startX = clientX;
-                startY = clientY;
-                initialLeft = rect.left;
-                initialTop = rect.top;
-
+                startX = clientX; startY = clientY;
+                initialLeft = rect.left; initialTop = rect.top;
                 el.style.animation = 'none';
                 el.style.position = 'fixed';
                 el.style.left = `${initialLeft}px`;
                 el.style.top = `${initialTop}px`;
                 el.style.zIndex = "1000";
-                
                 document.addEventListener('mousemove', onDrag, {passive: false});
                 document.addEventListener('touchmove', onDrag, {passive: false});
                 document.addEventListener('mouseup', endDrag);
@@ -214,24 +217,14 @@
             const onDrag = (e) => {
                 if (!isDragging) return;
                 e.preventDefault(); 
-                
                 const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
                 const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-                
-                const dx = clientX - startX;
-                const dy = clientY - startY;
-                
-                el.style.left = `${initialLeft + dx}px`;
-                el.style.top = `${initialTop + dy}px`;
+                el.style.left = `${initialLeft + (clientX - startX)}px`;
+                el.style.top = `${initialTop + (clientY - startY)}px`;
             };
 
             const endDrag = () => {
-                if (!isDragging) return;
                 isDragging = false;
-                
-                // Reset to relative position logic if needed, or keep at fixed. 
-                // For simplicity, we keep it where it was dropped but clean up events.
-                
                 document.removeEventListener('mousemove', onDrag);
                 document.removeEventListener('touchmove', onDrag);
                 document.removeEventListener('mouseup', endDrag);
@@ -244,7 +237,7 @@
 
         function startBalloons() {
             const container = document.getElementById('balloonContainer');
-            const createBalloon = () => {
+            setInterval(() => {
                 const b = document.createElement('div');
                 b.className = 'balloon';
                 b.style.left = Math.random() * 100 + 'vw';
@@ -252,8 +245,7 @@
                 b.style.backgroundColor = `hsla(${Math.random() * 360}, 70%, 80%, 0.6)`;
                 container.appendChild(b);
                 setTimeout(() => b.remove(), 10000);
-            };
-            setInterval(createBalloon, 2000);
+            }, 2000);
         }
 
         window.addEventListener('DOMContentLoaded', () => {

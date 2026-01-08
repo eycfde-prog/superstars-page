@@ -18,7 +18,6 @@
             color: var(--text-blue); overflow-x: hidden; position: relative; cursor: pointer;
         }
 
-        /* البلالين */
         .balloon-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0; }
         .balloon { position: absolute; bottom: -150px; width: 80px; height: 100px; background-color: rgba(var(--balloon-color-rgb), 0.7); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: floatUp var(--float-duration) ease-in forwards; }
 
@@ -26,7 +25,6 @@
         .logo { width: 100px; animation: bounce 2s infinite ease-in-out; }
         h1 { font-size: 2.8rem; color: #E64A19; text-shadow: 3px 3px #FFF; margin: 10px 0; }
         
-        /* قسم صورة مس دينا المحسن */
         .teacher-box { position: relative; display: inline-block; margin: 10px 0; z-index: 5; }
         .teacher-img {
             width: 120px; height: 120px; border-radius: 50%;
@@ -36,7 +34,9 @@
         }
         h3 { font-size: 1.3rem; color: #FFF; background: var(--deep-orange); padding: 8px 25px; border-radius: 50px; margin-top: -15px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-        /* حاوية الطالب والاستيكرات */
+        /* حاوية لكل طالب */
+        .student-card { margin-bottom: 150px; position: relative; }
+
         .hero-container { 
             position: relative; width: 380px; height: 380px; 
             margin: 30px auto; display: flex; justify-content: center; 
@@ -50,7 +50,6 @@
             transform: scale(0); transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* تكبير الاستيكرات وتعديل حركتها */
         .sticker { 
             position: absolute; width: 75px; height: 75px; z-index: 4; 
             filter: drop-shadow(0 5px 8px rgba(0,0,0,0.3));
@@ -60,13 +59,12 @@
 
         .student-name { font-size: 2.5rem; color: #2E7D32; text-shadow: 2px 2px #FFF; margin: 15px 0; opacity: 0; transition: 1s; }
 
-        /* الأنيميشن */
         @keyframes glow { from { box-shadow: 0 0 10px var(--glow-color); } to { box-shadow: 0 0 30px var(--glow-color), 0 0 50px var(--accent-pink); } }
         @keyframes floatUp { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: translateY(-120vh) scale(1.2); opacity: 0; } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* توزيع الاستيكرات الـ 10 حول الصورة (أكبر وأوسع) */
+        /* توزيع الاستيكرات */
         .st1  { transform: translate(0, -175px) scale(0); }
         .st2  { transform: translate(105px, -145px) scale(0); }
         .st3  { transform: translate(165px, -55px) scale(0); }
@@ -92,60 +90,67 @@
     <header>
         <img src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/Logo.png" alt="Logo" class="logo">
         <h1>Pioneers Academy</h1>
-        
         <div class="teacher-box">
             <img src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/MD.jpg" alt="Miss Dina" class="teacher-img">
             <h3>Miss Dina Online Classes</h3>
         </div>
-        
-        <div style="margin-top:10px; color: #E64A19; font-size: 1.5rem;">Hero Of The Day! 🌟</div>
+        <div style="margin-top:10px; color: #E64A19; font-size: 1.5rem;">Our Superstars! 🌟</div>
     </header>
 
-    <div id="heroContainer" class="hero-container">
-        <div class="outer-frame"></div>
-        <img id="studentPhoto" src="" alt="Student Hero" class="student-img">
-    </div>
-
-    <h2 id="studentNameDisplay" class="student-name">Loading...</h2>
+    <div id="studentsList"></div>
 
     <script>
-        // رابط الـ Web App الخاص بكِ
-        const DEPLOY_URL = "https://script.google.com/macros/s/AKfycbw8nV9hIb51YF9tQWZ_bZ8sQCkZ1LMxvOq6bmLdSQSPLf9j3JtdhQ8wFJPO41Plfj6y/exec";
+        const DEPLOY_URL = "https://script.google.com/macros/s/AKfycbxDPHkU_gzcF7Z8zaYgUUX9tSChSUYa2gIO4Z7fCOKwk8l-_d3A2YjqK0obGGI6CGaM/exec";
 
         function formatDriveUrl(url) {
             if (!url) return "";
             const match = url.match(/[-\w]{25,}/);
-            if (match) {
-                return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w1000`;
-            }
-            return url;
+            return match ? `https://drive.google.com/thumbnail?id=${match[0]}&sz=w1000` : url;
         }
 
         async function loadData() {
             try {
                 const response = await fetch(DEPLOY_URL);
-                const data = await response.json();
+                const students = await response.json();
+                const listContainer = document.getElementById('studentsList');
 
-                const nameTag = document.getElementById('studentNameDisplay');
-                const imgTag = document.getElementById('studentPhoto');
-                
-                nameTag.innerText = data.name;
-                imgTag.src = formatDriveUrl(data.imageUrl);
+                students.forEach((student, index) => {
+                    const studentHtml = `
+                        <div class="student-card">
+                            <div class="hero-container" id="container-${index}">
+                                <div class="outer-frame"></div>
+                                <img src="${formatDriveUrl(student.imageUrl)}" class="student-img" id="img-${index}">
+                            </div>
+                            <h2 class="student-name" id="name-${index}">${student.name}</h2>
+                        </div>
+                    `;
+                    listContainer.insertAdjacentHTML('beforeend', studentHtml);
 
-                imgTag.onload = () => {
-                    imgTag.style.transform = "scale(1)";
-                    nameTag.style.opacity = "1";
-                    renderStickers(data.rank);
-                };
+                    // أنيميشن الظهور
+                    const img = document.getElementById(`img-${index}`);
+                    const name = document.getElementById(`name-${index}`);
+                    
+                    img.onload = () => {
+                        img.style.transform = "scale(1)";
+                        name.style.opacity = "1";
+                        renderStickers(`container-${index}`, student.rank);
+                    };
+                    
+                    // للتعامل مع الروابط الجاهزة فوراً
+                    setTimeout(() => { 
+                        img.style.transform = "scale(1)"; 
+                        name.style.opacity = "1"; 
+                        renderStickers(`container-${index}`, student.rank);
+                    }, 500);
+                });
 
             } catch (e) {
-                document.getElementById('studentNameDisplay').innerText = "Welcome Our Heroes!";
-                document.getElementById('studentNameDisplay').style.opacity = "1";
+                console.error(e);
             }
         }
 
-        function renderStickers(count) {
-            const container = document.getElementById('heroContainer');
+        function renderStickers(containerId, count) {
+            const container = document.getElementById(containerId);
             for (let i = 1; i <= 10; i++) {
                 const img = document.createElement('img');
                 img.src = `https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/ST${i}.png`;
@@ -155,14 +160,12 @@
                 if (i <= count) {
                     setTimeout(() => {
                         img.classList.add('show-sticker');
-                    }, 500 + (i * 350)); // تبدأ بعد ظهور صورة الطالب وبفاصل زمني مريح
+                    }, 800 + (i * 200));
                 }
             }
         }
 
-        function playMusic() {
-            document.getElementById('bgMusic').play().catch(()=>{});
-        }
+        function playMusic() { document.getElementById('bgMusic').play().catch(()=>{}); }
 
         function startBalloons() {
             const container = document.getElementById('balloonContainer');
@@ -174,14 +177,10 @@
                 b.style.setProperty('--float-duration', (Math.random() * 5 + 7) + 's');
                 container.appendChild(b);
                 setTimeout(() => b.remove(), 10000);
-            }, 1000);
+            }, 1200);
         }
 
-        window.onload = () => {
-            loadData();
-            startBalloons();
-        };
+        window.onload = () => { loadData(); startBalloons(); };
     </script>
 </body>
 </html>
-

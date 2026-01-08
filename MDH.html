@@ -21,68 +21,81 @@
         }
 
         .balloon-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0; }
-        .balloon { position: absolute; bottom: -150px; width: 80px; height: 100px; background-color: rgba(var(--balloon-color-rgb), 0.7); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: floatUp var(--float-duration) ease-in forwards; }
+        .balloon { position: absolute; bottom: -150px; width: 60px; height: 80px; background-color: rgba(255, 255, 255, 0.5); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: floatUp var(--float-duration) ease-in forwards; }
 
         header { padding: 20px; z-index: 5; position: relative; }
-        .logo { width: 100px; animation: bounce 2s infinite ease-in-out; }
-        h1 { font-size: 2.8rem; color: #E64A19; text-shadow: 3px 3px #FFF; margin: 10px 0; }
+        .logo { width: 80px; animation: bounce 2s infinite ease-in-out; }
+        h1 { font-size: 2.2rem; color: #E64A19; text-shadow: 2px 2px #FFF; margin: 10px 0; }
         
         .teacher-box { position: relative; display: inline-block; margin: 10px 0; z-index: 5; }
         .teacher-img {
-            width: 120px; height: 120px; border-radius: 50%;
-            border: 5px solid #fff; object-fit: cover;
-            box-shadow: 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
+            width: 100px; height: 100px; border-radius: 50%;
+            border: 4px solid #fff; object-fit: cover;
+            box-shadow: 0 0 15px var(--glow-color);
             animation: glow 2s infinite alternate;
         }
-        h3 { font-size: 1.3rem; color: #FFF; background: var(--deep-orange); padding: 8px 25px; border-radius: 50px; margin-top: -15px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        h3 { font-size: 1.1rem; color: #FFF; background: var(--deep-orange); padding: 8px 20px; border-radius: 50px; margin-top: -10px; position: relative; }
 
-        .student-card { margin-bottom: 250px; position: relative; }
+        .student-card { margin-bottom: 150px; position: relative; width: 100%; }
 
+        /* تعديل الحاوية لتناسب الموبايل */
         .hero-container { 
-            position: relative; width: 450px; height: 450px; 
-            margin: 50px auto; display: flex; justify-content: center; 
+            position: relative; width: 320px; height: 320px; 
+            max-width: 90vw; max-height: 90vw;
+            margin: 40px auto; display: flex; justify-content: center; 
             align-items: center; z-index: 2; 
         }
-        .outer-frame { position: absolute; width: 100%; height: 100%; border: 12px dotted var(--accent-pink); border-radius: 50%; animation: rotate 25s linear infinite; }
+        .outer-frame { position: absolute; width: 100%; height: 100%; border: 8px dotted var(--accent-pink); border-radius: 50%; animation: rotate 25s linear infinite; }
         
         .student-img { 
-            width: 240px; height: 240px; border-radius: 50%; border: 8px solid #FFF; 
-            object-fit: cover; box-shadow: 0 0 25px rgba(0,0,0,0.2); z-index: 3;
+            width: 180px; height: 180px; border-radius: 50%; border: 6px solid #FFF; 
+            object-fit: cover; box-shadow: 0 0 20px rgba(0,0,0,0.1); z-index: 3;
             transform: scale(0); transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* حاوية الاستيكر الأساسية */
+        /* حاوية الاستيكر مع حركة دوران حول نفسها */
         .sticker-wrapper {
-            position: absolute; width: 100px; height: 100px;
+            position: absolute; width: 70px; height: 70px;
             z-index: 10; display: flex; justify-content: center; align-items: center;
             opacity: 0; transform: scale(0); 
             transition: opacity 1s, transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            cursor: grab; touch-action: none; /* لمنع التعليق في الموبايل */
         }
 
-        .sticker-wrapper:active { cursor: grabbing; }
+        /* حركة الدوران اللطيفة لكل استيكر */
+        @keyframes floatSticker {
+            0% { transform: scale(1.1) translate(0, 0) rotate(0deg); }
+            50% { transform: scale(1.1) translate(5px, 5px) rotate(5deg); }
+            100% { transform: scale(1.1) translate(0, 0) rotate(0deg); }
+        }
 
-        .sticker-img { width: 100%; height: 100%; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.3)); pointer-events: none; }
+        .sticker-img { 
+            width: 100%; height: 100%; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2)); 
+            pointer-events: auto;
+        }
 
-        .student-name { font-size: 3rem; color: #2E7D32; text-shadow: 2px 2px #FFF; margin: 25px 0; opacity: 0; transition: 1s; }
+        .student-name { font-size: 2.2rem; color: #2E7D32; text-shadow: 2px 2px #FFF; margin: 15px 0; opacity: 0; transition: 1s; }
 
-        /* الأماكن الثابتة حول الصورة */
-        .pos1  { top: -20px; left: 175px; }
-        .pos2  { top: 40px;  right: 20px; }
-        .pos3  { top: 175px; right: -40px; }
-        .pos4  { bottom: 40px; right: 20px; }
-        .pos5  { bottom: -20px; left: 175px; }
-        .pos6  { bottom: 40px; left: 20px; }
-        .pos7  { top: 175px; left: -40px; }
-        .pos8  { top: 40px;  left: 20px; }
-        .pos9  { top: 80px;  left: 80px; } 
-        .pos10 { top: 80px;  right: 80px; }
+        /* أماكن الاستيكرات موزعة للموبايل */
+        .pos1  { top: -10px; left: 125px; }
+        .pos2  { top: 30px;  right: 10px; }
+        .pos3  { top: 125px; right: -30px; }
+        .pos4  { bottom: 30px; right: 10px; }
+        .pos5  { bottom: -10px; left: 125px; }
+        .pos6  { bottom: 30px; left: 10px; }
+        .pos7  { top: 125px; left: -30px; }
+        .pos8  { top: 30px;  left: 10px; }
+        .pos9  { top: 60px;  left: 60px; } 
+        .pos10 { top: 60px;  right: 60px; }
 
-        .show-sticker { opacity: 1 !important; transform: scale(1.2) !important; }
+        .show-sticker { 
+            opacity: 1 !important; 
+            transform: scale(1.1) !important;
+            animation: floatSticker 3s infinite ease-in-out;
+        }
 
-        @keyframes glow { from { box-shadow: 0 0 10px var(--glow-color); } to { box-shadow: 0 0 30px var(--glow-color), 0 0 50px var(--accent-pink); } }
-        @keyframes floatUp { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: translateY(-120vh) scale(1.2); opacity: 0; } }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--glow-color); } to { box-shadow: 0 0 20px var(--accent-pink); } }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 100% { transform: translateY(-120vh) scale(1.2); opacity: 0; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -101,13 +114,13 @@
             <img src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/MD.jpg" alt="Miss Dina" class="teacher-img">
             <h3>Miss Dina Online Classes</h3>
         </div>
-        <div style="margin-top:10px; color: #E64A19; font-size: 1.8rem;">Our Superstars! 🌟</div>
     </header>
 
     <div id="studentsList"></div>
 
     <script>
         const DEPLOY_URL = "https://script.google.com/macros/s/AKfycbxDPHkU_gzcF7Z8zaYgUUX9tSChSUYa2gIO4Z7fCOKwk8l-_d3A2YjqK0obGGI6CGaM/exec";
+        let isCooldown = false; // للتحكم في بريك ثانية واحدة
 
         function formatDriveUrl(url) {
             if (!url) return "";
@@ -162,6 +175,10 @@
                 const img = document.createElement('img');
                 img.src = `https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/ST${i}.png`;
                 img.className = 'sticker-img';
+                img.onclick = (e) => {
+                    e.stopPropagation(); // منع تداخل الضغطات
+                    celebrate();
+                };
                 
                 wrapper.appendChild(img);
                 container.appendChild(wrapper);
@@ -169,92 +186,44 @@
                 if (i <= count) {
                     setTimeout(() => {
                         wrapper.classList.add('show-sticker');
-                        makeDraggable(wrapper);
-                    }, 1000 + (i * 500));
+                    }, 1000 + (i * 300));
                 }
             }
         }
 
-        // دالة السحب والإفلات التفاعلية
-        function makeDraggable(el) {
-            let isDragging = false;
-            let startX, startY;
-
-            el.addEventListener('mousedown', startDrag);
-            el.addEventListener('touchstart', startDrag, {passive: false});
-
-            function startDrag(e) {
-                isDragging = true;
-                el.style.transition = 'none'; // إلغاء الترانزيشن أثناء السحب
-                el.style.zIndex = "1000";
-                
-                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-                
-                const rect = el.getBoundingClientRect();
-                startX = clientX - rect.left;
-                startY = clientY - rect.top;
-
-                document.addEventListener('mousemove', onDrag);
-                document.addEventListener('touchmove', onDrag, {passive: false});
-                document.addEventListener('mouseup', endDrag);
-                document.addEventListener('touchend', endDrag);
-            }
-
-            function onDrag(e) {
-                if (!isDragging) return;
-                e.preventDefault();
-                const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-                
-                // تحريك العنصر
-                el.style.position = 'fixed';
-                el.style.left = (clientX - startX) + 'px';
-                el.style.top = (clientY - startY) + 'px';
-            }
-
-            function endDrag() {
-                isDragging = false;
-                el.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                el.style.position = 'absolute';
-                // العودة للمكان الأصلي في الـ CSS
-                el.style.left = '';
-                el.style.top = '';
-                el.style.zIndex = "10";
-                
-                // تشغيل مدفع القصاصات عند العودة للمكان
-                setTimeout(() => {
-                    celebrate();
-                }, 300);
-
-                document.removeEventListener('mousemove', onDrag);
-                document.removeEventListener('touchmove', onDrag);
-            }
-        }
-
-        // دالة مدافعة القصاصات الورقية (Confetti)
+        // دالة الاحتفال مع بريك ثانية واحدة
         function celebrate() {
+            if (isCooldown) return; // إذا كان في فترة الانتظار، لا تفعل شيئاً
+            
+            isCooldown = true;
+            
+            // مدفع القصاصات
             confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 },
+                particleCount: 80,
+                spread: 60,
+                origin: { y: 0.7 },
                 colors: ['#FF4081', '#FFCC80', '#3F51B5', '#ffd54f']
             });
+
+            // بعد ثانية واحدة، يسمح بالضغط مرة أخرى
+            setTimeout(() => {
+                isCooldown = false;
+            }, 1000);
         }
 
         function playMusic() { document.getElementById('bgMusic').play().catch(()=>{}); }
 
         function startBalloons() {
             const container = document.getElementById('balloonContainer');
-            const colors = ['color1', 'color2', 'color3', 'color4'];
             setInterval(() => {
                 const b = document.createElement('div');
-                b.className = `balloon ${colors[Math.floor(Math.random()*4)]}`;
+                b.className = 'balloon';
                 b.style.left = Math.random() * 100 + 'vw';
                 b.style.setProperty('--float-duration', (Math.random() * 5 + 7) + 's');
+                b.style.backgroundColor = `hsla(${Math.random() * 360}, 70%, 80%, 0.6)`;
                 container.appendChild(b);
                 setTimeout(() => b.remove(), 10000);
-            }, 1200);
+            }, 1500);
         }
 
         window.onload = () => { loadData(); startBalloons(); };

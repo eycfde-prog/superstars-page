@@ -16,11 +16,15 @@
             margin: 0; padding: 0; background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%);
             min-height: 100vh; font-family: 'Fredoka One', cursive; text-align: center;
             color: var(--text-blue); overflow-x: hidden; position: relative;
-            /* تم حذف touch-action للسماح بالتمرير */
         }
 
         .balloon-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0; }
-        .balloon { position: absolute; bottom: -150px; width: 60px; height: 80px; background-color: rgba(255, 255, 255, 0.5); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: floatUp var(--float-duration) ease-in forwards; }
+        .balloon { 
+            position: absolute; bottom: -150px; width: 60px; height: 80px; 
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; 
+            animation: floatUp var(--float-duration) ease-in forwards;
+            will-change: transform;
+        }
 
         header { padding: 20px; z-index: 5; position: relative; }
         .logo { width: 80px; animation: bounce 2s infinite ease-in-out; }
@@ -48,15 +52,15 @@
             width: 180px; height: 180px; border-radius: 50%; border: 6px solid #FFF; 
             object-fit: cover; box-shadow: 0 0 20px rgba(0,0,0,0.1); z-index: 3;
             transform: scale(0); transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
+            cursor: pointer; will-change: transform;
         }
 
         .sticker-wrapper {
             position: absolute; width: 65px; height: 65px;
             z-index: 10; display: flex; justify-content: center; align-items: center;
             opacity: 0; transform: scale(0);
-            cursor: grab;
-            touch-action: none; /* مسموح به هنا فقط على الاستيكر لمنع الشاشة من الحركة أثناء سحبه هو فقط */
+            cursor: grab; touch-action: none;
+            will-change: transform, left, top;
         }
 
         @keyframes orbit {
@@ -64,7 +68,7 @@
             to { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
         }
 
-        .sticker-img { width: 100%; height: 100%; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2)); }
+        .sticker-img { width: 100%; height: 100%; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2)); pointer-events: none; }
         
         .student-name { font-size: 2rem; color: #2E7D32; text-shadow: 2px 2px #FFF; margin: 15px 0; opacity: 0; transition: 1s; }
 
@@ -78,7 +82,7 @@
 </head>
 <body>
 
-    <audio id="bgMusic" loop>
+    <audio id="bgMusic" loop preload="auto">
         <source src="https://raw.githubusercontent.com/eycfde-prog/superstars-page/main/assets/PAMD/WVM.wav" type="audio/wav">
     </audio>
 
@@ -99,13 +103,13 @@
         const DEPLOY_URL = "https://script.google.com/macros/s/AKfycbxDPHkU_gzcF7Z8zaYgUUX9tSChSUYa2gIO4Z7fCOKwk8l-_d3A2YjqK0obGGI6CGaM/exec";
         let musicStarted = false;
 
-        function startMusicOnce() {
+        const startMusicOnce = () => {
             if (!musicStarted) {
                 const audio = document.getElementById('bgMusic');
-                audio.play().catch(() => {});
+                audio.play().catch(err => console.log("Audio play blocked: ", err));
                 musicStarted = true;
             }
-        }
+        };
 
         function formatDriveUrl(url) {
             if (!url) return "";
@@ -116,6 +120,7 @@
         async function loadData() {
             try {
                 const response = await fetch(DEPLOY_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
                 const students = await response.json();
                 const listContainer = document.getElementById('studentsList');
 
@@ -134,14 +139,19 @@
                     const img = document.getElementById(`img-${index}`);
                     const name = document.getElementById(`name-${index}`);
                     
-                    img.onload = () => {
+                    const triggerReveal = () => {
+                        if (img.dataset.loaded) return;
+                        img.dataset.loaded = "true";
                         img.style.transform = "scale(1)";
                         name.style.opacity = "1";
                         renderStickers(`container-${index}`, student.rank);
                     };
-                    setTimeout(() => { if(img.style.transform != "scale(1)") { img.style.transform = "scale(1)"; name.style.opacity = "1"; renderStickers(`container-${index}`, student.rank); } }, 2000);
+
+                    img.onload = triggerReveal;
+                    // Safe fallback if image fails or is cached
+                    setTimeout(triggerReveal, 3000);
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Data fetch error:", e); }
         }
 
         function renderStickers(containerId, count) {
@@ -166,65 +176,75 @@
                     setTimeout(() => {
                         wrapper.classList.add('show-sticker');
                         makeDraggable(wrapper);
-                    }, 1000 + (i * 300));
+                    }, 500 + (i * 200));
                 }
             }
         }
 
         function makeDraggable(el) {
             let isDragging = false;
-            let startX, startY;
+            let startX, startY, initialLeft, initialTop;
             const originalAnimation = el.style.animation;
 
-            el.addEventListener('mousedown', startDrag);
-            el.addEventListener('touchstart', startDrag, {passive: false});
-
-            function startDrag(e) {
+            const startDrag = (e) => {
                 isDragging = true;
                 startMusicOnce();
+                
+                const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                
+                const rect = el.getBoundingClientRect();
+                startX = clientX;
+                startY = clientY;
+                initialLeft = rect.left;
+                initialTop = rect.top;
+
                 el.style.animation = 'none';
+                el.style.position = 'fixed';
+                el.style.left = `${initialLeft}px`;
+                el.style.top = `${initialTop}px`;
                 el.style.zIndex = "1000";
                 
-                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-                const rect = el.getBoundingClientRect();
-                startX = clientX - rect.left;
-                startY = clientY - rect.top;
-
-                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('mousemove', onDrag, {passive: false});
                 document.addEventListener('touchmove', onDrag, {passive: false});
                 document.addEventListener('mouseup', endDrag);
                 document.addEventListener('touchend', endDrag);
-            }
+            };
 
-            function onDrag(e) {
+            const onDrag = (e) => {
                 if (!isDragging) return;
-                const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-                el.style.position = 'fixed';
-                el.style.left = (clientX - startX) + 'px';
-                el.style.top = (clientY - startY) + 'px';
-            }
+                e.preventDefault(); 
+                
+                const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+                
+                el.style.left = `${initialLeft + dx}px`;
+                el.style.top = `${initialTop + dy}px`;
+            };
 
-            function endDrag() {
+            const endDrag = () => {
                 if (!isDragging) return;
                 isDragging = false;
-                el.style.position = 'absolute';
-                el.style.left = '';
-                el.style.top = '';
-                el.style.zIndex = "10";
-                el.style.animation = originalAnimation;
-
+                
+                // Reset to relative position logic if needed, or keep at fixed. 
+                // For simplicity, we keep it where it was dropped but clean up events.
+                
                 document.removeEventListener('mousemove', onDrag);
                 document.removeEventListener('touchmove', onDrag);
                 document.removeEventListener('mouseup', endDrag);
                 document.removeEventListener('touchend', endDrag);
-            }
+            };
+
+            el.addEventListener('mousedown', startDrag);
+            el.addEventListener('touchstart', startDrag, {passive: false});
         }
 
         function startBalloons() {
             const container = document.getElementById('balloonContainer');
-            setInterval(() => {
+            const createBalloon = () => {
                 const b = document.createElement('div');
                 b.className = 'balloon';
                 b.style.left = Math.random() * 100 + 'vw';
@@ -232,10 +252,14 @@
                 b.style.backgroundColor = `hsla(${Math.random() * 360}, 70%, 80%, 0.6)`;
                 container.appendChild(b);
                 setTimeout(() => b.remove(), 10000);
-            }, 2000);
+            };
+            setInterval(createBalloon, 2000);
         }
 
-        window.onload = () => { loadData(); startBalloons(); };
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            startBalloons();
+        });
     </script>
 </body>
 </html>

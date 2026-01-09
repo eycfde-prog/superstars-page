@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC SUPERSTARS | Premium Student Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>EYC SUPERSTARS | Elite Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --gold: #d4af37;
-            --gold-bright: #fff3a0;
-            --dark-bg: #050505;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(212, 175, 55, 0.2);
-            --xbox-green: #107c10;
-            --season-blue: #0078d4;
+            --gold: #ffcc00;
+            --gold-glow: #ffcc0088;
+            --dark-deep: #050505;
+            --card-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 204, 0, 0.2);
+            --accent-blue: #00d4ff; /* For XBOX section vibe */
         }
 
         * {
@@ -23,239 +22,242 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Creative Animated Background */
         body {
-            background-color: var(--dark-bg);
+            background-color: var(--dark-deep);
             color: white;
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow-x: hidden;
-            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            position: relative;
         }
 
-        /* Star Animation */
-        .stars-container {
+        /* Creative Animated Background */
+        .bg-animate {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
-            pointer-events: none;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
+            overflow: hidden;
         }
 
-        @keyframes spaceStars {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-2000px); }
+        .star {
+            position: absolute;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: moveStars var(--duration) linear infinite;
         }
 
-        .stars {
-            width: 2px;
-            height: 2px;
-            background: transparent;
-            box-shadow: 454px 1032px #FFF, 1754px 123px #FFF, 854px 1500px #FFF, 400px 200px #d4af37; /* Add more dots here */
-            animation: spaceStars 100s linear infinite;
+        @keyframes moveStars {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100vh); }
         }
 
-        /* Content Wrapper */
-        .main-wrapper {
-            position: relative;
-            z-index: 1;
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        header {
+        /* Container */
+        .main-card {
+            width: 90%;
+            max-width: 450px;
+            background: var(--card-glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glass);
+            border-radius: 30px;
+            padding: 40px 25px;
             text-align: center;
-            padding: 40px 0;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            animation: cardEntrance 1s ease-out;
         }
 
-        .logo-img {
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Logo & Header */
+        .logo-box {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .logo-box img {
             width: 120px;
-            filter: drop-shadow(0 0 10px var(--gold));
-            margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px var(--gold-glow));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.5rem, 8vw, 2.5rem);
-            background: linear-gradient(to right, #fff, var(--gold), #fff);
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            background: linear-gradient(180deg, #fff 30%, var(--gold) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 4px;
+            margin-bottom: 5px;
         }
 
-        /* Top Action Bar (Ranks, Profile, etc) */
-        .action-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        .status-bar {
+            display: flex;
+            justify-content: center;
             gap: 15px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .btn-premium {
-            text-decoration: none;
-            color: white;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            backdrop-filter: blur(5px);
-            transition: 0.3s;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .btn-premium:hover {
-            border-color: var(--gold);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .btn-gold {
-            background: linear-gradient(45deg, var(--gold), #8a6d3b);
-            color: black;
-            border: none;
-        }
-
-        /* Zones Styling */
-        .zone-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .zone-container { grid-template-columns: 1fr; }
-        }
-
-        .zone-card {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: 0.4s;
-        }
-
-        .zone-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .zone-title {
-            font-family: 'Orbitron', sans-serif;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .zone-season { border-top: 4px solid var(--season-blue); }
-        .zone-xbox { border-top: 4px solid var(--xbox-green); }
-
-        .activity-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .tag {
-            background: rgba(255,255,255,0.05);
+        .status-item {
             padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #ccc;
-        }
-
-        .tag-special {
-            border-color: var(--gold);
+            background: rgba(255, 204, 0, 0.1);
+            border: 1px solid var(--gold);
             color: var(--gold);
         }
 
-        footer {
-            text-align: center;
-            margin-top: 60px;
-            padding-bottom: 30px;
-            font-size: 0.8rem;
-            opacity: 0.6;
+        /* Navigation Buttons */
+        .menu-grid {
+            display: grid;
+            gap: 15px;
         }
 
-        /* Golden Ticket Highlight */
-        .golden-ticket-promo {
-            margin-top: 40px;
-            background: linear-gradient(90deg, rgba(212,175,55,0.1), transparent);
-            padding: 20px;
+        .action-btn {
+            text-decoration: none;
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
             border-radius: 15px;
-            border-left: 5px solid var(--gold);
-            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 204, 0, 0.15);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.2);
+        }
+
+        .btn-main {
+            background: var(--gold);
+            color: var(--dark-deep);
+            border: none;
+            box-shadow: 0 10px 20px rgba(255, 204, 0, 0.3);
+        }
+
+        .btn-main:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .icon-arrow {
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .action-btn:hover .icon-arrow {
+            transform: translateX(5px);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            font-size: 0.7rem;
+            opacity: 0.5;
+            letter-spacing: 1px;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 400px) {
+            .main-card { padding: 30px 20px; }
+            h1 { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="stars-container">
-        <div class="stars"></div>
-    </div>
+    <div class="bg-animate" id="starField"></div>
 
-    <div class="main-wrapper">
-        <header>
-            <img src="assets/logo.png" alt="EYC Logo" class="logo-img">
-            <h1>EYC Superstars</h1>
-            <p style="color: var(--gold); letter-spacing: 5px;">ASCEND TO EXCELLENCE</p>
-        </header>
-
-        <nav class="action-bar">
-            <a href="PROFILE_LINK" class="btn-premium btn-gold">CREATE PROFILE</a>
-            <a href="RANKS_LINK" class="btn-premium">HALL OF FAME</a>
-            <a href="GUIDES_LINK" class="btn-premium">GUIDES</a>
-            <a href="REVIEWS_LINK" class="btn-premium">REVIEWS</a>
-        </nav>
-
-        <div class="zone-container">
-            <div class="zone-card zone-season">
-                <div class="zone-title">
-                    <span style="color: var(--season-blue)">✦</span> SEASON PHASE
-                </div>
-                <div class="activity-list">
-                    <span class="tag">Golden Ear</span>
-                    <span class="tag">Seeds</span>
-                    <span class="tag">Label</span>
-                    <span class="tag">Grammar</span>
-                    <span class="tag">Vivid</span>
-                </div>
-            </div>
-
-            <div class="zone-card zone-xbox">
-                <div class="zone-title">
-                    <span style="color: var(--xbox-green)">✕</span> XBOX PHASE
-                </div>
-                <div class="activity-list">
-                    <span class="tag">Alike X</span>
-                    <span class="tag">Vivid X</span>
-                    <span class="tag">Seeds X</span>
-                    <span class="tag">Dictation X</span>
-                    <span class="tag">Golden Ear X</span>
-                    <span class="tag">Elmagazine X</span>
-                    <span class="tag">Grammar X</span>
-                    <span class="tag">Figurative Focus X</span>
-                    <span class="tag">Label X</span>
-                    <span class="tag">Sing Snag Sung X</span>
-                </div>
-            </div>
+    <div class="main-card">
+        <div class="logo-box">
+            <img src="assets/logo.png" alt="EYC">
         </div>
 
-        <div class="golden-ticket-promo">
-            <h3 style="color: var(--gold); margin-bottom: 5px;">GOLDEN TICKETS</h3>
-            <p style="font-size: 0.9rem;">Convert your Stars into Golden Tickets to unlock the Elite Competition Arena.</p>
+        <h1>EYC SUPERSTARS</h1>
+        
+        <div class="status-bar">
+            <span class="status-item">Season • 5</span>
+            <span class="status-item">XBOX • 10</span>
+        </div>
+
+        <div class="menu-grid">
+            <a href="https://docs.google.com/forms/..." class="action-btn btn-main">
+                <span>CREATE PROFILE</span>
+                <span class="icon-arrow">→</span>
+            </a>
+            <a href="Ranks" class="action-btn">
+                <span>HALL OF FAME (RANKS)</span>
+                <span class="icon-arrow">🏆</span>
+            </a>
+            <a href="Guides" class="action-btn">
+                <span>LEARNING GUIDES</span>
+                <span class="icon-arrow">📖</span>
+            </a>
+            <a href="Reviews.html" class="action-btn">
+                <span>STUDENT REVIEWS</span>
+                <span class="icon-arrow">⭐</span>
+            </a>
         </div>
 
         <footer>
-            <p>All Rights Reserved &copy; 2026</p>
-            <p><strong>EYC ACADEMY FOR COURSES</strong></p>
+            EST. 2026 • EYC ACADEMY • PREMIER LEARNING
         </footer>
     </div>
+
+    <script>
+        // Script to generate creative background stars
+        const starField = document.getElementById('starField');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
+            starField.appendChild(star);
+        }
+    </script>
 
 </body>
 </html>

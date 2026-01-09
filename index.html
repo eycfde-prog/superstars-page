@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC SUPERSTARS | Season & XBOX</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>EYC SUPERSTARS | Premium Student Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #d4af37;
-            --gold-light: #f9e5af;
-            --dark-bg: #0f0f0f;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --glow: 0 0 15px rgba(212, 175, 55, 0.5);
+            --gold-bright: #fff3a0;
+            --dark-bg: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(212, 175, 55, 0.2);
+            --xbox-green: #107c10;
+            --season-blue: #0078d4;
         }
 
         * {
@@ -21,179 +23,239 @@
             font-family: 'Poppins', sans-serif;
         }
 
+        /* Creative Animated Background */
         body {
             background-color: var(--dark-bg);
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
             color: white;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             overflow-x: hidden;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
         }
 
-        /* Container */
-        .container {
-            width: 90%;
-            max-width: 600px;
+        /* Star Animation */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes spaceStars {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-2000px); }
+        }
+
+        .stars {
+            width: 2px;
+            height: 2px;
+            background: transparent;
+            box-shadow: 454px 1032px #FFF, 1754px 123px #FFF, 854px 1500px #FFF, 400px 200px #d4af37; /* Add more dots here */
+            animation: spaceStars 100s linear infinite;
+        }
+
+        /* Content Wrapper */
+        .main-wrapper {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
             text-align: center;
-            padding: 40px 20px;
+            padding: 40px 0;
         }
 
-        /* Logo Styling */
-        .logo-container {
-            margin-bottom: 20px;
-            animation: fadeInDown 1s ease-out;
+        .logo-img {
+            width: 120px;
+            filter: drop-shadow(0 0 10px var(--gold));
+            margin-bottom: 15px;
         }
 
-        .logo-container img {
-            width: 150px;
-            height: auto;
-            filter: drop-shadow(var(--glow));
-        }
-
-        /* Title Styling */
         h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-            background: linear-gradient(to bottom, var(--gold-light), var(--gold));
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.5rem, 8vw, 2.5rem);
+            background: linear-gradient(to right, #fff, var(--gold), #fff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: var(--glow);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: var(--gold);
-            margin-bottom: 40px;
-            letter-spacing: 4px;
             text-transform: uppercase;
-            opacity: 0.8;
+            letter-spacing: 4px;
         }
 
-        /* Navigation Buttons */
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
+        /* Top Action Bar (Ranks, Profile, etc) */
+        .action-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
-            width: 100%;
+            margin-bottom: 40px;
         }
 
-        .nav-btn {
+        .btn-premium {
             text-decoration: none;
             color: white;
-            background: var(--card-bg);
-            padding: 18px 25px;
-            border-radius: 12px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            font-size: 1.1rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            transition: 0.3s;
             font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            display: block;
-            position: relative;
-            overflow: hidden;
+            font-size: 0.9rem;
         }
 
-        .nav-btn:hover {
-            background: rgba(212, 175, 55, 0.1);
+        .btn-premium:hover {
             border-color: var(--gold);
-            transform: translateY(-3px);
-            box-shadow: var(--glow);
-            color: var(--gold-light);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
         }
 
-        /* Special style for Create Profile */
-        .btn-highlight {
-            background: linear-gradient(45deg, var(--gold), #b8860b);
-            color: var(--dark-bg);
+        .btn-gold {
+            background: linear-gradient(45deg, var(--gold), #8a6d3b);
+            color: black;
             border: none;
         }
 
-        .btn-highlight:hover {
-            background: linear-gradient(45deg, var(--gold-light), var(--gold));
-            color: #000;
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+        /* Zones Styling */
+        .zone-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        /* Footer */
-        footer {
-            margin-top: 50px;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
-            border-top: 1px solid rgba(212, 175, 55, 0.1);
-            padding-top: 20px;
-            width: 100%;
-            text-align: center;
+        @media (max-width: 768px) {
+            .zone-container { grid-template-columns: 1fr; }
         }
 
-        footer b {
+        .zone-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.4s;
+        }
+
+        .zone-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .zone-title {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .zone-season { border-top: 4px solid var(--season-blue); }
+        .zone-xbox { border-top: 4px solid var(--xbox-green); }
+
+        .activity-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: rgba(255,255,255,0.05);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ccc;
+        }
+
+        .tag-special {
+            border-color: var(--gold);
             color: var(--gold);
         }
 
-        /* Animations */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-bottom: 30px;
+            font-size: 0.8rem;
+            opacity: 0.6;
         }
 
-        /* Mobile Optimization */
-        @media (max-width: 480px) {
-            h1 { font-size: 1.8rem; }
-            .subtitle { font-size: 1rem; }
-            .nav-btn { padding: 15px 20px; font-size: 1rem; }
+        /* Golden Ticket Highlight */
+        .golden-ticket-promo {
+            margin-top: 40px;
+            background: linear-gradient(90deg, rgba(212,175,55,0.1), transparent);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid var(--gold);
+            text-align: left;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="logo-container">
-            <img src="assets/logo.png" alt="EYC Logo">
-        </div>
+    <div class="stars-container">
+        <div class="stars"></div>
+    </div>
 
-        <h1>EYC SUPERSTARS</h1>
-        <p class="subtitle">SEASON & XBOX</p>
+    <div class="main-wrapper">
+        <header>
+            <img src="assets/logo.png" alt="EYC Logo" class="logo-img">
+            <h1>EYC Superstars</h1>
+            <p style="color: var(--gold); letter-spacing: 5px;">ASCEND TO EXCELLENCE</p>
+        </header>
 
-        <nav class="nav-menu">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLScKDFaZusR0Q7DTXg5TZ6WFEk4N5t7PzmIEiT-f-cMuWNfJDQ/viewform?usp=publish-editor" class="nav-btn btn-highlight">Create Profile</a>
-            <a href="Ranks" class="nav-btn btn-highlight">Ranks</a>
-            <a href="Guides" class="nav-btn btn-highlight">Guides</a>
-            <a href="Reviews.html" class="nav-btn btn-highlight">Reviews</a>
+        <nav class="action-bar">
+            <a href="PROFILE_LINK" class="btn-premium btn-gold">CREATE PROFILE</a>
+            <a href="RANKS_LINK" class="btn-premium">HALL OF FAME</a>
+            <a href="GUIDES_LINK" class="btn-premium">GUIDES</a>
+            <a href="REVIEWS_LINK" class="btn-premium">REVIEWS</a>
         </nav>
 
+        <div class="zone-container">
+            <div class="zone-card zone-season">
+                <div class="zone-title">
+                    <span style="color: var(--season-blue)">✦</span> SEASON PHASE
+                </div>
+                <div class="activity-list">
+                    <span class="tag">Golden Ear</span>
+                    <span class="tag">Seeds</span>
+                    <span class="tag">Label</span>
+                    <span class="tag">Grammar</span>
+                    <span class="tag">Vivid</span>
+                </div>
+            </div>
 
-         
-            
-         
+            <div class="zone-card zone-xbox">
+                <div class="zone-title">
+                    <span style="color: var(--xbox-green)">✕</span> XBOX PHASE
+                </div>
+                <div class="activity-list">
+                    <span class="tag">Alike X</span>
+                    <span class="tag">Vivid X</span>
+                    <span class="tag">Seeds X</span>
+                    <span class="tag">Dictation X</span>
+                    <span class="tag">Golden Ear X</span>
+                    <span class="tag">Elmagazine X</span>
+                    <span class="tag">Grammar X</span>
+                    <span class="tag">Figurative Focus X</span>
+                    <span class="tag">Label X</span>
+                    <span class="tag">Sing Snag Sung X</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="golden-ticket-promo">
+            <h3 style="color: var(--gold); margin-bottom: 5px;">GOLDEN TICKETS</h3>
+            <p style="font-size: 0.9rem;">Convert your Stars into Golden Tickets to unlock the Elite Competition Arena.</p>
+        </div>
 
         <footer>
-            All Rights Reserved &copy; 2026 <br>
-             <b>EYC Academy for Courses</b>
+            <p>All Rights Reserved &copy; 2026</p>
+            <p><strong>EYC ACADEMY FOR COURSES</strong></p>
         </footer>
     </div>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

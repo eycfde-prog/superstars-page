@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superstars | EYC Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-bg: #0f0c29;
+            --accent-gold: #fcc200;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --text-color: #ffffff;
+            --secondary-color: #00d2ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Floating Letters Canvas */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Navigation & Premium Logo */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* EYC Branding Style */
+        .eyc-brand {
+            background: linear-gradient(135deg, #fcc200 0%, #b8860b 50%, #fcc200 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.2rem;
+            filter: drop-shadow(0 0 8px rgba(252, 194, 0, 0.5));
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a:hover { color: var(--accent-gold); }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 10vw, 4.5rem);
+            margin-bottom: 15px;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(to bottom, #fff 40%, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #aaa;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        /* High-End Glass Buttons */
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-btn {
+            min-width: 180px;
+            padding: 14px 28px;
+            border-radius: 50px;
+            background: var(--glass-bg);
+            color: white;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .main-btn:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255,255,255,0.2);
+        }
+
+        .btn-primary {
+            background: var(--accent-gold);
+            color: #000;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #fff;
+            box-shadow: 0 0 30px rgba(252, 194, 0, 0.4);
+        }
+
+        /* Game Modes Cards */
+        .modes-grid {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            padding: 60px 5%;
+        }
+
+        .mode-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            padding: 40px;
+            border-radius: 30px;
+            width: 350px;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .mode-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: var(--accent-gold);
+        }
+
+        .mode-card i {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: block;
+            color: var(--accent-gold);
+        }
+
+        .mode-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
+
+        .token-info {
+            margin-top: 20px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Responsive Mobile UI */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { padding: 50px 15px; }
+            .main-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-bg"></canvas>
+
+    <nav>
+        <div class="logo">
+            <span class="eyc-brand">EYC</span> SUPERSTARS
+        </div>
+        <div class="nav-links">
+            <a href="#">Rankings</a>
+            <a href="#">Guides</a>
+            <a href="#">Reviews</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>BEYOND THE <br> <span style="color: var(--accent-gold);">LANGUAGE</span></h1>
+        <p>Join the ultimate linguistic arena. Master 15 core activities, dominate the leaderboard, and exchange your stars for the legendary Golden Ticket.</p>
+        
+        <div class="btn-container">
+            <button class="main-btn btn-primary"><i class="fas fa-plus-circle"></i> Create Profile</button>
+            <button class="main-btn"><i class="fas fa-chart-line"></i> Global Ranks</button>
+            <button class="main-btn"><i class="fas fa-compass"></i> Activity Guides</button>
+            <button class="main-btn"><i class="fas fa-comment-dots"></i> Testimonials</button>
+            <button class="main-btn"><i class="fas fa-award"></i> My Stars</button>
+        </div>
+    </section>
+
+    <section class="modes-grid">
+        <div class="mode-card">
+            <i class="fas fa-bolt"></i>
+            <h3>The Season</h3>
+            <p>Master 5 focused English skills to build your foundation and earn rapid tokens.</p>
+            <div class="token-info"><i class="fas fa-coins"></i> +500 Max Tokens</div>
+        </div>
+
+        <div class="mode-card">
+            <i class="fas fa-rocket"></i>
+            <h3>X-BOX Arena</h3>
+            <p>10 Dynamic activities covering all 4 language skills. The path to the Golden Ticket starts here.</p>
+            <div class="token-info" style="color: var(--accent-gold);"><i class="fas fa-star"></i> +1000 Max Tokens</div>
+        </div>
+    </section>
+
+    <script>
+        // Floating English Letters Animation
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.text = letters.charAt(Math.floor(Math.random() * letters.length));
+                this.size = Math.random() * 15 + 10;
+                this.speed = Math.random() * 0.5 + 0.2;
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -20) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.font = `${this.size}px Poppins`;
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        function createParticles() {
+            for (let i = 0; i < 50; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        createParticles();
+        animate();
+    </script>
+</body>
+</html>

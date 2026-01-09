@@ -4,212 +4,224 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>English Mastery Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-glow: #00d2ff;
-            --secondary-glow: #9d50bb;
-            --gold: #ffd700;
-            --bg-dark: #0f0c29;
-            --glass: rgba(255, 255, 255, 0.1);
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.7); }
         }
 
         body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
             color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Creative Animated Background */
-        .bg-animate {
+        .floating-bg {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(to right, #4f46e5, #9333ea);
+            filter: blur(100px);
+            opacity: 0.2;
             z-index: -1;
-            background: radial-gradient(circle at 50% 50%, rgba(0, 210, 255, 0.1), transparent 50%);
-            animation: pulse 8s infinite alternate;
+            animation: float 10s infinite ease-in-out;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(1.2); opacity: 0.8; }
+        .activity-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
 
-        /* Header / Stats Bar */
-        header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        .activity-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #fbbf24;
         }
 
-        .user-stats {
-            display: flex;
-            gap: 20px;
+        .golden-ticket {
+            animation: glow 3s infinite;
+            background: linear-gradient(45deg, #f59e0b, #fbbf24);
         }
 
-        .stat-item {
-            background: rgba(0,0,0,0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
-            border: 1px solid var(--primary-glow);
-            font-weight: 600;
-        }
-
-        .stat-item.stars { border-color: var(--gold); color: var(--gold); }
-
-        /* Main Container */
-        .container {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h2 {
-            margin: 30px 0 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-left: 4px solid var(--primary-glow);
-            padding-left: 15px;
-        }
-
-        /* Grid Layout */
-        .activity-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
-        }
-
-        /* Activity Card */
-        .card {
-            background: var(--glass);
-            padding: 25px 15px;
-            border-radius: 20px;
-            text-align: center;
-            transition: 0.4s ease;
-            border: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
-            border-color: var(--primary-glow);
-        }
-
-        .card i {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            display: block;
-            background: linear-gradient(to bottom, #fff, var(--primary-glow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .card h3 {
-            font-size: 0.9rem;
-            font-weight: 400;
-        }
-
-        /* Section Specific Styles */
-        .xbox-section .card:hover {
-            box-shadow: 0 10px 30px rgba(157, 80, 187, 0.4);
-            border-color: var(--secondary-glow);
-        }
-        
-        .xbox-section h2 { border-color: var(--secondary-glow); }
-
-        /* Golden Ticket Button */
-        .btn-gold {
-            display: block;
-            width: fit-content;
-            margin: 40px auto;
-            padding: 15px 40px;
-            background: linear-gradient(45deg, #f1c40f, #e67e22);
-            color: #fff;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            box-shadow: 0 5px 20px rgba(241, 196, 15, 0.4);
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-
-        .btn-gold:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 40px rgba(241, 196, 15, 0.8);
-        }
-
-        /* Mobile Adjustments */
-        @media (max-width: 600px) {
-            .activity-grid { grid-template-columns: repeat(2, 1fr); }
-            header { flex-direction: column; gap: 15px; }
+        .rank-star {
+            color: #fbbf24;
+            filter: drop-shadow(0 0 5px #fbbf24);
         }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
 
-    <div class="bg-animate"></div>
+    <div class="floating-bg top-0 right-0"></div>
+    <div class="floating-bg bottom-0 left-0" style="animation-delay: -5s;"></div>
 
-    <header>
-        <div class="logo"><strong>MASTER</strong> ENGLISH</div>
-        <div class="user-stats">
-            <div class="stat-item"><i class="fas fa-coins"></i> 1,250 Tokens</div>
-            <div class="stat-item stars"><i class="fas fa-star"></i> 45 Stars</div>
-            <div class="stat-item"><i class="fas fa-trophy"></i> Rank #12</div>
+    <header class="max-w-7xl mx-auto flex flex-wrap justify-between items-center bg-white/5 p-6 rounded-3xl mb-12 border border-white/10">
+        <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-2xl font-bold shadow-lg">JD</div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight">STUDENT PORTAL</h1>
+                <div class="flex gap-1">
+                    <i class="fas fa-star rank-star"></i>
+                    <i class="fas fa-star rank-star"></i>
+                    <i class="fas fa-star rank-star"></i>
+                    <i class="fas fa-star text-white/20"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-6 mt-4 md:mt-0">
+            <div class="text-center">
+                <p class="text-xs uppercase text-gray-400">Tokens</p>
+                <p class="text-2xl font-bold text-indigo-400">1,250</p>
+            </div>
+            <div class="h-10 w-px bg-white/10"></div>
+            <div class="text-center">
+                <p class="text-xs uppercase text-gray-400">Global Rank</p>
+                <p class="text-2xl font-bold text-emerald-400">#42</p>
+            </div>
+            <button class="golden-ticket px-6 py-2 rounded-xl text-black font-bold text-sm flex items-center gap-2">
+                <i class="fas fa-ticket-alt"></i> GOLDEN TICKETS
+            </button>
         </div>
     </header>
 
-    <div class="container">
+    <main class="max-w-7xl mx-auto">
         
-        <section class="season-section">
-            <h2>Season Mode</h2>
-            <div class="activity-grid">
-                <div class="card"><i>🎧</i><h3>Golden Ear</h3></div>
-                <div class="card"><i>🌱</i><h3>Seeds</h3></div>
-                <div class="card"><i>🏷️</i><h3>Label</h3></div>
-                <div class="card"><i>📚</i><h3>Grammar</h3></div>
-                <div class="card"><i>✨</i><h3>Vivid</h3></div>
+        <section class="mb-16">
+            <div class="flex items-center gap-4 mb-8">
+                <h2 class="text-3xl font-black italic tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">THE SEASON</h2>
+                <div class="h-px flex-grow bg-gradient-to-r from-blue-400/50 to-transparent"></div>
+                <span class="text-xs font-bold px-3 py-1 bg-blue-500/20 rounded-full border border-blue-500/30">5 ACTIVITIES</span>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="activity-card p-6 rounded-2xl text-center cursor-pointer">
+                    <i class="fas fa-ear-listen text-3xl mb-4 text-blue-400"></i>
+                    <h3 class="font-bold">Golden Ear</h3>
+                    <p class="text-xs text-gray-400 mt-2">Listening Mastery</p>
+                </div>
+                <div class="activity-card p-6 rounded-2xl text-center cursor-pointer">
+                    <i class="fas fa-seedling text-3xl mb-4 text-emerald-400"></i>
+                    <h3 class="font-bold">Seeds</h3>
+                    <p class="text-xs text-gray-400 mt-2">Vocabulary Roots</p>
+                </div>
+                <div class="activity-card p-6 rounded-2xl text-center cursor-pointer">
+                    <i class="fas fa-tag text-3xl mb-4 text-indigo-400"></i>
+                    <h3 class="font-bold">Label</h3>
+                    <p class="text-xs text-gray-400 mt-2">Identification</p>
+                </div>
+                <div class="activity-card p-6 rounded-2xl text-center cursor-pointer">
+                    <i class="fas fa-font text-3xl mb-4 text-purple-400"></i>
+                    <h3 class="font-bold">Grammar</h3>
+                    <p class="text-xs text-gray-400 mt-2">Structure Focus</p>
+                </div>
+                <div class="activity-card p-6 rounded-2xl text-center cursor-pointer">
+                    <i class="fas fa-eye text-3xl mb-4 text-pink-400"></i>
+                    <h3 class="font-bold">Vivid</h3>
+                    <p class="text-xs text-gray-400 mt-2">Visual Learning</p>
+                </div>
             </div>
         </section>
 
-        <section class="xbox-section">
-            <h2>X-Box Mode</h2>
-            <div class="activity-grid">
-                <div class="card"><i>🔄</i><h3>Alike X</h3></div>
-                <div class="card"><i>⚡</i><h3>Vivid X</h3></div>
-                <div class="card"><i>🌿</i><h3>Seeds X</h3></div>
-                <div class="card"><i>✍️</i><h3>Dictation X</h3></div>
-                <div class="card"><i>👂</i><h3>Golden Ear X</h3></div>
-                <div class="card"><i>📰</i><h3>Elmagazine X</h3></div>
-                <div class="card"><i>📖</i><h3>Grammar X</h3></div>
-                <div class="card"><i>🎯</i><h3>Figurative Focus X</h3></div>
-                <div class="card"><i>🏷️</i><h3>Label X</h3></div>
-                <div class="card"><i>🎤</i><h3>Sing Snag Sung X</h3></div>
+        <section>
+            <div class="flex items-center gap-4 mb-8">
+                <h2 class="text-3xl font-black italic tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">X-BOX CHALLENGE</h2>
+                <div class="h-px flex-grow bg-gradient-to-r from-red-400/50 to-transparent"></div>
+                <span class="text-xs font-bold px-3 py-1 bg-red-500/20 rounded-full border border-red-500/30">10 ACTIVITIES</span>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Alike X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Vivid X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Seeds X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Dictation X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Golden Ear X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Elmagazine X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Grammar X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Figurative Focus X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Label X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
+                <div class="activity-card p-4 rounded-xl border-l-4 border-l-orange-500 cursor-pointer">
+                    <h3 class="font-bold text-sm">Sing Snag Sung X</h3>
+                    <div class="mt-4 flex justify-between items-center text-[10px] text-gray-400">
+                        <span>XP: +50</span>
+                        <i class="fas fa-bolt text-orange-400"></i>
+                    </div>
+                </div>
             </div>
         </section>
+    </main>
 
-        <a href="#" class="btn-gold">Get Golden Ticket</a>
-
-    </div>
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-black/80 backdrop-blur-2xl border border-white/20 rounded-2xl p-4 flex justify-around shadow-2xl lg:hidden">
+        <button class="text-indigo-400"><i class="fas fa-home text-xl"></i></button>
+        <button class="text-gray-400"><i class="fas fa-trophy text-xl"></i></button>
+        <button class="text-gray-400"><i class="fas fa-store text-xl"></i></button>
+        <button class="text-gray-400"><i class="fas fa-user text-xl"></i></button>
+    </nav>
 
 </body>
 </html>

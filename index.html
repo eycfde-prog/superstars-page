@@ -11,7 +11,7 @@
         :root {
             --primary-bg: #0f0c29;
             --accent-gold: #fcc200;
-            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.08);
             --text-color: #ffffff;
             --secondary-color: #00d2ff;
         }
@@ -24,26 +24,22 @@
         }
 
         body {
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #051937);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
             color: var(--text-color);
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Particles Overlay */
-        #particles-js {
+        /* Animated Letter Background */
+        #bg-canvas {
             position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
+            pointer-events: none;
         }
 
         /* Navigation */
@@ -51,198 +47,223 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 5%;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            padding: 20px 8%;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             color: var(--accent-gold);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: 0.3s;
+            text-shadow: 0 0 10px rgba(252, 194, 0, 0.3);
         }
 
         /* Hero Section */
         .hero {
             text-align: center;
-            padding: 100px 20px;
+            padding: 80px 20px;
         }
 
         .hero h1 {
             font-size: clamp(2.5rem, 8vw, 5rem);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            background: linear-gradient(to right, #fff, var(--accent-gold));
+            line-height: 1.1;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .hero p {
-            font-size: 1.2rem;
-            opacity: 0.8;
-            max-width: 600px;
-            margin: 0 auto 30px;
+            font-size: 1.1rem;
+            opacity: 0.7;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            letter-spacing: 0.5px;
         }
 
-        /* Action Buttons */
+        /* Action Grid */
         .btn-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
-            max-width: 900px;
-            margin: 40px auto;
+            max-width: 1000px;
+            margin: 0 auto;
             padding: 0 20px;
         }
 
         .main-btn {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 12px;
+            padding: 18px 10px;
+            border-radius: 15px;
             background: var(--glass-bg);
             color: white;
             font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
             gap: 10px;
         }
 
-        .main-btn:hover {
-            background: var(--accent-gold);
-            color: #000;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(252, 194, 0, 0.3);
-        }
-
-        .btn-primary {
-            background: var(--accent-gold);
-            color: #000;
-        }
-
-        /* Feature Cards */
-        .sections-container {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            padding: 50px 5%;
-        }
-
-        .card {
-            background: var(--glass-bg);
-            padding: 30px;
-            border-radius: 20px;
-            width: 300px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.4s;
-        }
-
-        .card:hover {
-            border-color: var(--secondary-color);
-            transform: scale(1.05);
-        }
-
-        .card i {
-            font-size: 3rem;
-            margin-bottom: 20px;
+        .main-btn i {
+            font-size: 1.5rem;
             color: var(--secondary-color);
         }
 
-        .token-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            background: rgba(0, 210, 255, 0.2);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-top: 15px;
+        .main-btn:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-8px);
+            border-color: var(--accent-gold);
         }
 
-        /* Mobile Adjustments */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .hero h1 { font-size: 3rem; }
+        .btn-highlight {
+            border: 1px solid var(--accent-gold);
+            background: rgba(252, 194, 0, 0.05);
+        }
+
+        /* Section Cards */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 60px 8%;
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin: 15px 0;
+            color: var(--accent-gold);
+        }
+
+        .token-badge {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 8px 20px;
+            background: var(--secondary-color);
+            color: #000;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2.8rem; }
+            .btn-container { grid-template-columns: 1fr 1fr; }
+            .content-grid { padding: 40px 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="particles-js"></div>
+    <canvas id="bg-canvas"></canvas>
 
     <nav>
-        <div class="logo">EYC SUPERSTARS</div>
-        <div class="nav-links">
-            <a href="#">Home</a>
-            <a href="#">Store</a>
-            <a href="#">Support</a>
-        </div>
+        <div class="logo">SUPERSTARS</div>
+        <div style="font-size: 0.8rem; opacity: 0.6; font-weight: 600;">EYC ACADEMY</div>
     </nav>
 
     <section class="hero">
-        <h1>UNLEASH THE STAR</h1>
-        <p>Master 15 English skills, collect tokens, and climb the ranks to secure your Golden Ticket.</p>
+        <h1>RISE TO THE <br>CHALLENGE</h1>
+        <p>A gamified English journey across 15 interactive activities. Rank up, earn stars, and claim your Golden Ticket.</p>
         
         <div class="btn-container">
-            <button class="main-btn btn-primary"><i class="fas fa-user-plus"></i> Create Profile</button>
-            <button class="main-btn"><i class="fas fa-trophy"></i> Global Ranks</button>
-            <button class="main-btn"><i class="fas fa-book-open"></i> Student Guides</button>
-            <button class="main-btn"><i class="fas fa-star"></i> Reviews</button>
-            <button class="main-btn"><i class="fas fa-ticket-alt"></i> Golden Tickets</button>
+            <button class="main-btn btn-highlight"><i class="fas fa-id-badge"></i> CREATE PROFILE</button>
+            <button class="main-btn"><i class="fas fa-chart-line"></i> RANKS</button>
+            <button class="main-btn"><i class="fas fa-map-signs"></i> GUIDES</button>
+            <button class="main-btn"><i class="fas fa-comment-dots"></i> REVIEWS</button>
+            <button class="main-btn"><i class="fas fa-store"></i> STAR SHOP</button>
         </div>
     </section>
 
-    <section class="sections-container">
+    <section class="content-grid">
         <div class="card">
-            <i class="fas fa-calendar-check"></i>
+            <i class="fas fa-bolt" style="font-size: 2.5rem; color: #fff;"></i>
             <h3>THE SEASON</h3>
-            <p>5 Intensive core activities designed for linguistic excellence.</p>
-            <div class="token-badge">Earn 500 Tokens</div>
+            <p>5 core skill-building activities to master the fundamentals.</p>
+            <div class="token-badge">500 TOKENS</div>
         </div>
 
-        <div class="card" style="border-color: var(--accent-gold);">
-            <i class="fas fa-gamepad" style="color: var(--accent-gold);"></i>
+        <div class="card">
+            <i class="fas fa-box-open" style="font-size: 2.5rem; color: var(--accent-gold);"></i>
             <h3>X-BOX MODE</h3>
-            <p>10 Creative challenges to test your speed and accuracy.</p>
-            <div class="token-badge" style="background: rgba(252, 194, 0, 0.2);">Earn 1000 Tokens</div>
+            <p>10 advanced activities for high-speed skill acquisition.</p>
+            <div class="token-badge" style="background: var(--accent-gold);">1000 TOKENS</div>
         </div>
     </section>
 
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        particlesJS("particles-js", {
-            "particles": {
-                "number": { "value": 80 },
-                "color": { "value": "#ffffff" },
-                "shape": { "type": "circle" },
-                "opacity": { "value": 0.5 },
-                "size": { "value": 3 },
-                "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.4, "width": 1 },
-                "move": { "enable": true, "speed": 2 }
-            },
-            "interactivity": {
-                "events": { "onhover": { "enable": true, "mode": "repulse" } }
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let letters = [];
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Letter {
+            constructor() {
+                this.init();
             }
-        });
+
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.char = alphabet[Math.floor(Math.random() * alphabet.length)];
+                this.size = Math.random() * 15 + 10;
+                this.speed = Math.random() * 1 + 0.5;
+                this.opacity = Math.random() * 0.3;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.font = `${this.size}px Poppins`;
+                ctx.fillText(this.char, this.x, this.y);
+            }
+
+            update() {
+                this.y -= this.speed;
+                if (this.y < -50) this.init();
+                this.draw();
+            }
+        }
+
+        for (let i = 0; i < 50; i++) {
+            letters.push(new Letter());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            letters.forEach(l => l.update());
+            requestAnimationFrame(animate);
+        }
+
+        animate();
     </script>
 </body>
 </html>

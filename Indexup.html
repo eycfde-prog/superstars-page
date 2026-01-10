@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Superstars | EYC Academy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Superstars | EYC Academy Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-bg: #0f0c29;
+            --primary-bg: #050505;
             --accent-gold: #fcc200;
-            --glass-bg: rgba(255, 255, 255, 0.08);
+            --purple-main: #8e44ad;
+            --glass-bg: rgba(255, 255, 255, 0.05);
             --text-color: #ffffff;
             --secondary-color: #00d2ff;
         }
@@ -24,21 +25,13 @@
         }
 
         body {
-            background: linear-gradient(-45deg, #0f0c29, #1a1a2e, #24243e, #051937);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: #0a0a0a;
             color: var(--text-color);
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Canvas Background */
+        /* Particles & Background */
         #letter-canvas {
             position: fixed;
             top: 0;
@@ -46,178 +39,252 @@
             width: 100%;
             height: 100%;
             z-index: -1;
+            opacity: 0.4;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(142, 68, 173, 0.1) 0%, transparent 80%);
+            z-index: -1;
+            pointer-events: none;
         }
 
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 50%;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(15px);
+            padding: 20px 5%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(252, 194, 0, 0.1);
         }
 
         .logo {
-            font-size: 1.6rem;
-            font-weight: 800;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
             letter-spacing: 2px;
             color: var(--accent-gold);
+            text-shadow: 0 0 10px rgba(252, 194, 0, 0.3);
         }
 
         .hero {
             text-align: center;
-            padding: 80px 20px;
+            padding: 100px 20px 60px;
             position: relative;
         }
 
         .hero h1 {
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            margin-bottom: 15px;
-            font-weight: 800;
-            text-transform: uppercase;
-            background: linear-gradient(to bottom, #fff 30%, var(--accent-gold) 100%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin-bottom: 20px;
+            font-weight: 900;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fff 40%, var(--accent-gold) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            drop-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
         .hero p {
             font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 700px;
-            margin: 0 auto 40px;
-            line-height: 1.6;
+            color: #aaa;
+            max-width: 750px;
+            margin: 0 auto 45px;
+            line-height: 1.8;
         }
 
-        .btn-container {
+        /* Buttons Grid */
+        .btn-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-            max-width: 1000px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        .main-btn {
-            padding: 16px 20px;
-            border-radius: 12px;
+        .nav-btn {
+            padding: 18px;
+            border-radius: 16px;
             background: var(--glass-bg);
-            color: white;
+            color: #fff;
             font-weight: 600;
-            cursor: pointer;
-            backdrop-filter: blur(8px);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
             border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            font-size: 0.9rem;
+            gap: 12px;
         }
 
-        .main-btn:hover {
+        .nav-btn:hover {
+            background: rgba(142, 68, 173, 0.2);
+            border-color: var(--purple-main);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-active {
             background: var(--accent-gold);
             color: #000;
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(252, 194, 0, 0.4);
+            border: none;
+            box-shadow: 0 0 20px rgba(252, 194, 0, 0.3);
         }
 
-        .btn-primary {
-            background: var(--accent-gold);
+        .btn-active:hover {
+            background: #fff;
             color: #000;
-            box-shadow: 0 4px 15px rgba(252, 194, 0, 0.2);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
         }
 
-        .sections-container {
+        /* Feature Cards */
+        .modes-container {
             display: flex;
             justify-content: center;
-            gap: 25px;
+            gap: 30px;
             flex-wrap: wrap;
-            padding: 40px 5% 80px;
+            padding: 60px 5% 100px;
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 40px 30px;
-            border-radius: 24px;
-            width: 320px;
+        .mode-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            padding: 50px 40px;
+            border-radius: 30px;
+            width: 380px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.05);
             backdrop-filter: blur(10px);
-            transition: 0.4s ease;
+            transition: 0.5s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: var(--secondary-color);
-            transform: translateY(-5px);
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--purple-main);
+            opacity: 0.5;
         }
 
-        .card i {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            color: var(--secondary-color);
+        .mode-card:hover {
+            transform: translateY(-15px);
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.07);
         }
 
-        .token-badge {
+        .mode-card.special::before {
+            background: var(--accent-gold);
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background: rgba(142, 68, 173, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+            color: var(--purple-main);
+            transition: 0.5s;
+        }
+
+        .mode-card:hover .icon-circle {
+            transform: rotateY(180deg);
+            background: var(--purple-main);
+            color: #fff;
+        }
+
+        .mode-card.special .icon-circle {
+            color: var(--accent-gold);
+            background: rgba(252, 194, 0, 0.1);
+        }
+
+        .mode-card.special:hover .icon-circle {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        .badge {
             display: inline-block;
-            padding: 6px 18px;
-            background: linear-gradient(90deg, var(--secondary-color), #0082ff);
+            margin-top: 25px;
+            padding: 8px 20px;
             border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-top: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(255,255,255,0.1);
         }
 
-        @media (max-width: 600px) {
-            .hero { padding: 50px 15px; }
-            .nav-links { display: none; }
-            .btn-container { grid-template-columns: 1fr 1fr; }
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .btn-grid { grid-template-columns: 1fr 1fr; }
+            .hero h1 { font-size: 3rem; }
+            .mode-card { width: 100%; }
         }
     </style>
 </head>
 <body>
 
+    <div class="bg-overlay"></div>
     <canvas id="letter-canvas"></canvas>
 
     <nav>
         <div class="logo">EYC SUPERSTARS</div>
-        <div style="display: flex; gap: 15px;">
-            <i class="fas fa-bars" style="font-size: 1.5rem; cursor: pointer;"></i>
+        <div style="color: var(--accent-gold); font-size: 1.2rem;">
+            <i class="fas fa-bars"></i>
         </div>
     </nav>
 
-    <section class="hero">
-        <h1>BEYOND LIMITS</h1>
-        <p>A specialized portal for EYC Academy students to master English through 15 interactive challenges, ranking systems, and legendary rewards.</p>
+    <header class="hero">
+        <div style="margin-bottom: 20px; color: var(--accent-gold); font-weight: bold; letter-spacing: 4px; font-size: 0.8rem; font-family: 'Orbitron';">
+            <i class="fas fa-star"></i> ELITE ACADEMY PORTAL <i class="fas fa-star"></i>
+        </div>
+        <h1>RISE TO THE <br>TOP RANK</h1>
+        <p>Your journey to English mastery starts here. Complete 15 gamified missions, collect digital tokens, and unlock the legendary Golden Tickets.</p>
         
-        <div class="btn-container">
-            <button class="main-btn btn-primary"><i class="fas fa-bolt"></i> Join Now</button>
-            <button class="main-btn"><i class="fas fa-chart-line"></i> Rankings</button>
-            <button class="main-btn"><i class="fas fa-map"></i> Roadmap</button>
-            <button class="main-btn"><i class="fas fa-comment-dots"></i> Feedback</button>
-            <button class="main-btn"><i class="fas fa-award"></i> My Rewards</button>
+        <div class="btn-grid">
+            <button class="nav-btn btn-active"><i class="fas fa-user-plus"></i> Create Profile</button>
+            <button class="nav-btn"><i class="fas fa-trophy"></i> Global Ranks</button>
+            <button class="nav-btn"><i class="fas fa-book-open"></i> Mastery Guides</button>
+            <button class="nav-btn"><i class="fas fa-star"></i> Student Reviews</button>
+            <button class="nav-btn"><i class="fas fa-ticket-alt"></i> Golden Tickets</button>
         </div>
-    </section>
+    </header>
 
-    <section class="sections-container">
-        <div class="card">
-            <i class="fas fa-rocket"></i>
-            <h3>SEASON MODE</h3>
-            <p>Engage in 5 core activities to build a solid foundation and earn high-tier rank points.</p>
-            <div class="token-badge">5 Activities</div>
+    <section class="modes-container">
+        <!-- Season Mode -->
+        <div class="mode-card">
+            <div class="icon-circle">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3 style="font-family: 'Orbitron'; margin-bottom: 15px;">SEASON MODE</h3>
+            <p style="color: #888; font-size: 0.95rem;">The foundation of your journey. 5 activities to secure your basic tokens and rank status.</p>
+            <div class="badge" style="color: var(--purple-main); border: 1px solid var(--purple-main);">Core 5 Missions</div>
         </div>
 
-        <div class="card" style="border-color: var(--accent-gold);">
-            <i class="fas fa-box-open" style="color: var(--accent-gold);"></i>
-            <h3 style="color: var(--accent-gold);">X-BOX ARENA</h3>
-            <p>The ultimate challenge area with 10 activities to sharpen your precision and skills.</p>
-            <div class="token-badge" style="background: var(--accent-gold); color: #000;">10 Activities</div>
+        <!-- Xbox Arena -->
+        <div class="mode-card special">
+            <div class="icon-circle">
+                <i class="fas fa-gamepad"></i>
+            </div>
+            <h3 style="font-family: 'Orbitron'; margin-bottom: 15px; color: var(--accent-gold);">X-BOX ARENA</h3>
+            <p style="color: #888; font-size: 0.95rem;">High-stakes training. 10 specialized activities to boost your star rating and wealth.</p>
+            <div class="badge" style="color: var(--accent-gold); border: 1px solid var(--accent-gold);">10 Pro Activities</div>
         </div>
     </section>
 
@@ -243,13 +310,12 @@
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.char = letters.charAt(Math.floor(Math.random() * letters.length));
-                this.fontSize = Math.random() * 20 + 10;
-                this.speed = Math.random() * 0.5 + 0.2;
-                this.opacity = Math.random() * 0.5;
+                this.fontSize = Math.random() * 15 + 12;
+                this.speed = Math.random() * 0.4 + 0.1;
+                this.opacity = Math.random() * 0.4;
                 
-                // Color logic: If it's E, Y, or C, make it gold
                 if (specialLetters.includes(this.char)) {
-                    this.color = `rgba(252, 194, 0, ${this.opacity + 0.3})`;
+                    this.color = `rgba(252, 194, 0, ${this.opacity + 0.4})`;
                     this.isSpecial = true;
                 } else {
                     this.color = `rgba(255, 255, 255, ${this.opacity})`;
@@ -259,7 +325,7 @@
 
             draw() {
                 ctx.fillStyle = this.color;
-                ctx.font = `${this.isSpecial ? 'bold' : 'normal'} ${this.fontSize}px Poppins`;
+                ctx.font = `${this.isSpecial ? '900' : '300'} ${this.fontSize}px Orbitron`;
                 ctx.fillText(this.char, this.x, this.y);
             }
 
@@ -274,7 +340,9 @@
         }
 
         function createParticles() {
-            for (let i = 0; i < 60; i++) {
+            particles = [];
+            let count = window.innerWidth < 768 ? 40 : 80;
+            for (let i = 0; i < count; i++) {
                 particles.push(new LetterParticle());
             }
         }
@@ -287,7 +355,6 @@
 
         window.addEventListener('resize', () => {
             initCanvas();
-            particles = [];
             createParticles();
         });
 
@@ -297,4 +364,3 @@
     </script>
 </body>
 </html>
-

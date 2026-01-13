@@ -3,61 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ملفات الطلاب</title>
+    <title>My Profile - Students</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background-color: #000; font-family: sans-serif; }
+        :root {
+            --gold: #ffd700;
+            --dark-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+        }
+
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            background-color: var(--dark-bg); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
         .swiper { width: 100%; height: 100%; }
+
         .swiper-slide {
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(180deg, #1a1a1a 0%, #000 100%);
+            background: radial-gradient(circle, #222 0%, #000 100%);
         }
-        .student-card {
-            text-align: center;
-            color: white;
+
+        /* الإطار الرئيسي للبروفايل */
+        .profile-card {
+            width: 90%;
+            max-width: 450px;
+            height: 90vh;
+            background: var(--card-bg);
+            border-radius: 30px;
+            border: 2px solid #333;
             padding: 20px;
+            overflow-y: auto;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* صورة الطالب والاسم */
+        .student-img {
+            width: 180px;
+            height: 180px;
             border-radius: 20px;
-            border: 1px solid #333;
-            width: 80%;
-            max-width: 400px;
-        }
-        .student-photo {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 3px solid #f09433; /* لون انستجرام */
-            margin-bottom: 20px;
             object-fit: cover;
+            border: 4px solid var(--gold);
+            margin-top: 10px;
         }
-        .student-name { font-size: 24px; margin: 10px 0; }
-        .student-score { font-size: 40px; font-weight: bold; color: #4bb543; }
-        .label { font-size: 14px; color: #aaa; }
+
+        .student-name { font-size: 28px; font-weight: bold; margin: 15px 0 5px 0; color: white; }
+        .student-title { font-size: 16px; color: #bbb; margin-bottom: 20px; }
+
+        /* الدائرة الذهبية للترتيب */
+        .rank-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            color: black;
+            font-size: 30px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 0 15px var(--gold);
+        }
+
+        /* قسم التيكت والتوكينز */
+        .assets-img { width: 120px; margin: 10px auto; display: block; }
+        .count-text { font-size: 24px; font-weight: bold; color: var(--gold); margin-bottom: 15px; }
+
+        /* مستطيل السيزون والاكسبوكس */
+        .ranks-split {
+            display: flex;
+            background: #252525;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid #444;
+        }
+        .rank-box {
+            flex: 1;
+            padding: 10px;
+            border-left: 1px solid #444;
+        }
+        .rank-box:last-child { border-left: none; }
+        .rank-label { font-size: 12px; color: #aaa; margin-bottom: 5px; }
+        .rank-val { font-size: 20px; font-weight: bold; color: white; }
+
+        /* شبكة التروفيز */
+        .trophies-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            background: #111;
+            padding: 15px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        .trophy-item {
+            aspect-ratio: 1;
+            background: #222;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #333;
+        }
+        .trophy-item img { width: 80%; height: 80%; object-fit: contain; }
+
+        /* أزرار التنقل الجانبية */
+        .nav-btn {
+            position: fixed;
+            top: 0;
+            height: 100%;
+            width: 50px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); }
+        .prev-btn { left: 0; }
+        .next-btn { right: 0; }
+
+        /* إخفاء السكرول بار */
+        .profile-card::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
+<button class="nav-btn prev-btn" onclick="swiper.slidePrev()">&#10094;</button>
+<button class="nav-btn next-btn" onclick="swiper.slideNext()">&#10095;</button>
+
 <div class="swiper">
     <div class="swiper-wrapper" id="students-container">
-        <div class="swiper-slide">
-            <div class="student-card">
-                <img src="https://via.placeholder.com/150" alt="صورة الطالب" class="student-photo">
-                <div class="student-name">اسم الطالب التجريبي</div>
-                <div class="label">إجمالي الدرجات</div>
-                <div class="student-score">95</div>
-            </div>
-        </div>
+        <div class="swiper-slide">جارٍ تحميل البيانات...</div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    const swiper = new Swiper('.swiper', {
-        direction: 'horizontal',
-        loop: false,
-        effect: 'coverflow', // حركة زي تقليب الصور
-    });
+    const API_URL = 'https://script.google.com/macros/s/AKfycbx5GB1BSlTMXEwAQlS69tOXskJBu7sH3mNMCSJhB9kAmrdE1gFka0-qtG4T7c-hpvo_Og/exec';
+
+    async function fetchStudents() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            renderStudents(data);
+        } catch (error) {
+            console.error("خطأ في جلب البيانات:", error);
+            document.getElementById('students-container').innerHTML = "حدث خطأ أثناء تحميل البيانات.";
+        }
+    }
+
+    function renderStudents(data) {
+        const container = document.getElementById('students-container');
+        container.innerHTML = '';
+
+        // نفترض أن API يرسل قائمة مدمجة من Vens و Ranks
+        data.forEach((student, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            
+            slide.innerHTML = `
+                <div class="profile-card">
+                    <div style="margin-bottom:10px; font-weight:bold; color:var(--gold)">MY PROFILE</div>
+                    
+                    <img src="${student.photo || 'https://via.placeholder.com/150'}" class="student-img">
+                    <div class="student-name">${student.name}</div>
+                    <div class="student-title">${student.title || 'طالب متميز'}</div>
+                    
+                    <div class="rank-circle">${index + 1}</div>
+                    
+                    <img src="assets/GT.png" class="assets-img" alt="Golden Ticket">
+                    
+                    <img src="assets/Token.png" class="assets-img" style="width:60px">
+                    <div class="count-text">${student.tokens}</div>
+                    
+                    <img src="assets/Star.png" class="assets-img" style="width:60px">
+                    <div class="count-text">${student.tokens}</div> <div class="ranks-split">
+                        <div class="rank-box">
+                            <div class="rank-label">ترتيب السيزون</div>
+                            <div class="rank-val">#${student.seasonRank}</div>
+                        </div>
+                        <div class="rank-box">
+                            <div class="rank-label">ترتيب الإكس بوكس</div>
+                            <div class="rank-val">#${student.xboxRank}</div>
+                        </div>
+                    </div>
+
+                    <div class="trophies-grid">
+                        ${generateTrophyGrid(student.trophies)}
+                    </div>
+                </div>
+            `;
+            container.appendChild(slide);
+        });
+
+        // تشغيل Swiper بعد إضافة البيانات
+        initSwiper();
+    }
+
+    function generateTrophyGrid(studentTrophies) {
+        // قائمة الـ 16 صورة المتاحة
+        const assets = [
+            'Alike X.PNG', 'Alike.PNG', 'Dictation x.PNG', 'Elmagazine -X.PNG', 
+            'Elmagazine.PNG', 'Figurative X.PNG', 'Golden Eat X.PNG', 'Golden Eat.PNG', 
+            'Grammar X.PNG', 'Grammar.PNG', 'Lable X.PNG', 'Lable.PNG', 
+            'Seeds X.PNG', 'Seeds.PNG', 'sss X.PNG', 'vivid X.PNG'
+        ];
+        
+        let gridHtml = '';
+        for (let i = 0; i < 20; i++) {
+            const imgName = assets[i] ? `assets/${assets[i]}` : ''; 
+            gridHtml += `
+                <div class="trophy-item">
+                    ${imgName ? `<img src="${imgName}" onerror="this.style.display='none'">` : ''}
+                </div>`;
+        }
+        return gridHtml;
+    }
+
+    function initSwiper() {
+        window.swiper = new Swiper('.swiper', {
+            direction: 'horizontal',
+            loop: false,
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 'auto',
+            coverflowEffect: {
+                rotate: 50,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: true,
+            },
+        });
+    }
+
+    // ابدأ العملية
+    fetchStudents();
 </script>
+
 </body>
 </html>

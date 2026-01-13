@@ -192,7 +192,7 @@
 
 <div id="loading-overlay">
     <div class="spinner"></div>
-    <p style="margin-top:15px; color:var(--gold)" id="loading-text">جاري استدعاء بيانات الأبطال...</p>
+    <p style="margin-top:15px; color:var(--gold)" id="loading-text">جاري استدعاء بيانات الأبطال من السحابة...</p>
 </div>
 
 <button class="nav-btn prev-btn" onclick="swiper.slidePrev()">&#10094;</button>
@@ -204,14 +204,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    // الرابط المباشر لبيانات الطلاب
-    const API_URL = 'https://script.google.com/macros/s/AKfycbx5GB1BSlTMXEwAQlS69tOXskJBu7sH3mNMCSJhB9kAmrdE1gFka0-qtG4T7c-hpvo_Og/exec';
-    
-    // تجربة عدة خوادم بروكسي لتجاوز CORS
-    const PROXIES = [
-        (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-        (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`
-    ];
+    // الروابط الجديدة التي زودتني بها
+    const RANKS_API = 'https://script.google.com/macros/s/AKfycbwdJKtq54uZ1nN3YTSAYx9sKP2n66Dxxd4ldGz7NriRfECLgspSbcUfbotT4-80JjtWeA/exec';
+    const VENS_API = 'https://script.google.com/macros/s/AKfycbx1cNcQhp3itykELGJFrgZB-clOCTERswVIudqtPJ3hh9M2LyOXKIvVYoBoe4HzL_h-/exec';
+
+    const PROXY = (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
 
     const ASSETS_LIST = [
         'Alike X.PNG', 'Alike.PNG', 'Dictation x.PNG', 'Elmagazine -X.PNG', 
@@ -220,55 +217,34 @@
         'Seeds X.PNG', 'Seeds.PNG', 'sss X.PNG', 'vivid X.PNG', 'vivid.PNG'
     ];
 
-    const MOCK_DATA = [{
-        B: "بطل ذهبي (بيانات افتراضية)",
-        E: "https://via.placeholder.com/150/ffd700/000000?text=VENS",
-        X: 100,
-        D_Ranks: 5,
-        E_Ranks: "بطل الموسم",
-        F_Ranks: 1,
-        G_Ranks: 1,
-        B_Ranks: 500,
-        B_Ranks_Index: 1,
-        achievements: [1, 2, 5]
-    }];
-
     async function fetchData() {
-        let success = false;
+        try {
+            // جلب البيانات من الرابطين في نفس الوقت للسرعة
+            const [resRanks, resVens] = await Promise.all([
+                fetch(PROXY(RANKS_API)).then(r => r.json()),
+                fetch(PROXY(VENS_API)).then(r => r.json())
+            ]);
 
-        // المحاولة عبر البروكسيات المتاحة بالتتابع
-        for (let proxyFn of PROXIES) {
-            try {
-                console.log("Trying proxy...");
-                const response = await fetch(proxyFn(API_URL));
-                if (!response.ok) continue;
+            const ranksData = JSON.parse(resRanks.contents);
+            const vensData = JSON.parse(resVens.contents);
 
-                const result = await response.json();
-                // استخراج المحتوى (بعض البروكسيات تعيد البيانات مباشرة وبعضها يلفها في حقل)
-                let rawData = result.contents || result;
-                
-                // التأكد من تحويل النص إلى كائن JSON إذا كان نصاً
-                let finalData = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+            // دمج البيانات (بناءً على الاسم كعامل مشترك)
+            const combinedData = ranksData.map(rankItem => {
+                const vensItem = vensData.find(v => v.B === rankItem.B) || {};
+                return { ...rankItem, ...vensItem };
+            });
 
-                if (Array.isArray(finalData) && finalData.length > 0) {
-                    renderStudents(finalData);
-                    success = true;
-                    break;
-                }
-            } catch (err) {
-                console.warn("Proxy attempt failed:", err);
+            if (combinedData.length > 0) {
+                renderStudents(combinedData);
+                document.getElementById('loading-overlay').style.display = 'none';
+            } else {
+                throw new Error("Empty Data");
             }
-        }
 
-        if (!success) {
-            console.error("All fetch attempts failed.");
-            renderStudents(MOCK_DATA);
-            document.getElementById('loading-text').innerText = "حدث خطأ في الاتصال. يتم عرض بيانات المعاينة.";
+        } catch (err) {
+            console.error("Fetch Error:", err);
+            document.getElementById('loading-text').innerText = "فشل جلب البيانات. تأكد من إعدادات الـ Deployment (Anyone can access).";
         }
-
-        setTimeout(() => {
-            document.getElementById('loading-overlay').style.display = 'none';
-        }, 1500);
     }
 
     function renderStudents(data) {
@@ -279,14 +255,14 @@
             const slide = document.createElement('div');
             slide.className = 'swiper-slide';
             
-            // معالجة أسماء الحقول المختلفة لضمان التوافق
-            const name = student.B || student.name || "بطل مجهول";
-            const photo = student.E || student.photo || "";
-            const tokens = student.X || student.tokens || 0;
-            const goldenTicket = student.D_Ranks || student.goldenTicket || 0;
-            const title = student.E_Ranks || student.title || "طالب متميز";
-            const seasonRank = student.F_Ranks || student.seasonRank || 0;
-            const xboxRank = student.G_Ranks || student.xboxRank || 0;
+            // تخصيص الحقول بناءً على هيكل الشيتات الخاص بك
+            const name = student.B || "بطل غير معروف";
+            const photo = student.E || ""; // يفترض أن العمود E في شيت Vens به رابط الصورة
+            const tokens = student.X || 0;
+            const goldenTicket = student.D_Ranks || 0;
+            const title = student.E_Ranks || "Elite Member";
+            const seasonRank = student.F_Ranks || 0;
+            const xboxRank = student.G_Ranks || 0;
             const totalRank = student.B_Ranks_Index || (index + 1);
             const totalScore = student.B_Ranks || 0;
 
@@ -305,17 +281,17 @@
                     
                     <div class="assets-row">
                         <div class="asset-box">
-                            <img src="assets/GT.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1047/1047260.png'">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1047/1047260.png" class="assets-img">
                             <div class="count-text">${goldenTicket}</div>
                             <div style="font-size:8px; color:#888">تيكت</div>
                         </div>
                         <div class="asset-box">
-                            <img src="assets/Token.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2111/2111224.png'">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111224.png" class="assets-img">
                             <div class="count-text">${tokens}</div>
                             <div style="font-size:8px; color:#888">توكينز</div>
                         </div>
                         <div class="asset-box">
-                            <img src="assets/Star.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1828/1828884.png'">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="assets-img">
                             <div class="count-text">${totalScore}</div>
                             <div style="font-size:8px; color:#888">إجمالي</div>
                         </div>
@@ -348,12 +324,10 @@
         let gridHtml = '';
         const achievementsArr = Array.isArray(studentAchievements) ? studentAchievements : [];
         for (let i = 0; i < 20; i++) {
-            const assetName = ASSETS_LIST[i];
             const isUnlocked = achievementsArr.includes(i);
-            
             gridHtml += `
                 <div class="trophy-item ${isUnlocked ? 'unlocked' : ''}">
-                    ${assetName ? `<img src="assets/${assetName}" onerror="this.style.opacity='0.1'">` : ''}
+                    <img src="assets/${ASSETS_LIST[i] || 'default.png'}" onerror="this.style.opacity='0.1'">
                 </div>`;
         }
         return gridHtml;
@@ -366,10 +340,7 @@
             grabCursor: true,
             loop: false,
             centeredSlides: true,
-            keyboard: { enabled: true },
-            cardsEffect: {
-                slideShadows: false,
-            },
+            cardsEffect: { slideShadows: false },
         });
     }
 

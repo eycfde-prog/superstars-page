@@ -10,6 +10,7 @@
             --gold: #ffd700;
             --dark-bg: #0a0a0a;
             --card-bg: #1a1a1a;
+            --royal-gold: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
         }
 
         body, html { 
@@ -20,146 +21,230 @@
             overflow: hidden;
         }
 
+        /* خلفية السيزون الذهبي */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            z-index: -1;
+        }
+
         .swiper { width: 100%; height: 100%; }
 
         .swiper-slide {
             display: flex;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle, #222 0%, #000 100%);
+            perspective: 1000px;
         }
 
         /* الإطار الرئيسي للبروفايل */
         .profile-card {
             width: 90%;
-            max-width: 450px;
-            height: 90vh;
-            background: var(--card-bg);
-            border-radius: 30px;
+            max-width: 420px;
+            height: 85vh;
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border-radius: 40px;
             border: 2px solid #333;
-            padding: 20px;
+            padding: 25px;
             overflow-y: auto;
             text-align: center;
             position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 15px rgba(191, 149, 63, 0.1);
         }
+
+        .profile-card::-webkit-scrollbar { display: none; }
 
         /* صورة الطالب والاسم */
-        .student-img {
-            width: 180px;
-            height: 180px;
-            border-radius: 20px;
-            object-fit: cover;
-            border: 4px solid var(--gold);
-            margin-top: 10px;
+        .img-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 10px auto;
         }
 
-        .student-name { font-size: 28px; font-weight: bold; margin: 15px 0 5px 0; color: white; }
-        .student-title { font-size: 16px; color: #bbb; margin-bottom: 20px; }
+        .student-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .student-name { 
+            font-size: 24px; 
+            font-weight: 800; 
+            margin: 15px 0 5px 0; 
+            color: var(--gold);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .student-title { 
+            font-size: 14px; 
+            color: #ddd; 
+            margin-bottom: 15px; 
+            letter-spacing: 1px;
+            background: rgba(255,255,255,0.05);
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 10px;
+        }
 
         /* الدائرة الذهبية للترتيب */
         .rank-circle {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            background: var(--royal-gold);
             color: black;
-            font-size: 30px;
-            font-weight: bold;
+            font-size: 28px;
+            font-weight: 900;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px auto;
-            box-shadow: 0 0 15px var(--gold);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            border: 3px solid white;
         }
 
         /* قسم التيكت والتوكينز */
-        .assets-img { width: 120px; margin: 10px auto; display: block; }
-        .count-text { font-size: 24px; font-weight: bold; color: var(--gold); margin-bottom: 15px; }
+        .assets-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .asset-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            padding: 10px;
+            border: 1px solid rgba(191, 149, 63, 0.2);
+        }
+
+        .assets-img { width: 40px; height: 40px; object-fit: contain; margin-bottom: 5px; }
+        .count-text { font-size: 18px; font-weight: bold; color: var(--gold); }
 
         /* مستطيل السيزون والاكسبوكس */
         .ranks-split {
             display: flex;
-            background: #252525;
-            border-radius: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
             margin: 20px 0;
             border: 1px solid #444;
+            overflow: hidden;
         }
         .rank-box {
             flex: 1;
-            padding: 10px;
-            border-left: 1px solid #444;
+            padding: 12px;
+            border-left: 1px solid #333;
         }
         .rank-box:last-child { border-left: none; }
-        .rank-label { font-size: 12px; color: #aaa; margin-bottom: 5px; }
-        .rank-val { font-size: 20px; font-weight: bold; color: white; }
+        .rank-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+        .rank-val { font-size: 18px; font-weight: bold; color: white; }
 
-        /* شبكة التروفيز */
+        /* شبكة التروفيز 20 مربع */
         .trophies-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            background: #111;
-            padding: 15px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            background: rgba(0,0,0,0.4);
+            padding: 12px;
             border-radius: 20px;
-            margin-top: 20px;
+            margin-top: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .trophy-item {
             aspect-ratio: 1;
-            background: #222;
+            background: rgba(255,255,255,0.02);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #333;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .trophy-item img { width: 80%; height: 80%; object-fit: contain; }
+        .trophy-item img { 
+            width: 80%; 
+            height: 80%; 
+            object-fit: contain; 
+            filter: grayscale(1) brightness(0.3);
+        }
+        .trophy-item.unlocked img {
+            filter: none;
+        }
 
         /* أزرار التنقل الجانبية */
         .nav-btn {
             position: fixed;
             top: 0;
             height: 100%;
-            width: 50px;
-            background: rgba(255,255,255,0.05);
+            width: 60px;
+            background: rgba(0,0,0,0.2);
             border: none;
-            color: white;
-            font-size: 30px;
+            color: var(--gold);
+            font-size: 40px;
             cursor: pointer;
-            z-index: 10;
+            z-index: 100;
             transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.3;
         }
-        .nav-btn:hover { background: rgba(255,255,255,0.1); }
+        .nav-btn:hover { opacity: 1; background: rgba(191, 149, 63, 0.1); }
         .prev-btn { left: 0; }
         .next-btn { right: 0; }
 
-        /* إخفاء السكرول بار */
-        .profile-card::-webkit-scrollbar { display: none; }
+        #loading-overlay {
+            position: fixed; inset: 0; background: black; z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #333; border-top-color: var(--gold);
+            border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <p style="margin-top:15px; color:var(--gold)">جاري استدعاء البيانات...</p>
+</div>
 
 <button class="nav-btn prev-btn" onclick="swiper.slidePrev()">&#10094;</button>
 <button class="nav-btn next-btn" onclick="swiper.slideNext()">&#10095;</button>
 
 <div class="swiper">
-    <div class="swiper-wrapper" id="students-container">
-        <div class="swiper-slide">جارٍ تحميل البيانات...</div>
-    </div>
+    <div class="swiper-wrapper" id="students-container"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbx5GB1BSlTMXEwAQlS69tOXskJBu7sH3mNMCSJhB9kAmrdE1gFka0-qtG4T7c-hpvo_Og/exec';
 
+    // بيانات احتياطية في حال فشل الاتصال (Fallback)
+    const mockData = [
+        { name: "بطل فنس التجريبي", photo: "", tokens: 500, stars: 100, seasonRank: 1, xboxRank: 3, title: "LEGENDARY EAR", goldenTicket: 5 },
+        { name: "طالب متفوق", photo: "", tokens: 300, stars: 80, seasonRank: 2, xboxRank: 8, title: "MASTER EAR", goldenTicket: 2 }
+    ];
+
     async function fetchStudents() {
         try {
-            const response = await fetch(API_URL);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+            const response = await fetch(API_URL, { signal: controller.signal });
             const data = await response.json();
             renderStudents(data);
         } catch (error) {
-            console.error("خطأ في جلب البيانات:", error);
-            document.getElementById('students-container').innerHTML = "حدث خطأ أثناء تحميل البيانات.";
+            console.warn("فشل جلب البيانات، تم تفعيل وضع الاستعراض الاحتياطي:", error);
+            renderStudents(mockData);
+        } finally {
+            document.getElementById('loading-overlay').style.display = 'none';
         }
     }
 
@@ -167,65 +252,88 @@
         const container = document.getElementById('students-container');
         container.innerHTML = '';
 
-        // نفترض أن API يرسل قائمة مدمجة من Vens و Ranks
         data.forEach((student, index) => {
             const slide = document.createElement('div');
             slide.className = 'swiper-slide';
             
+            // التعامل مع أسماء الحقول المختلفة (B, E, X أو الأسماء المباشرة)
+            const sName = student.name || student.B || "بطل مجهول";
+            const sPhoto = student.photo || student.E || "https://via.placeholder.com/200/000/ffd700?text=Student";
+            const sTokens = student.tokens || student.X || 0;
+            const sStars = student.stars || 0;
+            const sGT = student.goldenTicket || student.D_Ranks || 0;
+            const sTitle = student.title || student.E_Ranks || "طالب متميز";
+            const sSeason = student.seasonRank || student.F_Ranks || 0;
+            const sXbox = student.xboxRank || student.G_Ranks || 0;
+
             slide.innerHTML = `
                 <div class="profile-card">
-                    <div style="margin-bottom:10px; font-weight:bold; color:var(--gold)">MY PROFILE</div>
+                    <div style="margin-bottom:10px; font-weight:900; color:var(--gold); letter-spacing: 2px;">GOLDEN EAR PROFILE</div>
                     
-                    <img src="${student.photo || 'https://via.placeholder.com/150'}" class="student-img">
-                    <div class="student-name">${student.name}</div>
-                    <div class="student-title">${student.title || 'طالب متميز'}</div>
+                    <div class="img-container">
+                        <img src="${sPhoto}" class="student-img">
+                    </div>
+                    
+                    <div class="student-name">${sName}</div>
+                    <div class="student-title">${sTitle}</div>
                     
                     <div class="rank-circle">${index + 1}</div>
                     
-                    <img src="assets/GT.png" class="assets-img" alt="Golden Ticket">
-                    
-                    <img src="assets/Token.png" class="assets-img" style="width:60px">
-                    <div class="count-text">${student.tokens}</div>
-                    
-                    <img src="assets/Star.png" class="assets-img" style="width:60px">
-                    <div class="count-text">${student.tokens}</div> <div class="ranks-split">
+                    <div class="assets-row">
+                        <div class="asset-box">
+                            <img src="assets/GT.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1047/1047260.png'">
+                            <div class="count-text">${sGT}</div>
+                            <div style="font-size:9px; color:#888">تيكت</div>
+                        </div>
+                        <div class="asset-box">
+                            <img src="assets/Token.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2111/2111224.png'">
+                            <div class="count-text">${sTokens}</div>
+                            <div style="font-size:9px; color:#888">توكينز</div>
+                        </div>
+                        <div class="asset-box">
+                            <img src="assets/Star.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1828/1828884.png'">
+                            <div class="count-text">${sStars}</div>
+                            <div style="font-size:9px; color:#888">نجوم</div>
+                        </div>
+                    </div>
+
+                    <div class="ranks-split">
                         <div class="rank-box">
-                            <div class="rank-label">ترتيب السيزون</div>
-                            <div class="rank-val">#${student.seasonRank}</div>
+                            <div class="rank-label">ترتيب الموسم</div>
+                            <div class="rank-val">#${sSeason}</div>
                         </div>
                         <div class="rank-box">
                             <div class="rank-label">ترتيب الإكس بوكس</div>
-                            <div class="rank-val">#${student.xboxRank}</div>
+                            <div class="rank-val">#${sXbox}</div>
                         </div>
                     </div>
 
                     <div class="trophies-grid">
-                        ${generateTrophyGrid(student.trophies)}
+                        ${generateTrophyGrid(student.achievements)}
                     </div>
                 </div>
             `;
             container.appendChild(slide);
         });
 
-        // تشغيل Swiper بعد إضافة البيانات
         initSwiper();
     }
 
-    function generateTrophyGrid(studentTrophies) {
-        // قائمة الـ 16 صورة المتاحة
+    function generateTrophyGrid(achievements) {
         const assets = [
             'Alike X.PNG', 'Alike.PNG', 'Dictation x.PNG', 'Elmagazine -X.PNG', 
             'Elmagazine.PNG', 'Figurative X.PNG', 'Golden Eat X.PNG', 'Golden Eat.PNG', 
             'Grammar X.PNG', 'Grammar.PNG', 'Lable X.PNG', 'Lable.PNG', 
-            'Seeds X.PNG', 'Seeds.PNG', 'sss X.PNG', 'vivid X.PNG'
+            'Seeds X.PNG', 'Seeds.PNG', 'sss X.PNG', 'vivid X.PNG', 'vivid.PNG'
         ];
         
         let gridHtml = '';
         for (let i = 0; i < 20; i++) {
+            const isUnlocked = achievements && achievements.includes(i);
             const imgName = assets[i] ? `assets/${assets[i]}` : ''; 
             gridHtml += `
-                <div class="trophy-item">
-                    ${imgName ? `<img src="${imgName}" onerror="this.style.display='none'">` : ''}
+                <div class="trophy-item ${isUnlocked ? 'unlocked' : ''}">
+                    ${imgName ? `<img src="${imgName}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/179/179249.png'">` : ''}
                 </div>`;
         }
         return gridHtml;
@@ -233,23 +341,13 @@
 
     function initSwiper() {
         window.swiper = new Swiper('.swiper', {
-            direction: 'horizontal',
-            loop: false,
-            effect: 'coverflow',
+            effect: 'cards',
             grabCursor: true,
-            centeredSlides: true,
-            slidesPerView: 'auto',
-            coverflowEffect: {
-                rotate: 50,
-                stretch: 0,
-                depth: 100,
-                modifier: 1,
-                slideShadows: true,
-            },
+            loop: false,
+            keyboard: { enabled: true },
         });
     }
 
-    // ابدأ العملية
     fetchStudents();
 </script>
 

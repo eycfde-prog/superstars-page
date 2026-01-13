@@ -14,241 +14,148 @@
             --purple-main: #8e44ad;
             --glass-bg: rgba(255, 255, 255, 0.05);
             --text-color: #ffffff;
-            --red-portal: #ff4b2b;
             --blue-portal: #00d2ff;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #0a0a0a; color: var(--text-color); min-height: 100vh; overflow-x: hidden; }
+
+        #letter-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.35; }
+        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, rgba(142, 68, 173, 0.08) 0%, transparent 80%); z-index: -1; }
+
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(252, 194, 0, 0.15); }
+        .logo-text { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 900; color: var(--accent-gold); }
+
+        .hero { text-align: center; padding: 60px 20px 40px; }
+        .hero h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2.2rem, 8vw, 4rem); background: linear-gradient(135deg, #fff 40%, var(--accent-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; margin-bottom: 20px; }
+        
+        .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .nav-btn { width: 100%; padding: 15px; border-radius: 12px; background: var(--glass-bg); color: #fff; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .nav-btn:hover { border-color: var(--accent-gold); transform: translateY(-3px); background: rgba(252, 194, 0, 0.1); }
+        .btn-highlight { background: var(--accent-gold); color: #000; border: none; }
+
+        /* --- Wheel Section Styles --- */
+        .wheels-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 60px;
+            flex-wrap: wrap;
+            padding: 60px 5%;
+            perspective: 1000px;
         }
 
-        body {
-            background: #0a0a0a;
-            color: var(--text-color);
-            min-height: 100vh;
-            overflow-x: hidden;
+        .wheel-box {
+            text-align: center;
+            position: relative;
         }
 
-        /* Particles & Background */
-        #letter-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .wheel-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-gold);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(252, 194, 0, 0.3);
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 0 auto;
+        }
+
+        /* The Pointer */
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            width: 0; height: 0; 
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 25px solid var(--accent-gold);
+            filter: drop-shadow(0 0 5px var(--accent-gold));
+        }
+
+        .main-wheel {
             width: 100%;
             height: 100%;
-            z-index: -1;
-            opacity: 0.35;
+            border-radius: 50%;
+            position: relative;
+            border: 8px solid #1a1a1a;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+            background: #000;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
         }
 
-        .bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(142, 68, 173, 0.08) 0%, transparent 80%);
-            z-index: -1;
+        .wheel-purple { border-color: var(--purple-main); }
+        .wheel-blue { border-color: var(--blue-portal); }
+
+        /* Go Button in Middle */
+        .go-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            background: #fff;
+            color: #000;
+            border-radius: 50%;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-family: 'Orbitron';
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
+            transition: 0.3s;
+            border: none;
+            font-size: 1.1rem;
+        }
+
+        .go-btn:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 30px #fff;
+        }
+
+        /* Wheel Slices */
+        .slice {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 80px;
+        }
+
+        .slice span {
+            transform: rotate(45deg);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            width: 80px;
+            color: rgba(255,255,255,0.8);
             pointer-events: none;
         }
 
-        /* Fixed Header */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 5%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(15px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(252, 194, 0, 0.15);
-        }
+        /* Different Colors for Slices */
+        .slice:nth-child(odd) { background: rgba(255, 255, 255, 0.03); }
+        .slice:nth-child(even) { background: rgba(255, 255, 255, 0.07); }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        footer { padding: 40px 5%; text-align: center; background: rgba(0,0,0,0.9); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px; }
 
-        .logo-img {
-            height: 35px;
-            width: auto;
-        }
-
-        .logo-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            color: var(--accent-gold);
-            text-shadow: 0 0 10px rgba(252, 194, 0, 0.2);
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 80px 20px 40px;
-            position: relative;
-        }
-
-        .hero h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2.2rem, 8vw, 4.5rem);
-            margin-bottom: 20px;
-            font-weight: 900;
-            line-height: 1.2;
-            background: linear-gradient(135deg, #fff 40%, var(--accent-gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-        }
-
-        .hero p {
-            font-size: 1.15rem;
-            color: #efefef; /* Made more visible */
-            max-width: 800px;
-            margin: 0 auto 45px;
-            line-height: 1.8;
-            font-weight: 400;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        /* Navigation Grid */
-        .btn-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .nav-link {
-            text-decoration: none;
-        }
-
-        .nav-btn {
-            width: 100%;
-            padding: 18px;
-            border-radius: 12px;
-            background: var(--glass-bg);
-            color: #fff;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.3s all ease;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .nav-btn:hover {
-            background: rgba(252, 194, 0, 0.1);
-            border-color: var(--accent-gold);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(252, 194, 0, 0.1);
-        }
-
-        .btn-highlight {
-            background: var(--accent-gold);
-            color: #000;
-            border: none;
-        }
-
-        .btn-highlight:hover {
-            background: #fff;
-            color: #000;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-        }
-
-        /* Black Hole Portals */
-        .portals-section {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            flex-wrap: wrap;
-            padding: 80px 5%;
-        }
-
-        .portal-item {
-            text-align: center;
-            text-decoration: none;
-            width: 250px;
-            transition: 0.4s;
-        }
-
-        .black-hole {
-            width: 160px;
-            height: 160px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            position: relative;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(0,0,0,1);
-            transition: 0.5s;
-        }
-
-        /* Portal Colors & Glowing Effects */
-        .portal-gold { border: 2px solid var(--accent-gold); box-shadow: 0 0 20px rgba(252, 194, 0, 0.4), inset 0 0 40px rgba(252, 194, 0, 0.2); }
-        .portal-purple { border: 2px solid var(--purple-main); box-shadow: 0 0 20px rgba(142, 68, 173, 0.4), inset 0 0 40px rgba(142, 68, 173, 0.2); }
-        .portal-blue { border: 2px solid var(--blue-portal); box-shadow: 0 0 20px rgba(0, 210, 255, 0.4), inset 0 0 40px rgba(0, 210, 255, 0.2); }
-
-        .black-hole::after {
-            content: '';
-            position: absolute;
-            width: 110%;
-            height: 110%;
-            border-radius: 50%;
-            border: 1px dashed rgba(255,255,255,0.2);
-            animation: rotate 10s linear infinite;
-        }
-
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .portal-item:hover { transform: scale(1.1); }
-        .portal-item:hover .black-hole { box-shadow: 0 0 50px inherit; }
-
-        .portal-name {
-            font-family: 'Orbitron', sans-serif;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-            margin-top: 15px;
-        }
-
-        /* Footer */
-        footer {
-            padding: 40px 5%;
-            text-align: center;
-            background: rgba(0,0,0,0.9);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: 50px;
-        }
-
-        .footer-text {
-            color: #666;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-        }
-
-        /* Mobile */
         @media (max-width: 768px) {
             .btn-grid { grid-template-columns: 1fr 1fr; }
-            .hero h1 { font-size: 2.5rem; }
-            .portals-section { gap: 30px; }
-            .black-hole { width: 120px; height: 120px; }
+            .wheel-wrapper { width: 280px; height: 280px; }
         }
     </style>
 </head>
@@ -259,83 +166,124 @@
 
     <nav>
         <div class="logo-container">
-            <img src="logo.png" alt="EYC Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="logo-text">EYC SUPERSTARS</div>
         </div>
-        <div style="color: var(--accent-gold); cursor: pointer;">
-            <i class="fas fa-bars fa-lg"></i>
-        </div>
+        <div style="color: var(--accent-gold);"><i class="fas fa-bars fa-lg"></i></div>
     </nav>
 
     <header class="hero">
-        <div style="margin-bottom: 20px; color: var(--accent-gold); font-weight: bold; letter-spacing: 5px; font-size: 0.85rem; font-family: 'Orbitron';">
-             SUPERSTARS 
-        </div>
+        <div style="margin-bottom: 10px; color: var(--accent-gold); font-weight: bold; letter-spacing: 5px; font-size: 0.8rem; font-family: 'Orbitron';">MISSION CONTROL</div>
         <h1>Beyond Study <br>Level</h1>
-        <p>Your journey to English mastery starts here. Complete 15 gamified missions, collect digital tokens, and unlock the legendary Golden Tickets.</p>
+        <p style="max-width: 700px; margin: 0 auto 30px; opacity: 0.8;">Select your mission from the energy wheels below and hit GO to start.</p>
         
         <div class="btn-grid">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJRybZOK1U1IKZNR9ojX09AE9YtfXIVOGD4W9CgIuw7ezW6g/viewform?usp=publish-editor" class="nav-link" target="_blank">
-                <button class="nav-btn btn-highlight"><i class="fas fa-user-plus"></i> Create Profile</button>
-            </a>
-            <a href="Ranks.html" class="nav-link">
-                <button class="nav-btn"><i class="fas fa-trophy"></i> Global Ranks</button>
-            </a>
-            <a href="Guides.html" class="nav-link">
-                <button class="nav-btn"><i class="fas fa-book-open"></i> Your Guide</button>
-            </a>
-            <a href="Reviews.html" class="nav-link">
-                <button class="nav-btn"><i class="fas fa-star"></i> Student Reviews</button>
-            </a>
-            <a href="myprofile.html" class="nav-link">
-                <button class="nav-btn"><i class="fas fa-id-badge"></i> My Profile</button>
-            </a>
+            <button class="nav-btn btn-highlight"><i class="fas fa-user-plus"></i> Create Profile</button>
+            <button class="nav-btn"><i class="fas fa-trophy"></i> Global Ranks</button>
+            <button class="nav-btn"><i class="fas fa-book-open"></i> Your Guide</button>
+            <button class="nav-btn"><i class="fas fa-id-badge"></i> My Profile</button>
         </div>
     </header>
 
-    <!-- Portals Section -->
-    <section class="portals-section">
-        <!-- Master Sheet Portal -->
-        <a href="Ranks.html" class="portal-item">
-            <div class="black-hole portal-gold">
-                <i class="fas fa-crown" style="color: var(--accent-gold); font-size: 2.5rem;"></i>
+    <section class="wheels-container">
+        <div class="wheel-box">
+            <h3 class="wheel-title"><i class="fab fa-xbox"></i> XBOX LEAGUE</h3>
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <button class="go-btn" onclick="spin('xbox')">GO</button>
+                <div id="xbox-wheel" class="main-wheel wheel-purple">
+                    </div>
             </div>
-            <div class="portal-name">Master Sheet Rank</div>
-        </a>
+        </div>
 
-        <!-- Xbox League Portal -->
-        <a href="xboxranks.html" class="portal-item">
-            <div class="black-hole portal-purple">
-                <i class="fab fa-xbox" style="color: var(--purple-main); font-size: 2.5rem;"></i>
+        <div class="wheel-box">
+            <h3 class="wheel-title"><i class="fas fa-bolt"></i> SEASON RANK</h3>
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <button class="go-btn" onclick="spin('season')">GO</button>
+                <div id="season-wheel" class="main-wheel wheel-blue">
+                    </div>
             </div>
-            <div class="portal-name">XBox League</div>
-        </a>
-
-        <!-- Season Rank Portal -->
-        <a href="seasonranks.html" class="portal-item">
-            <div class="black-hole portal-blue">
-                <i class="fas fa-bolt" style="color: var(--blue-portal); font-size: 2.5rem;"></i>
-            </div>
-            <div class="portal-name">Season Rank</div>
-        </a>
+        </div>
     </section>
 
     <footer>
         <div class="footer-text">
-            &copy; <span id="year"></span> EYC Academy Superstars. All Rights Reserved. <br>
-            <span style="font-size: 0.7rem; margin-top: 10px; display: block; opacity: 0.5;">DESIGNED FOR ELITES</span>
+            &copy; <span id="year"></span> EYC Academy Superstars. <br>
+            <span style="font-size: 0.7rem; opacity: 0.5;">DESIGNED FOR ELITES</span>
         </div>
     </footer>
 
     <script>
-        document.getElementById('year').textContent = new Date().getFullYear();
+        // Activities Lists
+        const xboxActivities = [
+            "Vivid X", "Label X", "Alike X", "Elmagazine X", "Dictation X", 
+            "SSS X", "Figurative X", "Seeds X", "Golden Ear X", "Grammar X"
+        ];
 
+        const seasonActivities = [
+            "Grammar", "Vivid", "Seeds", "Alike", "Label", "Golden Ear"
+        ];
+
+        // Function to create slices
+        function createSlices(wheelId, activities) {
+            const wheel = document.getElementById(wheelId);
+            const deg = 360 / activities.length;
+            
+            activities.forEach((act, i) => {
+                const slice = document.createElement('div');
+                slice.className = 'slice';
+                slice.style.transform = `rotate(${i * deg}deg) skewY(${90 - deg}deg)`;
+                
+                const span = document.createElement('span');
+                span.innerText = act;
+                // Reverse the skew for the text
+                span.style.transform = `skewY(-${90 - deg}deg) rotate(${deg/2}deg)`;
+                
+                slice.appendChild(span);
+                wheel.appendChild(slice);
+            });
+        }
+
+        // Initialize Wheels
+        createSlices('xbox-wheel', xboxActivities);
+        createSlices('season-wheel', seasonActivities);
+
+        // Spin Logic
+        let spinning = false;
+        function spin(type) {
+            if (spinning) return;
+            spinning = true;
+
+            const isXbox = type === 'xbox';
+            const wheel = document.getElementById(isXbox ? 'xbox-wheel' : 'season-wheel');
+            const acts = isXbox ? xboxActivities : seasonActivities;
+            
+            // Randomly select an activity
+            const randomIndex = Math.floor(Math.random() * acts.length);
+            const degreePerSlice = 360 / acts.length;
+            
+            // Calculate rotation (multiple turns + target slice)
+            // We subtract from 360 because CSS rotation is clockwise
+            const targetRotation = (3600 + (360 - (randomIndex * degreePerSlice) - (degreePerSlice/2)));
+
+            wheel.style.transform = `rotate(${targetRotation}deg)`;
+
+            setTimeout(() => {
+                spinning = false;
+                const result = acts[randomIndex];
+                // Navigate to page (Convert "Vivid X" to "VividX.html")
+                const pageName = result.replace(/\s+/g, '') + ".html";
+                alert("Heading to: " + result);
+                window.location.href = pageName;
+            }, 4100); 
+        }
+
+        // Particle Background Logic
+        document.getElementById('year').textContent = new Date().getFullYear();
         const canvas = document.getElementById('letter-canvas');
         const ctx = canvas.getContext('2d');
-
         let particles = [];
         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const specialLetters = ["E", "Y", "C"];
 
         function initCanvas() {
             canvas.width = window.innerWidth;
@@ -351,30 +299,23 @@
                 this.fontSize = Math.random() * 14 + 10;
                 this.speed = Math.random() * 0.3 + 0.1;
                 this.opacity = Math.random() * 0.35;
-                if (specialLetters.includes(this.char)) {
-                    this.color = `rgba(252, 194, 0, ${this.opacity + 0.3})`;
-                    this.isSpecial = true;
-                } else {
-                    this.color = `rgba(255, 255, 255, ${this.opacity})`;
-                    this.isSpecial = false;
-                }
+                this.color = `rgba(255, 255, 255, ${this.opacity})`;
             }
             draw() {
                 ctx.fillStyle = this.color;
-                ctx.font = `${this.isSpecial ? '900' : '300'} ${this.fontSize}px Orbitron`;
+                ctx.font = `300 ${this.fontSize}px Orbitron`;
                 ctx.fillText(this.char, this.x, this.y);
             }
             update() {
                 this.y -= this.speed;
-                if (this.y < -20) { this.y = canvas.height + 20; this.x = Math.random() * canvas.width; }
+                if (this.y < -20) { this.y = canvas.height + 20; }
                 this.draw();
             }
         }
 
         function createParticles() {
             particles = [];
-            let count = window.innerWidth < 768 ? 35 : 75;
-            for (let i = 0; i < count; i++) particles.push(new LetterParticle());
+            for (let i = 0; i < 50; i++) particles.push(new LetterParticle());
         }
 
         function animate() {
@@ -388,4 +329,3 @@
     </script>
 </body>
 </html>
-

@@ -204,12 +204,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    // الرابط الأصلي
     const ORIGINAL_API = 'https://script.google.com/macros/s/AKfycbx5GB1BSlTMXEwAQlS69tOXskJBu7sH3mNMCSJhB9kAmrdE1gFka0-qtG4T7c-hpvo_Og/exec';
     
-    // استخدام بروكسي لتجاوز CORS إذا لزم الأمر
-    const PROXY_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(ORIGINAL_API);
-
     const ASSETS_LIST = [
         'Alike X.PNG', 'Alike.PNG', 'Dictation x.PNG', 'Elmagazine -X.PNG', 
         'Elmagazine.PNG', 'Figurative X.PNG', 'Golden Eat X.PNG', 'Golden Eat.PNG', 
@@ -217,45 +213,27 @@
         'Seeds X.PNG', 'Seeds.PNG', 'sss X.PNG', 'vivid X.PNG', 'vivid.PNG'
     ];
 
-    // بيانات تجريبية في حال فشل الـ API تماماً
-    const MOCK_DATA = [{
-        B: "بطل تجريبي (فشل الاتصال)",
-        E: "https://via.placeholder.com/150/ffd700/000000?text=Error",
-        X: 0,
-        D_Ranks: 0,
-        E_Ranks: "رابط البيانات معطل حالياً",
-        F_Ranks: 0,
-        G_Ranks: 0,
-        achievements: []
-    }];
-
     async function fetchData() {
         try {
-            // محاولة الجلب عبر البروكسي لتفادي خطأ Failed to Fetch
-            const response = await fetch(PROXY_URL);
-            if (!response.ok) throw new Error('Proxy failed');
+            // محاولة جلب مباشرة مع معالجة الـ Redirect
+            const response = await fetch(ORIGINAL_API);
+            
+            if (!response.ok) throw new Error('Network response was not ok');
+            
             const data = await response.json();
             
             if (data && data.length > 0) {
                 renderStudents(data);
             } else {
-                renderStudents(MOCK_DATA);
+                throw new Error('No data found');
             }
         } catch (error) {
             console.error("Fetch Error:", error);
-            // محاولة الجلب المباشر كخطة بديلة
-            try {
-                const directRes = await fetch(ORIGINAL_API);
-                const directData = await directRes.json();
-                renderStudents(directData);
-            } catch (e) {
-                renderStudents(MOCK_DATA);
-                document.getElementById('loading-text').innerText = "تم عرض بيانات احتياطية لتعذر الاتصال";
-                setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 2000);
-                return;
-            }
+            document.getElementById('loading-text').innerText = "حدث خطأ أثناء جلب البيانات.";
+            // يمكن هنا تفعيل MOCK_DATA إذا أردت
+        } finally {
+            document.getElementById('loading-overlay').style.display = 'none';
         }
-        document.getElementById('loading-overlay').style.display = 'none';
     }
 
     function renderStudents(data) {
@@ -266,14 +244,16 @@
             const slide = document.createElement('div');
             slide.className = 'swiper-slide';
             
-            const name = student.B || student.name || "بطل مجهول";
-            const photo = student.E || student.photo || "";
-            const tokens = student.X || student.tokens || 0;
-            const goldenTicket = student.D_Ranks || student.goldenTicket || 0;
-            const title = student.E_Ranks || student.title || "طالب متميز";
-            const seasonRank = student.F_Ranks || student.seasonRank || 0;
-            const xboxRank = student.G_Ranks || student.xboxRank || 0;
+            // تعيين المتغيرات مع التأكد من مطابقة أسماء الحقول في الـ JSON الخاص بك
+            const name = student.B || "بطل مجهول";
+            const photo = student.E || "";
+            const tokens = student.X || 0;
+            const goldenTicket = student.D_Ranks || 0;
+            const title = student.E_Ranks || "طالب متميز";
+            const seasonRank = student.F_Ranks || 0;
+            const xboxRank = student.G_Ranks || 0;
             const totalRank = student.B_Ranks_Index || (index + 1);
+            const totalScore = student.B_Ranks || 0;
 
             slide.innerHTML = `
                 <div class="profile-card">
@@ -301,7 +281,7 @@
                         </div>
                         <div class="asset-box">
                             <img src="assets/Star.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1828/1828884.png'">
-                            <div class="count-text">${student.B_Ranks || 0}</div>
+                            <div class="count-text">${totalScore}</div>
                             <div style="font-size:8px; color:#888">إجمالي</div>
                         </div>
                     </div>

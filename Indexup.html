@@ -192,7 +192,7 @@
 
 <div id="loading-overlay">
     <div class="spinner"></div>
-    <p style="margin-top:15px; color:var(--gold)" id="loading-text">جاري جلب بيانات الأبطال...</p>
+    <p style="margin-top:15px; color:var(--gold)" id="loading-text">جاري استدعاء بيانات الأبطال...</p>
 </div>
 
 <button class="nav-btn prev-btn" onclick="swiper.slidePrev()">&#10094;</button>
@@ -204,8 +204,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    const ORIGINAL_API = 'https://script.google.com/macros/s/AKfycbx5GB1BSlTMXEwAQlS69tOXskJBu7sH3mNMCSJhB9kAmrdE1gFka0-qtG4T7c-hpvo_Og/exec';
+    // الرابط المباشر لبيانات الطلاب
+    const API_URL = 'https://script.google.com/macros/s/AKfycbx5GB1BSlTMXEwAQlS69tOXskJBu7sH3mNMCSJhB9kAmrdE1gFka0-qtG4T7c-hpvo_Og/exec';
     
+    // تجربة عدة خوادم بروكسي لتجاوز CORS
+    const PROXIES = [
+        (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+        (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`
+    ];
+
     const ASSETS_LIST = [
         'Alike X.PNG', 'Alike.PNG', 'Dictation x.PNG', 'Elmagazine -X.PNG', 
         'Elmagazine.PNG', 'Figurative X.PNG', 'Golden Eat X.PNG', 'Golden Eat.PNG', 
@@ -213,27 +220,55 @@
         'Seeds X.PNG', 'Seeds.PNG', 'sss X.PNG', 'vivid X.PNG', 'vivid.PNG'
     ];
 
+    const MOCK_DATA = [{
+        B: "بطل ذهبي (بيانات افتراضية)",
+        E: "https://via.placeholder.com/150/ffd700/000000?text=VENS",
+        X: 100,
+        D_Ranks: 5,
+        E_Ranks: "بطل الموسم",
+        F_Ranks: 1,
+        G_Ranks: 1,
+        B_Ranks: 500,
+        B_Ranks_Index: 1,
+        achievements: [1, 2, 5]
+    }];
+
     async function fetchData() {
-        try {
-            // محاولة جلب مباشرة مع معالجة الـ Redirect
-            const response = await fetch(ORIGINAL_API);
-            
-            if (!response.ok) throw new Error('Network response was not ok');
-            
-            const data = await response.json();
-            
-            if (data && data.length > 0) {
-                renderStudents(data);
-            } else {
-                throw new Error('No data found');
+        let success = false;
+
+        // المحاولة عبر البروكسيات المتاحة بالتتابع
+        for (let proxyFn of PROXIES) {
+            try {
+                console.log("Trying proxy...");
+                const response = await fetch(proxyFn(API_URL));
+                if (!response.ok) continue;
+
+                const result = await response.json();
+                // استخراج المحتوى (بعض البروكسيات تعيد البيانات مباشرة وبعضها يلفها في حقل)
+                let rawData = result.contents || result;
+                
+                // التأكد من تحويل النص إلى كائن JSON إذا كان نصاً
+                let finalData = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+
+                if (Array.isArray(finalData) && finalData.length > 0) {
+                    renderStudents(finalData);
+                    success = true;
+                    break;
+                }
+            } catch (err) {
+                console.warn("Proxy attempt failed:", err);
             }
-        } catch (error) {
-            console.error("Fetch Error:", error);
-            document.getElementById('loading-text').innerText = "حدث خطأ أثناء جلب البيانات.";
-            // يمكن هنا تفعيل MOCK_DATA إذا أردت
-        } finally {
-            document.getElementById('loading-overlay').style.display = 'none';
         }
+
+        if (!success) {
+            console.error("All fetch attempts failed.");
+            renderStudents(MOCK_DATA);
+            document.getElementById('loading-text').innerText = "حدث خطأ في الاتصال. يتم عرض بيانات المعاينة.";
+        }
+
+        setTimeout(() => {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }, 1500);
     }
 
     function renderStudents(data) {
@@ -244,14 +279,14 @@
             const slide = document.createElement('div');
             slide.className = 'swiper-slide';
             
-            // تعيين المتغيرات مع التأكد من مطابقة أسماء الحقول في الـ JSON الخاص بك
-            const name = student.B || "بطل مجهول";
-            const photo = student.E || "";
-            const tokens = student.X || 0;
-            const goldenTicket = student.D_Ranks || 0;
-            const title = student.E_Ranks || "طالب متميز";
-            const seasonRank = student.F_Ranks || 0;
-            const xboxRank = student.G_Ranks || 0;
+            // معالجة أسماء الحقول المختلفة لضمان التوافق
+            const name = student.B || student.name || "بطل مجهول";
+            const photo = student.E || student.photo || "";
+            const tokens = student.X || student.tokens || 0;
+            const goldenTicket = student.D_Ranks || student.goldenTicket || 0;
+            const title = student.E_Ranks || student.title || "طالب متميز";
+            const seasonRank = student.F_Ranks || student.seasonRank || 0;
+            const xboxRank = student.G_Ranks || student.xboxRank || 0;
             const totalRank = student.B_Ranks_Index || (index + 1);
             const totalScore = student.B_Ranks || 0;
 
@@ -260,7 +295,7 @@
                     <div style="margin-bottom:8px; font-weight:900; color:var(--gold); font-size:11px; letter-spacing:1px">VENS GOLDEN SEASON</div>
                     
                     <div class="img-container">
-                        <img src="${photo}" class="student-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1144/1144760.png'">
+                        <img src="${photo}" class="student-img" alt="${name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1144/1144760.png'">
                     </div>
                     
                     <div class="student-name">${name}</div>
@@ -311,9 +346,10 @@
 
     function generateTrophyGrid(studentAchievements) {
         let gridHtml = '';
+        const achievementsArr = Array.isArray(studentAchievements) ? studentAchievements : [];
         for (let i = 0; i < 20; i++) {
             const assetName = ASSETS_LIST[i];
-            const isUnlocked = studentAchievements && studentAchievements.includes(i);
+            const isUnlocked = achievementsArr.includes(i);
             
             gridHtml += `
                 <div class="trophy-item ${isUnlocked ? 'unlocked' : ''}">
@@ -331,10 +367,13 @@
             loop: false,
             centeredSlides: true,
             keyboard: { enabled: true },
+            cardsEffect: {
+                slideShadows: false,
+            },
         });
     }
 
-    fetchData();
+    window.onload = fetchData;
 </script>
 
 </body>

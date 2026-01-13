@@ -41,7 +41,7 @@
         .profile-card {
             width: 90%;
             max-width: 420px;
-            height: 88vh;
+            height: 85vh;
             background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
             border-radius: 40px;
             border: 2px solid #333;
@@ -56,8 +56,8 @@
 
         .img-container {
             position: relative;
-            width: 140px;
-            height: 140px;
+            width: 120px;
+            height: 120px;
             margin: 0 auto 10px auto;
         }
 
@@ -71,7 +71,7 @@
         }
 
         .student-name { 
-            font-size: 22px; 
+            font-size: 20px; 
             font-weight: 800; 
             margin: 10px 0 5px 0; 
             color: var(--gold);
@@ -79,7 +79,7 @@
         }
         
         .student-title { 
-            font-size: 13px; 
+            font-size: 12px; 
             color: #ccc; 
             margin-bottom: 15px; 
             background: rgba(191, 149, 63, 0.15);
@@ -90,12 +90,12 @@
         }
 
         .rank-circle {
-            width: 55px;
-            height: 55px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: var(--royal-gold);
             color: black;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 900;
             display: flex;
             align-items: center;
@@ -119,8 +119,8 @@
             border: 1px solid rgba(191, 149, 63, 0.2);
         }
 
-        .assets-img { width: 30px; height: 30px; object-fit: contain; margin-bottom: 5px; }
-        .count-text { font-size: 16px; font-weight: bold; color: var(--gold); }
+        .assets-img { width: 25px; height: 25px; object-fit: contain; margin-bottom: 5px; }
+        .count-text { font-size: 14px; font-weight: bold; color: var(--gold); }
 
         .ranks-split {
             display: flex;
@@ -137,7 +137,7 @@
         }
         .rank-box:last-child { border-left: none; }
         .rank-label { font-size: 10px; color: #888; margin-bottom: 2px; }
-        .rank-val { font-size: 16px; font-weight: bold; color: white; }
+        .rank-val { font-size: 14px; font-weight: bold; color: white; }
 
         .trophies-grid {
             display: grid;
@@ -159,8 +159,8 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
         .trophy-item img { 
-            width: 85%; 
-            height: 85%; 
+            width: 80%; 
+            height: 80%; 
             object-fit: contain; 
             filter: grayscale(1) opacity(0.2);
         }
@@ -170,12 +170,12 @@
         }
 
         .nav-btn {
-            position: fixed; top: 0; height: 100%; width: 50px;
-            background: none; border: none; color: var(--gold);
-            font-size: 30px; cursor: pointer; z-index: 100; opacity: 0.3;
+            position: fixed; top: 50%; transform: translateY(-50%); height: 60px; width: 50px;
+            background: rgba(0,0,0,0.5); border: none; color: var(--gold);
+            font-size: 25px; cursor: pointer; z-index: 100; opacity: 0.5; border-radius: 10px;
         }
         .nav-btn:hover { opacity: 1; }
-        .prev-btn { left: 0; } .next-btn { right: 0; }
+        .prev-btn { left: 10px; } .next-btn { right: 10px; }
 
         #loading-overlay {
             position: fixed; inset: 0; background: black; z-index: 1000;
@@ -195,8 +195,8 @@
     <p style="margin-top:15px; color:var(--gold)" id="loading-text">جاري جلب بيانات الأبطال...</p>
 </div>
 
-<button class="nav-btn prev-btn" onclick="swiper.slidePrev()">&#10094;</button>
-<button class="nav-btn next-btn" onclick="swiper.slideNext()">&#10095;</button>
+<button class="nav-btn prev-btn" onclick="movePrev()">&#10094;</button>
+<button class="nav-btn next-btn" onclick="moveNext()">&#10095;</button>
 
 <div class="swiper">
     <div class="swiper-wrapper" id="students-container"></div>
@@ -204,6 +204,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
+    let swiperInstance; // متغير عالمي للسوايب
     const ORIGINAL_API = 'https://script.google.com/macros/s/AKfycbx5GB1BSlTMXEwAQlS69tOXskJBu7sH3mNMCSJhB9kAmrdE1gFka0-qtG4T7c-hpvo_Og/exec';
     
     const ASSETS_LIST = [
@@ -215,11 +216,8 @@
 
     async function fetchData() {
         try {
-            // محاولة جلب مباشرة مع معالجة الـ Redirect
             const response = await fetch(ORIGINAL_API);
-            
             if (!response.ok) throw new Error('Network response was not ok');
-            
             const data = await response.json();
             
             if (data && data.length > 0) {
@@ -229,10 +227,11 @@
             }
         } catch (error) {
             console.error("Fetch Error:", error);
-            document.getElementById('loading-text').innerText = "حدث خطأ أثناء جلب البيانات.";
-            // يمكن هنا تفعيل MOCK_DATA إذا أردت
+            document.getElementById('loading-text').innerText = "خطأ: تأكد من إعدادات الـ API أو اتصال الإنترنت.";
         } finally {
-            document.getElementById('loading-overlay').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }, 500);
         }
     }
 
@@ -244,7 +243,7 @@
             const slide = document.createElement('div');
             slide.className = 'swiper-slide';
             
-            // تعيين المتغيرات مع التأكد من مطابقة أسماء الحقول في الـ JSON الخاص بك
+            // استخراج البيانات مع قيم افتراضية
             const name = student.B || "بطل مجهول";
             const photo = student.E || "";
             const tokens = student.X || 0;
@@ -258,34 +257,29 @@
             slide.innerHTML = `
                 <div class="profile-card">
                     <div style="margin-bottom:8px; font-weight:900; color:var(--gold); font-size:11px; letter-spacing:1px">VENS GOLDEN SEASON</div>
-                    
                     <div class="img-container">
                         <img src="${photo}" class="student-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1144/1144760.png'">
                     </div>
-                    
                     <div class="student-name">${name}</div>
                     <div class="student-title">${title}</div>
-                    
                     <div class="rank-circle">${totalRank}</div>
-                    
                     <div class="assets-row">
                         <div class="asset-box">
-                            <img src="assets/GT.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1047/1047260.png'">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1047/1047260.png" class="assets-img">
                             <div class="count-text">${goldenTicket}</div>
                             <div style="font-size:8px; color:#888">تيكت</div>
                         </div>
                         <div class="asset-box">
-                            <img src="assets/Token.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2111/2111224.png'">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111224.png" class="assets-img">
                             <div class="count-text">${tokens}</div>
                             <div style="font-size:8px; color:#888">توكينز</div>
                         </div>
                         <div class="asset-box">
-                            <img src="assets/Star.png" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1828/1828884.png'">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="assets-img">
                             <div class="count-text">${totalScore}</div>
                             <div style="font-size:8px; color:#888">إجمالي</div>
                         </div>
                     </div>
-
                     <div class="ranks-split">
                         <div class="rank-box">
                             <div class="rank-label">ترتيب الموسم</div>
@@ -296,7 +290,6 @@
                             <div class="rank-val">#${xboxRank}</div>
                         </div>
                     </div>
-
                     <div style="text-align:right; font-size:10px; margin: 10px 5px 5px 0; color:var(--gold)">لوحة الإنجازات:</div>
                     <div class="trophies-grid">
                         ${generateTrophyGrid(student.achievements)}
@@ -311,28 +304,30 @@
 
     function generateTrophyGrid(studentAchievements) {
         let gridHtml = '';
+        // إذا لم تكن الإنجازات موجودة، سنعرضها كـ Lock بشكل افتراضي
         for (let i = 0; i < 20; i++) {
             const assetName = ASSETS_LIST[i];
-            const isUnlocked = studentAchievements && studentAchievements.includes(i);
+            const isUnlocked = Array.isArray(studentAchievements) && studentAchievements.includes(i);
             
             gridHtml += `
                 <div class="trophy-item ${isUnlocked ? 'unlocked' : ''}">
-                    ${assetName ? `<img src="assets/${assetName}" onerror="this.style.opacity='0.1'">` : ''}
+                    ${assetName ? `<img src="assets/${assetName}" onerror="this.parentElement.style.opacity='0.1'">` : ''}
                 </div>`;
         }
         return gridHtml;
     }
 
     function initSwiper() {
-        if (window.swiper) window.swiper.destroy();
-        window.swiper = new Swiper('.swiper', {
+        swiperInstance = new Swiper('.swiper', {
             effect: 'cards',
             grabCursor: true,
-            loop: false,
-            centeredSlides: true,
             keyboard: { enabled: true },
         });
     }
+
+    // دوال التحكم
+    function moveNext() { if(swiperInstance) swiperInstance.slideNext(); }
+    function movePrev() { if(swiperInstance) swiperInstance.slidePrev(); }
 
     fetchData();
 </script>

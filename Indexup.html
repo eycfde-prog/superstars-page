@@ -21,141 +21,134 @@
         body { background: #0a0a0a; color: var(--text-color); min-height: 100vh; overflow-x: hidden; }
 
         #letter-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.35; }
-        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, rgba(142, 68, 173, 0.08) 0%, transparent 80%); z-index: -1; }
+        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, rgba(142, 68, 173, 0.08) 0%, transparent 80%); z-index: -1; pointer-events: none; }
 
         nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(252, 194, 0, 0.15); }
         .logo-text { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 900; color: var(--accent-gold); }
 
         .hero { text-align: center; padding: 60px 20px 40px; }
-        .hero h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2.2rem, 8vw, 4rem); background: linear-gradient(135deg, #fff 40%, var(--accent-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; margin-bottom: 20px; }
-        
-        .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .nav-btn { width: 100%; padding: 15px; border-radius: 12px; background: var(--glass-bg); color: #fff; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .nav-btn:hover { border-color: var(--accent-gold); transform: translateY(-3px); background: rgba(252, 194, 0, 0.1); }
-        .btn-highlight { background: var(--accent-gold); color: #000; border: none; }
+        .hero h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2.2rem, 8vw, 4.5rem); margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* --- Wheel Section Styles --- */
-        .wheels-container {
+        /* Navigation Grid */
+        .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto 50px; padding: 0 20px; }
+        .nav-btn { width: 100%; padding: 15px; border-radius: 12px; background: var(--glass-bg); color: #fff; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; }
+        .nav-btn:hover { border-color: var(--accent-gold); transform: translateY(-3px); }
+        .btn-highlight { background: var(--accent-gold); color: #000; font-weight: bold; }
+
+        /* --- Activity Hub Styles --- */
+        .activity-hub {
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 60px;
             flex-wrap: wrap;
-            padding: 60px 5%;
-            perspective: 1000px;
+            justify-content: center;
+            gap: 60px;
+            padding: 50px 5%;
         }
 
-        .wheel-box {
+        .wheel-container {
             text-align: center;
             position: relative;
         }
 
         .wheel-title {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--accent-gold);
+            font-family: 'Orbitron';
             margin-bottom: 30px;
             letter-spacing: 2px;
-            font-size: 1.2rem;
-            text-shadow: 0 0 10px rgba(252, 194, 0, 0.3);
+            text-transform: uppercase;
         }
 
-        .wheel-wrapper {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            margin: 0 auto;
-        }
-
-        /* The Pointer */
-        .wheel-pointer {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            width: 0; height: 0; 
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 25px solid var(--accent-gold);
-            filter: drop-shadow(0 0 5px var(--accent-gold));
-        }
-
-        .main-wheel {
-            width: 100%;
-            height: 100%;
+        .wheel {
+            width: 380px;
+            height: 380px;
             border-radius: 50%;
             position: relative;
-            border: 8px solid #1a1a1a;
-            overflow: hidden;
-            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
             background: #000;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
-        }
-
-        .wheel-purple { border-color: var(--purple-main); }
-        .wheel-blue { border-color: var(--blue-portal); }
-
-        /* Go Button in Middle */
-        .go-btn {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70px;
-            height: 70px;
-            background: #fff;
-            color: #000;
-            border-radius: 50%;
-            z-index: 20;
+            border: 4px solid rgba(255,255,255,0.1);
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        /* Go Button Style */
+        .go-btn {
+            width: 85px;
+            height: 85px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
             font-weight: 900;
             font-family: 'Orbitron';
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255,255,255,0.4);
+            z-index: 10;
             transition: 0.3s;
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
             border: none;
-            font-size: 1.1rem;
+            text-decoration: none;
         }
 
-        .go-btn:hover {
-            transform: translate(-50%, -50%) scale(1.1);
-            box-shadow: 0 0 30px #fff;
-        }
+        .go-btn:hover { transform: scale(1.1); background: var(--accent-gold); }
 
-        /* Wheel Slices */
-        .slice {
+        /* Activity Items (Segments) */
+        .activity-item {
             position: absolute;
             width: 50%;
-            height: 50%;
-            transform-origin: 100% 100%;
+            height: 40px;
+            left: 50%;
+            top: 50%;
+            transform-origin: left center;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding-bottom: 80px;
+            justify-content: flex-end;
+            padding-right: 25px;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        .slice span {
-            transform: rotate(45deg);
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            text-align: center;
-            width: 80px;
-            color: rgba(255,255,255,0.8);
+        .activity-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            transition: 0.3s;
             pointer-events: none;
         }
 
-        /* Different Colors for Slices */
-        .slice:nth-child(odd) { background: rgba(255, 255, 255, 0.03); }
-        .slice:nth-child(even) { background: rgba(255, 255, 255, 0.07); }
+        .activity-item:hover .activity-text {
+            color: #fff;
+            text-shadow: 0 0 10px currentColor;
+            transform: scale(1.1);
+        }
 
-        footer { padding: 40px 5%; text-align: center; background: rgba(0,0,0,0.9); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px; }
+        /* Active selection styling */
+        .activity-item.selected .activity-text {
+            color: var(--accent-gold) !important;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        /* Separator lines */
+        .wheel-line {
+            position: absolute;
+            width: 50%;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            left: 50%;
+            top: 50%;
+            transform-origin: left center;
+            pointer-events: none;
+        }
+
+        /* Gold Wheel Glow */
+        .gold-wheel { border-color: var(--purple-main); box-shadow: 0 0 40px rgba(142, 68, 173, 0.2); }
+        .blue-wheel { border-color: var(--blue-portal); box-shadow: 0 0 40px rgba(0, 210, 255, 0.2); }
+
+        footer { padding: 40px; text-align: center; background: #000; border-top: 1px solid #111; }
 
         @media (max-width: 768px) {
-            .btn-grid { grid-template-columns: 1fr 1fr; }
-            .wheel-wrapper { width: 280px; height: 280px; }
+            .wheel { width: 300px; height: 300px; }
+            .activity-text { font-size: 0.65rem; }
         }
     </style>
 </head>
@@ -172,49 +165,41 @@
     </nav>
 
     <header class="hero">
-        <div style="margin-bottom: 10px; color: var(--accent-gold); font-weight: bold; letter-spacing: 5px; font-size: 0.8rem; font-family: 'Orbitron';">MISSION CONTROL</div>
         <h1>Beyond Study <br>Level</h1>
-        <p style="max-width: 700px; margin: 0 auto 30px; opacity: 0.8;">Select your mission from the energy wheels below and hit GO to start.</p>
+        <p>Choose your mission from the interactive wheels below.</p>
         
         <div class="btn-grid">
-            <button class="nav-btn btn-highlight"><i class="fas fa-user-plus"></i> Create Profile</button>
-            <button class="nav-btn"><i class="fas fa-trophy"></i> Global Ranks</button>
-            <button class="nav-btn"><i class="fas fa-book-open"></i> Your Guide</button>
-            <button class="nav-btn"><i class="fas fa-id-badge"></i> My Profile</button>
+            <a href="#" class="nav-link"><button class="nav-btn btn-highlight">Create Profile</button></a>
+            <a href="Ranks.html" class="nav-link"><button class="nav-btn">Global Ranks</button></a>
+            <a href="myprofile.html" class="nav-link"><button class="nav-btn">My Profile</button></a>
         </div>
     </header>
 
-    <section class="wheels-container">
-        <div class="wheel-box">
-            <h3 class="wheel-title"><i class="fab fa-xbox"></i> XBOX LEAGUE</h3>
-            <div class="wheel-wrapper">
-                <div class="wheel-pointer"></div>
-                <button class="go-btn" onclick="spin('xbox')">GO</button>
-                <div id="xbox-wheel" class="main-wheel wheel-purple">
-                    </div>
+    <section class="activity-hub">
+        
+        <div class="wheel-container">
+            <h3 class="wheel-title" style="color: var(--purple-main);">Xbox League</h3>
+            <div class="wheel gold-wheel" id="xbox-wheel">
+                <button class="go-btn" onclick="goToActivity('xbox')">GO</button>
             </div>
         </div>
 
-        <div class="wheel-box">
-            <h3 class="wheel-title"><i class="fas fa-bolt"></i> SEASON RANK</h3>
-            <div class="wheel-wrapper">
-                <div class="wheel-pointer"></div>
-                <button class="go-btn" onclick="spin('season')">GO</button>
-                <div id="season-wheel" class="main-wheel wheel-blue">
-                    </div>
+        <div class="wheel-container">
+            <h3 class="wheel-title" style="color: var(--blue-portal);">Season Rank</h3>
+            <div class="wheel blue-wheel" id="season-wheel">
+                <button class="go-btn" onclick="goToActivity('season')">GO</button>
             </div>
         </div>
+
     </section>
 
     <footer>
-        <div class="footer-text">
-            &copy; <span id="year"></span> EYC Academy Superstars. <br>
-            <span style="font-size: 0.7rem; opacity: 0.5;">DESIGNED FOR ELITES</span>
-        </div>
+        <div class="footer-text">&copy; <span id="year"></span> EYC Academy Superstars.</div>
     </footer>
 
     <script>
-        // Activities Lists
+        document.getElementById('year').textContent = new Date().getFullYear();
+
         const xboxActivities = [
             "Vivid X", "Label X", "Alike X", "Elmagazine X", "Dictation X", 
             "SSS X", "Figurative X", "Seeds X", "Golden Ear X", "Grammar X"
@@ -224,72 +209,63 @@
             "Grammar", "Vivid", "Seeds", "Alike", "Label", "Golden Ear"
         ];
 
-        // Function to create slices
-        function createSlices(wheelId, activities) {
-            const wheel = document.getElementById(wheelId);
-            const deg = 360 / activities.length;
-            
-            activities.forEach((act, i) => {
-                const slice = document.createElement('div');
-                slice.className = 'slice';
-                slice.style.transform = `rotate(${i * deg}deg) skewY(${90 - deg}deg)`;
+        let selectedXbox = "";
+        let selectedSeason = "";
+
+        function createWheel(containerId, activities) {
+            const wheel = document.getElementById(containerId);
+            const total = activities.length;
+            const angleStep = 360 / total;
+
+            activities.forEach((name, i) => {
+                const angle = i * angleStep;
                 
-                const span = document.createElement('span');
-                span.innerText = act;
-                // Reverse the skew for the text
-                span.style.transform = `skewY(-${90 - deg}deg) rotate(${deg/2}deg)`;
+                // Create Line
+                const line = document.createElement('div');
+                line.className = 'wheel-line';
+                line.style.transform = `rotate(${angle - (angleStep/2)}deg)`;
+                wheel.appendChild(line);
+
+                // Create Clickable Item
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.style.transform = `rotate(${angle}deg)`;
+                item.innerHTML = `<span class="activity-text" style="transform: rotate(-${angle}deg)">${name}</span>`;
                 
-                slice.appendChild(span);
-                wheel.appendChild(slice);
+                item.onclick = () => {
+                    // Remove selected class from others in this wheel
+                    wheel.querySelectorAll('.activity-item').forEach(el => el.classList.remove('selected'));
+                    item.classList.add('selected');
+                    
+                    if(containerId === 'xbox-wheel') selectedXbox = name;
+                    else selectedSeason = name;
+                };
+
+                wheel.appendChild(item);
             });
         }
 
-        // Initialize Wheels
-        createSlices('xbox-wheel', xboxActivities);
-        createSlices('season-wheel', seasonActivities);
-
-        // Spin Logic
-        let spinning = false;
-        function spin(type) {
-            if (spinning) return;
-            spinning = true;
-
-            const isXbox = type === 'xbox';
-            const wheel = document.getElementById(isXbox ? 'xbox-wheel' : 'season-wheel');
-            const acts = isXbox ? xboxActivities : seasonActivities;
-            
-            // Randomly select an activity
-            const randomIndex = Math.floor(Math.random() * acts.length);
-            const degreePerSlice = 360 / acts.length;
-            
-            // Calculate rotation (multiple turns + target slice)
-            // We subtract from 360 because CSS rotation is clockwise
-            const targetRotation = (3600 + (360 - (randomIndex * degreePerSlice) - (degreePerSlice/2)));
-
-            wheel.style.transform = `rotate(${targetRotation}deg)`;
-
-            setTimeout(() => {
-                spinning = false;
-                const result = acts[randomIndex];
-                // Navigate to page (Convert "Vivid X" to "VividX.html")
-                const pageName = result.replace(/\s+/g, '') + ".html";
-                alert("Heading to: " + result);
-                window.location.href = pageName;
-            }, 4100); 
+        function goToActivity(type) {
+            const selected = type === 'xbox' ? selectedXbox : selectedSeason;
+            if(!selected) {
+                alert("Please select an activity first!");
+                return;
+            }
+            // توجيه الطالب لصفحة النشاط (مثلاً: Vivid-X.html)
+            const pageName = selected.replace(/\s+/g, '-').toLowerCase() + ".html";
+            window.location.href = pageName;
         }
 
-        // Particle Background Logic
-        document.getElementById('year').textContent = new Date().getFullYear();
+        // Initialize Wheels
+        createWheel('xbox-wheel', xboxActivities);
+        createWheel('season-wheel', seasonActivities);
+
+        // --- Letter Background Animation (Your original script) ---
         const canvas = document.getElementById('letter-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-        function initCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         class LetterParticle {
             constructor() { this.init(); }
             init() {
@@ -301,29 +277,18 @@
                 this.opacity = Math.random() * 0.35;
                 this.color = `rgba(255, 255, 255, ${this.opacity})`;
             }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.font = `300 ${this.fontSize}px Orbitron`;
-                ctx.fillText(this.char, this.x, this.y);
-            }
-            update() {
-                this.y -= this.speed;
-                if (this.y < -20) { this.y = canvas.height + 20; }
-                this.draw();
-            }
+            draw() { ctx.fillStyle = this.color; ctx.font = `300 ${this.fontSize}px Orbitron`; ctx.fillText(this.char, this.x, this.y); }
+            update() { this.y -= this.speed; if (this.y < -20) this.y = canvas.height + 20; this.draw(); }
         }
-
         function createParticles() {
             particles = [];
             for (let i = 0; i < 50; i++) particles.push(new LetterParticle());
         }
-
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => p.update());
             requestAnimationFrame(animate);
         }
-
         window.addEventListener('resize', () => { initCanvas(); createParticles(); });
         initCanvas(); createParticles(); animate();
     </script>

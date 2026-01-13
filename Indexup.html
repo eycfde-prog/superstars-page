@@ -27,12 +27,14 @@
         }
 
         #letter-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; opacity: 0.35;
         }
 
         .bg-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% 50%, rgba(142, 68, 173, 0.08) 0%, transparent 80%);
             z-index: -1; pointer-events: none;
         }
@@ -49,11 +51,10 @@
             font-weight: 900; letter-spacing: 1.5px; color: var(--accent-gold);
         }
 
-        .hero { text-align: center; padding: 80px 20px 40px; }
+        .hero { text-align: center; padding: 60px 20px 40px; }
         .hero h1 {
-            font-family: 'Orbitron', sans-serif; font-size: clamp(2.2rem, 8vw, 4.5rem);
-            margin-bottom: 20px; font-weight: 900;
-            background: linear-gradient(135deg, #fff 40%, var(--accent-gold) 100%);
+            font-family: 'Orbitron', sans-serif; font-size: clamp(2.2rem, 8vw, 4rem);
+            margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent-gold) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
@@ -63,66 +64,232 @@
         }
 
         .nav-btn {
-            width: 100%; padding: 18px; border-radius: 12px;
+            width: 100%; padding: 15px; border-radius: 12px;
             background: var(--glass-bg); color: #fff; font-weight: 600;
             border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
+        .nav-btn:hover { border-color: var(--accent-gold); transform: translateY(-3px); }
         .btn-highlight { background: var(--accent-gold); color: #000; border: none; }
 
-        /* --- New Activity Hub Styling --- */
-        .activity-hub {
-            display: flex;
-            justify-content: center;
-            gap: 60px;
-            flex-wrap: wrap;
-            padding: 60px 5%;
-            perspective: 1000px;
+        /* --- New Activity Wheels Section --- */
+        .wheels-container {
+            display: flex; justify-content: center; gap: 80px;
+            padding: 60px 5%; flex-wrap: wrap; margin-bottom: 50px;
         }
 
-        .wheel-container {
-            text-align: center;
-            position: relative;
-            width: 380px;
-        }
-
+        .wheel-box { text-align: center; }
         .wheel-title {
-            font-family: 'Orbitron', sans-serif;
-            color: #fff;
-            margin-bottom: 25px;
-            letter-spacing: 2px;
-            font-size: 1.2rem;
-            text-transform: uppercase;
+            font-family: 'Orbitron'; color: var(--accent-gold);
+            margin-bottom: 25px; letter-spacing: 2px; font-size: 1.2rem;
         }
 
-        /* Wheel Design */
-        .wheel-wrapper {
-            position: relative;
-            width: 350px;
-            height: 350px;
-            margin: 0 auto;
-            border-radius: 50%;
-            padding: 10px;
-            background: rgba(255,255,255,0.03);
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        .activity-wheel {
+            position: relative; width: 350px; height: 350px;
+            border-radius: 50%; border: 8px solid #111;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            overflow: hidden; cursor: pointer;
         }
 
-        .main-wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.3s ease;
+        /* Go Button in Middle */
+        .go-btn {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; height: 80px; background: #000;
+            border: 4px solid var(--accent-gold); border-radius: 50%;
+            color: var(--accent-gold); font-family: 'Orbitron';
+            font-weight: 900; z-index: 10; display: flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(252,194,0,0.4);
+            transition: 0.3s; pointer-events: auto;
         }
 
-        .wheel-svg {
-            width: 100%;
-            height: 100%;
-            transform: rotate(-90deg); /* Adjust starting point */
-        }
+        .go-btn:hover { transform: translate(-50%, -50%) scale(1.1); background: var(--accent-gold); color: #000; }
 
+        /* Slices Logic */
         .slice {
-            fill: none;
-            stroke-
+            position: absolute; width: 100%; height: 100%;
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%); /* Placeholder */
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 20px; transition: 0.3s;
+        }
+
+        .slice span {
+            font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 700;
+            text-transform: uppercase; text-align: center; pointer-events: none;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .slice:hover { filter: brightness(1.5); transform: scale(1.02); }
+
+        /* Specific Wheel Styles */
+        .xbox-wheel { background: conic-gradient(from 0deg, #1e1e1e 0%, #2a2a2a 100%); }
+        .season-wheel { background: conic-gradient(from 0deg, #1e1e1e 0%, #2a2a2a 100%); }
+
+        footer {
+            padding: 40px 5%; text-align: center;
+            background: rgba(0,0,0,0.9); border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @media (max-width: 768px) {
+            .activity-wheel { width: 300px; height: 300px; }
+            .wheels-container { gap: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-overlay"></div>
+    <canvas id="letter-canvas"></canvas>
+
+    <nav>
+        <div class="logo-container">
+            <div class="logo-text">EYC SUPERSTARS</div>
+        </div>
+        <div style="color: var(--accent-gold); cursor: pointer;"><i class="fas fa-bars fa-lg"></i></div>
+    </nav>
+
+    <header class="hero">
+        <div style="margin-bottom: 20px; color: var(--accent-gold); font-weight: bold; letter-spacing: 5px; font-size: 0.8rem; font-family: 'Orbitron';">SUPERSTARS</div>
+        <h1>Beyond Study <br>Level</h1>
+        <p style="margin-bottom: 40px; opacity: 0.8;">Choose your mission, master the language, and collect your rewards.</p>
+        
+        <div class="btn-grid">
+            <a href="#" class="nav-link"><button class="nav-btn btn-highlight">Create Profile</button></a>
+            <a href="Ranks.html" class="nav-link"><button class="nav-btn">Global Ranks</button></a>
+            <a href="Guides.html" class="nav-link"><button class="nav-btn">Your Guide</button></a>
+            <a href="myprofile.html" class="nav-link"><button class="nav-btn">My Profile</button></a>
+        </div>
+    </header>
+
+    <section class="wheels-container">
+        <div class="wheel-box">
+            <h3 class="wheel-title"><i class="fab fa-xbox"></i> XBOX LEAGUE</h3>
+            <div class="activity-wheel" id="xboxWheel">
+                <div class="go-btn" onclick="goToActivity('xbox')">GO</div>
+                </div>
+        </div>
+
+        <div class="wheel-box">
+            <h3 class="wheel-title"><i class="fas fa-bolt"></i> SEASON RANK</h3>
+            <div class="activity-wheel" id="seasonWheel">
+                <div class="go-btn" onclick="goToActivity('season')">GO</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-text">
+            &copy; <span id="year"></span> EYC Academy Superstars. <br>
+            <span style="font-size: 0.7rem; opacity: 0.5;">DESIGNED FOR ELITES</span>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const xboxActivities = ["Vivid X", "Label X", "Alike X", "Elmagazine X", "Dictation X", "SSS X", "Figurative X", "Seeds X", "Golden Ear X", "Grammar X"];
+        const seasonActivities = ["Grammar", "Vivid", "Seeds", "Alike", "Label", "Golden Ear"];
+
+        let selectedXbox = "";
+        let selectedSeason = "";
+
+        function createWheel(containerId, activities, colors, type) {
+            const container = document.getElementById(containerId);
+            const total = activities.length;
+            const angleStep = 360 / total;
+
+            activities.forEach((act, i) => {
+                const slice = document.createElement('div');
+                slice.className = 'slice';
+                
+                // Color variation for clear sections
+                const color = i % 2 === 0 ? colors[0] : colors[1];
+                
+                // Position and Rotation
+                slice.style.backgroundColor = color;
+                slice.style.transformOrigin = "50% 50%";
+                slice.style.transform = `rotate(${i * angleStep}deg)`;
+                
+                // Clip the slice into a triangle
+                const skewAngle = 90 - angleStep;
+                slice.style.clipPath = `polygon(50% 50%, 50% 0%, ${50 + (50 * Math.tan((angleStep * Math.PI)/180))}% 0%)`;
+                if (total <= 6) { // Adjustment for wider slices
+                     slice.style.clipPath = `polygon(50% 50%, 20% 0%, 80% 0%)`;
+                }
+
+                // Text styling
+                const label = document.createElement('span');
+                label.innerText = act;
+                // Move text to be readable
+                label.style.transform = `rotate(${angleStep / 2}deg) translateY(20px)`;
+                
+                slice.appendChild(label);
+                
+                // Selection Logic
+                slice.onclick = (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll(`#${containerId} .slice`).forEach(s => s.style.border = "none");
+                    slice.style.border = "2px solid white";
+                    if(type === 'xbox') selectedXbox = act;
+                    else selectedSeason = act;
+                };
+
+                container.appendChild(slice);
+            });
+        }
+
+        // Initialize Wheels
+        createWheel('xboxWheel', xboxActivities, ['#8e44ad', '#6c3483'], 'xbox');
+        createWheel('seasonWheel', seasonActivities, ['#00d2ff', '#0095b6'], 'season');
+
+        function goToActivity(type) {
+            const activity = type === 'xbox' ? selectedXbox : selectedSeason;
+            if(!activity) {
+                alert("Please select an activity first!");
+                return;
+            }
+            // Logic to redirect, for example:
+            window.location.href = `${activity.replace(/\s+/g, '').toLowerCase()}.html`;
+        }
+
+        // --- Original Background Animation ---
+        const canvas = document.getElementById('letter-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class LetterParticle {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.char = letters.charAt(Math.floor(Math.random() * letters.length));
+                this.fontSize = Math.random() * 14 + 10;
+                this.speed = Math.random() * 0.3 + 0.1;
+                this.opacity = Math.random() * 0.35;
+                this.color = `rgba(255, 255, 255, ${this.opacity})`;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -20) this.y = canvas.height + 20;
+                ctx.fillStyle = this.color;
+                ctx.font = `${this.fontSize}px Orbitron`;
+                ctx.fillText(this.char, this.x, this.y);
+            }
+        }
+        function createParticles() {
+            particles = [];
+            for (let i = 0; i < 50; i++) particles.push(new LetterParticle());
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => p.update());
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', () => { initCanvas(); createParticles(); });
+        initCanvas(); createParticles(); animate();
+    </script>
+</body>
+</html>

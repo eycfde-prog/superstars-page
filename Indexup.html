@@ -204,9 +204,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    // الروابط الجديدة التي زودتني بها
-    const RANKS_API = 'https://script.google.com/macros/s/AKfycbwdJKtq54uZ1nN3YTSAYx9sKP2n66Dxxd4ldGz7NriRfECLgspSbcUfbotT4-80JjtWeA/exec';
-    const VENS_API = 'https://script.google.com/macros/s/AKfycbx1cNcQhp3itykELGJFrgZB-clOCTERswVIudqtPJ3hh9M2LyOXKIvVYoBoe4HzL_h-/exec';
+    // تم تحديث الروابط بناءً على آخر ديبلوي قمت به
+    const RANKS_API = 'https://script.google.com/macros/s/AKfycbzglYBC4oGGZN5h7c_YdLD3HpPI5DdBnrlpOJX6wAOlUXNYOefnHZyYlRLjeKeikKGT/exec';
+    const VENS_API = 'https://script.google.com/macros/s/AKfycbx1bxKakRRb4i28qUAsmnyLXKfDCzn3G7OaE6MOqyK_sqIaoQsYVFrAzWlYKire5oQGSQ/exec';
 
     const PROXY = (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
 
@@ -219,7 +219,7 @@
 
     async function fetchData() {
         try {
-            // جلب البيانات من الرابطين في نفس الوقت للسرعة
+            // جلب البيانات من الرابطين
             const [resRanks, resVens] = await Promise.all([
                 fetch(PROXY(RANKS_API)).then(r => r.json()),
                 fetch(PROXY(VENS_API)).then(r => r.json())
@@ -228,7 +228,7 @@
             const ranksData = JSON.parse(resRanks.contents);
             const vensData = JSON.parse(resVens.contents);
 
-            // دمج البيانات (بناءً على الاسم كعامل مشترك)
+            // دمج البيانات بناءً على الاسم (العمود B)
             const combinedData = ranksData.map(rankItem => {
                 const vensItem = vensData.find(v => v.B === rankItem.B) || {};
                 return { ...rankItem, ...vensItem };
@@ -238,12 +238,12 @@
                 renderStudents(combinedData);
                 document.getElementById('loading-overlay').style.display = 'none';
             } else {
-                throw new Error("Empty Data");
+                throw new Error("No Data Found");
             }
 
         } catch (err) {
             console.error("Fetch Error:", err);
-            document.getElementById('loading-text').innerText = "فشل جلب البيانات. تأكد من إعدادات الـ Deployment (Anyone can access).";
+            document.getElementById('loading-text').innerText = "فشل جلب البيانات. تأكد من إعدادات الـ Deployment (Anyone).";
         }
     }
 
@@ -255,12 +255,12 @@
             const slide = document.createElement('div');
             slide.className = 'swiper-slide';
             
-            // تخصيص الحقول بناءً على هيكل الشيتات الخاص بك
-            const name = student.B || "بطل غير معروف";
-            const photo = student.E || ""; // يفترض أن العمود E في شيت Vens به رابط الصورة
-            const tokens = student.X || 0;
+            // تخصيص الحقول
+            const name = student.B || "بطل مجهول";
+            const photo = student.C || ""; // في شيت Vens العمود C غالباً للصور (يرجى التأكد من الحرف)
+            const tokens = student.B_Ranks || 0;
             const goldenTicket = student.D_Ranks || 0;
-            const title = student.E_Ranks || "Elite Member";
+            const title = student.E_Ranks || "طالب متميز";
             const seasonRank = student.F_Ranks || 0;
             const xboxRank = student.G_Ranks || 0;
             const totalRank = student.B_Ranks_Index || (index + 1);

@@ -178,7 +178,7 @@
     function formatDriveUrl(url) {
         if (!url || !url.includes('drive.google.com')) return 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png';
         const id = url.match(/[-\w]{25,}/);
-        return id ? `https://lh3.googleusercontent.com/u/0/d/${id[0]}` : url;
+        return id ? `https://lh3.googleusercontent.com/d/${id[0]}` : url;
     }
 
     async function fetchData() {
@@ -187,20 +187,16 @@
                 fetch(PROXY(RANKS_API)).then(r => r.json()),
                 fetch(PROXY(VENS_API)).then(r => r.json())
             ]);
-            
             const ranksData = JSON.parse(resRanks.contents);
             const vensData = JSON.parse(resVens.contents);
 
             const combinedData = ranksData.map((rankItem, idx) => {
-                // البحث عن بيانات الطالب في شيت VENS باستخدام الاسم الموجود في عمود B
                 const vensItem = vensData.find(v => v.B === rankItem.B) || {};
-                
                 return { 
                     ...rankItem, 
                     ...vensItem, 
-                    displayRank: idx + 1, 
-                    // التعديل هنا: سحب النجوم من العمود C في شيت Ranks
-                    starsCount: rankItem.C || rankItem.C_Ranks || 0 
+                    displayRank: idx + 1, // الترتيب بناءً على ترتيبه في المصفوفة (رقم الصف)
+                    starsCount: rankItem.C_Ranks || 0 // أخذ النجوم من العمود C (C_Ranks)
                 };
             });
 
@@ -208,8 +204,7 @@
             document.getElementById('loading-overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
         } catch (err) {
-            console.error(err);
-            document.getElementById('loading-overlay').innerHTML = "<p style='color:white;'>خطأ في تحميل البيانات، يرجى المحاولة لاحقاً</p>";
+            document.getElementById('loading-text').innerText = "خطأ في الاتصال";
         }
     }
 
@@ -265,7 +260,6 @@
     }
 
     function generateTrophyGrid(ach) {
-        // إذا كان هناك بيانات للأوسمة يتم عرضها، وإلا تظهر شفافة
         const active = Array.isArray(ach) ? ach : [];
         return Array.from({length: 15}).map((_, i) => `
             <div class="trophy-item ${active.includes(i) ? 'unlocked' : ''}">

@@ -190,17 +190,13 @@
             ]);
             const ranksData = JSON.parse(resRanks.contents);
             const vensData = JSON.parse(resVens.contents);
-
-            // دمج البيانات مع حساب الترتيب التلقائي بناءً على موقع الطالب في الشيت
+            
             const combinedData = ranksData.map((rankItem, idx) => {
                 const vensItem = vensData.find(v => v.B === rankItem.B) || {};
-                return { 
-                    ...rankItem, 
-                    ...vensItem, 
-                    calculatedRank: idx + 1 // هذا هو ترتيب الطالب في العمود
-                };
+                // idx + 1 يمثل ترتيب الطالب في القائمة الحالية (ترتيب الموسم)
+                return { ...rankItem, ...vensItem, autoRank: idx + 1 };
             });
-
+            
             renderStudents(combinedData);
             document.getElementById('loading-overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
@@ -224,18 +220,18 @@
                         <span class="student-title">${student.E_Ranks || "Elite Member"}</span>
                     </div>
                     
-                    <div class="rank-circle">${student.calculatedRank}</div>
+                    <div class="rank-circle">${student.B_Ranks_Index || student.autoRank}</div>
                     
                     <div class="assets-row">
                         ${renderAsset('GT.png', student.D_Ranks || 0, 'GT')}
                         ${renderAsset('Token.png', student.B_Ranks || 0, 'Tokens')}
-                        ${renderAsset('Star.png', student.F_Ranks || 0, 'Stars')}
+                        ${renderAsset('Star.png', student.C_Ranks || 0, 'Stars')}
                     </div>
 
                     <div class="ranks-split">
                         <div class="rank-box">
                             <div class="rank-label">ترتيب الموسم</div>
-                            <div class="rank-val">#${student.calculatedRank}</div>
+                            <div class="rank-val">#${student.autoRank}</div>
                         </div>
                         <div class="rank-box">
                             <div class="rank-label">ترتيب XBOX</div>

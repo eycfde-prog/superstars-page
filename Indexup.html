@@ -165,8 +165,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    // تم تحديث الرابط الجديد لـ RANKS_API الذي يحتوي على العمود J
-    const RANKS_API = 'https://script.google.com/macros/s/AKfycbwsEape4U5hwDG2qs7B_qMUJvoYFxqsXb-DaDFvDT3XXPKdv5wBnkArSjs4FEYeexBl/exec';
+    // تم تحديث الرابط لـ RANKS_API بناءً على الديبلوي الأخير الخاص بك
+    const RANKS_API = 'https://script.google.com/macros/s/AKfycbwJYws8ECAeeP7RaTGduiT1w5tcLTvoIZmB2QCspf5wkFr5DXbVxrmbnBqj38-is-Hc/exec';
     const VENS_API = 'https://script.google.com/macros/s/AKfycbx1bxKakRRb4i28qUAsmnyLXKfDCzn3G7OaE6MOqyK_sqIaoQsYVFrAzWlYKire5oQGSQ/exec';
     const PROXY = (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
 
@@ -219,4 +219,74 @@
                             <img src="${formatDriveUrl(student.E)}" class="student-img" loading="lazy">
                         </div>
                         <h2 class="student-name">${student.Name || "Hero"}</h2>
-                        <span class="student-title">${student
+                        <span class="student-title">${student.Title || "Elite Member"}</span>
+                    </div>
+                    
+                    <div class="rank-circle">${student.Tokens || 0}</div>
+                    
+                    <div class="assets-row">
+                        ${renderAsset('GT.png', student.Golden_Tickets || 0, 'GT')}
+                        ${renderAsset('Token.png', student.Tokens || 0, 'Tokens')}
+                        ${renderAsset('Star.png', Math.floor((student.Tokens || 0) / 50), 'Stars')}
+                    </div>
+
+                    <div class="ranks-split">
+                        <div class="rank-box">
+                            <div class="rank-label">ترتيب الموسم</div>
+                            <div class="rank-val">#${student.Rank_Season_H || 0}</div>
+                        </div>
+                        <div class="rank-box">
+                            <div class="rank-label">ترتيب XBOX</div>
+                            <div class="rank-val">#${student.Rank_Xbox_I || 0}</div>
+                        </div>
+                    </div>
+
+                    <div class="trophies-grid">
+                        ${generateTrophyGrid(student.achievements)}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        initSwiper();
+    }
+
+    function renderAsset(img, count, label) {
+        return `<div class="asset-box">
+            <img src="assets/${img}" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1047/1047260.png'">
+            <div class="count-text">${count}</div>
+            <div style="font-size:7px; color:#777">${label}</div>
+        </div>`;
+    }
+
+    function generateTrophyGrid(ach) {
+        const active = Array.isArray(ach) ? ach : [];
+        return Array.from({length: 15}).map((_, i) => `
+            <div class="trophy-item ${active.includes(i) ? 'unlocked' : ''}">
+                <img src="assets/${ASSETS_LIST[i] || 'default.png'}" loading="lazy">
+            </div>`).join('');
+    }
+
+    function initSwiper() {
+        window.swiper = new Swiper('.swiper', {
+            grabCursor: true,
+            effect: 'creative',
+            speed: 800,
+            creativeEffect: {
+                prev: {
+                    shadow: true,
+                    origin: 'left center',
+                    translate: ['-100%', 0, 0],
+                    rotate: [0, 100, 0],
+                },
+                next: {
+                    origin: 'right center',
+                    translate: ['100%', 0, 0],
+                    rotate: [0, -100, 0],
+                },
+            },
+        });
+    }
+    window.onload = fetchData;
+</script>
+</body>
+</html>

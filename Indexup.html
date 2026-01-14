@@ -10,6 +10,7 @@
             --gold: #ffd700;
             --dark-bg: #050505;
             --royal-gold: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body, html { 
@@ -29,7 +30,7 @@
 
         .swiper-slide {
             display: flex; justify-content: center; align-items: center;
-            backface-visibility: hidden;
+            backface-visibility: hidden; /* ضروري لحركة الكتاب */
         }
 
         .profile-card {
@@ -39,6 +40,7 @@
             padding: 20px; display: flex; flex-direction: column;
             position: relative; box-shadow: 0 15px 50px rgba(0,0,0,0.7);
             overflow-y: auto; scrollbar-width: none;
+            /* تحسين أداء الحركة */
             transform-style: preserve-3d;
         }
 
@@ -49,6 +51,7 @@
             font-weight: 900; margin-bottom: 10px; opacity: 0.7; text-align: center;
         }
 
+        /* حاوية الصورة والاسم الجديدة */
         .profile-main-info {
             display: flex; flex-direction: column; align-items: center;
             margin-bottom: 15px; flex-shrink: 0;
@@ -189,17 +192,10 @@
             ]);
             const ranksData = JSON.parse(resRanks.contents);
             const vensData = JSON.parse(resVens.contents);
-
             const combinedData = ranksData.map((rankItem, idx) => {
                 const vensItem = vensData.find(v => v.B === rankItem.B) || {};
-                return { 
-                    ...rankItem, 
-                    ...vensItem, 
-                    displayRank: idx + 1, // الترتيب بناءً على ترتيبه في المصفوفة (رقم الصف)
-                    starsCount: rankItem.C_Ranks || 0 // أخذ النجوم من العمود C (C_Ranks)
-                };
+                return { ...rankItem, ...vensItem, index: idx + 1 };
             });
-
             renderStudents(combinedData);
             document.getElementById('loading-overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
@@ -223,18 +219,18 @@
                         <span class="student-title">${student.E_Ranks || "Elite Member"}</span>
                     </div>
                     
-                    <div class="rank-circle">${student.displayRank}</div>
+                    <div class="rank-circle">${student.B_Ranks_Index || student.index}</div>
                     
                     <div class="assets-row">
                         ${renderAsset('GT.png', student.D_Ranks || 0, 'GT')}
                         ${renderAsset('Token.png', student.B_Ranks || 0, 'Tokens')}
-                        ${renderAsset('Star.png', student.starsCount, 'Stars')}
+                        ${renderAsset('Star.png', student.F_Ranks || 0, 'Stars')}
                     </div>
 
                     <div class="ranks-split">
                         <div class="rank-box">
                             <div class="rank-label">ترتيب الموسم</div>
-                            <div class="rank-val">#${student.displayRank}</div>
+                            <div class="rank-val">#${student.F_Ranks || 0}</div>
                         </div>
                         <div class="rank-box">
                             <div class="rank-label">ترتيب XBOX</div>
@@ -275,6 +271,7 @@
             creativeEffect: {
                 prev: {
                     shadow: true,
+                    // تأثير تقليب الصفحة لليمين (كتاب)
                     origin: 'left center',
                     translate: ['-100%', 0, 0],
                     rotate: [0, 100, 0],

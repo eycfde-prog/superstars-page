@@ -30,7 +30,7 @@
 
         .swiper-slide {
             display: flex; justify-content: center; align-items: center;
-            backface-visibility: hidden; /* ضروري لحركة الكتاب */
+            backface-visibility: hidden;
         }
 
         .profile-card {
@@ -40,7 +40,6 @@
             padding: 20px; display: flex; flex-direction: column;
             position: relative; box-shadow: 0 15px 50px rgba(0,0,0,0.7);
             overflow-y: auto; scrollbar-width: none;
-            /* تحسين أداء الحركة */
             transform-style: preserve-3d;
         }
 
@@ -51,7 +50,6 @@
             font-weight: 900; margin-bottom: 10px; opacity: 0.7; text-align: center;
         }
 
-        /* حاوية الصورة والاسم الجديدة */
         .profile-main-info {
             display: flex; flex-direction: column; align-items: center;
             margin-bottom: 15px; flex-shrink: 0;
@@ -192,10 +190,17 @@
             ]);
             const ranksData = JSON.parse(resRanks.contents);
             const vensData = JSON.parse(resVens.contents);
+
+            // دمج البيانات مع حساب الترتيب التلقائي بناءً على موقع الطالب في الشيت
             const combinedData = ranksData.map((rankItem, idx) => {
                 const vensItem = vensData.find(v => v.B === rankItem.B) || {};
-                return { ...rankItem, ...vensItem, index: idx + 1 };
+                return { 
+                    ...rankItem, 
+                    ...vensItem, 
+                    calculatedRank: idx + 1 // هذا هو ترتيب الطالب في العمود
+                };
             });
+
             renderStudents(combinedData);
             document.getElementById('loading-overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
@@ -219,7 +224,7 @@
                         <span class="student-title">${student.E_Ranks || "Elite Member"}</span>
                     </div>
                     
-                    <div class="rank-circle">${student.B_Ranks_Index || student.index}</div>
+                    <div class="rank-circle">${student.calculatedRank}</div>
                     
                     <div class="assets-row">
                         ${renderAsset('GT.png', student.D_Ranks || 0, 'GT')}
@@ -230,7 +235,7 @@
                     <div class="ranks-split">
                         <div class="rank-box">
                             <div class="rank-label">ترتيب الموسم</div>
-                            <div class="rank-val">#${student.F_Ranks || 0}</div>
+                            <div class="rank-val">#${student.calculatedRank}</div>
                         </div>
                         <div class="rank-box">
                             <div class="rank-label">ترتيب XBOX</div>
@@ -271,7 +276,6 @@
             creativeEffect: {
                 prev: {
                     shadow: true,
-                    // تأثير تقليب الصفحة لليمين (كتاب)
                     origin: 'left center',
                     translate: ['-100%', 0, 0],
                     rotate: [0, 100, 0],

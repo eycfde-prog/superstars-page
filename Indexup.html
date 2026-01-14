@@ -165,8 +165,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    // تم تحديث رابط الرانكس للرابط الجديد الخاص بك
-    const RANKS_API = 'https://script.google.com/macros/s/AKfycbxDYb8P72LSGdgY3_38FETvwmMUCsK_DjUc32IUiTDzQ7B1kJOFnZFT5xEzHFlnYBkR/exec';
+    const RANKS_API = 'https://script.google.com/macros/s/AKfycbwJYws8ECAeeP7RaTGduiT1w5tcLTvoIZmB2QCspf5wkFr5DXbVxrmbnBqj38-is-Hc/exec';
     const VENS_API = 'https://script.google.com/macros/s/AKfycbx1bxKakRRb4i28qUAsmnyLXKfDCzn3G7OaE6MOqyK_sqIaoQsYVFrAzWlYKire5oQGSQ/exec';
     const PROXY = (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
 
@@ -189,18 +188,22 @@
                 fetch(PROXY(RANKS_API)).then(r => r.json()),
                 fetch(PROXY(VENS_API)).then(r => r.json())
             ]);
+            
             const ranksData = JSON.parse(resRanks.contents);
             const vensData = JSON.parse(resVens.contents);
-            
-            const combinedData = ranksData.map((rankItem) => {
-                const vensItem = vensData.find(v => v.B === rankItem.B) || {};
+
+            const combinedData = ranksData.map(rankItem => {
+                // البحث في شيت Vens عن بيانات الطالب (مثل الصورة) باستخدام الاسم
+                const vensItem = vensData.find(v => v.B === rankItem.Name) || {};
                 return { ...rankItem, ...vensItem };
             });
+
             renderStudents(combinedData);
             document.getElementById('loading-overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
         } catch (err) {
-            document.getElementById('loading-text').innerText = "خطأ في الاتصال";
+            console.error(err);
+            document.getElementById('loading-text').innerText = "خطأ في الاتصال بالسحابة";
         }
     }
 
@@ -215,26 +218,26 @@
                         <div class="img-container">
                             <img src="${formatDriveUrl(student.E)}" class="student-img" loading="lazy">
                         </div>
-                        <h2 class="student-name">${student.B || "Hero"}</h2>
-                        <span class="student-title">${student.E_Ranks || "Elite Member"}</span>
+                        <h2 class="student-name">${student.Name || "Hero"}</h2>
+                        <span class="student-title">${student.Title || "Elite Member"}</span>
                     </div>
                     
-                    <div class="rank-circle">${student.H_Ranks || "0"}</div>
+                    <div class="rank-circle">${student.Tokens || 0}</div>
                     
                     <div class="assets-row">
-                        ${renderAsset('GT.png', student.D_Ranks || 0, 'GT')}
-                        ${renderAsset('Token.png', student.B_Ranks || 0, 'Tokens')}
-                        ${renderAsset('Star.png', Math.floor(student.C_Ranks) || 0, 'Stars')}
+                        ${renderAsset('GT.png', student.Golden_Tickets || 0, 'GT')}
+                        ${renderAsset('Token.png', student.Tokens || 0, 'Tokens')}
+                        ${renderAsset('Star.png', Math.floor((student.Tokens || 0) / 50), 'Stars')}
                     </div>
 
                     <div class="ranks-split">
                         <div class="rank-box">
-                            <div class="rank-label">إجمالي الموسم</div>
-                            <div class="rank-val">${student.F_Ranks || 0}</div>
+                            <div class="rank-label">ترتيب الموسم</div>
+                            <div class="rank-val">#${student.Rank_Season_H || 0}</div>
                         </div>
                         <div class="rank-box">
-                            <div class="rank-label">إجمالي XBOX</div>
-                            <div class="rank-val">${student.G_Ranks || 0}</div>
+                            <div class="rank-label">ترتيب XBOX</div>
+                            <div class="rank-val">#${student.Rank_Xbox_I || 0}</div>
                         </div>
                     </div>
 
@@ -249,7 +252,8 @@
 
     function renderAsset(img, count, label) {
         return `<div class="asset-box">
-            <img src="https://img.icons8.com/fluency/48/000000/${img === 'GT.png' ? 'ticket' : img === 'Token.png' ? 'coins' : 'star'}.png" class="assets-img">
+            <img src="https://cdn-icons-png.flaticon.com/512/1047/1047260.png" class="assets-img" 
+                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/1828/1828884.png'">
             <div class="count-text">${count}</div>
             <div style="font-size:7px; color:#777">${label}</div>
         </div>`;
@@ -259,7 +263,7 @@
         const active = Array.isArray(ach) ? ach : [];
         return Array.from({length: 15}).map((_, i) => `
             <div class="trophy-item ${active.includes(i) ? 'unlocked' : ''}">
-                <img src="assets/${ASSETS_LIST[i] || 'default.png'}" loading="lazy">
+                <img src="assets/${ASSETS_LIST[i] || 'default.png'}" loading="lazy" onerror="this.style.opacity='0.05'">
             </div>`).join('');
     }
 

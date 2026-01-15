@@ -2,203 +2,218 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Activity Hub | Interactive Terminal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EYC Activity Hub | Mobile Elite</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
         :root {
             --gold: #fcc200;
-            --season-color: #00ff88;
-            --xbox-color: #ff4500;
-            --bg: #050505;
+            --season-color: #00ffa3;
+            --xbox-color: #ff3c3c;
+            --bg-dark: #080808;
         }
 
         body {
-            background-color: var(--bg);
+            background-color: var(--bg-dark);
             color: white;
             font-family: 'Poppins', sans-serif;
-            margin: 0; overflow: hidden; height: 100vh;
+            margin: 0; padding: 0;
+            overflow: hidden; /* لمنع السكرول الخارجي وتركيز الحركة داخل السوايب */
+            height: 100vh;
         }
 
-        /* Category Toggle Buttons */
-        .category-nav {
-            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 20px; z-index: 100;
+        /* Header & Navigation */
+        .header-nav {
+            text-align: center;
+            padding: 20px 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            position: relative; z-index: 10;
         }
 
-        .nav-btn {
+        .toggle-container {
+            display: flex; justify-content: center; gap: 15px; margin-top: 15px;
+        }
+
+        .mode-btn {
             background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            color: #777; padding: 10px 30px; border-radius: 12px;
-            font-family: 'Orbitron'; font-weight: 700; cursor: pointer;
-            transition: 0.4s; backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #888; padding: 10px 25px;
+            border-radius: 30px; font-family: 'Orbitron';
+            font-size: 12px; cursor: pointer; transition: 0.4s;
         }
 
-        .nav-btn.active[data-type="season"] { color: var(--season-color); border-color: var(--season-green); box-shadow: 0 0 15px rgba(0,255,136,0.3); background: rgba(0,255,136,0.05); }
-        .nav-btn.active[data-type="xbox"] { color: var(--xbox-color); border-color: var(--xbox-color); box-shadow: 0 0 15px rgba(255,69,0,0.3); background: rgba(255,69,0,0.05); }
+        .mode-btn.active.season-mode { background: var(--season-color); color: #000; box-shadow: 0 0 20px rgba(0,255,163,0.4); border-color: transparent; }
+        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; box-shadow: 0 0 20px rgba(255,60,60,0.4); border-color: transparent; }
 
-        /* Main Containers */
-        .main-wrapper {
-            position: relative; height: 100vh; width: 100%;
-            transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
+        /* Carousel Area */
+        .swiper {
+            width: 100%;
+            padding-top: 50px;
+            padding-bottom: 50px;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s;
         }
-
-        .section-container {
-            height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
-        }
-
-        /* Swiper / Card Stack */
-        .swiper { width: 100%; padding-top: 50px; padding-bottom: 50px; overflow: visible !important; }
 
         .swiper-slide {
-            width: 300px; height: 420px;
-            background: rgba(20, 20, 20, 0.95);
-            border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 30px; box-sizing: border-box;
-            backdrop-filter: blur(20px);
-            transition: border-color 0.3s;
+            background-position: center;
+            background-size: cover;
+            width: 280px; height: 380px; /* مقاس مثالي للموبايل */
+            border-radius: 25px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
         }
 
-        .season .swiper-slide { border-bottom: 5px solid var(--season-color); }
-        .xbox .swiper-slide { border-bottom: 5px solid var(--xbox-color); }
-
-        /* Card Content */
-        .icon-wrapper {
-            width: 80px; height: 80px; border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 35px; margin-bottom: 25px;
-            background: rgba(255,255,255,0.03);
+        /* Slide Content */
+        .activity-icon {
+            font-size: 50px; margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
         }
-        .season .icon-wrapper { color: var(--season-color); box-shadow: 0 0 20px rgba(0,255,136,0.1); }
-        .xbox .icon-wrapper { color: var(--xbox-color); box-shadow: 0 0 20px rgba(255,69,0,0.1); }
 
-        .activity-name { font-family: 'Orbitron'; font-size: 1.4rem; margin: 0; text-align: center; }
-        .activity-code { font-size: 10px; color: #555; letter-spacing: 2px; margin-bottom: 15px; }
-        .activity-desc { font-size: 0.85rem; color: #aaa; text-align: center; line-height: 1.6; }
+        .activity-name {
+            font-family: 'Orbitron'; font-size: 22px; font-weight: 800;
+            margin: 10px 0; text-align: center;
+        }
 
-        /* Instructions */
-        .hint {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-            font-size: 10px; color: #444; letter-spacing: 2px; font-family: 'Orbitron';
+        .activity-code {
+            font-size: 10px; opacity: 0.5; letter-spacing: 2px;
+        }
+
+        /* Season Style Card */
+        .season-card { background: linear-gradient(135deg, rgba(0, 255, 163, 0.1), rgba(0, 100, 50, 0.2)); border-color: rgba(0, 255, 163, 0.2); }
+        .season-card .activity-icon { color: var(--season-color); }
+
+        /* XBox Style Card */
+        .xbox-card { background: linear-gradient(135deg, rgba(255, 60, 60, 0.1), rgba(60, 0, 0, 0.3)); border-color: rgba(255, 60, 60, 0.2); }
+        .xbox-card .activity-icon { color: var(--xbox-color); }
+
+        /* Animation Classes */
+        .slide-up-exit { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+        .slide-down-entry { animation: slideDown 0.6s forwards; }
+
+        @keyframes slideDown {
+            from { transform: translateY(100vh) scale(0.8); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        /* Footer Hint */
+        .swipe-hint {
+            position: fixed; bottom: 30px; width: 100%;
+            text-align: center; font-size: 10px; color: #444;
+            text-transform: uppercase; letter-spacing: 3px;
+            font-family: 'Orbitron';
         }
     </style>
 </head>
 <body>
 
-    <div class="category-nav">
-        <button class="nav-btn active" data-type="season" onclick="switchCategory('season')">SEASON</button>
-        <button class="nav-btn" data-type="xbox" onclick="switchCategory('xbox')">XBOX ELITE</button>
+    <div class="header-nav">
+        <h1 style="font-family: 'Orbitron'; font-size: 18px; letter-spacing: 4px;">ACTIVITY HUB</h1>
+        <div class="toggle-container">
+            <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
+            <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
+        </div>
     </div>
 
-    <div class="main-wrapper" id="master-wrapper">
-        <section class="section-container season" id="season-sec">
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <span class="activity-code">ESGE</span>
-                        <div class="icon-wrapper"><i class="fas fa-ear-listen"></i></div>
-                        <h3 class="activity-name">Golden Ear</h3>
-                        <p class="activity-desc">Listen carefully. Solve stories through sound waves.</p>
-                    </div>
-                    <div class="swiper-slide">
-                        <span class="activity-code">ESS</span>
-                        <div class="icon-wrapper"><i class="fas fa-seedling"></i></div>
-                        <h3 class="activity-name">Seeds</h3>
-                        <p class="activity-desc">Plant words, harvest stories. Creative writing flow.</p>
-                    </div>
-                    <div class="swiper-slide">
-                        <span class="activity-code">ESL</span>
-                        <div class="icon-wrapper"><i class="fas fa-tag"></i></div>
-                        <h3 class="activity-name">Label</h3>
-                        <p class="activity-desc">Tag 10 images. Precision in naming is key.</p>
-                    </div>
-                    <div class="swiper-slide">
-                        <span class="activity-code">ESG</span>
-                        <div class="icon-wrapper"><i class="fas fa-magnifying-glass"></i></div>
-                        <h3 class="activity-name">Grammar</h3>
-                        <p class="activity-desc">The linguistic lens. Spot the error, fix the path.</p>
-                    </div>
+    <div id="carousel-wrapper">
+        <div id="season-swiper" class="swiper">
+            <div class="swiper-wrapper">
                 </div>
-            </div>
-        </section>
-
-        <section class="section-container xbox" id="xbox-sec">
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <span class="activity-code">EXA</span>
-                        <div class="icon-wrapper"><i class="fas fa-clone"></i></div>
-                        <h3 class="activity-name">Alike X</h3>
-                        <p class="activity-desc">Homophone challenge. Double the words, double the focus.</p>
-                    </div>
-                    <div class="swiper-slide">
-                        <span class="activity-code">EXV</span>
-                        <div class="icon-wrapper"><i class="fas fa-stopwatch"></i></div>
-                        <h3 class="activity-name">Vivid X</h3>
-                        <p class="activity-desc">Frozen moment description. High detail execution.</p>
-                    </div>
-                    <div class="swiper-slide">
-                        <span class="activity-code">EXD</span>
-                        <div class="icon-wrapper"><i class="fas fa-pen-nib"></i></div>
-                        <h3 class="activity-name">Dictation X</h3>
-                        <p class="activity-desc">Lightning speed writing. No room for errors.</p>
-                    </div>
-                    <div class="swiper-slide">
-                        <span class="activity-code">EXFF</span>
-                        <div class="icon-wrapper"><i class="fas fa-mask"></i></div>
-                        <h3 class="activity-name">Figurative X</h3>
-                        <p class="activity-desc">Unmask the idiom. Master the metaphorical realm.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
     </div>
 
-    <div class="hint">SWIPE LEFT/RIGHT TO EXPLORE</div>
+    <div class="swipe-hint">Swipe Left or Right</div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // Initialize Swipers
-        const swiperConfig = {
-            effect: "creative",
-            grabCursor: true,
-            centeredSlides: true,
-            slidesPerView: "auto",
-            creativeEffect: {
-                prev: {
-                    shadow: true,
-                    translate: ["-120%", 0, -500],
-                    rotate: [0, 0, -20],
-                    opacity: 0,
-                },
-                next: {
-                    translate: ["120%", 0, -500],
-                    rotate: [0, 0, 20],
-                    opacity: 0,
-                },
-            },
-            speed: 600,
+        const activities = {
+            season: [
+                { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen' },
+                { name: 'Seeds', code: 'ESS', icon: 'fa-seedling' },
+                { name: 'Label', code: 'ESL', icon: 'fa-tag' },
+                { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass' },
+                { name: 'Vivid', code: 'ESV', icon: 'fa-eye' }
+            ],
+            xbox: [
+                { name: 'Alike X', code: 'EXA', icon: 'fa-clone' },
+                { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch' },
+                { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece' },
+                { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib' },
+                { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines' }
+            ]
         };
 
-        const swipers = new Swiper(".mySwiper", swiperConfig);
+        let currentSwiper = null;
 
-        // Vertical Switching Logic
-        function switchCategory(type) {
-            const wrapper = document.getElementById('master-wrapper');
-            const btns = document.querySelectorAll('.nav-btn');
-            
-            btns.forEach(b => b.classList.remove('active'));
-            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+        function initSwiper(mode) {
+            const wrapper = document.querySelector('.swiper-wrapper');
+            wrapper.innerHTML = ''; // تنظيف الكروت القديمة
 
-            if(type === 'xbox') {
-                wrapper.style.transform = 'translateY(-100vh)';
-            } else {
-                wrapper.style.transform = 'translateY(0)';
-            }
+            activities[mode].forEach(act => {
+                const cardClass = mode === 'season' ? 'season-card' : 'xbox-card';
+                wrapper.innerHTML += `
+                    <div class="swiper-slide ${cardClass}">
+                        <div class="activity-code">${act.code}</div>
+                        <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
+                        <div class="activity-name">${act.name}</div>
+                        <div style="font-size: 11px; opacity: 0.6; text-align: center; padding: 0 20px;">
+                            ${mode === 'season' ? 'Growth & Exploration' : 'Elite Professional Challenge'}
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (currentSwiper) currentSwiper.destroy();
+
+            currentSwiper = new Swiper('.swiper', {
+                effect: 'coverflow',
+                grabCursor: true,
+                centeredSlides: true,
+                slidesPerView: 'auto',
+                coverflowEffect: {
+                    rotate: 30, // زاوية الدوران زي صورتك
+                    stretch: 0,
+                    depth: 200, // العمق اللي بيخلي البعيد يصغر
+                    modifier: 1,
+                    slideShadows: true,
+                },
+                speed: 600,
+            });
         }
+
+        function switchMode(mode) {
+            const btnSeason = document.querySelector('.season-mode');
+            const btnXbox = document.querySelector('.xbox-mode');
+            const swiperEl = document.querySelector('.swiper');
+
+            if ((mode === 'season' && btnSeason.classList.contains('active')) ||
+                (mode === 'xbox' && btnXbox.classList.contains('active'))) return;
+
+            // انميشن الخروج لفوق
+            swiperEl.classList.add('slide-up-exit');
+
+            setTimeout(() => {
+                // تغيير الـ Active Button
+                btnSeason.classList.toggle('active', mode === 'season');
+                btnXbox.classList.toggle('active', mode === 'xbox');
+
+                // بناء الكروت الجديدة والأنميشن للدخول
+                initSwiper(mode);
+                swiperEl.classList.remove('slide-up-exit');
+                swiperEl.classList.add('slide-down-entry');
+
+                setTimeout(() => {
+                    swiperEl.classList.remove('slide-down-entry');
+                }, 600);
+            }, 400);
+        }
+
+        // البداية بـ Season
+        initSwiper('season');
     </script>
 </body>
 </html>

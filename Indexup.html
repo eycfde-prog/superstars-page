@@ -18,7 +18,7 @@
             --wheel-border: #1a1a1a;
         }
 
-        /* --- أنيميشن الأيقونات الجديدة --- */
+        /* --- أنيميشن الأيقونات وتوهجها --- */
         @keyframes xboxGlow {
             0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 5px var(--accent-gold)); }
             50% { transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 15px var(--accent-gold)); }
@@ -28,6 +28,10 @@
         @keyframes boltFlash {
             0%, 100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); }
             50% { opacity: 0.7; transform: translateY(-2px) scale(1.1); filter: brightness(1.5); }
+        }
+
+        .wheel-title i {
+            text-shadow: 0 0 15px var(--accent-gold); /* تحسين الـ Glow */
         }
 
         .fa-xbox {
@@ -44,11 +48,36 @@
             margin-right: 10px;
         }
 
-        .wheel-box:hover .wheel-title i {
-            animation-play-state: running;
+        /* --- الأزرار بتأثير Glassmorphism المتقدم --- */
+        .nav-btn {
+            width: 100%; padding: 18px; border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05); /* زجاجي شفاف */
+            color: #fff; font-weight: 600;
+            border: 1px solid rgba(252, 194, 0, 0.3); 
+            backdrop-filter: blur(10px); /* تأثير الضبابية خلف الزجاج */
+            -webkit-backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase; font-family: 'Orbitron';
+            letter-spacing: 1px;
         }
 
-        /* --- باقي التنسيقات الأصلية --- */
+        .nav-btn:hover { 
+            border-color: var(--accent-gold); 
+            transform: translateY(-5px); 
+            background: rgba(252, 194, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 15px var(--gold-glow); 
+        }
+
+        .btn-highlight { 
+            background: var(--accent-gold); 
+            color: #000; 
+            border: none; 
+            box-shadow: 0 0 20px var(--gold-glow); 
+            backdrop-filter: none;
+        }
+
+        /* --- باقي التنسيقات --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
         body {
@@ -96,16 +125,6 @@
             gap: 20px; max-width: 1100px; margin: 0 auto;
         }
 
-        .nav-btn {
-            width: 100%; padding: 18px; border-radius: 4px;
-            background: var(--glass-bg); color: #fff; font-weight: 600;
-            border: 1px solid var(--glass-border); cursor: pointer;
-            transition: 0.4s; text-transform: uppercase; font-family: 'Orbitron';
-        }
-
-        .nav-btn:hover { border-color: var(--accent-gold); transform: translateY(-5px); box-shadow: 0 0 15px var(--gold-glow); }
-        .btn-highlight { background: var(--accent-gold); color: #000; border: none; box-shadow: 0 0 20px var(--gold-glow); }
-
         .wheels-container {
             display: flex; justify-content: center; gap: 40px;
             padding: 60px 5%; flex-wrap: wrap;
@@ -114,7 +133,6 @@
         .wheel-box {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 40px;
             border-radius: 20px;
@@ -144,9 +162,9 @@
             position: absolute; width: 100%; height: 100%;
             border-radius: 50%; border: 10px solid var(--wheel-border);
             outline: 1px solid var(--accent-gold);
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            overflow: hidden; cursor: pointer; background: #000;
+            background: #000;
             animation: slowRotate 40s linear infinite;
+            overflow: hidden;
         }
 
         @keyframes slowRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -319,6 +337,11 @@
                 card.innerText = act;
 
                 const selectFn = () => {
+                    // Haptic Feedback / Vibrate
+                    if (window.navigator && window.navigator.vibrate) {
+                        window.navigator.vibrate(10);
+                    }
+                    
                     container.querySelectorAll('.slice').forEach(s => s.classList.remove('active'));
                     carousel.querySelectorAll('.carousel-card').forEach(c => c.classList.remove('selected'));
                     slice.classList.add('active');
@@ -354,31 +377,4 @@
         const letters = "EYC"; 
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         class LetterParticle {
-            constructor() { this.init(); }
-            init() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.char = letters.charAt(Math.floor(Math.random() * letters.length));
-                this.fontSize = Math.random() * 20 + 15;
-                this.speed = Math.random() * 0.5 + 0.2;
-                this.opacity = Math.random() * 0.3 + 0.1;
-            }
-            update() {
-                this.y -= this.speed;
-                if (this.y < -30) this.y = canvas.height + 30;
-                ctx.fillStyle = `rgba(252, 194, 0, ${this.opacity})`;
-                ctx.font = `900 ${this.fontSize}px Orbitron`;
-                ctx.fillText(this.char, this.x, this.y);
-            }
-        }
-        function createParticles() { particles = Array.from({length: 40}, () => new LetterParticle()); }
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => p.update());
-            requestAnimationFrame(animate);
-        }
-        window.addEventListener('resize', () => { initCanvas(); createParticles(); });
-        initCanvas(); createParticles(); animate();
-    </script>
-</body>
-</html>
+            constructor() { this.init

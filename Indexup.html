@@ -3,226 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Activities | Mission Briefing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>EYC Activity Hub | Interactive Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
         :root {
-            --gold: #D4AF37;
-            --xbox-red: #ff4500;
-            --season-green: #00ff88;
-            --dark-bg: #050505;
-            --glass: rgba(255, 255, 255, 0.03);
+            --gold: #fcc200;
+            --season-color: #00ff88;
+            --xbox-color: #ff4500;
+            --bg: #050505;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--dark-bg); color: white; min-height: 100vh; overflow-x: hidden; }
-
-        .bg-stars {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-            z-index: -1;
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0; overflow: hidden; height: 100vh;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
-        header { text-align: center; margin-bottom: 50px; }
-        header h1 { 
-            font-family: 'Orbitron'; font-size: clamp(1.5rem, 5vw, 2.5rem);
-            letter-spacing: 5px; background: linear-gradient(to right, #fff, var(--gold));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .subtitle { font-family: 'Orbitron'; font-size: 10px; color: var(--gold); letter-spacing: 2px; margin-top: 10px; }
-
-        /* Section Styling */
-        .category-section { margin-bottom: 60px; }
-        .section-title {
-            font-family: 'Orbitron'; font-size: 1.2rem; margin-bottom: 30px;
-            display: flex; align-items: center; gap: 15px;
-        }
-        .section-title::after { content: ""; height: 1px; flex: 1; background: rgba(255,255,255,0.1); }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+        /* Category Toggle Buttons */
+        .category-nav {
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 20px; z-index: 100;
         }
 
-        /* Activity Card */
-        .card {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 20px; padding: 25px;
-            position: relative; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(10px); cursor: pointer;
-            overflow: hidden;
+        .nav-btn {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: #777; padding: 10px 30px; border-radius: 12px;
+            font-family: 'Orbitron'; font-weight: 700; cursor: pointer;
+            transition: 0.4s; backdrop-filter: blur(10px);
         }
 
-        .card:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.07);
+        .nav-btn.active[data-type="season"] { color: var(--season-color); border-color: var(--season-green); box-shadow: 0 0 15px rgba(0,255,136,0.3); background: rgba(0,255,136,0.05); }
+        .nav-btn.active[data-type="xbox"] { color: var(--xbox-color); border-color: var(--xbox-color); box-shadow: 0 0 15px rgba(255,69,0,0.3); background: rgba(255,69,0,0.05); }
+
+        /* Main Containers */
+        .main-wrapper {
+            position: relative; height: 100vh; width: 100%;
+            transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
         }
 
-        .card-code {
-            position: absolute; top: 15px; right: 20px;
-            font-family: 'Orbitron'; font-size: 10px; color: rgba(255,255,255,0.3);
+        .section-container {
+            height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
         }
 
-        .icon-box {
-            width: 60px; height: 60px; border-radius: 15px;
+        /* Swiper / Card Stack */
+        .swiper { width: 100%; padding-top: 50px; padding-bottom: 50px; overflow: visible !important; }
+
+        .swiper-slide {
+            width: 300px; height: 420px;
+            background: rgba(20, 20, 20, 0.95);
+            border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px; box-sizing: border-box;
+            backdrop-filter: blur(20px);
+            transition: border-color 0.3s;
+        }
+
+        .season .swiper-slide { border-bottom: 5px solid var(--season-color); }
+        .xbox .swiper-slide { border-bottom: 5px solid var(--xbox-color); }
+
+        /* Card Content */
+        .icon-wrapper {
+            width: 80px; height: 80px; border-radius: 20px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px; margin-bottom: 20px;
-            transition: 0.3s;
+            font-size: 35px; margin-bottom: 25px;
+            background: rgba(255,255,255,0.03);
         }
+        .season .icon-wrapper { color: var(--season-color); box-shadow: 0 0 20px rgba(0,255,136,0.1); }
+        .xbox .icon-wrapper { color: var(--xbox-color); box-shadow: 0 0 20px rgba(255,69,0,0.1); }
 
-        .card-title { font-family: 'Orbitron'; font-size: 1.1rem; margin-bottom: 10px; color: #fff; }
-        .card-desc { font-size: 0.85rem; color: #aaa; line-height: 1.6; }
+        .activity-name { font-family: 'Orbitron'; font-size: 1.4rem; margin: 0; text-align: center; }
+        .activity-code { font-size: 10px; color: #555; letter-spacing: 2px; margin-bottom: 15px; }
+        .activity-desc { font-size: 0.85rem; color: #aaa; text-align: center; line-height: 1.6; }
 
-        /* Season Style */
-        .season .card:hover { border-color: var(--season-green); box-shadow: 0 10px 30px rgba(0, 255, 136, 0.1); }
-        .season .icon-box { background: rgba(0, 255, 136, 0.1); color: var(--season-green); }
-        
-        /* Xbox Style */
-        .xbox .card:hover { border-color: var(--xbox-red); box-shadow: 0 10px 30px rgba(255, 69, 0, 0.1); }
-        .xbox .icon-box { background: rgba(255, 69, 0, 0.1); color: var(--xbox-red); }
-
-        /* Animations for Icons */
-        .card:hover .fa-ear-listen { animation: pulseEar 1s infinite; }
-        .card:hover .fa-seedling { animation: growSeed 1s infinite; }
-        .card:hover .fa-magnifying-glass { animation: searchZoom 1.5s infinite; }
-        .card:hover .fa-pen-nib { animation: writeFast 0.5s infinite; }
-
-        @keyframes pulseEar { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-        @keyframes growSeed { 0% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        @keyframes searchZoom { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(5px, 5px); } }
-        @keyframes writeFast { 0% { transform: rotate(0); } 50% { transform: rotate(-15deg); } }
-
-        .footer { text-align: center; padding: 40px; color: #444; font-family: 'Orbitron'; font-size: 10px; }
+        /* Instructions */
+        .hint {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            font-size: 10px; color: #444; letter-spacing: 2px; font-family: 'Orbitron';
+        }
     </style>
 </head>
 <body>
 
-    <div class="bg-stars"></div>
-
-    <div class="container">
-        <header>
-            <div class="subtitle">EYC MISSION PROTOCOLS</div>
-            <h1>ACTIVITY ARCHIVE</h1>
-        </header>
-
-        <section class="category-section season">
-            <div class="section-title" style="color: var(--season-green);">
-                <i class="fas fa-leaf"></i> SEASON MISSIONS (S-CODE)
-            </div>
-            <div class="grid">
-                <div class="card">
-                    <span class="card-code">ESGE</span>
-                    <div class="icon-box"><i class="fas fa-ear-listen"></i></div>
-                    <h3 class="card-title">Golden Ear</h3>
-                    <p class="card-desc">Immerse in auditory stories and solve elective challenges with your golden sense.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">ESS</span>
-                    <div class="icon-box"><i class="fas fa-seedling"></i></div>
-                    <h3 class="card-title">Seeds</h3>
-                    <p class="card-desc">Scatter words and watch them grow into powerful narrative landscapes.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">ESL</span>
-                    <div class="icon-box"><i class="fas fa-tag"></i></div>
-                    <h3 class="card-title">Label</h3>
-                    <p class="card-desc">Identify and tag the world. 10 images, 10 names, one perfect mission.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">ESG</span>
-                    <div class="icon-box"><i class="fas fa-magnifying-glass"></i></div>
-                    <h3 class="card-title">Grammar Challenge</h3>
-                    <p class="card-desc">Scrutinize the syntax. Detect the hidden errors between two linguistic paths.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">ESV</span>
-                    <div class="icon-box"><i class="fas fa-eye"></i></div>
-                    <h3 class="card-title">Vivid</h3>
-                    <p class="card-desc">Step into the surreal. Describe the unimaginable with artistic precision.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="category-section xbox">
-            <div class="section-title" style="color: var(--xbox-red);">
-                <i class="fas fa-bolt"></i> XBOX ELITE (X-CODE)
-            </div>
-            <div class="grid">
-                <div class="card">
-                    <span class="card-code">EXA</span>
-                    <div class="icon-box"><i class="fas fa-clone"></i></div>
-                    <h3 class="card-title">Alike X</h3>
-                    <p class="card-desc">Mirror words, different worlds. Master the art of homophones under pressure.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">EXV</span>
-                    <div class="icon-box"><i class="fas fa-stopwatch"></i></div>
-                    <h3 class="card-title">Vivid X</h3>
-                    <p class="card-desc">Freeze time. Capture every atom of a moment in a high-octane visual description.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">EXS</span>
-                    <div class="icon-box"><i class="fas fa-puzzle-piece"></i></div>
-                    <h3 class="card-title">Seeds X</h3>
-                    <p class="card-desc">Complex connections. Weave 6 intricate sentences into one unbreakable story.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">EXD</span>
-                    <div class="icon-box"><i class="fas fa-pen-nib"></i></div>
-                    <h3 class="card-title">Dictation X</h3>
-                    <p class="card-desc">Linguistic lightning. Transcribe complex lexicon with absolute speed and accuracy.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">EXGE</span>
-                    <div class="icon-box"><i class="fas fa-filter"></i></div>
-                    <h3 class="card-title">Golden Ear X</h3>
-                    <p class="card-desc">The ultimate distillation. Compress giant articles into three golden sentences.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">ESXEL</span>
-                    <div class="icon-box"><i class="fas fa-microphone-lines"></i></div>
-                    <h3 class="card-title">Elmagazine X</h3>
-                    <p class="card-desc">Broadcast your brilliance. Professional audio recording for elite articles.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">EXG</span>
-                    <div class="icon-box"><i class="fas fa-network-wired"></i></div>
-                    <h3 class="card-title">Grammar X</h3>
-                    <p class="card-desc">The Hunter's Net. Extract precise grammatical structures from complex data.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">EXFF</span>
-                    <div class="icon-box"><i class="fas fa-mask"></i></div>
-                    <h3 class="card-title">Figurative Focus X</h3>
-                    <p class="card-desc">Beyond the literal. Unmask the hidden meanings of idioms and metaphors.</p>
-                </div>
-                <div class="card">
-                    <span class="card-code">EXL</span>
-                    <div class="icon-box"><i class="fas fa-industry"></i></div>
-                    <h3 class="card-title">Label X</h3>
-                    <p class="card-desc">The Verb Factory. Transform basic actions into complex grammatical machinery.</p>
-                </div>
-            </div>
-        </section>
-
-        <footer class="footer">
-            &copy; 2026 EYC ACADEMY // CLASSIFIED CONTENT
-        </footer>
+    <div class="category-nav">
+        <button class="nav-btn active" data-type="season" onclick="switchCategory('season')">SEASON</button>
+        <button class="nav-btn" data-type="xbox" onclick="switchCategory('xbox')">XBOX ELITE</button>
     </div>
 
+    <div class="main-wrapper" id="master-wrapper">
+        <section class="section-container season" id="season-sec">
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <span class="activity-code">ESGE</span>
+                        <div class="icon-wrapper"><i class="fas fa-ear-listen"></i></div>
+                        <h3 class="activity-name">Golden Ear</h3>
+                        <p class="activity-desc">Listen carefully. Solve stories through sound waves.</p>
+                    </div>
+                    <div class="swiper-slide">
+                        <span class="activity-code">ESS</span>
+                        <div class="icon-wrapper"><i class="fas fa-seedling"></i></div>
+                        <h3 class="activity-name">Seeds</h3>
+                        <p class="activity-desc">Plant words, harvest stories. Creative writing flow.</p>
+                    </div>
+                    <div class="swiper-slide">
+                        <span class="activity-code">ESL</span>
+                        <div class="icon-wrapper"><i class="fas fa-tag"></i></div>
+                        <h3 class="activity-name">Label</h3>
+                        <p class="activity-desc">Tag 10 images. Precision in naming is key.</p>
+                    </div>
+                    <div class="swiper-slide">
+                        <span class="activity-code">ESG</span>
+                        <div class="icon-wrapper"><i class="fas fa-magnifying-glass"></i></div>
+                        <h3 class="activity-name">Grammar</h3>
+                        <p class="activity-desc">The linguistic lens. Spot the error, fix the path.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-container xbox" id="xbox-sec">
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <span class="activity-code">EXA</span>
+                        <div class="icon-wrapper"><i class="fas fa-clone"></i></div>
+                        <h3 class="activity-name">Alike X</h3>
+                        <p class="activity-desc">Homophone challenge. Double the words, double the focus.</p>
+                    </div>
+                    <div class="swiper-slide">
+                        <span class="activity-code">EXV</span>
+                        <div class="icon-wrapper"><i class="fas fa-stopwatch"></i></div>
+                        <h3 class="activity-name">Vivid X</h3>
+                        <p class="activity-desc">Frozen moment description. High detail execution.</p>
+                    </div>
+                    <div class="swiper-slide">
+                        <span class="activity-code">EXD</span>
+                        <div class="icon-wrapper"><i class="fas fa-pen-nib"></i></div>
+                        <h3 class="activity-name">Dictation X</h3>
+                        <p class="activity-desc">Lightning speed writing. No room for errors.</p>
+                    </div>
+                    <div class="swiper-slide">
+                        <span class="activity-code">EXFF</span>
+                        <div class="icon-wrapper"><i class="fas fa-mask"></i></div>
+                        <h3 class="activity-name">Figurative X</h3>
+                        <p class="activity-desc">Unmask the idiom. Master the metaphorical realm.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="hint">SWIPE LEFT/RIGHT TO EXPLORE</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // إضافة صوت أو تأثير بسيط عند الضغط (اختياري)
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', () => {
-                card.style.transform = "scale(0.95)";
-                setTimeout(() => { card.style.transform = "translateY(-10px) scale(1)"; }, 100);
-            });
-        });
+        // Initialize Swipers
+        const swiperConfig = {
+            effect: "creative",
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: "auto",
+            creativeEffect: {
+                prev: {
+                    shadow: true,
+                    translate: ["-120%", 0, -500],
+                    rotate: [0, 0, -20],
+                    opacity: 0,
+                },
+                next: {
+                    translate: ["120%", 0, -500],
+                    rotate: [0, 0, 20],
+                    opacity: 0,
+                },
+            },
+            speed: 600,
+        };
+
+        const swipers = new Swiper(".mySwiper", swiperConfig);
+
+        // Vertical Switching Logic
+        function switchCategory(type) {
+            const wrapper = document.getElementById('master-wrapper');
+            const btns = document.querySelectorAll('.nav-btn');
+            
+            btns.forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+
+            if(type === 'xbox') {
+                wrapper.style.transform = 'translateY(-100vh)';
+            } else {
+                wrapper.style.transform = 'translateY(0)';
+            }
+        }
     </script>
 </body>
 </html>

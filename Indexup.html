@@ -27,6 +27,37 @@
             overflow-x: hidden;
         }
 
+        /* --- Animations for Icons --- */
+        @keyframes xboxGlow {
+            0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 5px var(--accent-gold)); }
+            50% { transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 15px var(--accent-gold)); }
+            100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 5px var(--accent-gold)); }
+        }
+
+        @keyframes boltFlash {
+            0%, 100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); }
+            50% { opacity: 0.7; transform: translateY(-2px) scale(1.1); filter: brightness(1.5); }
+        }
+
+        .fa-xbox {
+            display: inline-block;
+            animation: xboxGlow 3s ease-in-out infinite;
+            color: #107c10; 
+            margin-right: 10px;
+        }
+
+        .fa-bolt {
+            display: inline-block;
+            animation: boltFlash 1s ease-in-out infinite;
+            color: var(--accent-gold);
+            margin-right: 10px;
+        }
+
+        .wheel-box:hover .wheel-title i {
+            animation-play-state: running;
+        }
+
+        /* --- Existing Styles --- */
         #letter-canvas {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -75,7 +106,6 @@
         .nav-btn:hover { border-color: var(--accent-gold); transform: translateY(-5px); box-shadow: 0 0 15px var(--gold-glow); }
         .btn-highlight { background: var(--accent-gold); color: #000; border: none; box-shadow: 0 0 20px var(--gold-glow); }
 
-        /* --- Activity Section with Glassmorphism --- */
         .wheels-container {
             display: flex; justify-content: center; gap: 40px;
             padding: 60px 5%; flex-wrap: wrap;
@@ -102,6 +132,7 @@
         .wheel-title {
             font-family: 'Orbitron'; color: var(--accent-gold);
             margin-bottom: 30px; letter-spacing: 4px; font-size: 1.4rem;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .wheel-wrapper {
@@ -134,7 +165,6 @@
         .slice:nth-child(odd) { background: #0a0a0a; }
         .slice:nth-child(even) { background: #050505; }
 
-        /* --- Active Slice Pulse Animation --- */
         .slice.active { 
             background: var(--accent-gold) !important; 
             z-index: 10;
@@ -157,9 +187,8 @@
 
         .go-btn:hover { background: var(--accent-gold); color: #000; transform: scale(1.1); }
 
-        /* --- Mobile Carousel Logic --- */
         @media (max-width: 768px) {
-            .wheel-wrapper { display: none; } /* Hide wheel on small screens */
+            .wheel-wrapper { display: none; }
             .mobile-carousel {
                 display: flex !important;
                 overflow-x: auto;
@@ -234,26 +263,22 @@
     </header>
 
     <section class="wheels-container">
-        <!-- Xbox Box -->
         <div class="wheel-box" id="xboxBox">
             <h3 class="wheel-title"><i class="fab fa-xbox"></i> XBOX LEAGUE</h3>
             <div class="wheel-wrapper">
                 <div class="activity-wheel" id="xboxWheel"></div>
                 <div class="go-btn" onclick="goToActivity('xbox')">GO</div>
             </div>
-            <!-- Mobile View -->
             <div class="mobile-carousel" id="xboxCarousel"></div>
             <button class="go-btn-mobile" onclick="goToActivity('xbox')">LAUNCH ACTIVITY</button>
         </div>
 
-        <!-- Season Box -->
         <div class="wheel-box" id="seasonBox">
             <h3 class="wheel-title"><i class="fas fa-bolt"></i> SEASON RANK</h3>
             <div class="wheel-wrapper">
                 <div class="activity-wheel" id="seasonWheel"></div>
                 <div class="go-btn" onclick="goToActivity('season')">GO</div>
             </div>
-            <!-- Mobile View -->
             <div class="mobile-carousel" id="seasonCarousel"></div>
             <button class="go-btn-mobile" onclick="goToActivity('season')">LAUNCH ACTIVITY</button>
         </div>
@@ -280,7 +305,6 @@
             const angleStep = 360 / total;
 
             activities.forEach((act, i) => {
-                // Wheel Slice
                 const slice = document.createElement('div');
                 slice.className = 'slice';
                 slice.style.transform = `rotate(${i * angleStep}deg)`;
@@ -290,7 +314,6 @@
                 label.innerText = act;
                 slice.appendChild(label);
                 
-                // Carousel Card
                 const card = document.createElement('div');
                 card.className = 'carousel-card';
                 card.innerText = act;
@@ -325,7 +348,6 @@
             window.location.href = `${activity.replace(/\s+/g, '').toLowerCase()}.html`;
         }
 
-        // --- EYC Letters Background ---
         const canvas = document.getElementById('letter-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

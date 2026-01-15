@@ -12,8 +12,8 @@
             --primary-bg: #050505;
             --accent-gold: #fcc200;
             --gold-glow: rgba(252, 194, 0, 0.4);
-            --purple-main: #8e44ad;
-            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(252, 194, 0, 0.2);
             --text-color: #ffffff;
             --wheel-border: #1a1a1a;
         }
@@ -54,35 +54,55 @@
 
         .hero { text-align: center; padding: 60px 20px 40px; }
         .hero h1 {
-            font-family: 'Orbitron'; font-size: clamp(2.2rem, 8vw, 4.5rem);
+            font-family: 'Orbitron'; font-size: clamp(2.5rem, 8vw, 4.5rem);
+            margin-bottom: 20px; line-height: 1.1;
             background: linear-gradient(to bottom, #fff 20%, var(--accent-gold) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; max-width: 1000px; margin: 0 auto; padding: 0 20px; }
-        .nav-btn {
-            width: 100%; padding: 15px; border-radius: 8px;
-            background: var(--glass-bg); color: #fff; font-weight: 600;
-            border: 1px solid rgba(252, 194, 0, 0.2); cursor: pointer;
-            transition: 0.3s; font-family: 'Orbitron'; font-size: 0.8rem;
+        .btn-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; max-width: 1100px; margin: 0 auto;
         }
-        .nav-btn:hover { border-color: var(--accent-gold); background: rgba(252, 194, 0, 0.1); transform: translateY(-3px); }
+
+        .nav-btn {
+            width: 100%; padding: 18px; border-radius: 4px;
+            background: var(--glass-bg); color: #fff; font-weight: 600;
+            border: 1px solid var(--glass-border); cursor: pointer;
+            transition: 0.4s; text-transform: uppercase; font-family: 'Orbitron';
+        }
+
+        .nav-btn:hover { border-color: var(--accent-gold); transform: translateY(-5px); box-shadow: 0 0 15px var(--gold-glow); }
         .btn-highlight { background: var(--accent-gold); color: #000; border: none; box-shadow: 0 0 20px var(--gold-glow); }
 
-        /* --- Glassmorphism Wheel Box --- */
-        .wheels-container { display: flex; justify-content: center; gap: 30px; padding: 50px 5%; flex-wrap: wrap; }
-        
-        .wheel-box { 
-            text-align: center; 
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.03);
+        /* --- Activity Section with Glassmorphism --- */
+        .wheels-container {
+            display: flex; justify-content: center; gap: 40px;
+            padding: 60px 5%; flex-wrap: wrap;
+        }
+
+        .wheel-box {
+            background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.5s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .wheel-box:hover {
+            border-color: var(--glass-border);
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.04);
         }
         
-        .wheel-title { font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 30px; letter-spacing: 3px; }
+        .wheel-title {
+            font-family: 'Orbitron'; color: var(--accent-gold);
+            margin-bottom: 30px; letter-spacing: 4px; font-size: 1.4rem;
+        }
 
         .wheel-wrapper {
             position: relative; width: 400px; height: 400px;
@@ -93,21 +113,38 @@
             position: absolute; width: 100%; height: 100%;
             border-radius: 50%; border: 10px solid var(--wheel-border);
             outline: 1px solid var(--accent-gold);
-            background: #000; animation: slowRotate 40s linear infinite;
-            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            overflow: hidden; cursor: pointer; background: #000;
+            animation: slowRotate 40s linear infinite;
         }
 
         @keyframes slowRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+        .slice {
+            position: absolute; width: 100%; height: 100%;
+            transform-origin: 50% 50%; display: flex; justify-content: center;
+            transition: 0.3s;
+        }
+
+        .slice span {
+            font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold);
+            margin-top: 40px; transform: rotate(-90deg); white-space: nowrap;
+        }
+
+        .slice:nth-child(odd) { background: #0a0a0a; }
+        .slice:nth-child(even) { background: #050505; }
+
         /* --- Active Slice Pulse Animation --- */
         .slice.active { 
-            background: rgba(252, 194, 0, 0.4) !important; 
-            z-index: 5;
-            animation: goldPulse 1.5s infinite alternate;
+            background: var(--accent-gold) !important; 
+            z-index: 10;
+            animation: pulseFlash 1.5s infinite alternate;
         }
-        @keyframes goldPulse {
-            0% { box-shadow: inset 0 0 20px rgba(252, 194, 0, 0.2); }
-            100% { box-shadow: inset 0 0 50px rgba(252, 194, 0, 0.6); }
+        .slice.active span { color: #000; }
+
+        @keyframes pulseFlash {
+            0% { box-shadow: inset 0 0 20px rgba(255,255,255,0.5); filter: brightness(1); }
+            100% { box-shadow: inset 0 0 50px rgba(255,255,255,0.8); filter: brightness(1.5); }
         }
 
         .go-btn {
@@ -117,64 +154,57 @@
             z-index: 100; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 0 30px var(--gold-glow); cursor: pointer; transition: 0.3s;
         }
+
         .go-btn:hover { background: var(--accent-gold); color: #000; transform: scale(1.1); }
 
-        .slice {
-            position: absolute; width: 100%; height: 100%; transform-origin: 50% 50%;
-            display: flex; align-items: flex-start; justify-content: center;
-            border-right: 1px solid rgba(252, 194, 0, 0.1); transition: 0.3s;
-        }
-        .slice span {
-            font-family: 'Orbitron'; font-weight: 700; color: var(--accent-gold);
-            margin-top: 45px; transform: rotate(-90deg); white-space: nowrap; font-size: 0.8rem;
-        }
-        .slice:nth-child(odd) { background: #0a0a0a; }
-        .slice:nth-child(even) { background: #050505; }
-
-        /* --- Mobile Carousel Style --- */
+        /* --- Mobile Carousel Logic --- */
         @media (max-width: 768px) {
-            .wheels-container { flex-direction: column; align-items: center; padding: 20px 0; }
-            .wheel-wrapper { display: none; } 
-            
-            /* تم تعديل العرض والـ margin هنا */
-            .wheel-box { width: 95%; padding: 20px 10px; margin-bottom: 20px; overflow: hidden; }
-
+            .wheel-wrapper { display: none; } /* Hide wheel on small screens */
             .mobile-carousel {
                 display: flex !important;
                 overflow-x: auto;
-                gap: 12px;
-                padding: 10px 20px;
-                width: 100%; /* تغيير من 100vw لضمان البقاء داخل الصندوق */
+                gap: 15px;
+                padding: 20px 0;
                 scroll-snap-type: x mandatory;
                 scrollbar-width: none;
-                -webkit-overflow-scrolling: touch;
             }
             .mobile-carousel::-webkit-scrollbar { display: none; }
-
-            .carousel-item {
-                flex: 0 0 80%; /* زيادة العرض قليلاً لتجربة مستخدم أفضل */
+            .carousel-card {
+                flex: 0 0 160px;
                 background: var(--glass-bg);
-                border: 2px solid rgba(252, 194, 0, 0.3);
+                border: 1px solid var(--glass-border);
                 padding: 20px;
-                border-radius: 15px;
-                text-align: center;
+                border-radius: 12px;
                 scroll-snap-align: center;
+                text-align: center;
                 font-family: 'Orbitron';
-                font-weight: bold;
+                font-size: 0.8rem;
                 color: var(--accent-gold);
-                text-transform: uppercase;
                 transition: 0.3s;
             }
-            .carousel-item.active {
+            .carousel-card.selected {
                 background: var(--accent-gold);
                 color: #000;
-                border-color: var(--accent-gold);
                 box-shadow: 0 0 15px var(--gold-glow);
+            }
+            .wheel-box { width: 100%; padding: 20px; }
+            .go-btn-mobile {
+                display: block !important;
+                margin: 20px auto 0;
+                padding: 12px 40px;
+                background: none;
+                border: 2px solid var(--accent-gold);
+                color: var(--accent-gold);
+                font-family: 'Orbitron';
+                border-radius: 30px;
             }
         }
 
-        .mobile-carousel { display: none; }
-        footer { padding: 40px; text-align: center; background: #000; border-top: 1px solid rgba(252,194,0,0.1); }
+        .mobile-carousel, .go-btn-mobile { display: none; }
+
+        footer { padding: 60px 5%; text-align: center; background: #000; border-top: 1px solid var(--glass-border); }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
     </style>
 </head>
 <body>
@@ -183,132 +213,150 @@
     <canvas id="letter-canvas"></canvas>
 
     <nav>
-        <a href="#" class="logo-wrapper">
-            <img src="assets/logo.png" alt="Logo" class="main-logo">
+        <a href="index.html" class="logo-wrapper">
+            <img src="assets/logo.png" alt="EYC Logo" class="main-logo">
             <div class="logo-text">EYC Superstars</div>
         </a>
-        <i class="fas fa-bars fa-2x" style="color: var(--accent-gold)"></i>
+        <div style="color: var(--accent-gold); cursor: pointer;"><i class="fas fa-bars fa-2x"></i></div>
     </nav>
 
     <header class="hero">
-        <h1>Beyond Study Level</h1>
+        <div style="margin-bottom: 20px; color: var(--accent-gold); font-weight: bold; letter-spacing: 8px; font-size: 0.9rem; font-family: 'Orbitron';">ELITE ACADEMY</div>
+        <h1>Beyond Study <br>Level</h1>
+        <p style="margin-bottom: 50px; opacity: 0.7; max-width: 600px; margin-left: auto; margin-right: auto;">Your journey to linguistic mastery starts here.</p>
+        
         <div class="btn-grid">
             <button class="nav-btn btn-highlight">Create Profile</button>
-            <button class="nav-btn">Global Ranks</button>
-            <button class="nav-btn">Your Guide</button>
+            <a href="Ranks.html"><button class="nav-btn">Global Ranks</button></a>
+            <a href="Guides.html"><button class="nav-btn">Your Guide</button></a>
+            <a href="myprofile.html"><button class="nav-btn">My Profile</button></a>
         </div>
     </header>
 
     <section class="wheels-container">
-        <div class="wheel-box" id="xboxContainer">
+        <!-- Xbox Box -->
+        <div class="wheel-box" id="xboxBox">
             <h3 class="wheel-title"><i class="fab fa-xbox"></i> XBOX LEAGUE</h3>
             <div class="wheel-wrapper">
                 <div class="activity-wheel" id="xboxWheel"></div>
                 <div class="go-btn" onclick="goToActivity('xbox')">GO</div>
             </div>
-            <div class="mobile-carousel" id="xboxMobile"></div>
+            <!-- Mobile View -->
+            <div class="mobile-carousel" id="xboxCarousel"></div>
+            <button class="go-btn-mobile" onclick="goToActivity('xbox')">LAUNCH ACTIVITY</button>
         </div>
 
-        <div class="wheel-box" id="seasonContainer">
+        <!-- Season Box -->
+        <div class="wheel-box" id="seasonBox">
             <h3 class="wheel-title"><i class="fas fa-bolt"></i> SEASON RANK</h3>
             <div class="wheel-wrapper">
                 <div class="activity-wheel" id="seasonWheel"></div>
                 <div class="go-btn" onclick="goToActivity('season')">GO</div>
             </div>
-            <div class="mobile-carousel" id="seasonMobile"></div>
+            <!-- Mobile View -->
+            <div class="mobile-carousel" id="seasonCarousel"></div>
+            <button class="go-btn-mobile" onclick="goToActivity('season')">LAUNCH ACTIVITY</button>
         </div>
     </section>
 
     <footer>
-        <div style="color: var(--accent-gold); font-family: 'Orbitron';">EYC ACADEMY © 2026</div>
+        <img src="assets/logo.png" alt="EYC Logo" style="height: 40px; margin-bottom: 15px;">
+        <div style="color: var(--accent-gold); font-family: 'Orbitron';">&copy; <span id="year"></span> EYC ACADEMY</div>
     </footer>
 
     <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
         const xboxActivities = ["Vivid X", "Label X", "Alike X", "Elmagazine X", "Dictation X", "SSS X", "Figurative X", "Seeds X", "Golden Ear X", "Grammar X"];
         const seasonActivities = ["Grammar", "Vivid", "Seeds", "Alike", "Label", "Golden Ear"];
 
         let selectedXbox = "";
         let selectedSeason = "";
 
-        function initWheels() {
-            createWheel('xboxWheel', xboxActivities, 'xbox');
-            createWheel('seasonWheel', seasonActivities, 'season');
-            createMobileCarousel('xboxMobile', xboxActivities, 'xbox');
-            createMobileCarousel('seasonMobile', seasonActivities, 'season');
-        }
+        function setupActivity(containerId, carouselId, activities, type) {
+            const container = document.getElementById(containerId);
+            const carousel = document.getElementById(carouselId);
+            const total = activities.length;
+            const angleStep = 360 / total;
 
-        function createWheel(id, activities, type) {
-            const container = document.getElementById(id);
-            const angleStep = 360 / activities.length;
             activities.forEach((act, i) => {
+                // Wheel Slice
                 const slice = document.createElement('div');
                 slice.className = 'slice';
                 slice.style.transform = `rotate(${i * angleStep}deg)`;
                 const clipVal = 50 + (50 * Math.tan((angleStep / 2) * Math.PI / 180));
                 slice.style.clipPath = `polygon(50% 50%, ${100 - clipVal}% 0%, ${clipVal}% 0%)`;
-                slice.innerHTML = `<span>${act}</span>`;
-                slice.onclick = () => {
+                const label = document.createElement('span');
+                label.innerText = act;
+                slice.appendChild(label);
+                
+                // Carousel Card
+                const card = document.createElement('div');
+                card.className = 'carousel-card';
+                card.innerText = act;
+
+                const selectFn = () => {
                     container.querySelectorAll('.slice').forEach(s => s.classList.remove('active'));
+                    carousel.querySelectorAll('.carousel-card').forEach(c => c.classList.remove('selected'));
                     slice.classList.add('active');
+                    card.classList.add('selected');
                     if(type === 'xbox') selectedXbox = act; else selectedSeason = act;
                 };
+
+                slice.onclick = selectFn;
+                card.onclick = selectFn;
+
                 container.appendChild(slice);
+                carousel.appendChild(card);
             });
         }
 
-        function createMobileCarousel(id, activities, type) {
-            const container = document.getElementById(id);
-            activities.forEach(act => {
-                const item = document.createElement('div');
-                item.className = 'carousel-item';
-                item.innerText = act;
-                item.onclick = () => {
-                    container.querySelectorAll('.carousel-item').forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    if(type === 'xbox') selectedXbox = act; else selectedSeason = act;
-                };
-                container.appendChild(item);
-            });
-        }
+        setupActivity('xboxWheel', 'xboxCarousel', xboxActivities, 'xbox');
+        setupActivity('seasonWheel', 'seasonCarousel', seasonActivities, 'season');
 
         function goToActivity(type) {
-            const act = type === 'xbox' ? selectedXbox : selectedSeason;
-            if(!act) alert("Please select an activity first!");
-            else window.location.href = `${act.replace(/\s+/g, '').toLowerCase()}.html`;
+            const activity = type === 'xbox' ? selectedXbox : selectedSeason;
+            if(!activity) {
+                const box = document.getElementById(`${type}Box`);
+                box.style.animation = "shake 0.5s";
+                setTimeout(() => box.style.animation = "", 500);
+                return;
+            }
+            window.location.href = `${activity.replace(/\s+/g, '').toLowerCase()}.html`;
         }
 
-        // --- Letter Background Animation ---
+        // --- EYC Letters Background ---
         const canvas = document.getElementById('letter-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
+        const letters = "EYC"; 
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        class Particle {
+        class LetterParticle {
             constructor() { this.init(); }
             init() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.char = "EYC"[Math.floor(Math.random()*3)];
+                this.char = letters.charAt(Math.floor(Math.random() * letters.length));
+                this.fontSize = Math.random() * 20 + 15;
                 this.speed = Math.random() * 0.5 + 0.2;
-                this.opacity = Math.random() * 0.3;
+                this.opacity = Math.random() * 0.3 + 0.1;
             }
-            draw() {
-                ctx.fillStyle = `rgba(252,194,0,${this.opacity})`;
-                ctx.font = "20px Orbitron";
-                ctx.fillText(this.char, this.x, this.y);
+            update() {
                 this.y -= this.speed;
-                if(this.y < 0) this.y = canvas.height;
+                if (this.y < -30) this.y = canvas.height + 30;
+                ctx.fillStyle = `rgba(252, 194, 0, ${this.opacity})`;
+                ctx.font = `900 ${this.fontSize}px Orbitron`;
+                ctx.fillText(this.char, this.x, this.y);
             }
         }
+        function createParticles() { particles = Array.from({length: 40}, () => new LetterParticle()); }
         function animate() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            particles.forEach(p => p.draw());
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => p.update());
             requestAnimationFrame(animate);
         }
-        initCanvas();
-        for(let i=0; i<50; i++) particles.push(new Particle());
-        animate();
-        initWheels();
+        window.addEventListener('resize', () => { initCanvas(); createParticles(); });
+        initCanvas(); createParticles(); animate();
     </script>
 </body>
 </html>
-

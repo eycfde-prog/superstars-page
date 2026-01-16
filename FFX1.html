@@ -3,233 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Figurative Focus X</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Figurative Focus X | EYC Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Montserrat:wght@300;400;600&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --gold-primary: #d4af37;
+            --gold: #d4af37;
             --gold-light: #f1c40f;
-            --gold-dark: #996515;
-            --bg-black: #0a0a0a;
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
         }
 
-        body {
-            background-color: var(--bg-black);
-            color: #e0e0e0;
-            font-family: 'Montserrat', sans-serif;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 20%);
-            min-height: 100vh;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { background: var(--bg-dark); color: white; overflow-x: hidden; min-height: 100vh; }
+
+        /* Background Animation */
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.2; }
+
+        /* Login Flash Overlay */
+        #login-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000;
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px);
+        }
+        .login-card {
+            background: var(--glass); border: 2px solid var(--gold); padding: 40px;
+            border-radius: 30px; text-align: center; width: 90%; max-width: 450px;
+        }
+        .login-card input {
+            width: 100%; padding: 15px; margin: 25px 0; background: rgba(255,255,255,0.05);
+            border: 1px solid #444; color: white; border-radius: 12px; text-align: center;
         }
 
-        .cinzel { font-family: 'Cinzel', serif; }
-        .gold-text-gradient {
-            background: linear-gradient(to bottom, #fff7ad 0%, #d4af37 50%, #996515 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* Banner */
+        .rank-header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(212,175,55,0.1); }
+        .rank-header h1 { font-family: 'Cinzel', serif; font-size: 1.6rem; background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
+
+        /* Status Bar */
+        .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(255,255,255,0.02); }
+        .token-display { font-family: 'Orbitron'; color: var(--gold); font-size: 13px; font-weight: 700; }
+        .tutorial-btn { background: linear-gradient(45deg, #8e44ad, #2980b9); color: white; border: none; padding: 8px 18px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Cairo'; }
+
+        /* Mission Container */
+        .mission-container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+
+        /* Level Tabs */
+        .level-tabs { display: flex; gap: 8px; margin-bottom: 25px; }
+        .tab { flex: 1; padding: 12px; text-align: center; background: var(--glass); border: 1px solid #333; border-radius: 15px; cursor: pointer; font-family: 'Cinzel'; font-size: 10px; transition: 0.3s; color: #777; }
+        .tab.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
+
+        /* Dialogue Section */
+        .dialogue-card { background: var(--glass); border-radius: 25px; padding: 30px; border: 1px solid rgba(255,255,255,0.05); }
+        .dialogue-line { border-left: 2px solid var(--gold); padding: 15px 20px; margin-bottom: 15px; background: rgba(255,255,255,0.02); border-radius: 0 15px 15px 0; transition: 0.3s; }
+        .dialogue-line:hover { background: rgba(212, 175, 55, 0.05); transform: translateX(5px); }
+        .speaker { font-family: 'Cinzel'; color: var(--gold); font-size: 11px; font-weight: 900; margin-bottom: 5px; display: block; letter-spacing: 2px; }
+        .text { font-style: italic; color: #ccc; line-height: 1.6; }
+
+        /* Target Phrase Box */
+        .target-box { background: rgba(212, 175, 55, 0.1); border: 2px dashed var(--gold); padding: 25px; border-radius: 20px; text-align: center; margin: 30px 0; }
+        .target-box h4 { font-family: 'Cinzel'; font-size: 10px; color: var(--gold); margin-bottom: 10px; letter-spacing: 3px; }
+        .target-phrase { font-family: 'Cinzel'; font-size: 28px; font-weight: 900; background: linear-gradient(to right, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Analysis Area */
+        .analysis-area { margin-top: 30px; }
+        textarea { width: 100%; height: 120px; background: rgba(0,0,0,0.5); border: 1px solid #333; border-radius: 15px; padding: 20px; color: white; margin-top: 15px; resize: none; transition: 0.3s; }
+        textarea:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 15px rgba(212, 175, 55, 0.1); }
+
+        .btn-submit {
+            width: 100%; padding: 18px; border-radius: 15px; font-family: 'Cinzel'; font-weight: 900;
+            margin-top: 20px; border: none; cursor: pointer; transition: 0.5s;
+            background: linear-gradient(135deg, #996515 0%, #d4af37 50%, #f1c40f 100%); color: black;
         }
-
-        .border-gold { border: 1px solid rgba(212, 175, 55, 0.4); }
-        .gold-gradient-bg { background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary), var(--gold-light)); }
-
-        /* Login Section Styles */
-        #loginSection {
-            backdrop-filter: blur(10px);
-            background: rgba(20, 20, 20, 0.8);
-        }
-
-        .input-gold {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: white;
-            transition: all 0.4s;
-        }
-
-        .input-gold:focus {
-            border-color: var(--gold-light);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-            outline: none;
-        }
-
-        .btn-gold {
-            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-primary) 50%, var(--gold-light) 100%);
-            color: black;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.3s;
-        }
-
-        .btn-gold:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-        }
-
-        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Dialogue Styles */
-        .dialogue-container { position: relative; padding-left: 20px; }
-        .dialogue-container::before {
-            content: '';
-            position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
-            background: linear-gradient(to bottom, transparent, var(--gold-primary), transparent);
-        }
-
-        .speech-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .speech-card:hover {
-            background: rgba(212, 175, 55, 0.05);
-            border-left: 3px solid var(--gold-primary);
-            transform: translateX(10px);
-        }
-
-        .speaker-label {
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            color: var(--gold-primary);
-            text-transform: uppercase;
-            font-weight: 900;
-        }
-
-        .figurative-box {
-            background: rgba(212, 175, 55, 0.1);
-            border: 2px dashed var(--gold-primary);
-        }
-
-        .hidden-section { display: none; }
+        .btn-submit:disabled { opacity: 0.5; filter: grayscale(1); }
     </style>
 </head>
-<body class="flex flex-col items-center py-10 px-4">
+<body>
 
-    <!-- Header -->
-    <header class="text-center mb-12">
-        <h1 class="cinzel text-4xl md:text-6xl font-black gold-text-gradient mb-2">FIGURATIVE FOCUS X</h1>
-        <p class="text-gray-500 tracking-[0.3em] uppercase text-xs font-bold">Unmask the Literal - Reveal the Figurative</p>
-        <div class="w-32 h-1 gold-gradient-bg mx-auto mt-4"></div>
-    </header>
+    <canvas id="bg-canvas"></canvas>
 
-    <!-- 1. Login Section -->
-    <div id="loginSection" class="w-full max-w-md p-8 rounded-3xl border-gold text-center mb-10">
-        <h2 class="cinzel text-gold-primary text-xl mb-6">IDENTIFICATION REQUIRED</h2>
-        <input type="text" id="emailInput" class="input-gold w-full py-4 px-6 rounded-xl mb-4 text-center" placeholder="Enter Email or Student Code">
-        <div id="errorMessage" class="mb-4 text-red-500 text-xs font-bold hidden bg-red-900/10 p-2 border border-red-500/20 rounded"></div>
-        <button onclick="handleLogin()" id="loginBtn" class="btn-gold w-full py-4 rounded-xl">Initialize Session</button>
+    <div id="login-overlay">
+        <div class="login-card">
+            <i class="fas fa-mask" style="font-size: 50px; color: var(--gold);"></i>
+            <h2 style="font-family: 'Cinzel'; margin-top: 20px; letter-spacing: 3px;">FIGURATIVE FOCUS</h2>
+            <p style="font-size: 11px; opacity: 0.5; margin-top: 10px; font-family: 'Montserrat';">INITIALIZE YOUR SESSION</p>
+            <input type="text" id="emailInput" placeholder="Email or Student Code">
+            <button onclick="handleLogin()" style="background: var(--gold); width: 100%; padding: 15px; border-radius: 12px; border: none; font-family: 'Cinzel'; font-weight: 900; cursor: pointer;">VERIFY IDENTITY</button>
+            <p id="errorMsg" style="color: #ff3c3c; font-size: 11px; margin-top: 15px; display: none;">ACCESS DENIED!</p>
+        </div>
     </div>
 
-    <!-- 2. Main Activity Section (Hidden Initially) -->
-    <main id="activitySection" class="w-full max-w-3xl hidden-section">
-        
-        <!-- Welcome User Info -->
-        <div class="p-4 rounded-xl border-gold mb-8 flex justify-between items-center bg-white/5">
-            <div>
-                <p class="text-gray-500 text-[10px] uppercase tracking-widest">Authorized Student</p>
-                <p id="displayEmail" class="text-gold-primary font-bold">---</p>
-            </div>
-            <div class="text-right">
-                <p class="text-gray-500 text-[10px] uppercase tracking-widest">Access Status</p>
-                <p class="text-green-500 font-bold uppercase text-xs">Verified</p>
-            </div>
+    <header class="rank-header">
+        <h1>EYC ACADEMY</h1>
+    </header>
+
+    <div class="status-bar">
+        <div class="token-display">
+            <i class="fas fa-gem"></i> REWARD: <span id="reward-amount">150</span> TK
+        </div>
+        <button class="tutorial-btn" onclick="alert('شاهد فيديو الشرح هنا...')">
+            دليل المهمة <i class="fas fa-info-circle"></i>
+        </button>
+    </div>
+
+    <main class="mission-container">
+        <div class="level-tabs">
+            <div class="tab" onclick="changeLevel(100, this)">BEGINNER</div>
+            <div class="tab active" onclick="changeLevel(150, this)">INTERMEDIATE</div>
+            <div class="tab" onclick="changeLevel(200, this)">ADVANCED</div>
         </div>
 
-        <!-- Dialogue Section -->
-        <section class="mb-10">
-            <h2 class="cinzel text-gold-primary text-xl mb-6 flex items-center gap-3">
-                <span class="w-8 h-[1px] bg-gold-primary"></span>
-                The Dialogue Exchange
-            </h2>
-            <div class="dialogue-container space-y-4">
-                <div class="speech-card p-4 rounded-lg">
-                    <p class="speaker-label mb-1">Speaker A</p>
-                    <p class="text-lg italic">"I’m so nervous about the final presentation tomorrow; I feel like I might forget everything I practiced."</p>
-                </div>
-            <div class="dialogue-container space-y-4">
-                <div class="speech-card p-4 rounded-lg">
-                    <p class="speaker-label mb-1">Speaker B</p>
-                    <p class="text-lg italic">"Don't worry, you've worked harder than anyone else. Just go out there and break a leg!"</p>
-                </div>
-            <div class="dialogue-container space-y-4">
-                <div class="speech-card p-4 rounded-lg">
-                    <p class="speaker-label mb-1">Speaker A</p>
-                    <p class="text-lg italic">"I hope you're right, but what if the judges ask me something I don't know"</p>
-                </div>
-                <div class="speech-card p-4 rounded-lg">
-                    <p class="speaker-label mb-1">Speaker B</p>
-                    <p class="text-lg italic">"Then just be honest and stay calm; you’ll do great, I promise."</p>
-                </div>
+        <div class="dialogue-card">
+            <h3 style="font-family: 'Cinzel'; font-size: 14px; color: var(--gold); margin-bottom: 20px; letter-spacing: 2px;">THE DIALOGUE:</h3>
+            
+            <div class="dialogue-line">
+                <span class="speaker">Speaker A</span>
+                <p class="text">"I’m so nervous about the final presentation tomorrow; I feel like I might forget everything I practiced."</p>
             </div>
-        </section>
-
-        <!-- Focus Phrase -->
-        <section class="mb-10">
-            <div class="figurative-box p-6 rounded-2xl text-center">
-                <h3 class="cinzel text-xs text-gold-primary tracking-widest mb-2 font-bold uppercase">The Targeted Phrase</h3>
-                <p class="text-2xl md:text-3xl font-bold gold-text-gradient italic">"break a leg!"</p>
+            <div class="dialogue-line">
+                <span class="speaker">Speaker B</span>
+                <p class="text">"Don't worry, you've worked harder than anyone else. Just go out there and break a leg!"</p>
             </div>
-        </section>
+            <div class="dialogue-line">
+                <span class="speaker">Speaker A</span>
+                <p class="text">"I hope you're right, but what if the judges ask me something I don't know?"</p>
+            </div>
+            <div class="dialogue-line">
+                <span class="speaker">Speaker B</span>
+                <p class="text">"Then just be honest and stay calm; you’ll do great, I promise."</p>
+            </div>
 
-        <!-- Submission Box -->
-        <section class="bg-[#111] p-8 rounded-3xl border-gold shadow-2xl relative overflow-hidden">
-            <h3 class="cinzel text-lg text-white mb-4">Final Interpretation</h3>
-            <p class="text-sm text-gray-400 mb-4 font-semibold">Based on the context, what does "hit the sack" mean?</p>
-            <textarea id="studentResponse" class="input-gold w-full h-32 p-4 rounded-xl mb-6" placeholder="Write your analysis here..."></textarea>
-            <button onclick="submitAnswer()" id="submitBtn" class="btn-gold w-full py-5 rounded-xl text-lg flex items-center justify-center gap-2">
-                <span>SUBMIT ANALYSIS</span>
-            </button>
-            <p id="statusMsg" class="text-center mt-4 text-sm font-bold uppercase tracking-widest"></p>
-        </section>
+            <div class="target-box">
+                <h4>THE TARGETED PHRASE</h4>
+                <p class="target-phrase">"break a leg!"</p>
+            </div>
+
+            <div class="analysis-area">
+                <h3 style="font-family: 'Cinzel'; font-size: 14px; color: white; letter-spacing: 1px;">YOUR INTERPRETATION:</h3>
+                <p style="font-size: 11px; color: #555; margin-top: 5px;">Based on the context, what does this figurative phrase mean?</p>
+                <textarea id="studentResponse" placeholder="Provide your deep analysis here..."></textarea>
+                
+                <button class="btn-submit" id="submitBtn" onclick="submitAnswer()">SUBMIT ANALYSIS</button>
+                <p id="statusMsg" style="text-align: center; margin-top: 15px; font-size: 11px; font-family: 'Orbitron';"></p>
+            </div>
+        </div>
     </main>
 
-    <footer class="mt-20 text-gray-600 text-[10px] cinzel tracking-[0.5em]">
-        Proprietary Content of Figurative Focus X - 2026
-    </footer>
-
     <script>
-        // الرابط الجديد الذي قمت بعمله (Deploy URL)
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwjMPJD-ZVrstF_5a_Kf53EEz3cp2USbhHgiK3gUMX1DvIBjJdlqB3nTTzKihq1NCXJ/exec";
         let currentUserKey = "";
 
         async function handleLogin() {
             const input = document.getElementById('emailInput').value.trim();
-            const btn = document.getElementById('loginBtn');
-            const err = document.getElementById('errorMessage');
-            
-            if (input.length < 3) {
-                showError("INPUT TOO SHORT");
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerText = "VERIFYING...";
-            err.classList.add('hidden');
+            const btn = document.getElementById('login-overlay');
+            if(input.length < 3) return;
 
             try {
-                // استدعاء الأكشن check من السكريبت
                 const response = await fetch(`${APPS_SCRIPT_URL}?action=check&email=${encodeURIComponent(input)}`);
                 const data = await response.json();
 
                 if (data.status === "authorized") {
                     currentUserKey = data.email || input;
-                    document.getElementById('displayEmail').innerText = currentUserKey;
-                    
-                    document.getElementById('loginSection').classList.add('hidden-section');
-                    document.getElementById('activitySection').classList.remove('hidden-section');
-                } else if (data.status === "already_done") {
-                    showError("TASK ALREADY COMPLETED");
+                    btn.style.display = 'none';
                 } else {
-                    showError("ACCESS DENIED: NOT FOUND");
+                    document.getElementById('errorMsg').style.display = 'block';
                 }
             } catch (e) {
-                showError("CONNECTION ERROR");
                 console.error(e);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Initialize Session";
             }
         }
 
@@ -238,47 +176,52 @@
             const submitBtn = document.getElementById('submitBtn');
             const statusMsg = document.getElementById('statusMsg');
 
-            if (!response) {
-                alert("Please write your interpretation.");
-                return;
-            }
+            if (!response) return;
 
             submitBtn.disabled = true;
             submitBtn.innerText = "TRANSMITTING...";
-            statusMsg.innerText = "Saving to database...";
-            statusMsg.className = "text-center mt-4 text-sm font-bold uppercase tracking-widest text-gold-primary";
+            statusMsg.innerText = "UPDATING DATABASE...";
+            statusMsg.style.color = "var(--gold)";
 
             try {
-                // إرسال الإجابة لتعلق بالعمود C
                 const finalUrl = `${APPS_SCRIPT_URL}?action=submit_answer&userKey=${encodeURIComponent(currentUserKey)}&answer=${encodeURIComponent(response)}`;
-                
-                // استخدام mode no-cors لتجنب مشاكل Redirect في جوجل
                 await fetch(finalUrl, { method: 'GET', mode: 'no-cors' });
 
-                statusMsg.innerText = "ANALYSIS RECORDED SUCCESSFULLY";
-                statusMsg.className = "text-center mt-4 text-sm font-bold uppercase tracking-widest text-green-500";
-                
-                document.getElementById('studentResponse').disabled = true;
+                statusMsg.innerText = "MISSION ACCOMPLISHED ✅";
+                statusMsg.style.color = "#4CAF50";
                 submitBtn.innerText = "COMPLETED";
+                document.getElementById('studentResponse').disabled = true;
             } catch (e) {
-                statusMsg.innerText = "TRANSMISSION FAILED";
-                statusMsg.className = "text-center mt-4 text-sm font-bold uppercase tracking-widest text-red-500";
+                statusMsg.innerText = "TRANSMISSION FAILED!";
+                statusMsg.style.color = "#ff3c3c";
                 submitBtn.disabled = false;
-                submitBtn.innerText = "RETRY SUBMISSION";
             }
         }
 
-        function showError(m) {
-            const e = document.getElementById('errorMessage');
-            e.innerText = m;
-            e.classList.remove('hidden');
+        function changeLevel(tokens, el) {
+            document.getElementById('reward-amount').innerText = tokens;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
         }
 
-        // منع إغلاق الصفحة بالخطأ
-        window.onbeforeunload = () => currentUserKey ? "Don't lose your progress!" : null;
+        // Simple Background Particles
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        function init() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', init);
+        init();
+        function draw() {
+            ctx.fillStyle = 'rgba(5,5,5,0.1)';
+            ctx.fillRect(0,0,canvas.width, canvas.height);
+            for(let i=0; i<2; i++) {
+                ctx.fillStyle = 'rgba(212,175,55,0.5)';
+                ctx.beginPath();
+                ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 1, 0, Math.PI*2);
+                ctx.fill();
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
     </script>
 </body>
 </html>
-
-
-

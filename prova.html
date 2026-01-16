@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seeds | Writing Mission</title>
+    <title>Grammar Lab | EYC Academy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --gold: #f1c40f;
-            --bg-deep: #050505;
+            --error-red: #ef4444;
+            --success-green: #22c55e;
+            --bg-deep: #030712;
         }
         body {
             font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #111 0%, var(--bg-deep) 100%);
+            background: radial-gradient(circle at center, #111827 0%, var(--bg-deep) 100%);
             color: white; min-height: 100vh;
         }
         .orbitron { font-family: 'Orbitron', sans-serif; }
@@ -22,33 +24,22 @@
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 35px;
+            border-radius: 30px;
         }
-        .word-badge {
-            background: rgba(241, 196, 15, 0.1);
-            border: 1px solid var(--gold);
-            padding: 10px 20px;
-            border-radius: 15px;
-            font-weight: 900;
-            color: var(--gold);
-            display: inline-block;
-            margin: 5px;
-            transition: 0.3s;
+        .wrong-sentence {
+            background: rgba(239, 68, 68, 0.05);
+            border-right: 4px solid var(--error-red);
+            padding: 15px; border-radius: 12px;
+            font-style: italic; color: #fca5a5;
         }
-        .story-area {
+        .correct-input {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 25px;
-            width: 100%;
-            min-height: 300px;
-            color: #ddd;
-            line-height: 1.8;
-            resize: none;
-            outline: none;
-            transition: 0.3s;
+            border-radius: 15px; padding: 15px; width: 100%;
+            color: var(--success-green); font-weight: bold;
+            outline: none; transition: 0.3s;
         }
-        .story-area:focus { border-color: var(--gold); background: rgba(255, 255, 255, 0.05); }
+        .correct-input:focus { border-color: var(--gold); background: rgba(255, 255, 255, 0.05); }
         
         #howToModal {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
@@ -65,62 +56,46 @@
 
     <div id="howToModal">
         <div class="glass-card p-10 max-w-md w-full border-2 border-yellow-500 text-center">
-            <i class="fas fa-pen-nib text-5xl text-yellow-500 mb-6"></i>
-            <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">SEEDS MISSION</h2>
+            <i class="fas fa-microscope text-5xl text-yellow-500 mb-6"></i>
+            <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">GRAMMAR LAB</h2>
             <p class="text-gray-300 mb-8 leading-relaxed text-right">
-                <i class="fas fa-check text-yellow-500 ml-2"></i> استخدم الكلمات الـ 6 الموضحة أمامك.<br>
-                <i class="fas fa-check text-yellow-500 ml-2"></i> اكتب قصة إبداعية لا تقل عن 120 كلمة.<br>
-                <i class="fas fa-check text-yellow-500 ml-2"></i> تأكد من ترابط الجمل واستخدام الكلمات بشكل صحيح.
+                <i class="fas fa-bug text-red-500 ml-2"></i> هتظهرلك جملة فيها خطأ جرامر (Grammar Error).<br>
+                <i class="fas fa-wrench text-blue-500 ml-2"></i> مهمتك تكتب الجملة كاملة بشكل صحيح في الخانة اللي تحتها.<br>
+                <i class="fas fa-check-circle text-green-500 ml-2"></i> ركز في علامات الترقيم (Punctuation) والزمن (Tense).
             </p>
-            <button onclick="toggleHowTo()" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl">بدء الكتابة</button>
+            <button onclick="toggleHowTo()" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl">ابدأ الإصلاح</button>
         </div>
     </div>
 
     <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto">
-        <h1 class="text-5xl font-black orbitron mb-2 golden-text">SEEDS</h1>
-        <p class="text-yellow-500 text-[10px] mb-8 orbitron tracking-[5px]">STORYTELLING LAB</p>
+        <h1 class="text-5xl font-black orbitron mb-2 golden-text">GRAMMAR</h1>
+        <p class="text-yellow-500 text-[10px] mb-8 orbitron tracking-[5px]">FIX THE SYSTEM</p>
         <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="كود الطالب">
         <button onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">
-            ACCESS LAB
+            INITIALIZE LAB
         </button>
     </div>
 
     <div id="mainContent" class="hidden w-full max-w-4xl">
         <header class="text-center my-10">
-            <h1 class="text-6xl font-black orbitron mb-2 golden-text">SEEDS</h1>
+            <h1 class="text-6xl font-black orbitron mb-2 golden-text">GRAMMAR</h1>
             <button onclick="toggleHowTo()" class="mt-4 text-gray-400 text-xs hover:text-white transition-colors flex items-center gap-2 mx-auto bg-white/5 px-4 py-2 rounded-full border border-white/10">
-                <i class="fas fa-lightbulb text-yellow-500"></i> كيفية تنفيذ المهمة
+                <i class="fas fa-terminal text-yellow-500"></i> دليل التصحيح
             </button>
         </header>
 
-        <div class="glass-card p-8 mb-8 text-center">
-            <h3 class="orbitron text-[10px] text-gray-500 mb-6 tracking-[3px]">REQUIRED WORDS (SEEDS)</h3>
-            <div class="flex flex-wrap justify-center gap-2">
-                <span class="word-badge orbitron uppercase">Challenge</span>
-                <span class="word-badge orbitron uppercase">Success</span>
-                <span class="word-badge orbitron uppercase">Growth</span>
-                <span class="word-badge orbitron uppercase">Future</span>
-                <span class="word-badge orbitron uppercase">Knowledge</span>
-                <span class="word-badge orbitron uppercase">Impact</span>
+        <div class="space-y-6 mb-20" id="grammarGrid">
             </div>
-        </div>
-
-        <div class="glass-card p-8 mb-10">
-            <div class="flex justify-between items-center mb-4">
-                <label class="text-xs font-bold text-gray-400">كتبت قصتك هنا:</label>
-                <div class="orbitron text-xs">
-                    <span id="wordCount" class="text-yellow-500 font-black">0</span> / 120 Words
-                </div>
-            </div>
-            <textarea id="storyInput" class="story-area" placeholder="Once upon a time..." oninput="countWords()"></textarea>
-            
-            <button onclick="submitStory()" id="submitBtn" class="w-full mt-8 py-4 bg-white/5 border border-yellow-500/30 rounded-2xl orbitron font-black hover:bg-yellow-500 hover:text-black transition-all">
-                UPLOAD STORY
-            </button>
-        </div>
     </div>
 
     <script>
+        const grammarQuests = [
+            { id: 1, wrong: "She don't likes apples for breakfast." },
+            { id: 2, wrong: "He go to the park yesterday with his friends." },
+            { id: 3, wrong: "They is playing football in the garden now." },
+            { id: 4, wrong: "I have saw that movie three times already." }
+        ];
+
         function toggleHowTo() {
             const modal = document.getElementById('howToModal');
             modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
@@ -131,38 +106,49 @@
             if(id.length < 2) return alert("أدخل الكود يا بطل");
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('mainContent').classList.remove('hidden');
+            initActivity();
         }
 
-        function countWords() {
-            const text = document.getElementById('storyInput').value.trim();
-            const words = text ? text.split(/\s+/).length : 0;
-            const counter = document.getElementById('wordCount');
-            counter.innerText = words;
-
-            if (words >= 120) {
-                counter.classList.remove('text-yellow-500');
-                counter.classList.add('text-green-500');
-            } else {
-                counter.classList.remove('text-green-500');
-                counter.classList.add('text-yellow-500');
-            }
+        function initActivity() {
+            const grid = document.getElementById('grammarGrid');
+            grid.innerHTML = '';
+            grammarQuests.forEach((q) => {
+                const card = document.createElement('div');
+                card.className = "glass-card p-6 flex flex-col gap-4";
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="bg-red-500/20 text-red-500 text-[10px] font-black orbitron px-3 py-1 rounded-full border border-red-500/20">WRONG VERSION</span>
+                    </div>
+                    <div class="wrong-sentence text-lg">${q.wrong}</div>
+                    
+                    <div class="flex items-center gap-3 mt-4 mb-2">
+                        <span class="bg-green-500/20 text-green-500 text-[10px] font-black orbitron px-3 py-1 rounded-full border border-green-500/20">FIXED VERSION</span>
+                    </div>
+                    <input type="text" id="input-${q.id}" class="correct-input" placeholder="Type the correct sentence here...">
+                    
+                    <button onclick="submitFix(${q.id})" id="btn-${q.id}" class="w-full mt-2 py-3 border border-white/5 bg-white/5 rounded-xl orbitron text-[10px] font-black hover:bg-yellow-500 hover:text-black transition-all">
+                        SEND CORRECTION
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
         }
 
-        function submitStory() {
-            const text = document.getElementById('storyInput').value.trim();
-            const words = text ? text.split(/\s+/).length : 0;
-            const btn = document.getElementById('submitBtn');
-
-            if(words < 5) return alert("اكتب قصتك أولاً!");
+        function submitFix(id) {
+            const btn = document.getElementById(`btn-${id}`);
+            const input = document.getElementById(`input-${id}`);
             
+            if(!input.value) return alert("اكتب التصحيح أولاً!");
+
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> UPLOADING...';
+            btn.innerHTML = '<i class="fas fa-wrench fa-spin"></i> FIXING...';
 
             setTimeout(() => {
-                btn.innerHTML = `<i class="fas fa-check"></i> STORY UPLOADED`;
-                btn.className = "w-full mt-8 py-4 bg-green-600 text-white rounded-2xl orbitron font-black";
-                document.getElementById('storyInput').disabled = true;
-            }, 1500);
+                btn.innerHTML = `<i class="fas fa-check"></i> SYSTEM FIXED`;
+                btn.className = "w-full mt-2 py-3 bg-green-600 text-white rounded-xl orbitron text-[10px] font-black";
+                input.disabled = true;
+                input.style.borderColor = "var(--success-green)";
+            }, 1000);
         }
     </script>
 </body>

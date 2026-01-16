@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dictation X | EYC Academy Mission</title>
+    <title>Dictation X | EYC Academy</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -15,71 +15,82 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-dark); color: white; overflow-x: hidden; }
+        body { background: var(--bg-dark); color: white; overflow-x: hidden; min-height: 100vh; }
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
 
         /* Login Flash Overlay */
         #login-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000;
             display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px);
         }
         .login-card {
-            background: var(--glass); border: 1px solid var(--gold); padding: 40px;
-            border-radius: 25px; text-align: center; width: 90%; max-width: 400px;
-            box-shadow: 0 0 30px rgba(252, 194, 0, 0.1);
+            background: var(--glass); border: 2px solid var(--gold); padding: 40px;
+            border-radius: 30px; text-align: center; width: 90%; max-width: 450px;
+            box-shadow: 0 0 50px rgba(252, 194, 0, 0.1);
         }
         .login-card input {
-            width: 100%; padding: 14px; margin: 20px 0; background: rgba(255,255,255,0.05);
-            border: 1px solid #333; color: white; border-radius: 12px; text-align: center; font-family: 'Orbitron';
+            width: 100%; padding: 15px; margin: 25px 0; background: rgba(255,255,255,0.05);
+            border: 1px solid #444; color: white; border-radius: 12px; text-align: center; font-size: 16px;
         }
 
-        /* Header & Status Bar */
-        .rank-header { text-align: center; padding: 25px 0; border-bottom: 1px solid rgba(252,194,0,0.1); }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.5rem; background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 4px; }
-        
-        .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(255,255,255,0.02); }
-        .token-display { font-family: 'Orbitron'; color: var(--gold); font-size: 14px; }
-        .tutorial-btn { background: linear-gradient(45deg, #ff0055, #ff5500); color: white; border: none; padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 0 15px rgba(255, 0, 85, 0.4); font-family: 'Cairo'; }
+        /* Academy Banner */
+        .rank-header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(252,194,0,0.1); }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.6rem; background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
 
-        /* Main Content */
-        .mission-container { max-width: 600px; margin: 20px auto; padding: 0 20px; text-align: center; }
-        
+        /* Status & Tutorial */
+        .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(255,255,255,0.02); }
+        .token-display { font-family: 'Orbitron'; color: var(--gold); font-size: 13px; font-weight: 700; }
+        .tutorial-btn { background: linear-gradient(45deg, #ff0055, #ff5500); color: white; border: none; padding: 8px 18px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 0 15px rgba(255, 0, 85, 0.3); font-family: 'Cairo'; }
+
+        /* Main Container */
+        .mission-container { max-width: 600px; margin: 20px auto; padding: 0 20px; }
+
+        /* Level Tabs */
         .level-tabs { display: flex; gap: 8px; margin-bottom: 25px; }
         .tab { flex: 1; padding: 12px; text-align: center; background: var(--glass); border: 1px solid #333; border-radius: 15px; cursor: pointer; font-family: 'Orbitron'; font-size: 9px; transition: 0.3s; color: #777; }
-        .tab.active { border-color: var(--xbox-red); background: rgba(255, 60, 60, 0.1); color: white; box-shadow: 0 0 15px rgba(255, 60, 60, 0.2); }
+        .tab.active { border-color: var(--gold); background: rgba(252, 194, 0, 0.1); color: var(--gold); box-shadow: 0 0 20px rgba(252, 194, 0, 0.15); }
 
-        /* Audio Controls */
-        .audio-engine { background: var(--glass); border-radius: 30px; padding: 35px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px; }
-        
-        .audio-btn {
-            width: 100px; height: 100px; border-radius: 50%; margin: 10px auto;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.4s; border: 4px solid rgba(0,0,0,0.3);
-            font-size: 30px;
+        /* Audio Control Area */
+        .dictation-hub {
+            background: var(--glass); border-radius: 30px; padding: 40px 20px;
+            border: 1px solid rgba(255,255,255,0.05); text-align: center;
         }
-        .slow-mode { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #000; }
-        .normal-mode { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: #000; width: 80px; height: 80px; font-size: 24px; }
+        .welcome-note { background: rgba(252,194,0,0.05); padding: 10px; border-radius: 15px; margin-bottom: 30px; border: 1px dashed rgba(252,194,0,0.2); }
+
+        .audio-controls { display: flex; flex-direction: column; gap: 30px; align-items: center; }
+        .audio-unit { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         
-        .pulse-active { animation: pulse-ring 1.5s infinite; }
-        @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(241, 196, 15, 0); } 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); } }
-
-        .disabled-audio { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
-        .timer { font-family: 'Orbitron'; font-size: 12px; color: var(--gold); margin-top: 10px; }
-
-        /* Submit Area */
-        .submit-section { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .btn-answer {
-            width: 100%; padding: 16px; border-radius: 15px; font-family: 'Orbitron'; font-weight: 900;
-            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.2);
-            text-decoration: none; display: block; pointer-events: none; transition: 0.5s;
+        .circle-play {
+            width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--gold);
+            display: flex; align-items: center; justify-content: center; font-size: 30px;
+            cursor: pointer; transition: 0.4s; background: transparent; color: var(--gold);
         }
-        .btn-active { background: #fff !important; color: #000 !important; pointer-events: auto !important; box-shadow: 0 0 20px #fff; }
+        .unit-slow .circle-play { width: 130px; height: 130px; background: linear-gradient(135deg, var(--gold), #d35400); color: black; border: none; }
+        .unit-normal .circle-play { border-color: #777; color: #777; }
+        
+        .timer { font-family: 'Orbitron'; font-size: 14px; color: var(--gold); margin-top: 5px; }
+
+        /* Animations & States */
+        .pulse-ring { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(252, 194, 0, 0.6); }
+            70% { box-shadow: 0 0 0 20px rgba(252, 194, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(252, 194, 0, 0); }
+        }
+        .disabled-unit { opacity: 0.2; pointer-events: none; filter: grayscale(1); }
 
         /* Video Popup */
-        #video-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        #video-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .video-content { width: 90%; max-width: 700px; position: relative; }
-        .close-video { position: absolute; top: -40px; right: 0; color: white; font-size: 30px; cursor: pointer; }
+        
+        /* Submit Button */
+        .btn-submit {
+            width: 100%; padding: 18px; border-radius: 20px; font-family: 'Orbitron'; font-weight: 900;
+            margin-top: 30px; border: none; cursor: pointer; transition: 0.5s;
+            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.1); pointer-events: none;
+        }
+        .btn-submit.active { background: white; color: black; box-shadow: 0 0 30px white; pointer-events: auto; }
     </style>
 </head>
 <body>
@@ -88,11 +99,12 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <i class="fas fa-fingerprint" style="font-size: 50px; color: var(--gold);"></i>
-            <h2 style="font-family: 'Orbitron'; margin-top: 20px;">DICTATION X</h2>
-            <p style="font-size: 11px; opacity: 0.6; margin-top: 5px;">Enter credentials to unlock audio files</p>
-            <input type="text" id="studentEmail" placeholder="Email or Student Code">
-            <button onclick="unlockMission()" style="width:100%; background: var(--gold); border:none; padding:14px; border-radius:12px; font-family:'Orbitron'; font-weight:900; cursor:pointer;">ACCESS SYSTEM</button>
+            <i class="fas fa-feather-pointed" style="font-size: 50px; color: var(--gold);"></i>
+            <h2 style="font-family: 'Orbitron'; margin-top: 20px; letter-spacing: 2px;">DICTATION X</h2>
+            <p style="font-size: 12px; opacity: 0.5; margin-top: 10px;">Enter your credentials to unlock the audio</p>
+            <input type="text" id="studentInput" placeholder="Email or Student Code">
+            <button onclick="handleLogin()" style="background: var(--gold); width: 100%; padding: 15px; border-radius: 12px; border: none; font-family: 'Orbitron'; font-weight: 900; cursor: pointer;">INITIALIZE MISSION</button>
+            <p id="errorMsg" style="color: var(--xbox-red); font-size: 11px; margin-top: 15px; display: none;">Invalid Data!</p>
         </div>
     </div>
 
@@ -102,7 +114,7 @@
 
     <div class="status-bar">
         <div class="token-display">
-            <i class="fas fa-coins"></i> BOUNTY: <span id="reward-amount">150</span> TK
+            <i class="fas fa-microchip"></i> REWARD: <span id="reward-amount">180</span> TK
         </div>
         <button class="tutorial-btn" onclick="document.getElementById('video-popup').style.display='flex'">
             ازاي تعمل النشاط دا <i class="fas fa-play-circle"></i>
@@ -111,45 +123,48 @@
 
     <main class="mission-container">
         <div class="level-tabs">
-            <div class="tab" onclick="changeLevel('Beginner', 100, this)">BEGINNER</div>
-            <div class="tab active" onclick="changeLevel('Intermediate', 150, this)">INTERMEDIATE</div>
+            <div class="tab" onclick="changeLevel('Beginner', 150, this)">BEGINNER</div>
+            <div class="tab active" onclick="changeLevel('Intermediate', 180, this)">INTERMEDIATE</div>
             <div class="tab" onclick="changeLevel('Advanced', 250, this)">ADVANCED</div>
         </div>
 
-        <p style="font-size: 10px; color: var(--xbox-red); margin-bottom: 20px; font-weight: 700;">⚠️ SLOW MOTION CANNOT BE PAUSED ONCE STARTED</p>
-
-        <div class="audio-engine">
-            <div style="margin-bottom: 40px;">
-                <p style="font-family: 'Orbitron'; font-size: 10px; color: var(--gold);">DECODER: SLOW MOTION</p>
-                <div id="slowBtn" class="audio-btn slow-mode" onclick="playAudio('slow')">
-                    <i id="slowIcon" class="fas fa-play"></i>
-                </div>
-                <div id="slowTimer" class="timer">00:00</div>
+        <div class="dictation-hub">
+            <div class="welcome-note">
+                <p style="font-size: 10px; color: var(--gold); font-family: 'Orbitron';">WELCOME BACK AGENT</p>
+                <p id="displayCode" style="font-family: 'Orbitron'; font-size: 18px; color: white;">#ST-CODE</p>
             </div>
 
-            <div>
-                <p style="font-family: 'Orbitron'; font-size: 10px; color: #777;">DECODER: NORMAL SPEED</p>
-                <div id="normalBtn" class="audio-btn normal-mode" onclick="playAudio('normal')">
-                    <i id="normalIcon" class="fas fa-play"></i>
+            <p style="color: var(--xbox-red); font-size: 10px; font-weight: 700; margin-bottom: 25px; font-family: 'Cairo';">⚠️ تحذير: الـ Slow Motion يعمل لمرة واحدة ولا يمكن إيقافه.</p>
+
+            <div class="audio-controls">
+                <div class="audio-unit unit-slow" id="slowContainer">
+                    <p style="font-family: 'Orbitron'; font-size: 11px; color: var(--gold);">SLOW MODE</p>
+                    <button class="circle-play" onclick="playAudio('slow')" id="slowBtn">
+                        <i class="fas fa-play" id="slowIcon"></i>
+                    </button>
+                    <div class="timer" id="slowTimer">00:00</div>
                 </div>
-                <div id="normalTimer" class="timer">00:00</div>
+
+                <div class="audio-unit unit-normal" id="normalContainer">
+                    <p style="font-family: 'Orbitron'; font-size: 11px; color: #777;">NORMAL MODE</p>
+                    <button class="circle-play" onclick="playAudio('normal')" id="normalBtn">
+                        <i class="fas fa-play" id="normalIcon"></i>
+                    </button>
+                    <div class="timer" id="normalTimer">00:00</div>
+                </div>
             </div>
-        </div>
 
-        <audio id="audioSlow" src="DX1S.wav"></audio>
-        <audio id="audioNormal" src="DX1N.wav"></audio>
+            <audio id="audioSlow"><source src="DX1S.wav" type="audio/wav"></audio>
+            <audio id="audioNormal"><source src="DX1N.wav" type="audio/wav"></audio>
 
-        <div class="submit-section">
-            <a id="formLink" href="https://docs.google.com/forms/your-link" target="_blank" class="btn-answer">
-                OPEN ANSWER FORM
-            </a>
-            <p id="lockMsg" style="font-size: 10px; color: var(--gold); margin-top: 15px; font-family: 'Cairo';">الزرار هيفتح اول ما المقطع يخلص ✅</p>
+            <button class="btn-submit" id="submitBtn" onclick="window.open('https://docs.google.com/forms/YOUR_FORM_LINK', '_blank')">OPEN ANSWER SHEET</button>
+            <p id="lockMsg" style="font-size: 9px; margin-top: 10px; color: #444; font-family: 'Orbitron'; uppercase">Locked until audio finishes</p>
         </div>
     </main>
 
     <div id="video-popup">
         <div class="video-content">
-            <span class="close-video" onclick="document.getElementById('video-popup').style.display='none'">&times;</span>
+            <span style="position:absolute; top:-40px; right:0; cursor:pointer; font-size:30px;" onclick="document.getElementById('video-popup').style.display='none'">&times;</span>
             <div style="padding:56.25% 0 0 0;position:relative; background: #000; border: 2px solid var(--gold);">
                 <iframe src="YOUR_DRIVE_VIDEO_LINK" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allowfullscreen></iframe>
             </div>
@@ -157,78 +172,87 @@
     </div>
 
     <script>
-        let activeAudio = null;
         let slowFinished = false;
         let normalFinished = false;
+        let activeAudio = null;
 
-        function unlockMission() {
-            const input = document.getElementById('studentEmail').value;
+        function handleLogin() {
+            const input = document.getElementById('studentInput').value;
             if(input.length > 3) {
                 document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('displayCode').innerText = input;
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
             }
         }
 
-        async function playAudio(type) {
+        function playAudio(type) {
             const audio = document.getElementById(type === 'slow' ? 'audioSlow' : 'audioNormal');
-            const otherBtn = document.getElementById(type === 'slow' ? 'normalBtn' : 'slowBtn');
+            const otherType = type === 'slow' ? 'normal' : 'slow';
             const btn = document.getElementById(type + 'Btn');
             const icon = document.getElementById(type + 'Icon');
+            const otherContainer = document.getElementById(otherType + 'Container');
 
             if (activeAudio && activeAudio !== audio) return;
-            if (type === 'slow' && slowFinished) return;
-            if (type === 'normal' && normalFinished) return;
 
             if (audio.paused) {
                 activeAudio = audio;
-                otherBtn.classList.add('disabled-audio');
-                btn.classList.add('pulse-active');
+                audio.play();
                 icon.className = 'fas fa-pause';
-                await audio.play();
+                btn.classList.add('pulse-ring');
+                otherContainer.classList.add('disabled-unit');
             } else {
-                if (type === 'normal') {
+                if (type === 'normal') { // Normal can be paused, Slow cannot (as per original logic)
                     audio.pause();
                     icon.className = 'fas fa-play';
-                    btn.classList.remove('pulse-active');
+                    btn.classList.remove('pulse-ring');
                     activeAudio = null;
-                    if (!slowFinished) otherBtn.classList.remove('disabled-audio');
+                    if(!slowFinished) otherContainer.classList.remove('disabled-unit');
                 }
             }
 
             audio.ontimeupdate = () => {
                 const rem = Math.ceil(audio.duration - audio.currentTime);
-                if (!isNaN(rem)) document.getElementById(type + 'Timer').innerText = formatTime(rem);
+                document.getElementById(type + 'Timer').innerText = formatTime(rem);
             };
 
             audio.onended = () => {
-                btn.classList.remove('pulse-active');
-                btn.classList.add('disabled-audio');
+                btn.classList.remove('pulse-ring');
+                btn.classList.add('disabled-unit');
                 icon.className = 'fas fa-check';
                 activeAudio = null;
                 if (type === 'slow') slowFinished = true;
                 if (type === 'normal') normalFinished = true;
-                otherBtn.classList.remove('disabled-audio');
-                unlockForm();
+                
+                // Unlock other if not finished
+                if(type === 'slow' && !normalFinished) otherContainer.classList.remove('disabled-unit');
+                if(type === 'normal' && !slowFinished) otherContainer.classList.remove('disabled-unit');
+                
+                unlockSubmit();
             };
         }
 
-        function unlockForm() {
-            const f = document.getElementById('formLink');
-            f.classList.add('btn-active');
-            document.getElementById('lockMsg').innerText = "Mission Ready: Access Granted ✅";
+        function unlockSubmit() {
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('active');
+            btn.innerText = "SUBMIT ANSWERS NOW";
+            document.getElementById('lockMsg').style.color = 'var(--gold)';
+            document.getElementById('lockMsg').innerText = "SYSTEM UNLOCKED ✅";
         }
 
         function formatTime(s) {
+            if(isNaN(s)) return "00:00";
             const m = Math.floor(s/60); const sec = s%60;
             return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
         }
 
-        function changeLevel(name, tokens, el) {
+        function changeLevel(level, tokens, el) {
             document.getElementById('reward-amount').innerText = tokens;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
         }
 
-        // Particle Background Logic
+        // Particles
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

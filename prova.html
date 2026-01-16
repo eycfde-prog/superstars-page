@@ -52,12 +52,12 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
-        .glow-button:hover:not(:disabled) {
+        .glow-button:hover {
             transform: scale(1.02);
             box-shadow: 0 0 25px var(--gold);
         }
-        .glow-button:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .task-card {
             background: rgba(20, 20, 20, 0.8);
@@ -66,7 +66,6 @@
 
         .hidden-section { display: none; }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
@@ -75,36 +74,34 @@
 <body class="p-4 md:p-8">
 
     <div class="max-w-4xl mx-auto">
-        <!-- Header Section -->
         <div class="text-center mb-10 relative">
             <h1 class="header-font text-5xl md:text-6xl font-black gold-gradient-text tracking-tighter mb-2">GRAMMAR X</h1>
             <p class="text-xs tracking-[0.4em] text-gray-400 uppercase">Season: The Language Hunter</p>
             <div class="h-1 w-32 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent mx-auto mt-4"></div>
         </div>
 
-        <!-- Login Section -->
         <div id="loginSection" class="task-card p-8 rounded-2xl gold-border text-center max-w-md mx-auto">
-            <h2 class="header-font text-[#d4af37] text-xl mb-6">IDENTIFICATION REQUIRED</h2>
-            <input type="text" id="emailInput" class="input-field w-full py-4 px-6 rounded-xl mb-4 text-center text-lg" placeholder="Enter Email or Student Code">
-            <div id="errorMessage" class="mb-4 text-red-500 text-xs font-bold hidden bg-red-900/10 p-2 border border-red-500/20 rounded"></div>
-            <button onclick="handleLogin()" id="loginBtn" class="glow-button w-full py-4 rounded-xl">Initialize Mission</button>
+            <div class="mb-6">
+                <i class="fas fa-shield-alt text-[#d4af37] text-4xl mb-4"></i>
+                <h2 class="header-font text-[#d4af37] text-xl">ACCESS PROTOCOL</h2>
+            </div>
+            <input type="text" id="emailInput" class="input-field w-full py-4 px-6 rounded-xl mb-4 text-center text-lg" placeholder="Enter Hunter Name or Code">
+            <button onclick="fastLogin()" class="glow-button w-full py-4 rounded-xl">Initialize Mission</button>
+            <p class="text-[10px] text-gray-500 mt-4 tracking-widest uppercase italic">Direct Access Enabled by Mr. Ezz</p>
         </div>
 
-        <!-- Activity Section (Hidden by default) -->
         <div id="activitySection" class="hidden-section">
-            <!-- Welcome Badge -->
             <div class="task-card p-4 rounded-xl gold-border mb-8 flex justify-between items-center border-l-4 border-l-[#d4af37]">
                 <div>
                     <p class="text-gray-400 text-xs uppercase tracking-widest">Active Hunter</p>
                     <p id="displayEmail" class="text-[#d4af37] font-bold">---</p>
                 </div>
                 <div class="text-right">
-                    <p class="text-gray-400 text-xs uppercase tracking-widest">Hunter ID</p>
-                    <p id="displayCode" class="text-white font-mono font-bold tracking-tighter">---</p>
+                    <p class="text-gray-400 text-xs uppercase tracking-widest">Mission Status</p>
+                    <p class="text-green-500 font-mono font-bold tracking-tighter">ONLINE</p>
                 </div>
             </div>
 
-            <!-- Instructions Box -->
             <div class="task-card p-6 rounded-2xl gold-border mb-8 border-l-4 border-l-[#d4af37]">
                 <h3 class="header-font text-[#d4af37] font-bold mb-2">MISSION BRIEFING:</h3>
                 <p class="text-gray-300 text-sm leading-relaxed">
@@ -112,39 +109,34 @@
                 </p>
             </div>
 
- <!-- Text Content Area -->
             <div class="task-card p-8 rounded-2xl gold-border mb-8">
-                <label class="block header-font text-xs text-gray-500 mb-4 uppercase tracking-widest">Target Text Area</label>
-                <!-- يا مستر تقدر تغير نص القطعة من هنا -->
-                <div id="passageDisplay" class="text-xl md:text-2xl font-light italic text-gray-200 border-l-2 border-[#d4af37] pl-6 py-4 bg-white/5 rounded-r-lg">
-                   The modern world is changing rapidly due to amazing technology. Small robots are now helping doctors in busy hospitals to perform difficult surgeries. Yesterday, a famous scientist spoke about the future of artificial intelligence. He claimed that smart machines will eventually learn to think like humans. Many people feel excited, but others are worried about their jobs. In the silence of the laboratory, the scientist carefully examined a new microchip. It was glowing with a faint blue light. This tiny invention could potentially solve many global problems. We must understand that progress requires patience and continuous learning..
+                <label class="block header-font text-xs text-gray-500 mb-4 uppercase tracking-widest text-center">Target Passage</label>
+                <div class="text-xl md:text-2xl font-light italic text-gray-200 border-l-2 border-[#d4af37] pl-6 py-4 bg-white/5 rounded-r-lg leading-relaxed">
+                    The modern world is changing rapidly due to amazing technology. Small robots are now helping doctors in busy hospitals to perform difficult surgeries. Yesterday, a famous scientist spoke about the future of artificial intelligence. He claimed that smart machines will eventually learn to think like humans. Many people feel excited, but others are worried about their jobs. In the silence of the laboratory, the scientist carefully examined a new microchip. It was glowing with a faint blue light. This tiny invention could potentially solve many global problems. We must understand that progress requires patience and continuous learning..
                 </div>
             </div>
 
-            <!-- Activity Form -->
             <form id="grammarForm" class="space-y-8">
                 <div id="requirementsContainer" class="space-y-6">
-                    <!-- التوليد التلقائي للمهام -->
                     <script>
-                        // يا مستر غير المطالب من هنا (مثلاً: 5 Verbs، 5 Nouns، إلخ)
                         const missions = [
-                            "5 Verbs",
-                            "5 Adjectives",
-                            "5 Adjectives",
-                            "5 Prepositions",
-                            "5 Adverbs"
+                            "Extract 5 Verbs",
+                            "Extract 5 Nouns",
+                            "Extract 5 Adjectives",
+                            "Extract 5 Prepositions",
+                            "Extract 5 Adverbs"
                         ];
 
                         missions.forEach((missionTitle, index) => {
                             document.write(`
                             <div class="task-card p-6 rounded-xl border border-white/10 hover:border-[#d4af37]/50 transition-colors">
-                                <h4 class="text-[#d4af37] font-bold mb-4 header-font text-lg mission-title">${missionTitle}</h4>
+                                <h4 class="text-[#d4af37] font-bold mb-4 header-font text-lg">${missionTitle}</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                                    <input type="text" placeholder="1" class="input-field p-3 rounded-lg text-sm mission-input" required>
-                                    <input type="text" placeholder="2" class="input-field p-3 rounded-lg text-sm mission-input" required>
-                                    <input type="text" placeholder="3" class="input-field p-3 rounded-lg text-sm mission-input" required>
-                                    <input type="text" placeholder="4" class="input-field p-3 rounded-lg text-sm mission-input" required>
-                                    <input type="text" placeholder="5" class="input-field p-3 rounded-lg text-sm mission-input" required>
+                                    <input type="text" placeholder="Word 1" class="input-field p-3 rounded-lg text-sm" required>
+                                    <input type="text" placeholder="Word 2" class="input-field p-3 rounded-lg text-sm" required>
+                                    <input type="text" placeholder="Word 3" class="input-field p-3 rounded-lg text-sm" required>
+                                    <input type="text" placeholder="Word 4" class="input-field p-3 rounded-lg text-sm" required>
+                                    <input type="text" placeholder="Word 5" class="input-field p-3 rounded-lg text-sm" required>
                                 </div>
                             </div>
                             `);
@@ -153,11 +145,9 @@
                 </div>
 
                 <div class="text-center pt-10">
-                    <button type="submit" id="submitBtn" class="glow-button px-12 py-4 rounded-full text-xl flex items-center gap-3 mx-auto">
-                        <span>Submit Mission</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    <button type="submit" class="glow-button px-12 py-4 rounded-full text-xl flex items-center gap-3 mx-auto">
+                        <span>End Mission</span>
                     </button>
-                    <p id="statusMsg" class="mt-4 text-sm font-bold uppercase tracking-widest"></p>
                 </div>
             </form>
         </div>
@@ -168,99 +158,27 @@
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRkYp14qpPdZJvq6f_T0NPKRGVoSUfcjWTZoSzZhbegKGc4QnsKwyx2jr52sl7vQIi_g/exec";
-        let currentUserKey = "";
-
-        // --- Login Logic ---
-        async function handleLogin() {
+        function fastLogin() {
             const input = document.getElementById('emailInput').value.trim();
-            const btn = document.getElementById('loginBtn');
-            const err = document.getElementById('errorMessage');
-            
-            if (input.length < 3) {
-                showError("INPUT TOO SHORT");
+            if (input.length < 2) {
+                alert("Please enter a valid Hunter ID");
                 return;
             }
-
-            btn.disabled = true;
-            btn.innerText = "VERIFYING...";
-            err.classList.add('hidden');
-
-            try {
-                const response = await fetch(`${APPS_SCRIPT_URL}?action=check&email=${encodeURIComponent(input)}`);
-                const data = await response.json();
-
-                if (data.status === "authorized") {
-                    currentUserKey = data.email || input;
-                    document.getElementById('displayEmail').innerText = data.email;
-                    document.getElementById('displayCode').innerText = data.studentCode;
-                    
-                    document.getElementById('loginSection').classList.add('hidden-section');
-                    document.getElementById('activitySection').classList.remove('hidden-section');
-                } else if (data.status === "already_done") {
-                    showError("MISSION ALREADY COMPLETED");
-                } else {
-                    showError("IDENTIFICATION FAILED");
-                }
-            } catch (e) {
-                showError("SERVER CONNECTION ERROR");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Initialize Mission";
-            }
+            
+            // تأثبر بسيط قبل الدخول
+            document.getElementById('displayEmail').innerText = input;
+            document.getElementById('loginSection').style.opacity = '0';
+            
+            setTimeout(() => {
+                document.getElementById('loginSection').classList.add('hidden-section');
+                document.getElementById('activitySection').classList.remove('hidden-section');
+            }, 300);
         }
 
-        function showError(m) {
-            const e = document.getElementById('errorMessage');
-            e.innerText = m;
-            e.classList.remove('hidden');
-        }
-
-        // --- Form Submission Logic ---
-        const form = document.getElementById('grammarForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const statusMsg = document.getElementById('statusMsg');
-
-        form.addEventListener('submit', async (e) => {
+        document.getElementById('grammarForm').onsubmit = (e) => {
             e.preventDefault();
-            
-            submitBtn.disabled = true;
-            statusMsg.textContent = 'Transmitting data to HQ...';
-            statusMsg.style.color = '#d4af37';
-
-            // تجميع الإجابات في نص واحد بفاصلات
-            let fullAnswer = "";
-            const rows = document.querySelectorAll('#requirementsContainer > div');
-            
-            rows.forEach((row, index) => {
-                const title = row.querySelector('input[type="text"]').value;
-                const inputs = Array.from(row.querySelectorAll('.grid input')).map(i => i.value).join(', ');
-                fullAnswer += `Task ${index + 1} (${title}): [${inputs}] | `;
-            });
-
-            try {
-                // إرسال البيانات للأب سكريبت بالأكشن submit_all
-                const finalUrl = `${APPS_SCRIPT_URL}?action=submit_all&userKey=${encodeURIComponent(currentUserKey)}&answers=${encodeURIComponent(fullAnswer)}`;
-                
-                // استخدام fetch مع mode no-cors لأن جوجل سكريبت أحياناً يرفض الـ Redirect
-                await fetch(finalUrl, { method: 'GET', mode: 'no-cors' });
-
-                statusMsg.textContent = 'MISSION ACCOMPLISHED! DATA SECURED.';
-                statusMsg.style.color = '#107c10';
-                form.innerHTML = `<div class="p-10 text-center gold-border rounded-2xl bg-xbox-green/10">
-                    <h2 class="header-font text-2xl text-white mb-2">WELL DONE, HUNTER!</h2>
-                    <p class="text-gray-400">Your mission data has been encrypted and stored.</p>
-                </div>`;
-            } catch (error) {
-                statusMsg.textContent = 'TRANSMISSION FAILED. RETRY.';
-                statusMsg.style.color = '#ff0000';
-                submitBtn.disabled = false;
-            }
-        });
-
-        // منع إغلاق الصفحة بالخطأ
-        window.onbeforeunload = () => currentUserKey ? "Mission in progress! Are you sure?" : null;
+            alert("Mission Accomplished! Your data has been recorded (Simulation Mode).");
+        };
     </script>
 </body>
 </html>
-

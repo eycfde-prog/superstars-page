@@ -1,180 +1,227 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alike X - EYC Activity</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>Alike X | EYC Academy Mission</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; color: white; }
-        .gold-border {
-            border: 2px solid transparent;
-            background: linear-gradient(#1e293b, #1e293b) padding-box,
-                        linear-gradient(135deg, #f59e0b, #fbbf24, #d97706) border-box;
+        :root {
+            --gold: #fcc200;
+            --xbox-red: #ff3c3c;
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
         }
-        .gold-text {
-            background: linear-gradient(to right, #f59e0b, #fbbf24);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-dark); color: white; overflow-x: hidden; }
+
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
+
+        /* Login Flash */
+        #login-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000;
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);
         }
-        .audio-btn {
-            transition: all 0.2s ease;
-            background: #1e293b;
-            border: 1px solid #f59e0b;
+        .login-card {
+            background: var(--glass); border: 1px solid var(--gold); padding: 40px;
+            border-radius: 20px; text-align: center; width: 90%; max-width: 400px;
         }
-        .audio-btn:hover { background: #f59e0b; color: #0f172a; }
-        .question-card { background: rgba(30, 41, 59, 0.5); border-right: 4px solid #f59e0b; }
-        .error-box { background: #7f1d1d; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: none; }
+        .login-card input {
+            width: 100%; padding: 12px; margin: 20px 0; background: rgba(255,255,255,0.1);
+            border: 1px solid #444; color: white; border-radius: 10px; text-align: center;
+        }
+
+        /* Header & Status */
+        .rank-header { text-align: center; padding: 25px 0; border-bottom: 1px solid rgba(252,194,0,0.1); }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.5rem; background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 4px; }
+        
+        .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(255,255,255,0.02); }
+        .token-display { font-family: 'Orbitron'; color: var(--gold); font-size: 14px; }
+        .tutorial-btn { background: linear-gradient(45deg, #ff0055, #ff5500); color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 0 15px rgba(255, 0, 85, 0.4); font-family: 'Cairo'; }
+
+        /* Main Mission */
+        .mission-container { max-width: 700px; margin: 20px auto; padding: 0 20px; }
+        
+        /* Level Tabs */
+        .level-tabs { display: flex; gap: 8px; margin-bottom: 25px; }
+        .tab { flex: 1; padding: 10px; text-align: center; background: var(--glass); border: 1px solid #333; border-radius: 12px; cursor: pointer; font-family: 'Orbitron'; font-size: 9px; transition: 0.3s; color: #888; }
+        .tab.active { border-color: var(--xbox-red); background: rgba(255, 60, 60, 0.1); color: white; box-shadow: 0 0 15px rgba(255, 60, 60, 0.2); }
+
+        /* Audio Player */
+        .audio-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.5));
+            border-radius: 25px; padding: 30px; border: 1px solid rgba(255,255,255,0.1);
+            text-align: center; margin-bottom: 30px;
+        }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px 0; }
+        .circle-btn { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--gold); background: transparent; color: var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .circle-btn:hover { background: var(--gold); color: black; }
+        .play-btn { width: 70px; height: 70px; background: var(--gold); color: black; font-size: 24px; border: none; }
+
+        /* Questions */
+        .question-card {
+            background: var(--glass); border-left: 4px solid var(--gold);
+            padding: 20px; border-radius: 15px; margin-bottom: 15px;
+            transition: 0.3s;
+        }
+        .options { display: flex; gap: 20px; margin-top: 15px; }
+        .option {
+            background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 10px;
+            border: 1px solid #444; cursor: pointer; transition: 0.3s; flex: 1; text-align: center;
+            font-weight: bold; color: var(--gold);
+        }
+        .option:hover { border-color: var(--gold); background: rgba(252,194,0,0.1); }
+
+        /* Video Popup */
+        #video-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .video-content { width: 90%; max-width: 700px; position: relative; }
+        .close-video { position: absolute; top: -40px; right: 0; color: white; font-size: 30px; cursor: pointer; }
+
+        .btn-submit { width: 100%; padding: 15px; background: var(--xbox-red); color: white; border: none; border-radius: 15px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center py-12 px-4">
+<body>
 
-    <!-- Header -->
-    <header class="text-center mb-12">
-        <h1 class="text-5xl font-bold gold-text mb-2">Alike X</h1>
-        <h2 class="text-2xl text-gray-400">A X 2</h2>
-    </header>
+    <canvas id="rank-canvas"></canvas>
 
-    <!-- Audio Player Section -->
-    <div class="w-full max-w-2xl gold-border p-8 rounded-3xl mb-12 text-center bg-slate-800 shadow-2xl">
-        <div id="errorDisplay" class="error-box text-sm"></div>
-        
-        <p class="mb-6 text-gray-300 font-bold">اعمل ريفرش عشان تقدر تقدم وتأخر</p>
-        
-        <!-- استخدام الملف المحلى المرفوع بجانب الـ HTML -->
-        <audio id="mainAudio" preload="auto">
-            <source src="AX1-2.wav" type="audio/wav">
-            Your browser does not support the audio element.
-        </audio>
-        
-        <div id="audioStatus" class="mb-4 text-yellow-500 text-sm italic">جاري تحضير الأبطال...</div>
-
-        <div class="flex flex-wrap justify-center items-center gap-6">
-            <!-- تأخير ثانية -->
-            <button onclick="skip(-1)" class="audio-btn p-4 rounded-full shadow-lg" title="تأخير ثانية">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
-                </svg>
-            </button>
-
-            <!-- Play/Pause -->
-            <button onclick="togglePlay()" id="playBtn" class="bg-yellow-500 text-slate-900 p-6 rounded-full shadow-2xl hover:scale-105 transition-transform">
-                <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-                <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 hidden" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                </svg>
-            </button>
-
-            <!-- تقديم ثانية -->
-            <button onclick="skip(1)" class="audio-btn p-4 rounded-full shadow-lg" title="تقديم ثانية">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4zm7.066 0a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z" />
-                </svg>
-            </button>
-        </div>
-
-        <div class="mt-8 w-full bg-gray-700 rounded-full h-2 overflow-hidden">
-            <div id="progressBar" class="bg-yellow-500 h-2 rounded-full transition-all duration-75" style="width: 0%"></div>
+    <div id="login-overlay">
+        <div class="login-card">
+            <i class="fas fa-lock" style="font-size: 40px; color: var(--gold);"></i>
+            <h2 style="font-family: 'Orbitron'; margin-top: 15px;">ALIKE X ACCESS</h2>
+            <input type="email" placeholder="Enter Academy Email">
+            <button onclick="document.getElementById('login-overlay').style.display='none'" style="background: var(--gold); border:none; padding:12px 30px; border-radius:10px; font-family:'Orbitron'; font-weight:900; cursor:pointer;">START MISSION</button>
         </div>
     </div>
 
-    <!-- Questions Section -->
-    <div class="w-full max-w-3xl space-y-6 mb-12">
-        <h3 class="text-2xl font-bold gold-text text-center mb-8 italic">Choose wisely..</h3>
-        
-       <div class="question-card p-6 rounded-xl">
-    <p class="text-xl mb-4 leading-relaxed">1. "Please be __________ about the confidential information I shared with you."</p>
-    <div class="flex gap-8 text-yellow-500 font-bold"><span>A) Discreet</span><span>B) Discrete</span></div>
-</div>
+    <header class="rank-header">
+        <h1>EYC ACADEMY</h1>
+    </header>
 
-<div class="question-card p-6 rounded-xl">
-    <p class="text-xl mb-4 leading-relaxed">2. "The patient had an __________ reaction to the new medication."</p>
-    <div class="flex gap-8 text-yellow-500 font-bold"><span>A) Averse</span><span>B) Adverse</span></div>
-</div>
+    <div class="status-bar">
+        <div class="token-display">
+            <i class="fas fa-bolt"></i> CHALLENGE: <span id="reward-amount">150</span> TK
+        </div>
+        <button class="tutorial-btn" onclick="document.getElementById('video-popup').style.display='flex'">
+            ازاي تعمل النشاط دا <i class="fas fa-play-circle"></i>
+        </button>
+    </div>
 
-<div class="question-card p-6 rounded-xl">
-    <p class="text-xl mb-4 leading-relaxed">3. "The detective tried to __________ information from the reluctant witness."</p>
-    <div class="flex gap-8 text-yellow-500 font-bold"><span>A) Illicit</span><span>B) Elicit</span></div>
-</div>
+    <main class="mission-container">
+        <div class="level-tabs">
+            <div class="tab" onclick="changeLevel('Beginner', 100, this)">BEGINNER</div>
+            <div class="tab active" onclick="changeLevel('Intermediate', 150, this)">INTERMEDIATE</div>
+            <div class="tab" onclick="changeLevel('Advanced', 200, this)">ADVANCED</div>
+        </div>
 
-<div class="question-card p-6 rounded-xl">
-    <p class="text-xl mb-4 leading-relaxed">4. "She has a natural __________ for interior design and creative arts."</p>
-    <div class="flex gap-8 text-yellow-500 font-bold"><span>A) Flair</span><span>B) Flare</span></div>
-</div>
+        <div class="audio-card">
+            <p style="font-size: 11px; color: var(--gold); font-family: 'Orbitron'; margin-bottom: 10px;">Linguistic Audio Decoder</p>
+            <h2 style="font-family: 'Orbitron'; margin-bottom: 20px;">MISSION AUDIO: AX1-2</h2>
+            
+            <audio id="mainAudio">
+                <source src="AX1-2.wav" type="audio/wav">
+            </audio>
 
-<div class="question-card p-6 rounded-xl">
-    <p class="text-xl mb-4 leading-relaxed">5. "The museum curator warned against the tendency to __________ valuable artifacts."</p>
-    <div class="flex gap-8 text-yellow-500 font-bold"><span>A) Hoard</span><span>B) Horde</span></div>
-  </div>
-</div>
-    <!-- Footer Action -->
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfVgWo3SSn3ojUK6OdR8azHvTumTr3RChJJh2uTFRZ6RI-NJA/viewform?usp=publish-editor" 
-       target="_blank"
-       class="gold-border px-12 py-4 rounded-full text-xl font-bold hover:scale-105 transition-transform flex items-center gap-3 bg-slate-800">
-       <span>To the answer</span>
-       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-       </svg>
-    </a>
+            <div class="controls">
+                <button class="circle-btn" onclick="skip(-2)"><i class="fas fa-backward"></i></button>
+                <button class="circle-btn play-btn" onclick="togglePlay()" id="playBtn"><i class="fas fa-play"></i></button>
+                <button class="circle-btn" onclick="skip(2)"><i class="fas fa-forward"></i></button>
+            </div>
+            <div style="width: 100%; height: 4px; background: #222; border-radius: 2px;">
+                <div id="progress" style="width: 0%; height: 100%; background: var(--gold); box-shadow: 0 0 10px var(--gold);"></div>
+            </div>
+        </div>
+
+        <div id="questions-box" style="margin-bottom: 100px;">
+            <div class="question-card">
+                <p>1. "Please be __________ about the confidential information."</p>
+                <div class="options">
+                    <div class="option">A) Discreet</div>
+                    <div class="option">B) Discrete</div>
+                </div>
+            </div>
+            <div class="question-card">
+                <p>2. "The patient had an __________ reaction to the new medication."</p>
+                <div class="options">
+                    <div class="option">A) Averse</div>
+                    <div class="option">B) Adverse</div>
+                </div>
+            </div>
+            </div>
+
+        <button class="btn-submit">SUBMIT ANSWERS</button>
+    </main>
+
+    <div id="video-popup">
+        <div class="video-content">
+            <span class="close-video" onclick="document.getElementById('video-popup').style.display='none'">&times;</span>
+            <div style="padding:56.25% 0 0 0;position:relative; background: #000; border: 2px solid var(--gold);">
+                <iframe src="LINK_TO_DRIVE" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
 
     <script>
         const audio = document.getElementById('mainAudio');
-        const playIcon = document.getElementById('playIcon');
-        const pauseIcon = document.getElementById('pauseIcon');
-        const progressBar = document.getElementById('progressBar');
-        const statusMsg = document.getElementById('audioStatus');
-        const errorDisplay = document.getElementById('errorDisplay');
+        const playBtn = document.getElementById('playBtn');
+        const progress = document.getElementById('progress');
 
-        audio.onerror = () => {
-            errorDisplay.style.display = "block";
-            errorDisplay.innerText = "خطأ: لم نجد ملف AX1-1.wav في مجلد المشروع.";
-            statusMsg.innerText = "فشل التحميل";
-        };
-
-        audio.oncanplay = () => {
-            statusMsg.innerText = "Get Ready!";
-            setTimeout(() => statusMsg.classList.add('hidden'), 2000);
-        };
-
-        async function togglePlay() {
-            try {
-                if (audio.paused) {
-                    await audio.play();
-                    playIcon.classList.add('hidden');
-                    pauseIcon.classList.remove('hidden');
-                } else {
-                    audio.pause();
-                    playIcon.classList.remove('hidden');
-                    pauseIcon.classList.add('hidden');
-                }
-            } catch (err) {
-                if (err.name !== 'AbortError') console.error(err);
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                audio.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
             }
-        }
-
-        function skip(time) {
-            if (audio.readyState > 0) audio.currentTime += time;
         }
 
         audio.ontimeupdate = () => {
-            if (audio.duration) {
-                progressBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
-            }
+            const perc = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = perc + '%';
         };
 
-        audio.onended = () => {
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
-            progressBar.style.width = '0%';
-        };
+        function skip(val) { audio.currentTime += val; }
+
+        function changeLevel(name, tokens, el) {
+            document.getElementById('reward-amount').innerText = tokens;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            // هنا ممكن تغير الأسئلة برضه بناء على الليفل
+        }
+
+        // Particle Background Logic
+        const canvas = document.getElementById('rank-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class Particle {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.char = "EYC"[Math.floor(Math.random()*3)];
+                this.speed = Math.random() * 0.3 + 0.1;
+                this.opacity = Math.random() * 0.2;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(252,194,0,${this.opacity})`;
+                ctx.font = `10px Orbitron`;
+                ctx.fillText(this.char, this.x, this.y);
+                this.y -= this.speed;
+                if(this.y < -20) this.y = canvas.height + 20;
+            }
+        }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            particles.forEach(p => p.draw());
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for(let i=0; i<30; i++) particles.push(new Particle());
+        animate();
     </script>
 </body>
 </html>
-
-
-
-
-

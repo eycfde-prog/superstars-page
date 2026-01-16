@@ -5,133 +5,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Label X | Season 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --gold: #f1c40f;
+            --dark-gold: #f39c12;
+            --bg-deep: #05070a;
+        }
         body {
             font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
-            color: #fff;
-            min-height: 100vh;
+            background: radial-gradient(circle at top, #111827 0%, var(--bg-deep) 100%);
+            color: #fff; min-height: 100vh;
         }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .gold-glow { text-shadow: 0 0 15px rgba(241, 196, 15, 0.5); }
+        .golden-text {
+            background: linear-gradient(to bottom, #fff 20%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .glass-card {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 30px;
         }
-        .difficulty-btn.active {
-            border-color: #f1c40f;
-            background: rgba(241, 196, 15, 0.1);
-            color: #f1c40f;
+        .input-dark {
+            background: rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid rgba(241, 196, 15, 0.1) !important;
         }
-        /* Glassy's Button */
-        .glassy-float {
-            position: fixed; bottom: 30px; left: 30px; z-index: 1000;
-            background: linear-gradient(135deg, #f1c40f, #f39c12);
-            width: 60px; height: 60px; border-radius: 50%;
-            display: flex; items-center; justify-content: center;
-            box-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
-            cursor: pointer; animation: bounce 2s infinite;
-        }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .input-dark:focus { border-color: var(--gold) !important; box-shadow: 0 0 15px rgba(241, 196, 15, 0.1); }
         
-        .hidden-section { display: none; }
+        /* Difficulty Badge */
+        .diff-btn {
+            padding: 8px 16px; border-radius: 12px; font-size: 10px; font-weight: 900;
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s;
+        }
+        .diff-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(241,196,15,0.1); }
+
+        /* Instructions Modal */
+        #howToModal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 5000; align-items: center; justify-content: center; padding: 20px;
+        }
     </style>
 </head>
-<body class="p-4">
+<body class="p-4 flex flex-col items-center">
 
-    <div class="glassy-float" onclick="showGlassyGuide()">
-        <i class="fas fa-magic text-black text-2xl"></i>
-    </div>
-
-    <div id="loginSection" class="max-w-md mx-auto mt-20">
-        <div class="glass-card p-10 text-center border-t-4 border-yellow-500">
-            <h1 class="orbitron text-4xl mb-2 gold-glow uppercase tracking-tighter">Label X</h1>
-            <p class="text-gray-500 text-xs mb-8 uppercase tracking-widest">Season 2026 / Mission 01</p>
-            
-            <input type="text" id="emailInput" value="H-2026-MR-EZZ"
-                   class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:outline-none focus:border-yellow-500 transition-all">
-            
-            <button onclick="handleLogin()" class="w-full py-4 rounded-2xl font-black bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-xl hover:scale-105 transition-transform orbitron">
-                INITIALIZE MISSION
-            </button>
-            <p class="mt-4 text-[10px] text-gray-500">Authorized by EYC Systems & Glassy</p>
+    <div id="howToModal">
+        <div class="glass-card p-8 max-w-md w-full border-2 border-yellow-500 text-center">
+            <i class="fas fa-lightbulb text-4xl text-yellow-500 mb-4"></i>
+            <h2 class="text-2xl font-bold mb-4">كيفية المشاركة؟</h2>
+            <ul class="text-right text-gray-300 space-y-3 mb-6">
+                <li><i class="fas fa-check-circle text-yellow-500 ml-2"></i> انظر جيداً لكل صورة معروضة.</li>
+                <li><i class="fas fa-check-circle text-yellow-500 ml-2"></i> اكتب اسم الشيء أو الوصف الصحيح بالإنجليزي.</li>
+                <li><i class="fas fa-check-circle text-yellow-500 ml-2"></i> اضغط "إرسال" لكل صورة بمفردها.</li>
+                <li><i class="fas fa-check-circle text-yellow-500 ml-2"></i> نقاط الـ Tokens بتعتمد على مستوى الصعوبة!</li>
+            </ul>
+            <button onclick="toggleHowTo()" class="w-full py-3 bg-yellow-500 text-black font-black rounded-xl">فهمت، لنبدأ!</button>
         </div>
     </div>
 
-    <div id="activitySection" class="hidden-section max-w-6xl mx-auto">
-        <header class="text-center mb-12">
-            <h1 class="orbitron text-5xl gold-glow mb-4">LABEL MISSION</h1>
-            
-            <div class="flex justify-center gap-4 mt-6">
-                <button onclick="setDiff('Basic', 100, this)" class="difficulty-btn px-6 py-2 rounded-full border border-white/10 text-xs orbitron">BASIC (+100 TK)</button>
-                <button onclick="setDiff('Expert', 250, this)" class="difficulty-btn active px-6 py-2 rounded-full border border-white/10 text-xs orbitron">EXPERT (+250 TK)</button>
-                <button onclick="setDiff('Legend', 500, this)" class="difficulty-btn px-6 py-2 rounded-full border border-white/10 text-xs orbitron">LEGEND (+500 TK)</button>
-            </div>
+    <div class="max-w-5xl w-full">
+        <header class="text-center my-12">
+            <div class="orbitron text-[10px] tracking-[5px] text-yellow-500 mb-2">EYC SYSTEMS PRESENT</div>
+            <h1 class="text-6xl golden-text font-black mb-2">LABEL X</h1>
+            <p class="text-gray-500 text-xs font-bold tracking-widest uppercase italic">Season 2026 | Mission One</p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="imagesGrid">
-            </div>
-    </div>
-
-    <div id="glassyModal" class="hidden-section fixed inset-0 bg-black/90 z-[2000] flex items-center justify-center p-6 backdrop-blur-md">
-        <div class="glass-card max-w-lg p-8 border-2 border-yellow-500 text-center relative">
-            <div class="absolute -top-12 left-1/2 -translate-x-1/2 bg-yellow-500 w-24 h-24 rounded-full flex items-center justify-center border-4 border-black">
-                <i class="fas fa-robot text-black text-4xl"></i>
-            </div>
-            <h2 class="text-2xl font-black mt-8 mb-4 text-yellow-500">إزاي تعمل النشاط يا بطل؟</h2>
-            <div class="text-right space-y-4 text-gray-300">
-                <p>1️⃣ بص على الصورة كويس وحاول تفهم الـ <b>Label</b> المطلوب.</p>
-                <p>2️⃣ اكتب الكلمة الصح بالإنجليزية في المربع.</p>
-                <p>3️⃣ دوس إرسال عشان تجمع الـ <b>Tokens</b> بتاعتك.</p>
-                <p class="text-yellow-500 italic text-sm">"النشاط ده بيقوي عندك الـ Vocabulary جداً.. وريني شطارتك!" - Glassy</p>
-            </div>
-            <button onclick="hideGlassyGuide()" class="mt-8 bg-white text-black px-10 py-3 rounded-xl font-bold">فهمت يا جلاسي!</button>
+        <div id="loginSection" class="glass-card p-10 text-center max-w-md mx-auto relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl"></div>
+            <h2 class="text-xl font-black mb-6">تجهيز المهمة...</h2>
+            <input type="text" id="emailInput" class="w-full input-dark rounded-2xl py-4 px-6 mb-4 text-center text-white" placeholder="كود الطالب أو الإيميل">
+            <button onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-gradient-to-r from-yellow-500 to-orange-600 text-black shadow-xl transition-all hover:scale-105 active:scale-95">
+                دخول النشاط
+            </button>
+            <p class="mt-4 text-[10px] text-gray-500 italic">بمجرد الدخول سيتم تسجيل الوقت المستغرق</p>
         </div>
+
+        <div id="activitySection" class="hidden">
+            <div class="flex flex-col md:flex-row gap-4 mb-10 items-center justify-between">
+                <div class="glass-card p-4 flex gap-6 items-center border-l-4 border-yellow-500">
+                    <div class="text-center">
+                        <p class="text-[10px] text-gray-500 font-bold orbitron">STUDENT CODE</p>
+                        <p id="displayCode" class="text-yellow-500 font-black orbitron">---</p>
+                    </div>
+                    <div class="h-8 w-px bg-white/10"></div>
+                    <button onclick="toggleHowTo()" class="text-xs bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
+                        <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
+                    </button>
+                </div>
+
+                <div class="glass-card p-2 flex gap-2">
+                    <button onclick="setDiff(100, this)" class="diff-btn orbitron active">NORMAL (100 TK)</button>
+                    <button onclick="setDiff(250, this)" class="diff-btn orbitron">HARD (250 TK)</button>
+                    <button onclick="setDiff(500, this)" class="diff-btn orbitron">LEGEND (500 TK)</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="imagesGrid">
+                </div>
+        </div>
+
+        <footer class="mt-20 mb-10 text-center">
+            <div class="h-px w-20 bg-yellow-500/30 mx-auto mb-6"></div>
+            <p class="text-gray-600 text-[10px] orbitron tracking-[4px] uppercase">&copy; 2026 EYC ACADEMY | MISSION CONTROL</p>
+        </footer>
     </div>
 
 <script>
     const GITHUB_BASE = "https://raw.githubusercontent.com/رابط_حسابك/رابط_المستودع/main/ESSL/"; 
-    let currentDiff = "Expert";
+    let studentInfo = { email: "", code: "" };
+    let currentTK = 100;
 
-    function showGlassyGuide() { document.getElementById('glassyModal').classList.remove('hidden-section'); }
-    function hideGlassyGuide() { document.getElementById('glassyModal').classList.add('hidden-section'); }
-
-    function setDiff(name, tk, btn) {
-        currentDiff = name;
-        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        alert(`Mission changed to: ${name}. Reward: ${tk} Tokens.`);
+    function toggleHowTo() {
+        const modal = document.getElementById('howToModal');
+        modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
     }
 
-    function handleLogin() {
-        document.getElementById('loginSection').classList.add('hidden-section');
-        document.getElementById('activitySection').classList.remove('hidden-section');
+    function setDiff(tk, btn) {
+        currentTK = tk;
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    async function handleLogin() {
+        const input = document.getElementById('emailInput').value.trim();
+        if (input.length < 2) { alert("أدخل بياناتك يا بطل"); return; }
+        
+        // Bypass Logic for Preview
+        studentInfo.code = input.toUpperCase();
+        document.getElementById('displayCode').innerText = studentInfo.code;
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('activitySection').classList.remove('hidden');
         initActivity();
     }
 
     function initActivity() {
         const grid = document.getElementById('imagesGrid');
         grid.innerHTML = '';
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 6; i++) { // Let's start with 6 items for better look
             const id = `SL${i}`;
             const card = document.createElement('div');
-            card.className = "glass-card p-6 border-b-2 border-transparent hover:border-yellow-500 transition-all group";
+            card.className = "glass-card p-5 group hover:border-yellow-500/30 transition-all duration-500";
             card.innerHTML = `
-                <div class="aspect-video bg-black rounded-2xl mb-6 overflow-hidden border border-white/5 relative">
-                    <img src="${GITHUB_BASE}${id}.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all" onerror="this.src='https://via.placeholder.com/400x250/111/f1c40f?text=Label+Image+${i}'">
-                    <div class="absolute top-4 left-4 bg-yellow-500 text-black text-[10px] font-bold px-3 py-1 rounded-md orbitron">#IMAGE-0${i}</div>
+                <div class="relative rounded-2xl overflow-hidden mb-4 aspect-video bg-black flex items-center justify-center">
+                    <img src="${GITHUB_BASE}${id}.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://via.placeholder.com/400x250/000/f1c40f?text=MISSION+IMG+${i}'">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <span class="absolute bottom-3 left-3 orbitron text-[10px] text-yellow-500">M-0${i}</span>
                 </div>
-                <div class="flex gap-2">
-                    <input type="text" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-sm focus:border-yellow-500 outline-none" placeholder="Label name...">
-                    <button class="bg-yellow-500 text-black px-6 rounded-xl font-black text-xs hover:scale-95 transition-all">OK</button>
+                <div class="space-y-3">
+                    <input type="text" id="input-${id}" class="w-full input-dark rounded-xl px-4 py-3 text-sm text-center focus:outline-none" placeholder="What is this?">
+                    <button onclick="submitLabel('${id}')" id="btn-${id}" class="w-full py-3 bg-white/5 hover:bg-yellow-500 hover:text-black transition-all rounded-xl font-black text-xs orbitron">
+                        SUBMIT DATA
+                    </button>
                 </div>
             `;
             grid.appendChild(card);
         }
+    }
+
+    function submitLabel(id) {
+        const btn = document.getElementById(`btn-${id}`);
+        const input = document.getElementById(`input-${id}`);
+        if(!input.value) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        
+        setTimeout(() => { // Simulated success
+            btn.innerHTML = `<i class="fas fa-check"></i> +${currentTK} TK`;
+            btn.className = "w-full py-3 bg-green-600 text-white rounded-xl font-black text-xs orbitron";
+            input.disabled = true;
+        }, 1000);
     }
 </script>
 </body>

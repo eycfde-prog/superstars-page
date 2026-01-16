@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EYC Activity Hub | Hall of Fame</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        :root {
+            --primary-bg: #050505;
+            --accent-gold: #fcc200;
+            --season-color: #00ffa3;
+            --xbox-color: #ff3c3c;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--primary-bg); color: #fff; overflow-x: hidden; height: 100vh; }
+
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
+
+        /* Banner Style from Hall of Fame */
+        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; z-index: 10; position: relative; }
+        .rank-header h1 { 
+            font-family: 'Orbitron'; font-size: clamp(1.5rem, 5vw, 2.5rem); 
+            background: linear-gradient(to bottom, #fff, var(--accent-gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: 5px;
+        }
+
+        .toggle-container {
+            display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; z-index: 10; position: relative;
+        }
+
+        .mode-btn {
+            background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.1);
+            color: #888; padding: 8px 20px; border-radius: 20px;
+            font-family: 'Orbitron'; font-size: 10px; cursor: pointer; transition: 0.4s;
+        }
+
+        .mode-btn.active.season-mode { background: var(--season-color); color: #000; box-shadow: 0 0 15px var(--season-color); }
+        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; box-shadow: 0 0 15px var(--xbox-color); }
+
+        /* Swiper Area */
+        .swiper { width: 100%; padding-top: 30px; padding-bottom: 50px; }
+        .swiper-slide {
+            width: 270px; height: 380px; border-radius: 25px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer; position: relative;
+        }
+
+        /* Activity Animation on Click */
+        .swiper-slide:active { transform: scale(0.92); }
+
+        .token-badge {
+            position: absolute; top: 20px; left: 20px;
+            background: var(--accent-gold); color: #000;
+            font-family: 'Orbitron'; font-size: 10px; font-weight: 900;
+            padding: 4px 10px; border-radius: 10px; box-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        .activity-icon { font-size: 50px; margin-bottom: 15px; }
+        .activity-name { font-family: 'Orbitron'; font-size: 20px; font-weight: 800; text-align: center; }
+        .activity-code { font-size: 9px; opacity: 0.5; letter-spacing: 2px; margin-bottom: 15px; }
+
+        .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.1), rgba(0,0,0,0.8)); }
+        .season-card .activity-icon { color: var(--season-color); }
+        .xbox-card { background: linear-gradient(135deg, rgba(255,60,60,0.1), rgba(0,0,0,0.8)); }
+        .xbox-card .activity-icon { color: var(--xbox-color); }
+
+        /* Exit/Entry Animations */
+        .slide-up-exit { transform: translateY(-100vh); opacity: 0; transition: 0.5s; }
+        .slide-down-entry { animation: slideIn 0.5s forwards; }
+        @keyframes slideIn { from { transform: translateY(100vh); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .swipe-hint { text-align: center; font-family: 'Orbitron'; font-size: 9px; color: #444; margin-top: 10px; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <canvas id="rank-canvas"></canvas>
+
+    <header class="rank-header">
+        <h1>EYC ACADEMY</h1>
+        <p style="font-size: 10px; letter-spacing: 3px; color: var(--accent-gold); opacity: 0.7; font-family: 'Orbitron';">ACTIVITY MISSION CONTROL</p>
+    </header>
+
+    <div class="toggle-container">
+        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
+        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
+    </div>
+
+    <div id="swiper-container" class="swiper">
+        <div class="swiper-wrapper" id="activities-wrapper"></div>
+    </div>
+
+    <div class="swipe-hint">SWIPE TO NAVIGATE MISSIONS</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const activities = {
+            season: [
+                { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
+                { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 },
+                { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 },
+                { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 },
+                { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 },
+                { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }
+            ],
+            xbox: [
+                { name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 100 },
+                { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 120 },
+                { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 110 },
+                { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 150 },
+                { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 130 },
+                { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 200 },
+                { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 140 },
+                { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 180 },
+                { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 110 },
+                { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 250 }
+            ]
+        };
+
+        let currentSwiper = null;
+
+        function renderActivities(mode) {
+            const wrapper = document.getElementById('activities-wrapper');
+            wrapper.innerHTML = activities[mode].map(act => `
+                <div class="swiper-slide ${mode}-card">
+                    <div class="token-badge">${act.tk} TK</div>
+                    <div class="activity-code">${act.code}</div>
+                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
+                    <div class="activity-name">${act.name}</div>
+                    <div style="font-size: 10px; opacity: 0.4; margin-top: 10px; font-family: 'Orbitron';">PROTOCOL ACTIVE</div>
+                </div>
+            `).join('');
+
+            if (currentSwiper) currentSwiper.destroy();
+            currentSwiper = new Swiper('.swiper', {
+                effect: 'coverflow',
+                centeredSlides: true,
+                slidesPerView: 'auto',
+                coverflowEffect: { rotate: 20, stretch: 0, depth: 150, modifier: 1, slideShadows: false },
+                speed: 600
+            });
+        }
+
+        function switchMode(mode) {
+            const btnS = document.querySelector('.season-mode');
+            const btnX = document.querySelector('.xbox-mode');
+            const swiperEl = document.getElementById('swiper-container');
+
+            if ((mode === 'season' && btnS.classList.contains('active')) || (mode === 'xbox' && btnX.classList.contains('active'))) return;
+
+            swiperEl.classList.add('slide-up-exit');
+            setTimeout(() => {
+                btnS.classList.toggle('active', mode === 'season');
+                btnX.classList.toggle('active', mode === 'xbox');
+                renderActivities(mode);
+                swiperEl.classList.remove('slide-up-exit');
+                swiperEl.classList.add('slide-down-entry');
+                setTimeout(() => swiperEl.classList.remove('slide-down-entry'), 500);
+            }, 500);
+        }
+
+        // Background Animation Logic (From Hall of Fame)
+        const canvas = document.getElementById('rank-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class Particle {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.char = "EYC"[Math.floor(Math.random()*3)];
+                this.speed = Math.random() * 0.4 + 0.1;
+                this.opacity = Math.random() * 0.2;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(252,194,0,${this.opacity})`;
+                ctx.font = `12px Orbitron`;
+                ctx.fillText(this.char, this.x, this.y);
+                this.y -= this.speed;
+                if(this.y < -20) this.y = canvas.height + 20;
+            }
+        }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            particles.forEach(p => p.draw());
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for(let i=0; i<30; i++) particles.push(new Particle());
+        animate();
+
+        renderActivities('season');
+    </script>
+</body>
+</html>

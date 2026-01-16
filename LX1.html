@@ -1,129 +1,121 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Label X 🎮 | Xbox Grammar Challenge</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Label X | EYC Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Montserrat:wght@300;400;600&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --xbox-green: #107c10;
-            --xbox-dark: #1a1a1a;
-            --gold: #f1c40f;
+            --gold: #fcc200;
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
         }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-            color: #fff;
-            min-height: 100vh;
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { background: var(--bg-dark); color: white; overflow-x: hidden; min-height: 100vh; }
+
+        /* Login Flash Overlay */
+        #login-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000;
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px);
         }
-        .xbox-card {
-            background: rgba(40, 40, 40, 0.7);
-            backdrop-filter: blur(15px);
-            border-left: 4px solid var(--xbox-green);
-            border-radius: 15px;
-            transition: all 0.3s ease;
+        .login-card {
+            background: var(--glass); border: 2px solid var(--xbox-green); padding: 40px;
+            border-radius: 35px; text-align: center; width: 90%; max-width: 450px;
+            box-shadow: 0 0 50px rgba(16, 124, 16, 0.1);
         }
-        .xbox-card:hover {
-            transform: scale(1.02);
-            background: rgba(50, 50, 50, 0.9);
+        .login-card input {
+            width: 100%; padding: 15px; margin: 25px 0; background: rgba(255,255,255,0.05);
+            border: 1px solid #333; color: white; border-radius: 12px; text-align: center; font-size: 16px;
         }
-        .golden-gradient {
-            background: linear-gradient(to right, #f1c40f, #f39c12);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        /* Header */
+        .rank-header { text-align: center; padding: 25px 0; border-bottom: 1px solid rgba(16,124,16,0.2); }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.5rem; background: linear-gradient(to bottom, #fff, var(--xbox-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
+
+        /* Status Bar */
+        .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(255,255,255,0.02); }
+        .token-display { font-family: 'Orbitron'; color: var(--gold); font-size: 13px; font-weight: 700; }
+
+        /* Mission Container */
+        .mission-container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+
+        /* Question Cards */
+        .question-card { 
+            background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 20px; 
+            border: 1px solid rgba(255,255,255,0.05); border-left: 5px solid var(--xbox-green);
+            transition: 0.3s;
         }
-        .input-focus:focus {
-            outline: none;
-            border-color: var(--xbox-green);
-            box-shadow: 0 0 15px rgba(16, 124, 16, 0.3);
+        .question-card:hover { transform: scale(1.01); background: rgba(255,255,255,0.05); }
+        
+        .badge-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .badge { font-size: 10px; padding: 5px 12px; border-radius: 6px; font-weight: 700; font-family: 'Orbitron'; }
+        .badge-verb { background: rgba(16, 124, 16, 0.2); color: #44ff44; border: 1px solid rgba(16,124,16,0.3); }
+        .badge-tense { background: rgba(255, 255, 255, 0.05); color: #bbb; border: 1px solid rgba(255,255,255,0.1); }
+
+        textarea {
+            width: 100%; height: 100px; background: rgba(0,0,0,0.3); border: 1px solid #333; 
+            border-radius: 12px; padding: 15px; color: white; margin-top: 10px; resize: none; 
+            font-size: 14px; line-height: 1.5; transition: 0.3s;
         }
-        .btn-xbox {
-            background: var(--xbox-green);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        textarea:focus { border-color: var(--xbox-green); outline: none; box-shadow: 0 0 15px rgba(16,124,16,0.2); }
+
+        /* Submit */
+        .btn-submit {
+            width: 100%; padding: 22px; border-radius: 20px; font-family: 'Orbitron'; font-weight: 900;
+            margin: 40px 0; border: none; cursor: pointer; background: var(--xbox-green); color: white;
+            box-shadow: 0 10px 30px rgba(16, 124, 16, 0.2); transition: 0.3s; letter-spacing: 2px;
         }
-        .btn-xbox:hover:not(:disabled) {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 20px rgba(16, 124, 16, 0.4);
-        }
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--xbox-green);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-left: 10px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .hidden-section { display: none; }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(16, 124, 16, 0.4); }
+
+        .hidden { display: none; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
-    <div class="max-w-4xl mx-auto">
-        <!-- Header -->
-        <header class="text-center mb-12">
-            <div class="inline-block bg-[#107c10] text-white px-4 py-1 rounded-full text-xs font-bold mb-4 uppercase tracking-widest">Original Activity</div>
-            <h1 class="text-5xl md:text-7xl font-black mb-2 italic">LABEL <span class="golden-gradient text-white">X</span></h1>
-            <p class="text-gray-400 font-bold uppercase tracking-widest text-sm">Elite Grammar Challenge</p>
-        </header>
-
-        <!-- Login Section -->
-        <div id="loginSection" class="max-w-md mx-auto bg-[#222] p-8 rounded-3xl border border-white/10 shadow-2xl">
-            <h2 class="text-2xl font-bold mb-6 text-center">سجل دخولك يا بطل</h2>
-            <div class="space-y-4">
-                <input type="text" id="userInput" class="w-full bg-black/50 border border-white/10 p-4 rounded-xl text-center text-xl input-focus" placeholder="الإيميل أو الكود الخاص بك">
-                <button onclick="handleLogin()" id="loginBtn" class="btn-xbox w-full py-4 rounded-xl font-black text-xl shadow-lg">
-                    دخول التحدي
-                </button>
-                <p id="loginError" class="text-red-500 text-sm text-center hidden font-bold"></p>
+    <div id="login-overlay">
+        <div class="login-card">
+            <div style="width: 70px; height: 70px; background: var(--xbox-green); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                <i class="fab fa-xbox" style="font-size: 40px; color: white;"></i>
             </div>
-        </div>
-
-        <!-- Activity Section -->
-        <div id="activitySection" class="hidden-section">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-black/30 p-4 rounded-2xl border border-white/5">
-                <div class="flex items-center gap-4 mb-4 md:mb-0">
-                    <div class="w-12 h-12 bg-xbox-green rounded-full flex items-center justify-center font-bold text-xl">X</div>
-                    <div>
-                        <p class="text-xs text-gray-500 uppercase">Student Profile</p>
-                        <p id="studentNameDisplay" class="font-bold text-lg text-white">---</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="text-xs text-gray-500 uppercase">Current Mission</p>
-                    <p class="text-xbox-green font-black italic">10 SENTENCES CHALLENGE</p>
-                </div>
-            </div>
-
-            <form id="challengeForm" onsubmit="handleSubmit(event)" class="space-y-6">
-                <div id="questionsContainer" class="grid gap-6">
-                    <!-- Questions injected here -->
-                </div>
-
-                <div class="pt-8 pb-20">
-                    <button type="submit" id="submitBtn" class="btn-xbox w-full py-6 rounded-2xl font-black text-2xl shadow-2xl flex items-center justify-center">
-                        إرسال الإجابات النهائية (SUBMIT)
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Success Section -->
-        <div id="successSection" class="hidden-section text-center py-20 animate-bounce">
-            <div class="text-9xl mb-8">🎮</div>
-            <h2 class="text-5xl font-black golden-gradient mb-4">Mission Accomplished!</h2>
-            <p class="text-xl text-gray-400">تم حفظ إجاباتك بنجاح في سجلات Label X.</p>
+            <h2 style="font-family: 'Orbitron'; margin-top: 20px; letter-spacing: 3px;">LABEL X</h2>
+            <p style="font-size: 11px; opacity: 0.5; margin-top: 10px; font-family: 'Montserrat';">ELITE GRAMMAR CHALLENGE</p>
+            <input type="text" id="emailInput" placeholder="Enter Student Code / Email">
+            <button onclick="bypassLogin()" style="background: var(--xbox-green); color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-family: 'Orbitron'; font-weight: 900; cursor: pointer;">START MISSION</button>
         </div>
     </div>
 
-    <script>
-        // الرابط الخاص بك (تأكد إنه نفس رابط الـ Web App اللي عملنا له Deploy)
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXvUcfLppLO9VOi9GMGOMeWR6Ugpne6ZRCvqEyzzWvG7wqzyUf1BJ5rYmKvpqMWEre/exec"; 
+    <header class="rank-header">
+        <h1>EYC ACADEMY</h1>
+    </header>
 
+    <div class="status-bar">
+        <div class="token-display">
+            <i class="fas fa-coins"></i> REWARD: 180 TK
+        </div>
+        <div style="font-family: 'Orbitron'; font-size: 10px; color: var(--xbox-green); font-weight: 900;">
+            MISSION: 10 SENTENCES
+        </div>
+    </div>
+
+    <main class="mission-container">
+        <form id="challengeForm">
+            <div id="questions-grid">
+                </div>
+            <button type="submit" class="btn-submit">TRANSMIT ALL DATA</button>
+        </form>
+
+        <div id="successMsg" class="hidden" style="text-align:center; padding: 60px 20px;">
+            <div style="font-size: 80px; color: var(--xbox-green); margin-bottom: 20px;">🎮</div>
+            <h2 style="font-family: 'Orbitron'; color: var(--gold);">MISSION ACCOMPLISHED</h2>
+            <p style="opacity: 0.5; margin-top: 10px;">Your sentences have been stored in EYC database.</p>
+        </div>
+    </main>
+
+    <script>
         const challengeData = [
             { v: "Write", t: "Present Simple" },
             { v: "Finish", t: "Past Simple" },
@@ -137,103 +129,38 @@
             { v: "Help", t: "If Conditional (Type 2)" }
         ];
 
-        let userIdentifier = "";
-
-        async function handleLogin() {
-            const input = document.getElementById('userInput').value.trim();
-            const btn = document.getElementById('loginBtn');
-            const err = document.getElementById('loginError');
-
-            if (!input) return;
-
-            btn.disabled = true;
-            btn.innerHTML = 'جاري التحقق... <div class="loader"></div>';
-            err.classList.add('hidden');
-
-            try {
-                const response = await fetch(`${SCRIPT_URL}?action=check&email=${encodeURIComponent(input)}`);
-                const data = await response.json();
-
-                if (data.status === "authorized") {
-                    userIdentifier = input;
-                    document.getElementById('studentNameDisplay').innerText = data.studentCode;
-                    startChallenge();
-                } else if (data.status === "already_done") {
-                    showLoginError("لقد قمت بحل هذا التحدي مسبقاً يا بطل!");
-                } else {
-                    showLoginError("هذا الإيميل أو الكود غير موجود.");
-                }
-            } catch (e) {
-                showLoginError("خطأ في الاتصال. تأكد من نشر الـ Script كـ Anyone.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "دخول التحدي";
-            }
+        function bypassLogin() {
+            document.getElementById('login-overlay').style.display = 'none';
+            renderQuestions();
         }
 
-        function showLoginError(msg) {
-            const err = document.getElementById('loginError');
-            err.innerText = msg;
-            err.classList.remove('hidden');
-        }
-
-        function startChallenge() {
-            document.getElementById('loginSection').classList.add('hidden-section');
-            document.getElementById('activitySection').classList.remove('hidden-section');
-            
-            const container = document.getElementById('questionsContainer');
+        function renderQuestions() {
+            const grid = document.getElementById('questions-grid');
             challengeData.forEach((item, i) => {
-                container.innerHTML += `
-                    <div class="xbox-card p-6 border border-white/5">
-                        <div class="flex flex-wrap items-center gap-3 mb-4">
-                            <span class="bg-xbox-green/20 text-xbox-green px-4 py-1 rounded-lg font-bold text-sm">Verb: ${item.v}</span>
-                            <span class="text-gray-500 font-bold">+</span>
-                            <span class="bg-white/5 text-gray-300 px-4 py-1 rounded-lg font-bold text-sm">Tense: ${item.t}</span>
-                            <span class="mr-auto text-white/20 font-black italic">#0${i+1}</span>
+                grid.innerHTML += `
+                    <div class="question-card">
+                        <div class="badge-row">
+                            <span class="badge badge-verb">VERB: ${item.v}</span>
+                            <span class="badge badge-tense">TENSE: ${item.t}</span>
+                            <span style="margin-left: auto; font-family: 'Orbitron'; font-size: 10px; opacity: 0.3;">TASK #0${i+1}</span>
                         </div>
-                        <textarea name="q${i}" required class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 input-focus h-24 resize-none" placeholder="اكتب جملتك المبدعة هنا..."></textarea>
+                        <textarea placeholder="Construct your sentence here..." required></textarea>
                     </div>
                 `;
             });
         }
 
-        async function handleSubmit(e) {
+        document.getElementById('challengeForm').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            const formData = new FormData(e.target);
-            
-            // تجميع الإجابات بفاصلة
-            const answers = [];
-            for(let i=0; i<10; i++) {
-                answers.push(formData.get(`q${i}`).replace(/-/g, ' '));
-            }
-            const finalString = answers.join(" - ");
-
+            const btn = e.target.querySelector('button');
+            btn.innerText = "UPLOADING TO CLOUD...";
             btn.disabled = true;
-            btn.innerHTML = 'جاري رفع البيانات للسحابة... <div class="loader"></div>';
 
-            try {
-                // إرسال البيانات للـ Script
-                const url = `${SCRIPT_URL}?action=submit_all&userKey=${encodeURIComponent(userIdentifier)}&answers=${encodeURIComponent(finalString)}`;
-                
-                const res = await fetch(url);
-                const result = await res.json();
-
-                if (result.status === "success") {
-                    document.getElementById('activitySection').classList.add('hidden-section');
-                    document.getElementById('successSection').classList.remove('hidden-section');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else {
-                    alert("حدث خطأ أثناء الحفظ: " + result.message);
-                }
-            } catch (err) {
-                alert("تم الإرسال! (إذا كانت هناك مشكلة في الـ CORS، الإجابة غالباً وصلت، يرجى التحقق من الشيت)");
-                // في حالات الـ Script أحياناً يعطي خطأ CORS رغم وصول البيانات
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "إرسال الإجابات النهائية (SUBMIT)";
-            }
-        }
+            setTimeout(() => {
+                document.getElementById('challengeForm').classList.add('hidden');
+                document.getElementById('successMsg').classList.remove('hidden');
+            }, 1500);
+        };
     </script>
 </body>
 </html>

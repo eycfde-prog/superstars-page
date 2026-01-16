@@ -1,195 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Label X | Season 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Montserrat:wght@300;400;600&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --xbox-green: #107c10;
-            --gold: #fcc200;
-            --bg-dark: #050505;
-            --glass: rgba(255, 255, 255, 0.03);
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+            color: #fff;
+            min-height: 100vh;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        body { background: var(--bg-dark); color: white; overflow-x: hidden; min-height: 100vh; }
-
-        /* Login Flash Overlay */
-        #login-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000;
-            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px);
-            transition: 0.5s;
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        .gold-glow { text-shadow: 0 0 15px rgba(241, 196, 15, 0.5); }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
         }
-        .login-card {
-            background: var(--glass); border: 2px solid var(--xbox-green); padding: 40px;
-            border-radius: 35px; text-align: center; width: 90%; max-width: 450px;
-            box-shadow: 0 0 50px rgba(16, 124, 16, 0.2);
+        .difficulty-btn.active {
+            border-color: #f1c40f;
+            background: rgba(241, 196, 15, 0.1);
+            color: #f1c40f;
         }
-        .login-card input {
-            width: 100%; padding: 15px; margin: 25px 0; background: rgba(255,255,255,0.05);
-            border: 1px solid #333; color: white; border-radius: 12px; text-align: center; font-size: 16px;
+        /* Glassy's Button */
+        .glassy-float {
+            position: fixed; bottom: 30px; left: 30px; z-index: 1000;
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; items-center; justify-content: center;
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
+            cursor: pointer; animation: bounce 2s infinite;
         }
-
-        /* Header */
-        .rank-header { text-align: center; padding: 25px 0; border-bottom: 1px solid rgba(16, 124, 16, 0.1); }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; background: linear-gradient(to bottom, #fff, var(--xbox-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
-
-        /* Status Bar */
-        .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: rgba(16, 124, 16, 0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .token-display { font-family: 'Orbitron'; color: var(--gold); font-size: 14px; font-weight: 700; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         
-        /* Glassy Instructions Button */
-        .glassy-btn { 
-            background: linear-gradient(45deg, #107c10, #1eb11e); 
-            color: white; border: none; padding: 10px 20px; border-radius: 50px; 
-            font-size: 12px; font-weight: 800; cursor: pointer; font-family: 'Cairo';
-            box-shadow: 0 4px 15px rgba(16, 124, 16, 0.3); transition: 0.3s;
-        }
-        .glassy-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(16, 124, 16, 0.5); }
-
-        /* Level Tabs */
-        .level-tabs { display: flex; gap: 10px; margin: 25px auto; max-width: 600px; padding: 0 20px; }
-        .tab { flex: 1; padding: 15px; text-align: center; background: var(--glass); border: 1px solid #333; border-radius: 15px; cursor: pointer; font-family: 'Orbitron'; font-size: 10px; transition: 0.3s; color: #777; font-weight: 900; }
-        .tab.active { border-color: var(--xbox-green); background: rgba(16, 124, 16, 0.15); color: #fff; box-shadow: inset 0 0 10px rgba(16, 124, 16, 0.2); }
-
-        /* Questions Section */
-        .mission-container { max-width: 800px; margin: 0 auto; padding: 0 20px 50px; }
-        .xbox-card { 
-            background: var(--glass); border-left: 4px solid var(--xbox-green); 
-            border-radius: 20px; padding: 25px; margin-bottom: 20px; 
-            border-top: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
-            position: relative; overflow: hidden;
-        }
-        .xbox-card:hover { transform: translateX(10px); background: rgba(255,255,255,0.06); }
-        
-        .verb-tag { background: rgba(16, 124, 16, 0.3); color: #4ade80; padding: 6px 15px; border-radius: 10px; font-weight: 900; font-size: 13px; font-family: 'Orbitron'; }
-        .tense-tag { background: rgba(255,255,255,0.05); color: #aaa; padding: 6px 15px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-        
-        textarea { 
-            width: 100%; height: 100px; background: rgba(0,0,0,0.6); 
-            border: 1px solid #333; border-radius: 15px; padding: 15px; 
-            color: #fff; resize: none; font-size: 16px; margin-top: 15px;
-            transition: 0.3s; font-family: 'Montserrat'; border-right: 1px solid #333;
-        }
-        textarea:focus { border-color: var(--xbox-green); outline: none; box-shadow: 0 0 20px rgba(16, 124, 16, 0.1); }
-
-        .btn-submit {
-            width: 100%; padding: 22px; border-radius: 25px; font-family: 'Orbitron'; font-weight: 900;
-            margin-top: 30px; border: none; cursor: pointer; background: var(--xbox-green); color: white;
-            font-size: 1.1rem; letter-spacing: 2px; box-shadow: 0 10px 30px rgba(16, 124, 16, 0.3); transition: 0.3s;
-        }
-        .btn-submit:hover { transform: translateY(-5px); box-shadow: 0 15px 45px rgba(16, 124, 16, 0.5); }
-
-        .hidden { display: none; }
+        .hidden-section { display: none; }
     </style>
 </head>
-<body>
+<body class="p-4">
 
-    <div id="login-overlay">
-        <div class="login-card">
-            <i class="fab fa-xbox" style="font-size: 60px; color: var(--xbox-green);"></i>
-            <h2 style="font-family: 'Orbitron'; margin-top: 25px; letter-spacing: 4px;">LABEL X</h2>
-            <p style="font-size: 10px; color: #777; margin-top: 10px; font-family: 'Orbitron';">AUTHENTICATION REQUIRED</p>
-            <input type="text" id="studentName" placeholder="Enter Hunter Code / Email">
-            <button onclick="loginSuccess()" class="glassy-btn" style="width: 100%; padding: 18px; font-size: 16px;">START MISSION</button>
+    <div class="glassy-float" onclick="showGlassyGuide()">
+        <i class="fas fa-magic text-black text-2xl"></i>
+    </div>
+
+    <div id="loginSection" class="max-w-md mx-auto mt-20">
+        <div class="glass-card p-10 text-center border-t-4 border-yellow-500">
+            <h1 class="orbitron text-4xl mb-2 gold-glow uppercase tracking-tighter">Label X</h1>
+            <p class="text-gray-500 text-xs mb-8 uppercase tracking-widest">Season 2026 / Mission 01</p>
+            
+            <input type="text" id="emailInput" value="H-2026-MR-EZZ"
+                   class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:outline-none focus:border-yellow-500 transition-all">
+            
+            <button onclick="handleLogin()" class="w-full py-4 rounded-2xl font-black bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-xl hover:scale-105 transition-transform orbitron">
+                INITIALIZE MISSION
+            </button>
+            <p class="mt-4 text-[10px] text-gray-500">Authorized by EYC Systems & Glassy</p>
         </div>
     </div>
 
-    <header class="rank-header">
-        <h1>EYC ACADEMY</h1>
-    </header>
+    <div id="activitySection" class="hidden-section max-w-6xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="orbitron text-5xl gold-glow mb-4">LABEL MISSION</h1>
+            
+            <div class="flex justify-center gap-4 mt-6">
+                <button onclick="setDiff('Basic', 100, this)" class="difficulty-btn px-6 py-2 rounded-full border border-white/10 text-xs orbitron">BASIC (+100 TK)</button>
+                <button onclick="setDiff('Expert', 250, this)" class="difficulty-btn active px-6 py-2 rounded-full border border-white/10 text-xs orbitron">EXPERT (+250 TK)</button>
+                <button onclick="setDiff('Legend', 500, this)" class="difficulty-btn px-6 py-2 rounded-full border border-white/10 text-xs orbitron">LEGEND (+500 TK)</button>
+            </div>
+        </header>
 
-    <div class="status-bar">
-        <div class="token-display">
-            <i class="fas fa-coins"></i> <span id="reward-val">180</span> TK
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="imagesGrid">
+            </div>
+    </div>
+
+    <div id="glassyModal" class="hidden-section fixed inset-0 bg-black/90 z-[2000] flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="glass-card max-w-lg p-8 border-2 border-yellow-500 text-center relative">
+            <div class="absolute -top-12 left-1/2 -translate-x-1/2 bg-yellow-500 w-24 h-24 rounded-full flex items-center justify-center border-4 border-black">
+                <i class="fas fa-robot text-black text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-black mt-8 mb-4 text-yellow-500">إزاي تعمل النشاط يا بطل؟</h2>
+            <div class="text-right space-y-4 text-gray-300">
+                <p>1️⃣ بص على الصورة كويس وحاول تفهم الـ <b>Label</b> المطلوب.</p>
+                <p>2️⃣ اكتب الكلمة الصح بالإنجليزية في المربع.</p>
+                <p>3️⃣ دوس إرسال عشان تجمع الـ <b>Tokens</b> بتاعتك.</p>
+                <p class="text-yellow-500 italic text-sm">"النشاط ده بيقوي عندك الـ Vocabulary جداً.. وريني شطارتك!" - Glassy</p>
+            </div>
+            <button onclick="hideGlassyGuide()" class="mt-8 bg-white text-black px-10 py-3 rounded-xl font-bold">فهمت يا جلاسي!</button>
         </div>
-        <button class="glassy-btn" onclick="showInstructions()">
-            HOW TO PLAY <i class="fas fa-magic"></i>
-        </button>
     </div>
 
-    <div class="level-tabs">
-        <div class="tab" onclick="setDifficulty(120, this)">BEGINNER</div>
-        <div class="tab active" onclick="setDifficulty(180, this)">INTERMEDIATE</div>
-        <div class="tab" onclick="setDifficulty(250, this)">ELITE</div>
-    </div>
+<script>
+    const GITHUB_BASE = "https://raw.githubusercontent.com/رابط_حسابك/رابط_المستودع/main/ESSL/"; 
+    let currentDiff = "Expert";
 
-    <main class="mission-container">
-        <form id="mission-form">
-            <div id="questions-area">
+    function showGlassyGuide() { document.getElementById('glassyModal').classList.remove('hidden-section'); }
+    function hideGlassyGuide() { document.getElementById('glassyModal').classList.add('hidden-section'); }
+
+    function setDiff(name, tk, btn) {
+        currentDiff = name;
+        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        alert(`Mission changed to: ${name}. Reward: ${tk} Tokens.`);
+    }
+
+    function handleLogin() {
+        document.getElementById('loginSection').classList.add('hidden-section');
+        document.getElementById('activitySection').classList.remove('hidden-section');
+        initActivity();
+    }
+
+    function initActivity() {
+        const grid = document.getElementById('imagesGrid');
+        grid.innerHTML = '';
+        for (let i = 1; i <= 6; i++) {
+            const id = `SL${i}`;
+            const card = document.createElement('div');
+            card.className = "glass-card p-6 border-b-2 border-transparent hover:border-yellow-500 transition-all group";
+            card.innerHTML = `
+                <div class="aspect-video bg-black rounded-2xl mb-6 overflow-hidden border border-white/5 relative">
+                    <img src="${GITHUB_BASE}${id}.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all" onerror="this.src='https://via.placeholder.com/400x250/111/f1c40f?text=Label+Image+${i}'">
+                    <div class="absolute top-4 left-4 bg-yellow-500 text-black text-[10px] font-bold px-3 py-1 rounded-md orbitron">#IMAGE-0${i}</div>
                 </div>
-            <button type="submit" class="btn-submit">SYNC DATA TO SERVER <i class="fas fa-cloud-upload-alt"></i></button>
-        </form>
-
-        <div id="finish-card" class="hidden" style="text-align:center; padding: 60px 20px; background: var(--glass); border-radius: 40px; border: 2px solid var(--xbox-green); margin-top: 30px;">
-            <i class="fas fa-check-double" style="font-size: 80px; color: var(--xbox-green); margin-bottom: 25px;"></i>
-            <h2 style="font-family: 'Orbitron'; font-size: 2rem;">MISSION COMPLETE</h2>
-            <p style="color: #888; margin-top: 15px;">Your sentences have been encrypted and sent to EYC Database.</p>
-        </div>
-    </main>
-
-    <script>
-        const tasks = [
-            { v: "Write", t: "Present Simple" },
-            { v: "Finish", t: "Past Simple" },
-            { v: "Build", t: "Passive Voice (Present)" },
-            { v: "Say", t: "Reported Speech" },
-            { v: "Study", t: "If Conditional (Type 1)" },
-            { v: "Play", t: "Present Continuous" },
-            { v: "Eat", t: "Present Perfect" },
-            { v: "Fix", t: "Passive Voice (Past)" },
-            { v: "Visit", t: "Future Simple (will)" },
-            { v: "Help", t: "If Conditional (Type 2)" }
-        ];
-
-        function loginSuccess() {
-            const user = document.getElementById('studentName').value;
-            if(!user) { alert("Please identify yourself, Hunter!"); return; }
-            document.getElementById('login-overlay').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('login-overlay').style.display = 'none';
-                renderTasks();
-            }, 500);
-        }
-
-        function renderTasks() {
-            const area = document.getElementById('questions-area');
-            area.innerHTML = tasks.map((task, i) => `
-                <div class="xbox-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span class="verb-tag">${task.v}</span>
-                        <span class="tense-tag">${task.t}</span>
-                    </div>
-                    <textarea placeholder="Write a perfect sentence using the verb and tense above..." required></textarea>
+                <div class="flex gap-2">
+                    <input type="text" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-sm focus:border-yellow-500 outline-none" placeholder="Label name...">
+                    <button class="bg-yellow-500 text-black px-6 rounded-xl font-black text-xs hover:scale-95 transition-all">OK</button>
                 </div>
-            `).join('');
+            `;
+            grid.appendChild(card);
         }
-
-        function setDifficulty(val, el) {
-            document.getElementById('reward-val').innerText = val;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-        }
-
-        function showInstructions() {
-            alert("أهلاً بك يا بطل! جلاسي بتقولك:\n\n1. بص على الفعل والزمن المطلوبين.\n2. كون جملة من خيالك تكون صحيحة 100%.\n3. ركز في الـ Passive و الـ Reported لأنهم فيهم توكنز أعلى!\n\nبالتوفيق يا سكر!");
-        }
-
-        document.getElementById('mission-form').onsubmit = (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ENCRYPTING...';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                document.getElementById('mission-form').classList.add('hidden');
-                document.getElementById('finish-card').classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 2000);
-        };
-    </script>
+    }
+</script>
 </body>
 </html>

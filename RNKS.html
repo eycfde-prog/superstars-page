@@ -9,98 +9,124 @@
     
     <style>
         :root {
-            --primary-bg: #0a0a0c;
-            --accent-gold: #ffcc00;
+            --primary-bg: #050505;
+            --accent-gold: #fcc200;
             --accent-silver: #e0e0e0;
-            --accent-bronze: #ffa366;
-            --gold-glow: rgba(255, 204, 0, 0.3);
-            --glass-bg: rgba(255, 255, 255, 0.07);
+            --accent-bronze: #cd7f32;
+            --gold-glow: rgba(252, 194, 0, 0.4);
+            --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
             --text-color: #ffffff;
-            --card-gradient: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            --card-gradient: linear-gradient(145deg, rgba(30,30,30,0.9) 0%, rgba(5,5,5,1) 100%);
         }
 
         html { scroll-behavior: smooth; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--primary-bg); color: var(--text-color); overflow-x: hidden; }
 
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 40px 15px; }
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
 
-        /* Header */
-        .rank-header { text-align: center; margin-bottom: 80px; }
+        .rank-header { text-align: center; margin-bottom: 80px; position: relative; }
         .rank-header h1 { 
-            font-family: 'Orbitron'; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900;
-            background: linear-gradient(to bottom, #fff 30%, var(--accent-gold));
+            font-family: 'Orbitron'; font-size: clamp(2.5rem, 6vw, 4rem); 
+            letter-spacing: 5px; font-weight: 900;
+            background: linear-gradient(to bottom, #fff 30%, var(--accent-gold) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            letter-spacing: 5px;
+            filter: drop-shadow(0 0 20px var(--gold-glow));
         }
 
-        /* Podium Section */
+        /* --- Podium Styling --- */
         .podium {
             display: flex; justify-content: center; align-items: flex-end;
-            gap: 15px; margin-bottom: 80px; padding-top: 60px;
+            gap: 25px; margin-bottom: 120px; padding-top: 50px;
+            display: none; /* Will be shown after JS load */
         }
 
         .podium-item {
             background: var(--card-gradient);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px; padding: 25px 15px;
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--glass-border);
+            border-radius: 30px; padding: 35px 20px;
             text-align: center; position: relative;
-            flex: 1; transition: 0.3s ease;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
         .podium-item:hover { transform: translateY(-10px); border-color: var(--accent-gold); }
 
-        .rank-1 { height: 450px; border-color: var(--accent-gold); z-index: 5; background: rgba(255, 204, 0, 0.05); }
-        .rank-2 { height: 380px; border-color: var(--accent-silver); }
-        .rank-3 { height: 350px; border-color: var(--accent-bronze); }
+        .rank-1 { width: 340px; height: 500px; order: 2; border-color: var(--accent-gold); z-index: 5; }
+        .rank-2 { width: 280px; height: 400px; order: 1; border-color: var(--accent-silver); }
+        .rank-3 { width: 280px; height: 360px; order: 3; border-color: var(--accent-bronze); }
 
-        .avatar-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 15px; }
-        .rank-1 .avatar-wrapper { width: 130px; height: 130px; box-shadow: 0 0 30px var(--gold-glow); animation: goldPulse 2s infinite ease-in-out; }
+        .avatar-wrapper { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
+        .rank-1 .avatar-wrapper { width: 160px; height: 160px; }
         
-        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.2); }
-        .rank-1 .avatar { border-color: var(--accent-gold); }
-
-        .crown { position: absolute; top: -55px; left: 50%; transform: translateX(-50%); font-size: 3.5rem; color: var(--accent-gold); animation: crownFloat 2.5s infinite ease-in-out; filter: drop-shadow(0 0 15px var(--accent-gold)); }
-
-        /* Stats in Podium */
-        .podium-stats { display: flex; justify-content: center; gap: 10px; margin-top: 15px; font-size: 0.85rem; }
-        .stat-box { display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 10px; }
-        .stat-box img { width: 18px; height: 18px; }
-
-        /* Rank List */
-        .rank-list { display: flex; flex-direction: column; gap: 15px; }
-        .rank-row {
-            display: flex; align-items: center;
-            background: var(--card-gradient);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 15px 25px;
-            transition: 0.3s;
+        .avatar { 
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover; 
+            border: 4px solid var(--glass-border); position: relative; z-index: 2; 
         }
-        .rank-row:hover { background: rgba(255,255,255,0.05); transform: scale(1.01); }
 
-        .row-rank-num { font-family: 'Orbitron'; font-size: 1.5rem; font-weight: 900; width: 50px; color: var(--accent-gold); }
-        .row-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent-gold); margin-right: 20px; }
+        .rank-1 .avatar { border-color: var(--accent-gold); box-shadow: 0 0 30px var(--gold-glow); }
+
+        /* --- Stats Icons --- */
+        .stat-badge {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; margin: 10px 0; font-family: 'Orbitron'; font-weight: 700;
+        }
+        .stat-icon { height: 22px; width: auto; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
         
-        .row-info { flex-grow: 1; }
-        .row-name { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .row-title { font-size: 0.75rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; }
+        .tokens-count { color: var(--accent-gold); font-size: 1.2rem; margin: 15px 0; font-weight: 900; }
 
-        .row-stats { display: flex; align-items: center; gap: 20px; text-align: right; }
-        .token-count { font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 1.1rem; }
-        .asset-icon { width: 24px; height: 24px; vertical-align: middle; margin-left: 5px; }
+        /* --- Rank List Styling --- */
+        .rank-list { display: flex; flex-direction: column; gap: 20px; display: none; }
+        
+        .rank-row {
+            display: grid;
+            grid-template-columns: 80px 100px 1fr 250px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 15px 25px;
+            border-radius: 20px;
+            transition: 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
 
-        @keyframes goldPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .rank-row:hover {
+            background: rgba(252, 194, 0, 0.05);
+            border-color: var(--accent-gold);
+            transform: scale(1.01);
+        }
+
+        .row-rank-num { font-family: 'Orbitron'; font-weight: 900; font-size: 1.5rem; color: var(--accent-gold); }
+        .row-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent-gold); object-fit: cover; }
+        
+        .row-info { padding-left: 20px; }
+        .row-name { font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 700; color: #fff; display: block; }
+        .row-title { font-size: 0.75rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+
+        .row-stats {
+            display: flex; gap: 20px; justify-content: flex-end; align-items: center;
+        }
+
+        .mini-stat { display: flex; align-items: center; gap: 5px; font-family: 'Orbitron'; font-size: 0.9rem; font-weight: 800; }
+
+        .crown { 
+            position: absolute; top: -45px; left: 50%; transform: translateX(-50%); 
+            font-size: 3.5rem; color: var(--accent-gold); 
+            filter: drop-shadow(0 0 15px var(--accent-gold));
+            animation: crownFloat 3s infinite ease-in-out;
+        }
+
         @keyframes crownFloat { 0%, 100% { transform: translateX(-50%) translateY(0) rotate(-5deg); } 50% { transform: translateX(-50%) translateY(-15px) rotate(5deg); } }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .podium { flex-direction: column; align-items: center; gap: 40px; }
-            .podium-item { width: 100%; height: auto !important; padding: 40px 20px; }
-            .row-stats { flex-direction: column; gap: 5px; align-items: flex-end; }
-            .row-name { font-size: 1rem; }
+            .rank-1, .rank-2, .rank-3 { width: 90%; height: auto; order: initial; }
+            .rank-row { grid-template-columns: 50px 70px 1fr; gap: 10px; padding: 10px; }
+            .row-stats { grid-column: 1 / span 4; justify-content: space-around; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; margin-top: 10px; }
+            .row-name { font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -110,8 +136,11 @@
 
     <div class="container">
         <header class="rank-header">
+            <div style="color: var(--accent-gold); letter-spacing: 10px; font-weight: bold; font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 10px;">GLOBAL LEADERBOARD</div>
             <h1>HALL OF FAME</h1>
-            <p id="loading-text" style="color: var(--accent-gold); font-family: 'Orbitron'; letter-spacing: 2px;">SYNCING RECORDS...</p>
+            <div id="loading-status" style="margin-top: 20px; font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent-gold);">
+                <i class="fas fa-sync fa-spin"></i> ACCESSING ENCRYPTED DATA...
+            </div>
         </header>
 
         <div class="podium" id="podium-container"></div>
@@ -119,6 +148,7 @@
     </div>
 
     <script>
+        // API رابط البيانات (تأكد أن أسماء الأعمدة في الشيت تطابق المستدعى بالأسفل)
         const scriptURL = 'https://script.google.com/macros/s/AKfycbzqwGgv3hQxRg8sU-OhHV1s9nQjeXg-CqCV4f4ainnAuo2yfWoycxWTNO702eM1Ek78/exec';
 
         async function fetchRanks() {
@@ -127,7 +157,7 @@
                 const data = await response.json();
                 renderData(data);
             } catch (error) {
-                document.getElementById('loading-text').innerText = "CONNECTION FAILED.";
+                document.getElementById('loading-status').innerHTML = "<span style='color: #ff4444;'>CONNECTION ERROR</span>";
                 console.error('Error!', error.message);
             }
         }
@@ -135,58 +165,74 @@
         function renderData(data) {
             const podiumContainer = document.getElementById('podium-container');
             const ranksContainer = document.getElementById('ranks-container');
-            document.getElementById('loading-text').style.display = 'none';
+            document.getElementById('loading-status').style.display = 'none';
 
-            // Top 3 Rendering
+            // Top 3 for Podium
             const top3 = data.slice(0, 3);
+            const displayOrder = [1, 0, 2]; // 2nd, 1st, 3rd
             let podiumHTML = '';
-            const order = [1, 0, 2]; // Silver, Gold, Bronze
-            
-            order.forEach(i => {
-                if(top3[i]) {
-                    const s = top3[i];
-                    const rankClass = i === 0 ? 'rank-1' : (i === 1 ? 'rank-2' : 'rank-3');
-                    const crown = i === 0 ? '<i class="fas fa-crown crown"></i>' : '';
-                    podiumHTML += `
-                        <div class="podium-item ${rankClass}">
-                            ${crown}
-                            <div class="avatar-wrapper">
-                                <img src="${s.Image}" class="avatar">
-                            </div>
-                            <div style="font-family: 'Orbitron'; font-weight: 800; font-size: 1.2rem; margin-bottom: 5px;">${s.Name}</div>
-                            <div style="color: var(--accent-gold); font-family: 'Orbitron'; font-weight: 900; font-size: 1.3rem;">${s.Tokens} <span style="font-size: 0.7rem;">TK</span></div>
-                            <div style="font-size: 0.7rem; margin: 10px 0; opacity: 0.7; letter-spacing: 1px;">${s.Title}</div>
-                            <div class="podium-stats">
-                                <div class="stat-box"><img src="Assets/Stars.png"> <span>${s.Stars || 0}</span></div>
-                                <div class="stat-box"><img src="Assets/GT.png"> <span>${s.GoldenTickets || 0}</span></div>
-                            </div>
-                        </div>`;
-                }
-            });
-            podiumContainer.innerHTML = podiumHTML;
 
-            // Rest of Ranks
-            const rest = data.slice(3);
-            let listHTML = '';
-            rest.forEach((s, index) => {
-                listHTML += `
-                <div class="rank-row">
-                    <div class="row-rank-num">#${index + 4}</div>
-                    <img src="${s.Image}" class="row-avatar">
-                    <div class="row-info">
-                        <div class="row-name">${s.Name}</div>
-                        <div class="row-title">${s.Title}</div>
-                    </div>
-                    <div class="row-stats">
-                        <div class="token-count">${s.Tokens} <span style="font-size: 0.6rem; color: var(--accent-gold);">TOKENS</span></div>
-                        <div>
-                            <span style="margin-right: 10px;"><img src="Assets/Stars.png" class="asset-icon"> ${s.Stars || 0}</span>
-                            <span><img src="Assets/GT.png" class="asset-icon"> ${s.GoldenTickets || 0}</span>
+            displayOrder.forEach(idx => {
+                const student = top3[idx];
+                if (!student) return;
+                
+                const isFirst = idx === 0;
+                const rankClass = isFirst ? 'rank-1' : (idx === 1 ? 'rank-2' : 'rank-3');
+                const crown = isFirst ? '<i class="fas fa-crown crown"></i>' : '';
+
+                podiumHTML += `
+                    <div class="podium-item ${rankClass}">
+                        ${crown}
+                        <div class="avatar-wrapper">
+                            <img src="${student.Image || 'https://via.placeholder.com/150'}" class="avatar">
+                        </div>
+                        <div class="row-title">${student.Title || 'Newcomer'}</div>
+                        <div class="row-name" style="font-size: 1.5rem; margin: 10px 0;">${student.Name}</div>
+                        
+                        <div class="tokens-count">${student.Tokens || 0} TOKENS</div>
+                        
+                        <div class="stat-badge">
+                            <img src="assets/Stars.png" class="stat-icon" alt="Stars">
+                            <span>${student.Stars || 0}</span>
+                        </div>
+                        <div class="stat-badge">
+                            <img src="assets/GT.png" class="stat-icon" alt="GT">
+                            <span>${student.GT || 0} GT</span>
                         </div>
                     </div>
-                </div>`;
+                `;
+            });
+            podiumContainer.innerHTML = podiumHTML;
+            podiumContainer.style.display = 'flex';
+
+            // Rest of the list
+            const rest = data.slice(3);
+            let listHTML = '';
+            rest.forEach((student, index) => {
+                listHTML += `
+                    <div class="rank-row">
+                        <div class="row-rank-num">#${index + 4}</div>
+                        <img src="${student.Image || 'https://via.placeholder.com/150'}" class="row-avatar">
+                        <div class="row-info">
+                            <span class="row-name">${student.Name}</span>
+                            <span class="row-title">${student.Title || 'Superstar'}</span>
+                        </div>
+                        <div class="row-stats">
+                            <div class="mini-stat" style="color: var(--accent-gold);">
+                                ${student.Tokens || 0} TK
+                            </div>
+                            <div class="mini-stat">
+                                <img src="assets/Stars.png" style="height: 18px;"> ${student.Stars || 0}
+                            </div>
+                            <div class="mini-stat">
+                                <img src="assets/GT.png" style="height: 18px;"> ${student.GT || 0}
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
             ranksContainer.innerHTML = listHTML;
+            ranksContainer.style.display = 'flex';
         }
 
         // --- Background Animation ---
@@ -200,26 +246,26 @@
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.size = Math.random() * 2 + 1;
-                this.speed = Math.random() * 0.5 + 0.2;
+                this.speedY = Math.random() * -0.5 - 0.2;
                 this.opacity = Math.random() * 0.5;
             }
-            draw() {
-                ctx.fillStyle = `rgba(255, 204, 0, ${this.opacity})`;
+            update() {
+                this.y += this.speedY;
+                if (this.y < -10) this.y = canvas.height + 10;
+                ctx.fillStyle = `rgba(252, 194, 0, ${this.opacity})`;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
-                this.y -= this.speed;
-                if(this.y < -10) this.init();
             }
         }
         function animate() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            particles.forEach(p => p.draw());
+            particles.forEach(p => p.update());
             requestAnimationFrame(animate);
         }
         window.addEventListener('resize', initCanvas);
         initCanvas();
-        for(let i=0; i<60; i++) particles.push(new Particle());
+        particles = Array.from({length: 60}, () => new Particle());
         animate();
 
         fetchRanks();

@@ -60,9 +60,10 @@
         }
 
         .student-img {
-            width: 100%; height: 100%; border-radius: 50%;
+            width: 120px; height: 120px; border-radius: 50%;
             object-fit: cover; border: 3px solid var(--gold);
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            background: #222;
         }
 
         .student-name { 
@@ -121,15 +122,6 @@
         .trophy-item.unlocked { border: 1px solid rgba(255,215,0,0.2); }
         .trophy-item.unlocked img { opacity: 1; filter: none; }
 
-        .nav-btn {
-            position: fixed; top: 50%; transform: translateY(-50%);
-            background: rgba(255,215,0,0.1); border: none; 
-            width: 45px; height: 45px; border-radius: 50%;
-            color: var(--gold); font-size: 18px; cursor: pointer; 
-            z-index: 100; backdrop-filter: blur(5px);
-        }
-        .prev-btn { left: 15px; } .next-btn { right: 15px; }
-
         #loading-overlay {
             position: fixed; inset: 0; background: #000; z-index: 1000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -141,10 +133,6 @@
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        @media (max-width: 768px) {
-            .nav-btn { display: none; }
-        }
     </style>
 </head>
 <body>
@@ -153,11 +141,8 @@
 
 <div id="loading-overlay">
     <div class="spinner"></div>
-    <p id="loading-text" style="margin-top:20px; color:var(--gold); font-family: sans-serif;">تحميل بيانات الأبطال...</p>
+    <p id="loading-text" style="margin-top:20px; color:var(--gold);">جاري استدعاء الأبطال...</p>
 </div>
-
-<button class="nav-btn prev-btn" onclick="window.swiper.slidePrev()">❮</button>
-<button class="nav-btn next-btn" onclick="window.swiper.slideNext()">❯</button>
 
 <div class="swiper">
     <div class="swiper-wrapper" id="students-container"></div>
@@ -165,90 +150,60 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    // تأكد من وضع الروابط الجديدة للـ API هنا بعد الـ Deploy
-    const RANKS_API = 'https://script.google.com/macros/s/AKfycbzH037q_627Z-j9QtitNS1xhGBJxeaYs3DapOYPoqc_DyzVTp8Yy86N_lHYjhy3gY-z/exec';
-    const VENS_API = 'https://script.google.com/macros/s/AKfycbx1bxKakRRb4i28qUAsmnyLXKfDCzn3G7OaE6MOqyK_sqIaoQsYVFrAzWlYKire5oQGSQ/exec';
-    const PROXY = (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-
-    const ASSETS_LIST = [
-        'Alike X.PNG', 'Alike.PNG', 'Dictation x.PNG', 'Elmagazine -X.PNG', 
-        'Elmagazine.PNG', 'Figurative X.PNG', 'Golden Eat X.PNG', 'Golden Eat.PNG', 
-        'Grammar X.PNG', 'Grammar.PNG', 'Lable X.PNG', 'Lable.PNG', 
-        'Seeds X.PNG', 'Seeds.PNG', 'sss X.PNG', 'vivid X.PNG', 'vivid.PNG'
-    ];
+    // الرابط المباشر الذي أرسلته لي
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzH037q_627Z-j9QtitNS1xhGBJxeaYs3DapOYPoqc_DyzVTp8Yy86N_lHYjhy3gY-z/exec';
 
     async function fetchData() {
         try {
-            const [resRanks, resVens] = await Promise.all([
-                fetch(PROXY(RANKS_API)).then(r => r.json()),
-                fetch(PROXY(VENS_API)).then(r => r.json())
-            ]);
+            // طلب واحد فقط يجلب كل البيانات دفعة واحدة
+            const response = await fetch(API_URL);
+            const data = await response.json();
             
-            const ranksData = JSON.parse(resRanks.contents);
-            const vensData = JSON.parse(resVens.contents);
-            
-            // عملية الدمج الذكي المعتمدة على المفاتيح الجديدة
-            const combinedData = vensData.map((vensItem) => {
-                const rankItem = ranksData.find(r => r.name === vensItem.B) || {};
-                
-                return {
-                    name: vensItem.B || "Hero",
-                    title: rankItem.title || "Elite Member",
-                    rank_circle: rankItem.rank_circle || 0,
-                    img: rankItem.img || "https://via.placeholder.com/150",
-                    gt: rankItem.gt || 0,
-                    tokens: vensItem.X || rankItem.tokens || 0,
-                    season_rank: rankItem.season_rank || 0,
-                    xbox_rank: rankItem.xbox_rank || 0,
-                    achievements: vensItem.achievements || []
-                };
-            });
-
-            renderStudents(combinedData);
-            document.getElementById('loading-overlay').style.opacity = '0';
-            setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
+            if (data && data.length > 0) {
+                renderStudents(data);
+                hideLoading();
+            } else {
+                showError("لا توجد بيانات حالياً");
+            }
         } catch (err) {
-            document.getElementById('loading-text').innerText = "خطأ في الاتصال بالسيرفر";
             console.error(err);
+            showError("حدث خطأ في الاتصال");
         }
     }
 
-    function renderStudents(data) {
+    function renderStudents(students) {
         const container = document.getElementById('students-container');
-        container.innerHTML = data.map(student => `
+        container.innerHTML = students.map(student => `
             <div class="swiper-slide">
                 <div class="profile-card">
                     <div class="card-header">VENS GOLDEN SEASON</div>
                     
                     <div class="profile-main-info">
                         <div class="img-container">
-                            <img src="${student.img}" class="student-img" onerror="this.src='https://via.placeholder.com/150'">
+                            <img src="${student.Image}" class="student-img" loading="lazy" 
+                                 onerror="this.src='https://via.placeholder.com/150'">
                         </div>
-                        <h2 class="student-name">${student.name}</h2>
-                        <span class="student-title">${student.title}</span>
+                        <h2 class="student-name">${student.Name}</h2>
+                        <span class="student-title">${student.Title}</span>
                     </div>
                     
-                    <div class="rank-circle">${student.rank_circle}</div>
+                    <div class="rank-circle">${student.Rank_J}</div>
                     
                     <div class="assets-row">
-                        ${renderAsset('GT.png', student.gt, 'GT')}
-                        ${renderAsset('Token.png', student.tokens, 'Tokens')}
-                        ${renderAsset('Star.png', Math.floor(student.tokens / 50), 'Stars')}
+                        ${renderAsset('Token.png', student.Tokens, 'Tokens')}
+                        ${renderAsset('Star.png', Math.floor(student.Tokens / 50), 'Stars')}
+                        ${renderAsset('Rank.png', student.Rank_J, 'Rank')}
                     </div>
 
                     <div class="ranks-split">
                         <div class="rank-box">
                             <div class="rank-label">ترتيب الموسم</div>
-                            <div class="rank-val">#${student.season_rank}</div>
-                        </div>
-                        <div class="rank-box">
-                            <div class="rank-label">ترتيب XBOX</div>
-                            <div class="rank-val">#${student.xbox_rank}</div>
+                            <div class="rank-val">#${student.Rank_J}</div>
                         </div>
                     </div>
 
                     <div class="trophies-grid">
-                        ${generateTrophyGrid(student.achievements)}
+                        ${generateDummyTrophies()}
                     </div>
                 </div>
             </div>
@@ -257,46 +212,46 @@
     }
 
     function renderAsset(img, count, label) {
+        // أيقونات احتياطية في حال لم تكن الـ assets موجودة
+        const iconUrl = `https://cdn-icons-png.flaticon.com/512/1047/1047260.png`; 
         return `<div class="asset-box">
-            <img src="assets/${img}" class="assets-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1047/1047260.png'">
             <div class="count-text">${count}</div>
             <div style="font-size:7px; color:#777">${label}</div>
         </div>`;
     }
 
-    function generateTrophyGrid(ach) {
-        const active = Array.isArray(ach) ? ach : [];
-        return Array.from({length: 15}).map((_, i) => `
-            <div class="trophy-item ${active.includes(i) ? 'unlocked' : ''}">
-                <img src="assets/${ASSETS_LIST[i] || 'default.png'}" loading="lazy">
+    function generateDummyTrophies() {
+        return Array.from({length: 10}).map(() => `
+            <div class="trophy-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/1603/1603724.png" style="opacity: 0.2">
             </div>`).join('');
     }
 
     function initSwiper() {
-        window.swiper = new Swiper('.swiper', {
-            grabCursor: true,
+        new Swiper('.swiper', {
             effect: 'creative',
-            speed: 800,
+            grabCursor: true,
+            speed: 600,
             creativeEffect: {
-                prev: {
-                    shadow: true,
-                    origin: 'left center',
-                    translate: ['-100%', 0, 0],
-                    rotate: [0, 100, 0],
-                },
-                next: {
-                    origin: 'right center',
-                    translate: ['100%', 0, 0],
-                    rotate: [0, -100, 0],
-                },
+                prev: { shadow: true, translate: ['-120%', 0, -500] },
+                next: { shadow: true, translate: ['120%', 0, -500] },
             },
         });
     }
+
+    function hideLoading() {
+        const loader = document.getElementById('loading-overlay');
+        loader.style.opacity = '0';
+        setTimeout(() => loader.remove(), 500);
+    }
+
+    function showError(msg) {
+        document.getElementById('loading-text').innerText = msg;
+        document.getElementById('loading-text').style.color = "red";
+    }
+
     window.onload = fetchData;
 </script>
 
 </body>
 </html>
-
-
-

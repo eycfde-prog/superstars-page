@@ -1,202 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Player | Join the Mission</title>
+    <title>Reviews | آراء المبدعين</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --gold: #d4af37;
-            --bg-dark: #050505;
-            --glass: rgba(255, 255, 255, 0.03);
-        }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at center, #111, var(--bg-dark));
-            color: white; min-height: 100vh;
-        }
+        :root { --gold: #d4af37; --bg: #050505; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: white; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(212, 175, 55, 0.1);
-            border-radius: 30px;
-        }
-        input, select {
-            background: rgba(0,0,0,0.5) !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
-            color: white !important;
-            border-radius: 12px !important;
-        }
-        input:focus { border-color: var(--gold) !important; outline: none; }
-        .neon-red { color: #ff3131; text-shadow: 0 0 10px rgba(255, 49, 49, 0.5); }
-        
-        /* Modal Style */
-        .modal {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.9); z-index: 1000;
-            align-items: center; justify-content: center; padding: 20px;
-        }
+        .glass-card { background: rgba(255,255,255,0.02); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 25px; }
+        .ai-btn { position: fixed; left: 20px; bottom: 20px; z-index: 100; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .emoji-bar span { cursor: pointer; font-size: 1.5rem; transition: 0.3s; padding: 5px; }
+        .emoji-bar span:hover { transform: scale(1.3); }
+        .heart-btn.liked { color: #ff3131; transform: scale(1.2); }
     </style>
 </head>
-<body class="py-10 px-4">
+<body class="pb-20">
 
-    <div id="termsModal" class="modal">
-        <div class="glass-card p-8 max-w-lg w-full border-t-4 border-yellow-500">
-            <h2 class="orbitron text-xl text-yellow-500 mb-4">MISSION TERMS</h2>
-            <div class="space-y-4 text-sm text-gray-300">
-                <p><i class="fas fa-user-shield mr-2"></i> Profile pictures must be respectful and appropriate.</p>
-                <p><i class="fas fa-brain mr-2"></i> Direct use of AI tools in answers is strictly forbidden.</p>
-                <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
-                    <p class="neon-red font-bold underline">WARNING:</p>
-                    <p class="text-xs mt-1">All answers are scanned by AI-Detection systems. Violation results in temporary freezing or permanent deletion of your profile.</p>
-                </div>
+    <div id="aiModal" class="modal">
+        <div class="glass-card p-8 max-w-lg w-full text-center border-2 border-blue-500/30">
+            <i class="fas fa-robot text-5xl text-blue-400 mb-4"></i>
+            <h2 class="orbitron text-2xl text-blue-400 mb-6 uppercase">AI Analysis Report</h2>
+            <div class="text-right leading-relaxed text-gray-200 space-y-4">
+                <p class="font-bold text-lg text-yellow-500">"تحليل المحتوى الرقمي لأكاديمية EYC:"</p>
+                <p>إن هذا المنصة تمثل طفرة في دمج التكنولوجيا بالتعليم. التصميم يتميز بهوية بصرية قوية (Futuristic UI) تعزز من تجربة المستخدم، أما المحتوى التعليمي فيتبع استراتيجية "التعلم التفاعلي" التي ترفع من كفاءة الطالب بنسبة تصل إلى 90% مقارنة بالأساليب التقليدية.</p>
+                <p class="text-blue-300 italic">ـ التقييم النهائي: ملكي (Royal Grade) 💎</p>
             </div>
-            <button onclick="closeModal('termsModal')" class="w-full mt-6 py-3 bg-yellow-500 text-black font-bold rounded-xl">I UNDERSTAND</button>
+            <button onclick="closeModal('aiModal')" class="mt-8 px-10 py-3 bg-blue-600 rounded-full font-bold">إغلاق التقرير</button>
         </div>
     </div>
 
-    <div id="gtModal" class="modal">
-        <div class="glass-card p-8 max-w-md w-full border-t-4 border-yellow-500 text-center">
-            <img src="GT.png" class="w-24 mx-auto mb-4" alt="GT">
-            <h2 class="orbitron text-lg text-yellow-500 mb-4">REDEEM GOLDEN TICKETS</h2>
-            <div class="space-y-4">
-                <input type="email" placeholder="Confirm Google Email" class="w-full p-3 rounded-xl border border-white/10 bg-black">
-                <div class="flex gap-2">
-                    <input type="text" placeholder="GT Code 1" class="w-1/2 p-3 text-center orbitron">
-                    <input type="text" placeholder="GT Code 2" class="w-1/2 p-3 text-center orbitron">
-                </div>
-                <button onclick="closeModal('gtModal')" class="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl shadow-lg">SUBMIT TICKETS</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="successScreen" class="modal">
-        <div class="glass-card p-10 text-center max-w-md">
-            <div class="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                <i class="fas fa-check-double"></i>
-            </div>
-            <h2 class="orbitron text-2xl mb-2">APPLICATION SENT!</h2>
-            <p class="text-gray-400 text-sm leading-relaxed">Your data is being reviewed. A verification message with your unique ID will be sent to your Gmail shortly.</p>
-            <button onclick="window.location.href='index.html'" class="mt-8 px-8 py-3 border border-yellow-500 text-yellow-500 rounded-full hover:bg-yellow-500 hover:text-black transition-all">BACK TO COMMAND CENTER</button>
-        </div>
-    </div>
-
-    <div class="max-w-2xl mx-auto">
-        <div class="text-center mb-10">
-            <img src="logo.png" alt="Logo" class="h-24 mx-auto mb-4">
-            <h1 class="orbitron text-3xl font-black text-yellow-500">NEW PLAYER REGISTRATION</h1>
-            <p class="text-gray-500 text-xs mt-2 tracking-widest uppercase">E.Y.C Space Program 2026</p>
-        </div>
-
-        <form id="regForm" class="glass-card p-8 space-y-6" onsubmit="event.preventDefault(); showSuccess();">
+    <div id="commentModal" class="modal">
+        <div class="glass-card p-8 max-w-md w-full border-t-4 border-yellow-500">
+            <h3 class="text-xl font-black mb-4 text-yellow-500">أضف لمستك الخاصة ✨</h3>
+            <input type="email" id="userEmail" placeholder="بريدك الإلكتروني (جوجل)" class="w-full p-3 bg-black/50 border border-white/10 rounded-xl mb-4 text-right">
+            <textarea id="userText" placeholder="اكتب رأيك هنا يا بطل..." class="w-full p-3 bg-black/50 border border-white/10 rounded-xl mb-4 h-32 text-right"></textarea>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2">FULL NAME (ENGLISH)</label>
-                    <input type="text" required placeholder="First & Last Name" class="w-full p-3">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2">AGE</label>
-                    <input type="number" required placeholder="Years" class="w-full p-3">
-                </div>
+            <div class="emoji-bar flex justify-center gap-2 mb-6 bg-white/5 p-2 rounded-xl">
+                <span onclick="addEmoji('❤️')">❤️</span> <span onclick="addEmoji('✨')">✨</span>
+                <span onclick="addEmoji('🌟')">🌟</span> <span onclick="addEmoji('🌸')">🌸</span>
+                <span onclick="addEmoji('💎')">💎</span> <span onclick="addEmoji('🔥')">🔥</span>
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2">GOOGLE EMAIL</label>
-                <input type="email" required placeholder="example@gmail.com" class="w-full p-3">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2">FACEBOOK PROFILE LINK</label>
-                <input type="url" required placeholder="Copy & Paste Profile Link" class="w-full p-3">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2">PHONE NUMBER</label>
-                <input type="tel" minlength="11" required placeholder="01xxxxxxxxx" class="w-full p-3">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2">AVATAR / PERSONAL PHOTO</label>
-                <div class="border-2 border-dashed border-white/10 rounded-2xl p-6 text-center hover:border-yellow-500/50 transition-all cursor-pointer relative">
-                    <input type="file" required class="absolute inset-0 opacity-0 cursor-pointer">
-                    <i class="fas fa-cloud-upload-alt text-2xl text-yellow-500 mb-2"></i>
-                    <p class="text-[10px] text-gray-500">Click to upload your photo</p>
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-4">CHOOSE YOUR MISSION PROGRAMS</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer hover:border-yellow-500/30">
-                        <input type="checkbox" name="prog" value="Season" class="w-5 h-5 accent-yellow-500">
-                        <span class="text-sm font-bold">Season</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer hover:border-yellow-500/30">
-                        <input type="checkbox" name="prog" id="xboxCheck" value="XBoX" onchange="toggleXboxOptions()" class="w-5 h-5 accent-yellow-500">
-                        <span class="text-sm font-bold text-blue-400">XBoX Elite</span>
-                    </label>
-                </div>
-            </div>
-
-            <div id="xboxOptions" class="hidden space-y-4 p-6 bg-blue-500/5 rounded-2xl border border-blue-500/20">
-                <label class="block text-[10px] font-bold text-blue-400 mb-2">XBOX ELITE SUBSCRIPTION METHOD</label>
-                <div class="flex flex-col gap-3">
-                    <label class="flex items-center justify-between p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
-                        <div class="flex items-center gap-3">
-                            <input type="radio" name="sub" value="GT" onchange="openModal('gtModal')" class="accent-yellow-500">
-                            <span class="text-sm">Redeem Golden Tickets</span>
-                        </div>
-                        <div class="flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded">
-                            <span class="text-[10px] font-black text-yellow-500">x2</span>
-                            <img src="assets/GT.png" class="h-4" alt="GT">
-                        </div>
-                    </label>
-                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="radio" name="sub" value="Free" class="accent-green-500">
-                        <span class="text-sm">Free (Limited Period)</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="flex items-start gap-3 py-4">
-                <input type="checkbox" required class="mt-1 w-4 h-4 accent-yellow-500">
-                <p class="text-[10px] text-gray-500">
-                    I agree to the 
-                    <button type="button" onclick="openModal('termsModal')" class="text-yellow-500 underline font-bold">Mission Terms</button> 
-                    and confirm all data is correct.
-                </p>
-            </div>
-
-            <button type="submit" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:scale-[1.02] active:scale-95 transition-all">
-                JOIN THE MISSION
-            </button>
-        </form>
+            <button onclick="submitReview()" id="sendBtn" class="w-full py-4 bg-yellow-500 text-black font-black rounded-xl">إرسال التعليق</button>
+            <button onclick="closeModal('commentModal')" class="w-full mt-2 text-gray-500 text-xs">إلغاء</button>
+        </div>
     </div>
+
+    <header class="text-center py-12 px-6">
+        <div class="relative inline-block mb-6">
+            <div class="absolute inset-0 bg-yellow-500 blur-2xl opacity-20 rounded-full"></div>
+            <img src="MrEzz.png" alt="Mr. Ezz" class="relative w-32 h-32 rounded-full border-4 border-yellow-500 object-cover mx-auto shadow-2xl">
+        </div>
+        <h1 class="text-4xl font-black golden-text mb-2">مستر عز | Mr. Ezz</h1>
+        <p class="text-gray-400 tracking-[3px] orbitron text-xs">THE LEGEND BEHIND THE MISSION</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4">
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-2xl font-black border-r-4 border-yellow-500 pr-4">آراء المبدعين</h2>
+            <button id="addCommentBtn" onclick="openModal('commentModal')" class="bg-yellow-500/10 text-yellow-500 border border-yellow-500/50 px-6 py-2 rounded-full text-sm font-bold hover:bg-yellow-500 hover:text-black transition-all">
+                <i class="fas fa-plus ml-2"></i> أضف رأيك
+            </button>
+        </div>
+
+        <div class="space-y-6" id="commentsContainer">
+            <div class="glass-card p-6 relative">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center font-black text-black">A</div>
+                        <div>
+                            <h4 class="font-bold text-sm">Ahmed Ali</h4>
+                            <p class="text-[10px] text-gray-500">منذ ساعتين</p>
+                        </div>
+                    </div>
+                    <button onclick="likeComment(this)" class="heart-btn text-gray-600 transition-all flex items-center gap-2">
+                        <span class="text-xs font-bold">124</span> <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+                <p class="text-gray-300 text-sm leading-relaxed">بجد يا مستر عز الشغل ده مش مجرد تعليم، ده رحلة ممتعة جداً. التصميم يفتح النفس على المذاكرة ❤️✨</p>
+            </div>
+
+            <div class="glass-card p-6 relative">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center font-black text-black">S</div>
+                        <div>
+                            <h4 class="font-bold text-sm">Sara Mahmoud</h4>
+                            <p class="text-[10px] text-gray-500">منذ 5 ساعات</p>
+                        </div>
+                    </div>
+                    <button onclick="likeComment(this)" class="heart-btn text-gray-600 transition-all flex items-center gap-2">
+                        <span class="text-xs font-bold">89</span> <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+                <p class="text-gray-300 text-sm leading-relaxed">أكتر حاجة بحبها في السيستم ده هو التفاعل والتشجيع. شكراً يا مستر عز على المجهود ده 🌟💎</p>
+            </div>
+        </div>
+    </main>
+
+    <button onclick="openModal('aiModal')" class="ai-btn bg-white/5 backdrop-blur-md border border-blue-500/50 p-4 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+        <i class="fas fa-robot text-blue-400 text-2xl"></i>
+        <div class="absolute -top-2 -right-2 bg-blue-500 text-[8px] px-2 py-1 rounded-full font-black">AI REVIEW</div>
+    </button>
 
     <script>
-        function toggleXboxOptions() {
-            const xboxCheck = document.getElementById('xboxCheck');
-            const xboxOptions = document.getElementById('xboxOptions');
-            xboxOptions.style.display = xboxCheck.checked ? 'block' : 'none';
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function addEmoji(emoji) {
+            document.getElementById('userText').value += emoji;
         }
 
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
+        function likeComment(btn) {
+            if(btn.classList.contains('liked')) return;
+            btn.classList.add('liked');
+            let count = btn.querySelector('span');
+            count.innerText = parseInt(count.innerText) + 1;
+            btn.querySelector('i').className = "fas fa-heart";
         }
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
+        function submitReview() {
+            const email = document.getElementById('userEmail').value;
+            const text = document.getElementById('userText').value;
+            if(!email || !text) return alert("من فضلك املأ البيانات يا بطل");
 
-        function showSuccess() {
-            openModal('successScreen');
+            const btn = document.getElementById('sendBtn');
+            btn.disabled = true;
+            btn.innerText = "جاري الإرسال...";
+
+            setTimeout(() => {
+                alert("شكراً لك! تم استلام تعليقك وجاري مراجعته بنجاح ❤️");
+                closeModal('commentModal');
+                document.getElementById('addCommentBtn').style.display = 'none'; // إخفاء الزرار بعد التعليق
+            }, 1500);
         }
     </script>
 </body>
 </html>
-

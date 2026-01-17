@@ -165,7 +165,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    // الرابط الجديد الذي يقرا من شيت Ranks العمود J
+    // تأكد من وضع الروابط الجديدة للـ API هنا بعد الـ Deploy
     const RANKS_API = 'https://script.google.com/macros/s/AKfycbzqwGgv3hQxRg8sU-OhHV1s9nQjeXg-CqCV4f4ainnAuo2yfWoycxWTNO702eM1Ek78/exec';
     const VENS_API = 'https://script.google.com/macros/s/AKfycbx1bxKakRRb4i28qUAsmnyLXKfDCzn3G7OaE6MOqyK_sqIaoQsYVFrAzWlYKire5oQGSQ/exec';
     const PROXY = (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
@@ -177,12 +177,6 @@
         'Seeds X.PNG', 'Seeds.PNG', 'sss X.PNG', 'vivid X.PNG', 'vivid.PNG'
     ];
 
-    function formatDriveUrl(url) {
-        if (!url || !url.includes('drive.google.com')) return 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png';
-        const id = url.match(/[-\w]{25,}/);
-        return id ? `https://lh3.googleusercontent.com/u/0/d/${id[0]}` : url;
-    }
-
     async function fetchData() {
         try {
             const [resRanks, resVens] = await Promise.all([
@@ -193,17 +187,28 @@
             const ranksData = JSON.parse(resRanks.contents);
             const vensData = JSON.parse(resVens.contents);
             
-            // دمج البيانات: نستخدم Name للربط بين الشيتين
+            // عملية الدمج الذكي المعتمدة على المفاتيح الجديدة
             const combinedData = vensData.map((vensItem) => {
-                const rankItem = ranksData.find(r => r.Name === vensItem.B) || {};
-                return { ...vensItem, ...rankItem };
+                const rankItem = ranksData.find(r => r.name === vensItem.B) || {};
+                
+                return {
+                    name: vensItem.B || "Hero",
+                    title: rankItem.title || "Elite Member",
+                    rank_circle: rankItem.rank_circle || 0,
+                    img: rankItem.img || "https://via.placeholder.com/150",
+                    gt: rankItem.gt || 0,
+                    tokens: vensItem.X || rankItem.tokens || 0,
+                    season_rank: rankItem.season_rank || 0,
+                    xbox_rank: rankItem.xbox_rank || 0,
+                    achievements: vensItem.achievements || []
+                };
             });
 
             renderStudents(combinedData);
             document.getElementById('loading-overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
         } catch (err) {
-            document.getElementById('loading-text').innerText = "خطأ في جلب البيانات";
+            document.getElementById('loading-text').innerText = "خطأ في الاتصال بالسيرفر";
             console.error(err);
         }
     }
@@ -217,30 +222,28 @@
                     
                     <div class="profile-main-info">
                         <div class="img-container">
-                            <img src="${formatDriveUrl(student.E)}" class="student-img" loading="lazy">
+                            <img src="${student.img}" class="student-img" onerror="this.src='https://via.placeholder.com/150'">
                         </div>
-                        <h2 class="student-name">${student.B || student.Name || "Hero"}</h2>
-                        <span class="student-title">${student.E_Ranks || student.Title || "Elite Member"}</span>
+                        <h2 class="student-name">${student.name}</h2>
+                        <span class="student-title">${student.title}</span>
                     </div>
                     
-                    <!-- التعديل المطلوب: الدائرة تقرأ من العمود J (الذي تم تسميته في الـ API بـ Rank_J أو ما يماثله) -->
-                    <!-- بناءً على الديبلوي، القيمة القادمة من العمود J هي Rank_J -->
-                    <div class="rank-circle">${student.Rank_J || 0}</div>
+                    <div class="rank-circle">${student.rank_circle}</div>
                     
                     <div class="assets-row">
-                        ${renderAsset('GT.png', student.D_Ranks || 0, 'GT')}
-                        ${renderAsset('Token.png', student.X || 0, 'Tokens')}
-                        ${renderAsset('Star.png', Math.floor((student.X || 0) / 50), 'Stars')}
+                        ${renderAsset('GT.png', student.gt, 'GT')}
+                        ${renderAsset('Token.png', student.tokens, 'Tokens')}
+                        ${renderAsset('Star.png', Math.floor(student.tokens / 50), 'Stars')}
                     </div>
 
                     <div class="ranks-split">
                         <div class="rank-box">
                             <div class="rank-label">ترتيب الموسم</div>
-                            <div class="rank-val">#${student.F_Ranks || 0}</div>
+                            <div class="rank-val">#${student.season_rank}</div>
                         </div>
                         <div class="rank-box">
                             <div class="rank-label">ترتيب XBOX</div>
-                            <div class="rank-val">#${student.G_Ranks || 0}</div>
+                            <div class="rank-val">#${student.xbox_rank}</div>
                         </div>
                     </div>
 
@@ -294,5 +297,3 @@
 
 </body>
 </html>
-
-

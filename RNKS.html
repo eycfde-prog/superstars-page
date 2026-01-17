@@ -10,101 +10,97 @@
     <style>
         :root {
             --primary-bg: #0a0a0c;
-            --secondary-bg: #16161a;
             --accent-gold: #ffcc00;
             --accent-silver: #e0e0e0;
-            --accent-bronze: #ff8c42;
+            --accent-bronze: #ffa366;
             --gold-glow: rgba(255, 204, 0, 0.3);
-            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(255, 255, 255, 0.07);
             --glass-border: rgba(255, 255, 255, 0.1);
             --text-color: #ffffff;
+            --card-gradient: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
         }
 
         html { scroll-behavior: smooth; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { 
-            background: radial-gradient(circle at top, #1a1a2e 0%, var(--primary-bg) 100%); 
-            color: var(--text-color); 
-            overflow-x: hidden; 
-            min-height: 100vh;
-        }
+        body { background: var(--primary-bg); color: var(--text-color); overflow-x: hidden; }
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 60px 20px; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 15px; }
 
         /* Header */
         .rank-header { text-align: center; margin-bottom: 80px; }
         .rank-header h1 { 
-            font-family: 'Orbitron'; font-size: clamp(2.5rem, 6vw, 4rem); 
-            letter-spacing: 5px;
+            font-family: 'Orbitron'; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900;
             background: linear-gradient(to bottom, #fff 30%, var(--accent-gold));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            text-shadow: 0 10px 30px rgba(255, 204, 0, 0.2);
+            text-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            letter-spacing: 5px;
         }
 
-        /* Podium Area */
+        /* Podium Section */
         .podium {
             display: flex; justify-content: center; align-items: flex-end;
-            gap: 25px; margin-bottom: 120px; display: none;
+            gap: 15px; margin-bottom: 80px; padding-top: 60px;
         }
 
         .podium-item {
-            background: var(--secondary-bg);
-            border: 2px solid var(--glass-border);
-            border-radius: 24px; padding: 40px 20px;
-            text-align: center; position: relative;
-            transition: transform 0.3s ease;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-
-        .podium-item:hover { transform: translateY(-10px); }
-
-        .rank-1 { width: 340px; border-color: var(--accent-gold); background: linear-gradient(145deg, #1a1a1a, #000); }
-        .rank-2 { width: 280px; height: 380px; border-color: var(--accent-silver); }
-        .rank-3 { width: 280px; height: 350px; border-color: var(--accent-bronze); }
-
-        .crown { 
-            position: absolute; top: -55px; left: 50%; transform: translateX(-50%); 
-            font-size: 3.5rem; color: var(--accent-gold); 
-            filter: drop-shadow(0 0 15px var(--accent-gold));
-            animation: crownFloat 3s infinite ease-in-out; 
-        }
-
-        @keyframes crownFloat { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-15px); } }
-
-        .avatar-wrapper { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
-        .rank-1 .avatar-wrapper { width: 150px; height: 150px; }
-        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #fff; }
-
-        .stats-icons { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
-        .stat-box { display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.3); padding: 5px 12px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; }
-        .stat-box img { width: 20px; height: 20px; object-fit: contain; }
-
-        /* Rank List Row */
-        .rank-list { display: flex; flex-direction: column; gap: 15px; display: none; }
-        .rank-row { 
-            background: var(--glass-bg); 
+            background: var(--card-gradient);
+            backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
-            border-radius: 100px 20px 20px 100px;
-            display: flex; align-items: center; padding: 10px 25px 10px 10px;
+            border-radius: 24px; padding: 25px 15px;
+            text-align: center; position: relative;
+            flex: 1; transition: 0.3s ease;
+        }
+
+        .podium-item:hover { transform: translateY(-10px); border-color: var(--accent-gold); }
+
+        .rank-1 { height: 450px; border-color: var(--accent-gold); z-index: 5; background: rgba(255, 204, 0, 0.05); }
+        .rank-2 { height: 380px; border-color: var(--accent-silver); }
+        .rank-3 { height: 350px; border-color: var(--accent-bronze); }
+
+        .avatar-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 15px; }
+        .rank-1 .avatar-wrapper { width: 130px; height: 130px; box-shadow: 0 0 30px var(--gold-glow); animation: goldPulse 2s infinite ease-in-out; }
+        
+        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.2); }
+        .rank-1 .avatar { border-color: var(--accent-gold); }
+
+        .crown { position: absolute; top: -55px; left: 50%; transform: translateX(-50%); font-size: 3.5rem; color: var(--accent-gold); animation: crownFloat 2.5s infinite ease-in-out; filter: drop-shadow(0 0 15px var(--accent-gold)); }
+
+        /* Stats in Podium */
+        .podium-stats { display: flex; justify-content: center; gap: 10px; margin-top: 15px; font-size: 0.85rem; }
+        .stat-box { display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 10px; }
+        .stat-box img { width: 18px; height: 18px; }
+
+        /* Rank List */
+        .rank-list { display: flex; flex-direction: column; gap: 15px; }
+        .rank-row {
+            display: flex; align-items: center;
+            background: var(--card-gradient);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 15px 25px;
             transition: 0.3s;
         }
-        .rank-row:hover { background: rgba(255,255,255,0.08); transform: scale(1.01); }
+        .rank-row:hover { background: rgba(255,255,255,0.05); transform: scale(1.01); }
 
-        .row-rank-num { width: 40px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); font-size: 1.2rem; }
-        .small-avatar { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--accent-gold); margin-right: 20px; }
+        .row-rank-num { font-family: 'Orbitron'; font-size: 1.5rem; font-weight: 900; width: 50px; color: var(--accent-gold); }
+        .row-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent-gold); margin-right: 20px; }
         
-        .player-info { flex-grow: 1; }
-        .row-name { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 800; color: #fff; text-transform: uppercase; }
-        .row-title { font-size: 0.75rem; color: var(--accent-gold); letter-spacing: 1px; }
+        .row-info { flex-grow: 1; }
+        .row-name { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .row-title { font-size: 0.75rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; }
 
-        .row-stats { display: flex; gap: 20px; align-items: center; }
+        .row-stats { display: flex; align-items: center; gap: 20px; text-align: right; }
+        .token-count { font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 1.1rem; }
+        .asset-icon { width: 24px; height: 24px; vertical-align: middle; margin-left: 5px; }
+
+        @keyframes goldPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes crownFloat { 0%, 100% { transform: translateX(-50%) translateY(0) rotate(-5deg); } 50% { transform: translateX(-50%) translateY(-15px) rotate(5deg); } }
 
         @media (max-width: 768px) {
-            .podium { flex-direction: column; align-items: center; gap: 60px; }
-            .rank-row { border-radius: 20px; flex-wrap: wrap; justify-content: center; text-align: center; }
-            .row-stats { margin-top: 10px; }
+            .podium { flex-direction: column; align-items: center; gap: 40px; }
+            .podium-item { width: 100%; height: auto !important; padding: 40px 20px; }
+            .row-stats { flex-direction: column; gap: 5px; align-items: flex-end; }
+            .row-name { font-size: 1rem; }
         }
     </style>
 </head>
@@ -115,7 +111,7 @@
     <div class="container">
         <header class="rank-header">
             <h1>HALL OF FAME</h1>
-            <p id="loading-text">RETRIVING DATA FROM THE NEBULA...</p>
+            <p id="loading-text" style="color: var(--accent-gold); font-family: 'Orbitron'; letter-spacing: 2px;">SYNCING RECORDS...</p>
         </header>
 
         <div class="podium" id="podium-container"></div>
@@ -132,6 +128,7 @@
                 renderData(data);
             } catch (error) {
                 document.getElementById('loading-text').innerText = "CONNECTION FAILED.";
+                console.error('Error!', error.message);
             }
         }
 
@@ -143,55 +140,56 @@
             // Top 3 Rendering
             const top3 = data.slice(0, 3);
             let podiumHTML = '';
-            const order = [1, 0, 2]; 
+            const order = [1, 0, 2]; // Silver, Gold, Bronze
             
             order.forEach(i => {
                 if(top3[i]) {
                     const s = top3[i];
-                    const isFirst = i === 0;
+                    const rankClass = i === 0 ? 'rank-1' : (i === 1 ? 'rank-2' : 'rank-3');
+                    const crown = i === 0 ? '<i class="fas fa-crown crown"></i>' : '';
                     podiumHTML += `
-                        <div class="podium-item ${isFirst ? 'rank-1' : (i === 1 ? 'rank-2' : 'rank-3')}">
-                            ${isFirst ? '<i class="fas fa-crown crown"></i>' : ''}
+                        <div class="podium-item ${rankClass}">
+                            ${crown}
                             <div class="avatar-wrapper">
                                 <img src="${s.Image}" class="avatar">
                             </div>
-                            <div class="row-name">${s.Name}</div>
-                            <div class="row-title" style="margin-bottom:15px">${s.Title}</div>
-                            <div class="stats-icons">
-                                <div class="stat-box"><i class="fas fa-coins" style="color:var(--accent-gold)"></i> ${s.Tokens}</div>
-                                <div class="stat-box"><img src="Stars.png"> ${s.Stars || 0}</div>
-                                <div class="stat-box"><img src="GT.png"> ${s.GoldenTickets || 0}</div>
+                            <div style="font-family: 'Orbitron'; font-weight: 800; font-size: 1.2rem; margin-bottom: 5px;">${s.Name}</div>
+                            <div style="color: var(--accent-gold); font-family: 'Orbitron'; font-weight: 900; font-size: 1.3rem;">${s.Tokens} <span style="font-size: 0.7rem;">TK</span></div>
+                            <div style="font-size: 0.7rem; margin: 10px 0; opacity: 0.7; letter-spacing: 1px;">${s.Title}</div>
+                            <div class="podium-stats">
+                                <div class="stat-box"><img src="Assets/Stars.png"> <span>${s.Stars || 0}</span></div>
+                                <div class="stat-box"><img src="Assets/GT.png"> <span>${s.GoldenTickets || 0}</span></div>
                             </div>
                         </div>`;
                 }
             });
             podiumContainer.innerHTML = podiumHTML;
-            podiumContainer.style.display = 'flex';
 
-            // Rest of List Rendering
+            // Rest of Ranks
             const rest = data.slice(3);
             let listHTML = '';
-            rest.forEach(s => {
+            rest.forEach((s, index) => {
                 listHTML += `
                 <div class="rank-row">
-                    <div class="row-rank-num">#${s.Rank_J}</div>
-                    <img src="${s.Image}" class="small-avatar">
-                    <div class="player-info">
+                    <div class="row-rank-num">#${index + 4}</div>
+                    <img src="${s.Image}" class="row-avatar">
+                    <div class="row-info">
                         <div class="row-name">${s.Name}</div>
                         <div class="row-title">${s.Title}</div>
                     </div>
                     <div class="row-stats">
-                        <div class="stat-box" style="border: 1px solid var(--accent-gold)">${s.Tokens} TK</div>
-                        <div class="stat-box"><img src="Stars.png"> ${s.Stars || 0}</div>
-                        <div class="stat-box"><img src="GT.png"> ${s.GoldenTickets || 0}</div>
+                        <div class="token-count">${s.Tokens} <span style="font-size: 0.6rem; color: var(--accent-gold);">TOKENS</span></div>
+                        <div>
+                            <span style="margin-right: 10px;"><img src="Assets/Stars.png" class="asset-icon"> ${s.Stars || 0}</span>
+                            <span><img src="Assets/GT.png" class="asset-icon"> ${s.GoldenTickets || 0}</span>
+                        </div>
                     </div>
                 </div>`;
             });
             ranksContainer.innerHTML = listHTML;
-            ranksContainer.style.display = 'flex';
         }
 
-        // Particle Background Logic
+        // --- Background Animation ---
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -201,7 +199,7 @@
             init() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
+                this.size = Math.random() * 2 + 1;
                 this.speed = Math.random() * 0.5 + 0.2;
                 this.opacity = Math.random() * 0.5;
             }
@@ -221,7 +219,7 @@
         }
         window.addEventListener('resize', initCanvas);
         initCanvas();
-        for(let i=0; i<100; i++) particles.push(new Particle());
+        for(let i=0; i<60; i++) particles.push(new Particle());
         animate();
 
         fetchRanks();

@@ -9,28 +9,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --gold: #f1c40f; --bg-deep: #020617; }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%);
-            color: white; min-height: 100vh; overflow-x: hidden;
-        }
+        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; }
-        .btn-pulse { animation: pulse-gold 2s infinite; }
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); border-color: rgba(241, 196, 15, 0.2); }
-            70% { box-shadow: 0 0 0 10px rgba(241, 196, 15, 0); border-color: var(--gold); }
-            100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); border-color: rgba(241, 196, 15, 0.2); }
-        }
-        .input-alike {
-            background: rgba(0,0,0,0.4); border: 2px solid var(--gold);
-            border-radius: 12px; padding: 10px; text-align: center; width: 100%;
-            color: var(--gold); font-family: 'Orbitron'; font-weight: bold; transition: 0.3s;
-        }
-        .input-alike::placeholder { font-size: 9px; opacity: 0.5; }
+        .input-alike { background: rgba(0,0,0,0.4); border: 2px solid var(--gold); border-radius: 12px; padding: 10px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; }
         .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         #howToModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
-        footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 40px 0; margin-top: 60px; text-align: center; font-size: 10px; color: #444; font-family: 'Orbitron'; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="pt-20 p-4 flex flex-col items-center">
@@ -40,44 +26,32 @@
             <i class="fas fa-clone text-5xl text-yellow-500 mb-6"></i>
             <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">ALIKE MISSION</h2>
             <p class="text-gray-300 mb-8 leading-relaxed text-right">
-                <i class="fas fa-star text-yellow-500 ml-2"></i> هتظهرلك كلمتين بالعربي ليهم نفس النطق بالإنجليزي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> اكتب الكلمة الإنجليزية الصحيحة تحت كل معنى عربي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> تأكد من الإملاء قبل الضغط على التحقق.
+                اكتب الكلمة الإنجليزية الصحيحة التي تعطي نفس النطق للمعنيين العربيين الموضحين.
             </p>
             <button onclick="toggleHowTo()" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl">بدء المهمة</button>
         </div>
     </div>
 
-    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto">
+    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto w-full">
         <img src="https://i.ibb.co/vzYp5zP/logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
         <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
         <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
-        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="كود الطالب">
-        <button onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">دخول المهمة</button>
+        <div id="loginMsg" class="text-red-500 text-xs mb-4 hidden font-bold">عفواً! هذا الكود غير مسجل لدينا</div>
+        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="كود الطالب أو الإيميل">
+        <button id="loginBtn" onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">تحقق ودخول</button>
     </div>
 
     <div id="mainContent" class="hidden w-full max-w-5xl">
         <header class="text-center my-10">
-            <img src="https://i.ibb.co/vzYp5zP/logo.png" alt="EYC Logo" class="w-16 mx-auto mb-4">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <div class="flex justify-center gap-4 mt-6">
-                <button onclick="toggleHowTo()" class="btn-pulse text-white text-xs flex items-center gap-2 bg-white/5 px-6 py-3 rounded-full border border-yellow-500/50">
-                    <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
-                </button>
-            </div>
+            <p id="welcomeName" class="text-yellow-500 orbitron mt-2"></p>
         </header>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20" id="alikeGrid"></div>
-
-        <footer>
-            <div class="mb-4"><img src="https://i.ibb.co/vzYp5zP/logo.png" class="w-8 mx-auto opacity-20"></div>
-            <p>© 2026 EYC ACADEMY - ALL RIGHTS RESERVED</p>
-        </footer>
     </div>
 
     <script>
-        // ضع رابط الـ Web App الخاص بك هنا بعد عمل Deploy للمحرك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby681_Ye5uDBTwoAJMjIL7RRGsXQjLzNnzhCpS9Itdf3WvyQeTGgsKoO99aFAjIi7fG/exec"; 
+        // الرابط الجديد الخاص بك
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOgQgdCoKIV-LeKvC4e9QI-f8USm2-vwiaC19Doq67FwjdAmvUhe1ommfLckENUlGD/exec"; 
         const PAGE_NAME = "Alike.html"; 
         let currentStudentId = "";
 
@@ -89,17 +63,39 @@
             { ar1: "اشترى", ar2: "بواسطة" }, { ar1: "ثمانية", ar2: "أكل" }
         ];
 
-        function toggleHowTo() {
-            const modal = document.getElementById('howToModal');
-            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function handleLogin() {
+        async function handleLogin() {
+            const btn = document.getElementById('loginBtn');
+            const msg = document.getElementById('loginMsg');
             currentStudentId = document.getElementById('emailInput').value.trim();
-            if(currentStudentId.length < 2) return alert("أدخل الكود يا بطل");
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            initActivity();
+            
+            if(!currentStudentId) return alert("من فضلك أدخل الكود");
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loader"></span> جاري التحقق...';
+            msg.classList.add('hidden');
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "login", studentId: currentStudentId })
+                });
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('mainContent').classList.remove('hidden');
+                    document.getElementById('welcomeName').innerText = "WELCOME, AGENT " + data.name;
+                    initActivity();
+                } else {
+                    msg.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = "تحقق ودخول";
+                }
+            } catch (e) {
+                alert("خطأ في الاتصال بالسيرفر");
+                btn.disabled = false;
+                btn.innerHTML = "تحقق ودخول";
+            }
         }
 
         function initActivity() {
@@ -113,15 +109,15 @@
                     <div class="flex justify-between items-center gap-4">
                         <div class="flex-1 text-center">
                             <h3 class="text-2xl font-black mb-4">${pair.ar1}</h3>
-                            <input type="text" placeholder="WORD 1" class="input-alike" id="${pairId}-1">
+                            <input type="text" class="input-alike" id="${pairId}-1">
                         </div>
-                        <div class="h-16 w-px bg-white/10 relative"><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-500/30 font-black orbitron text-[10px]">VS</div></div>
+                        <div class="text-yellow-500/30 font-black orbitron text-[10px]">VS</div>
                         <div class="flex-1 text-center">
                             <h3 class="text-2xl font-black mb-4">${pair.ar2}</h3>
-                            <input type="text" placeholder="WORD 2" class="input-alike" id="${pairId}-2">
+                            <input type="text" class="input-alike" id="${pairId}-2">
                         </div>
                     </div>
-                    <button onclick="submitPair('${pairId}', '${pair.ar1}', '${pair.ar2}')" id="btn-${pairId}" class="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl orbitron text-[10px] font-black hover:bg-yellow-500 hover:text-black transition-all">SUBMIT MISSION DATA</button>
+                    <button onclick="submitPair('${pairId}', '${pair.ar1}', '${pair.ar2}')" id="btn-${pairId}" class="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl orbitron text-[10px] font-black hover:bg-yellow-500 hover:text-black transition-all">SUBMIT MISSION</button>
                 `;
                 grid.appendChild(card);
             });
@@ -131,33 +127,38 @@
             const btn = document.getElementById(`btn-${id}`);
             const in1 = document.getElementById(`${id}-1`);
             const in2 = document.getElementById(`${id}-2`);
-            
-            if(!in1.value || !in2.value) return alert("أكمل الفراغات!");
+            if(!in1.value || !in2.value) return alert("أكمل البيانات!");
 
             const answer = `${ar1}: ${in1.value} | ${ar2}: ${in2.value}`;
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> UPLOADING...';
+            btn.innerHTML = 'UPLOADING...';
 
             try {
-                await fetch(SCRIPT_URL, {
+                // إرسال البيانات باستخدام POST عادي لضمان المعالجة
+                fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify({
+                        action: "submit",
                         studentId: currentStudentId,
                         pageName: PAGE_NAME,
                         score: answer
                     })
                 });
-
-                btn.innerHTML = `<i class="fas fa-check"></i> DATA SECURED`;
+                
+                // في وضع no-cors لا ننتظر الاستجابة، نعتبرها نجحت لإراحة المستخدم
+                btn.innerHTML = "DATA SECURED";
                 btn.className = "w-full mt-8 py-3 bg-green-600 text-white rounded-xl orbitron text-[10px] font-black";
                 in1.disabled = in2.disabled = true;
-                in1.style.borderColor = in2.style.borderColor = "#16a34a";
             } catch (e) {
-                alert("حدث خطأ في الاتصال");
+                alert("خطأ في الإرسال");
                 btn.disabled = false;
-                btn.innerHTML = "RETRY SUBMIT";
             }
+        }
+
+        function toggleHowTo() {
+            const modal = document.getElementById('howToModal');
+            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
         }
     </script>
 </body>

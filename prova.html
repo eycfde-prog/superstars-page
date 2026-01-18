@@ -1,209 +1,105 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alike | EYC Academy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --gold: #f1c40f;
-            --bg-deep: #020617;
-        }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%);
-            color: white; min-height: 100vh;
-            overflow-x: hidden;
-        }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
-        }
+/**
+ * EYC Scoring System - Centralized Answers Hub
+ * Developed for: Mr. EYC
+ * محرك استقبال الإجابات وتوزيعها مع دعم صفحة Alike وشيت Sign-Up (Responses)
+ */
 
-        /* Runner Styles */
-        .stars-runner {
-            background: rgba(241, 196, 15, 0.1);
-            border-bottom: 1px solid var(--gold);
-            padding: 8px 0;
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-        }
-        .marquee {
-            display: flex; white-space: nowrap; overflow: hidden;
-        }
-        .marquee-content {
-            display: inline-block; animation: marquee 20s linear infinite;
-            font-family: 'Orbitron'; font-weight: 900; color: var(--gold); font-size: 12px;
-        }
+// --- CONFIGURATION ---
+const SIGNUP_SHEET_ID = "1pu6qPbnvrygZiXfjP2QFp_gpLIHaPE4M67e0eYttdwQ";
+const MASTER_SIGNUP_TAB = "Sign-Up (Responses)"; 
+const SCORE_SHEET_NAME = "Score";
 
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
+// خريطة الربط بين اسم الصفحة واسم النشاط في الشيت
+const ACTIVITY_MAP = {
+  "seeds.html": "Seeds",
+  "GoldenEar.htmlde": "Golden ear",
+  "Grammar.htmlde": "Grammar",
+  "Label.htmlgl": "Label",
+  "Vivid.html": "Vivid",
+  "SeedsX.html": "Seedsx",
+  "GEX.html": "Golden earx",
+  "GX.html": "Grammarx",
+  "Labelx.html": "Labelx",
+  "Vividx.html": "Vividx",
+  "AlikeXIndex.html": "Alikex",
+  "SSS.html": "Sssx",
+  "FFX.html": "Figurativex",
+  "Dictationx.html": "Dictationx",
+  "Elmagazinex.html": "Elmagazinex",
+  "Alike.html": "Alike" // النشاط الجديد
+};
 
-        /* Pulsing Instruction Button */
-        .btn-pulse {
-            animation: pulse-gold 2s infinite;
-        }
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); border-color: rgba(241, 196, 15, 0.2); }
-            70% { box-shadow: 0 0 0 10px rgba(241, 196, 15, 0); border-color: var(--gold); }
-            100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); border-color: rgba(241, 196, 15, 0.2); }
-        }
+// قائمة الأنشطة بالترتيب لنسخها في العمود B
+const ACTIVITIES_LIST = [
+  "Seeds", "Golden ear", "Grammar", "Label", "Vivid",
+  "Seedsx", "Golden earx", "Grammarx", "Labelx", "Vividx",
+  "Alikex", "Sssx", "Figurativex", "Dictationx", "Elmagazinex",
+  "Alike"
+];
 
-        .input-alike {
-            background: rgba(0,0,0,0.4);
-            border: 2px solid var(--gold); /* إطار ذهبي */
-            border-radius: 12px; padding: 10px; text-align: center; width: 100%;
-            color: var(--gold); font-family: 'Orbitron'; font-weight: bold;
-            transition: 0.3s;
-        }
-        .input-alike::placeholder { font-size: 9px; opacity: 0.5; letter-spacing: 1px; }
-        .input-alike:focus { outline: none; box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); }
+function doPost(e) {
+  try {
+    const params = JSON.parse(e.postData.contents);
+    const identifier = params.studentId; 
+    const pageName = params.pageName;    
+    const score = params.score;          
+    
+    const activityName = ACTIVITY_MAP[pageName];
+    if (!activityName) {
+      return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": "Activity not mapped"})).setMimeType(ContentService.MimeType.JSON);
+    }
+    const result = processSubmission(identifier, activityName, score);
+    return ContentService.createTextOutput(JSON.stringify({"status": "success", "result": result})).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": err.toString()})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
 
-        .golden-text {
-            background: linear-gradient(to bottom, #fff, var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        #howToModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
+function processSubmission(identifier, activityName, studentAnswer) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const scoreSheet = ss.getSheetByName(SCORE_SHEET_NAME);
+  const studentInfo = getStudentInfoFromMaster(identifier);
+  if (!studentInfo) return "Student not found";
+  const studentFullName = studentInfo.name;
 
-        footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 40px 0; margin-top: 60px; text-align: center; font-size: 10px; color: #444; font-family: 'Orbitron'; }
-    </style>
-</head>
-<body class="pt-20 p-4 flex flex-col items-center">
+  let studentColumn = findStudentColumn(scoreSheet, studentFullName);
+  if (studentColumn === -1) {
+    studentColumn = scoreSheet.getLastColumn() + 1;
+    scoreSheet.getRange(1, studentColumn).setValue(studentFullName)
+      .setBackground("#fcc200").setFontWeight("bold");
+  }
 
-    <div id="howToModal">
-        <div class="glass-card p-10 max-w-md w-full border-2 border-yellow-500 text-center">
-            <i class="fas fa-clone text-5xl text-yellow-500 mb-6"></i>
-            <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">ALIKE MISSION</h2>
-            <p class="text-gray-300 mb-8 leading-relaxed text-right">
-                <i class="fas fa-star text-yellow-500 ml-2"></i> هتظهرلك كلمتين بالعربي ليهم نفس النطق بالإنجليزي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> اكتب الكلمة الإنجليزية الصحيحة تحت كل معنى عربي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> تأكد من الإملاء (Spelling) قبل الضغط على التحقق.
-            </p>
-            <button onclick="toggleHowTo()" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl">بدء المهمة</button>
-        </div>
-    </div>
+  const activityRow = ACTIVITIES_LIST.indexOf(activityName) + 2;
+  const cell = scoreSheet.getRange(activityRow, studentColumn);
+  const currentValue = cell.getValue().toString();
+  
+  let newValue = "";
+  if (!currentValue || currentValue.trim() === "") {
+    newValue = "1) " + studentAnswer;
+  } else {
+    const attempts = (currentValue.match(/\d+\)/g) || []).length;
+    newValue = currentValue + "\n" + (attempts + 1) + ") " + studentAnswer;
+  }
+  cell.setValue(newValue);
+  scoreSheet.getRange(scoreSheet.getLastRow() + 1, 1).setValue(identifier + " | " + activityName + " | " + new Date().toLocaleString());
+  return "Updated column " + studentColumn;
+}
 
-    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto">
-        <img src="logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
-        <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-        <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
-        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="كود الطالب">
-        <button onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">
-            دخول المهمة
-        </button>
-    </div>
+function getStudentInfoFromMaster(id) {
+  const masterSS = SpreadsheetApp.openById(SIGNUP_SHEET_ID);
+  const sheet = masterSS.getSheetByName(MASTER_SIGNUP_TAB);
+  if (!sheet) return null;
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (id == data[i][1] || id == data[i][8]) return { name: data[i][3] };
+  }
+  return null;
+}
 
-    <div id="mainContent" class="hidden w-full max-w-5xl">
-        <header class="text-center my-10">
-            <img src="logo.png" alt="EYC Logo" class="w-16 mx-auto mb-4">
-            <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <div class="flex justify-center gap-4 mt-6">
-                <button onclick="toggleHowTo()" class="btn-pulse text-white text-xs hover:text-white transition-colors flex items-center gap-2 bg-white/5 px-6 py-3 rounded-full border border-yellow-500/50">
-                    <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
-                </button>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20" id="alikeGrid">
-            </div>
-
-        <footer>
-            <div class="mb-4">
-                <img src="logo.png" alt="EYC Logo" class="w-8 mx-auto opacity-20">
-            </div>
-            <p>© 2026 EYC ACADEMY - ALL RIGHTS RESERVED</p>
-            <p class="mt-2 tracking-widest">MISSION CONTROL UNIT</p>
-        </footer>
-    </div>
-
-    <script>
-        // 10 أمثلة لنشاط Alike
-        const wordsData = [
-            { ar1: "إلى", ar2: "أيضاً" },
-            { ar1: "ابن", ar2: "شمس" },
-            { ar1: "هناك", ar2: "ملكهم" },
-            { ar1: "يرى", ar2: "بحر" },
-            { ar1: "دقيق", ar2: "وردة" },
-            { ar1: "أسبوع", ar2: "ضعيف" },
-            { ar1: "لحم", ar2: "يقابل" },
-            { ar1: "ساعة", ar2: "لنا" },
-            { ar1: "اشترى", ar2: "بواسطة" },
-            { ar1: "ثمانية", ar2: "أكل" }
-        ];
-
-        function toggleHowTo() {
-            const modal = document.getElementById('howToModal');
-            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function handleLogin() {
-            const id = document.getElementById('emailInput').value;
-            if(id.length < 2) return alert("أدخل الكود يا بطل");
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            initActivity();
-        }
-
-        function initActivity() {
-            const grid = document.getElementById('alikeGrid');
-            grid.innerHTML = '';
-            wordsData.forEach((pair, index) => {
-                const pairId = `pair-${index}`;
-                const card = document.createElement('div');
-                card.className = "glass-card p-8 relative overflow-hidden group border-b-2 border-transparent hover:border-yellow-500/50 transition-all";
-                card.innerHTML = `
-                    <div class="flex justify-between items-center gap-4">
-                        <div class="flex-1 text-center">
-                            <h3 class="text-2xl font-black mb-4 text-white">${pair.ar1}</h3>
-                            <input type="text" placeholder="WORD 1" class="input-alike" id="${pairId}-1">
-                        </div>
-                        
-                        <div class="h-16 w-px bg-white/10 relative">
-                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-500/30 font-black orbitron italic text-[10px]">VS</div>
-                        </div>
-
-                        <div class="flex-1 text-center">
-                            <h3 class="text-2xl font-black mb-4 text-white">${pair.ar2}</h3>
-                            <input type="text" placeholder="WORD 2" class="input-alike" id="${pairId}-2">
-                        </div>
-                    </div>
-                    <button onclick="submitPair('${pairId}')" id="btn-${pairId}" class="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl orbitron text-[10px] font-black hover:bg-yellow-500 hover:text-black transition-all">
-                        SUBMIT MISSION DATA
-                    </button>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function submitPair(id) {
-            const btn = document.getElementById(`btn-${id}`);
-            const in1 = document.getElementById(`${id}-1`);
-            const in2 = document.getElementById(`${id}-2`);
-            
-            if(!in1.value || !in2.value) return alert("أكمل الفراغات يا بطل!");
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> UPLOADING...';
-
-            setTimeout(() => {
-                btn.innerHTML = `<i class="fas fa-check"></i> DATA SECURED`;
-                btn.className = "w-full mt-8 py-3 bg-green-600 text-white rounded-xl orbitron text-[10px] font-black shadow-lg shadow-green-900/20";
-                in1.disabled = true;
-                in2.disabled = true;
-                in1.style.borderColor = "#16a34a";
-                in2.style.borderColor = "#16a34a";
-            }, 800);
-        }
-    </script>
-</body>
-</html>
+function findStudentColumn(sheet, name) {
+  const lastCol = sheet.getLastColumn();
+  if (lastCol < 2) return -1;
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  for (let j = 2; j < headers.length; j++) { if (headers[j] === name) return j + 1; }
+  return -1;
+}

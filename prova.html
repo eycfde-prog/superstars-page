@@ -16,122 +16,101 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--primary-bg); color: #fff; overflow-x: hidden; height: 100vh; transition: background 1s ease; }
+        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; transition: background 0.8s ease; }
 
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; }
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
 
-        /* الشاشة الرئيسية */
-        .main-ui { transition: opacity 0.8s ease, transform 0.8s ease; }
-        .focused .main-ui { opacity: 0; transform: scale(0.9); pointer-events: none; }
+        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; transition: 0.5s; }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.5rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
 
-        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
+        /* الأزرار */
+        .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; transition: 0.5s; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid var(--accent-gold); color: #fff; padding: 8px 20px; border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; transition: 0.4s; opacity: 0.6; }
+        .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); box-shadow: 0 0 20px var(--season-color); opacity: 1; }
+        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); box-shadow: 0 0 20px var(--xbox-color); opacity: 1; }
 
-        .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid var(--accent-gold); color: #fff; padding: 10px 25px; border-radius: 25px; font-family: 'Orbitron'; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.4s; opacity: 0.6; }
-        .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); opacity: 1; box-shadow: 0 0 20px var(--season-color); }
-        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); opacity: 1; box-shadow: 0 0 20px var(--xbox-color); }
-
-        /* الكروت */
-        .swiper { width: 100%; padding-top: 20px; padding-bottom: 50px; }
+        /* السوايب وكروت النشاط */
+        #swiper-container { transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         .swiper-slide {
-            width: 280px; height: 400px; border-radius: 30px;
+            width: 260px; height: 360px; border-radius: 30px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.15);
-            transition: 0.5s; cursor: pointer; position: relative;
+            backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.1);
+            transition: 0.6s all cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative;
         }
 
-        .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.15), rgba(0,0,0,0.9)); }
-        .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.15), rgba(0,0,0,0.9)); }
-        .activity-icon { font-size: 65px; margin-bottom: 20px; filter: drop-shadow(0 0 15px currentColor); transition: 0.5s; }
-        .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; text-align: center; }
+        .token-badge { position: absolute; top: 20px; left: 20px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 10px; }
+        .activity-icon { font-size: 50px; margin-bottom: 15px; filter: drop-shadow(0 0 10px currentColor); }
+        .activity-name { font-family: 'Orbitron'; font-size: 20px; font-weight: 800; text-align: center; }
+        .activity-code { font-size: 9px; color: var(--accent-gold); letter-spacing: 2px; margin-bottom: 10px; }
 
-        /* واجهة المهمات (Grid Interface) */
-        #missions-overlay {
-            position: fixed; inset: 0; z-index: 100;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, var(--primary-bg) 100%);
-            animation: fadeIn 0.8s forwards;
+        .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.1), rgba(0,0,0,0.9)); }
+        .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.1), rgba(0,0,0,0.9)); }
+
+        /* منطقة التمارين الـ 10 */
+        #mission-grid-area {
+            position: fixed; top: 55%; left: 50%; transform: translate(-50%, -50%);
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+            opacity: 0; pointer-events: none; transition: 0.8s 0.3s; z-index: 100;
         }
 
-        .selected-card-mini {
-            transform: scale(0.5); transform-origin: center;
-            margin-bottom: -80px; filter: grayscale(0.5);
-            pointer-events: none;
-        }
-
-        .missions-grid {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
-            max-width: 500px; padding: 20px; margin-top: 20px;
-        }
-
-        .mission-box {
-            width: 70px; height: 70px; background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
+        .mission-node {
+            width: 55px; height: 55px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; transition: 0.3s; cursor: not-allowed;
+            font-family: 'Orbitron'; font-size: 12px; color: rgba(255,255,255,0.5);
+            position: relative; overflow: hidden;
         }
+        .mission-node i { font-size: 14px; margin-bottom: 2px; color: rgba(255,255,255,0.2); }
 
-        .mission-box i { font-size: 18px; color: rgba(255,255,255,0.2); margin-bottom: 5px; }
-        .mission-box span { font-family: 'Orbitron'; font-size: 10px; color: rgba(255,255,255,0.4); }
+        /* وضع التركيز Focus Mode */
+        body.focus-active { background: #000; }
+        body.focus-active .rank-header, body.focus-active .toggle-container, body.focus-active .swipe-hint { opacity: 0; transform: translateY(-20px); }
+        
+        .swiper-slide.selected {
+            position: fixed !important; top: 25% !important; left: 50% !important;
+            transform: translate(-50%, -50%) scale(0.65) !important;
+            z-index: 200; box-shadow: 0 0 50px rgba(0,0,0,0.5); border-color: var(--accent-gold);
+        }
+        .swiper-slide.not-selected { opacity: 0; transform: scale(0.8) translateY(50px) !important; pointer-events: none; }
 
-        .mission-box:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-gold); }
+        body.focus-active #mission-grid-area { opacity: 1; pointer-events: auto; transform: translate(-50%, -20%); }
 
+        /* زر الرجوع */
         .back-btn {
-            margin-top: 40px; background: none; border: 1px solid var(--accent-gold);
-            color: var(--accent-gold); padding: 8px 30px; border-radius: 20px;
-            font-family: 'Orbitron'; font-size: 12px; cursor: pointer;
-            transition: 0.3s;
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            background: none; border: 1px solid var(--accent-gold); color: var(--accent-gold);
+            padding: 10px 30px; border-radius: 30px; font-family: 'Orbitron'; font-size: 12px;
+            cursor: pointer; opacity: 0; transition: 0.5s; pointer-events: none;
         }
-        .back-btn:hover { background: var(--accent-gold); color: #000; }
+        body.focus-active .back-btn { opacity: 1; pointer-events: auto; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        @media (max-width: 600px) {
-            .missions-grid { grid-template-columns: repeat(4, 1fr); }
-        }
+        .swipe-hint { text-align: center; font-family: 'Orbitron'; font-size: 10px; color: var(--accent-gold); margin-top: 15px; letter-spacing: 2px; opacity: 0.5; }
     </style>
 </head>
 <body>
 
     <canvas id="rank-canvas"></canvas>
 
-    <div class="main-ui" id="main-ui">
-        <header class="rank-header">
-            <h1>EYC ACADEMY</h1>
-            <p style="font-size: 11px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">ACTIVITY MISSION CONTROL</p>
-        </header>
+    <header class="rank-header">
+        <h1>EYC ACADEMY</h1>
+        <p style="font-size: 10px; letter-spacing: 3px; color: var(--accent-gold);">ACTIVITY MISSION CONTROL</p>
+    </header>
 
-        <div class="toggle-container">
-            <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-            <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
-        </div>
-
-        <div id="swiper-container" class="swiper">
-            <div class="swiper-wrapper" id="activities-wrapper"></div>
-        </div>
+    <div class="toggle-container">
+        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
+        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
     </div>
 
-    <div id="missions-overlay">
-        <div id="mini-card-container"></div>
-        
-        <h2 id="mission-title" style="font-family: 'Orbitron'; letter-spacing: 5px; margin-top: 10px; color: var(--accent-gold);">SELECT MISSION</h2>
-        
-        <div class="missions-grid">
-            <script>
-                for(let i=1; i<=10; i++) {
-                    document.write(`
-                        <div class="mission-box">
-                            <i class="fas fa-lock"></i>
-                            <span>M-${i < 10 ? '0'+i : i}</span>
-                        </div>
-                    `);
-                }
-            </script>
+    <div id="swiper-container" class="swiper">
+        <div class="swiper-wrapper" id="activities-wrapper"></div>
+    </div>
+
+    <div id="mission-grid-area">
         </div>
 
-        <button class="back-btn" onclick="exitMission()">« BACK TO HUB</button>
-    </div>
+    <button class="back-btn" onclick="exitFocus()">EXIT MISSION</button>
+
+    <div class="swipe-hint">« SELECT MISSION TO START »</div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
@@ -140,20 +119,12 @@
                 { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
                 { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 },
                 { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 },
-                { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 },
-                { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 },
-                { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }
+                { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 }
             ],
             xbox: [
                 { name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 100 },
                 { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 120 },
                 { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 110 },
-                { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 150 },
-                { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 130 },
-                { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 200 },
-                { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 140 },
-                { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 180 },
-                { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 110 },
                 { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 250 }
             ]
         };
@@ -163,11 +134,11 @@
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide ${mode}-card" onclick="enterMission(this, '${act.name}')">
-                    <div style="position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 5px 12px; border-radius: 12px;">${act.tk} TK</div>
+                <div class="swiper-slide ${mode}-card" onclick="enterFocus(this, ${index})">
+                    <div class="token-badge">${act.tk} TK</div>
+                    <div class="activity-code">${act.code}</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
-                    <div style="font-size: 10px; color: var(--accent-gold); letter-spacing: 3px; margin-top: 10px; font-weight: 700;">${act.code}</div>
                 </div>
             `).join('');
 
@@ -181,42 +152,50 @@
             });
         }
 
-        // دالة الدخول للمهمة
-        function enterMission(cardEl, name) {
-            document.body.classList.add('focused');
-            
-            // استنساخ الكارت المختار
-            const miniCard = cardEl.cloneNode(true);
-            miniCard.classList.add('selected-card-mini');
-            miniCard.removeAttribute('onclick');
-            
-            document.getElementById('mini-card-container').innerHTML = '';
-            document.getElementById('mini-card-container').appendChild(miniCard);
-            document.getElementById('mission-title').innerText = name + " MISSIONS";
+        // الدخول في وضع التركيز والتمارين
+        function enterFocus(card, index) {
+            if(document.body.classList.contains('focus-active')) return;
 
-            setTimeout(() => {
-                document.getElementById('missions-overlay').style.display = 'flex';
-                document.body.style.background = "#020202"; // تغميق الخلفية أكتر
-            }, 600);
+            const allCards = document.querySelectorAll('.swiper-slide');
+            allCards.forEach(c => {
+                if(c !== card) c.classList.add('not-selected');
+                else c.classList.add('selected');
+            });
+
+            document.body.classList.add('focus-active');
+
+            // توليد الـ 10 مربعات
+            const gridArea = document.getElementById('mission-grid-area');
+            gridArea.innerHTML = '';
+            for(let i=1; i<=10; i++) {
+                gridArea.innerHTML += `
+                    <div class="mission-node">
+                        <i class="fas fa-lock"></i>
+                        <span>${i < 10 ? '0'+i : i}</span>
+                    </div>
+                `;
+            }
         }
 
-        // دالة الخروج
-        function exitMission() {
-            document.getElementById('missions-overlay').style.display = 'none';
-            document.body.classList.remove('focused');
-            document.body.style.background = var(--primary-bg);
+        // الخروج والعودة للقائمة
+        function exitFocus() {
+            document.body.classList.remove('focus-active');
+            const allCards = document.querySelectorAll('.swiper-slide');
+            allCards.forEach(c => {
+                c.classList.remove('not-selected', 'selected');
+            });
         }
 
         function switchMode(mode) {
+            if(document.body.classList.contains('focus-active')) return;
             const btnS = document.querySelector('.season-mode');
             const btnX = document.querySelector('.xbox-mode');
-            if ((mode === 'season' && btnS.classList.contains('active')) || (mode === 'xbox' && btnX.classList.contains('active'))) return;
             btnS.classList.toggle('active', mode === 'season');
             btnX.classList.toggle('active', mode === 'xbox');
             renderActivities(mode);
         }
 
-        // Background Animation
+        // Animation Background
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -227,12 +206,12 @@
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.char = "EYC"[Math.floor(Math.random()*3)];
-                this.speed = Math.random() * 0.4 + 0.1;
-                this.opacity = Math.random() * 0.3;
+                this.speed = Math.random() * 0.3 + 0.1;
+                this.opacity = Math.random() * 0.2;
             }
             draw() {
                 ctx.fillStyle = `rgba(255,204,0,${this.opacity})`;
-                ctx.font = `900 14px Orbitron`;
+                ctx.font = `900 12px Orbitron`;
                 ctx.fillText(this.char, this.x, this.y);
                 this.y -= this.speed;
                 if(this.y < -20) this.y = canvas.height + 20;
@@ -245,7 +224,7 @@
         }
         window.addEventListener('resize', initCanvas);
         initCanvas();
-        for(let i=0; i<40; i++) particles.push(new Particle());
+        for(let i=0; i<30; i++) particles.push(new Particle());
         animate();
 
         renderActivities('season');

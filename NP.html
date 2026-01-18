@@ -12,10 +12,10 @@
         body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #111, var(--bg-dark)); color: white; min-height: 100vh; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 30px; }
-        input { background: rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 12px !important; }
+        input, select { background: rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 12px !important; }
         input:focus { border-color: var(--gold) !important; outline: none; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -24,15 +24,8 @@
     <div id="termsModal" class="modal">
         <div class="glass-card p-8 max-w-lg w-full border-t-4 border-yellow-500">
             <h2 class="orbitron text-xl text-yellow-500 mb-4">MISSION TERMS</h2>
-            <div class="space-y-4 text-sm text-gray-300">
-                <p><i class="fas fa-user-shield mr-2"></i> Profile pictures must be respectful and appropriate.</p>
-                <p><i class="fas fa-brain mr-2"></i> Direct use of AI tools in answers is strictly forbidden.</p>
-                <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
-                    <p class="text-red-500 font-bold underline">WARNING:</p>
-                    <p class="text-xs mt-1">All answers are scanned by AI-Detection systems.</p>
-                </div>
-            </div>
-            <button onclick="closeModal('termsModal')" class="w-full mt-6 py-3 bg-yellow-500 text-black font-bold rounded-xl">I UNDERSTAND</button>
+            <p class="text-sm text-gray-300 mb-6">By joining, you agree to all program regulations and anti-cheat systems.</p>
+            <button onclick="closeModal('termsModal')" class="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl">I UNDERSTAND</button>
         </div>
     </div>
 
@@ -42,15 +35,14 @@
                 <i class="fas fa-check-double"></i>
             </div>
             <h2 class="orbitron text-2xl mb-2">MISSION ACCEPTED!</h2>
-            <p class="text-gray-400 text-sm leading-relaxed">Your data has been uploaded. Check your Gmail for further instructions.</p>
-            <button onclick="window.location.reload()" class="mt-8 px-8 py-3 border border-yellow-500 text-yellow-500 rounded-full hover:bg-yellow-500 hover:text-black transition-all">CLOSE</button>
+            <p class="text-gray-400 text-sm">Your data has been sent to the command center.</p>
+            <button onclick="window.location.reload()" class="mt-8 px-8 py-3 border border-yellow-500 text-yellow-500 rounded-full hover:bg-yellow-500 hover:text-black">CLOSE</button>
         </div>
     </div>
 
     <div class="max-w-2xl mx-auto">
         <div class="text-center mb-10">
             <h1 class="orbitron text-3xl font-black text-yellow-500 uppercase">New Player Registration</h1>
-            <p class="text-gray-500 text-xs mt-2 tracking-widest uppercase">E.Y.C Space Program 2026</p>
         </div>
 
         <form id="regForm" class="glass-card p-8 space-y-6">
@@ -72,7 +64,7 @@
 
             <div>
                 <label class="block text-xs font-bold text-gray-400 mb-2">AVATAR / PERSONAL PHOTO</label>
-                <div class="border-2 border-dashed border-white/10 rounded-2xl p-6 text-center hover:border-yellow-500/50 transition-all cursor-pointer relative">
+                <div class="border-2 border-dashed border-white/10 rounded-2xl p-6 text-center relative cursor-pointer">
                     <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
                     <i class="fas fa-cloud-upload-alt text-2xl text-yellow-500 mb-2"></i>
                     <p id="fileName" class="text-[10px] text-gray-500">Click to upload your photo</p>
@@ -87,27 +79,38 @@
                         <span class="text-sm font-bold">Season</span>
                     </label>
                     <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" class="w-5 h-5 accent-yellow-500">
+                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-5 h-5 accent-yellow-500">
                         <span class="text-sm font-bold text-blue-400">XBoX Elite</span>
                     </label>
                 </div>
             </div>
 
-            <div id="xboxTicketSection" style="display: none;" class="p-6 bg-blue-500/5 border border-blue-500/20 rounded-2xl space-y-4">
-                <p class="text-[10px] text-blue-400 orbitron font-bold uppercase">XBoX Elite Authentication</p>
-                <div class="flex gap-3">
-                    <input type="text" id="ticket1" placeholder="Code 1" class="w-1/2 p-3 text-center text-sm orbitron">
-                    <input type="text" id="ticket2" placeholder="Code 2" class="w-1/2 p-3 text-center text-sm orbitron">
+            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl space-y-4">
+                <label class="block text-[10px] font-bold text-blue-400">SELECT XBOX ACCESS METHOD</label>
+                <div class="flex flex-col gap-2">
+                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="radio" name="xboxType" value="Free" checked onchange="toggleTicketInputs()">
+                        <span class="text-sm">Free (Limited Access)</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="radio" name="xboxType" value="GT" onchange="toggleTicketInputs()">
+                        <span class="text-sm">Redeem Golden Tickets (Full Access)</span>
+                    </label>
                 </div>
-                <p class="text-[9px] text-gray-500">Two Golden Tickets will be deducted from your Superstars balance.</p>
             </div>
 
-            <div class="flex items-start gap-3 py-2">
+            <div id="ticketInputs" style="display: none;" class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl space-y-3">
+                <p class="text-[10px] text-yellow-500 orbitron">REQUIRED: 2 GOLDEN TICKETS</p>
+                <input type="text" id="ticket1" placeholder="GT Code 1" class="w-full p-3 text-sm">
+                <input type="text" id="ticket2" placeholder="GT Code 2" class="w-full p-3 text-sm">
+            </div>
+
+            <div class="flex items-start gap-3 py-4">
                 <input type="checkbox" required class="mt-1 w-4 h-4 accent-yellow-500">
                 <p class="text-[10px] text-gray-500">I agree to the <button type="button" onclick="openModal('termsModal')" class="text-yellow-500 underline font-bold">Mission Terms</button></p>
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl shadow-lg hover:scale-[1.01] transition-all">
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl">
                 <span id="btnText">JOIN THE MISSION</span>
                 <div id="loader" class="loader"></div>
             </button>
@@ -117,26 +120,30 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMDLZLDf0jZrQQYDiM9wvOvBFpiWUUfnWMpHDaZXOvPEaMFtL7ZloYenwuKCEtjhqfww/exec";
 
-        // Update filename on upload
-        document.getElementById('imageInput').onchange = function() {
-            if(this.files[0]) {
-                document.getElementById('fileName').innerText = this.files[0].name;
-                document.getElementById('fileName').className = "text-[10px] text-yellow-500 font-bold";
+        function toggleXboxSection() {
+            const isChecked = document.getElementById('xboxCheck').checked;
+            document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
+            if (!isChecked) {
+                document.getElementById('ticketInputs').style.display = 'none';
+            } else {
+                toggleTicketInputs();
             }
-        };
+        }
 
-        // Toggle Xbox Section
-        document.getElementById('xboxCheck').onchange = function() {
-            const section = document.getElementById('xboxTicketSection');
-            section.style.display = this.checked ? 'block' : 'none';
-            document.getElementById('ticket1').required = this.checked;
-            document.getElementById('ticket2').required = this.checked;
-        };
+        function toggleTicketInputs() {
+            const isGT = document.querySelector('input[name="xboxType"]:checked').value === 'GT';
+            document.getElementById('ticketInputs').style.display = isGT ? 'block' : 'none';
+            document.getElementById('ticket1').required = isGT;
+            document.getElementById('ticket2').required = isGT;
+        }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Form Submit
+        document.getElementById('imageInput').onchange = function() {
+            document.getElementById('fileName').innerText = this.files[0].name;
+        };
+
         document.getElementById('regForm').onsubmit = async function(e) {
             e.preventDefault();
             const btnText = document.getElementById('btnText');
@@ -150,19 +157,21 @@
             const formData = new FormData(this);
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
+            
+            const xboxType = document.querySelector('input[name="xboxType"]:checked')?.value || "None";
 
-            // Convert Image to Base64
             const fileInput = document.getElementById('imageInput');
             let base64Image = "";
-            if (fileInput.files[0]) {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
                 base64Image = await new Promise((resolve) => {
                     const reader = new FileReader();
                     reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(fileInput.files[0]);
+                    reader.readAsDataURL(file);
                 });
             }
 
-            const payload = {
+            const data = {
                 name: formData.get('fullName'),
                 age: formData.get('age'),
                 email: formData.get('email'),
@@ -170,29 +179,22 @@
                 image: base64Image,
                 ticket1: document.getElementById('ticket1').value,
                 ticket2: document.getElementById('ticket2').value,
-                isXbox: progs.includes('XBoX')
+                isXboxGT: (progs.includes('XBoX') && xboxType === 'GT')
             };
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Use no-cors for Google Script redirection
-                body: JSON.stringify(payload)
-            })
-            .then(() => {
-                // Since 'no-cors' won't return JSON, we assume success if no catch
-                if(payload.isXbox) {
-                    alert("2 Golden Tickets have been deducted from your Superstars program to join the Xbox mission.");
+                mode: 'no-cors',
+                body: JSON.stringify(data)
+            }).then(() => {
+                if(data.isXboxGT) {
+                    alert("لقد تم خصم تذكرتين من تذاكرك علي برنامج السوبرستارز للاشتراك في روند في برنامج الاكس بوكس");
                 }
                 openModal('successScreen');
                 this.reset();
-                document.getElementById('xboxTicketSection').style.display = 'none';
-                document.getElementById('fileName').innerText = "Click to upload your photo";
-            })
-            .catch(err => {
-                alert("Connection Error. Please check your internet or ticket codes.");
-                console.error(err);
-            })
-            .finally(() => {
+            }).catch(err => {
+                alert("Error sending data.");
+            }).finally(() => {
                 btnText.style.display = 'block';
                 loader.style.display = 'none';
                 submitBtn.disabled = false;

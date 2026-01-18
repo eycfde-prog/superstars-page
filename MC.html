@@ -13,76 +13,98 @@
             --accent-gold: #ffcc00;
             --season-color: #00ffa3;
             --xbox-color: #ff3131;
+            --season-grad: linear-gradient(135deg, rgba(0, 255, 163, 0.4), rgba(0, 128, 255, 0.2));
+            --xbox-grad: linear-gradient(135deg, rgba(255, 49, 49, 0.4), rgba(255, 150, 0, 0.2));
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--primary-bg); color: #fff; overflow-x: hidden; height: 100vh; transition: background 0.8s ease; }
+        body { 
+            background: var(--primary-bg); 
+            color: #fff; 
+            overflow: hidden; 
+            height: 100vh; 
+            transition: background 1.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
 
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; }
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
 
-        /* Header & Toggles */
-        .header-area { transition: 0.5s ease; }
+        /* Header Area */
+        .header-area { transition: 0.6s ease; position: relative; z-index: 10; }
         .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
+        .rank-header h1 { 
+            font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); 
+            background: linear-gradient(to bottom, #fff, var(--accent-gold)); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            letter-spacing: 5px; 
+        }
 
-        .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; transition: 0.5s; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid var(--accent-gold); color: #ffffff; padding: 10px 25px; border-radius: 25px; font-family: 'Orbitron'; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.4s; opacity: 0.6; }
-        .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); box-shadow: 0 0 20px var(--season-color); opacity: 1; }
-        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); box-shadow: 0 0 20px var(--xbox-color); opacity: 1; }
+        .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .mode-btn { 
+            background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,204,0,0.3); 
+            color: #ffffff; padding: 10px 25px; border-radius: 25px; 
+            font-family: 'Orbitron'; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.4s; 
+        }
+        .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); box-shadow: 0 0 20px rgba(0,255,163,0.4); }
+        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); box-shadow: 0 0 20px rgba(255,49,49,0.4); }
 
         /* Swiper Area */
-        #swiper-container { transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .swiper-slide { width: 280px; height: 380px; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.15); position: relative; overflow: hidden; transition: 0.5s; }
+        #swiper-container { transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; position: relative; }
+        .swiper-slide { 
+            width: 280px; height: 380px; border-radius: 35px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); 
+            position: relative; overflow: hidden; transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
         
-        /* Focus Classes */
-        .hide-context { opacity: 0 !important; pointer-events: none; transform: translateY(-20px); }
-        .focus-card { transform: scale(0.7) translateY(-30px) !important; cursor: default !important; }
-        .darken-bg { background: #000 !important; }
+        /* Vibrant Card Colors */
+        .season-card { background: var(--season-grad); box-shadow: inset 0 0 30px rgba(0,255,163,0.1); }
+        .xbox-card { background: var(--xbox-grad); box-shadow: inset 0 0 30px rgba(255,49,49,0.1); }
 
-        /* Grid System (The 10 Squares) */
+        /* Animation Classes */
+        .hide-context { opacity: 0 !important; pointer-events: none; transform: scale(0.8) translateY(-30px); }
+        .focus-card { transform: scale(0.65) translateY(-60px) !important; border-color: var(--accent-gold) !important; box-shadow: 0 0 50px rgba(255,204,0,0.2) !important; }
+
+        /* Mission Grid */
         #mission-grid {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
-            max-width: 350px; margin: -50px auto 0;
-            opacity: 0; transform: translateY(50px);
-            transition: 0.8s 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+            max-width: 360px; margin: -70px auto 0;
+            opacity: 0; transform: translateY(30px);
+            transition: 0.8s 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none; position: relative; z-index: 20;
         }
         #mission-grid.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
         .mission-box {
-            aspect-ratio: 1; background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+            aspect-ratio: 1; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; transition: 0.3s; cursor: not-allowed;
+            transition: 0.3s; cursor: not-allowed;
         }
-        .mission-box i { font-size: 14px; color: var(--accent-gold); opacity: 0.5; margin-bottom: 5px; }
-        .mission-box span { font-family: 'Orbitron'; font-size: 10px; font-weight: 700; color: #666; }
-        .mission-box:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-gold); }
+        .mission-box i { font-size: 16px; color: var(--accent-gold); margin-bottom: 5px; filter: drop-shadow(0 0 5px var(--accent-gold)); }
+        .mission-box span { font-family: 'Orbitron'; font-size: 10px; font-weight: 700; color: #aaa; }
+        .mission-box:hover { background: rgba(255,255,255,0.15); transform: translateY(-3px); }
 
-        /* Back Button */
+        /* Elements inside Card */
+        .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 6px 14px; border-radius: 15px; box-shadow: 0 5px 15px rgba(255,204,0,0.3); }
+        .activity-icon { font-size: 70px; margin-bottom: 20px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3)); transition: 0.5s; }
+        .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; text-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
         #back-btn {
-            display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: none; border: 1px solid #444; color: #888; padding: 10px 20px;
-            border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; z-index: 100;
+            display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 30px;
+            border-radius: 30px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; z-index: 100; backdrop-filter: blur(10px);
         }
-
-        /* Card Elements */
-        .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 5px 12px; border-radius: 12px; }
-        .activity-icon { font-size: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 10px currentColor); }
-        .activity-name { font-family: 'Orbitron'; font-size: 22px; font-weight: 900; }
-        
-        .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.1), rgba(0,0,0,0.9)); }
-        .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.1), rgba(0,0,0,0.9)); }
     </style>
 </head>
 <body id="main-body">
 
     <canvas id="rank-canvas"></canvas>
 
-    <div class="header-area">
+    <div class="header-area" id="header-area">
         <header class="rank-header">
             <h1>EYC ACADEMY</h1>
-            <p style="font-size: 11px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">ACTIVITY MISSION CONTROL</p>
+            <p style="font-size: 11px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">MISSION CONTROL</p>
         </header>
 
         <div class="toggle-container">
@@ -95,14 +117,13 @@
         <div class="swiper-wrapper" id="activities-wrapper"></div>
     </div>
 
-    <div id="mission-grid">
-        </div>
+    <div id="mission-grid"></div>
 
-    <button id="back-btn" onclick="exitFocusMode()"><i class="fas fa-arrow-left mr-2"></i> BACK TO MISSIONS</button>
+    <button id="back-btn" onclick="exitFocusMode()"><i class="fas fa-chevron-left mr-2"></i> ABORT MISSION</button>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-       const activities = {
+        const activities = {
             season: [
                 { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
                 { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 },
@@ -130,36 +151,34 @@
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide ${mode}-card" onclick="enterFocusMode(this, ${index})">
+                <div class="swiper-slide ${mode}-card" onclick="enterFocusMode(this, '${mode}')">
                     <div class="token-badge">${act.tk} TK</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
-                    <div class="activity-code" style="font-size: 10px; opacity:0.5; margin-top:5px;">${act.code}</div>
+                    <div style="font-size: 10px; opacity:0.6; margin-top:10px; font-family:'Orbitron'">${act.code}</div>
                 </div>
             `).join('');
 
             if (currentSwiper) currentSwiper.destroy();
             currentSwiper = new Swiper('.swiper', {
                 effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
-                coverflowEffect: { rotate: 15, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
-                speed: 600
+                coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
+                speed: 600, grabCursor: true
             });
         }
 
-        function enterFocusMode(card, index) {
+        function enterFocusMode(card, mode) {
             if (card.classList.contains('focus-card')) return;
 
-            // 1. إخفاء الهيدر والزراير وباقي الكروت
-            document.querySelector('.header-area').classList.add('hide-context');
-            document.querySelectorAll('.swiper-slide').forEach(s => {
-                if (s !== card) s.classList.add('hide-context');
-            });
+            // تغيير لون الخلفية بشكل اختفاء بطيء حسب المود
+            const bgColor = mode === 'season' ? '#001a14' : '#1a0505';
+            document.body.style.background = bgColor;
 
-            // 2. تمييز الكارت المختار
-            card.classList.add('focus-card');
-            document.getElementById('main-body').classList.add('darken-bg');
+            document.getElementById('header-area').classList.add('hide-context');
+            document.querySelectorAll('.swiper-slide').forEach(s => { if (s !== card) s.classList.add('hide-context'); });
             
-            // 3. إظهار المربعات العشرة
+            card.classList.add('focus-card');
+            
             const grid = document.getElementById('mission-grid');
             grid.innerHTML = Array.from({length: 10}, (_, i) => `
                 <div class="mission-box">
@@ -168,18 +187,16 @@
                 </div>
             `).join('');
             
-            setTimeout(() => {
-                grid.classList.add('show');
-                document.getElementById('back-btn').style.display = 'block';
+            setTimeout(() => { 
+                grid.classList.add('show'); 
+                document.getElementById('back-btn').style.display = 'block'; 
             }, 400);
         }
 
         function exitFocusMode() {
-            document.querySelector('.header-area').classList.remove('hide-context');
-            document.querySelectorAll('.swiper-slide').forEach(s => {
-                s.classList.remove('hide-context', 'focus-card');
-            });
-            document.getElementById('main-body').classList.remove('darken-bg');
+            document.body.style.background = '#050505'; // رجوع للون الأصلي
+            document.getElementById('header-area').classList.remove('hide-context');
+            document.querySelectorAll('.swiper-slide').forEach(s => s.classList.remove('hide-context', 'focus-card'));
             document.getElementById('mission-grid').classList.remove('show');
             document.getElementById('back-btn').style.display = 'none';
         }
@@ -192,20 +209,16 @@
             renderActivities(mode);
         }
 
-        // Background Animation (EYC)
+        // Particle System
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        class Particle {
-            constructor() { this.init(); }
-            init() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.char = "EYC"[Math.floor(Math.random()*3)]; this.speed = Math.random() * 0.4 + 0.1; this.opacity = Math.random() * 0.3; }
-            draw() { ctx.fillStyle = `rgba(255,204,0,${this.opacity})`; ctx.font = `900 14px Orbitron`; ctx.fillText(this.char, this.x, this.y); this.y -= this.speed; if(this.y < -20) this.y = canvas.height + 20; }
-        }
+        class Particle { constructor() { this.init(); } init() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.char = "EYC"[Math.floor(Math.random()*3)]; this.speed = Math.random() * 0.3 + 0.1; this.opacity = Math.random() * 0.3; } draw() { ctx.fillStyle = `rgba(255,204,0,${this.opacity})`; ctx.font = `900 12px Orbitron`; ctx.fillText(this.char, this.x, this.y); this.y -= this.speed; if(this.y < -20) this.y = canvas.height + 20; } }
         function animate() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p => p.draw()); requestAnimationFrame(animate); }
         window.addEventListener('resize', initCanvas);
         initCanvas();
-        for(let i=0; i<40; i++) particles.push(new Particle());
+        for(let i=0; i<30; i++) particles.push(new Particle());
         animate();
 
         renderActivities('season');

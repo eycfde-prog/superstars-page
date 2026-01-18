@@ -1,214 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Activity Hub | Hall of Fame</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alike | EYC Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
         :root {
-            --primary-bg: #050505;
-            --accent-gold: #ffcc00;
-            --season-color: #00ffa3;
-            --xbox-color: #ff3131;
+            --gold: #f1c40f;
+            --bg-deep: #020617;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--primary-bg); color: #fff; overflow-x: hidden; height: 100vh; transition: background 0.8s ease; }
-
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; }
-
-        /* Header & Toggles */
-        .header-area { transition: 0.5s ease; }
-        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
-
-        .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; transition: 0.5s; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid var(--accent-gold); color: #ffffff; padding: 10px 25px; border-radius: 25px; font-family: 'Orbitron'; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.4s; opacity: 0.6; }
-        .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); box-shadow: 0 0 20px var(--season-color); opacity: 1; }
-        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); box-shadow: 0 0 20px var(--xbox-color); opacity: 1; }
-
-        /* Swiper Area */
-        #swiper-container { transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .swiper-slide { width: 280px; height: 380px; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.15); position: relative; overflow: hidden; transition: 0.5s; }
-        
-        /* Focus Classes */
-        .hide-context { opacity: 0 !important; pointer-events: none; transform: translateY(-20px); }
-        .focus-card { transform: scale(0.7) translateY(-30px) !important; cursor: default !important; }
-        .darken-bg { background: #000 !important; }
-
-        /* Grid System (The 10 Squares) */
-        #mission-grid {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
-            max-width: 350px; margin: -50px auto 0;
-            opacity: 0; transform: translateY(50px);
-            transition: 0.8s 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%);
+            color: white; min-height: 100vh;
         }
-        #mission-grid.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-
-        .mission-box {
-            aspect-ratio: 1; background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; transition: 0.3s; cursor: not-allowed;
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
         }
-        .mission-box i { font-size: 14px; color: var(--accent-gold); opacity: 0.5; margin-bottom: 5px; }
-        .mission-box span { font-family: 'Orbitron'; font-size: 10px; font-weight: 700; color: #666; }
-        .mission-box:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-gold); }
-
-        /* Back Button */
-        #back-btn {
-            display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: none; border: 1px solid #444; color: #888; padding: 10px 20px;
-            border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; z-index: 100;
+        #howToModal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 5000; align-items: center; justify-content: center; padding: 20px;
         }
-
-        /* Card Elements */
-        .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 5px 12px; border-radius: 12px; }
-        .activity-icon { font-size: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 10px currentColor); }
-        .activity-name { font-family: 'Orbitron'; font-size: 22px; font-weight: 900; }
-        
-        .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.1), rgba(0,0,0,0.9)); }
-        .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.1), rgba(0,0,0,0.9)); }
+        .input-alike {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 12px; text-align: center; width: 100%;
+            color: var(--gold); font-family: 'Orbitron'; font-weight: bold;
+        }
+        .input-alike:focus { outline: none; border-color: var(--gold); }
+        .golden-text {
+            background: linear-gradient(to bottom, #fff, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
-<body id="main-body">
+<body class="p-4 flex flex-col items-center">
 
-    <canvas id="rank-canvas"></canvas>
+    <div id="howToModal">
+        <div class="glass-card p-10 max-w-md w-full border-2 border-yellow-500 text-center">
+            <i class="fas fa-clone text-5xl text-yellow-500 mb-6"></i>
+            <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">ALIKE MISSION</h2>
+            <p class="text-gray-300 mb-8 leading-relaxed text-right">
+                <i class="fas fa-star text-yellow-500 ml-2"></i> هتظهرلك كلمتين بالعربي ليهم نفس النطق بالإنجليزي.<br>
+                <i class="fas fa-star text-yellow-500 ml-2"></i> اكتب الكلمة الإنجليزية الصحيحة تحت كل معنى عربي.<br>
+                <i class="fas fa-star text-yellow-500 ml-2"></i> تأكد من الإملاء (Spelling) قبل الضغط على التحقق.
+            </p>
+            <button onclick="toggleHowTo()" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl">بدء المهمة</button>
+        </div>
+    </div>
 
-    <div class="header-area">
-        <header class="rank-header">
-            <h1>EYC ACADEMY</h1>
-            <p style="font-size: 11px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">ACTIVITY MISSION CONTROL</p>
+    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto">
+        <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
+        <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
+        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="كود الطالب">
+        <button onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">
+            دخول المهمة
+        </button>
+    </div>
+
+    <div id="mainContent" class="hidden w-full max-w-5xl">
+        <header class="text-center my-10">
+            <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
+            <div class="flex justify-center gap-4 mt-6">
+                <button onclick="toggleHowTo()" class="text-gray-400 text-xs hover:text-white transition-colors flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                    <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
+                </button>
+            </div>
         </header>
 
-        <div class="toggle-container">
-            <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-            <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20" id="alikeGrid">
+            </div>
     </div>
 
-    <div id="swiper-container" class="swiper">
-        <div class="swiper-wrapper" id="activities-wrapper"></div>
-    </div>
-
-    <div id="mission-grid">
-        </div>
-
-    <button id="back-btn" onclick="exitFocusMode()"><i class="fas fa-arrow-left mr-2"></i> BACK TO MISSIONS</button>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-       const activities = {
-            season: [
-                { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
-                { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 },
-                { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 },
-                { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 },
-                { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 },
-                { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }
-            ],
-            xbox: [
-                { name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 100 },
-                { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 120 },
-                { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 110 },
-                { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 150 },
-                { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 130 },
-                { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 200 },
-                { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 140 },
-                { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 180 },
-                { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 110 },
-                { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 250 }
-            ]
-        };
+        const wordsData = [
+            { ar1: "إلى", ar2: "أيضاً" },
+            { ar1: "ابن", ar2: "شمس" },
+            { ar1: "هناك", ar2: "ملكهم" },
+            { ar1: "يرى", ar2: "بحر" }
+        ];
 
-        let currentSwiper = null;
+        function toggleHowTo() {
+            const modal = document.getElementById('howToModal');
+            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+        }
 
-        function renderActivities(mode) {
-            const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide ${mode}-card" onclick="enterFocusMode(this, ${index})">
-                    <div class="token-badge">${act.tk} TK</div>
-                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
-                    <div class="activity-name">${act.name}</div>
-                    <div class="activity-code" style="font-size: 10px; opacity:0.5; margin-top:5px;">${act.code}</div>
-                </div>
-            `).join('');
+        function handleLogin() {
+            const id = document.getElementById('emailInput').value;
+            if(id.length < 2) return alert("أدخل الكود يا بطل");
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            initActivity();
+        }
 
-            if (currentSwiper) currentSwiper.destroy();
-            currentSwiper = new Swiper('.swiper', {
-                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
-                coverflowEffect: { rotate: 15, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
-                speed: 600
+        function initActivity() {
+            const grid = document.getElementById('alikeGrid');
+            grid.innerHTML = '';
+            wordsData.forEach((pair, index) => {
+                const pairId = `pair-${index}`;
+                const card = document.createElement('div');
+                card.className = "glass-card p-8 relative overflow-hidden group border-b-2 border-transparent hover:border-yellow-500/50 transition-all";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center gap-6">
+                        <div class="flex-1 text-center">
+                            <h3 class="text-3xl font-black mb-4 text-white">${pair.ar1}</h3>
+                            <input type="text" placeholder="English Word" class="input-alike" id="${pairId}-1">
+                        </div>
+                        
+                        <div class="h-16 w-px bg-white/10 relative">
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-500/30 font-black orbitron italic">VS</div>
+                        </div>
+
+                        <div class="flex-1 text-center">
+                            <h3 class="text-3xl font-black mb-4 text-white">${pair.ar2}</h3>
+                            <input type="text" placeholder="English Word" class="input-alike" id="${pairId}-2">
+                        </div>
+                    </div>
+                    <button onclick="submitPair('${pairId}')" id="btn-${pairId}" class="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl orbitron text-[10px] font-black hover:bg-yellow-500 hover:text-black transition-all">
+                        SUBMIT DATA
+                    </button>
+                `;
+                grid.appendChild(card);
             });
         }
 
-        function enterFocusMode(card, index) {
-            if (card.classList.contains('focus-card')) return;
-
-            // 1. إخفاء الهيدر والزراير وباقي الكروت
-            document.querySelector('.header-area').classList.add('hide-context');
-            document.querySelectorAll('.swiper-slide').forEach(s => {
-                if (s !== card) s.classList.add('hide-context');
-            });
-
-            // 2. تمييز الكارت المختار
-            card.classList.add('focus-card');
-            document.getElementById('main-body').classList.add('darken-bg');
+        function submitPair(id) {
+            const btn = document.getElementById(`btn-${id}`);
+            const in1 = document.getElementById(`${id}-1`);
+            const in2 = document.getElementById(`${id}-2`);
             
-            // 3. إظهار المربعات العشرة
-            const grid = document.getElementById('mission-grid');
-            grid.innerHTML = Array.from({length: 10}, (_, i) => `
-                <div class="mission-box">
-                    <i class="fas fa-lock"></i>
-                    <span>M-${i+1}</span>
-                </div>
-            `).join('');
-            
+            if(!in1.value || !in2.value) return alert("أكمل الفراغات يا بطل!");
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> SAVING...';
+
             setTimeout(() => {
-                grid.classList.add('show');
-                document.getElementById('back-btn').style.display = 'block';
-            }, 400);
+                btn.innerHTML = `<i class="fas fa-check"></i> DATA SAVED`;
+                btn.className = "w-full mt-8 py-3 bg-green-600 text-white rounded-xl orbitron text-[10px] font-black";
+                in1.disabled = true;
+                in2.disabled = true;
+            }, 800);
         }
-
-        function exitFocusMode() {
-            document.querySelector('.header-area').classList.remove('hide-context');
-            document.querySelectorAll('.swiper-slide').forEach(s => {
-                s.classList.remove('hide-context', 'focus-card');
-            });
-            document.getElementById('main-body').classList.remove('darken-bg');
-            document.getElementById('mission-grid').classList.remove('show');
-            document.getElementById('back-btn').style.display = 'none';
-        }
-
-        function switchMode(mode) {
-            const btnS = document.querySelector('.season-mode');
-            const btnX = document.querySelector('.xbox-mode');
-            btnS.classList.toggle('active', mode === 'season');
-            btnX.classList.toggle('active', mode === 'xbox');
-            renderActivities(mode);
-        }
-
-        // Background Animation (EYC)
-        const canvas = document.getElementById('rank-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        class Particle {
-            constructor() { this.init(); }
-            init() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.char = "EYC"[Math.floor(Math.random()*3)]; this.speed = Math.random() * 0.4 + 0.1; this.opacity = Math.random() * 0.3; }
-            draw() { ctx.fillStyle = `rgba(255,204,0,${this.opacity})`; ctx.font = `900 14px Orbitron`; ctx.fillText(this.char, this.x, this.y); this.y -= this.speed; if(this.y < -20) this.y = canvas.height + 20; }
-        }
-        function animate() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p => p.draw()); requestAnimationFrame(animate); }
-        window.addEventListener('resize', initCanvas);
-        initCanvas();
-        for(let i=0; i<40; i++) particles.push(new Particle());
-        animate();
-
-        renderActivities('season');
     </script>
 </body>
 </html>

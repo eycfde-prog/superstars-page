@@ -50,8 +50,8 @@
     </div>
 
     <script>
-        // الرابط الجديد الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6BUi_hyb3wCSqN3W2MNo5uuoiGvqb_s4BrjtAJ68pK7hGzetUlLC127586Dk1-I1j/exec"; 
+        // الرابط الخاص بك (Web App URL)
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9w2NbJbK_q_BK5c-Nk6oWiCd_qLULSye1NHlD2z4iximbgGXUJAsks9nLn0XlNzLQ/exec"; 
         const PAGE_NAME = "Alike.html"; 
         let currentStudentId = "";
 
@@ -131,13 +131,12 @@
 
             const answer = `${ar1}: ${in1.value} | ${ar2}: ${in2.value}`;
             btn.disabled = true;
-            btn.innerHTML = 'UPLOADING...';
+            btn.innerHTML = '<span class="loader"></span> UPLOADING...';
 
             try {
-                // إرسال البيانات باستخدام POST عادي لضمان المعالجة
-                fetch(SCRIPT_URL, {
+                // تم إزالة no-cors لضمان استلام تأكيد الحفظ من السكريبت
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
                     body: JSON.stringify({
                         action: "submit",
                         studentId: currentStudentId,
@@ -146,13 +145,19 @@
                     })
                 });
                 
-                // في وضع no-cors لا ننتظر الاستجابة، نعتبرها نجحت لإراحة المستخدم
-                btn.innerHTML = "DATA SECURED";
-                btn.className = "w-full mt-8 py-3 bg-green-600 text-white rounded-xl orbitron text-[10px] font-black";
-                in1.disabled = in2.disabled = true;
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    btn.innerHTML = "DATA SECURED";
+                    btn.className = "w-full mt-8 py-3 bg-green-600 text-white rounded-xl orbitron text-[10px] font-black";
+                    in1.disabled = in2.disabled = true;
+                } else {
+                    throw new Error("Server Error");
+                }
             } catch (e) {
-                alert("خطأ في الإرسال");
+                alert("خطأ في الإرسال، حاول مرة أخرى");
                 btn.disabled = false;
+                btn.innerHTML = "SUBMIT MISSION";
             }
         }
 

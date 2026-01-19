@@ -12,29 +12,62 @@
         body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; }
-        .input-alike { background: rgba(0,0,0,0.4); border: 2px solid var(--gold); border-radius: 12px; padding: 10px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; transition: 0.3s; }
-        .input-alike:focus { outline: none; box-shadow: 0 0 10px rgba(241, 196, 15, 0.3); }
+        .input-alike { background: rgba(0,0,0,0.4); border: 2px solid var(--gold); border-radius: 12px; padding: 10px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; }
         .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        #howToModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Modals */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
+        
+        /* Floating Character (Animated Object) */
+        .floating-obj { animation: float 3s ease-in-out infinite, spin 10s linear infinite; color: var(--gold); opacity: 0.3; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes spin { from { rotate: 0deg; } to { rotate: 360deg; } }
+
+        /* Pulsing Button */
+        .pulse-btn { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(241, 196, 15, 0); } 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); } }
+
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin-loader 1s linear infinite; display: inline-block; }
+        @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
     </style>
 </head>
 <body class="p-4 flex flex-col items-center">
 
-    <div id="howToModal">
+    <div id="howToModal" class="modal-overlay">
         <div class="glass-card p-10 max-w-md w-full border-2 border-yellow-500 text-center">
             <i class="fas fa-clone text-5xl text-yellow-500 mb-6"></i>
             <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">ALIKE MISSION</h2>
             <p class="text-gray-300 mb-8 leading-relaxed text-right">
-                اكتب الكلمة الإنجليزية الصحيحة التي تعطي نفس النطق للمعنيين العربيين الموضحين في الـ 10 تحديات القادمة.
+                اكتب الكلمة الإنجليزية الصحيحة التي تعطي نفس النطق للمعنيين العربيين الموضحين في كل كارت.
             </p>
-            <button onclick="toggleHowTo()" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl">بدء المهمة</button>
+            <button onclick="closeModal('howToModal')" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl">فهمت المهمة</button>
         </div>
     </div>
 
-    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto w-full">
-        <img src="logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
+    <div id="benefitModal" class="modal-overlay">
+        <div class="glass-card p-10 max-w-md w-full border-2 border-blue-500 text-center">
+            <i class="fas fa-brain text-5xl text-blue-500 mb-6"></i>
+            <h2 class="text-2xl font-black mb-4 orbitron text-blue-500">MISSION GOALS</h2>
+            <p class="text-gray-300 mb-8 leading-relaxed text-right">
+                هذا النشاط يساعدك على التمييز بين الكلمات المتشابهة في النطق (Homophones) وتطوير مهارة الإملاء (Spelling) بدقة عالية.
+            </p>
+            <button onclick="closeModal('benefitModal')" class="w-full py-4 bg-blue-500 text-white font-black rounded-2xl">رجوع</button>
+        </div>
+    </div>
+
+    <div id="successOverlay" class="modal-overlay">
+        <div class="text-center">
+            <i class="fas fa-check-circle text-8xl text-green-500 mb-6 block"></i>
+            <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION ACCOMPLISHED</h2>
+            <p class="text-gray-400">تم حفظ بياناتك بنجاح في قاعدة بيانات الأكاديمية</p>
+            <button onclick="location.reload()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs">BACK TO HUB</button>
+        </div>
+    </div>
+
+    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto w-full relative overflow-hidden">
+        <img src="https://i.ibb.co/vzYp5zP/logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
         <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
         <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
         <div id="loginMsg" class="text-red-500 text-xs mb-4 hidden font-bold">عفواً! هذا الكود غير مسجل لدينا</div>
@@ -43,19 +76,37 @@
     </div>
 
     <div id="mainContent" class="hidden w-full max-w-5xl">
-        <header class="text-center my-10">
-            <img src="logo.png" alt="EYC Logo" class="w-16 mx-auto mb-4">
+        <header class="text-center my-10 relative">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 floating-obj">
+                <i class="fas fa-sync-alt text-6xl"></i>
+            </div>
+            
+            <img src="https://i.ibb.co/vzYp5zP/logo.png" alt="EYC Logo" class="w-16 mx-auto mb-4 mt-12">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
             <p id="welcomeName" class="text-yellow-500 orbitron mt-2"></p>
+            
+            <div class="flex flex-wrap justify-center gap-4 mt-8">
+                <button onclick="openModal('howToModal')" class="pulse-btn text-white text-xs bg-white/5 px-6 py-3 rounded-full border border-yellow-500/50 flex items-center gap-2">
+                    <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
+                </button>
+                <button onclick="openModal('benefitModal')" class="text-white text-xs bg-white/5 px-6 py-3 rounded-full border border-blue-500/50 flex items-center gap-2 hover:bg-blue-500/10 transition-all">
+                    <i class="fas fa-lightbulb text-blue-500"></i> الاستفادة من النشاط
+                </button>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10" id="alikeGrid"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12" id="alikeGrid"></div>
 
-        <div class="w-full max-w-md mx-auto mb-20">
-            <button id="finalSubmitBtn" onclick="submitAllAnswers()" class="w-full py-6 rounded-3xl text-2xl font-black bg-green-600 text-white shadow-[0_0_30px_rgba(22,163,74,0.3)] hover:bg-green-500 active:scale-95 transition-all orbitron">
-                <i class="fas fa-paper-plane ml-2"></i> FINISH MISSION
+        <div class="max-w-md mx-auto mb-20">
+            <button id="finalSubmitBtn" onclick="submitAllData()" class="w-full py-5 bg-yellow-500 text-black font-black orbitron rounded-2xl shadow-2xl shadow-yellow-500/20 hover:scale-105 transition-transform">
+                FINALIZE MISSION & SAVE
             </button>
         </div>
+
+        <footer>
+            <p>© 2026 EYC ACADEMY - ALL RIGHTS RESERVED</p>
+            <p class="mt-2 tracking-[4px]">DESIGNED FOR SUPERSTARS</p>
+        </footer>
     </div>
 
     <script>
@@ -75,7 +126,6 @@
             const btn = document.getElementById('loginBtn');
             const msg = document.getElementById('loginMsg');
             currentStudentId = document.getElementById('emailInput').value.trim();
-            
             if(!currentStudentId) return alert("من فضلك أدخل الكود");
             
             btn.disabled = true;
@@ -92,7 +142,7 @@
                 if (data.status === "success") {
                     document.getElementById('loginSection').classList.add('hidden');
                     document.getElementById('mainContent').classList.remove('hidden');
-                    document.getElementById('welcomeName').innerText = "AGENT: " + data.name;
+                    document.getElementById('welcomeName').innerText = "WELCOME, AGENT " + data.name;
                     initActivity();
                 } else {
                     msg.classList.remove('hidden');
@@ -130,60 +180,45 @@
             });
         }
 
-        async function submitAllAnswers() {
+        async function submitAllData() {
             const btn = document.getElementById('finalSubmitBtn');
             let allAnswers = [];
             let isComplete = true;
 
-            // تجميع كل البيانات والتأكد إن مفيش حاجة فاضية
             wordsData.forEach((pair, index) => {
-                const in1 = document.getElementById(`pair-${index}-1`).value.trim();
-                const in2 = document.getElementById(`pair-${index}-2`).value.trim();
-                
+                const in1 = document.getElementById(`pair-${index}-1`).value;
+                const in2 = document.getElementById(`pair-${index}-2`).value;
                 if(!in1 || !in2) isComplete = false;
-                allAnswers.push(`(${pair.ar1}+${pair.ar2}: ${in1}/${in2})`);
+                allAnswers.push(`${pair.ar1}:${in1}-${pair.ar2}:${in2}`);
             });
 
-            if(!isComplete) return alert("يا بطل، لازم تخلص كل الـ 10 أسئلة الأول!");
-
-            if(!confirm("هل أنت متأكد من إرسال جميع الإجابات؟")) return;
+            if(!isComplete) return alert("من فضلك أكمل جميع الإجابات يا بطل!");
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin ml-2"></i> UPLOADING MISSION DATA...';
-
-            const finalString = allAnswers.join(" | ");
+            btn.innerHTML = '<span class="loader"></span> UPLOADING DATA...';
 
             try {
-                fetch(SCRIPT_URL, {
+                await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify({
                         action: "submit",
                         studentId: currentStudentId,
                         pageName: PAGE_NAME,
-                        score: finalString
+                        score: allAnswers.join(" | ")
                     })
                 });
                 
-                // تغيير شكل الزرار بعد الإرسال
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="fas fa-check-double ml-2"></i> MISSION ACCOMPLISHED';
-                    btn.className = "w-full py-6 rounded-3xl text-2xl font-black bg-gray-700 text-green-500 orbitron cursor-not-allowed";
-                    // قفل جميع الحقول
-                    document.querySelectorAll('input').forEach(input => input.disabled = true);
-                }, 1000);
-
+                document.getElementById('successOverlay').style.display = 'flex';
             } catch (e) {
-                alert("حدث خطأ أثناء الإرسال، حاول مرة أخرى");
+                alert("حدث خطأ أثناء الإرسال");
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane ml-2"></i> FINISH MISSION';
+                btn.innerHTML = "FINALIZE MISSION & SAVE";
             }
         }
 
-        function toggleHowTo() {
-            const modal = document.getElementById('howToModal');
-            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-        }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     </script>
 </body>
 </html>

@@ -40,7 +40,7 @@
         <div class="text-center">
             <i class="fas fa-check-circle text-8xl text-green-500 mb-6 block"></i>
             <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION ACCOMPLISHED</h2>
-            <p class="text-gray-400">تم حفظ بياناتك بنجاح في قاعدة بيانات الأكاديمية</p>
+            <p class="text-gray-400">تم حفظ إجاباتك بنجاح في سجل الدرجات</p>
             <button onclick="location.reload()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs">BACK TO HUB</button>
         </div>
     </div>
@@ -50,7 +50,7 @@
         <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
         <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
         <div id="loginMsg" class="text-red-500 text-xs mb-4 hidden font-bold"></div>
-        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="كود الطالب">
+        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="أدخل البريد الإلكتروني للطالب">
         <button id="loginBtn" onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">تحقق ودخول</button>
     </div>
 
@@ -82,14 +82,12 @@
     </div>
 
     <script>
-        // --- الإعدادات الروابط ---
-        const SCORE_URL = "https://script.google.com/macros/s/AKfycbxJg7bZSF1_MMGI9dCscu2UgGnm1p3X3PXaaIQpWkuyQ2PJ3haf53osI7UsX8wSc2Qq/exec"; 
-        const AC_URL = "https://script.google.com/macros/s/AKfycbyTMwbxuFP4Dj3K-SVLoEroy7SEG0ErWr3mT5A8CbPbux_9ljGTBQ07eh-tR5Mnz4tpHw/exec";
+        // --- الإعدادات (رابط Apps Script لشيت Score) ---
+        const SCORE_URL = "https://script.google.com/macros/s/AKfycbxko0NRHlEUm4f3ZEqUIb3JetUeLH0GsH6GbuTsyC3sQ8Cw5AmeEIV9BhErhhkp2CiC/exec"; 
         
         // --- إعداد النشاط ---
-        const ACTIVITY_VERSION = "Alike 1"; // قم بتغيير الرقم في كل نسخة (1-10)
-        const PAGE_NAME = "Alike.html"; 
-        let currentStudentId = "";
+        const PAGE_NAME = "AS.html"; // اسم الصفحة المطلوب ربطه بنشاط Alike
+        let currentStudentEmail = "";
 
         const wordsData = [
             { ar1: "إلى", ar2: "أيضاً" }, { ar1: "ابن", ar2: "شمس" },
@@ -99,44 +97,15 @@
             { ar1: "اشترى", ar2: "بواسطة" }, { ar1: "ثمانية", ar2: "أكل" }
         ];
 
-        async function handleLogin() {
-            const btn = document.getElementById('loginBtn');
-            const msg = document.getElementById('loginMsg');
-            currentStudentId = document.getElementById('emailInput').value.trim();
-            if(!currentStudentId) return alert("أدخل الكود أولاً");
+        function handleLogin() {
+            const emailInput = document.getElementById('emailInput').value.trim();
+            if(!emailInput) return alert("الرجاء إدخال البريد الإلكتروني");
             
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loader"></span> جاري التحقق...';
-            msg.classList.add('hidden');
-
-            try {
-                // التحقق من شيت AC
-                const response = await fetch(AC_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        action: "login", 
-                        studentId: currentStudentId, 
-                        activity: ACTIVITY_VERSION 
-                    })
-                });
-                const data = await response.json();
-
-                if (data.status === "success") {
-                    document.getElementById('loginSection').classList.add('hidden');
-                    document.getElementById('mainContent').classList.remove('hidden');
-                    document.getElementById('welcomeName').innerText = "READY, AGENT: " + currentStudentId;
-                    initActivity();
-                } else {
-                    msg.innerText = data.message; // سيعرض "تم الحل مسبقاً" أو "غير مسجل"
-                    msg.classList.remove('hidden');
-                    btn.disabled = false;
-                    btn.innerHTML = "تحقق ودخول";
-                }
-            } catch (e) {
-                alert("خطأ في الاتصال بالسيستم");
-                btn.disabled = false;
-                btn.innerHTML = "تحقق ودخول";
-            }
+            currentStudentEmail = emailInput;
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('welcomeName').innerText = "READY, AGENT: " + currentStudentEmail;
+            initActivity();
         }
 
         function initActivity() {
@@ -171,7 +140,7 @@
                 const in1 = document.getElementById(`pair-${index}-1`).value.trim();
                 const in2 = document.getElementById(`pair-${index}-2`).value.trim();
                 if(!in1 || !in2) isComplete = false;
-                allAnswers.push(`${pair.ar1}:${in1}-${pair.ar2}:${in2}`);
+                allAnswers.push(`${in1}/${in2}`);
             });
 
             if(!isComplete) return alert("أكمل جميع الكلمات!");
@@ -180,34 +149,22 @@
             btn.innerHTML = '<span class="loader"></span> SAVING...';
 
             try {
-                // 1. إرسال الدرجة لشيت Score
+                // إرسال البيانات لشيت Score فقط
+                const formData = new URLSearchParams();
+                formData.append('email', currentStudentEmail);
+                formData.append('page', PAGE_NAME);
+                formData.append('answer', allAnswers.join(" | "));
+
                 await fetch(SCORE_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify({
-                        action: "submit",
-                        studentId: currentStudentId,
-                        pageName: PAGE_NAME,
-                        score: allAnswers.join(" | ")
-                    })
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
                 });
 
-                // 2. تحديث شيت AC لوضع علامة الصح
-                await fetch(AC_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({
-                        action: "submit",
-                        studentId: currentStudentId,
-                        activity: ACTIVITY_VERSION,
-                        pageName: PAGE_NAME,
-                        score: "DONE"
-                    })
-                });
-                
                 document.getElementById('successOverlay').style.display = 'flex';
             } catch (e) {
-                alert("حدث خطأ أثناء حفظ البيانات");
+                alert("حدث خطأ أثناء الاتصال بالسيستم");
                 btn.disabled = false;
                 btn.innerHTML = "FINALIZE MISSION & SAVE";
             }

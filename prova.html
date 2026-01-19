@@ -45,21 +45,17 @@
         </div>
     </div>
 
-    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto w-full relative overflow-hidden">
-        <img src="logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
-        <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-        <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
-        <div id="loginMsg" class="text-red-500 text-xs mb-4 hidden font-bold"></div>
-        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="أدخل البريد الإلكتروني للطالب">
-        <button id="loginBtn" onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">تحقق ودخول</button>
-    </div>
-
-    <div id="mainContent" class="hidden w-full max-w-5xl">
+    <div id="mainContent" class="w-full max-w-5xl">
         <header class="text-center my-10 relative">
             <div class="absolute -top-10 left-1/2 -translate-x-1/2 floating-obj"><i class="fas fa-sync-alt text-6xl"></i></div>
             <img src="logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
             <p id="welcomeName" class="text-yellow-500 orbitron mt-2"></p>
+            
+            <div class="max-w-xs mx-auto mt-6">
+                <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-center text-white focus:border-yellow-500 outline-none text-sm" placeholder="أدخل بريدك الإلكتروني هنا">
+            </div>
+
             <div class="flex flex-wrap justify-center gap-4 mt-8">
                 <button onclick="openModal('howToModal')" class="pulse-btn text-white text-xs bg-white/5 px-6 py-3 rounded-full border border-yellow-500/50 flex items-center gap-2">
                     <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
@@ -86,9 +82,7 @@
         const SCORE_URL = "https://script.google.com/macros/s/AKfycbxko0NRHlEUm4f3ZEqUIb3JetUeLH0GsH6GbuTsyC3sQ8Cw5AmeEIV9BhErhhkp2CiC/exec"; 
         
         // --- إعداد النشاط ---
-        const PAGE_NAME = "AS.html"; // اسم الصفحة المطلوب ربطه بنشاط Alike
-        let currentStudentEmail = "";
-
+        const PAGE_NAME = "AS.html"; 
         const wordsData = [
             { ar1: "إلى", ar2: "أيضاً" }, { ar1: "ابن", ar2: "شمس" },
             { ar1: "هناك", ar2: "ملكهم" }, { ar1: "يرى", ar2: "بحر" },
@@ -97,16 +91,10 @@
             { ar1: "اشترى", ar2: "بواسطة" }, { ar1: "ثمانية", ar2: "أكل" }
         ];
 
-        function handleLogin() {
-            const emailInput = document.getElementById('emailInput').value.trim();
-            if(!emailInput) return alert("الرجاء إدخال البريد الإلكتروني");
-            
-            currentStudentEmail = emailInput;
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            document.getElementById('welcomeName').innerText = "READY, AGENT: " + currentStudentEmail;
+        // تشغيل النشاط فور تحميل الصفحة
+        window.onload = function() {
             initActivity();
-        }
+        };
 
         function initActivity() {
             const grid = document.getElementById('alikeGrid');
@@ -133,6 +121,10 @@
 
         async function submitAllData() {
             const btn = document.getElementById('finalSubmitBtn');
+            const emailInput = document.getElementById('emailInput').value.trim();
+            
+            if(!emailInput) return alert("الرجاء إدخال البريد الإلكتروني أولاً قبل الحفظ!");
+
             let allAnswers = [];
             let isComplete = true;
 
@@ -149,9 +141,8 @@
             btn.innerHTML = '<span class="loader"></span> SAVING...';
 
             try {
-                // إرسال البيانات لشيت Score فقط
                 const formData = new URLSearchParams();
-                formData.append('email', currentStudentEmail);
+                formData.append('email', emailInput);
                 formData.append('page', PAGE_NAME);
                 formData.append('answer', allAnswers.join(" | "));
 

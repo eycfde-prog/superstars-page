@@ -67,7 +67,7 @@
     </div>
 
     <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto w-full relative overflow-hidden">
-        <img src="logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
+        <img src="https://i.ibb.co/vzYp5zP/logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
         <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
         <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
         <div id="loginMsg" class="text-red-500 text-xs mb-4 hidden font-bold">عفواً! هذا الكود غير مسجل لدينا</div>
@@ -81,7 +81,7 @@
                 <i class="fas fa-sync-alt text-6xl"></i>
             </div>
             
-            <img src="logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
+            <img src="https://i.ibb.co/vzYp5zP/logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
             <p id="welcomeName" class="text-yellow-500 orbitron mt-2"></p>
             
@@ -110,7 +110,8 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6BUi_hyb3wCSqN3W2MNo5uuoiGvqb_s4BrjtAJ68pK7hGzetUlLC127586Dk1-I1j/exec"; 
+        // تم وضع لينك شيت Score الذي أرسلته يا مستر
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJg7bZSF1_MMGI9dCscu2UgGnm1p3X3PXaaIQpWkuyQ2PJ3haf53osI7UsX8wSc2Qq/exec"; 
         const PAGE_NAME = "Alike.html"; 
         let currentStudentId = "";
 
@@ -186,8 +187,8 @@
             let isComplete = true;
 
             wordsData.forEach((pair, index) => {
-                const in1 = document.getElementById(`pair-${index}-1`).value;
-                const in2 = document.getElementById(`pair-${index}-2`).value;
+                const in1 = document.getElementById(`pair-${index}-1`).value.trim();
+                const in2 = document.getElementById(`pair-${index}-2`).value.trim();
                 if(!in1 || !in2) isComplete = false;
                 allAnswers.push(`${pair.ar1}:${in1}-${pair.ar2}:${in2}`);
             });
@@ -198,9 +199,9 @@
             btn.innerHTML = '<span class="loader"></span> UPLOADING DATA...';
 
             try {
-                await fetch(SCRIPT_URL, {
+                // تم إزالة no-cors لاستقبال رد السيرفر والتأكد من ظهور SuccessOverlay
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
                     body: JSON.stringify({
                         action: "submit",
                         studentId: currentStudentId,
@@ -209,9 +210,15 @@
                     })
                 });
                 
-                document.getElementById('successOverlay').style.display = 'flex';
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    document.getElementById('successOverlay').style.display = 'flex';
+                } else {
+                    throw new Error("Save Failed");
+                }
             } catch (e) {
-                alert("حدث خطأ أثناء الإرسال");
+                alert("حدث خطأ أثناء الإرسال، برجاء المحاولة مرة أخرى");
                 btn.disabled = false;
                 btn.innerHTML = "FINALIZE MISSION & SAVE";
             }

@@ -76,14 +76,13 @@
         #mission-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; max-width: 360px; margin: -70px auto 0; opacity: 0; transform: translateY(30px); transition: 0.8s; pointer-events: none; position: relative; z-index: 20; }
         #mission-grid.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-        .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; text-decoration: none; }
-        .mission-box i { font-size: 16px; margin-bottom: 5px; }
-        .mission-box span { font-family: 'Orbitron'; font-size: 8px; font-weight: 700; color: #fff; }
+        .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; text-decoration: none; position: relative; }
+        .mission-box.locked { cursor: not-allowed; opacity: 0.5; }
+        .mission-box.done { cursor: default; }
         
-        /* Mission States */
-        .mission-done { border-color: var(--season-color); background: rgba(0, 255, 163, 0.1); cursor: default; }
-        .mission-available { border-color: var(--accent-gold); box-shadow: 0 0 10px rgba(255, 204, 0, 0.2); }
-        .mission-locked { opacity: 0.4; cursor: not-allowed; }
+        .mission-box i { font-size: 16px; margin-bottom: 5px; }
+        .mission-box span { font-family: 'Orbitron'; font-size: 8px; font-weight: 700; color: #fff; text-transform: uppercase; }
+        .mission-box small { font-size: 7px; color: #aaa; margin-top: 2px; }
 
         .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 6px 14px; border-radius: 15px; }
         .activity-icon { font-size: 70px; margin-bottom: 20px; }
@@ -98,7 +97,7 @@
 
     <canvas id="rank-canvas"></canvas>
 
-    <div id="user-status-bar" onclick="openLoginModal()">
+    <div id="user-status-bar" onclick="checkAndOpenLogin()">
         <span id="user-display"><i class="fas fa-user-shield"></i> AGENT LOGIN</span>
     </div>
 
@@ -137,9 +136,58 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         const VENS_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbw4NYQNX3k78RWb6IWfDBlPMcLPTmQgi42q5O9T2fPZM6sOouU8AspEiAnqCp7I5-oLEw/exec";
-        const AC_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbwgkSgh2zaMuCNKi3rTlmdwGMClebe6y5b03KIkuZ8zMpxcPojDv4KIdyVVX2IReqvtow/exec";
+        const AC_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbyDMmVnS9BSMxm5oqcdz8nhkrlvZXWHjpeizmv6L7LL1TwNwlwzZP5P2qIwzZ7jcU-t/exec";
 
-        let currentUser = null; 
+        let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
+
+        window.onload = () => {
+            if(currentUser) {
+                updateUserUI(currentUser);
+            }
+            renderActivities('season');
+        }
+
+        function updateUserUI(user) {
+            document.getElementById('user-display').innerHTML = `<i class="fas fa-star" style="color:var(--accent-gold)"></i> ${user.name} | #${user.rank}`;
+        }
+
+        function checkAndOpenLogin() { if(!currentUser) openLoginModal(); }
+        function openLoginModal() { document.getElementById('auth-modal').style.display = 'flex'; }
+        function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
+
+        async function processLogin() {
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('pass-input').value;
+            if(!email || !password) return alert("Missing Credentials");
+
+            const originalContent = document.getElementById('modal-content-main').innerHTML;
+            document.getElementById('modal-content-main').innerHTML = `<p class="loading-overlay">SCANNING BIOMETRICS...</p>`;
+            
+            try {
+                const resp = await fetch(VENS_DEPLOY_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'login', email: email, password: password })
+                });
+                const result = await resp.json();
+
+                if(result.status === "success") {
+                    currentUser = { email, name: result.name, tokens: result.tokens, rank: result.rank };
+                    localStorage.setItem('eyc_user', JSON.stringify(currentUser));
+                    updateUserUI(currentUser);
+                    closeLoginModal();
+                } else {
+                    alert(result.message);
+                    document.getElementById('modal-content-main').innerHTML = originalContent;
+                }
+            } catch(e) { alert("Server Error"); location.reload(); }
+        }
+
+        async function forgotPassword() {
+            const email = document.getElementById('email-input').value;
+            if(!email) return alert("Please enter your email first");
+            fetch(VENS_DEPLOY_URL, { method: 'POST', body: JSON.stringify({ action: 'forgot_password', email: email }) });
+            alert("If this email exists, your code has been sent to your Gmail.");
+        }
 
         const activities = {
             season: [
@@ -163,41 +211,6 @@
                 { name: 'SSS X', code: 'Sssx', icon: 'fa-bolt', tk: 250 }
             ]
         };
-
-        function openLoginModal() { document.getElementById('auth-modal').style.display = 'flex'; }
-        function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
-
-        async function processLogin() {
-            const email = document.getElementById('email-input').value;
-            const password = document.getElementById('pass-input').value;
-            if(!email || !password) return alert("Missing Credentials");
-            const originalContent = document.getElementById('modal-content-main').innerHTML;
-            document.getElementById('modal-content-main').innerHTML = `<p class="loading-overlay">SCANNING BIOMETRICS...</p>`;
-            
-            try {
-                const resp = await fetch(VENS_DEPLOY_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'login', email: email, password: password })
-                });
-                const result = await resp.json();
-
-                if(result.status === "success") {
-                    currentUser = { email, name: result.name, tokens: result.tokens, rank: result.rank };
-                    document.getElementById('user-display').innerHTML = `<i class="fas fa-star" style="color:var(--accent-gold)"></i> ${result.name} | #${result.rank}`;
-                    closeLoginModal();
-                } else {
-                    alert(result.message);
-                    document.getElementById('modal-content-main').innerHTML = originalContent;
-                }
-            } catch(e) { alert("Server Error"); document.getElementById('modal-content-main').innerHTML = originalContent; }
-        }
-
-        async function forgotPassword() {
-            const email = document.getElementById('email-input').value;
-            if(!email) return alert("Please enter your email first");
-            fetch(VENS_DEPLOY_URL, { method: 'POST', body: JSON.stringify({ action: 'forgot_password', email: email }) });
-            alert("If this email exists, your code has been sent to your Gmail.");
-        }
 
         let currentSwiper = null;
 
@@ -230,7 +243,7 @@
             card.classList.add('focus-card');
 
             const grid = document.getElementById('mission-grid');
-            grid.innerHTML = `<div style="grid-column: span 5; text-align:center;" class="loading-overlay">FETCHING MISSIONS...</div>`;
+            grid.innerHTML = `<div style="grid-column: span 5; text-align:center;" class="loading-overlay">SYNCHRONIZING...</div>`;
             grid.classList.add('show');
 
             try {
@@ -238,51 +251,46 @@
                     method: 'POST',
                     body: JSON.stringify({ action: 'get_status', email: currentUser.email, activity: activityCode })
                 });
-                const statusArray = await resp.json(); // Array of "Done" or ""
+                const missionStatus = await resp.json(); // Array: ["Done", "", "", ...]
 
-                let firstAvailableFound = false;
+                let firstEmptyFound = false;
+                grid.innerHTML = missionStatus.map((status, i) => {
+                    let type = "locked";
+                    let icon = "fa-lock";
+                    let label = "Locked";
+                    let color = "#555";
 
-                grid.innerHTML = statusArray.map((val, i) => {
-                    const missionNum = i + 1;
-                    let stateClass = "";
-                    let icon = "";
-                    let label = "";
-                    let clickAction = "";
-
-                    if (val === "Done") {
-                        stateClass = "mission-done";
+                    if (status === "Done") {
+                        type = "done";
                         icon = "fa-check-circle";
-                        label = "DONE";
-                        clickAction = "return;"; // لا يفعل شيء
-                    } else if (!firstAvailableFound) {
-                        stateClass = "mission-available";
+                        label = "Done";
+                        color = "var(--season-color)";
+                    } else if (!firstEmptyFound) {
+                        type = "available";
                         icon = "fa-play";
-                        label = "AVAILABLE";
-                        clickAction = `startMission('${activityCode}', ${missionNum})`;
-                        firstAvailableFound = true;
-                    } else {
-                        stateClass = "mission-locked";
-                        icon = "fa-lock";
-                        label = "LOCKED";
-                        clickAction = "return;"; // لا يفعل شيء
+                        label = "Available";
+                        color = "var(--accent-gold)";
+                        firstEmptyFound = true;
                     }
 
                     return `
-                        <div class="mission-box ${stateClass}" onclick="${clickAction}">
-                            <i class="fas ${icon}" style="color: ${stateClass==='mission-done'?'var(--season-color)':(stateClass==='mission-available'?'var(--accent-gold)':'#555')}"></i>
-                            <span style="display:block">${label}</span>
-                            <span style="font-size:7px; opacity:0.5">M-${missionNum}</span>
+                        <div class="mission-box ${type}" onclick="startMission('${type}', '${activityCode}', ${i+1})">
+                            <i class="fas ${icon}" style="color:${color}"></i>
+                            <span style="color:${color}">M-${i+1}</span>
+                            <small>${label}</small>
                         </div>
                     `;
                 }).join('');
                 document.getElementById('back-btn').style.display = 'block';
-            } catch(e) { 
-                grid.innerHTML = `<p style="grid-column: span 5; text-align:center;">ACCESS DENIED / SERVER ERROR</p>`; 
-            }
+            } catch(e) { grid.innerHTML = `<p>Error Syncing Data</p>`; }
         }
 
-        function startMission(activity, num) {
-            window.location.href = `mission_player.html?act=${encodeURIComponent(activity)}&m=${num}`;
+        function startMission(type, activity, num) {
+            if(type === 'available') {
+                window.location.href = `mission_player.html?act=${activity}&m=${num}`;
+            } else if (type === 'done') {
+                alert("Mission already completed!");
+            }
         }
 
         function exitFocusMode() {
@@ -299,6 +307,7 @@
             renderActivities(mode);
         }
 
+        // Animation
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -309,8 +318,6 @@
         initCanvas();
         for(let i=0; i<30; i++) particles.push(new Particle());
         animate();
-
-        renderActivities('season');
     </script>
 </body>
 </html>

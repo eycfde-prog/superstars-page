@@ -18,137 +18,161 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; }
+        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; position: relative; }
 
-        /* خلفية النجوم الذهبية السابحة */
-        #star-field {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; background: radial-gradient(circle at center, #111 0%, #000 100%);
+        /* --- Background Stars with Rotation --- */
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+        .bg-glow {
+            position: fixed; top: 50%; left: 50%; width: 150vw; height: 150vw;
+            background: radial-gradient(circle, rgba(255,204,0,0.05) 0%, transparent 70%);
+            transform: translate(-50%, -50%); z-index: -2; pointer-events: none;
+            animation: rotateBg 60s linear infinite;
         }
-        .star {
-            position: absolute; background: var(--accent-gold); border-radius: 50%;
-            filter: blur(1px); animation: drift linear infinite, twinkle 2s ease-in-out infinite;
-        }
-        @keyframes drift { from { transform: rotate(0deg) translateX(50px) rotate(0deg); } to { transform: rotate(360deg) translateX(50px) rotate(-360deg); } }
-        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; scale: 1.2; } }
+        @keyframes rotateBg { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* اسم الطالب بالشرار */
-        #user-status-bar {
-            position: fixed; top: 15px; right: 15px; z-index: 1000;
+        /* --- Sparkle Name (Top Right) --- */
+        .user-sparkle-name {
+            position: fixed; top: 20px; right: 20px; z-index: 1100;
             font-family: 'Orbitron'; font-weight: 900; font-size: 14px;
-            color: #fff; text-shadow: 0 0 10px var(--accent-gold);
-            animation: spark 1.5s infinite alternate;
+            color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold);
+            pointer-events: none; display: none;
         }
-        @keyframes spark { 
-            0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--accent-gold); transform: scale(1); }
-            100% { text-shadow: 0 0 15px var(--accent-gold), 0 0 30px #ffaa00; transform: scale(1.05); }
-        }
+        .sparkle-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        /* زر اللوج إن النابض */
-        .login-trigger {
-            position: fixed; bottom: 30px; left: 30px; width: 80px; height: 80px;
-            background: var(--accent-gold); border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; color: #000; font-size: 24px;
-            z-index: 1100; cursor: pointer; border: none;
-            box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7);
-            animation: pulse-gold 2s infinite;
-        }
-        @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(255, 204, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); } }
-
-        /* عنقود البروفايل المطور */
+        /* --- Profile Cluster & Floating Login --- */
         .profile-cluster {
-            position: fixed; bottom: 20px; left: 20px; z-index: 1000;
-            display: none; flex-direction: column-reverse; align-items: center; gap: 10px;
+            position: fixed; bottom: 30px; left: 30px; z-index: 1000;
+            display: flex; flex-direction: column-reverse; align-items: center; gap: 15px;
         }
         .float-circle {
-            border: 3px solid var(--accent-gold); border-radius: 50%;
-            background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; transition: 0.5s;
+            border-radius: 50%; border: 3px solid var(--accent-gold);
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px rgba(255,204,0,0.4); overflow: hidden;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .main-img-circle { width: 90px; height: 90px; border-width: 4px; z-index: 3; }
-        .main-img-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-        .token-circle { width: 70px; height: 70px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); font-size: 14px; }
-        .rank-circle { width: 60px; height: 60px; font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 16px; }
-
-        /* تأثير دخول الكوتشينة */
-        .swiper-slide {
-            opacity: 0; transform: translateX(200px) rotate(10deg);
-            animation: dealCards 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes dealCards { to { opacity: 1; transform: translateX(0) rotate(0); } }
-
-        /* التصميم الخاص بالكروت والمهام */
-        .swiper-slide { width: 280px; height: 380px; border-radius: 35px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); transition: 0.6s ease; }
-        .focus-card { transform: scale(0.5) translateY(-150px) !important; z-index: 100; }
-        .hide-other-cards { opacity: 0; pointer-events: none; transition: 0.8s; }
-
-        #mission-grid {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
-            position: fixed; top: 55%; left: 50%; transform: translate(-50%, -40%) scale(0.9);
-            width: 95%; max-width: 500px; opacity: 0; visibility: hidden; transition: 0.5s;
-        }
-        #mission-grid.show { opacity: 1; visibility: visible; transform: translate(-50%, -40%) scale(1); }
-
-        .mission-box {
-            background: rgba(255,255,255,0.05); border-radius: 12px; aspect-ratio: 1;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: 1px solid rgba(255,255,255,0.1); position: relative;
-        }
-        .lock-icon-gold { color: var(--accent-gold); filter: drop-shadow(0 0 5px rgba(255,204,0,0.5)); font-size: 18px; transform: perspective(500px) translateZ(10px); }
+        .main-img-circle { width: 90px; height: 90px; z-index: 3; }
+        .main-img-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .token-circle { width: 75px; height: 75px; font-size: 16px; font-weight: 900; color: var(--accent-gold); font-family: 'Orbitron'; flex-direction: column; z-index: 2; }
+        .rank-circle { width: 60px; height: 60px; font-size: 14px; color: #fff; border-color: #fff; font-family: 'Orbitron'; z-index: 1; }
         
-        /* Modal & UI */
-        #auth-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; }
-        .modal-content { background: #111; border: 2px solid var(--accent-gold); padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
-        .modal-input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #222; color: #fff; text-align: center; }
-        .modal-btn { width: 100%; padding: 12px; background: var(--accent-gold); border: none; border-radius: 8px; font-weight: 900; font-family: 'Orbitron'; cursor: pointer; }
+        /* Floating Login Button */
+        #floating-login-btn {
+            width: 90px; height: 90px; border-radius: 50%; background: var(--accent-gold);
+            color: #000; display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 12px; cursor: pointer;
+            box-shadow: 0 0 30px var(--accent-gold); animation: pulseBtn 2s infinite;
+            position: absolute; bottom: 0; left: 0; z-index: 1001;
+        }
+        @keyframes pulseBtn { 0% { transform: scale(1); box-shadow: 0 0 20px var(--accent-gold); } 50% { transform: scale(1.1); box-shadow: 0 0 40px var(--accent-gold); } 100% { transform: scale(1); box-shadow: 0 0 20px var(--accent-gold); } }
 
-        .header-area { text-align: center; padding: 20px 0; }
-        .header-area h1 { font-family: 'Orbitron'; letter-spacing: 5px; background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2rem; }
+        /* --- Header & Toggles --- */
+        .header-area { padding-top: 40px; text-align: center; z-index: 10; position: relative; }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
+        .toggle-container { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,204,0,0.3); color: #fff; padding: 12px 25px; border-radius: 25px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; transition: 0.4s; }
+        .mode-btn.active.season-mode { background: var(--season-color); color: #000; box-shadow: 0 0 20px var(--season-color); }
+        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; box-shadow: 0 0 20px var(--xbox-color); }
+
+        /* --- Cards Deck Animation --- */
+        #swiper-container { padding: 40px 0; opacity: 0; transform: translateX(100%); animation: deckIn 1s forwards cubic-bezier(0.23, 1, 0.32, 1); animation-delay: 0.5s; }
+        @keyframes deckIn { to { opacity: 1; transform: translateX(0); } }
+
+        .swiper-slide { 
+            width: 280px; height: 380px; border-radius: 35px; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; backdrop-filter: blur(20px); 
+            border: 2px solid rgba(255,255,255,0.1); transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        .season-card { background: var(--season-grad); }
+        .xbox-card { background: var(--xbox-grad); }
+
+        /* Focus Mode Transitions */
+        .hide-context { opacity: 0 !important; pointer-events: none; transform: translateY(-50px) !important; }
+        .focus-card { transform: scale(0.55) translateY(-140px) !important; border-color: var(--accent-gold) !important; z-index: 100 !important; }
+        .other-cards-fade { opacity: 0 !important; transform: scale(0.8) !important; pointer-events: none; }
+
+        /* --- 3D Gold Locks & Grid --- */
+        #mission-grid { 
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; 
+            max-width: 400px; margin: -100px auto 0; opacity: 0; pointer-events: none;
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #mission-grid.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .mission-box { 
+            aspect-ratio: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            transition: 0.3s; cursor: pointer; position: relative;
+        }
+        .mission-box:hover:not(.locked) { background: rgba(255,204,0,0.2); transform: translateY(-5px); border-color: var(--accent-gold); }
         
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold); color: #fff; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-family: 'Orbitron'; font-size: 10px; margin: 0 5px; }
-        .mode-btn.active { background: var(--accent-gold); color: #000; }
+        .mission-box.locked { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; }
+        .lock-icon-3d { 
+            position: absolute; top: 5px; right: 5px; font-size: 14px; 
+            color: #ffd700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(255,215,0,0.5); 
+            filter: drop-shadow(0 0 2px #b8860b);
+        }
 
-        #back-btn { position: fixed; bottom: 20px; right: 20px; background: #ff3131; border: none; color: #fff; padding: 10px 20px; border-radius: 20px; font-family: 'Orbitron'; display: none; z-index: 1000; }
+        .mission-box span { font-family: 'Orbitron'; font-size: 10px; font-weight: 900; color: #fff; margin-top: 5px; }
 
-        @media (max-width: 480px) {
-            #mission-grid { grid-template-columns: repeat(2, 1fr); max-height: 50vh; overflow-y: auto; }
-            .swiper-slide { width: 240px; height: 320px; }
+        /* Auth Modal */
+        #auth-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .modal-content { background: #111; border: 2px solid var(--accent-gold); padding: 35px; border-radius: 30px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 0 50px rgba(255,204,0,0.3); }
+        .modal-input { width: 100%; background: #222; border: 1px solid #444; padding: 15px; margin: 10px 0; border-radius: 15px; color: #fff; text-align: center; font-size: 16px; }
+        .modal-btn { width: 100%; background: var(--accent-gold); color: #000; padding: 15px; border: none; border-radius: 15px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; }
+
+        #back-btn { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); border: 2px solid var(--accent-gold); color: #fff; padding: 15px 40px; border-radius: 40px; font-family: 'Orbitron'; z-index: 100; backdrop-filter: blur(10px); cursor: pointer; }
+
+        @media (max-width: 600px) {
+            #mission-grid { grid-template-columns: repeat(4, 1fr); max-width: 90%; margin-top: -120px; }
+            .focus-card { transform: scale(0.5) translateY(-200px) !important; }
+            .profile-cluster { bottom: 20px; left: 20px; gap: 10px; }
+            .main-img-circle { width: 70px; height: 70px; }
+            .token-circle { width: 60px; height: 60px; font-size: 12px; }
+            .rank-circle { width: 50px; height: 50px; font-size: 11px; }
+            #floating-login-btn { width: 70px; height: 70px; font-size: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="star-field"></div>
+    <canvas id="rank-canvas"></canvas>
+    <div class="bg-glow"></div>
 
-    <button class="login-trigger" id="login-trigger" onclick="openLoginModal()">
-        <i class="fas fa-fingerprint"></i>
-    </button>
-
-    <div id="user-status-bar">
-        <span id="user-display">GUEST_AGENT</span>
+    <!-- Sparkle Name Container -->
+    <div class="user-sparkle-name" id="user-sparkle-container">
+        <span id="sparkle-name-text"></span>
+        <div class="sparkle-container" id="sp-particles"></div>
     </div>
 
     <div class="profile-cluster" id="profile-cluster">
-        <div class="float-circle main-img-circle"><img id="user-img" src="" alt=""></div>
-        <div class="float-circle token-circle" id="user-tokens">0 TK</div>
-        <div class="float-circle rank-circle" id="user-rank">#0</div>
+        <div class="float-circle rank-circle" id="user-rank">#--</div>
+        <div class="float-circle token-circle" id="user-tokens">--<br><span style="font-size:8px">TOKENS</span></div>
+        <div class="float-circle main-img-circle" id="img-circle-container">
+            <img id="user-img" src="" alt="" style="display:none">
+            <div id="floating-login-btn" onclick="openLoginModal()">AGENT<br>LOGIN</div>
+        </div>
     </div>
 
     <div id="auth-modal">
         <div class="modal-content">
-            <h2 style="font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 20px;">ACCESS DENIED</h2>
-            <input type="email" id="email-input" class="modal-input" placeholder="EMAIL">
-            <input type="password" id="pass-input" class="modal-input" placeholder="SECURITY CODE">
-            <button class="modal-btn" onclick="processLogin()">AUTHENTICATE</button>
-            <p onclick="closeLoginModal()" style="color:red; margin-top:15px; cursor:pointer; font-size:12px;">CANCEL</p>
+            <h2 style="font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 20px;">IDENTIFICATION</h2>
+            <input type="email" id="email-input" class="modal-input" placeholder="Registered Email">
+            <input type="password" id="pass-input" class="modal-input" placeholder="Unique Code">
+            <button class="modal-btn" onclick="processLogin()">VERIFY IDENTITY</button>
+            <span onclick="closeLoginModal()" style="color: #ff3131; cursor: pointer; display: block; margin-top: 15px; font-size: 12px; font-weight: bold;">CANCEL</span>
         </div>
     </div>
 
     <div class="header-area" id="header-area">
-        <h1>EYC ACADEMY</h1>
-        <div style="margin-top: 15px;">
-            <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-            <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
+        <header class="rank-header">
+            <h1>EYC ACADEMY</h1>
+            <p style="font-size: 11px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">MISSION CONTROL</p>
+        </header>
+        <div class="toggle-container">
+            <button class="mode-btn active season-mode" id="btn-season" onclick="switchMode('season')">SEASON</button>
+            <button class="mode-btn xbox-mode" id="btn-xbox" onclick="switchMode('xbox')">XBOX ELITE</button>
         </div>
     </div>
 
@@ -158,53 +182,35 @@
 
     <div id="mission-grid"></div>
 
-    <button id="back-btn" onclick="exitFocusMode()">BACK TO BASE</button>
+    <button id="back-btn" onclick="exitFocusMode()">ABORT MISSION</button>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         const VENS_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
         const RANKS_URL = "https://script.google.com/macros/s/AKfycbwtbuvN0Ai0_efho0f7pK2QuhbkanJEqF-cHnMmIvujHhNVhoE13A5aAm0tNd3kbTbN/exec";
-
+        
         const unlockTimes = [
-            { year: 2026, month: 1, day: 20, hour: 0, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 17, minute: 25 },
-            { year: 2026, month: 1, day: 20, hour: 18, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 19, minute: 30 },
-            { year: 2026, month: 1, day: 20, hour: 20, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 21, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 21, minute: 30 },
-            { year: 2026, month: 1, day: 20, hour: 22, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 22, minute: 30 },
-            { year: 2026, month: 1, day: 20, hour: 23, minute: 0 }
+            { year: 2026, month: 1, day: 20, hour: 0, minute: 0 },    
+            { year: 2026, month: 1, day: 20, hour: 17, minute: 25 },  
+            { year: 2026, month: 1, day: 20, hour: 18, minute: 0 },   
+            { year: 2026, month: 1, day: 20, hour: 19, minute: 30 },  
+            { year: 2026, month: 1, day: 20, hour: 20, minute: 0 },   
+            { year: 2026, month: 1, day: 20, hour: 21, minute: 0 },   
+            { year: 2026, month: 1, day: 20, hour: 21, minute: 30 },  
+            { year: 2026, month: 1, day: 20, hour: 22, minute: 0 },   
+            { year: 2026, month: 1, day: 20, hour: 22, minute: 30 },  
+            { year: 2026, month: 1, day: 20, hour: 23, minute: 0 }    
         ];
 
         let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
 
-        // نجوم الخلفية
-        function createStars() {
-            const container = document.getElementById('star-field');
-            for(let i=0; i<50; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                const size = Math.random() * 3 + 'px';
-                star.style.width = size;
-                star.style.height = size;
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDuration = (Math.random() * 5 + 5) + 's';
-                star.style.animationDelay = Math.random() * 5 + 's';
-                container.appendChild(star);
-            }
-        }
-
         window.onload = () => {
-            createStars();
             renderActivities('season');
-            if(currentUser) {
-                updateUserUI();
+            if(currentUser && currentUser.email) {
+                onSuccessfulLogin();
                 fetchProfileData();
             }
-        };
+        }
 
         function openLoginModal() { document.getElementById('auth-modal').style.display = 'flex'; }
         function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
@@ -212,27 +218,30 @@
         async function processLogin() {
             const email = document.getElementById('email-input').value;
             const password = document.getElementById('pass-input').value;
+            if(!email) return;
+            
             try {
                 const resp = await fetch(VENS_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'login', email, password })
                 });
-                const res = await resp.json();
-                if(res.status === "success") {
-                    currentUser = { email, name: res.name };
+                const result = await resp.json();
+                if(result.status === "success") {
+                    currentUser = { email, name: result.name };
                     localStorage.setItem('eyc_user', JSON.stringify(currentUser));
-                    updateUserUI();
+                    onSuccessfulLogin();
                     fetchProfileData();
                     closeLoginModal();
-                } else alert(res.message);
-            } catch(e) { alert("Network Error"); }
+                } else { alert(result.message); }
+            } catch(e) { alert("Server connection failed"); }
         }
 
-        function updateUserUI() {
-            if(currentUser) {
-                document.getElementById('user-display').innerText = currentUser.name;
-                document.getElementById('login-trigger').style.display = 'none';
-            }
+        function onSuccessfulLogin() {
+            document.getElementById('floating-login-btn').style.display = 'none';
+            document.getElementById('user-img').style.display = 'block';
+            document.getElementById('user-sparkle-container').style.display = 'block';
+            document.getElementById('sparkle-name-text').innerText = currentUser.name;
+            createSparkles();
         }
 
         async function fetchProfileData() {
@@ -242,9 +251,8 @@
                 const data = await resp.json();
                 if(data.image) {
                     document.getElementById('user-img').src = data.image;
-                    document.getElementById('user-tokens').innerText = data.tokens + " TK";
+                    document.getElementById('user-tokens').innerHTML = `${data.tokens}<br><span style="font-size:8px">TOKENS</span>`;
                     document.getElementById('user-rank').innerText = "#" + data.rank;
-                    document.getElementById('profile-cluster').style.display = 'flex';
                 }
             } catch(e) {}
         }
@@ -275,72 +283,125 @@
         let currentSwiper = null;
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide ${mode}-card" style="animation-delay: ${index * 0.1}s" onclick="enterFocusMode(this, '${mode}', '${act.code}')">
-                    <div style="position:absolute; top:20px; left:20px; background:var(--accent-gold); color:#000; padding:5px 15px; border-radius:20px; font-weight:900; font-size:12px;">${act.tk} TK</div>
-                    <i class="fas ${act.icon}" style="font-size:60px; margin-bottom:20px; color:#fff;"></i>
-                    <div style="font-family:'Orbitron'; font-weight:900; font-size:1.5rem;">${act.name}</div>
+            wrapper.innerHTML = activities[mode].map(act => `
+                <div class="swiper-slide ${mode}-card" onclick="enterFocusMode(this, '${mode}', '${act.code}')">
+                    <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.5); padding: 5px 12px; border-radius: 10px; font-family:'Orbitron'; font-size:10px; color:var(--accent-gold); font-weight:900;">${act.tk} TK</div>
+                    <i class="fas ${act.icon}" style="font-size: 60px; margin-bottom: 20px;"></i>
+                    <div style="font-family:'Orbitron'; font-size:22px; font-weight:900;">${act.name}</div>
                 </div>
             `).join('');
-            
             if (currentSwiper) currentSwiper.destroy();
             currentSwiper = new Swiper('.swiper', { 
                 effect: 'coverflow', 
                 centeredSlides: true, 
                 slidesPerView: 'auto', 
-                keyboard: { enabled: true, onlyInViewport: true }
+                grabCursor: true,
+                keyboard: { enabled: true, onlyInViewport: true },
+                coverflowEffect: { rotate: 30, stretch: 0, depth: 100, modifier: 1, slideShadows: false }
             });
+        }
+
+        function isMissionUnlocked(idx) {
+            const now = new Date();
+            const t = unlockTimes[idx];
+            return now >= new Date(t.year, t.month-1, t.day, t.hour, t.minute);
         }
 
         function enterFocusMode(card, mode, activityCode) {
             if(!currentUser) { openLoginModal(); return; }
 
+            document.getElementById('header-area').classList.add('hide-context');
             document.querySelectorAll('.swiper-slide').forEach(s => {
-                if(s !== card) s.classList.add('hide-other-cards');
+                if(s !== card) s.classList.add('other-cards-fade');
             });
-            
             card.classList.add('focus-card');
-            document.getElementById('header-area').style.opacity = '0';
-            document.getElementById('mission-grid').classList.add('show');
-            document.getElementById('back-btn').style.display = 'block';
-
-            const grid = document.getElementById('mission-grid');
-            const now = new Date();
             
+            const grid = document.getElementById('mission-grid');
             grid.innerHTML = Array(10).fill(0).map((_, i) => {
-                const target = unlockTimes[i];
-                const unlockDate = new Date(target.year, target.month - 1, target.day, target.hour, target.minute);
-                const isLocked = now < unlockDate;
-                const timeStr = `${target.hour}:${target.minute.toString().padStart(2, '0')}`;
-
+                const unlocked = isMissionUnlocked(i);
                 return `
-                    <div class="mission-box" onclick="${!isLocked ? `startMission('${activityCode}', ${i+1})` : `alert('Unlocks at ${timeStr}')`}">
-                        ${isLocked ? `<i class="fas fa-lock lock-icon-gold"></i>` : `<i class="fas fa-play" style="color:var(--season-color)"></i>`}
-                        <span style="font-family:'Orbitron'; font-size:10px; margin-top:5px;">M-${i+1}</span>
+                    <div class="mission-box ${unlocked ? '' : 'locked'}" onclick="${unlocked ? `alert('Starting Mission ${i+1}')` : ''}">
+                        ${unlocked ? '<i class="fas fa-play" style="color:var(--accent-gold); font-size:14px;"></i>' : '<i class="fas fa-lock lock-icon-3d"></i>'}
+                        <span>M-${i+1}</span>
                     </div>
                 `;
             }).join('');
+            
+            grid.classList.add('show');
+            document.getElementById('back-btn').style.display = 'block';
         }
 
         function exitFocusMode() {
-            document.querySelectorAll('.swiper-slide').forEach(s => {
-                s.classList.remove('hide-other-cards', 'focus-card');
-            });
-            document.getElementById('header-area').style.opacity = '1';
+            document.getElementById('header-area').classList.remove('hide-context');
+            document.querySelectorAll('.swiper-slide').forEach(s => s.classList.remove('focus-card', 'other-cards-fade'));
             document.getElementById('mission-grid').classList.remove('show');
             document.getElementById('back-btn').style.display = 'none';
         }
 
         function switchMode(mode) {
-            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
-            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
+            document.getElementById('btn-season').classList.toggle('active', mode === 'season');
+            document.getElementById('btn-xbox').classList.toggle('active', mode === 'xbox');
             renderActivities(mode);
         }
 
-        function startMission(act, num) {
-            console.log(`Starting ${act} - Mission ${num}`);
-            // Your logic remains untouched
+        // --- Sparkle Animation for Name ---
+        function createSparkles() {
+            const container = document.getElementById('sp-particles');
+            setInterval(() => {
+                const s = document.createElement('div');
+                s.style.position = 'absolute';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.width = '2px';
+                s.style.height = '2px';
+                s.style.background = 'var(--accent-gold)';
+                s.style.borderRadius = '50%';
+                s.style.pointerEvents = 'none';
+                s.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(4) translateY(-20px)' }], { duration: 1000 });
+                container.appendChild(s);
+                setTimeout(() => s.remove(), 1000);
+            }, 100);
         }
+
+        // --- Floating Stars Background ---
+        const canvas = document.getElementById('rank-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class Star {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5;
+                this.blink = Math.random() * 0.05;
+                this.opacity = Math.random();
+            }
+            draw() {
+                this.opacity += this.blink;
+                if(this.opacity > 1 || this.opacity < 0) this.blink *= -1;
+                ctx.fillStyle = `rgba(255, 204, 0, ${this.opacity})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+            }
+        }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            particles.forEach(p => p.draw());
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for(let i=0; i<150; i++) particles.push(new Star());
+        animate();
+
+        // Keyboard Controls
+        window.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") exitFocusMode();
+            if (e.key === "Enter" && currentSwiper) {
+                const activeSlide = document.querySelector('.swiper-slide-active');
+                if(activeSlide) activeSlide.click();
+            }
+        });
     </script>
 </body>
 </html>

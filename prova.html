@@ -22,6 +22,24 @@
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
 
+        /* Floating User Widgets */
+        #floating-container {
+            position: fixed; top: 20px; left: 20px; z-index: 150;
+            display: none; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .user-avatar-circle {
+            width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--accent-gold);
+            background-size: cover; background-position: center; box-shadow: 0 0 15px rgba(255,204,0,0.4);
+        }
+        .user-tokens-circle {
+            width: 45px; height: 45px; border-radius: 50%; background: #111;
+            border: 1px solid var(--season-color); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; font-family: 'Orbitron';
+            font-weight: 900; color: var(--season-color); box-shadow: 0 0 10px rgba(0,255,163,0.3);
+        }
+        .user-tokens-circle span { font-size: 10px; }
+        .user-tokens-circle small { font-size: 6px; text-transform: uppercase; }
+
         /* Login Modal Style */
         #auth-modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000;
@@ -44,7 +62,7 @@
         .modal-btn:hover { transform: scale(1.02); box-shadow: 0 0 15px var(--accent-gold); }
         .secondary-link { font-size: 11px; color: #888; margin-top: 15px; cursor: pointer; display: block; }
 
-        /* User Bar */
+        /* User Bar (Right) */
         #user-status-bar {
             position: fixed; top: 20px; right: 20px; z-index: 100;
             background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 20px;
@@ -84,12 +102,7 @@
         .mission-box span { font-family: 'Orbitron'; font-size: 8px; font-weight: 700; color: #fff; text-transform: uppercase; }
         .mission-box small { font-size: 7px; color: #aaa; margin-top: 2px; }
 
-        .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 6px 14px; border-radius: 15px; }
-        .activity-icon { font-size: 70px; margin-bottom: 20px; }
-        .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; }
-
         #back-btn { display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 30px; border-radius: 30px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; z-index: 100; backdrop-filter: blur(10px); }
-        
         .loading-overlay { font-family: 'Orbitron'; font-size: 12px; color: var(--accent-gold); letter-spacing: 2px; }
     </style>
 </head>
@@ -97,19 +110,29 @@
 
     <canvas id="rank-canvas"></canvas>
 
+    <div id="floating-container">
+        <div id="user-avatar" class="user-avatar-circle"></div>
+        <div class="user-tokens-circle">
+            <span id="total-tokens">0</span>
+            <small>TK</small>
+        </div>
+    </div>
+
     <div id="user-status-bar" onclick="checkAndOpenLogin()">
         <span id="user-display"><i class="fas fa-user-shield"></i> AGENT LOGIN</span>
     </div>
 
     <div id="auth-modal">
         <div class="modal-content" id="modal-content-main">
-            <h2 style="font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 10px;">IDENTIFICATION</h2>
-            <p style="font-size: 10px; color: #888; margin-bottom: 20px;">ACCESSING EYC SECURE SERVERS</p>
-            <input type="email" id="email-input" class="modal-input" placeholder="Registered Email">
-            <input type="password" id="pass-input" class="modal-input" placeholder="Unique Code (Password)">
-            <button class="modal-btn" onclick="processLogin()">VERIFY IDENTITY</button>
-            <span class="secondary-link" onclick="forgotPassword()">Request My Unique Code</span>
-            <span class="secondary-link" onclick="closeLoginModal()" style="color: #ff3131;">CANCEL</span>
+            <div id="modal-form">
+                <h2 style="font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 10px;">IDENTIFICATION</h2>
+                <p style="font-size: 10px; color: #888; margin-bottom: 20px;">EYC SECURE ACCESS</p>
+                <input type="email" id="email-input" class="modal-input" placeholder="Registered Email">
+                <input type="password" id="pass-input" class="modal-input" placeholder="Unique Code">
+                <button class="modal-btn" onclick="processLogin()">VERIFY IDENTITY</button>
+                <span class="secondary-link" onclick="forgotPassword()">Request My Unique Code</span>
+                <span class="secondary-link" onclick="closeLoginModal()" style="color: #ff3131;">CANCEL</span>
+            </div>
         </div>
     </div>
 
@@ -149,6 +172,9 @@
 
         function updateUserUI(user) {
             document.getElementById('user-display').innerHTML = `<i class="fas fa-star" style="color:var(--accent-gold)"></i> ${user.name} | #${user.rank}`;
+            document.getElementById('floating-container').style.display = 'flex';
+            document.getElementById('user-avatar').style.backgroundImage = `url('${user.photo || ""}')`;
+            document.getElementById('total-tokens').innerText = user.tokens || 0;
         }
 
         function checkAndOpenLogin() { if(!currentUser) openLoginModal(); }
@@ -156,10 +182,39 @@
         function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
 
         async function processLogin() {
-            const email = document.getElementById('email-input').value;
-            const password = document.getElementById('pass-input').value;
-            if(!email || !password) return alert("Missing Credentials");
+            const email = document.getElementById('email-input').value.trim();
+            const password = document.getElementById('pass-input').value.trim();
 
+            // تعديل أولاً: إذا لم يكتب إيميل
+            if(!email) {
+                document.getElementById('modal-content-main').innerHTML = `
+                    <h3 style="color:var(--accent-gold); font-family:'Orbitron';">NO PROFILE DETECTED</h3>
+                    <p style="font-size:12px; margin:20px 0;">If you don't have an email profile, you can create one now.</p>
+                    <button class="modal-btn" onclick="window.location.href='https://your-github-link/NP.html'">CREATE NEW PROFILE</button>
+                    <span class="secondary-link" onclick="location.reload()">TRY AGAIN</span>
+                `;
+                return;
+            }
+
+            // تعديل ثانياً: إذا كتب إيميل بدون باسورد
+            if(email && !password) {
+                document.getElementById('modal-content-main').innerHTML = `<p class="loading-overlay">VERIFYING EMAIL...</p>`;
+                try {
+                    const resp = await fetch(VENS_DEPLOY_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'forgot_password', email: email })
+                    });
+                    const result = await resp.json();
+                    document.getElementById('modal-content-main').innerHTML = `
+                        <h3 style="color:var(--season-color); font-family:'Orbitron';">CODE SENT!</h3>
+                        <p style="font-size:11px; margin:20px 0;">We found your profile. Your unique access code has been sent to your Gmail.</p>
+                        <button class="modal-btn" onclick="location.reload()">LOG IN WITH CODE</button>
+                    `;
+                } catch(e) { alert("Email not found or Server Error"); location.reload(); }
+                return;
+            }
+
+            // تسجيل الدخول العادي
             const originalContent = document.getElementById('modal-content-main').innerHTML;
             document.getElementById('modal-content-main').innerHTML = `<p class="loading-overlay">SCANNING BIOMETRICS...</p>`;
             
@@ -171,13 +226,19 @@
                 const result = await resp.json();
 
                 if(result.status === "success") {
-                    currentUser = { email, name: result.name, tokens: result.tokens, rank: result.rank };
+                    currentUser = { 
+                        email, 
+                        name: result.name, 
+                        tokens: result.tokens, 
+                        rank: result.rank, 
+                        photo: result.photo // تأكد أن كود Vens يرسل الـ photo من العمود E
+                    };
                     localStorage.setItem('eyc_user', JSON.stringify(currentUser));
                     updateUserUI(currentUser);
                     closeLoginModal();
                 } else {
                     alert(result.message);
-                    document.getElementById('modal-content-main').innerHTML = originalContent;
+                    location.reload();
                 }
             } catch(e) { alert("Server Error"); location.reload(); }
         }
@@ -186,9 +247,10 @@
             const email = document.getElementById('email-input').value;
             if(!email) return alert("Please enter your email first");
             fetch(VENS_DEPLOY_URL, { method: 'POST', body: JSON.stringify({ action: 'forgot_password', email: email }) });
-            alert("If this email exists, your code has been sent to your Gmail.");
+            alert("Sent! Check your Gmail.");
         }
 
+        // --- Activities Data & Swiper ---
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'Golden ear', icon: 'fa-ear-listen', tk: 50 },
@@ -218,10 +280,9 @@
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map(act => `
                 <div class="swiper-slide ${mode}-card" onclick="enterFocusMode(this, '${mode}', '${act.code}')">
-                    <div class="token-badge">${act.tk} TK</div>
+                    <div style="position:absolute; top:25px; left:25px; background:var(--accent-gold); color:#000; padding:4px 12px; border-radius:12px; font-size:10px; font-weight:900;">${act.tk} TK</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
-                    <div style="font-size: 10px; opacity:0.6; margin-top:10px; font-family:'Orbitron'">${act.code}</div>
                 </div>
             `).join('');
 
@@ -229,7 +290,7 @@
             currentSwiper = new Swiper('.swiper', {
                 effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
                 coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
-                speed: 600, grabCursor: true
+                speed: 600
             });
         }
 
@@ -251,26 +312,16 @@
                     method: 'POST',
                     body: JSON.stringify({ action: 'get_status', email: currentUser.email, activity: activityCode })
                 });
-                const missionStatus = await resp.json(); // Array: ["Done", "", "", ...]
+                const missionStatus = await resp.json();
 
                 let firstEmptyFound = false;
                 grid.innerHTML = missionStatus.map((status, i) => {
-                    let type = "locked";
-                    let icon = "fa-lock";
-                    let label = "Locked";
-                    let color = "#555";
+                    let type = "locked"; let icon = "fa-lock"; let label = "Locked"; let color = "#555";
 
                     if (status === "Done") {
-                        type = "done";
-                        icon = "fa-check-circle";
-                        label = "Done";
-                        color = "var(--season-color)";
+                        type = "done"; icon = "fa-check-circle"; label = "Done"; color = "var(--season-color)";
                     } else if (!firstEmptyFound) {
-                        type = "available";
-                        icon = "fa-play";
-                        label = "Available";
-                        color = "var(--accent-gold)";
-                        firstEmptyFound = true;
+                        type = "available"; icon = "fa-play"; label = "Available"; color = "var(--accent-gold)"; firstEmptyFound = true;
                     }
 
                     return `
@@ -282,15 +333,11 @@
                     `;
                 }).join('');
                 document.getElementById('back-btn').style.display = 'block';
-            } catch(e) { grid.innerHTML = `<p>Error Syncing Data</p>`; }
+            } catch(e) { grid.innerHTML = `<p>Error</p>`; }
         }
 
         function startMission(type, activity, num) {
-            if(type === 'available') {
-                window.location.href = `mission_player.html?act=${activity}&m=${num}`;
-            } else if (type === 'done') {
-                alert("Mission already completed!");
-            }
+            if(type === 'available') window.location.href = `mission_player.html?act=${activity}&m=${num}`;
         }
 
         function exitFocusMode() {
@@ -307,7 +354,7 @@
             renderActivities(mode);
         }
 
-        // Animation
+        // Particle Background
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

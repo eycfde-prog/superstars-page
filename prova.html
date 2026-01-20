@@ -22,25 +22,26 @@
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
 
-        /* Floating User Profile */
+        /* Floating User Profile - Left Side */
         #floating-profile {
-            position: fixed; top: 20px; left: 20px; z-index: 1000;
-            display: none; flex-direction: column; align-items: center; gap: 8px;
+            position: fixed; bottom: 30px; left: 20px; z-index: 1000;
+            display: none; flex-direction: column; align-items: center; gap: 10px;
         }
         .profile-circle {
-            width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--accent-gold);
-            background: #111; overflow: hidden; box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+            width: 75px; height: 75px; border-radius: 50%; border: 3px solid var(--accent-gold);
+            background: #111; overflow: hidden; box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
             display: flex; align-items: center; justify-content: center;
         }
         .profile-circle img { width: 100%; height: 100%; object-fit: cover; }
+        
         .tokens-circle {
-            width: 45px; height: 45px; border-radius: 50%; border: 1.5px solid var(--season-color);
-            background: rgba(0, 0, 0, 0.8); display: flex; flex-direction: column; 
+            width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--season-color);
+            background: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; 
             align-items: center; justify-content: center; font-family: 'Orbitron';
-            box-shadow: 0 0 10px rgba(0, 255, 163, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 163, 0.3);
         }
-        .tokens-circle span { font-size: 10px; font-weight: 900; color: var(--season-color); }
-        .tokens-circle small { font-size: 6px; color: #fff; text-transform: uppercase; }
+        .tokens-circle span { font-size: 11px; font-weight: 900; color: var(--season-color); }
+        .tokens-circle small { font-size: 7px; color: #fff; text-transform: uppercase; }
 
         /* Login Modal Style */
         #auth-modal {
@@ -113,7 +114,7 @@
 
     <div id="floating-profile">
         <div class="profile-circle" id="profile-img-container">
-            <i class="fas fa-user-ninja" style="font-size: 24px; color: #333;"></i>
+            <i class="fas fa-user-ninja" style="font-size: 24px; color: #444;"></i>
         </div>
         <div class="tokens-circle">
             <span id="floating-tokens">0</span>
@@ -160,8 +161,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // الروابط الخاصة بك
-        const VENS_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbx2ywySNBHOnQDEZXeGot_jRwZxYbSu3w2ylpPH10BGndFde3vDwLFHNwuhJF--XHtt_A/exec";
+        const VENS_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbw72j-smcu2hqZNVesWoNKXrg2ui8udmpL6iydBHnCOxkVpVYh3ZknrFvVAzIlQ0cmamg/exec";
         const AC_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbyDMmVnS9BSMxm5oqcdz8nhkrlvZXWHjpeizmv6L7LL1TwNwlwzZP5P2qIwzZ7jcU-t/exec";
 
         let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
@@ -171,37 +171,28 @@
             renderActivities('season');
         }
 
-        // تحسين دالة جلب الصور لتعمل باحترافية
+        // دالة تحويل رابط جوجل درايف ليظهر كصورة مباشرة
         function formatDriveUrl(url) {
-            if (!url || url === "" || url === "Error Uploading Image") return null;
-            let fileId = "";
-            try {
+            if (!url) return '';
+            if (url.includes('drive.google.com')) {
+                let fileId = "";
                 if (url.includes('id=')) {
                     fileId = url.split('id=')[1].split('&')[0];
-                } else if (url.includes('/d/')) {
-                    fileId = url.split('/d/')[1].split('/')[0];
                 } else {
-                    return url; // إذا كان رابطاً مباشراً أصلاً
+                    fileId = url.split('/d/')[1].split('/')[0];
                 }
-                // الرابط المباشر الصحيح من جوجل درايف
-                return `https://lh3.googleusercontent.com/u/0/d/${fileId}`;
-            } catch (e) {
-                return null;
+                return `https://lh3.googleusercontent.com/u/0/d/${fileId}=w200-h200-p-k-no-iv1`;
             }
+            return url;
         }
 
         function updateUserUI(user) {
             document.getElementById('user-display').innerHTML = `<i class="fas fa-star" style="color:var(--accent-gold)"></i> ${user.name} | #${user.rank}`;
             document.getElementById('floating-profile').style.display = 'flex';
             document.getElementById('floating-tokens').innerText = user.tokens;
-            
-            const profileContainer = document.getElementById('profile-img-container');
-            const finalImg = formatDriveUrl(user.photo);
-
-            if(finalImg) {
-                profileContainer.innerHTML = `<img src="${finalImg}" alt="Profile" onerror="this.parentElement.innerHTML='<i class=\'fas fa-user-ninja\' style=\'font-size: 24px; color: #333;\'></i>'">`;
-            } else {
-                profileContainer.innerHTML = `<i class="fas fa-user-ninja" style="font-size: 24px; color: #333;"></i>`;
+            if(user.photo) {
+                const imgUrl = formatDriveUrl(user.photo);
+                document.getElementById('profile-img-container').innerHTML = `<img src="${imgUrl}" alt="Profile">`;
             }
         }
 
@@ -214,29 +205,37 @@
             const password = document.getElementById('pass-input').value.trim();
             const modalBody = document.getElementById('modal-body');
 
+            // 1. إذا لم يكتب الإيميل
             if(!email) {
                 modalBody.innerHTML = `
-                    <h3 style="color:var(--accent-gold); font-family:'Orbitron'">NO ID DETECTED</h3>
-                    <p style="font-size:12px; margin:20px 0; color:#ccc;">It seems you don't have a registered profile.</p>
-                    <button class="modal-btn" onclick="window.location.href='NP.html'">CREATE NEW PROFILE</button>
-                    <span class="secondary-link" onclick="location.reload()">TRY LOGIN AGAIN</span>
+                    <h3 style="color:var(--accent-gold); font-family:'Orbitron'">ACCESS DENIED</h3>
+                    <p style="font-size:12px; margin:20px 0; color:#ccc;">لو معندكش إيميل بروفايل تقدر تعمل واحد من هنا:</p>
+                    <button class="modal-btn" onclick="window.location.href='https://np.html'">CREATE NEW PROFILE</button>
+                    <span class="secondary-link" onclick="location.reload()">BACK TO LOGIN</span>
                 `;
                 return;
             }
 
+            // 2. إذا كتب الإيميل بدون كلمة سر (إرسال تلقائي للكود)
             if(email && !password) {
-                modalBody.innerHTML = `<p class="loading-overlay">VERIFYING AGENT EMAIL...</p>`;
+                modalBody.innerHTML = `<p class="loading-overlay">VERIFYING ACCOUNT...</p>`;
                 try {
-                    await fetch(VENS_DEPLOY_URL, {
+                    const resp = await fetch(VENS_DEPLOY_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'forgot_password', email: email })
                     });
-                    alert("A unique access code has been sent to your Gmail.");
+                    const res = await resp.json();
+                    if(res.status === "success") {
+                        alert("Your Unique Code has been sent to your Gmail.");
+                    } else {
+                        alert(res.message);
+                    }
                     location.reload();
-                } catch(e) { alert("Email verification failed."); location.reload(); }
+                } catch(e) { alert("Verification error."); location.reload(); }
                 return;
             }
 
+            // 3. محاولة الدخول العادية
             modalBody.innerHTML = `<p class="loading-overlay">SCANNING BIOMETRICS...</p>`;
             try {
                 const resp = await fetch(VENS_DEPLOY_URL, {
@@ -256,8 +255,6 @@
                     localStorage.setItem('eyc_user', JSON.stringify(currentUser));
                     updateUserUI(currentUser);
                     closeLoginModal();
-                    // تحديث الصفحة لضمان تحميل الحالة الجديدة
-                    setTimeout(() => location.reload(), 500);
                 } else {
                     alert(result.message);
                     location.reload();
@@ -265,11 +262,10 @@
             } catch(e) { alert("Server Error"); location.reload(); }
         }
 
-        function forgotPassword() {
+        async function forgotPassword() {
             const email = document.getElementById('email-input').value;
             if(!email) return alert("Please enter your email first");
-            fetch(VENS_DEPLOY_URL, { method: 'POST', body: JSON.stringify({ action: 'forgot_password', email: email }) });
-            alert("If this email exists, your code has been sent to your Gmail.");
+            processLogin(); // ستتكفل الوظيفة بإرسال الكود لأن الباسورد فارغ
         }
 
         const activities = {
@@ -304,6 +300,7 @@
                     <div class="token-badge">${act.tk} TK</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
+                    <div style="font-size: 10px; opacity:0.6; margin-top:10px; font-family:'Orbitron'">${act.code}</div>
                 </div>
             `).join('');
 
@@ -341,14 +338,16 @@
                     if (status === "Done") {
                         type = "done"; icon = "fa-check-circle"; label = "Done"; color = "var(--season-color)";
                     } else if (!firstEmptyFound) {
-                        type = "available"; icon = "fa-play"; label = "Available"; color = "var(--accent-gold)"; firstEmptyFound = true;
+                        type = "available"; icon = "fa-play"; label = "Available"; color = "var(--accent-gold)";
+                        firstEmptyFound = true;
                     }
                     return `
                         <div class="mission-box ${type}" onclick="startMission('${type}', '${activityCode}', ${i+1})">
                             <i class="fas ${icon}" style="color:${color}"></i>
                             <span style="color:${color}">M-${i+1}</span>
                             <small>${label}</small>
-                        </div>`;
+                        </div>
+                    `;
                 }).join('');
                 document.getElementById('back-btn').style.display = 'block';
             } catch(e) { grid.innerHTML = `<p>Error Syncing Data</p>`; }
@@ -356,10 +355,15 @@
 
         function startMission(type, activity, num) {
             if(type === 'available') window.location.href = `mission_player.html?act=${activity}&m=${num}`;
+            else if (type === 'done') alert("Mission already completed!");
         }
 
         function exitFocusMode() {
-            location.reload();
+            document.body.style.background = '#050505';
+            document.getElementById('header-area').classList.remove('hide-context');
+            document.querySelectorAll('.swiper-slide').forEach(s => s.classList.remove('hide-context', 'focus-card'));
+            document.getElementById('mission-grid').classList.remove('show');
+            document.getElementById('back-btn').style.display = 'none';
         }
 
         function switchMode(mode) {
@@ -368,7 +372,6 @@
             renderActivities(mode);
         }
 
-        // Canvas Background Animation
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

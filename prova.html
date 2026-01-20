@@ -115,7 +115,7 @@
             <h2 style="font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 10px;">IDENTIFICATION</h2>
             <input type="email" id="email-input" class="modal-input" placeholder="Registered Email">
             <input type="password" id="pass-input" class="modal-input" placeholder="Unique Code">
-            <button class="modal-btn" id="login-btn" onclick="processLogin()">VERIFY IDENTITY</button>
+            <button class="modal-btn" onclick="processLogin()">VERIFY IDENTITY</button>
             <div id="no-email-section" class="no-email-box">
                 <p style="font-size: 12px; color: #fff;">لو معندكش ايميل بروفايل تقدر تعمل واحد</p>
                 <a href="#" class="github-btn">إنشاء بروفايل جديد</a>
@@ -149,92 +149,70 @@
         const VENS_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
         const RANKS_URL = "https://script.google.com/macros/s/AKfycbwtbuvN0Ai0_efho0f7pK2QuhbkanJEqF-cHnMmIvujHhNVhoE13A5aAm0tNd3kbTbN/exec";
         
+        // --- نظام التوقيت المطور (20 يناير 2026) ---
         const unlockTimes = [
-            { year: 2026, month: 1, day: 20, hour: 0, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 17, minute: 25 },
-            { year: 2026, month: 1, day: 20, hour: 18, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 19, minute: 30 },
-            { year: 2026, month: 1, day: 20, hour: 20, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 21, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 21, minute: 30 },
-            { year: 2026, month: 1, day: 20, hour: 22, minute: 0 },
-            { year: 2026, month: 1, day: 20, hour: 22, minute: 30 },
-            { year: 2026, month: 1, day: 20, hour: 23, minute: 0 }
+            { year: 2026, month: 1, day: 20, hour: 0, minute: 0 },    
+            { year: 2026, month: 1, day: 20, hour: 17, minute: 25 },  
+            { year: 2026, month: 1, day: 20, hour: 18, minute: 0 },   
+            { year: 2026, month: 1, day: 20, hour: 19, minute: 30 },  
+            { year: 2026, month: 1, day: 20, hour: 20, minute: 0 },   
+            { year: 2026, month: 1, day: 20, hour: 21, minute: 0 },   
+            { year: 2026, month: 1, day: 20, hour: 21, minute: 30 },  
+            { year: 2026, month: 1, day: 20, hour: 22, minute: 0 },   
+            { year: 2026, month: 1, day: 20, hour: 22, minute: 30 },  
+            { year: 2026, month: 1, day: 20, hour: 23, minute: 0 }    
         ];
 
         let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
 
         window.onload = async () => {
             renderActivities('season');
-            // عند الريفرش: إذا كان مسجل دخول، نتحقق من حالته في الشيت بصمت
+            // استعادة الجلسة تلقائياً عند الريفرش
             if(currentUser && currentUser.email) {
-                console.log("Refreshing session for:", currentUser.email);
-                validateSession(true); 
+                updateUserUI(); // تحديث الواجهة فوراً بالبيانات المخزنة
+                fetchProfileData(); // جلب البيانات المحدثة من السيرفر (صورة، توكنز)
+                validateSession(true); // فحص صامت لصحة الجلسة
             }
         }
 
         async function validateSession(isSilent = false) {
+            if(!currentUser) return;
             try {
-                // نرسل الإيميل المخزن للتأكد من حالة الأعمدة Y و Z
                 const resp = await fetch(VENS_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'check_session', email: currentUser.email })
                 });
                 const res = await resp.json();
-                
                 if(res.status === "active") {
-                    // إذا كان الطالب "active" (الأعمدة صحيحة)، نحدث الواجهة
-                    currentUser.name = res.name; 
                     updateUserUI();
-                    fetchProfileData();
-                } else {
-                    // إذا لم يعد مسجلاً (الأعمدة فارغة)، يتم تسجيل الخروج
-                    if(!isSilent) alert("Session expired or unauthorized.");
+                } else if(!isSilent) {
                     logout();
                 }
-            } catch(e) {
-                console.error("Session check failed");
-            }
+            } catch(e) { console.error("Session sync failed"); }
         }
 
-        function openLoginModal() { 
-            document.getElementById('auth-modal').style.display = 'flex';
-        }
-
+        function openLoginModal() { document.getElementById('auth-modal').style.display = 'flex'; }
         function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
 
         async function processLogin() {
             const email = document.getElementById('email-input').value;
             const password = document.getElementById('pass-input').value;
-            const btn = document.getElementById('login-btn');
-
             if(!email) { document.getElementById('no-email-section').style.display = 'block'; return; }
             
-            btn.innerText = "VERIFYING...";
-            btn.disabled = true;
-
             try {
                 const resp = await fetch(VENS_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'login', email: email, password: password })
                 });
                 const result = await resp.json();
-                
                 if(result.status === "success") {
                     currentUser = { email, name: result.name };
                     localStorage.setItem('eyc_user', JSON.stringify(currentUser));
                     updateUserUI();
                     fetchProfileData();
                     closeLoginModal();
-                } else {
-                    alert(result.message);
-                }
-            } catch(e) { 
-                alert("Error connecting to server"); 
-            } finally {
-                btn.innerText = "VERIFY IDENTITY";
-                btn.disabled = false;
-            }
+                } else { alert(result.message); }
+            } catch(e) { alert("Error connecting to server"); }
         }
 
         async function fetchProfileData() {
@@ -254,14 +232,11 @@
 
         function logout() {
             localStorage.removeItem('eyc_user');
-            currentUser = null;
             location.reload();
         }
 
         function updateUserUI() {
-            if(currentUser) {
-                document.getElementById('user-display').innerHTML = `<i class="fas fa-circle" style="color:var(--season-color)"></i> ${currentUser.name}`;
-            }
+            if(currentUser) document.getElementById('user-display').innerText = currentUser.name;
         }
 
         const activities = {
@@ -305,14 +280,15 @@
             const now = new Date();
             const target = unlockTimes[missionIndex];
             if (!target) return true;
-            
+            // استخدام التاريخ الكامل للمقارنة
             const unlockDate = new Date(target.year, target.month - 1, target.day, target.hour, target.minute, 0);
             return now >= unlockDate;
         }
 
         async function enterFocusMode(card, mode, activityCode) {
-            // التحقق من تسجيل الدخول عند الضغط على أي كارت نشاط
+            // التحقق من تسجيل الدخول عند الضغط على أي نشاط
             if(!currentUser) { 
+                alert("Please login first to access missions!");
                 openLoginModal(); 
                 return; 
             }
@@ -325,12 +301,11 @@
             const grid = document.getElementById('mission-grid');
             grid.innerHTML = Array(10).fill(0).map((_, i) => {
                 const unlocked = isMissionUnlocked(i);
-                const t = unlockTimes[i];
-                const timeStr = `${t.hour}:${t.minute.toString().padStart(2, '0')}`;
+                const timeStr = `${unlockTimes[i].hour}:${unlockTimes[i].minute.toString().padStart(2, '0')}`;
                 
                 return `
                     <div class="mission-box ${unlocked ? 'available' : 'locked'}" 
-                         onclick="handleMissionClick(${unlocked}, '${activityCode}', ${i+1}, '${timeStr}')">
+                         onclick="${unlocked ? `startMission('${activityCode}', ${i+1})` : `alert('This mission unlocks at ${timeStr}')`}">
                         ${unlocked ? '<i class="fas fa-play" style="color:var(--accent-gold)"></i>' : '<i class="fas fa-lock lock-icon"></i>'}
                         <span>M-${i+1}</span>
                         ${unlocked ? '' : `<div class="time-badge">${timeStr}</div>`}
@@ -339,21 +314,15 @@
             }).join('');
         }
 
-        function handleMissionClick(unlocked, actCode, mNumber, timeStr) {
+        function startMission(act, num) {
+            // حماية إضافية: لو حاول الطالب الضغط على المهمة ولم يسجل دخوله
             if(!currentUser) {
+                alert("Access Denied! Please login to start the mission.");
                 openLoginModal();
                 return;
             }
-            if(!unlocked) {
-                alert(`Mission ${mNumber} is locked until ${timeStr}`);
-                return;
-            }
-            startMission(actCode, mNumber);
-        }
-
-        function startMission(act, num) {
-            console.log(`Starting ${act} Mission ${num}`);
-            // توجيه الطالب للمهمة
+            console.log(`Agent ${currentUser.name} starting ${act} Mission ${num}`);
+            // أضف هنا رابط المهمة الفعلي إذا وجد
         }
 
         function exitFocusMode() {

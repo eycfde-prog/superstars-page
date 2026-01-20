@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -13,43 +13,40 @@
             --accent-gold: #ffcc00;
             --season-color: #00ffa3;
             --xbox-color: #ff3131;
+            --season-grad: linear-gradient(135deg, rgba(0, 255, 163, 0.4), rgba(0, 128, 255, 0.2));
+            --xbox-grad: linear-gradient(135deg, rgba(255, 49, 49, 0.4), rgba(255, 150, 0, 0.2));
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; }
+        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; transition: background 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
 
-        /* Floating Info Panels (Left Side) */
-        .floating-stats {
-            position: fixed; left: 20px; top: 50%; transform: translateY(-50%);
-            display: flex; flex-direction: column; gap: 15px; z-index: 1500;
-            pointer-events: none; opacity: 0; transition: 0.5s;
+        /* Floating Profile System */
+        .profile-cluster {
+            position: fixed; bottom: 20px; left: 20px; z-index: 1000;
+            display: none; flex-direction: column; align-items: center; gap: 8px;
         }
-        .floating-stats.visible { opacity: 1; pointer-events: auto; }
-
-        .stat-circle {
-            width: 70px; height: 70px; border-radius: 50%; 
-            border: 2px solid var(--accent-gold); overflow: hidden;
+        .float-circle {
+            border-radius: 50%; border: 2px solid var(--accent-gold);
             display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.8); box-shadow: 0 0 15px rgba(255,204,0,0.3);
-            position: relative;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(255,204,0,0.3); overflow: hidden;
         }
-        .stat-circle.profile-img { width: 90px; height: 90px; border-width: 3px; }
-        .stat-circle img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .stat-circle.tokens { width: 60px; height: 60px; font-family: 'Orbitron'; font-size: 12px; color: var(--accent-gold); font-weight: 900; flex-direction: column; }
-        .stat-circle.rank { width: 50px; height: 50px; font-family: 'Orbitron'; font-size: 14px; color: #fff; background: var(--xbox-color); border: none; font-weight: 900; }
-        .stat-label { font-size: 8px; color: #fff; margin-bottom: -2px; }
+        .main-img-circle { width: 70px; height: 70px; }
+        .main-img-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .token-circle { width: 45px; height: 45px; font-size: 10px; font-weight: 900; color: var(--accent-gold); font-family: 'Orbitron'; }
+        .rank-circle { width: 35px; height: 35px; font-size: 10px; color: #fff; border-color: #fff; font-family: 'Orbitron'; }
 
-        /* Auth Modal */
+        /* Login Modal Style */
         #auth-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000;
             display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px);
         }
         .modal-content {
-            background: #111; border: 2px solid var(--accent-gold); padding: 30px;
+            background: #111; border: 2px solid var(--accent-gold); padding: 35px;
             border-radius: 25px; width: 90%; max-width: 380px; text-align: center;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.2);
         }
         .modal-input {
             width: 100%; background: #222; border: 1px solid #444; padding: 12px;
@@ -58,64 +55,84 @@
         .modal-btn {
             width: 100%; background: var(--accent-gold); color: #000; padding: 12px;
             border: none; border-radius: 12px; font-family: 'Orbitron'; font-weight: 900;
-            cursor: pointer; margin-top: 10px;
+            cursor: pointer; margin-top: 15px; transition: 0.3s;
         }
-        .reg-notice { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin-top: 20px; display: none; }
-        .btn-link { background: #0088ff; color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 8px; display: inline-block; margin-top: 10px; font-size: 12px; }
-
-        /* UI Elements */
-        #user-status-bar { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--accent-gold); cursor: pointer; }
-        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: 2.2rem; background: linear-gradient(#fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        #swiper-container { z-index: 5; }
-        .swiper-slide { width: 280px; height: 380px; border-radius: 35px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
-        .season-card { background: linear-gradient(135deg, rgba(0, 255, 163, 0.2), rgba(0, 0, 0, 0.5)); }
+        .modal-btn:hover { transform: scale(1.02); box-shadow: 0 0 15px var(--accent-gold); }
+        .secondary-link { font-size: 11px; color: #888; margin-top: 15px; cursor: pointer; display: block; }
         
-        .hide-context { opacity: 0 !important; pointer-events: none; }
-        .focus-card { transform: scale(0.65) translateY(-60px) !important; }
+        .no-email-box { display: none; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
+        .github-btn { background: #24292e; color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 8px; font-size: 11px; display: inline-block; margin-top: 10px; }
 
-        #mission-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 350px; margin: -60px auto 0; opacity: 0; pointer-events: none; transition: 0.5s; }
-        #mission-grid.show { opacity: 1; pointer-events: auto; }
-        .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; }
+        /* Rest of your existing styles (Header, Swiper, etc.) */
+        #user-status-bar { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,204,0,0.3); font-family: 'Orbitron'; font-size: 10px; cursor: pointer; }
+        .header-area { transition: 0.6s ease; position: relative; z-index: 10; }
+        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
+        .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,204,0,0.3); color: #ffffff; padding: 10px 25px; border-radius: 25px; font-family: 'Orbitron'; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.4s; }
+        .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); box-shadow: 0 0 20px rgba(0,255,163,0.4); }
+        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); box-shadow: 0 0 20px rgba(255,49,49,0.4); }
+        #swiper-container { transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; position: relative; }
+        .swiper-slide { width: 280px; height: 380px; border-radius: 35px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); position: relative; overflow: hidden; transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .season-card { background: var(--season-grad); }
+        .xbox-card { background: var(--xbox-grad); }
+        .hide-context { opacity: 0 !important; pointer-events: none; transform: scale(0.8) translateY(-30px); }
+        .focus-card { animation: cardPop 0.6s forwards; transform: scale(0.65) translateY(-60px) !important; border-color: var(--accent-gold) !important; }
+        @keyframes cardPop { 0% { transform: scale(1) translateY(0); } 100% { transform: scale(0.65) translateY(-60px); } }
+        #mission-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; max-width: 360px; margin: -70px auto 0; opacity: 0; transform: translateY(30px); transition: 0.8s; pointer-events: none; position: relative; z-index: 20; }
+        #mission-grid.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; text-decoration: none; position: relative; }
+        .mission-box.locked { cursor: not-allowed; opacity: 0.5; }
+        .mission-box i { font-size: 16px; margin-bottom: 5px; }
+        .mission-box span { font-family: 'Orbitron'; font-size: 8px; font-weight: 700; color: #fff; text-transform: uppercase; }
+        .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 6px 14px; border-radius: 15px; }
+        .activity-icon { font-size: 70px; margin-bottom: 20px; }
+        .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; }
+        #back-btn { display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 30px; border-radius: 30px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; z-index: 100; backdrop-filter: blur(10px); }
+        .loading-overlay { font-family: 'Orbitron'; font-size: 12px; color: var(--accent-gold); letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
     <canvas id="rank-canvas"></canvas>
 
-    <div id="floating-stats" class="floating-stats">
-        <div class="stat-circle profile-img"><img id="user-photo" src="" alt=""></div>
-        <div class="stat-circle tokens"><span class="stat-label">TOKENS</span><span id="user-tokens">0</span></div>
-        <div class="stat-circle rank" id="user-rank">#?</div>
+    <div class="profile-cluster" id="profile-cluster">
+        <div class="float-circle main-img-circle"><img id="user-img" src="" alt=""></div>
+        <div class="float-circle token-circle" id="user-tokens">0</div>
+        <div class="float-circle rank-circle" id="user-rank">#0</div>
     </div>
 
-    <div id="user-status-bar" onclick="checkAndOpenLogin()">
+    <div id="user-status-bar" onclick="openLoginModal()">
         <span id="user-display"><i class="fas fa-user-shield"></i> AGENT LOGIN</span>
     </div>
 
     <div id="auth-modal">
-        <div class="modal-content" id="modal-body">
-            <h2 style="font-family:'Orbitron'; color:var(--accent-gold)">IDENTIFICATION</h2>
-            <input type="email" id="email-input" class="modal-input" placeholder="Your Email">
-            <input type="password" id="pass-input" class="modal-input" placeholder="Mission Code">
+        <div class="modal-content" id="modal-content-main">
+            <h2 style="font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 10px;">IDENTIFICATION</h2>
+            <input type="email" id="email-input" class="modal-input" placeholder="Registered Email">
+            <input type="password" id="pass-input" class="modal-input" placeholder="Unique Code">
             <button class="modal-btn" onclick="processLogin()">VERIFY IDENTITY</button>
             
-            <div id="register-section" class="reg-notice">
-                <p style="font-size:11px">لا تمتلك بروفايل؟ يمكنك إنشاء واحد الآن</p>
-                <a href="https://github.com/YourUser/NP.html" class="btn-link">Create Profile</a>
+            <div id="no-email-section" class="no-email-box">
+                <p style="font-size: 12px; color: #fff;">لو معندكش ايميل بروفايل تقدر تعمل واحد</p>
+                <a href="https://github.com/YourUsername/NP.html" class="github-btn">إنشاء بروفايل جديد</a>
             </div>
 
-            <span onclick="forgotPassword()" style="display:block; font-size:11px; color:#888; margin-top:15px; cursor:pointer">Forget Code?</span>
-            <span onclick="closeLoginModal()" style="display:block; font-size:11px; color:red; margin-top:10px; cursor:pointer">CANCEL</span>
+            <span class="secondary-link" onclick="forgotPassword()">Request My Unique Code</span>
+            <span class="secondary-link" onclick="closeLoginModal()" style="color: #ff3131;">CANCEL</span>
         </div>
     </div>
 
     <div class="header-area" id="header-area">
         <header class="rank-header">
             <h1>EYC ACADEMY</h1>
-            <p style="font-family:'Orbitron'; color:var(--accent-gold); font-size:10px; letter-spacing:3px">MISSION CONTROL</p>
+            <p style="font-size: 11px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">MISSION CONTROL</p>
         </header>
+
+        <div class="toggle-container">
+            <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
+            <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
+        </div>
     </div>
 
     <div id="swiper-container" class="swiper">
@@ -124,129 +141,191 @@
 
     <div id="mission-grid"></div>
 
+    <button id="back-btn" onclick="exitFocusMode()">ABORT MISSION</button>
+
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const VENS_URL = "https://script.google.com/macros/s/AKfycbysb8HupCCwF-Zb3LrVh_jMolyCBENTEi8HXnBYeJqUWjCAqit8N1gMzHQV0rp3o8CrDQ/exec";
-        const RANKS_URL = "https://script.google.com/macros/s/AKfycbx3JTUOaiukrxBhXnYDD4capGp1XRA40hIIgGSEb1EzljEPnyTIqyp9LbMMdpalczm_/exec";
-
+        const VENS_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
+        const RANKS_URL = "https://script.google.com/macros/s/AKfycbwtbuvN0Ai0_efho0f7pK2QuhbkanJEqF-cHnMmIvujHhNVhoE13A5aAm0tNd3kbTbN/exec";
+        
         let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
 
         window.onload = async () => {
-            renderActivities('season');
             if(currentUser) {
-                // التأكد من حالة النشاط عند الريفرش (العمود Y أو Z)
-                const check = await fetch(VENS_URL, {
+                await validateSession();
+            }
+            renderActivities('season');
+        }
+
+        async function validateSession() {
+            try {
+                const resp = await fetch(VENS_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'check_status', email: currentUser.email })
+                    body: JSON.stringify({ action: 'check_session', email: currentUser.email })
                 });
-                const res = await check.json();
-                if(res.verified) {
-                    showUI(currentUser);
-                    syncFloatingData();
+                const res = await resp.json();
+                if(res.status === "active") {
+                    updateUserUI();
+                    fetchProfileData();
                 } else {
-                    localStorage.removeItem('eyc_user');
-                    location.reload();
+                    logout();
                 }
-            }
+            } catch(e) { console.error("Session check failed"); }
         }
 
-        function showUI(user) {
-            document.getElementById('user-display').innerHTML = `<i class="fas fa-check-circle"></i> ${user.name}`;
-            document.getElementById('floating-stats').classList.add('visible');
-        }
-
-        async function syncFloatingData() {
-            const resp = await fetch(RANKS_URL);
-            const allData = await resp.json();
-            const myData = allData.find(u => u.Name === currentUser.name);
-            if(myData) {
-                document.getElementById('user-photo').src = myData.Image;
-                document.getElementById('user-tokens').innerText = myData.Tokens;
-                document.getElementById('user-rank').innerText = `#${myData.Rank}`;
-            }
-        }
-
-        function checkAndOpenLogin() { if(!currentUser) openLoginModal(); }
-        
         function openLoginModal() { 
             document.getElementById('auth-modal').style.display = 'flex';
-            document.getElementById('register-section').style.display = 'none';
+            document.getElementById('no-email-section').style.display = 'none';
         }
+
         function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
 
         async function processLogin() {
             const email = document.getElementById('email-input').value;
-            const pass = document.getElementById('pass-input').value;
+            const password = document.getElementById('pass-input').value;
 
+            // الحالة الأولى: ضغط لوجن بدون ايميل
             if(!email) {
-                document.getElementById('register-section').style.display = 'block';
-                return;
-            }
-            if(!pass) {
-                // إذا أدخل الإيميل فقط، نبحث عنه ونرسل الكود
-                forgotPassword();
+                document.getElementById('no-email-section').style.display = 'block';
                 return;
             }
 
-            const resp = await fetch(VENS_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'login', email: email, password: pass })
-            });
-            const res = await resp.json();
-
-            if(res.status === "success") {
-                currentUser = res;
-                localStorage.setItem('eyc_user', JSON.stringify(res));
-                location.reload();
-            } else {
-                alert(res.message);
+            // الحالة الثانية: ايميل بدون باسورد
+            if(email && !password) {
+                await forgotPassword();
+                return;
             }
+
+            // الحالة الثالثة: محاولة تسجيل دخول كاملة
+            try {
+                const resp = await fetch(VENS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'login', email: email, password: password })
+                });
+                const result = await resp.json();
+                if(result.status === "success") {
+                    currentUser = { email, name: result.name };
+                    localStorage.setItem('eyc_user', JSON.stringify(currentUser));
+                    updateUserUI();
+                    fetchProfileData();
+                    closeLoginModal();
+                    alert(`مرحباً بك يا ${result.name}`);
+                } else {
+                    alert(result.message);
+                }
+            } catch(e) { alert("Error connecting to server"); }
         }
 
         async function forgotPassword() {
             const email = document.getElementById('email-input').value;
-            if(!email) return alert("Enter email first");
+            if(!email) return alert("الرجاء كتابة الايميل أولاً");
             
-            const resp = await fetch(VENS_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'forgot_password', email: email })
+            const resp = await fetch(VENS_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'forgot_password', email: email }) 
             });
             const res = await resp.json();
-            if(res.status === "success") {
-                alert(`مرحباً ${res.name}، تم إرسال كود الدخول إلى بريدك الإلكتروني.`);
-            } else {
-                alert(res.message);
+            alert(res.status === "success" ? "تم إرسال الكود لإيميلك بنجاح" : res.message);
+        }
+
+        async function fetchProfileData() {
+            if(!currentUser) return;
+            const resp = await fetch(`${RANKS_URL}?email=${currentUser.email}&name=${encodeURIComponent(currentUser.name)}`);
+            const data = await resp.json();
+            if(data.image) {
+                document.getElementById('user-img').src = data.image;
+                document.getElementById('user-tokens').innerText = data.tokens + " TK";
+                document.getElementById('user-rank').innerText = "#" + data.rank;
+                document.getElementById('profile-cluster').style.display = 'flex';
+                document.getElementById('user-display').innerHTML = `<i class="fas fa-circle" style="color:var(--season-color)"></i> ${currentUser.name}`;
             }
         }
 
-        // دالة الدخول للمهمات
-        function enterFocusMode(card, mode, activityCode) {
+        function logout() {
+            localStorage.removeItem('eyc_user');
+            location.reload();
+        }
+
+        function updateUserUI() {
+            document.getElementById('user-display').innerText = currentUser.name;
+        }
+
+        // منطق المهام والـ Swiper
+        const activities = {
+            season: [
+                { name: 'Golden Ear', code: 'Golden ear', icon: 'fa-ear-listen', tk: 50 },
+                { name: 'Seeds', code: 'Seeds', icon: 'fa-seedling', tk: 40 },
+                { name: 'Label', code: 'Label', icon: 'fa-tag', tk: 30 },
+                { name: 'Grammar', code: 'Grammar', icon: 'fa-magnifying-glass', tk: 60 },
+                { name: 'Vivid', code: 'Vivid', icon: 'fa-eye', tk: 45 },
+                { name: 'Alike', code: 'Alike', icon: 'fa-equals', tk: 35 }
+            ],
+            xbox: [
+                { name: 'Alike X', code: 'Alikex', icon: 'fa-clone', tk: 100 },
+                { name: 'Vivid X', code: 'Vividx', icon: 'fa-stopwatch', tk: 120 },
+                { name: 'Dictation X', code: 'Dictationx', icon: 'fa-pen-nib', tk: 150 },
+                { name: 'SSS X', code: 'Sssx', icon: 'fa-bolt', tk: 250 }
+            ]
+        };
+
+        let currentSwiper = null;
+        function renderActivities(mode) {
+            const wrapper = document.getElementById('activities-wrapper');
+            wrapper.innerHTML = activities[mode].map(act => `
+                <div class="swiper-slide ${mode}-card" onclick="enterFocusMode(this, '${mode}', '${act.code}')">
+                    <div class="token-badge">${act.tk} TK</div>
+                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
+                    <div class="activity-name">${act.name}</div>
+                </div>
+            `).join('');
+            if (currentSwiper) currentSwiper.destroy();
+            currentSwiper = new Swiper('.swiper', { effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto', grabCursor: true });
+        }
+
+        async function enterFocusMode(card, mode, activityCode) {
             if(!currentUser) {
                 openLoginModal();
                 return;
             }
-            // كود الأنيميشن وعرض المهام هنا...
-            card.classList.add('focus-card');
+            // Logic for showing missions grid...
             document.getElementById('header-area').classList.add('hide-context');
+            card.classList.add('focus-card');
             document.getElementById('mission-grid').classList.add('show');
-            // استكمال عرض المهام من AC_DEPLOY_URL
-        }
-
-        // رندر الكروت
-        function renderActivities(mode) {
-            const activities = [
-                { name: 'Golden Ear', code: 'GE', icon: 'fa-ear-listen' },
-                { name: 'Grammar', code: 'GR', icon: 'fa-magnifying-glass' }
-            ];
-            const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities.map(act => `
-                <div class="swiper-slide season-card" onclick="enterFocusMode(this, 'season', '${act.code}')">
-                    <i class="fas ${act.icon}" style="font-size:40px; color:var(--accent-gold)"></i>
-                    <h3 style="margin-top:15px; font-family:'Orbitron'">${act.name}</h3>
+            document.getElementById('back-btn').style.display = 'block';
+            // Simulate missions fetch
+            const grid = document.getElementById('mission-grid');
+            grid.innerHTML = Array(10).fill(0).map((_, i) => `
+                <div class="mission-box available">
+                    <i class="fas fa-play" style="color:var(--accent-gold)"></i>
+                    <span>M-${i+1}</span>
                 </div>
             `).join('');
-            new Swiper('.swiper', { effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto' });
         }
+
+        function exitFocusMode() {
+            document.getElementById('header-area').classList.remove('hide-context');
+            document.querySelectorAll('.swiper-slide').forEach(s => s.classList.remove('focus-card'));
+            document.getElementById('mission-grid').classList.remove('show');
+            document.getElementById('back-btn').style.display = 'none';
+        }
+
+        function switchMode(mode) {
+            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
+            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
+            renderActivities(mode);
+        }
+
+        // Animation Canvas (Matrix/EYC effect)
+        const canvas = document.getElementById('rank-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class Particle { constructor() { this.init(); } init() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.char = "EYC"[Math.floor(Math.random()*3)]; this.speed = Math.random() * 0.5 + 0.2; this.opacity = Math.random() * 0.3; } draw() { ctx.fillStyle = `rgba(255,204,0,${this.opacity})`; ctx.font = `900 12px Orbitron`; ctx.fillText(this.char, this.x, this.y); this.y -= this.speed; if(this.y < -20) this.y = canvas.height + 20; } }
+        function animate() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p => p.draw()); requestAnimationFrame(animate); }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for(let i=0; i<40; i++) particles.push(new Particle());
+        animate();
     </script>
 </body>
 </html>

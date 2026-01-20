@@ -160,7 +160,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const VENS_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbz4T6YOK2OECJnnmDFYAF9ugkScQUTWkm5PZx3QLvbYPg5veSBwTtxcumyvEuydCDqt1w/exec";
+        // الروابط الخاصة بك
+        const VENS_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbx2ywySNBHOnQDEZXeGot_jRwZxYbSu3w2ylpPH10BGndFde3vDwLFHNwuhJF--XHtt_A/exec";
         const AC_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbyDMmVnS9BSMxm5oqcdz8nhkrlvZXWHjpeizmv6L7LL1TwNwlwzZP5P2qIwzZ7jcU-t/exec";
 
         let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
@@ -170,21 +171,37 @@
             renderActivities('season');
         }
 
+        // تحسين دالة جلب الصور لتعمل باحترافية
         function formatDriveUrl(url) {
-            if (!url) return '';
-            if (url.includes('drive.google.com')) {
-                const id = url.split('id=')[1] || url.split('/d/')[1].split('/')[0];
-                return `https://lh3.googleusercontent.com/u/0/d/${id}`;
+            if (!url || url === "" || url === "Error Uploading Image") return null;
+            let fileId = "";
+            try {
+                if (url.includes('id=')) {
+                    fileId = url.split('id=')[1].split('&')[0];
+                } else if (url.includes('/d/')) {
+                    fileId = url.split('/d/')[1].split('/')[0];
+                } else {
+                    return url; // إذا كان رابطاً مباشراً أصلاً
+                }
+                // الرابط المباشر الصحيح من جوجل درايف
+                return `https://lh3.googleusercontent.com/u/0/d/${fileId}`;
+            } catch (e) {
+                return null;
             }
-            return url;
         }
 
         function updateUserUI(user) {
             document.getElementById('user-display').innerHTML = `<i class="fas fa-star" style="color:var(--accent-gold)"></i> ${user.name} | #${user.rank}`;
             document.getElementById('floating-profile').style.display = 'flex';
             document.getElementById('floating-tokens').innerText = user.tokens;
-            if(user.photo) {
-                document.getElementById('profile-img-container').innerHTML = `<img src="${formatDriveUrl(user.photo)}" onerror="this.innerHTML='<i class=\'fas fa-user-ninja\'></i>'">`;
+            
+            const profileContainer = document.getElementById('profile-img-container');
+            const finalImg = formatDriveUrl(user.photo);
+
+            if(finalImg) {
+                profileContainer.innerHTML = `<img src="${finalImg}" alt="Profile" onerror="this.parentElement.innerHTML='<i class=\'fas fa-user-ninja\' style=\'font-size: 24px; color: #333;\'></i>'">`;
+            } else {
+                profileContainer.innerHTML = `<i class="fas fa-user-ninja" style="font-size: 24px; color: #333;"></i>`;
             }
         }
 
@@ -197,32 +214,29 @@
             const password = document.getElementById('pass-input').value.trim();
             const modalBody = document.getElementById('modal-body');
 
-            // التعديل الأول: إذا لم يكتب إيميل
             if(!email) {
                 modalBody.innerHTML = `
                     <h3 style="color:var(--accent-gold); font-family:'Orbitron'">NO ID DETECTED</h3>
-                    <p style="font-size:12px; margin:20px 0; color:#ccc;">It seems you don't have a registered profile. Would you like to create a new Agent Profile?</p>
+                    <p style="font-size:12px; margin:20px 0; color:#ccc;">It seems you don't have a registered profile.</p>
                     <button class="modal-btn" onclick="window.location.href='NP.html'">CREATE NEW PROFILE</button>
                     <span class="secondary-link" onclick="location.reload()">TRY LOGIN AGAIN</span>
                 `;
                 return;
             }
 
-            // التعديل الثاني: إذا كتب الإيميل بدون كلمة سر
             if(email && !password) {
                 modalBody.innerHTML = `<p class="loading-overlay">VERIFYING AGENT EMAIL...</p>`;
                 try {
-                    const resp = await fetch(VENS_DEPLOY_URL, {
+                    await fetch(VENS_DEPLOY_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'forgot_password', email: email })
                     });
-                    alert("A unique access code has been sent to your registered Gmail. Please check your inbox and return here to login.");
+                    alert("A unique access code has been sent to your Gmail.");
                     location.reload();
                 } catch(e) { alert("Email verification failed."); location.reload(); }
                 return;
             }
 
-            // الدخول العادي
             modalBody.innerHTML = `<p class="loading-overlay">SCANNING BIOMETRICS...</p>`;
             try {
                 const resp = await fetch(VENS_DEPLOY_URL, {
@@ -237,12 +251,13 @@
                         name: result.name, 
                         tokens: result.tokens, 
                         rank: result.rank,
-                        photo: result.photo // تأكد أن كود الفينز يرسل الصورة
+                        photo: result.photo 
                     };
                     localStorage.setItem('eyc_user', JSON.stringify(currentUser));
                     updateUserUI(currentUser);
                     closeLoginModal();
-                    location.reload(); // لإعادة بناء الواجهة
+                    // تحديث الصفحة لضمان تحميل الحالة الجديدة
+                    setTimeout(() => location.reload(), 500);
                 } else {
                     alert(result.message);
                     location.reload();
@@ -250,7 +265,7 @@
             } catch(e) { alert("Server Error"); location.reload(); }
         }
 
-        async function forgotPassword() {
+        function forgotPassword() {
             const email = document.getElementById('email-input').value;
             if(!email) return alert("Please enter your email first");
             fetch(VENS_DEPLOY_URL, { method: 'POST', body: JSON.stringify({ action: 'forgot_password', email: email }) });
@@ -289,7 +304,6 @@
                     <div class="token-badge">${act.tk} TK</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
-                    <div style="font-size: 10px; opacity:0.6; margin-top:10px; font-family:'Orbitron'">${act.code}</div>
                 </div>
             `).join('');
 
@@ -323,50 +337,29 @@
 
                 let firstEmptyFound = false;
                 grid.innerHTML = missionStatus.map((status, i) => {
-                    let type = "locked";
-                    let icon = "fa-lock";
-                    let label = "Locked";
-                    let color = "#555";
-
+                    let type = "locked", icon = "fa-lock", label = "Locked", color = "#555";
                     if (status === "Done") {
-                        type = "done";
-                        icon = "fa-check-circle";
-                        label = "Done";
-                        color = "var(--season-color)";
+                        type = "done"; icon = "fa-check-circle"; label = "Done"; color = "var(--season-color)";
                     } else if (!firstEmptyFound) {
-                        type = "available";
-                        icon = "fa-play";
-                        label = "Available";
-                        color = "var(--accent-gold)";
-                        firstEmptyFound = true;
+                        type = "available"; icon = "fa-play"; label = "Available"; color = "var(--accent-gold)"; firstEmptyFound = true;
                     }
-
                     return `
                         <div class="mission-box ${type}" onclick="startMission('${type}', '${activityCode}', ${i+1})">
                             <i class="fas ${icon}" style="color:${color}"></i>
                             <span style="color:${color}">M-${i+1}</span>
                             <small>${label}</small>
-                        </div>
-                    `;
+                        </div>`;
                 }).join('');
                 document.getElementById('back-btn').style.display = 'block';
             } catch(e) { grid.innerHTML = `<p>Error Syncing Data</p>`; }
         }
 
         function startMission(type, activity, num) {
-            if(type === 'available') {
-                window.location.href = `mission_player.html?act=${activity}&m=${num}`;
-            } else if (type === 'done') {
-                alert("Mission already completed!");
-            }
+            if(type === 'available') window.location.href = `mission_player.html?act=${activity}&m=${num}`;
         }
 
         function exitFocusMode() {
-            document.body.style.background = '#050505';
-            document.getElementById('header-area').classList.remove('hide-context');
-            document.querySelectorAll('.swiper-slide').forEach(s => s.classList.remove('hide-context', 'focus-card'));
-            document.getElementById('mission-grid').classList.remove('show');
-            document.getElementById('back-btn').style.display = 'none';
+            location.reload();
         }
 
         function switchMode(mode) {
@@ -375,7 +368,7 @@
             renderActivities(mode);
         }
 
-        // Canvas Particles
+        // Canvas Background Animation
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

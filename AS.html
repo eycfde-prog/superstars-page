@@ -8,147 +8,162 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --gold: #f1c40f;
-            --bg-deep: #020617;
-        }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%);
-            color: white; min-height: 100vh;
-        }
+        :root { --gold: #f1c40f; --bg-deep: #020617; }
+        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
-        }
-        #howToModal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 5000; align-items: center; justify-content: center; padding: 20px;
-        }
-        .input-alike {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 12px; text-align: center; width: 100%;
-            color: var(--gold); font-family: 'Orbitron'; font-weight: bold;
-        }
-        .input-alike:focus { outline: none; border-color: var(--gold); }
-        .golden-text {
-            background: linear-gradient(to bottom, #fff, var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; }
+        .input-alike { background: rgba(0,0,0,0.4); border: 2px solid var(--gold); border-radius: 12px; padding: 10px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; text-transform: uppercase; outline: none; transition: 0.3s; }
+        .input-alike:focus { box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); background: rgba(0,0,0,0.6); }
+        .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
+        .floating-obj { animation: float 3s ease-in-out infinite, spin 10s linear infinite; color: var(--gold); opacity: 0.3; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes spin { from { rotate: 0deg; } to { rotate: 360deg; } }
+        .pulse-btn { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(241, 196, 15, 0); } 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); } }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin-loader 1s linear infinite; display: inline-block; }
+        @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
     </style>
 </head>
 <body class="p-4 flex flex-col items-center">
 
-    <div id="howToModal">
+    <div id="howToModal" class="modal-overlay">
         <div class="glass-card p-10 max-w-md w-full border-2 border-yellow-500 text-center">
             <i class="fas fa-clone text-5xl text-yellow-500 mb-6"></i>
             <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">ALIKE MISSION</h2>
-            <p class="text-gray-300 mb-8 leading-relaxed text-right">
-                <i class="fas fa-star text-yellow-500 ml-2"></i> هتظهرلك كلمتين بالعربي ليهم نفس النطق بالإنجليزي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> اكتب الكلمة الإنجليزية الصحيحة تحت كل معنى عربي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> تأكد من الإملاء (Spelling) قبل الضغط على التحقق.
-            </p>
-            <button onclick="toggleHowTo()" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl">بدء المهمة</button>
+            <p class="text-gray-300 mb-8 leading-relaxed text-right">اكتب الكلمة الإنجليزية الصحيحة التي تعطي نفس النطق للمعنيين العربيين الموضحين في كل كارت.</p>
+            <button onclick="closeModal('howToModal')" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl">فهمت المهمة</button>
         </div>
     </div>
 
-    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto">
-        <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-        <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
-        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="كود الطالب">
-        <button onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">
-            دخول المهمة
-        </button>
+    <div id="successOverlay" class="modal-overlay">
+        <div class="text-center">
+            <i class="fas fa-check-circle text-8xl text-green-500 mb-6 block"></i>
+            <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION ACCOMPLISHED</h2>
+            <p class="text-gray-400" id="successMsg">تم حفظ إجاباتك بنجاح في سجل الدرجات</p>
+            <button onclick="window.history.back()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs">BACK TO MISSION CONTROL</button>
+        </div>
     </div>
 
-    <div id="mainContent" class="hidden w-full max-w-5xl">
-        <header class="text-center my-10">
+    <div id="mainContent" class="w-full max-w-5xl">
+        <header class="text-center my-10 relative">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 floating-obj"><i class="fas fa-sync-alt text-6xl"></i></div>
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <div class="flex justify-center gap-4 mt-6">
-                <button onclick="toggleHowTo()" class="text-gray-400 text-xs hover:text-white transition-colors flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+            <p id="missionVersionText" class="text-yellow-500 orbitron mt-2 tracking-[4px]"></p>
+            
+            <div class="flex flex-wrap justify-center gap-4 mt-8">
+                <button onclick="openModal('howToModal')" class="pulse-btn text-white text-xs bg-white/5 px-6 py-3 rounded-full border border-yellow-500/50 flex items-center gap-2">
                     <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
                 </button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20" id="alikeGrid">
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" id="alikeGrid"></div>
+
+        <div class="max-w-md mx-auto mb-20">
+            <button id="finalSubmitBtn" onclick="submitAllData()" class="w-full py-5 bg-yellow-500 text-black font-black orbitron rounded-2xl shadow-2xl shadow-yellow-500/20 hover:scale-105 transition-transform">
+                FINALIZE MISSION & SAVE
+            </button>
+        </div>
+
+        <footer>
+            <p>© 2026 EYC ACADEMY - ALL RIGHTS RESERVED</p>
+            <p class="mt-2 tracking-[4px]">DESIGNED FOR SUPERSTARS</p>
+        </footer>
     </div>
 
-    <script>
-        const wordsData = [
-            { ar1: "إلى", ar2: "أيضاً" },
-            { ar1: "ابن", ar2: "شمس" },
-            { ar1: "هناك", ar2: "ملكهم" },
-            { ar1: "يرى", ar2: "بحر" }
-        ];
+<script>
+    const SCORE_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
 
-        function toggleHowTo() {
-            const modal = document.getElementById('howToModal');
-            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    // جلب البيانات من الرابط (Query Parameters)
+    const params = new URLSearchParams(window.location.search);
+    const userEmail = params.get('email'); // الإيميل يتم استلامه تلقائياً من الـ Hub
+    const vNum = params.get('v') || "1";   // رقم النسخة
+    const PAGE_NAME = `ALIKE_V${vNum}`;
+
+    // الكلمات (يمكنك تعديلها بناءً على vNum إذا أردت)
+    const wordsData = [
+        { m1: "ابن", m2: "شمس" },
+        { m1: "هنا", m2: "يسمع" },
+        { m1: "بحر", m2: "يرى" },
+        { m1: "يرتدى", m2: "أين" },
+        { m1: "أسبوع", m2: "ضعيف" },
+        { m1: "طريق", m2: "ركب" }
+    ];
+
+    window.onload = () => {
+        document.getElementById('missionVersionText').innerText = `VERSION 0${vNum}`;
+        renderGrid();
+        // إظهار شرح النشاط تلقائياً عند أول فتح
+        if(!localStorage.getItem('alike_tutorial_seen')) {
+            openModal('howToModal');
+            localStorage.setItem('alike_tutorial_seen', 'true');
+        }
+    };
+
+    function renderGrid() {
+        const grid = document.getElementById('alikeGrid');
+        grid.innerHTML = wordsData.map((pair, index) => `
+            <div class="glass-card p-8 text-center border border-white/5">
+                <div class="text-[10px] orbitron text-yellow-500/50 mb-4 tracking-[2px]">ALIKE CASE #${index + 1}</div>
+                <div class="flex justify-around items-center mb-6">
+                    <span class="text-lg font-bold">${pair.m1}</span>
+                    <i class="fas fa-arrows-left-right text-yellow-500 opacity-30"></i>
+                    <span class="text-lg font-bold">${pair.m2}</span>
+                </div>
+                <input type="text" id="ans-${index}" class="input-alike" placeholder="WORD...">
+            </div>
+        `).join('');
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    async function submitAllData() {
+        const btn = document.getElementById('finalSubmitBtn');
+        
+        // التحقق من وجود إيميل (لضمان أن الطالب جاء من الـ Hub)
+        if(!userEmail) {
+            alert("خطأ: لم يتم العثور على بيانات الطالب. يرجى الدخول من صفحة الـ Hub.");
+            return;
         }
 
-        function handleLogin() {
-            const id = document.getElementById('emailInput').value;
-            if(id.length < 2) return alert("أدخل الكود يا بطل");
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            initActivity();
-        }
+        let answers = [];
+        let isComplete = true;
 
-        function initActivity() {
-            const grid = document.getElementById('alikeGrid');
-            grid.innerHTML = '';
-            wordsData.forEach((pair, index) => {
-                const pairId = `pair-${index}`;
-                const card = document.createElement('div');
-                card.className = "glass-card p-8 relative overflow-hidden group border-b-2 border-transparent hover:border-yellow-500/50 transition-all";
-                card.innerHTML = `
-                    <div class="flex justify-between items-center gap-6">
-                        <div class="flex-1 text-center">
-                            <h3 class="text-3xl font-black mb-4 text-white">${pair.ar1}</h3>
-                            <input type="text" placeholder="English Word" class="input-alike" id="${pairId}-1">
-                        </div>
-                        
-                        <div class="h-16 w-px bg-white/10 relative">
-                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-500/30 font-black orbitron italic">VS</div>
-                        </div>
+        wordsData.forEach((_, index) => {
+            const val = document.getElementById(`ans-${index}`).value.trim();
+            if(!val) isComplete = false;
+            answers.push(val);
+        });
 
-                        <div class="flex-1 text-center">
-                            <h3 class="text-3xl font-black mb-4 text-white">${pair.ar2}</h3>
-                            <input type="text" placeholder="English Word" class="input-alike" id="${pairId}-2">
-                        </div>
-                    </div>
-                    <button onclick="submitPair('${pairId}')" id="btn-${pairId}" class="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl orbitron text-[10px] font-black hover:bg-yellow-500 hover:text-black transition-all">
-                        SUBMIT DATA
-                    </button>
-                `;
-                grid.appendChild(card);
+        if(!isComplete) return alert("يرجى ملء جميع الخانات قبل الإرسال!");
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loader"></span> PROCESSING SCORE...';
+
+        try {
+            const formData = new URLSearchParams();
+            formData.append('email', userEmail);
+            formData.append('page', PAGE_NAME);
+            formData.append('answer', answers.join(" | "));
+
+            // الإرسال للسيرفر
+            await fetch(SCORE_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
             });
-        }
 
-        function submitPair(id) {
-            const btn = document.getElementById(`btn-${id}`);
-            const in1 = document.getElementById(`${id}-1`);
-            const in2 = document.getElementById(`${id}-2`);
+            document.getElementById('successOverlay').style.display = 'flex';
             
-            if(!in1.value || !in2.value) return alert("أكمل الفراغات يا بطل!");
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> SAVING...';
-
-            setTimeout(() => {
-                btn.innerHTML = `<i class="fas fa-check"></i> DATA SAVED`;
-                btn.className = "w-full mt-8 py-3 bg-green-600 text-white rounded-xl orbitron text-[10px] font-black";
-                in1.disabled = true;
-                in2.disabled = true;
-            }, 800);
+        } catch (e) {
+            alert("حدث خطأ في الاتصال بالسيرفر");
+            btn.disabled = false;
+            btn.innerHTML = "FINALIZE MISSION & SAVE";
         }
-    </script>
+    }
+</script>
 </body>
 </html>

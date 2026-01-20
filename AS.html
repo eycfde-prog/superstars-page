@@ -12,7 +12,7 @@
         body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; }
-        .input-alike { background: rgba(0,0,0,0.4); border: 2px solid var(--gold); border-radius: 12px; padding: 10px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; }
+        .input-alike { background: rgba(0,0,0,0.4); border: 2px solid var(--gold); border-radius: 12px; padding: 10px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; text-transform: uppercase; }
         .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
         .floating-obj { animation: float 3s ease-in-out infinite, spin 10s linear infinite; color: var(--gold); opacity: 0.3; }
@@ -41,21 +41,16 @@
             <i class="fas fa-check-circle text-8xl text-green-500 mb-6 block"></i>
             <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION ACCOMPLISHED</h2>
             <p class="text-gray-400">تم حفظ إجاباتك بنجاح في سجل الدرجات</p>
-            <button onclick="location.reload()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs">BACK TO HUB</button>
+            <button onclick="window.history.back()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs">BACK TO HUB</button>
         </div>
     </div>
 
     <div id="mainContent" class="w-full max-w-5xl">
         <header class="text-center my-10 relative">
             <div class="absolute -top-10 left-1/2 -translate-x-1/2 floating-obj"><i class="fas fa-sync-alt text-6xl"></i></div>
-            <img src="logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <p id="welcomeName" class="text-yellow-500 orbitron mt-2"></p>
+            <p id="missionTitle" class="text-yellow-500 orbitron mt-2 tracking-[5px] uppercase">VERSION --</p>
             
-            <div class="max-w-xs mx-auto mt-6">
-                <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-center text-white focus:border-yellow-500 outline-none text-sm" placeholder="أدخل بريدك الإلكتروني هنا">
-            </div>
-
             <div class="flex flex-wrap justify-center gap-4 mt-8">
                 <button onclick="openModal('howToModal')" class="pulse-btn text-white text-xs bg-white/5 px-6 py-3 rounded-full border border-yellow-500/50 flex items-center gap-2">
                     <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
@@ -63,7 +58,7 @@
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12" id="alikeGrid"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" id="alikeGrid"></div>
 
         <div class="max-w-md mx-auto mb-20">
             <button id="finalSubmitBtn" onclick="submitAllData()" class="w-full py-5 bg-yellow-500 text-black font-black orbitron rounded-2xl shadow-2xl shadow-yellow-500/20 hover:scale-105 transition-transform">
@@ -78,43 +73,82 @@
     </div>
 
 <script>
+    // الإعدادات الأساسية
+    const SCORE_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
     
+    // جلب البيانات من الرابط
+    const urlParams = new URLSearchParams(window.location.search);
+    const userEmail = urlParams.get('email') || localStorage.getItem('eyc_user_email'); // محاولة جلب الإيميل
+    const versionNum = urlParams.get('v') || '1';
+    const PAGE_NAME = `ALIKE_V${versionNum}`;
+
+    // تحديث واجهة العنوان
+    document.getElementById('missionTitle').innerText = `VERSION ${versionNum}`;
+
+    // بيانات الكلمات (مثال لبيانات النسخة 1 - يمكنك توسيعها لتعتمد على versionNum)
+    const wordsData = [
+        { m1: "ابن", m2: "شمس" },
+        { m1: "هنا", m2: "يسمع" },
+        { m1: "بحر", m2: "يرى" },
+        { m1: "يرتدى", m2: "أين" },
+        { m1: "أسبوع", m2: "ضعيف" },
+        { m1: "طريق", m2: "ركب" }
+    ];
+
+    // بناء الكروت
+    function initGrid() {
+        const grid = document.getElementById('alikeGrid');
+        grid.innerHTML = wordsData.map((pair, index) => `
+            <div class="glass-card p-8 text-center border border-white/5 hover:border-yellow-500/30 transition-all">
+                <div class="text-xs orbitron text-gray-500 mb-4 tracking-[3px]">CASE #${index + 1}</div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="bg-white/5 px-4 py-2 rounded-lg text-sm">${pair.m1}</div>
+                    <i class="fas fa-exchange-alt text-yellow-500 opacity-50"></i>
+                    <div class="bg-white/5 px-4 py-2 rounded-lg text-sm">${pair.m2}</div>
+                </div>
+                <input type="text" id="ans-${index}" class="input-alike" placeholder="TYPE WORD HERE...">
+            </div>
+        `).join('');
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
     async function submitAllData() {
         const btn = document.getElementById('finalSubmitBtn');
-        const emailInput = document.getElementById('emailInput').value.trim();
         
-        if(!emailInput) return alert("الرجاء إدخال البريد الإلكتروني أولاً!");
+        // التحقق من وجود الإيميل (إذا كان الطالب دخل الصفحة مباشرة بدون Hub)
+        if(!userEmail) {
+            alert("حدث خطأ في تحديد الهوية، يرجى العودة لصفحة النشاطات والدخول مرة أخرى.");
+            return;
+        }
 
-        let allAnswers = [];
+        let answers = [];
         let isComplete = true;
 
-        wordsData.forEach((pair, index) => {
-            const in1 = document.getElementById(`pair-${index}-1`).value.trim();
-            const in2 = document.getElementById(`pair-${index}-2`).value.trim();
-            if(!in1 || !in2) isComplete = false;
-            allAnswers.push(`${in1}/${in2}`);
+        wordsData.forEach((_, index) => {
+            const val = document.getElementById(`ans-${index}`).value.trim();
+            if(!val) isComplete = false;
+            answers.push(val);
         });
 
-        if(!isComplete) return alert("أكمل جميع الكلمات!");
+        if(!isComplete) return alert("الرجاء إكمال جميع الكلمات المطلوبة!");
 
         btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> CALCULATING SCORE...';
+        btn.innerHTML = '<span class="loader"></span> UPLOADING...';
 
         try {
             const formData = new URLSearchParams();
-            formData.append('email', emailInput);
+            formData.append('email', userEmail);
             formData.append('page', PAGE_NAME);
-            formData.append('answer', allAnswers.join(" | "));
+            formData.append('answer', answers.join(" | "));
 
-            // إرسال البيانات واستقبال النتيجة
-            const response = await fetch(SCORE_URL, {
+            await fetch(SCORE_URL, {
                 method: 'POST',
-                mode: 'no-cors', // ملاحظة: no-cors لن يسمح بقراءة الرد، يفضل استخدام JSONP أو إعدادات CORS لو أردت عرض النتيجة فوراً
+                mode: 'no-cors',
                 body: formData
             });
 
-            // تغيير رسالة النجاح لتشجيع الطالب
-            document.querySelector('#successOverlay p').innerHTML = `MISSION ACCOMPLISHED!<br>Your answers have been graded and tokens added to your Vens account.`;
             document.getElementById('successOverlay').style.display = 'flex';
             
         } catch (e) {
@@ -123,6 +157,13 @@
             btn.innerHTML = "FINALIZE MISSION & SAVE";
         }
     }
+
+    // التشغيل عند التحميل
+    window.onload = () => {
+        initGrid();
+        // إظهار شرح النشاط لأول مرة فقط (اختياري)
+        setTimeout(() => openModal('howToModal'), 500);
+    };
 </script>
 </body>
 </html>

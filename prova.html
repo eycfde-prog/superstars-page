@@ -22,7 +22,6 @@
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
 
-        /* Floating Profile System */
         .profile-cluster {
             position: fixed; bottom: 20px; left: 20px; z-index: 1000;
             display: none; flex-direction: column; align-items: center; gap: 8px;
@@ -38,7 +37,6 @@
         .token-circle { width: 45px; height: 45px; font-size: 10px; font-weight: 900; color: var(--accent-gold); font-family: 'Orbitron'; }
         .rank-circle { width: 35px; height: 35px; font-size: 10px; color: #fff; border-color: #fff; font-family: 'Orbitron'; }
 
-        /* Login Modal Style */
         #auth-modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000;
             display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px);
@@ -63,7 +61,6 @@
         .no-email-box { display: none; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
         .github-btn { background: #24292e; color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 8px; font-size: 11px; display: inline-block; margin-top: 10px; }
 
-        /* Rest of your existing styles (Header, Swiper, etc.) */
         #user-status-bar { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,204,0,0.3); font-family: 'Orbitron'; font-size: 10px; cursor: pointer; }
         .header-area { transition: 0.6s ease; position: relative; z-index: 10; }
         .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; }
@@ -78,18 +75,25 @@
         .xbox-card { background: var(--xbox-grad); }
         .hide-context { opacity: 0 !important; pointer-events: none; transform: scale(0.8) translateY(-30px); }
         .focus-card { animation: cardPop 0.6s forwards; transform: scale(0.65) translateY(-60px) !important; border-color: var(--accent-gold) !important; }
+        
         @keyframes cardPop { 0% { transform: scale(1) translateY(0); } 100% { transform: scale(0.65) translateY(-60px); } }
+        
         #mission-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; max-width: 360px; margin: -70px auto 0; opacity: 0; transform: translateY(30px); transition: 0.8s; pointer-events: none; position: relative; z-index: 20; }
         #mission-grid.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; text-decoration: none; position: relative; }
-        .mission-box.locked { cursor: not-allowed; opacity: 0.5; }
+        
+        /* Locking System Styles */
+        .mission-box.locked { cursor: not-allowed; opacity: 0.4; filter: grayscale(1); }
+        .mission-box.locked span { color: #888; }
+        .lock-icon { position: absolute; font-size: 10px; top: 8px; right: 8px; color: #ff3131; }
+        .time-badge { position: absolute; bottom: 5px; font-size: 6px; font-family: 'Orbitron'; color: #ff3131; }
+
         .mission-box i { font-size: 16px; margin-bottom: 5px; }
         .mission-box span { font-family: 'Orbitron'; font-size: 8px; font-weight: 700; color: #fff; text-transform: uppercase; }
         .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 6px 14px; border-radius: 15px; }
         .activity-icon { font-size: 70px; margin-bottom: 20px; }
         .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; }
         #back-btn { display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 30px; border-radius: 30px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; z-index: 100; backdrop-filter: blur(10px); }
-        .loading-overlay { font-family: 'Orbitron'; font-size: 12px; color: var(--accent-gold); letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -107,17 +111,15 @@
     </div>
 
     <div id="auth-modal">
-        <div class="modal-content" id="modal-content-main">
+        <div class="modal-content">
             <h2 style="font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 10px;">IDENTIFICATION</h2>
             <input type="email" id="email-input" class="modal-input" placeholder="Registered Email">
             <input type="password" id="pass-input" class="modal-input" placeholder="Unique Code">
             <button class="modal-btn" onclick="processLogin()">VERIFY IDENTITY</button>
-            
             <div id="no-email-section" class="no-email-box">
                 <p style="font-size: 12px; color: #fff;">لو معندكش ايميل بروفايل تقدر تعمل واحد</p>
-                <a href="https://github.com/YourUsername/NP.html" class="github-btn">إنشاء بروفايل جديد</a>
+                <a href="#" class="github-btn">إنشاء بروفايل جديد</a>
             </div>
-
             <span class="secondary-link" onclick="forgotPassword()">Request My Unique Code</span>
             <span class="secondary-link" onclick="closeLoginModal()" style="color: #ff3131;">CANCEL</span>
         </div>
@@ -128,7 +130,6 @@
             <h1>EYC ACADEMY</h1>
             <p style="font-size: 11px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">MISSION CONTROL</p>
         </header>
-
         <div class="toggle-container">
             <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
             <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
@@ -148,16 +149,33 @@
         const VENS_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
         const RANKS_URL = "https://script.google.com/macros/s/AKfycbwtbuvN0Ai0_efho0f7pK2QuhbkanJEqF-cHnMmIvujHhNVhoE13A5aAm0tNd3kbTbN/exec";
         
+        // --- نظام التوقيت ---
+        // يمكنك تعديل الأوقات هنا (الساعة بنظام 24)
+        const unlockTimes = [
+            { hour: 0, minute: 0 },   // Mission 1: دائماً مفتوحة
+            { hour: 17, minute: 10 }, // Mission 2: تفتح 5:10 مساءً
+            { hour: 18, minute: 0 },  // Mission 3: تفتح 6:00 مساءً
+            { hour: 19, minute: 30 }, // Mission 4
+            { hour: 20, minute: 0 },  // Mission 5
+            { hour: 21, minute: 0 },  // Mission 6
+            { hour: 21, minute: 30 }, // Mission 7
+            { hour: 22, minute: 0 },  // Mission 8
+            { hour: 22, minute: 30 }, // Mission 9
+            { hour: 23, minute: 0 }   // Mission 10
+        ];
+
         let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
 
         window.onload = async () => {
-            if(currentUser) {
-                await validateSession();
-            }
             renderActivities('season');
+            // حل مشكلة الريفرش: التأكد من الجلسة تلقائياً
+            if(currentUser && currentUser.email) {
+                console.log("Auto-validating agent...");
+                validateSession(true); // true تعني فحص صامت
+            }
         }
 
-        async function validateSession() {
+        async function validateSession(isSilent = false) {
             try {
                 const resp = await fetch(VENS_URL, {
                     method: 'POST',
@@ -167,15 +185,16 @@
                 if(res.status === "active") {
                     updateUserUI();
                     fetchProfileData();
-                } else {
+                } else if(!isSilent) {
                     logout();
                 }
-            } catch(e) { console.error("Session check failed"); }
+            } catch(e) { 
+                console.error("Connection lost"); 
+            }
         }
 
         function openLoginModal() { 
             document.getElementById('auth-modal').style.display = 'flex';
-            document.getElementById('no-email-section').style.display = 'none';
         }
 
         function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
@@ -183,20 +202,8 @@
         async function processLogin() {
             const email = document.getElementById('email-input').value;
             const password = document.getElementById('pass-input').value;
-
-            // الحالة الأولى: ضغط لوجن بدون ايميل
-            if(!email) {
-                document.getElementById('no-email-section').style.display = 'block';
-                return;
-            }
-
-            // الحالة الثانية: ايميل بدون باسورد
-            if(email && !password) {
-                await forgotPassword();
-                return;
-            }
-
-            // الحالة الثالثة: محاولة تسجيل دخول كاملة
+            if(!email) { document.getElementById('no-email-section').style.display = 'block'; return; }
+            
             try {
                 const resp = await fetch(VENS_URL, {
                     method: 'POST',
@@ -209,36 +216,25 @@
                     updateUserUI();
                     fetchProfileData();
                     closeLoginModal();
-                    alert(`مرحباً بك يا ${result.name}`);
                 } else {
                     alert(result.message);
                 }
             } catch(e) { alert("Error connecting to server"); }
         }
 
-        async function forgotPassword() {
-            const email = document.getElementById('email-input').value;
-            if(!email) return alert("الرجاء كتابة الايميل أولاً");
-            
-            const resp = await fetch(VENS_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: 'forgot_password', email: email }) 
-            });
-            const res = await resp.json();
-            alert(res.status === "success" ? "تم إرسال الكود لإيميلك بنجاح" : res.message);
-        }
-
         async function fetchProfileData() {
             if(!currentUser) return;
-            const resp = await fetch(`${RANKS_URL}?email=${currentUser.email}&name=${encodeURIComponent(currentUser.name)}`);
-            const data = await resp.json();
-            if(data.image) {
-                document.getElementById('user-img').src = data.image;
-                document.getElementById('user-tokens').innerText = data.tokens + " TK";
-                document.getElementById('user-rank').innerText = "#" + data.rank;
-                document.getElementById('profile-cluster').style.display = 'flex';
-                document.getElementById('user-display').innerHTML = `<i class="fas fa-circle" style="color:var(--season-color)"></i> ${currentUser.name}`;
-            }
+            try {
+                const resp = await fetch(`${RANKS_URL}?email=${currentUser.email}&name=${encodeURIComponent(currentUser.name)}`);
+                const data = await resp.json();
+                if(data.image) {
+                    document.getElementById('user-img').src = data.image;
+                    document.getElementById('user-tokens').innerText = data.tokens + " TK";
+                    document.getElementById('user-rank').innerText = "#" + data.rank;
+                    document.getElementById('profile-cluster').style.display = 'flex';
+                    document.getElementById('user-display').innerHTML = `<i class="fas fa-circle" style="color:var(--season-color)"></i> ${currentUser.name}`;
+                }
+            } catch(e) {}
         }
 
         function logout() {
@@ -250,7 +246,6 @@
             document.getElementById('user-display').innerText = currentUser.name;
         }
 
-        // منطق المهام والـ Swiper
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'Golden ear', icon: 'fa-ear-listen', tk: 50 },
@@ -261,7 +256,7 @@
                 { name: 'Alike', code: 'Alike', icon: 'fa-equals', tk: 35 }
             ],
             xbox: [
-                               { name: 'Alike X', code: 'Alikex', icon: 'fa-clone', tk: 100 },
+                { name: 'Alike X', code: 'Alikex', icon: 'fa-clone', tk: 100 },
                 { name: 'Vivid X', code: 'Vividx', icon: 'fa-stopwatch', tk: 120 },
                 { name: 'Seeds X', code: 'Seedsx', icon: 'fa-puzzle-piece', tk: 110 },
                 { name: 'Dictation X', code: 'Dictationx', icon: 'fa-pen-nib', tk: 150 },
@@ -273,7 +268,6 @@
                 { name: 'SSS X', code: 'Sssx', icon: 'fa-bolt', tk: 250 }
             ]
         };
-
 
         let currentSwiper = null;
         function renderActivities(mode) {
@@ -289,24 +283,44 @@
             currentSwiper = new Swiper('.swiper', { effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto', grabCursor: true });
         }
 
+        function isMissionUnlocked(missionIndex) {
+            const now = new Date();
+            const target = unlockTimes[missionIndex];
+            if (!target) return true;
+            
+            const unlockTime = new Date();
+            unlockTime.setHours(target.hour, target.minute, 0);
+            
+            return now >= unlockTime;
+        }
+
         async function enterFocusMode(card, mode, activityCode) {
-            if(!currentUser) {
-                openLoginModal();
-                return;
-            }
-            // Logic for showing missions grid...
+            if(!currentUser) { openLoginModal(); return; }
+
             document.getElementById('header-area').classList.add('hide-context');
             card.classList.add('focus-card');
             document.getElementById('mission-grid').classList.add('show');
             document.getElementById('back-btn').style.display = 'block';
-            // Simulate missions fetch
+
             const grid = document.getElementById('mission-grid');
-            grid.innerHTML = Array(10).fill(0).map((_, i) => `
-                <div class="mission-box available">
-                    <i class="fas fa-play" style="color:var(--accent-gold)"></i>
-                    <span>M-${i+1}</span>
-                </div>
-            `).join('');
+            grid.innerHTML = Array(10).fill(0).map((_, i) => {
+                const unlocked = isMissionUnlocked(i);
+                const timeStr = `${unlockTimes[i].hour}:${unlockTimes[i].minute.toString().padStart(2, '0')}`;
+                
+                return `
+                    <div class="mission-box ${unlocked ? 'available' : 'locked'}" 
+                         onclick="${unlocked ? `startMission('${activityCode}', ${i+1})` : `alert('This mission unlocks at ${timeStr}')`}">
+                        ${unlocked ? '<i class="fas fa-play" style="color:var(--accent-gold)"></i>' : '<i class="fas fa-lock lock-icon"></i>'}
+                        <span>M-${i+1}</span>
+                        ${unlocked ? '' : `<div class="time-badge">${timeStr}</div>`}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startMission(act, num) {
+            // هنا تضع كود فتح المهمة الفعلي (رابط مثلاً)
+            console.log(`Starting ${act} Mission ${num}`);
         }
 
         function exitFocusMode() {
@@ -322,7 +336,7 @@
             renderActivities(mode);
         }
 
-        // Animation Canvas (Matrix/EYC effect)
+        // Animation Canvas
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

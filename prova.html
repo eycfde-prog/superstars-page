@@ -22,26 +22,25 @@
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
 
-        /* Floating User Profile - Left Side */
+        /* Floating User Profile */
         #floating-profile {
             position: fixed; top: 20px; left: 20px; z-index: 1000;
             display: none; flex-direction: column; align-items: center; gap: 8px;
         }
         .profile-circle {
-            width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--accent-gold);
-            background: #222; overflow: hidden; box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
+            width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--accent-gold);
+            background: #111; overflow: hidden; box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
             display: flex; align-items: center; justify-content: center;
         }
         .profile-circle img { width: 100%; height: 100%; object-fit: cover; }
-        
         .tokens-circle {
-            width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--season-color);
-            background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; 
+            width: 45px; height: 45px; border-radius: 50%; border: 1.5px solid var(--season-color);
+            background: rgba(0, 0, 0, 0.8); display: flex; flex-direction: column; 
             align-items: center; justify-content: center; font-family: 'Orbitron';
-            box-shadow: 0 0 15px rgba(0, 255, 163, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 163, 0.2);
         }
-        .tokens-circle span { font-size: 11px; font-weight: 900; color: var(--season-color); }
-        .tokens-circle small { font-size: 7px; color: #fff; text-transform: uppercase; }
+        .tokens-circle span { font-size: 10px; font-weight: 900; color: var(--season-color); }
+        .tokens-circle small { font-size: 6px; color: #fff; text-transform: uppercase; }
 
         /* Login Modal Style */
         #auth-modal {
@@ -70,6 +69,11 @@
         .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
 
+        .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,204,0,0.3); color: #ffffff; padding: 10px 25px; border-radius: 25px; font-family: 'Orbitron'; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.4s; }
+        .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); box-shadow: 0 0 20px rgba(0,255,163,0.4); }
+        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); box-shadow: 0 0 20px rgba(255,49,49,0.4); }
+
         /* Swiper & Cards */
         #swiper-container { transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; position: relative; }
         .swiper-slide { width: 280px; height: 380px; border-radius: 35px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); position: relative; overflow: hidden; transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
@@ -85,21 +89,22 @@
         #mission-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; max-width: 360px; margin: -70px auto 0; opacity: 0; transform: translateY(30px); transition: 0.8s; pointer-events: none; position: relative; z-index: 20; }
         #mission-grid.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-        .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; text-decoration: none; position: relative; }
+        .mission-box.locked { cursor: not-allowed; opacity: 0.4; }
+        .mission-box.done { cursor: default; }
         
-        #user-status-bar { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,204,0,0.3); font-family: 'Orbitron'; font-size: 10px; cursor: pointer;}
+        .mission-box i { font-size: 16px; margin-bottom: 5px; }
+        .mission-box span { font-family: 'Orbitron'; font-size: 8px; font-weight: 700; color: #fff; }
+        .mission-box small { font-size: 7px; color: #aaa; margin-top: 2px; }
+
+        .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 6px 14px; border-radius: 15px; }
+        .activity-icon { font-size: 70px; margin-bottom: 20px; }
+        .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; }
+
+        #back-btn { display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 30px; border-radius: 30px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; z-index: 100; backdrop-filter: blur(10px); }
         
         .loading-overlay { font-family: 'Orbitron'; font-size: 12px; color: var(--accent-gold); letter-spacing: 2px; }
-        #back-btn { display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.5); border: 1px solid #fff; color: #fff; padding: 10px 25px; border-radius: 20px; z-index: 1000; cursor: pointer; }
-        
-        .toggle-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .mode-btn { padding: 8px 20px; border-radius: 20px; border: none; font-family: 'Orbitron'; cursor: pointer; background: #222; color: #fff; }
-        .mode-btn.active.season-mode { background: var(--season-color); color: #000; }
-        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; }
-
-        .token-badge { position: absolute; top: 20px; left: 20px; background: var(--accent-gold); color: #000; padding: 4px 10px; border-radius: 10px; font-weight: 900; font-size: 12px; }
-        .activity-icon { font-size: 50px; margin-bottom: 10px; }
-        .activity-name { font-family: 'Orbitron'; font-weight: 900; font-size: 20px; }
+        #user-status-bar { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,204,0,0.3); font-family: 'Orbitron'; font-size: 10px; cursor: pointer;}
     </style>
 </head>
 <body>
@@ -108,7 +113,7 @@
 
     <div id="floating-profile">
         <div class="profile-circle" id="profile-img-container">
-            <i class="fas fa-user-circle" style="font-size: 40px; color: #444;"></i>
+            <i class="fas fa-user-ninja" style="font-size: 24px; color: #333;"></i>
         </div>
         <div class="tokens-circle">
             <span id="floating-tokens">0</span>
@@ -122,10 +127,11 @@
 
     <div id="auth-modal">
         <div class="modal-content" id="modal-content-main">
-            <div id="modal-inner">
+            <div id="modal-body">
                 <h2 style="font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 10px;">IDENTIFICATION</h2>
+                <p style="font-size: 10px; color: #888; margin-bottom: 20px;">ACCESSING EYC SECURE SERVERS</p>
                 <input type="email" id="email-input" class="modal-input" placeholder="Registered Email">
-                <input type="password" id="pass-input" class="modal-input" placeholder="Unique Code">
+                <input type="password" id="pass-input" class="modal-input" placeholder="Unique Code (Password)">
                 <button class="modal-btn" onclick="processLogin()">VERIFY IDENTITY</button>
                 <span class="secondary-link" onclick="forgotPassword()">Request My Unique Code</span>
                 <span class="secondary-link" onclick="closeLoginModal()" style="color: #ff3131;">CANCEL</span>
@@ -149,7 +155,8 @@
     </div>
 
     <div id="mission-grid"></div>
-    <button id="back-btn" onclick="exitFocusMode()">ABORT MISSION</button>
+
+    <button id="back-btn" onclick="exitFocusMode()"><i class="fas fa-chevron-left mr-2"></i> ABORT MISSION</button>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
@@ -163,26 +170,21 @@
             renderActivities('season');
         }
 
-        // دالة تحويل رابط جوجل درايف لرابط مباشر
-        function getDirectImgLink(url) {
-            if (!url || url.trim() === "") return null;
-            let fileId = "";
-            if (url.includes("id=")) {
-                fileId = url.split("id=")[1].split("&")[0];
-            } else if (url.includes("/d/")) {
-                fileId = url.split("/d/")[1].split("/")[0];
+        function formatDriveUrl(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com')) {
+                const id = url.split('id=')[1] || url.split('/d/')[1].split('/')[0];
+                return `https://lh3.googleusercontent.com/u/0/d/${id}`;
             }
-            return fileId ? `https://lh3.googleusercontent.com/u/0/d/${fileId}` : url;
+            return url;
         }
 
         function updateUserUI(user) {
             document.getElementById('user-display').innerHTML = `<i class="fas fa-star" style="color:var(--accent-gold)"></i> ${user.name} | #${user.rank}`;
             document.getElementById('floating-profile').style.display = 'flex';
-            document.getElementById('floating-tokens').innerText = user.tokens || 0;
-            
+            document.getElementById('floating-tokens').innerText = user.tokens;
             if(user.photo) {
-                const imgUrl = getDirectImgLink(user.photo);
-                document.getElementById('profile-img-container').innerHTML = `<img src="${imgUrl}" alt="Profile" onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=ffcc00&color=000'">`;
+                document.getElementById('profile-img-container').innerHTML = `<img src="${formatDriveUrl(user.photo)}" onerror="this.innerHTML='<i class=\'fas fa-user-ninja\'></i>'">`;
             }
         }
 
@@ -193,32 +195,35 @@
         async function processLogin() {
             const email = document.getElementById('email-input').value.trim();
             const password = document.getElementById('pass-input').value.trim();
-            const modalInner = document.getElementById('modal-inner');
+            const modalBody = document.getElementById('modal-body');
 
-            // تعديل 1: لا يوجد إيميل
+            // التعديل الأول: إذا لم يكتب إيميل
             if(!email) {
-                modalInner.innerHTML = `
-                    <h2 style="color:var(--accent-gold); font-family:'Orbitron'">NO ACCOUNT?</h2>
-                    <p style="font-size:12px; margin:15px 0;">If you don't have a profile, you can create one now.</p>
-                    <button class="modal-btn" onclick="window.location.href='NP.html'">CREATE PROFILE</button>
-                    <span class="secondary-link" onclick="location.reload()">BACK TO LOGIN</span>
+                modalBody.innerHTML = `
+                    <h3 style="color:var(--accent-gold); font-family:'Orbitron'">NO ID DETECTED</h3>
+                    <p style="font-size:12px; margin:20px 0; color:#ccc;">It seems you don't have a registered profile. Would you like to create a new Agent Profile?</p>
+                    <button class="modal-btn" onclick="window.location.href='NP.html'">CREATE NEW PROFILE</button>
+                    <span class="secondary-link" onclick="location.reload()">TRY LOGIN AGAIN</span>
                 `;
                 return;
             }
 
-            // تعديل 2: إيميل بدون باسوورد (إرسال الكود)
+            // التعديل الثاني: إذا كتب الإيميل بدون كلمة سر
             if(email && !password) {
-                modalInner.innerHTML = `<p class="loading-overlay">VERIFYING AGENT...</p>`;
+                modalBody.innerHTML = `<p class="loading-overlay">VERIFYING AGENT EMAIL...</p>`;
                 try {
-                    await fetch(VENS_DEPLOY_URL, { method: 'POST', body: JSON.stringify({ action: 'forgot_password', email: email }) });
-                    alert("Verification code sent! Please check your Gmail.");
+                    const resp = await fetch(VENS_DEPLOY_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'forgot_password', email: email })
+                    });
+                    alert("A unique access code has been sent to your registered Gmail. Please check your inbox and return here to login.");
                     location.reload();
-                } catch(e) { alert("Error sending code."); location.reload(); }
+                } catch(e) { alert("Email verification failed."); location.reload(); }
                 return;
             }
 
-            // تسجيل الدخول العادي
-            modalInner.innerHTML = `<p class="loading-overlay">SCANNING BIOMETRICS...</p>`;
+            // الدخول العادي
+            modalBody.innerHTML = `<p class="loading-overlay">SCANNING BIOMETRICS...</p>`;
             try {
                 const resp = await fetch(VENS_DEPLOY_URL, {
                     method: 'POST',
@@ -228,12 +233,16 @@
 
                 if(result.status === "success") {
                     currentUser = { 
-                        email, name: result.name, tokens: result.tokens, rank: result.rank, 
-                        photo: result.photo // تأكد أن السيرفر يرسل رابط الصورة هنا
+                        email, 
+                        name: result.name, 
+                        tokens: result.tokens, 
+                        rank: result.rank,
+                        photo: result.photo // تأكد أن كود الفينز يرسل الصورة
                     };
                     localStorage.setItem('eyc_user', JSON.stringify(currentUser));
                     updateUserUI(currentUser);
                     closeLoginModal();
+                    location.reload(); // لإعادة بناء الواجهة
                 } else {
                     alert(result.message);
                     location.reload();
@@ -241,11 +250,11 @@
             } catch(e) { alert("Server Error"); location.reload(); }
         }
 
-        function forgotPassword() {
+        async function forgotPassword() {
             const email = document.getElementById('email-input').value;
-            if(!email) return alert("Enter email first");
+            if(!email) return alert("Please enter your email first");
             fetch(VENS_DEPLOY_URL, { method: 'POST', body: JSON.stringify({ action: 'forgot_password', email: email }) });
-            alert("Code requested. Check your Gmail.");
+            alert("If this email exists, your code has been sent to your Gmail.");
         }
 
         const activities = {
@@ -272,6 +281,7 @@
         };
 
         let currentSwiper = null;
+
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map(act => `
@@ -279,43 +289,84 @@
                     <div class="token-badge">${act.tk} TK</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
+                    <div style="font-size: 10px; opacity:0.6; margin-top:10px; font-family:'Orbitron'">${act.code}</div>
                 </div>
             `).join('');
+
             if (currentSwiper) currentSwiper.destroy();
-            currentSwiper = new Swiper('.swiper', { effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto', speed: 600 });
+            currentSwiper = new Swiper('.swiper', {
+                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
+                coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
+                speed: 600, grabCursor: true
+            });
         }
 
         async function enterFocusMode(card, mode, activityCode) {
             if(!currentUser) return openLoginModal();
+            if (card.classList.contains('focus-card')) return;
+
             document.body.style.background = mode === 'season' ? '#001a14' : '#1a0505';
             document.getElementById('header-area').classList.add('hide-context');
             document.querySelectorAll('.swiper-slide').forEach(s => { if (s !== card) s.classList.add('hide-context'); });
             card.classList.add('focus-card');
+
             const grid = document.getElementById('mission-grid');
-            grid.innerHTML = `<div style="grid-column: span 5; text-align:center;" class="loading-overlay">LOADING...</div>`;
+            grid.innerHTML = `<div style="grid-column: span 5; text-align:center;" class="loading-overlay">SYNCHRONIZING...</div>`;
             grid.classList.add('show');
+
             try {
-                const resp = await fetch(AC_DEPLOY_URL, { method: 'POST', body: JSON.stringify({ action: 'get_status', email: currentUser.email, activity: activityCode }) });
+                const resp = await fetch(AC_DEPLOY_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'get_status', email: currentUser.email, activity: activityCode })
+                });
                 const missionStatus = await resp.json();
+
                 let firstEmptyFound = false;
                 grid.innerHTML = missionStatus.map((status, i) => {
-                    let type = status === "Done" ? "done" : (!firstEmptyFound ? "available" : "locked");
-                    if (type === "available") firstEmptyFound = true;
-                    return `<div class="mission-box ${type}" onclick="startMission('${type}', '${activityCode}', ${i+1})">
-                                <i class="fas ${type==='done'?'fa-check-circle':(type==='available'?'fa-play':'fa-lock')}" style="color:${type==='done'?'#00ffa3':(type==='available'?'#ffcc00':'#555')}"></i>
-                                <span>M-${i+1}</span>
-                            </div>`;
+                    let type = "locked";
+                    let icon = "fa-lock";
+                    let label = "Locked";
+                    let color = "#555";
+
+                    if (status === "Done") {
+                        type = "done";
+                        icon = "fa-check-circle";
+                        label = "Done";
+                        color = "var(--season-color)";
+                    } else if (!firstEmptyFound) {
+                        type = "available";
+                        icon = "fa-play";
+                        label = "Available";
+                        color = "var(--accent-gold)";
+                        firstEmptyFound = true;
+                    }
+
+                    return `
+                        <div class="mission-box ${type}" onclick="startMission('${type}', '${activityCode}', ${i+1})">
+                            <i class="fas ${icon}" style="color:${color}"></i>
+                            <span style="color:${color}">M-${i+1}</span>
+                            <small>${label}</small>
+                        </div>
+                    `;
                 }).join('');
                 document.getElementById('back-btn').style.display = 'block';
-            } catch(e) { grid.innerHTML = `Error`; }
+            } catch(e) { grid.innerHTML = `<p>Error Syncing Data</p>`; }
         }
 
         function startMission(type, activity, num) {
-            if(type === 'available') window.location.href = `mission_player.html?act=${activity}&m=${num}`;
+            if(type === 'available') {
+                window.location.href = `mission_player.html?act=${activity}&m=${num}`;
+            } else if (type === 'done') {
+                alert("Mission already completed!");
+            }
         }
 
         function exitFocusMode() {
-            location.reload();
+            document.body.style.background = '#050505';
+            document.getElementById('header-area').classList.remove('hide-context');
+            document.querySelectorAll('.swiper-slide').forEach(s => s.classList.remove('hide-context', 'focus-card'));
+            document.getElementById('mission-grid').classList.remove('show');
+            document.getElementById('back-btn').style.display = 'none';
         }
 
         function switchMode(mode) {
@@ -324,13 +375,14 @@
             renderActivities(mode);
         }
 
-        // Background Animation
+        // Canvas Particles
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        class Particle { constructor() { this.init(); } init() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.speed = Math.random()*0.3+0.1; this.opacity = Math.random()*0.3; } draw() { ctx.fillStyle = `rgba(255,204,0,${this.opacity})`; ctx.font = `10px Orbitron`; ctx.fillText("EYC", this.x, this.y); this.y -= this.speed; if(this.y < -20) this.y = canvas.height+20; } }
+        class Particle { constructor() { this.init(); } init() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.char = "EYC"[Math.floor(Math.random()*3)]; this.speed = Math.random() * 0.3 + 0.1; this.opacity = Math.random() * 0.3; } draw() { ctx.fillStyle = `rgba(255,204,0,${this.opacity})`; ctx.font = `900 12px Orbitron`; ctx.fillText(this.char, this.x, this.y); this.y -= this.speed; if(this.y < -20) this.y = canvas.height + 20; } }
         function animate() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p => p.draw()); requestAnimationFrame(animate); }
+        window.addEventListener('resize', initCanvas);
         initCanvas();
         for(let i=0; i<30; i++) particles.push(new Particle());
         animate();

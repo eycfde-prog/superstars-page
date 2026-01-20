@@ -1,128 +1,285 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alike | EYC Academy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EYC Activity Hub | Authentication</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
-        :root { --gold: #f1c40f; --bg-deep: #020617; }
-        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; }
-        .input-alike { background: rgba(0,0,0,0.4); border: 2px solid var(--gold); border-radius: 12px; padding: 10px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; }
-        .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
-        .floating-obj { animation: float 3s ease-in-out infinite, spin 10s linear infinite; color: var(--gold); opacity: 0.3; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        @keyframes spin { from { rotate: 0deg; } to { rotate: 360deg; } }
-        .pulse-btn { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(241, 196, 15, 0); } 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); } }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin-loader 1s linear infinite; display: inline-block; }
-        @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
+        :root {
+            --primary-bg: #050505;
+            --accent-gold: #ffcc00;
+            --season-color: #00ffa3;
+            --xbox-color: #ff3131;
+            --season-grad: linear-gradient(135deg, rgba(0, 255, 163, 0.4), rgba(0, 128, 255, 0.2));
+            --xbox-grad: linear-gradient(135deg, rgba(255, 49, 49, 0.4), rgba(255, 150, 0, 0.2));
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; transition: background 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
+
+        /* Login Overlay Styling */
+        #login-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000;
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px);
+            transition: 0.8s ease;
+        }
+        .login-box {
+            width: 90%; max-width: 400px; padding: 40px; text-align: center;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: 30px; box-shadow: 0 0 50px rgba(255, 204, 0, 0.1);
+        }
+        .login-box h2 { font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 25px; letter-spacing: 3px; }
+        .login-input {
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 20px; border-radius: 15px; color: #fff; margin-bottom: 15px;
+            outline: none; transition: 0.3s; text-align: center; font-size: 14px;
+        }
+        .login-input:focus { border-color: var(--accent-gold); background: rgba(255,255,255,0.08); }
+        .login-btn {
+            width: 100%; background: var(--accent-gold); color: #000; padding: 15px;
+            border-radius: 15px; border: none; font-family: 'Orbitron'; font-weight: 900;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .login-btn:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(255,204,0,0.4); }
+        .forgot-link { font-size: 11px; color: #888; margin-top: 20px; cursor: pointer; display: block; text-decoration: underline; }
+
+        /* Header Area */
+        .header-area { transition: 0.6s ease; position: relative; z-index: 10; opacity: 0; pointer-events: none; }
+        .header-area.authenticated { opacity: 1; pointer-events: auto; }
+        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
+
+        /* Student Stats Bar */
+        .student-bar { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; font-family: 'Orbitron'; font-size: 10px; color: var(--accent-gold); font-weight: 700; }
+
+        .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,204,0,0.3); color: #ffffff; padding: 10px 25px; border-radius: 25px; font-family: 'Orbitron'; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.4s; }
+        .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); box-shadow: 0 0 20px rgba(0,255,163,0.4); }
+        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); box-shadow: 0 0 20px rgba(255,49,49,0.4); }
+
+        /* Swiper Area */
+        #swiper-container { transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; position: relative; opacity: 0; pointer-events: none; }
+        #swiper-container.authenticated { opacity: 1; pointer-events: auto; }
+        .swiper-slide { width: 280px; height: 380px; border-radius: 35px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); position: relative; overflow: hidden; transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .season-card { background: var(--season-grad); box-shadow: inset 0 0 30px rgba(0,255,163,0.1); }
+        .xbox-card { background: var(--xbox-grad); box-shadow: inset 0 0 30px rgba(255,49,49,0.1); }
+
+        .hide-context { opacity: 0 !important; pointer-events: none; transform: scale(0.8) translateY(-30px); }
+        .focus-card { animation: cardPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); transform: scale(0.65) translateY(-60px) !important; border-color: var(--accent-gold) !important; box-shadow: 0 0 50px rgba(255,204,0,0.2) !important; }
+
+        @keyframes cardPop { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-20px); } 100% { transform: scale(0.65) translateY(-60px); } }
+
+        /* Mission Grid */
+        #mission-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; max-width: 360px; margin: -70px auto 0; opacity: 0; transform: translateY(30px); transition: 0.8s 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; position: relative; z-index: 20; }
+        #mission-grid.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: not-allowed; }
+        .mission-box i { font-size: 16px; color: var(--accent-gold); margin-bottom: 5px; }
+        .mission-box span { font-family: 'Orbitron'; font-size: 10px; font-weight: 700; color: #aaa; }
+
+        .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 6px 14px; border-radius: 15px; }
+        .activity-icon { font-size: 70px; margin-bottom: 20px; }
+        .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; }
+
+        #back-btn { display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 30px; border-radius: 30px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; z-index: 100; backdrop-filter: blur(10px); }
+        
+        .loader { width: 20px; height: 20px; border: 3px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite; display: none; margin-left: 10px; vertical-align: middle; }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center">
+<body id="main-body">
 
-    <div id="howToModal" class="modal-overlay">
-        <div class="glass-card p-10 max-w-md w-full border-2 border-yellow-500 text-center">
-            <i class="fas fa-clone text-5xl text-yellow-500 mb-6"></i>
-            <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">ALIKE MISSION</h2>
-            <p class="text-gray-300 mb-8 leading-relaxed text-right">اكتب الكلمة الإنجليزية الصحيحة التي تعطي نفس النطق للمعنيين العربيين الموضحين في كل كارت.</p>
-            <button onclick="closeModal('howToModal')" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl">فهمت المهمة</button>
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>AGENT ACCESS</h2>
+            <input type="email" id="email-input" class="login-input" placeholder="Your Registered Email">
+            <input type="password" id="pass-input" class="login-input" placeholder="Unique Passcode">
+            <button class="login-btn" onclick="attemptLogin()">
+                VERIFY IDENTITY <span id="btn-loader" class="loader"></span>
+            </button>
+            <span class="forgot-link" onclick="forgotPassword()">Request My Passcode via Email</span>
         </div>
     </div>
 
-    <div id="successOverlay" class="modal-overlay">
-        <div class="text-center">
-            <i class="fas fa-check-circle text-8xl text-green-500 mb-6 block"></i>
-            <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION ACCOMPLISHED</h2>
-            <p class="text-gray-400">تم حفظ إجاباتك بنجاح في سجل الدرجات</p>
-            <button onclick="location.reload()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs">BACK TO HUB</button>
-        </div>
-    </div>
+    <canvas id="rank-canvas"></canvas>
 
-    <div id="mainContent" class="w-full max-w-5xl">
-        <header class="text-center my-10 relative">
-            <div class="absolute -top-10 left-1/2 -translate-x-1/2 floating-obj"><i class="fas fa-sync-alt text-6xl"></i></div>
-            <img src="logo.png" alt="EYC Logo" class="w-24 mx-auto mb-6">
-            <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <p id="welcomeName" class="text-yellow-500 orbitron mt-2"></p>
-            
-            <div class="max-w-xs mx-auto mt-6">
-                <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-center text-white focus:border-yellow-500 outline-none text-sm" placeholder="أدخل بريدك الإلكتروني هنا">
-            </div>
-
-            <div class="flex flex-wrap justify-center gap-4 mt-8">
-                <button onclick="openModal('howToModal')" class="pulse-btn text-white text-xs bg-white/5 px-6 py-3 rounded-full border border-yellow-500/50 flex items-center gap-2">
-                    <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
-                </button>
+    <div class="header-area" id="header-area">
+        <header class="rank-header">
+            <h1>EYC ACADEMY</h1>
+            <div class="student-bar">
+                <span id="display-name">ID: UNKNOWN</span>
+                <span id="display-tokens">VENS: 0</span>
+                <span id="display-rank">RANK: #--</span>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12" id="alikeGrid"></div>
-
-        <div class="max-w-md mx-auto mb-20">
-            <button id="finalSubmitBtn" onclick="submitAllData()" class="w-full py-5 bg-yellow-500 text-black font-black orbitron rounded-2xl shadow-2xl shadow-yellow-500/20 hover:scale-105 transition-transform">
-                FINALIZE MISSION & SAVE
-            </button>
+        <div class="toggle-container">
+            <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
+            <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
         </div>
-
-        <footer>
-            <p>© 2026 EYC ACADEMY - ALL RIGHTS RESERVED</p>
-            <p class="mt-2 tracking-[4px]">DESIGNED FOR SUPERSTARS</p>
-        </footer>
     </div>
 
-<script>
-    
-    async function submitAllData() {
-        const btn = document.getElementById('finalSubmitBtn');
-        const emailInput = document.getElementById('emailInput').value.trim();
-        
-        if(!emailInput) return alert("الرجاء إدخال البريد الإلكتروني أولاً!");
+    <div id="swiper-container" class="swiper">
+        <div class="swiper-wrapper" id="activities-wrapper"></div>
+    </div>
 
-        let allAnswers = [];
-        let isComplete = true;
+    <div id="mission-grid"></div>
 
-        wordsData.forEach((pair, index) => {
-            const in1 = document.getElementById(`pair-${index}-1`).value.trim();
-            const in2 = document.getElementById(`pair-${index}-2`).value.trim();
-            if(!in1 || !in2) isComplete = false;
-            allAnswers.push(`${in1}/${in2}`);
-        });
+    <button id="back-btn" onclick="exitFocusMode()"><i class="fas fa-chevron-left mr-2"></i> ABORT MISSION</button>
 
-        if(!isComplete) return alert("أكمل جميع الكلمات!");
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMAluyTnUhTJvb9ZraXkiSZJGNX7FChb0XWlKQGB9qFgZFxnWAwRnFtUEEzd59bdGxlg/exec";
 
-        btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> CALCULATING SCORE...';
+        // --- Auth Logic ---
+        async function attemptLogin() {
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('pass-input').value;
+            const loader = document.getElementById('btn-loader');
 
-        try {
-            const formData = new URLSearchParams();
-            formData.append('email', emailInput);
-            formData.append('page', PAGE_NAME);
-            formData.append('answer', allAnswers.join(" | "));
+            if(!email || !password) { alert("Please fill all fields"); return; }
 
-            // إرسال البيانات واستقبال النتيجة
-            const response = await fetch(SCORE_URL, {
-                method: 'POST',
-                mode: 'no-cors', // ملاحظة: no-cors لن يسمح بقراءة الرد، يفضل استخدام JSONP أو إعدادات CORS لو أردت عرض النتيجة فوراً
-                body: formData
-            });
+            loader.style.display = "inline-block";
 
-            // تغيير رسالة النجاح لتشجيع الطالب
-            document.querySelector('#successOverlay p').innerHTML = `MISSION ACCOMPLISHED!<br>Your answers have been graded and tokens added to your Vens account.`;
-            document.getElementById('successOverlay').style.display = 'flex';
-            
-        } catch (e) {
-            alert("Connection Error");
-            btn.disabled = false;
-            btn.innerHTML = "FINALIZE MISSION & SAVE";
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // لضمان العمل مع Google Apps Script
+                    body: JSON.stringify({ action: 'login', email: email, password: password })
+                });
+
+                // ملاحظة: مع no-cors لا يمكن قراءة الـ JSON مباشرة، 
+                // لذا يفضل استخدام الدالة التالية لطلب حقيقي:
+                const realResponse = await fetch(`${SCRIPT_URL}?action=login&email=${email}&password=${password}`);
+                const data = await realResponse.json();
+
+                if(data.status === "success") {
+                    // إخفاء الـ Overlay وإظهار المحتوى
+                    document.getElementById('login-overlay').style.opacity = "0";
+                    setTimeout(() => document.getElementById('login-overlay').style.display = "none", 800);
+                    
+                    document.getElementById('header-area').classList.add('authenticated');
+                    document.getElementById('swiper-container').classList.add('authenticated');
+                    
+                    // تحديث البيانات
+                    document.getElementById('display-name').innerText = `ID: ${data.name.toUpperCase()}`;
+                    document.getElementById('display-tokens').innerText = `VENS: ${data.tokens}`;
+                    document.getElementById('display-rank').innerText = `RANK: #${data.rank}`;
+                    
+                    renderActivities('season');
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert("Connection error or invalid credentials.");
+            } finally {
+                loader.style.display = "none";
+            }
         }
-    }
-</script>
+
+        async function forgotPassword() {
+            const email = document.getElementById('email-input').value;
+            if(!email) { alert("Please enter your email first"); return; }
+
+            if(confirm("Send passcode to " + email + "?")) {
+                try {
+                    await fetch(`${SCRIPT_URL}?action=forgot_password&email=${email}`);
+                    alert("If the email is registered, your passcode has been sent.");
+                } catch (e) { alert("Error sending request."); }
+            }
+        }
+
+        // --- Page Functions ---
+        const activities = {
+            season: [
+                { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
+                { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 },
+                { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 },
+                { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 },
+                { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 },
+                { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }
+            ],
+            xbox: [
+                { name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 100 },
+                { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 120 },
+                { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 110 },
+                { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 150 },
+                { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 130 },
+                { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 200 },
+                { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 140 },
+                { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 180 },
+                { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 110 },
+                { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 250 }
+            ]
+        };
+
+        let currentSwiper = null;
+
+        function renderActivities(mode) {
+            const wrapper = document.getElementById('activities-wrapper');
+            wrapper.innerHTML = activities[mode].map((act) => `
+                <div class="swiper-slide ${mode}-card" onclick="enterFocusMode(this, '${mode}')">
+                    <div class="token-badge">${act.tk} TK</div>
+                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
+                    <div class="activity-name">${act.name}</div>
+                    <div style="font-size: 10px; opacity:0.6; margin-top:10px; font-family:'Orbitron'">${act.code}</div>
+                </div>
+            `).join('');
+
+            if (currentSwiper) currentSwiper.destroy();
+            currentSwiper = new Swiper('.swiper', {
+                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
+                coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
+                speed: 600, grabCursor: true
+            });
+        }
+
+        function enterFocusMode(card, mode) {
+            if (card.classList.contains('focus-card')) return;
+            document.body.style.background = mode === 'season' ? '#001a14' : '#1a0505';
+            document.getElementById('header-area').classList.add('hide-context');
+            document.querySelectorAll('.swiper-slide').forEach(s => { if (s !== card) s.classList.add('hide-context'); });
+            card.classList.add('focus-card');
+            const grid = document.getElementById('mission-grid');
+            grid.innerHTML = Array.from({length: 10}, (_, i) => `
+                <div class="mission-box"><i class="fas fa-lock"></i><span>M-${i+1}</span></div>
+            `).join('');
+            setTimeout(() => { 
+                grid.classList.add('show'); 
+                document.getElementById('back-btn').style.display = 'block'; 
+            }, 600);
+        }
+
+        function exitFocusMode() {
+            document.body.style.background = '#050505';
+            document.getElementById('header-area').classList.remove('hide-context');
+            document.querySelectorAll('.swiper-slide').forEach(s => s.classList.remove('hide-context', 'focus-card'));
+            document.getElementById('mission-grid').classList.remove('show');
+            document.getElementById('back-btn').style.display = 'none';
+        }
+
+        function switchMode(mode) {
+            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
+            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
+            renderActivities(mode);
+        }
+
+        // Particle System
+        const canvas = document.getElementById('rank-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class Particle { constructor() { this.init(); } init() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.char = "EYC"[Math.floor(Math.random()*3)]; this.speed = Math.random() * 0.3 + 0.1; this.opacity = Math.random() * 0.3; } draw() { ctx.fillStyle = `rgba(255,204,0,${this.opacity})`; ctx.font = `900 12px Orbitron`; ctx.fillText(this.char, this.x, this.y); this.y -= this.speed; if(this.y < -20) this.y = canvas.height + 20; } }
+        function animate() { ctx.clearRect(0,0,canvas.width, canvas.height); particles.forEach(p => p.draw()); requestAnimationFrame(animate); }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for(let i=0; i<30; i++) particles.push(new Particle());
+        animate();
+    </script>
 </body>
 </html>

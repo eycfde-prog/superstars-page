@@ -77,92 +77,52 @@
         </footer>
     </div>
 
-    <script>
-        // --- الإعدادات (رابط Apps Script لشيت Score) ---
-        const SCORE_URL = "https://script.google.com/macros/s/AKfycbxko0NRHlEUm4f3ZEqUIb3JetUeLH0GsH6GbuTsyC3sQ8Cw5AmeEIV9BhErhhkp2CiC/exec"; 
+<script>
+    
+    async function submitAllData() {
+        const btn = document.getElementById('finalSubmitBtn');
+        const emailInput = document.getElementById('emailInput').value.trim();
         
-        // --- إعداد النشاط ---
-        const PAGE_NAME = "AS.html"; 
-        const wordsData = [
-            { ar1: "إلى", ar2: "أيضاً" }, { ar1: "ابن", ar2: "شمس" },
-            { ar1: "هناك", ar2: "ملكهم" }, { ar1: "يرى", ar2: "بحر" },
-            { ar1: "دقيق", ar2: "وردة" }, { ar1: "أسبوع", ar2: "ضعيف" },
-            { ar1: "لحم", ar2: "يقابل" }, { ar1: "ساعة", ar2: "لنا" },
-            { ar1: "اشترى", ar2: "بواسطة" }, { ar1: "ثمانية", ar2: "أكل" }
-        ];
+        if(!emailInput) return alert("الرجاء إدخال البريد الإلكتروني أولاً!");
 
-        // تشغيل النشاط فور تحميل الصفحة
-        window.onload = function() {
-            initActivity();
-        };
+        let allAnswers = [];
+        let isComplete = true;
 
-        function initActivity() {
-            const grid = document.getElementById('alikeGrid');
-            grid.innerHTML = '';
-            wordsData.forEach((pair, index) => {
-                const pairId = `pair-${index}`;
-                const card = document.createElement('div');
-                card.className = "glass-card p-8 relative border-b-2 border-transparent hover:border-yellow-500/50 transition-all";
-                card.innerHTML = `
-                    <div class="flex justify-between items-center gap-4">
-                        <div class="flex-1 text-center">
-                            <h3 class="text-2xl font-black mb-4">${pair.ar1}</h3>
-                            <input type="text" class="input-alike" id="${pairId}-1" placeholder="WORD 1">
-                        </div>
-                        <div class="text-yellow-500/30 font-black orbitron text-[10px]">VS</div>
-                        <div class="flex-1 text-center">
-                            <h3 class="text-2xl font-black mb-4">${pair.ar2}</h3>
-                            <input type="text" class="input-alike" id="${pairId}-2" placeholder="WORD 2">
-                        </div>
-                    </div>`;
-                grid.appendChild(card);
+        wordsData.forEach((pair, index) => {
+            const in1 = document.getElementById(`pair-${index}-1`).value.trim();
+            const in2 = document.getElementById(`pair-${index}-2`).value.trim();
+            if(!in1 || !in2) isComplete = false;
+            allAnswers.push(`${in1}/${in2}`);
+        });
+
+        if(!isComplete) return alert("أكمل جميع الكلمات!");
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loader"></span> CALCULATING SCORE...';
+
+        try {
+            const formData = new URLSearchParams();
+            formData.append('email', emailInput);
+            formData.append('page', PAGE_NAME);
+            formData.append('answer', allAnswers.join(" | "));
+
+            // إرسال البيانات واستقبال النتيجة
+            const response = await fetch(SCORE_URL, {
+                method: 'POST',
+                mode: 'no-cors', // ملاحظة: no-cors لن يسمح بقراءة الرد، يفضل استخدام JSONP أو إعدادات CORS لو أردت عرض النتيجة فوراً
+                body: formData
             });
-        }
 
-        async function submitAllData() {
-            const btn = document.getElementById('finalSubmitBtn');
-            const emailInput = document.getElementById('emailInput').value.trim();
+            // تغيير رسالة النجاح لتشجيع الطالب
+            document.querySelector('#successOverlay p').innerHTML = `MISSION ACCOMPLISHED!<br>Your answers have been graded and tokens added to your Vens account.`;
+            document.getElementById('successOverlay').style.display = 'flex';
             
-            if(!emailInput) return alert("الرجاء إدخال البريد الإلكتروني أولاً قبل الحفظ!");
-
-            let allAnswers = [];
-            let isComplete = true;
-
-            wordsData.forEach((pair, index) => {
-                const in1 = document.getElementById(`pair-${index}-1`).value.trim();
-                const in2 = document.getElementById(`pair-${index}-2`).value.trim();
-                if(!in1 || !in2) isComplete = false;
-                allAnswers.push(`${in1}/${in2}`);
-            });
-
-            if(!isComplete) return alert("أكمل جميع الكلمات!");
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loader"></span> SAVING...';
-
-            try {
-                const formData = new URLSearchParams();
-                formData.append('email', emailInput);
-                formData.append('page', PAGE_NAME);
-                formData.append('answer', allAnswers.join(" | "));
-
-                await fetch(SCORE_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData
-                });
-
-                document.getElementById('successOverlay').style.display = 'flex';
-            } catch (e) {
-                alert("حدث خطأ أثناء الاتصال بالسيستم");
-                btn.disabled = false;
-                btn.innerHTML = "FINALIZE MISSION & SAVE";
-            }
+        } catch (e) {
+            alert("Connection Error");
+            btn.disabled = false;
+            btn.innerHTML = "FINALIZE MISSION & SAVE";
         }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    </script>
+    }
+</script>
 </body>
 </html>

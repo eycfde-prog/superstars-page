@@ -77,9 +77,13 @@
         #mission-grid.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
         .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; text-decoration: none; }
-        .mission-box i { font-size: 16px; color: var(--accent-gold); margin-bottom: 5px; }
-        .mission-box span { font-family: 'Orbitron'; font-size: 10px; font-weight: 700; color: #fff; }
-        .mission-box:hover { background: rgba(255,204,0,0.2); }
+        .mission-box i { font-size: 16px; margin-bottom: 5px; }
+        .mission-box span { font-family: 'Orbitron'; font-size: 8px; font-weight: 700; color: #fff; }
+        
+        /* Mission States */
+        .mission-done { border-color: var(--season-color); background: rgba(0, 255, 163, 0.1); cursor: default; }
+        .mission-available { border-color: var(--accent-gold); box-shadow: 0 0 10px rgba(255, 204, 0, 0.2); }
+        .mission-locked { opacity: 0.4; cursor: not-allowed; }
 
         .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 6px 14px; border-radius: 15px; }
         .activity-icon { font-size: 70px; margin-bottom: 20px; }
@@ -135,11 +139,11 @@
         const VENS_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbw4NYQNX3k78RWb6IWfDBlPMcLPTmQgi42q5O9T2fPZM6sOouU8AspEiAnqCp7I5-oLEw/exec";
         const AC_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbwgkSgh2zaMuCNKi3rTlmdwGMClebe6y5b03KIkuZ8zMpxcPojDv4KIdyVVX2IReqvtow/exec";
 
-        let currentUser = null; // سيخزن بيانات الطالب عند الدخول
+        let currentUser = null; 
 
         const activities = {
             season: [
-                { name: 'Golden Ear', code: 'Golden Ear', icon: 'fa-ear-listen', tk: 50 },
+                { name: 'Golden Ear', code: 'Golden ear', icon: 'fa-ear-listen', tk: 50 },
                 { name: 'Seeds', code: 'Seeds', icon: 'fa-seedling', tk: 40 },
                 { name: 'Label', code: 'Label', icon: 'fa-tag', tk: 30 },
                 { name: 'Grammar', code: 'Grammar', icon: 'fa-magnifying-glass', tk: 60 },
@@ -147,20 +151,19 @@
                 { name: 'Alike', code: 'Alike', icon: 'fa-equals', tk: 35 }
             ],
             xbox: [
-                { name: 'Alike X', code: 'Alike X', icon: 'fa-clone', tk: 100 },
-                { name: 'Vivid X', code: 'Vivid X', icon: 'fa-stopwatch', tk: 120 },
-                { name: 'Seeds X', code: 'Seeds X', icon: 'fa-puzzle-piece', tk: 110 },
-                { name: 'Dictation X', code: 'Dictation X', icon: 'fa-pen-nib', tk: 150 },
-                { name: 'Golden Ear X', code: 'Golden Ear X', icon: 'fa-filter', tk: 130 },
-                { name: 'Elmagazine X', code: 'Elmagazine X', icon: 'fa-microphone-lines', tk: 200 },
-                { name: 'Grammar X', code: 'Grammar X', icon: 'fa-network-wired', tk: 140 },
-                { name: 'Figurative X', code: 'Figurative X', icon: 'fa-mask', tk: 180 },
-                { name: 'Label X', code: 'Label X', icon: 'fa-industry', tk: 110 },
-                { name: 'SSS X', code: 'SSS X', icon: 'fa-bolt', tk: 250 }
+                { name: 'Alike X', code: 'Alikex', icon: 'fa-clone', tk: 100 },
+                { name: 'Vivid X', code: 'Vividx', icon: 'fa-stopwatch', tk: 120 },
+                { name: 'Seeds X', code: 'Seedsx', icon: 'fa-puzzle-piece', tk: 110 },
+                { name: 'Dictation X', code: 'Dictationx', icon: 'fa-pen-nib', tk: 150 },
+                { name: 'Golden Ear X', code: 'Golden earx', icon: 'fa-filter', tk: 130 },
+                { name: 'Elmagazine X', code: 'Elmagazinex', icon: 'fa-microphone-lines', tk: 200 },
+                { name: 'Grammar X', code: 'Grammarx', icon: 'fa-network-wired', tk: 140 },
+                { name: 'Figurative X', code: 'Figurativex', icon: 'fa-mask', tk: 180 },
+                { name: 'Label X', code: 'Labelx', icon: 'fa-industry', tk: 110 },
+                { name: 'SSS X', code: 'Sssx', icon: 'fa-bolt', tk: 250 }
             ]
         };
 
-        // --- Auth Logic ---
         function openLoginModal() { document.getElementById('auth-modal').style.display = 'flex'; }
         function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
 
@@ -168,7 +171,7 @@
             const email = document.getElementById('email-input').value;
             const password = document.getElementById('pass-input').value;
             if(!email || !password) return alert("Missing Credentials");
-
+            const originalContent = document.getElementById('modal-content-main').innerHTML;
             document.getElementById('modal-content-main').innerHTML = `<p class="loading-overlay">SCANNING BIOMETRICS...</p>`;
             
             try {
@@ -184,23 +187,18 @@
                     closeLoginModal();
                 } else {
                     alert(result.message);
-                    location.reload();
+                    document.getElementById('modal-content-main').innerHTML = originalContent;
                 }
-            } catch(e) { alert("Server Error"); location.reload(); }
+            } catch(e) { alert("Server Error"); document.getElementById('modal-content-main').innerHTML = originalContent; }
         }
 
         async function forgotPassword() {
             const email = document.getElementById('email-input').value;
             if(!email) return alert("Please enter your email first");
-            
-            fetch(VENS_DEPLOY_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'forgot_password', email: email })
-            });
+            fetch(VENS_DEPLOY_URL, { method: 'POST', body: JSON.stringify({ action: 'forgot_password', email: email }) });
             alert("If this email exists, your code has been sent to your Gmail.");
         }
 
-        // --- Core Functions ---
         let currentSwiper = null;
 
         function renderActivities(mode) {
@@ -232,7 +230,7 @@
             card.classList.add('focus-card');
 
             const grid = document.getElementById('mission-grid');
-            grid.innerHTML = `<div style="grid-column: span 5; text-align:center;" class="loading-overlay">DOWNLOADING MISSION DATA...</div>`;
+            grid.innerHTML = `<div style="grid-column: span 5; text-align:center;" class="loading-overlay">FETCHING MISSIONS...</div>`;
             grid.classList.add('show');
 
             try {
@@ -240,21 +238,51 @@
                     method: 'POST',
                     body: JSON.stringify({ action: 'get_status', email: currentUser.email, activity: activityCode })
                 });
-                const status = await resp.json(); // مصفوفة من 10 قيم true/false
+                const statusArray = await resp.json(); // Array of "Done" or ""
 
-                grid.innerHTML = status.map((done, i) => `
-                    <div class="mission-box" onclick="startMission('${activityCode}', ${i+1})">
-                        <i class="fas ${done ? 'fa-check-circle' : 'fa-play'}" style="color:${done ? 'var(--season-color)' : 'var(--accent-gold)'}"></i>
-                        <span>M-${i+1}</span>
-                    </div>
-                `).join('');
+                let firstAvailableFound = false;
+
+                grid.innerHTML = statusArray.map((val, i) => {
+                    const missionNum = i + 1;
+                    let stateClass = "";
+                    let icon = "";
+                    let label = "";
+                    let clickAction = "";
+
+                    if (val === "Done") {
+                        stateClass = "mission-done";
+                        icon = "fa-check-circle";
+                        label = "DONE";
+                        clickAction = "return;"; // لا يفعل شيء
+                    } else if (!firstAvailableFound) {
+                        stateClass = "mission-available";
+                        icon = "fa-play";
+                        label = "AVAILABLE";
+                        clickAction = `startMission('${activityCode}', ${missionNum})`;
+                        firstAvailableFound = true;
+                    } else {
+                        stateClass = "mission-locked";
+                        icon = "fa-lock";
+                        label = "LOCKED";
+                        clickAction = "return;"; // لا يفعل شيء
+                    }
+
+                    return `
+                        <div class="mission-box ${stateClass}" onclick="${clickAction}">
+                            <i class="fas ${icon}" style="color: ${stateClass==='mission-done'?'var(--season-color)':(stateClass==='mission-available'?'var(--accent-gold)':'#555')}"></i>
+                            <span style="display:block">${label}</span>
+                            <span style="font-size:7px; opacity:0.5">M-${missionNum}</span>
+                        </div>
+                    `;
+                }).join('');
                 document.getElementById('back-btn').style.display = 'block';
-            } catch(e) { grid.innerHTML = `<p>Error Loading Missions</p>`; }
+            } catch(e) { 
+                grid.innerHTML = `<p style="grid-column: span 5; text-align:center;">ACCESS DENIED / SERVER ERROR</p>`; 
+            }
         }
 
         function startMission(activity, num) {
-            // توجيه الطالب لصفحة المهمة مع بارامترات
-            window.location.href = `mission_player.html?act=${activity}&m=${num}`;
+            window.location.href = `mission_player.html?act=${encodeURIComponent(activity)}&m=${num}`;
         }
 
         function exitFocusMode() {
@@ -271,7 +299,6 @@
             renderActivities(mode);
         }
 
-        // --- Background Animation ---
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

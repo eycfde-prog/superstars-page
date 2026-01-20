@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Activity Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>EYC Activity Hub | Mission Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
@@ -12,164 +12,241 @@
             --primary-bg: #050505;
             --accent-gold: #ffcc00;
             --season-color: #00ffa3;
+            --xbox-color: #ff3131;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Orbitron', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; }
 
-        /* Floating UI Elements */
-        .floating-container {
-            position: fixed; bottom: 20px; left: 20px;
-            display: flex; flex-direction: column; gap: 10px; z-index: 3000;
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
+
+        /* Floating Info Panels (Left Side) */
+        .floating-stats {
+            position: fixed; left: 20px; top: 50%; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 15px; z-index: 1500;
+            pointer-events: none; opacity: 0; transition: 0.5s;
         }
-        .float-circle {
-            border-radius: 50%; border: 2px solid var(--accent-gold);
+        .floating-stats.visible { opacity: 1; pointer-events: auto; }
+
+        .stat-circle {
+            width: 70px; height: 70px; border-radius: 50%; 
+            border: 2px solid var(--accent-gold); overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-            box-shadow: 0 0 15px rgba(255,204,0,0.3); overflow: hidden;
+            background: rgba(0,0,0,0.8); box-shadow: 0 0 15px rgba(255,204,0,0.3);
+            position: relative;
         }
-        #user-img-float { width: 70px; height: 70px; }
-        #user-tokens-float { width: 50px; height: 50px; font-size: 12px; color: var(--accent-gold); font-weight: bold; }
-        #user-rank-float { width: 40px; height: 40px; font-size: 10px; color: #fff; border-color: #fff; }
-        #user-img-float img { width: 100%; height: 100%; object-fit: cover; }
+        .stat-circle.profile-img { width: 90px; height: 90px; border-width: 3px; }
+        .stat-circle img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .stat-circle.tokens { width: 60px; height: 60px; font-family: 'Orbitron'; font-size: 12px; color: var(--accent-gold); font-weight: 900; flex-direction: column; }
+        .stat-circle.rank { width: 50px; height: 50px; font-family: 'Orbitron'; font-size: 14px; color: #fff; background: var(--xbox-color); border: none; font-weight: 900; }
+        .stat-label { font-size: 8px; color: #fff; margin-bottom: -2px; }
 
         /* Auth Modal */
         #auth-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 4000;
-            display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px);
         }
         .modal-content {
             background: #111; border: 2px solid var(--accent-gold); padding: 30px;
-            border-radius: 25px; width: 90%; max-width: 400px; text-align: center;
+            border-radius: 25px; width: 90%; max-width: 380px; text-align: center;
         }
         .modal-input {
             width: 100%; background: #222; border: 1px solid #444; padding: 12px;
-            margin: 10px 0; border-radius: 12px; color: #fff; text-align: center;
+            margin: 10px 0; border-radius: 12px; color: #fff; outline: none; text-align: center;
         }
         .modal-btn {
             width: 100%; background: var(--accent-gold); color: #000; padding: 12px;
-            border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 10px;
+            border: none; border-radius: 12px; font-family: 'Orbitron'; font-weight: 900;
+            cursor: pointer; margin-top: 10px;
         }
-        .github-btn {
-            background: transparent; border: 1px solid #555; color: #fff; margin-top: 15px; font-size: 12px;
-        }
+        .reg-notice { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin-top: 20px; display: none; }
+        .btn-link { background: #0088ff; color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 8px; display: inline-block; margin-top: 10px; font-size: 12px; }
+
+        /* UI Elements */
+        #user-status-bar { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--accent-gold); cursor: pointer; }
+        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: 2.2rem; background: linear-gradient(#fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        #swiper-container { z-index: 5; }
+        .swiper-slide { width: 280px; height: 380px; border-radius: 35px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
+        .season-card { background: linear-gradient(135deg, rgba(0, 255, 163, 0.2), rgba(0, 0, 0, 0.5)); }
         
-        /* Rest of Styles... (Keep previous CSS for Swiper and Header) */
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
-        .header-area { text-align: center; padding: 20px; }
-        .header-area h1 { font-family: 'Orbitron'; color: var(--accent-gold); letter-spacing: 3px; }
+        .hide-context { opacity: 0 !important; pointer-events: none; }
+        .focus-card { transform: scale(0.65) translateY(-60px) !important; }
+
+        #mission-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 350px; margin: -60px auto 0; opacity: 0; pointer-events: none; transition: 0.5s; }
+        #mission-grid.show { opacity: 1; pointer-events: auto; }
+        .mission-box { aspect-ratio: 1; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; }
     </style>
 </head>
 <body>
 
     <canvas id="rank-canvas"></canvas>
 
-    <div class="floating-container" id="floating-ui" style="display: none;">
-        <div class="float-circle" id="user-img-float"><img id="profile-pic" src="" alt=""></div>
-        <div class="float-circle" id="user-tokens-float"><span id="token-val">0</span></div>
-        <div class="float-circle" id="user-rank-float">Rank: <span id="rank-val">0</span></div>
+    <div id="floating-stats" class="floating-stats">
+        <div class="stat-circle profile-img"><img id="user-photo" src="" alt=""></div>
+        <div class="stat-circle tokens"><span class="stat-label">TOKENS</span><span id="user-tokens">0</span></div>
+        <div class="stat-circle rank" id="user-rank">#?</div>
+    </div>
+
+    <div id="user-status-bar" onclick="checkAndOpenLogin()">
+        <span id="user-display"><i class="fas fa-user-shield"></i> AGENT LOGIN</span>
     </div>
 
     <div id="auth-modal">
-        <div class="modal-content">
-            <h2 style="color: var(--accent-gold); font-family: 'Orbitron';">EYC LOGIN</h2>
-            <div id="login-fields">
-                <input type="email" id="email-input" class="modal-input" placeholder="Enter Email">
-                <input type="password" id="pass-input" class="modal-input" placeholder="Access Code (Password)">
-                <button class="modal-btn" onclick="handleAuthAction()">ACCESS HUB</button>
+        <div class="modal-content" id="modal-body">
+            <h2 style="font-family:'Orbitron'; color:var(--accent-gold)">IDENTIFICATION</h2>
+            <input type="email" id="email-input" class="modal-input" placeholder="Your Email">
+            <input type="password" id="pass-input" class="modal-input" placeholder="Mission Code">
+            <button class="modal-btn" onclick="processLogin()">VERIFY IDENTITY</button>
+            
+            <div id="register-section" class="reg-notice">
+                <p style="font-size:11px">لا تمتلك بروفايل؟ يمكنك إنشاء واحد الآن</p>
+                <a href="https://github.com/YourUser/NP.html" class="btn-link">Create Profile</a>
             </div>
-            <div id="no-email-box" style="display: none; margin-top: 20px;">
-                <p style="font-size: 12px; color: #ccc;">If you don't have a profile email, create one now:</p>
-                <button class="modal-btn github-btn" onclick="window.location.href='https://github.com/USERNAME/NP.html'">CREATE PROFILE (NP.html)</button>
-            </div>
+
+            <span onclick="forgotPassword()" style="display:block; font-size:11px; color:#888; margin-top:15px; cursor:pointer">Forget Code?</span>
+            <span onclick="closeLoginModal()" style="display:block; font-size:11px; color:red; margin-top:10px; cursor:pointer">CANCEL</span>
         </div>
     </div>
 
     <div class="header-area" id="header-area">
-        <h1>EYC ACADEMY</h1>
-        <p style="color: var(--accent-gold); font-size: 10px;">MISSION CONTROL</p>
+        <header class="rank-header">
+            <h1>EYC ACADEMY</h1>
+            <p style="font-family:'Orbitron'; color:var(--accent-gold); font-size:10px; letter-spacing:3px">MISSION CONTROL</p>
+        </header>
     </div>
 
     <div id="swiper-container" class="swiper">
         <div class="swiper-wrapper" id="activities-wrapper"></div>
     </div>
 
+    <div id="mission-grid"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const VENS_URL = "https://script.google.com/macros/s/AKfycbwMFxX0jv8-o8r4IymfCQ5IQTDq8OTIdyrobeR2FXF6xPhPoxwrdfCyVQQaXAMKtAGz/exec"; // استبدل بـ URL شيت الفينز
-        const RANKS_URL = "https://script.google.com/macros/s/AKfycbwjEpcjO4wzWeG1PuQEsx5NI4g3oSMq-S4DVjUw8__qRR7kwnsrCD_Rt2IQb3AoPKMS/exec"; // استبدل بـ URL شيت الرانكس
+        const VENS_URL = "https://script.google.com/macros/s/AKfycbysb8HupCCwF-Zb3LrVh_jMolyCBENTEi8HXnBYeJqUWjCAqit8N1gMzHQV0rp3o8CrDQ/exec";
+        const RANKS_URL = "https://script.google.com/macros/s/AKfycbx3JTUOaiukrxBhXnYDD4capGp1XRA40hIIgGSEb1EzljEPnyTIqyp9LbMMdpalczm_/exec";
 
         let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
 
         window.onload = async () => {
-            if (currentUser) {
-                const isStillActive = await verifySession();
-                if (isStillActive) {
-                    loadFloatingUI();
+            renderActivities('season');
+            if(currentUser) {
+                // التأكد من حالة النشاط عند الريفرش (العمود Y أو Z)
+                const check = await fetch(VENS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'check_status', email: currentUser.email })
+                });
+                const res = await check.json();
+                if(res.verified) {
+                    showUI(currentUser);
+                    syncFloatingData();
                 } else {
-                    openLoginModal();
+                    localStorage.removeItem('eyc_user');
+                    location.reload();
                 }
-            } else {
-                openLoginModal();
             }
-        };
+        }
 
+        function showUI(user) {
+            document.getElementById('user-display').innerHTML = `<i class="fas fa-check-circle"></i> ${user.name}`;
+            document.getElementById('floating-stats').classList.add('visible');
+        }
+
+        async function syncFloatingData() {
+            const resp = await fetch(RANKS_URL);
+            const allData = await resp.json();
+            const myData = allData.find(u => u.Name === currentUser.name);
+            if(myData) {
+                document.getElementById('user-photo').src = myData.Image;
+                document.getElementById('user-tokens').innerText = myData.Tokens;
+                document.getElementById('user-rank').innerText = `#${myData.Rank}`;
+            }
+        }
+
+        function checkAndOpenLogin() { if(!currentUser) openLoginModal(); }
+        
         function openLoginModal() { 
-            document.getElementById('auth-modal').style.display = 'flex'; 
+            document.getElementById('auth-modal').style.display = 'flex';
+            document.getElementById('register-section').style.display = 'none';
         }
+        function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
 
-        async function verifySession() {
-            try {
-                const r = await fetch(VENS_URL, { method: 'POST', body: JSON.stringify({ action: 'verify_session', email: currentUser.email }) });
-                const res = await r.json();
-                return res.status === "active";
-            } catch { return false; }
-        }
+        async function processLogin() {
+            const email = document.getElementById('email-input').value;
+            const pass = document.getElementById('pass-input').value;
 
-        async function handleAuthAction() {
-            const email = document.getElementById('email-input').value.trim();
-            const pass = document.getElementById('pass-input').value.trim();
-
-            if (!email) {
-                document.getElementById('no-email-box').style.display = 'block';
+            if(!email) {
+                document.getElementById('register-section').style.display = 'block';
+                return;
+            }
+            if(!pass) {
+                // إذا أدخل الإيميل فقط، نبحث عنه ونرسل الكود
+                forgotPassword();
                 return;
             }
 
-            if (email && !pass) {
-                // محاولة إرسال الكود
-                const r = await fetch(VENS_URL, { method: 'POST', body: JSON.stringify({ action: 'check_email_only', email: email }) });
-                const res = await r.json();
-                alert(res.message);
-                return;
-            }
+            const resp = await fetch(VENS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', email: email, password: pass })
+            });
+            const res = await resp.json();
 
-            // تسجيل دخول كامل
-            const r = await fetch(VENS_URL, { method: 'POST', body: JSON.stringify({ action: 'login', email, password: pass }) });
-            const res = await r.json();
-            if (res.status === "success") {
-                currentUser = { email, name: res.name };
-                localStorage.setItem('eyc_user', JSON.stringify(currentUser));
-                alert(`Welcome back, Agent ${res.name}`);
+            if(res.status === "success") {
+                currentUser = res;
+                localStorage.setItem('eyc_user', JSON.stringify(res));
                 location.reload();
             } else {
                 alert(res.message);
             }
         }
 
-        async function loadFloatingUI() {
-            try {
-                const r = await fetch(`${RANKS_URL}?name=${encodeURIComponent(currentUser.name)}`);
-                const data = await r.json();
-                if (!data.error) {
-                    document.getElementById('profile-pic').src = data.image;
-                    document.getElementById('token-val').innerText = data.tokens;
-                    document.getElementById('rank-val').innerText = data.rank;
-                    document.getElementById('floating-ui').style.display = 'flex';
-                    document.getElementById('auth-modal').style.display = 'none';
-                }
-            } catch (e) { console.error("Ranks Load Error"); }
+        async function forgotPassword() {
+            const email = document.getElementById('email-input').value;
+            if(!email) return alert("Enter email first");
+            
+            const resp = await fetch(VENS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'forgot_password', email: email })
+            });
+            const res = await resp.json();
+            if(res.status === "success") {
+                alert(`مرحباً ${res.name}، تم إرسال كود الدخول إلى بريدك الإلكتروني.`);
+            } else {
+                alert(res.message);
+            }
         }
 
-        // --- إضافة كود الأنيميشن والـ Swiper من الكود القديم هنا ليعمل التصميم بالكامل ---
+        // دالة الدخول للمهمات
+        function enterFocusMode(card, mode, activityCode) {
+            if(!currentUser) {
+                openLoginModal();
+                return;
+            }
+            // كود الأنيميشن وعرض المهام هنا...
+            card.classList.add('focus-card');
+            document.getElementById('header-area').classList.add('hide-context');
+            document.getElementById('mission-grid').classList.add('show');
+            // استكمال عرض المهام من AC_DEPLOY_URL
+        }
+
+        // رندر الكروت
+        function renderActivities(mode) {
+            const activities = [
+                { name: 'Golden Ear', code: 'GE', icon: 'fa-ear-listen' },
+                { name: 'Grammar', code: 'GR', icon: 'fa-magnifying-glass' }
+            ];
+            const wrapper = document.getElementById('activities-wrapper');
+            wrapper.innerHTML = activities.map(act => `
+                <div class="swiper-slide season-card" onclick="enterFocusMode(this, 'season', '${act.code}')">
+                    <i class="fas ${act.icon}" style="font-size:40px; color:var(--accent-gold)"></i>
+                    <h3 style="margin-top:15px; font-family:'Orbitron'">${act.name}</h3>
+                </div>
+            `).join('');
+            new Swiper('.swiper', { effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto' });
+        }
     </script>
 </body>
 </html>

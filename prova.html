@@ -161,7 +161,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const VENS_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbw72j-smcu2hqZNVesWoNKXrg2ui8udmpL6iydBHnCOxkVpVYh3ZknrFvVAzIlQ0cmamg/exec";
+        const VENS_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbxk8rQJYPVrkbi-FJ4FYGj2eD8-45Z-LnNtiWJcS0jWVzTiKnxgR5ZiaVzpdoxQkVZUTA/exec";
         const AC_DEPLOY_URL = "https://script.google.com/macros/s/AKfycbyDMmVnS9BSMxm5oqcdz8nhkrlvZXWHjpeizmv6L7LL1TwNwlwzZP5P2qIwzZ7jcU-t/exec";
 
         let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
@@ -171,28 +171,31 @@
             renderActivities('season');
         }
 
-        // دالة تحويل رابط جوجل درايف ليظهر كصورة مباشرة
+        // دالة تحويل رابط جوجل درايف المصلحة لتعمل كصورة (Thumbnail)
         function formatDriveUrl(url) {
-            if (!url) return '';
-            if (url.includes('drive.google.com')) {
-                let fileId = "";
-                if (url.includes('id=')) {
-                    fileId = url.split('id=')[1].split('&')[0];
-                } else {
-                    fileId = url.split('/d/')[1].split('/')[0];
-                }
-                return `https://lh3.googleusercontent.com/u/0/d/${fileId}=w200-h200-p-k-no-iv1`;
+            if (!url || typeof url !== 'string') return '';
+            let fileId = "";
+            
+            if (url.includes('id=')) {
+                fileId = url.split('id=')[1].split('&')[0];
+            } else if (url.includes('/d/')) {
+                fileId = url.split('/d/')[1].split('/')[0];
+            } else {
+                return url; // إذا لم يكن رابط درايف، ارجع الرابط كما هو
             }
-            return url;
+            
+            // الرابط المباشر الصحيح لعرض الصور من درايف داخل الموقع
+            return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500`;
         }
 
         function updateUserUI(user) {
             document.getElementById('user-display').innerHTML = `<i class="fas fa-star" style="color:var(--accent-gold)"></i> ${user.name} | #${user.rank}`;
             document.getElementById('floating-profile').style.display = 'flex';
             document.getElementById('floating-tokens').innerText = user.tokens;
+            
             if(user.photo) {
                 const imgUrl = formatDriveUrl(user.photo);
-                document.getElementById('profile-img-container').innerHTML = `<img src="${imgUrl}" alt="Profile">`;
+                document.getElementById('profile-img-container').innerHTML = `<img src="${imgUrl}" alt="Profile" onerror="this.src='https://via.placeholder.com/100?text=EYC'">`;
             }
         }
 
@@ -205,18 +208,16 @@
             const password = document.getElementById('pass-input').value.trim();
             const modalBody = document.getElementById('modal-body');
 
-            // 1. إذا لم يكتب الإيميل
             if(!email) {
                 modalBody.innerHTML = `
                     <h3 style="color:var(--accent-gold); font-family:'Orbitron'">ACCESS DENIED</h3>
-                    <p style="font-size:12px; margin:20px 0; color:#ccc;">لو معندكش إيميل بروفايل تقدر تعمل واحد من هنا:</p>
+                    <p style="font-size:12px; margin:20px 0; color:#ccc;">ليس لديك حساب؟ قم بإنشاء بروفايلك الآن:</p>
                     <button class="modal-btn" onclick="window.location.href='https://np.html'">CREATE NEW PROFILE</button>
                     <span class="secondary-link" onclick="location.reload()">BACK TO LOGIN</span>
                 `;
                 return;
             }
 
-            // 2. إذا كتب الإيميل بدون كلمة سر (إرسال تلقائي للكود)
             if(email && !password) {
                 modalBody.innerHTML = `<p class="loading-overlay">VERIFYING ACCOUNT...</p>`;
                 try {
@@ -225,17 +226,12 @@
                         body: JSON.stringify({ action: 'forgot_password', email: email })
                     });
                     const res = await resp.json();
-                    if(res.status === "success") {
-                        alert("Your Unique Code has been sent to your Gmail.");
-                    } else {
-                        alert(res.message);
-                    }
+                    alert(res.status === "success" ? "تم إرسال الكود الخاص بك إلى Gmail" : res.message);
                     location.reload();
-                } catch(e) { alert("Verification error."); location.reload(); }
+                } catch(e) { alert("خطأ في الاتصال بالسيرفر"); location.reload(); }
                 return;
             }
 
-            // 3. محاولة الدخول العادية
             modalBody.innerHTML = `<p class="loading-overlay">SCANNING BIOMETRICS...</p>`;
             try {
                 const resp = await fetch(VENS_DEPLOY_URL, {
@@ -264,8 +260,8 @@
 
         async function forgotPassword() {
             const email = document.getElementById('email-input').value;
-            if(!email) return alert("Please enter your email first");
-            processLogin(); // ستتكفل الوظيفة بإرسال الكود لأن الباسورد فارغ
+            if(!email) return alert("الرجاء إدخال الإيميل أولاً");
+            processLogin(); 
         }
 
         const activities = {
@@ -372,6 +368,7 @@
             renderActivities(mode);
         }
 
+        // Particle background
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

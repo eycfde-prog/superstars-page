@@ -11,137 +11,144 @@
         :root { --gold: #f1c40f; --bg-deep: #020617; }
         body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; }
-        .input-alike { background: rgba(0,0,0,0.4); border: 2px solid var(--gold); border-radius: 12px; padding: 10px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; text-transform: uppercase; outline: none; transition: 0.3s; }
-        .input-alike:focus { box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); background: rgba(0,0,0,0.6); }
+        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; transition: 0.3s; }
+        .glass-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+        
+        .input-alike { 
+            background: rgba(0,0,0,0.4); 
+            border: 1.5px solid rgba(255,255,255,0.1); 
+            border-radius: 12px; 
+            padding: 8px; 
+            text-align: center; 
+            width: 100%; 
+            color: var(--gold); 
+            font-family: 'Orbitron'; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            outline: none;
+        }
+        .input-alike:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.2); }
+
         .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
-        .floating-obj { animation: float 3s ease-in-out infinite, spin 10s linear infinite; color: var(--gold); opacity: 0.3; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        @keyframes spin { from { rotate: 0deg; } to { rotate: 360deg; } }
-        .pulse-btn { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(241, 196, 15, 0); } 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); } }
+        
+        .floating-obj { animation: float 3s ease-in-out infinite; color: var(--gold); opacity: 0.2; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin-loader 1s linear infinite; display: inline-block; }
         @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
         footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
     </style>
 </head>
 <body class="p-4 flex flex-col items-center">
 
-    <div id="howToModal" class="modal-overlay">
-        <div class="glass-card p-10 max-w-md w-full border-2 border-yellow-500 text-center">
-            <i class="fas fa-clone text-5xl text-yellow-500 mb-6"></i>
-            <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">ALIKE MISSION</h2>
-            <p class="text-gray-300 mb-8 leading-relaxed text-right">اكتب الكلمة الإنجليزية الصحيحة التي تعطي نفس النطق للمعنيين العربيين الموضحين في كل كارت.</p>
-            <button onclick="closeModal('howToModal')" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl">فهمت المهمة</button>
-        </div>
-    </div>
-
     <div id="successOverlay" class="modal-overlay">
         <div class="text-center">
             <i class="fas fa-check-circle text-8xl text-green-500 mb-6 block"></i>
-            <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION ACCOMPLISHED</h2>
-            <p class="text-gray-400" id="successMsg">تم حفظ إجاباتك بنجاح في سجل الدرجات</p>
-            <button onclick="window.history.back()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs">BACK TO MISSION CONTROL</button>
+            <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION COMPLETE</h2>
+            <p class="text-gray-400">تم تسجيل درجاتك وإضافة التوكنز لحسابك بنجاح</p>
+            <button onclick="window.history.back()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs hover:bg-white hover:text-black transition">BACK TO HUB</button>
         </div>
     </div>
 
-    <div id="mainContent" class="w-full max-w-5xl">
+    <div id="mainContent" class="w-full max-w-6xl">
         <header class="text-center my-10 relative">
-            <div class="absolute -top-10 left-1/2 -translate-x-1/2 floating-obj"><i class="fas fa-sync-alt text-6xl"></i></div>
-            <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <p id="missionVersionText" class="text-yellow-500 orbitron mt-2 tracking-[4px]"></p>
+            <img src="logo.png" alt="EYC Logo" class="w-28 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(255,204,0,0.3)]">
             
-            <div class="flex flex-wrap justify-center gap-4 mt-8">
-                <button onclick="openModal('howToModal')" class="pulse-btn text-white text-xs bg-white/5 px-6 py-3 rounded-full border border-yellow-500/50 flex items-center gap-2">
-                    <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
-                </button>
-            </div>
+            <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
+            <p id="versionTag" class="text-yellow-500 orbitron mt-2 tracking-[5px] text-sm uppercase">VERSION --</p>
+            
+            <p class="text-gray-400 mt-6 max-w-xl mx-auto text-sm leading-relaxed">
+                اكتب الكلمة الإنجليزية المناسبة لكل معنى. تذكر: الكلمات في كل كارت لها نفس النطق ولكن تختلف في الكتابة والمعنى.
+            </p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" id="alikeGrid"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16" id="alikeGrid"></div>
 
         <div class="max-w-md mx-auto mb-20">
-            <button id="finalSubmitBtn" onclick="submitAllData()" class="w-full py-5 bg-yellow-500 text-black font-black orbitron rounded-2xl shadow-2xl shadow-yellow-500/20 hover:scale-105 transition-transform">
-                FINALIZE MISSION & SAVE
+            <button id="finalSubmitBtn" onclick="submitAllData()" class="w-full py-5 bg-yellow-500 text-black font-black orbitron rounded-2xl shadow-xl shadow-yellow-500/20 hover:scale-[1.02] transition-transform">
+                VALIDATE & SAVE RESULTS
             </button>
         </div>
 
         <footer>
-            <p>© 2026 EYC ACADEMY - ALL RIGHTS RESERVED</p>
-            <p class="mt-2 tracking-[4px]">DESIGNED FOR SUPERSTARS</p>
+            <p>© 2026 EYC ACADEMY - MISSION CONTROL SYSTEM</p>
         </footer>
     </div>
 
 <script>
     const SCORE_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
 
-    // جلب البيانات من الرابط (Query Parameters)
+    // جلب البيانات من الرابط
     const params = new URLSearchParams(window.location.search);
-    const userEmail = params.get('email'); // الإيميل يتم استلامه تلقائياً من الـ Hub
-    const vNum = params.get('v') || "1";   // رقم النسخة
+    const userEmail = params.get('email');
+    const vNum = params.get('v') || "1";
     const PAGE_NAME = `ALIKE_V${vNum}`;
 
-    // الكلمات (يمكنك تعديلها بناءً على vNum إذا أردت)
+    // قائمة 10 أزواج من الكلمات
     const wordsData = [
         { m1: "ابن", m2: "شمس" },
         { m1: "هنا", m2: "يسمع" },
         { m1: "بحر", m2: "يرى" },
-        { m1: "يرتدى", m2: "أين" },
         { m1: "أسبوع", m2: "ضعيف" },
-        { m1: "طريق", m2: "ركب" }
+        { m1: "طريق", m2: "ركب" },
+        { m1: "دقيق", m2: "وردة" },
+        { m1: "ساعة", m2: "ملكنا" },
+        { m1: "يشترى", m2: "بواسطة" },
+        { m1: "أزرق", m2: "نفخ" },
+        { m1: "ثمانية", m2: "أكل" }
     ];
 
     window.onload = () => {
-        document.getElementById('missionVersionText').innerText = `VERSION 0${vNum}`;
+        document.getElementById('versionTag').innerText = `MISSION V.0${vNum}`;
         renderGrid();
-        // إظهار شرح النشاط تلقائياً عند أول فتح
-        if(!localStorage.getItem('alike_tutorial_seen')) {
-            openModal('howToModal');
-            localStorage.setItem('alike_tutorial_seen', 'true');
-        }
     };
 
     function renderGrid() {
         const grid = document.getElementById('alikeGrid');
         grid.innerHTML = wordsData.map((pair, index) => `
-            <div class="glass-card p-8 text-center border border-white/5">
-                <div class="text-[10px] orbitron text-yellow-500/50 mb-4 tracking-[2px]">ALIKE CASE #${index + 1}</div>
-                <div class="flex justify-around items-center mb-6">
-                    <span class="text-lg font-bold">${pair.m1}</span>
-                    <i class="fas fa-arrows-left-right text-yellow-500 opacity-30"></i>
-                    <span class="text-lg font-bold">${pair.m2}</span>
+            <div class="glass-card p-6 flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] orbitron text-yellow-500 opacity-60">CASE ${index + 1}</span>
+                    <i class="fas fa-clone text-[10px] text-gray-600"></i>
                 </div>
-                <input type="text" id="ans-${index}" class="input-alike" placeholder="WORD...">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs text-gray-400 text-center">${pair.m1}</label>
+                        <input type="text" id="ans-${index}-1" class="input-alike" placeholder="...">
+                    </div>
+                    
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs text-gray-400 text-center">${pair.m2}</label>
+                        <input type="text" id="ans-${index}-2" class="input-alike" placeholder="...">
+                    </div>
+                </div>
             </div>
         `).join('');
     }
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
     async function submitAllData() {
         const btn = document.getElementById('finalSubmitBtn');
-        
-        // التحقق من وجود إيميل (لضمان أن الطالب جاء من الـ Hub)
-        if(!userEmail) {
-            alert("خطأ: لم يتم العثور على بيانات الطالب. يرجى الدخول من صفحة الـ Hub.");
-            return;
-        }
+        if(!userEmail) return alert("خطأ: لم يتم التعرف على الطالب.");
 
         let answers = [];
-        let isComplete = true;
+        let missing = false;
 
         wordsData.forEach((_, index) => {
-            const val = document.getElementById(`ans-${index}`).value.trim();
-            if(!val) isComplete = false;
-            answers.push(val);
+            const a1 = document.getElementById(`ans-${index}-1`).value.trim();
+            const a2 = document.getElementById(`ans-${index}-2`).value.trim();
+            
+            if(!a1 || !a2) missing = true;
+            // حفظ الإجابتين بشكل "word1/word2"
+            answers.push(`${a1}/${a2}`);
         });
 
-        if(!isComplete) return alert("يرجى ملء جميع الخانات قبل الإرسال!");
+        if(missing) return alert("يرجى كتابة جميع الكلمات العشرين!");
 
         btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> PROCESSING SCORE...';
+        btn.innerHTML = '<span class="loader"></span> ANALYZING...';
 
         try {
             const formData = new URLSearchParams();
@@ -149,7 +156,6 @@
             formData.append('page', PAGE_NAME);
             formData.append('answer', answers.join(" | "));
 
-            // الإرسال للسيرفر
             await fetch(SCORE_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -159,9 +165,9 @@
             document.getElementById('successOverlay').style.display = 'flex';
             
         } catch (e) {
-            alert("حدث خطأ في الاتصال بالسيرفر");
+            alert("فشل في الاتصال بالسيرفر");
             btn.disabled = false;
-            btn.innerHTML = "FINALIZE MISSION & SAVE";
+            btn.innerHTML = "VALIDATE & SAVE RESULTS";
         }
     }
 </script>

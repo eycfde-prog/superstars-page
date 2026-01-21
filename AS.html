@@ -21,9 +21,17 @@
         @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
         .locked-msg { display:none; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center; }
+        #loadingScreen { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="p-4 flex flex-col items-center">
+
+    <div id="loadingScreen">
+        <div class="text-center">
+            <div class="loader mb-4 w-12 h-12"></div>
+            <p class="orbitron text-xs tracking-widest">INITIALIZING MISSION...</p>
+        </div>
+    </div>
 
     <div id="successOverlay" class="modal-overlay">
         <div class="text-center">
@@ -46,7 +54,7 @@
         <button onclick="window.history.back()" class="mt-8 px-10 py-3 bg-white text-black rounded-full orbitron text-xs">EXIT</button>
     </div>
 
-    <div id="mainContent" class="w-full max-w-6xl">
+    <div id="mainContent" class="w-full max-w-6xl" style="display:none;">
         <header class="text-center my-10 relative">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
             <p id="versionTag" class="text-yellow-500 orbitron mt-2 tracking-[5px] text-sm uppercase">VERSION --</p>
@@ -67,10 +75,9 @@
     </div>
 
 <script>
-    // روابط الـ Scripts
-    // تأكد أن هذا الرابط هو رابط الـ Deployment لكود الـ Score (doPost)
+    // روابط الـ Scripts (يجب تحديث الروابط بعد نشر السكريبتات الجديدة)
     const SCORE_URL = "https://script.google.com/macros/s/AKfycbwLlZMg2EnrcUZVXWAFjIwqOGNHBptm99IvUCppGg3Sk7aBt0c-tYrzINMtd2X_082A/exec"; 
-    const AC_URL = "https://script.google.com/macros/s/AKfycbzZ0lQaivWhF3l1mbtwuTKjH4-5b1HcyfHmPpnWIgHo_P4Yqw7yj9gOhm71GhmGFht4/exec";
+    const AC_URL = "https://script.google.com/macros/s/AKfycbzCvmwMyeQhU5VsmXig2AtLUIpqyk29LVvPYa4nlZCOiyqRuZ9uvrpT6jeNJJ9Klih4MA/exec";
     
     const params = new URLSearchParams(window.location.search);
     const userEmail = params.get('email');
@@ -100,21 +107,36 @@
         }
         document.getElementById('versionTag').innerText = `MISSION V.0${vNum}`;
         await checkAccess();
-        renderGrid();
     };
 
     async function checkAccess() {
         try {
             const response = await fetch(AC_URL, {
                 method: 'POST',
-                body: JSON.stringify({ action: "get_status", email: userEmail, activity: ACTIVITY_NAME })
+                body: JSON.stringify({ 
+                    action: "get_status", 
+                    email: userEmail, 
+                    activity: ACTIVITY_NAME,
+                    version: vNum 
+                })
             });
-            const statusArray = await response.json();
-            if (statusArray[vNum - 1] === "DONE") {
+            const result = await response.json();
+            
+            document.getElementById('loadingScreen').style.display = 'none';
+
+            if (result.status === "DONE") {
                 document.getElementById('mainContent').style.display = 'none';
                 document.getElementById('lockedContent').style.display = 'flex';
+            } else {
+                document.getElementById('mainContent').style.display = 'block';
+                renderGrid();
             }
-        } catch (e) { console.log("Access Check Error"); }
+        } catch (e) { 
+            console.log("Access Check Error");
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            renderGrid();
+        }
     }
 
     function renderGrid() {
@@ -162,7 +184,6 @@
             formData.append('page', PAGE_NAME);
             formData.append('answer', answers.join(" | "));
 
-            // إرسال البيانات واستقبال النتيجة
             const response = await fetch(SCORE_URL, {
                 method: 'POST',
                 body: formData
@@ -170,14 +191,16 @@
             const result = await response.json();
 
             if(result.status === "success") {
-                // عرض الدرجة في الـ Overlay
+                // بعد النجاح، نقوم بطلب تحديث شيت الـ AC فوراً
+                fetch(AC_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "sync" })
+                });
+
                 document.getElementById('displayScore').innerText = result.score;
-                
-                // إضافة تفاصيل إضافية (اختياري)
                 if(result.correctCount !== undefined) {
                     document.getElementById('statsMsg').innerText = `CORRECT: ${result.correctCount} | WRONG: ${result.wrongCount}`;
                 }
-
                 document.getElementById('successOverlay').style.display = 'flex';
                 document.getElementById('mainContent').style.display = 'none';
             } else {
@@ -194,4 +217,3 @@
 </script>
 </body>
 </html>
-

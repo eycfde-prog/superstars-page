@@ -9,35 +9,42 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --gold: #f1c40f; --bg-deep: #020617; }
-        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
+        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; overflow-x: hidden; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; transition: 0.3s; }
         .input-alike { background: rgba(0,0,0,0.4); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; text-transform: uppercase; outline: none; }
         .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin-loader 1s linear infinite; display: inline-block; }
         @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .locked-msg { color: #ff4757; font-family: 'Orbitron'; font-weight: bold; }
+        #lockOverlay { display: flex; } /* يبدأ ظاهراً للفحص */
     </style>
 </head>
 <body class="p-4 flex flex-col items-center">
+
+    <div id="lockOverlay" class="modal-overlay">
+        <div class="text-center">
+            <div id="lockIcon"><span class="loader"></span></div>
+            <h2 id="lockTitle" class="text-3xl font-black orbitron golden-text mt-4">INITIALIZING...</h2>
+            <p id="lockMsg" class="text-gray-400 mt-2">جاري فحص حالة المهمة، يرجى الانتظار...</p>
+            <button id="lockBackBtn" onclick="window.history.back()" class="hidden mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs hover:bg-white hover:text-black transition">BACK TO HUB</button>
+        </div>
+    </div>
 
     <div id="successOverlay" class="modal-overlay">
         <div class="text-center">
             <i class="fas fa-check-circle text-8xl text-green-500 mb-6 block"></i>
             <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION COMPLETE</h2>
-            <p id="successResult" class="text-xl text-white mb-2"></p>
-            <p class="text-gray-400">تم تسجيل درجاتك وإضافة التوكنز لحسابك بنجاح</p>
+            <p class="text-gray-400" id="successMsg">تم تسجيل درجاتك وإضافة التوكنز بنجاح</p>
             <button onclick="window.history.back()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs hover:bg-white hover:text-black transition">BACK TO HUB</button>
         </div>
     </div>
 
-    <div id="mainContent" class="w-full max-w-6xl">
+    <div id="mainContent" class="w-full max-w-6xl opacity-0 transition-opacity duration-700">
         <header class="text-center my-10 relative">
             <img src="logo.png" alt="EYC Logo" class="w-28 mx-auto mb-6">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <p id="versionTag" class="text-yellow-500 orbitron mt-2 tracking-[5px] text-sm uppercase">VERSION --</p>
-            <div id="statusIndicator" class="mt-4"></div>
+            <p id="versionTag" class="text-yellow-500 orbitron mt-2 tracking-[5px] text-sm uppercase">MISSION --</p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16" id="alikeGrid"></div>
@@ -73,35 +80,39 @@
 
     window.onload = async () => {
         if(!userEmail) {
-            alert("Security Error: Student identification missing!");
+            showError("ACCESS DENIED", "بيانات الطالب مفقودة، لا يمكنك البدء.");
             return;
         }
         document.getElementById('versionTag').innerText = `MISSION V.0${vNum}`;
         renderGrid();
-        checkMissionLock();
+        await checkMissionStatus();
     };
 
-    async function checkMissionLock() {
-        const indicator = document.getElementById('statusIndicator');
-        indicator.innerHTML = '<span class="loader"></span> فحص حالة المهمة...';
-        
+    async function checkMissionStatus() {
         try {
-            const response = await fetch(`${SCORE_URL}?action=check_lock&email=${userEmail}&page=${PAGE_NAME}`);
-            const data = await response.json();
-            
-            if(data.locked) {
-                indicator.innerHTML = '<span class="locked-msg text-red-500">لقد تمت الإجابة على هذه المهمة بالفعل!</span>';
-                document.getElementById('finalSubmitBtn').disabled = true;
-                document.getElementById('finalSubmitBtn').style.opacity = "0.5";
-                document.querySelectorAll('input').forEach(input => input.disabled = true);
-                alert("تم قفل المهمة لأنك أجبت عليها مسبقاً.");
+            const resp = await fetch(SCORE_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'get_status', email: userEmail, page: PAGE_NAME })
+            });
+            const data = await resp.json();
+            if(data.status === "LOCKED") {
+                showError("ALREADY COMPLETED", "لقد تمت الإجابة على هذه المهمة بالفعل!");
             } else {
-                indicator.innerHTML = '<span class="text-green-500">مهمة مفتوحة - بانتظار الإجابة</span>';
+                document.getElementById('lockOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.opacity = '1';
             }
-        } catch(e) {
-            indicator.innerHTML = '';
-            console.log("فشل فحص القفل، الاستمرار متاح.");
+        } catch (e) {
+            console.error("Status Check Error:", e);
+            // في حالة فشل الاتصال بالسيرفر، نظهر خطأ أمان
+            showError("COMMUNICATION ERROR", "فشل الاتصال بأنظمة الأكاديمية.");
         }
+    }
+
+    function showError(title, msg) {
+        document.getElementById('lockIcon').innerHTML = '<i class="fas fa-lock text-7xl text-red-500"></i>';
+        document.getElementById('lockTitle').innerText = title;
+        document.getElementById('lockMsg').innerText = msg;
+        document.getElementById('lockBackBtn').classList.remove('hidden');
     }
 
     function renderGrid() {
@@ -115,11 +126,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex flex-col gap-2">
                         <label class="text-xs text-gray-400 text-center">${pair.m1}</label>
-                        <input type="text" id="ans-${index}-1" class="input-alike" placeholder="..." autocomplete="off">
+                        <input type="text" id="ans-${index}-1" class="input-alike" placeholder="..." autocomplete="off" spellcheck="false">
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="text-xs text-gray-400 text-center">${pair.m2}</label>
-                        <input type="text" id="ans-${index}-2" class="input-alike" placeholder="..." autocomplete="off">
+                        <input type="text" id="ans-${index}-2" class="input-alike" placeholder="..." autocomplete="off" spellcheck="false">
                     </div>
                 </div>
             </div>
@@ -144,30 +155,24 @@
         btn.innerHTML = '<span class="loader"></span> ANALYZING...';
 
         try {
-            const formData = new URLSearchParams();
-            formData.append('email', userEmail);
-            formData.append('page', PAGE_NAME);
-            formData.append('answer', answers.join(" | "));
-
-            const response = await fetch(SCORE_URL, {
+            const resp = await fetch(SCORE_URL, {
                 method: 'POST',
-                body: formData
+                body: JSON.stringify({ 
+                    email: userEmail, 
+                    page: PAGE_NAME, 
+                    answer: answers.join(" | ") 
+                })
             });
-
-            const result = await response.json();
+            const result = await resp.json();
             
-            if(result.status === "Success") {
-                document.getElementById('successResult').innerText = `حصلت على ${result.tokens} توكنز!`;
-                document.getElementById('successOverlay').style.display = 'flex';
-            } else {
-                alert("حدث خطأ أثناء حفظ البيانات.");
-            }
+            document.getElementById('successMsg').innerText = `تم منحك ${result.tokens} توكنز وإضافة الدرجة لملفك.`;
+            document.getElementById('successOverlay').style.display = 'flex';
         } catch (e) {
-            alert("فشل في الاتصال بالسيرفر، تأكد من إعداد الـ Apps Script كـ Web App.");
+            alert("فشل في الاتصال بالسيرفر");
             btn.disabled = false;
+            btn.innerHTML = "VALIDATE & SAVE RESULTS";
         }
     }
 </script>
 </body>
 </html>
-

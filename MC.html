@@ -31,10 +31,6 @@
         .main-img-circle img { width: 100%; height: 100%; object-fit: cover; }
         .token-circle { width: 60px; height: 60px; font-size: 10px; text-align: center; color: var(--accent-gold); font-family: 'Orbitron'; flex-direction: column; z-index: 2; }
         .rank-circle { width: 50px; height: 50px; font-size: 11px; color: #fff; border-color: #fff; font-family: 'Orbitron'; z-index: 1; }
-        
-        /* إضافة الدوائر الجديدة للنجوم والجولدن تيكيت */
-        .extra-circle { width: 45px; height: 45px; font-size: 9px; color: #00ffa3; border-color: #00ffa3; font-family: 'Orbitron'; z-index: 0; }
-
         #floating-login-btn { width: 100%; height: 100%; background: var(--accent-gold); color: #000; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; font-size: 10px; cursor: pointer; animation: pulseBtn 2s infinite; }
         @keyframes pulseBtn { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
@@ -86,7 +82,6 @@
 
         .mission-box:hover:not(.locked) { background: var(--accent-gold); color: #000; transform: translate(-50%, -50%) scale(1.1); }
         .mission-box.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; border-color: #555; }
-        .mission-box.completed { border-color: #00ffa3; background: rgba(0, 255, 163, 0.1); color: #00ffa3; }
         .mission-box i { font-size: 16px; margin-bottom: 5px; }
         .mission-box span { font-family: 'Orbitron'; font-size: 9px; font-weight: 900; }
 
@@ -115,8 +110,6 @@
 
     <div class="profile-cluster">
         <div class="float-circle rank-circle" id="user-rank">#--</div>
-        <div class="float-circle extra-circle" id="user-gt" style="border-color: #ff3131; color: #ff3131;">0<br><span style="font-size:6px">GT</span></div>
-        <div class="float-circle extra-circle" id="user-stars">0<br><span style="font-size:6px">STARS</span></div>
         <div class="float-circle token-circle" id="user-tokens">--<br><span style="font-size:7px">TOKENS</span></div>
         <div class="float-circle main-img-circle">
             <img id="user-img" src="" alt="" style="display:none">
@@ -155,14 +148,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // الروابط المحدثة
+        // روابط السكريبتات الخاصة بك (تأكد من صحتها بعد الدمج)
         const VENS_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
-        const RANKS_URL = "https://script.google.com/macros/s/AKfycbxw0o6m0VOJ9hIGM-AFAMsMkkh0ciJeb29Z0GPLHFKckRPjwbNLeg4qno0KFmCxEYnNwQ/exec";
-        const AC_TRACKER_URL = "https://script.google.com/macros/s/AKfycbxw0o6m0VOJ9hIGM-AFAMsMkkh0ciJeb29Z0GPLHFKckRPjwbNLeg4qno0KFmCxEYnNwQ/exec"; // كود الـ AC
+        const RANKS_URL = "https://script.google.com/macros/s/AKfycbxT2TyKTpuff8mc7itZwBoxyqcid8jxpJar3kTbrf7-uvUqq4EM9V2g-E5l4p3wZks/exec";
+        const AC_URL = "https://script.google.com/macros/s/AKfycbxw0o6m0VOJ9hIGM-AFAMsMkkh0ciJeb29Z0GPLHFKckRPjwbNLeg4qno0KFmCxEYnNwQ/exec";
 
         let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
         let currentSwiper = null;
-        let userProgress = new Array(10).fill(0); // مصفوفة لتخزين إنجازات الطالب
+        let activityStatus = []; // مصفوفة لتخزين حالة المهام الـ 10
 
         window.onload = () => {
             renderActivities('season');
@@ -197,43 +190,54 @@
             try {
                 const resp = await fetch(`${RANKS_URL}?name=${encodeURIComponent(currentUser.name)}`);
                 const data = await resp.json();
-                if(data.Name) {
+                if(data.Image) {
                     document.getElementById('user-img').src = data.Image;
                     document.getElementById('user-tokens').innerHTML = `${data.Tokens}<br><span style="font-size:7px">TOKENS</span>`;
                     document.getElementById('user-rank').innerText = "#" + data.Rank;
-                    document.getElementById('user-stars').innerHTML = `${data.Stars}<br><span style="font-size:6px">STARS</span>`;
-                    document.getElementById('user-gt').innerHTML = `${data.GT}<br><span style="font-size:6px">GT</span>`;
                 }
             } catch(e) {}
         }
 
+        // جلب حالة المهام من شيت AC
+        async function fetchActivityStatus(activityName) {
+            try {
+                const resp = await fetch(AC_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'get_status', email: currentUser.email, activity: activityName })
+                });
+                activityStatus = await resp.json();
+            } catch(e) {
+                activityStatus = new Array(10).fill(""); // حالة افتراضية عند الخطأ
+            }
+        }
+
         const activities = {
             season: [
-                { name: 'Golden Ear', code: 'Golden ear', icon: 'fa-ear-listen', tk: 50 },
-                { name: 'Seeds', code: 'Seeds', icon: 'fa-seedling', tk: 40 },
-                { name: 'Label', code: 'Label', icon: 'fa-tag', tk: 30 },
-                { name: 'Grammar', code: 'Grammar', icon: 'fa-magnifying-glass', tk: 60 },
-                { name: 'Vivid', code: 'Vivid', icon: 'fa-eye', tk: 45 },
-                { name: 'Alike', code: 'Alike', icon: 'fa-equals', tk: 35 }
+                { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
+                { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 },
+                { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 },
+                { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 },
+                { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 },
+                { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }
             ],
             xbox: [
-                { name: 'Alike X', code: 'Alikex', icon: 'fa-clone', tk: 100 },
-                { name: 'Vivid X', code: 'Vividx', icon: 'fa-stopwatch', tk: 120 },
-                { name: 'Seeds X', code: 'Seedsx', icon: 'fa-puzzle-piece', tk: 110 },
-                { name: 'Dictation X', code: 'Dictationx', icon: 'fa-pen-nib', tk: 150 },
-                { name: 'Golden Ear X', code: 'Golden earx', icon: 'fa-filter', tk: 130 },
-                { name: 'Elmagazine X', code: 'Elmagazinex', icon: 'fa-microphone-lines', tk: 200 },
-                { name: 'Grammar X', code: 'Grammarx', icon: 'fa-network-wired', tk: 140 },
-                { name: 'Figurative X', code: 'Figurativex', icon: 'fa-mask', tk: 180 },
-                { name: 'Label X', code: 'Labelx', icon: 'fa-industry', tk: 110 },
-                { name: 'SSS X', code: 'Sssx', icon: 'fa-bolt', tk: 250 }
+                { name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 100 },
+                { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 120 },
+                { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 110 },
+                { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 150 },
+                { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 130 },
+                { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 200 },
+                { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 140 },
+                { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 180 },
+                { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 110 },
+                { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 250 }
             ]
         };
 
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map(act => `
-                <div class="swiper-slide" data-name="${act.name}" data-code="${act.code}" onclick="enterFocusMode(this)">
+                <div class="swiper-slide" data-name="${act.name}" onclick="enterFocusMode(this)">
                     <div style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 8px; font-size:9px; color:var(--accent-gold); font-weight:900;">${act.tk} TK</div>
                     <i class="fas ${act.icon}" style="font-size: 50px; margin-bottom: 15px; color:${mode === 'season' ? 'var(--season-color)' : 'var(--xbox-color)'}"></i>
                     <div style="font-family:'Orbitron'; font-size:18px; font-weight:900; text-align:center">${act.name}</div>
@@ -247,18 +251,9 @@
             if(!currentUser) { openLoginModal(); return; }
             
             const activityName = card.getAttribute('data-name');
-            const activityCode = card.getAttribute('data-code');
             
-            // جلب حالة المهمات من شيت AC
-            try {
-                const resp = await fetch(AC_TRACKER_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'get_status', email: currentUser.email, activity: activityCode })
-                });
-                userProgress = await resp.json();
-            } catch(e) {
-                userProgress = new Array(10).fill(0);
-            }
+            // جلب الحالة من السيرفر قبل العرض
+            await fetchActivityStatus(activityName);
 
             document.getElementById('header-area').classList.add('hide-context');
             document.querySelectorAll('.swiper-slide').forEach(s => { if(s !== card) s.style.opacity = '0'; });
@@ -273,30 +268,35 @@
             const radius = window.innerWidth < 600 ? 130 : 180;
 
             for (let i = 0; i < totalMissions; i++) {
-                // المهمة مفتوحة إذا كانت الأولى أو إذا كانت التي قبلها مكتملة (فيها بيانات)
-                const isCompleted = userProgress[i] && userProgress[i] !== "";
-                const isUnlocked = i === 0 || (userProgress[i-1] && userProgress[i-1] !== "");
-                
+                // المهمة مفتوحة إذا كانت الأولى، أو إذا كانت المهمة السابقة مكتملة (قيمة غير فارغة في شيت AC)
+                const isFirst = (i === 0);
+                const prevCompleted = activityStatus[i-1] && activityStatus[i-1] !== "";
+                const unlocked = isFirst || prevCompleted;
+
                 const angle = (i / totalMissions) * (Math.PI * 2) - Math.PI/2;
                 const x = Math.cos(angle) * radius;
                 const y = Math.sin(angle) * radius;
 
                 const box = document.createElement('div');
-                box.className = `mission-box ${isCompleted ? 'completed' : (isUnlocked ? '' : 'locked')}`;
+                box.className = `mission-box ${unlocked ? '' : 'locked'}`;
                 box.style.left = `calc(50% + ${x}px)`;
                 box.style.top = `calc(50% + ${y}px)`;
                 box.style.animationDelay = `${i * 0.05}s`;
                 box.style.transform = `translate(-50%, -50%)`;
 
+                // تغيير الأيقونة إذا كانت المهمة مكتملة أصلاً
+                const isDone = activityStatus[i] && activityStatus[i] !== "";
+                const iconClass = isDone ? 'fa-check' : (unlocked ? 'fa-play' : 'fa-lock');
+
                 box.innerHTML = `
-                    <i class="fas ${isCompleted ? 'fa-check-double' : (isUnlocked ? 'fa-play' : 'fa-lock')}"></i>
+                    <i class="fas ${iconClass}"></i>
                     <span>M-${i+1}</span>
                 `;
                 
-                if(isUnlocked) {
+                if(unlocked) {
                     box.onclick = () => {
                         if(activityName === "Alike" || activityName === "Alike X") {
-                            window.location.href = `AS.html?v=${i+1}&email=${encodeURIComponent(currentUser.email)}&activity=${activityCode}`;
+                            window.location.href = `AS.html?v=${i+1}&email=${encodeURIComponent(currentUser.email)}`;
                         } else {
                             alert(`Mission ${i+1} for ${activityName} coming soon!`);
                         }
@@ -344,15 +344,27 @@
             const canvas = document.getElementById('rank-canvas');
             const ctx = canvas.getContext('2d');
             let stars = [];
-            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            window.onresize = resize; resize();
-            for(let i=0; i<150; i++) { stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.5, speed: Math.random()*0.5 }); }
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.onresize = resize;
+            resize();
+
+            for(let i=0; i<150; i++) {
+                stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.5, speed: Math.random()*0.5 });
+            }
+
             function animate() {
                 ctx.clearRect(0,0,canvas.width, canvas.height);
                 ctx.fillStyle = "#fff";
                 stars.forEach(s => {
-                    ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill();
-                    s.y += s.speed; if(s.y > canvas.height) s.y = 0;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+                    ctx.fill();
+                    s.y += s.speed;
+                    if(s.y > canvas.height) s.y = 0;
                 });
                 requestAnimationFrame(animate);
             }

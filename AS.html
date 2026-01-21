@@ -65,12 +65,13 @@
 
 <script>
     const SCORE_URL = "https://script.google.com/macros/s/AKfycbwLlZMg2EnrcUZVXWAFjIwqOGNHBptm99IvUCppGg3Sk7aBt0c-tYrzINMtd2X_082A/exec"; 
-    const AC_URL = "https://script.google.com/macros/s/AKfycbwxFpZwxjTjGb2x3rgk5iypC5CCrpQALTeUfkrJDqsVLYaPMsp21IOMGWkO5Cd97i6uVQ/exec";
+    const AC_URL = "https://script.google.com/macros/s/AKfycbwGEqBP1Oka8DBeWDWlz5L1VqZr-QKZXyAKZw-EhUGQjddgbz52_kgrgmRxy8xt09aF/exec";
     
     const params = new URLSearchParams(window.location.search);
     const userEmail = params.get('email');
     const vNum = parseInt(params.get('v')) || 1;
-    const PAGE_NAME = `ALIKE_V${vNum}`;
+    const ACTIVITY_NAME = "Alike"; // اسم النشاط الأساسي للتطابق مع الشيت
+    const PAGE_NAME = `${ACTIVITY_NAME}_V${vNum}`;
 
     const allMissions = {
         1: [{ m1: "ابن", m2: "شمس" }, { m1: "هنا", m2: "يسمع" }, { m1: "بحر", m2: "يرى" }, { m1: "أسبوع", m2: "ضعيف" }, { m1: "طريق", m2: "ركب" }, { m1: "دقيق", m2: "وردة" }, { m1: "ساعة", m2: "ملكنا" }, { m1: "يشترى", m2: "بواسطة" }, { m1: "أزرق", m2: "نفخ" }, { m1: "ثمانية", m2: "أكل" }],
@@ -93,8 +94,6 @@
             return;
         }
         document.getElementById('versionTag').innerText = `MISSION V.0${vNum}`;
-        
-        // التحقق من حالة الإنجاز في شييت AC
         await checkAccess();
         renderGrid();
     };
@@ -103,15 +102,14 @@
         try {
             const response = await fetch(AC_URL, {
                 method: 'POST',
-                body: JSON.stringify({ action: "get_status", email: userEmail, activity: "Alike" })
+                body: JSON.stringify({ action: "get_status", email: userEmail, activity: ACTIVITY_NAME })
             });
             const statusArray = await response.json();
-            // الحالة الخاصة بالمهمة الحالية (vNum - 1 لأن المصفوفة تبدأ من 0)
             if (statusArray[vNum - 1] === "DONE") {
                 document.getElementById('mainContent').style.display = 'none';
                 document.getElementById('lockedContent').style.display = 'flex';
             }
-        } catch (e) { console.log("Access Check Bypass or Error"); }
+        } catch (e) { console.log("Access Check Error"); }
     }
 
     function renderGrid() {
@@ -159,7 +157,6 @@
             formData.append('page', PAGE_NAME);
             formData.append('answer', answers.join(" | "));
 
-            // نستخدم fetch عادي بدون no-cors لنتمكن من قراءة النتيجة
             const response = await fetch(SCORE_URL, {
                 method: 'POST',
                 body: formData
@@ -167,17 +164,26 @@
             const result = await response.json();
 
             if(result.status === "success") {
+                // تحديث حالة المهمة في شيت الـ AC فور النجاح
+                await fetch(AC_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        action: "update_status", 
+                        email: userEmail, 
+                        activity: ACTIVITY_NAME, 
+                        mission: vNum 
+                    })
+                });
+
                 document.getElementById('displayScore').innerText = result.score;
                 document.getElementById('successOverlay').style.display = 'flex';
                 document.getElementById('mainContent').style.display = 'none';
             }
         } catch (e) {
-            // في حالة الـ CORS Error، سنفترض النجاح ولكن لن تظهر النتيجة بدقة
-            alert("تم إرسال البيانات بنجاح!");
+            alert("تم إرسال البيانات!");
             document.getElementById('successOverlay').style.display = 'flex';
         }
     }
 </script>
 </body>
 </html>
-

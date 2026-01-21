@@ -201,26 +201,25 @@
             } catch(e) { alert("Connection Error"); }
         }
 
-        function onSuccessfulLogin() {
-            document.getElementById('floating-login-btn').style.display = 'none';
-            document.getElementById('user-img').style.display = 'block';
-            document.getElementById('user-sparkle-container').style.display = 'block';
-            document.getElementById('sparkle-name-text').innerText = currentUser.name;
-            createSparkles();
+  async function fetchProfileData() {
+    try {
+        // نستخدم RANKS_URL لجلب بيانات التوكنز والترتيب
+        const resp = await fetch(`${RANKS_URL}?name=${encodeURIComponent(currentUser.name)}`);
+        const data = await resp.json();
+        
+        // لاحظ تغيير الحروف هنا لتطابق مخرجات الـ Apps Script (التي تبدأ بحرف كبير)
+        if(data.Status === "Success") {
+            document.getElementById('user-img').src = data.Image || "https://via.placeholder.com/150";
+            // استخدام Tokens و Rank بحرف كبير
+            document.getElementById('user-tokens').innerHTML = `${data.Tokens || 0}<br><span style="font-size:7px">TOKENS</span>`;
+            document.getElementById('user-rank').innerText = "#" + (data.Rank || "--");
+        } else {
+            console.error("Student data not found in Ranks sheet");
         }
-
-        async function fetchProfileData() {
-            try {
-                const resp = await fetch(`${RANKS_URL}?email=${currentUser.email}&name=${encodeURIComponent(currentUser.name)}`);
-                const data = await resp.json();
-                if(data.image) {
-                    document.getElementById('user-img').src = data.image;
-                    document.getElementById('user-tokens').innerHTML = `${data.tokens}<br><span style="font-size:7px">TOKENS</span>`;
-                    document.getElementById('user-rank').innerText = "#" + data.rank;
-                }
-            } catch(e) {}
-        }
-
+    } catch(e) {
+        console.error("Connection Error to Ranks:", e);
+    }
+}
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
@@ -392,5 +391,6 @@
     </script>
 </body>
 </html>
+
 
 

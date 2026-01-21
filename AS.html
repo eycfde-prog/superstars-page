@@ -27,10 +27,14 @@
 
     <div id="successOverlay" class="modal-overlay">
         <div class="text-center">
-            <i class="fas fa-check-circle text-8xl text-green-500 mb-6 block"></i>
+            <i class="fas fa-award text-8xl text-yellow-500 mb-6 block"></i>
             <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION COMPLETE</h2>
-            <p class="text-gray-400">لقد حصلت على: <span id="displayScore" class="text-white font-bold text-2xl">0</span> توكنز</p>
-            <p class="text-gray-500 text-sm mt-2">تم تسجيل الدرجة وإرسالها لمركز التحكم</p>
+            <p class="text-gray-400 text-lg">أحسنت! لقد حصلت على:</p>
+            <div class="my-4">
+                <span id="displayScore" class="text-white font-black text-6xl orbitron">0</span>
+                <span class="text-yellow-500 font-bold block mt-2">TOKENS EARNED</span>
+            </div>
+            <p id="statsMsg" class="text-gray-500 text-sm mt-2 orbitron"></p>
             <button onclick="window.history.back()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs hover:bg-white hover:text-black transition">BACK TO HUB</button>
         </div>
     </div>
@@ -38,13 +42,12 @@
     <div id="lockedContent" class="locked-msg">
         <i class="fas fa-lock text-6xl text-red-500 mb-6"></i>
         <h2 class="text-3xl orbitron golden-text">ACCESS DENIED</h2>
-        <p class="text-gray-400 mt-4">عذراً، لقد قمت بإنجاز هذه المهمة مسبقاً.</p>
+        <p class="text-gray-400 mt-4">عذراً يا بطل، لقد قمت بإنجاز هذه المهمة مسبقاً.</p>
         <button onclick="window.history.back()" class="mt-8 px-10 py-3 bg-white text-black rounded-full orbitron text-xs">EXIT</button>
     </div>
 
     <div id="mainContent" class="w-full max-w-6xl">
         <header class="text-center my-10 relative">
-            <img src="logo.png" alt="EYC Logo" class="w-28 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(255,204,0,0.3)]">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
             <p id="versionTag" class="text-yellow-500 orbitron mt-2 tracking-[5px] text-sm uppercase">VERSION --</p>
             <p class="text-gray-400 mt-6 max-w-xl mx-auto text-sm leading-relaxed">اكتب الكلمة الإنجليزية المناسبة لكل معنى. الكلمات في كل كارت لها نفس النطق (Homophones) ولكن تختلف في الكتابة والمعنى.</p>
@@ -64,7 +67,8 @@
     </div>
 
 <script>
-    // روابط الـ Scripts الخاصة بك
+    // روابط الـ Scripts
+    // تأكد أن هذا الرابط هو رابط الـ Deployment لكود الـ Score (doPost)
     const SCORE_URL = "https://script.google.com/macros/s/AKfycbwLlZMg2EnrcUZVXWAFjIwqOGNHBptm99IvUCppGg3Sk7aBt0c-tYrzINMtd2X_082A/exec"; 
     const AC_URL = "https://script.google.com/macros/s/AKfycbz1UY_Z47aCqGE0IFFyUEkJVaanquXzXhmMK8mFNzm3gV7mop-V_r5MGrUytUoi9zawrQ/exec";
     
@@ -106,7 +110,6 @@
                 body: JSON.stringify({ action: "get_status", email: userEmail, activity: ACTIVITY_NAME })
             });
             const statusArray = await response.json();
-            // التحقق من حالة المهمة الحالية في المصفوفة (vNum - 1 لأن المصفوفة تبدأ من 0)
             if (statusArray[vNum - 1] === "DONE") {
                 document.getElementById('mainContent').style.display = 'none';
                 document.getElementById('lockedContent').style.display = 'flex';
@@ -120,7 +123,7 @@
             <div class="glass-card p-6 flex flex-col gap-4">
                 <div class="flex items-center justify-between">
                     <span class="text-[10px] orbitron text-yellow-500 opacity-60">CASE ${index + 1}</span>
-                    <i class="fas fa-microchip text-[10px] text-gray-600"></i>
+                    <i class="fas fa-bolt text-[10px] text-gray-600"></i>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex flex-col gap-2">
@@ -148,18 +151,18 @@
             answers.push(`${a1}/${a2}`);
         });
 
-        if(missing) return alert("يرجى كتابة جميع الكلمات المطلوبة!");
+        if(missing) return alert("يرجى كتابة جميع الكلمات المطلوبة يا مستر!");
 
         btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> ANALYZING...';
+        btn.innerHTML = '<span class="loader"></span> VALIDATING...';
 
         try {
-            // الخطوة 1: إرسال الإجابات لشيت الدرجات الرئيسي
             const formData = new URLSearchParams();
             formData.append('email', userEmail);
             formData.append('page', PAGE_NAME);
             formData.append('answer', answers.join(" | "));
 
+            // إرسال البيانات واستقبال النتيجة
             const response = await fetch(SCORE_URL, {
                 method: 'POST',
                 body: formData
@@ -167,25 +170,25 @@
             const result = await response.json();
 
             if(result.status === "success") {
-                // الخطوة 2: تحديث حالة المهمة في شيت الـ AC إلى DONE
-                await fetch(AC_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        action: "update_status", 
-                        email: userEmail, 
-                        activity: ACTIVITY_NAME, 
-                        mission: vNum 
-                    })
-                });
-
+                // عرض الدرجة في الـ Overlay
                 document.getElementById('displayScore').innerText = result.score;
+                
+                // إضافة تفاصيل إضافية (اختياري)
+                if(result.correctCount !== undefined) {
+                    document.getElementById('statsMsg').innerText = `CORRECT: ${result.correctCount} | WRONG: ${result.wrongCount}`;
+                }
+
                 document.getElementById('successOverlay').style.display = 'flex';
                 document.getElementById('mainContent').style.display = 'none';
+            } else {
+                alert("Error: " + result.message);
+                btn.disabled = false;
+                btn.innerText = "RETRY VALIDATION";
             }
         } catch (e) {
-            // في حال حدوث خطأ بسيط في الرد ولكن البيانات أرسلت
-            alert("تم إرسال البيانات بنجاح!");
-            document.getElementById('successOverlay').style.display = 'flex';
+            alert("Connection Error. Please try again.");
+            btn.disabled = false;
+            btn.innerText = "RETRY VALIDATION";
         }
     }
 </script>

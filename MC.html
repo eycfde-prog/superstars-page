@@ -13,6 +13,7 @@
             --accent-gold: #ffcc00;
             --season-color: #00ffa3;
             --xbox-color: #ff3131;
+            --done-color: #00ff00; /* لون المهام المكتملة */
             --season-grad: linear-gradient(135deg, rgba(0, 255, 163, 0.4), rgba(0, 128, 255, 0.2));
             --xbox-grad: linear-gradient(135deg, rgba(255, 49, 49, 0.4), rgba(255, 150, 0, 0.2));
         }
@@ -80,8 +81,11 @@
             to { opacity: 1; }
         }
 
-        .mission-box:hover:not(.locked) { background: var(--accent-gold); color: #000; transform: translate(-50%, -50%) scale(1.1); }
+        .mission-box:hover:not(.locked):not(.done) { background: var(--accent-gold); color: #000; transform: translate(-50%, -50%) scale(1.1); }
         .mission-box.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; border-color: #555; }
+        .mission-box.done { border-color: var(--done-color); cursor: default; }
+        .mission-box.done i { color: var(--done-color); }
+        
         .mission-box i { font-size: 16px; margin-bottom: 5px; }
         .mission-box span { font-family: 'Orbitron'; font-size: 9px; font-weight: 900; }
 
@@ -149,7 +153,9 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         const VENS_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
-        const RANKS_URL = "https://script.google.com/macros/s/AKfycbwtbuvN0Ai0_efho0f7pK2QuhbkanJEqF-cHnMmIvujHhNVhoE13A5aAm0tNd3kbTbN/exec";
+        const RANKS_URL = "https://script.google.com/macros/s/AKfycbyNrZAl1XspQE0syoqYYb54xrr7wHWP9-KnEkLytK-iZBlB-McDe-Y2HQ8ZjcqSf6DB/exec";
+        // رابط شيت الـ AC الجديد
+        const AC_URL = "https://script.google.com/macros/s/AKfycbz1UY_Z47aCqGE0IFFyUEkJVaanquXzXhmMK8mFNzm3gV7mop-V_r5MGrUytUoi9zawrQ/exec"; 
         
         const unlockTimes = [
             { year: 2026, month: 1, day: 20, hour: 0, minute: 0 },  
@@ -251,43 +257,63 @@
             currentSwiper = new Swiper('.swiper', { effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto', coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false } });
         }
 
-        function enterFocusMode(card) {
+        async function enterFocusMode(card) {
             if(!currentUser) { openLoginModal(); return; }
             
             const activityName = card.getAttribute('data-name');
+            // تنظيف الاسم ليتوافق مع أسماء الشيت (إزالة المسافات وتحويل لصغير)
+            const cleanActivityName = activityName.replace(/\s+/g, '').toLowerCase();
+
+            // إظهار واجهة التركيز
             document.getElementById('header-area').classList.add('hide-context');
             document.querySelectorAll('.swiper-slide').forEach(s => { if(s !== card) s.style.opacity = '0'; });
-            
             card.classList.add('focus-card');
             
             const radialContainer = document.getElementById('mission-radial-container');
-            radialContainer.innerHTML = '';
+            radialContainer.innerHTML = '<div style="color:var(--accent-gold); font-family:Orbitron; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">LOADING STATUS...</div>';
             radialContainer.classList.add('show');
+
+            // جلب حالات المهام من الشيت
+            let missionStatuses = [];
+            try {
+                const response = await fetch(AC_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'get_status', email: currentUser.email, activity: cleanActivityName })
+                });
+                missionStatuses = await response.json();
+            } catch (e) { console.log("Status Error:", e); }
+
+            radialContainer.innerHTML = ''; // مسح كلمة التحميل
 
             const totalMissions = 10;
             const radius = window.innerWidth < 600 ? 130 : 180;
 
             for (let i = 0; i < totalMissions; i++) {
                 const unlocked = isMissionUnlocked(i);
+                const isDone = missionStatuses[i] === "DONE";
+                
                 const angle = (i / totalMissions) * (Math.PI * 2) - Math.PI/2;
                 const x = Math.cos(angle) * radius;
                 const y = Math.sin(angle) * radius;
 
                 const box = document.createElement('div');
-                box.className = `mission-box ${unlocked ? '' : 'locked'}`;
+                box.className = `mission-box ${unlocked ? '' : 'locked'} ${isDone ? 'done' : ''}`;
                 box.style.left = `calc(50% + ${x}px)`;
                 box.style.top = `calc(50% + ${y}px)`;
                 box.style.animationDelay = `${i * 0.05}s`;
                 box.style.transform = `translate(-50%, -50%)`;
 
+                // تغيير الأيقونة بناءً على الحالة
+                let iconClass = unlocked ? 'fa-play' : 'fa-lock';
+                if (isDone) iconClass = 'fa-check-circle';
+
                 box.innerHTML = `
-                    <i class="fas ${unlocked ? 'fa-play' : 'fa-lock'}"></i>
+                    <i class="fas ${iconClass}"></i>
                     <span>M-${i+1}</span>
                 `;
                 
-                if(unlocked) {
+                if(unlocked && !isDone) {
                     box.onclick = () => {
-                        // التعديل: إرسال الإيميل ورقم المهمة في الرابط
                         if(activityName === "Alike" || activityName === "Alike X") {
                             window.location.href = `AS.html?v=${i+1}&email=${encodeURIComponent(currentUser.email)}`;
                         } else {

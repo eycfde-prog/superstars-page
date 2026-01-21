@@ -12,41 +12,32 @@
         body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; transition: 0.3s; }
-        .glass-card:hover { border-color: var(--gold); transform: translateY(-5px); }
         .input-alike { background: rgba(0,0,0,0.4); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; text-transform: uppercase; outline: none; }
-        .input-alike:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.2); }
         .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin-loader 1s linear infinite; display: inline-block; }
         @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
-        
-        /* شاشة التحميل الأولية */
-        #loadingScreen { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .locked-msg { color: #ff4757; font-family: 'Orbitron'; font-weight: bold; }
     </style>
 </head>
 <body class="p-4 flex flex-col items-center">
-
-    <div id="loadingScreen">
-        <div class="loader mb-4"></div>
-        <p class="orbitron text-xs tracking-widest">INITIALIZING MISSION...</p>
-    </div>
 
     <div id="successOverlay" class="modal-overlay">
         <div class="text-center">
             <i class="fas fa-check-circle text-8xl text-green-500 mb-6 block"></i>
             <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION COMPLETE</h2>
+            <p id="successResult" class="text-xl text-white mb-2"></p>
             <p class="text-gray-400">تم تسجيل درجاتك وإضافة التوكنز لحسابك بنجاح</p>
             <button onclick="window.history.back()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs hover:bg-white hover:text-black transition">BACK TO HUB</button>
         </div>
     </div>
 
-    <div id="mainContent" class="w-full max-w-6xl" style="display:none;">
+    <div id="mainContent" class="w-full max-w-6xl">
         <header class="text-center my-10 relative">
-            <img src="logo.png" alt="EYC Logo" class="w-28 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(255,204,0,0.3)]">
+            <img src="logo.png" alt="EYC Logo" class="w-28 mx-auto mb-6">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
             <p id="versionTag" class="text-yellow-500 orbitron mt-2 tracking-[5px] text-sm uppercase">VERSION --</p>
-            <p class="text-gray-400 mt-6 max-w-xl mx-auto text-sm leading-relaxed">اكتب الكلمة الإنجليزية المناسبة لكل معنى. الكلمات في كل كارت لها نفس النطق (Homophones) ولكن تختلف في الكتابة والمعنى.</p>
+            <div id="statusIndicator" class="mt-4"></div>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16" id="alikeGrid"></div>
@@ -56,15 +47,10 @@
                 VALIDATE & SAVE RESULTS
             </button>
         </div>
-
-        <footer>
-            <p>© 2026 EYC ACADEMY - MISSION CONTROL SYSTEM</p>
-        </footer>
     </div>
 
 <script>
-    const SCORE_URL = "https://script.google.com/macros/s/AKfycbw5u4lJlGibgBOISq0LJt_sD6vTEkjhafc6XNB1rccPKyak50ViL0HaQBJkuqLVY0km/exec";
-    
+    const SCORE_URL = "https://script.google.com/macros/s/AKfycbzAy3-yerH6mEOXt2EU42zHHPUIGLWAmGBOI2CVQDZIqMjMETWwqnYN78NyEeIDrkqV/exec";
     const params = new URLSearchParams(window.location.search);
     const userEmail = params.get('email');
     const vNum = parseInt(params.get('v')) || 1;
@@ -90,31 +76,33 @@
             alert("Security Error: Student identification missing!");
             return;
         }
-
-        // --- الفحص المسبق للمهمة ---
-        try {
-            const checkRes = await fetch(`${SCORE_URL}?email=${userEmail}&v=${vNum}`);
-            const checkData = await checkRes.json();
-            
-            if(checkData.status === "LOCKED") {
-                document.body.innerHTML = `
-                <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
-                    <i class="fas fa-lock text-yellow-500 text-6xl mb-6"></i>
-                    <h1 class="orbitron text-3xl mb-4">MISSION LOCKED</h1>
-                    <p class="text-gray-400">لقد تمت الإجابة على هذه المهمة بالفعل ولا يمكنك دخولها مرة أخرى.</p>
-                    <button onclick="window.history.back()" style="margin-top:20px; padding:10px 30px; border:1px solid gold; color:gold; border-radius:50px;">BACK</button>
-                </div>`;
-                return;
-            }
-        } catch(e) {
-            console.error("فشل فحص الحالة، سيتم المتابعة بحذر.");
-        }
-
-        document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
         document.getElementById('versionTag').innerText = `MISSION V.0${vNum}`;
         renderGrid();
+        checkMissionLock();
     };
+
+    async function checkMissionLock() {
+        const indicator = document.getElementById('statusIndicator');
+        indicator.innerHTML = '<span class="loader"></span> فحص حالة المهمة...';
+        
+        try {
+            const response = await fetch(`${SCORE_URL}?action=check_lock&email=${userEmail}&page=${PAGE_NAME}`);
+            const data = await response.json();
+            
+            if(data.locked) {
+                indicator.innerHTML = '<span class="locked-msg text-red-500">لقد تمت الإجابة على هذه المهمة بالفعل!</span>';
+                document.getElementById('finalSubmitBtn').disabled = true;
+                document.getElementById('finalSubmitBtn').style.opacity = "0.5";
+                document.querySelectorAll('input').forEach(input => input.disabled = true);
+                alert("تم قفل المهمة لأنك أجبت عليها مسبقاً.");
+            } else {
+                indicator.innerHTML = '<span class="text-green-500">مهمة مفتوحة - بانتظار الإجابة</span>';
+            }
+        } catch(e) {
+            indicator.innerHTML = '';
+            console.log("فشل فحص القفل، الاستمرار متاح.");
+        }
+    }
 
     function renderGrid() {
         const grid = document.getElementById('alikeGrid');
@@ -127,11 +115,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex flex-col gap-2">
                         <label class="text-xs text-gray-400 text-center">${pair.m1}</label>
-                        <input type="text" id="ans-${index}-1" class="input-alike" placeholder="..." autocomplete="off" spellcheck="false">
+                        <input type="text" id="ans-${index}-1" class="input-alike" placeholder="..." autocomplete="off">
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="text-xs text-gray-400 text-center">${pair.m2}</label>
-                        <input type="text" id="ans-${index}-2" class="input-alike" placeholder="..." autocomplete="off" spellcheck="false">
+                        <input type="text" id="ans-${index}-2" class="input-alike" placeholder="..." autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -140,8 +128,6 @@
 
     async function submitAllData() {
         const btn = document.getElementById('finalSubmitBtn');
-        if(!userEmail) return alert("خطأ: لم يتم التعرف على بيانات الطالب.");
-
         let answers = [];
         let missing = false;
 
@@ -152,10 +138,10 @@
             answers.push(`${a1}/${a2}`);
         });
 
-        if(missing) return alert("يرجى كتابة جميع الكلمات المطلوبة لهذه المهمة!");
+        if(missing) return alert("يرجى كتابة جميع الكلمات المطلوبة!");
 
         btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> ANALYZING DATA...';
+        btn.innerHTML = '<span class="loader"></span> ANALYZING...';
 
         try {
             const formData = new URLSearchParams();
@@ -163,21 +149,24 @@
             formData.append('page', PAGE_NAME);
             formData.append('answer', answers.join(" | "));
 
-            // هنا نستخدم التحميل العادي لضمان وصول الاستجابة
-            await fetch(SCORE_URL, {
+            const response = await fetch(SCORE_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 body: formData
             });
 
-            document.getElementById('successOverlay').style.display = 'flex';
+            const result = await response.json();
+            
+            if(result.status === "Success") {
+                document.getElementById('successResult').innerText = `حصلت على ${result.tokens} توكنز!`;
+                document.getElementById('successOverlay').style.display = 'flex';
+            } else {
+                alert("حدث خطأ أثناء حفظ البيانات.");
+            }
         } catch (e) {
-            alert("فشل في الاتصال بالسيرفر");
+            alert("فشل في الاتصال بالسيرفر، تأكد من إعداد الـ Apps Script كـ Web App.");
             btn.disabled = false;
-            btn.innerHTML = "VALIDATE & SAVE RESULTS";
         }
     }
 </script>
 </body>
 </html>
-

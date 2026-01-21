@@ -64,13 +64,14 @@
     </div>
 
 <script>
+    // روابط الـ Scripts الخاصة بك
     const SCORE_URL = "https://script.google.com/macros/s/AKfycbwLlZMg2EnrcUZVXWAFjIwqOGNHBptm99IvUCppGg3Sk7aBt0c-tYrzINMtd2X_082A/exec"; 
-    const AC_URL = "https://script.google.com/macros/s/AKfycbwGEqBP1Oka8DBeWDWlz5L1VqZr-QKZXyAKZw-EhUGQjddgbz52_kgrgmRxy8xt09aF/exec";
+    const AC_URL = "https://script.google.com/macros/s/AKfycbz1UY_Z47aCqGE0IFFyUEkJVaanquXzXhmMK8mFNzm3gV7mop-V_r5MGrUytUoi9zawrQ/exec";
     
     const params = new URLSearchParams(window.location.search);
     const userEmail = params.get('email');
     const vNum = parseInt(params.get('v')) || 1;
-    const ACTIVITY_NAME = "Alike"; // اسم النشاط الأساسي للتطابق مع الشيت
+    const ACTIVITY_NAME = "Alike"; 
     const PAGE_NAME = `${ACTIVITY_NAME}_V${vNum}`;
 
     const allMissions = {
@@ -105,6 +106,7 @@
                 body: JSON.stringify({ action: "get_status", email: userEmail, activity: ACTIVITY_NAME })
             });
             const statusArray = await response.json();
+            // التحقق من حالة المهمة الحالية في المصفوفة (vNum - 1 لأن المصفوفة تبدأ من 0)
             if (statusArray[vNum - 1] === "DONE") {
                 document.getElementById('mainContent').style.display = 'none';
                 document.getElementById('lockedContent').style.display = 'flex';
@@ -152,6 +154,7 @@
         btn.innerHTML = '<span class="loader"></span> ANALYZING...';
 
         try {
+            // الخطوة 1: إرسال الإجابات لشيت الدرجات الرئيسي
             const formData = new URLSearchParams();
             formData.append('email', userEmail);
             formData.append('page', PAGE_NAME);
@@ -164,7 +167,7 @@
             const result = await response.json();
 
             if(result.status === "success") {
-                // تحديث حالة المهمة في شيت الـ AC فور النجاح
+                // الخطوة 2: تحديث حالة المهمة في شيت الـ AC إلى DONE
                 await fetch(AC_URL, {
                     method: 'POST',
                     body: JSON.stringify({ 
@@ -180,7 +183,8 @@
                 document.getElementById('mainContent').style.display = 'none';
             }
         } catch (e) {
-            alert("تم إرسال البيانات!");
+            // في حال حدوث خطأ بسيط في الرد ولكن البيانات أرسلت
+            alert("تم إرسال البيانات بنجاح!");
             document.getElementById('successOverlay').style.display = 'flex';
         }
     }

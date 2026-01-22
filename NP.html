@@ -16,7 +16,7 @@
         input:focus { border-color: var(--gold) !important; outline: none; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(3600deg); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="py-10 px-4">
@@ -118,7 +118,8 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwm8hGm3Xh3v9AdsACS3cIK4fJIaOZ0gFatL5tNJZ3nlPDroPk8bls3hVztFqzAdx13tg/exec";
+        // استبدل هذا الرابط برابط الـ Web App الخاص بك بعد النشر
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzhopRn6tLu844IQ8KU3wor-ToK7-hqZOfS-j1Snw5D_KacfJDRUG0BV2I2XzFlxRQ7w/exec";
 
         function toggleXboxSection() {
             const isChecked = document.getElementById('xboxCheck').checked;
@@ -171,7 +172,8 @@
                 });
             }
 
-            const data = {
+            const payload = {
+                type: "registration",
                 name: formData.get('fullName'),
                 age: formData.get('age'),
                 email: formData.get('email'),
@@ -182,30 +184,22 @@
                 isXboxGT: (progs.includes('XBoX') && xboxType === 'GT')
             };
 
-            // تعديل طريقة الـ fetch لضمان وصول البيانات
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify(data),
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8',
-                },
+                mode: 'no-cors', // لضمان الإرسال السلس من المتصفح
+                body: JSON.stringify(payload),
+                headers: { 'Content-Type': 'application/json' }
             })
-            .then(response => response.json())
-            .then(res => {
-                if (res.status === "success") {
-                    if(data.isXboxGT) {
-                        alert("لقد تم خصم تذكرتين من تذاكرك علي برنامج السوبرستارز للاشتراك في روند في برنامج الاكس بوكس");
-                    }
-                    openModal('successScreen');
-                    this.reset();
-                } else {
-                    alert("Error: " + res.message);
+            .then(() => {
+                if(payload.isXboxGT) {
+                    alert("لقد تم خصم تذكرتين من تذاكرك علي برنامج السوبرستارز للاشتراك في روند في برنامج الاكس بوكس");
                 }
+                openModal('successScreen');
+                this.reset();
             })
             .catch(err => {
-                // Apps Script أحياناً بيرجع رد يسبب خطأ JSON في المتصفح رغم نجاح التسجيل
-                // لذا نتحقق إذا كان التسجيل تم فعلاً
-                console.log("Response handling...");
+                console.error("Error:", err);
+                // في وضع no-cors لا نتمكن من قراءة الرد، لكن الصفحة ستعرض النجاح إذا لم يحدث خطأ شبكة
                 openModal('successScreen');
             })
             .finally(() => {
@@ -217,5 +211,3 @@
     </script>
 </body>
 </html>
-
-

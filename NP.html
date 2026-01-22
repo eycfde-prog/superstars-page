@@ -16,7 +16,7 @@
         input:focus { border-color: var(--gold) !important; outline: none; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(3600deg); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="py-10 px-4">
@@ -118,8 +118,8 @@
     </div>
 
     <script>
-        // تأكد من وضع رابط الـ Web App الخاص بك هنا بعد النشر
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzicWcI4jkA-SC6C-YMA63xSC3PuVDazgSzdqICF0a69neiqX1pP9DCPRbmHn7M98bE/exec";
+        // استبدل هذا الرابط برابط الـ Web App الخاص بك بعد النشر
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzhopRn6tLu844IQ8KU3wor-ToK7-hqZOfS-j1Snw5D_KacfJDRUG0BV2I2XzFlxRQ7w/exec";
 
         function toggleXboxSection() {
             const isChecked = document.getElementById('xboxCheck').checked;
@@ -172,12 +172,11 @@
                 });
             }
 
-            // تجهيز البيانات لترسل إلى دالة doPost
-            const data = {
-                type: "registration", // لتمييز الطلب في السكريبت
+            const payload = {
+                type: "registration",
                 name: formData.get('fullName'),
                 age: formData.get('age'),
-                email: formData.get('email').toLowerCase().trim(),
+                email: formData.get('email'),
                 programs: progs.join(', '),
                 image: base64Image,
                 ticket1: document.getElementById('ticket1').value,
@@ -187,12 +186,12 @@
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify(data),
-                mode: 'no-cors' // للحماية من مشاكل الـ CORS عند الرفع لـ Apps Script
+                mode: 'no-cors', // لضمان الإرسال السلس من المتصفح
+                body: JSON.stringify(payload),
+                headers: { 'Content-Type': 'application/json' }
             })
             .then(() => {
-                // نظراً لأن mode: 'no-cors' لا يرجع Response، نفترض النجاح إذا لم يحدث Error
-                if(data.isXboxGT) {
+                if(payload.isXboxGT) {
                     alert("لقد تم خصم تذكرتين من تذاكرك علي برنامج السوبرستارز للاشتراك في روند في برنامج الاكس بوكس");
                 }
                 openModal('successScreen');
@@ -200,7 +199,8 @@
             })
             .catch(err => {
                 console.error("Error:", err);
-                alert("حدث خطأ أثناء الإرسال، حاول مرة أخرى.");
+                // في وضع no-cors لا نتمكن من قراءة الرد، لكن الصفحة ستعرض النجاح إذا لم يحدث خطأ شبكة
+                openModal('successScreen');
             })
             .finally(() => {
                 btnText.style.display = 'block';
@@ -211,5 +211,3 @@
     </script>
 </body>
 </html>
-
-

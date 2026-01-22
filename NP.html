@@ -22,7 +22,7 @@
 <body class="py-10 px-4">
 
     <div id="termsModal" class="modal">
-        <div class="glass-card p-8 max-w-lg w-full border-t-4 border-yellow-500">
+        <div class="glass-card p-8 max-w-lg w-full border-t-4 border-yellow-500 text-center">
             <h2 class="orbitron text-xl text-yellow-500 mb-4">MISSION TERMS</h2>
             <p class="text-sm text-gray-300 mb-6">By joining, you agree to all program regulations and anti-cheat systems.</p>
             <button onclick="closeModal('termsModal')" class="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl">I UNDERSTAND</button>
@@ -118,7 +118,7 @@
     </div>
 
     <script>
-        // استبدل هذا الرابط برابط الـ Web App الخاص بك بعد النشر
+        // ضع رابط الـ Web App الخاص بك هنا
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwu52oTQCzn7cxjOZilYY8LNYZVesyh3ONduAOyvHlMOVIL6DKJzVaEWw7lbEnYXQ/exec";
 
         function toggleXboxSection() {
@@ -132,7 +132,8 @@
         }
 
         function toggleTicketInputs() {
-            const isGT = document.querySelector('input[name="xboxType"]:checked').value === 'GT';
+            const xboxTypeEl = document.querySelector('input[name="xboxType"]:checked');
+            const isGT = xboxTypeEl && xboxTypeEl.value === 'GT';
             document.getElementById('ticketInputs').style.display = isGT ? 'block' : 'none';
             document.getElementById('ticket1').required = isGT;
             document.getElementById('ticket2').required = isGT;
@@ -155,61 +156,63 @@
             loader.style.display = 'block';
             submitBtn.disabled = true;
 
-            const formData = new FormData(this);
-            const progs = [];
-            document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
-            
-            const xboxType = document.querySelector('input[name="xboxType"]:checked')?.value || "None";
+            try {
+                const formData = new FormData(this);
+                const progs = [];
+                document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
+                
+                const xboxType = document.querySelector('input[name="xboxType"]:checked')?.value || "None";
 
-            const fileInput = document.getElementById('imageInput');
-            let base64Image = "";
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                base64Image = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(file);
+                const fileInput = document.getElementById('imageInput');
+                let base64Image = "";
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    base64Image = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                const payload = {
+                    type: "registration",
+                    name: formData.get('fullName'),
+                    age: formData.get('age'),
+                    email: formData.get('email'),
+                    programs: progs.join(', '),
+                    image: base64Image,
+                    ticket1: document.getElementById('ticket1').value || "",
+                    ticket2: document.getElementById('ticket2').value || "",
+                    isXboxGT: (progs.includes('XBoX') && xboxType === 'GT')
+                };
+
+                // إرسال البيانات باستخدام POST
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
-            }
 
-            const payload = {
-                type: "registration",
-                name: formData.get('fullName'),
-                age: formData.get('age'),
-                email: formData.get('email'),
-                programs: progs.join(', '),
-                image: base64Image,
-                ticket1: document.getElementById('ticket1').value,
-                ticket2: document.getElementById('ticket2').value,
-                isXboxGT: (progs.includes('XBoX') && xboxType === 'GT')
-            };
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors', // لضمان الإرسال السلس من المتصفح
-                body: JSON.stringify(payload),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(() => {
+                // في وضع no-cors لا يمكن قراءة الاستجابة، لذا نعتمد على عدم حدوث Exception
                 if(payload.isXboxGT) {
-                    alert("لقد تم خصم تذكرتين من تذاكرك علي برنامج السوبرستارز للاشتراك في روند في برنامج الاكس بوكس");
+                    alert("لقد تم خصم تذكرتين من تذاكرك على برنامج السوبر ستارز.");
                 }
                 openModal('successScreen');
                 this.reset();
-            })
-            .catch(err => {
-                console.error("Error:", err);
-                // في وضع no-cors لا نتمكن من قراءة الرد، لكن الصفحة ستعرض النجاح إذا لم يحدث خطأ شبكة
-                openModal('successScreen');
-            })
-            .finally(() => {
+                document.getElementById('fileName').innerText = "Click to upload your photo";
+
+            } catch (err) {
+                console.error("Critical Error:", err);
+                alert("حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.");
+            } finally {
                 btnText.style.display = 'block';
                 loader.style.display = 'none';
                 submitBtn.disabled = false;
-            });
+            }
         };
     </script>
 </body>
 </html>
-
-

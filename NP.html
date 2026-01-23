@@ -40,7 +40,6 @@
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
         
-        /* Animation */
         @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
         .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; }
     </style>
@@ -108,14 +107,14 @@
                 </div>
             </div>
 
-            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl animate-pulse">
+            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
                 <p class="text-[9px] orbitron text-blue-400 mb-3">XBOX ACCESS PROTOCOL</p>
                 <div class="space-y-2">
                     <label class="flex items-center gap-3 text-xs">
-                        <input type="radio" name="xboxType" value="Free" checked onchange="toggleTicketInputs()"> Free Limited
+                        <input type="radio" name="xboxType" value="Free" checked> Free Limited
                     </label>
                     <label class="flex items-center gap-3 text-xs">
-                        <input type="radio" name="xboxType" value="GT" onchange="toggleTicketInputs()"> Golden Ticket Redemption
+                        <input type="radio" name="xboxType" value="GT"> Golden Ticket Redemption
                     </label>
                 </div>
             </div>
@@ -127,16 +126,15 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAlkF5kRByQ-1YkZhHMxP3pcrLNGETX1h9tQ_TTCb9yNY3z3ZbIJdPQ7n6fNHLUObzzQ/exec"; // استبدله برابط الـ Web App الخاص بك
+        // ضع رابط الـ Web App الخاص بك هنا
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby64-yVdV8ywLLwQYNg2X-VNO0ODqWavjxoxoSjOzBAOVhfA0GLZ75AQV08fgJBq9Q_5w/exec";
 
         function toggleXboxSection() {
             const isChecked = document.getElementById('xboxCheck').checked;
             document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
         }
 
-        function toggleTicketInputs() { /* يمكنك إضافة حقول التذاكر هنا إذا أردت */ }
-
-        // Handle Image Name Update
+        // تحديث شكل رفع الملف عند اختيار صورة
         document.getElementById('imageInput').onchange = function() {
             if(this.files[0]) {
                 document.getElementById('fileName').innerText = "IDENTIFIED: " + this.files[0].name;
@@ -147,6 +145,8 @@
         document.getElementById('regForm').onsubmit = async function(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
+            
+            // تغيير حالة الزر أثناء الإرسال
             submitBtn.innerText = "UPLOADING TO COMMAND CENTER...";
             submitBtn.disabled = true;
 
@@ -154,19 +154,19 @@
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
 
-            // Convert Image to Base64
+            // تحويل الصورة إلى Base64
             const fileInput = document.getElementById('imageInput');
             let base64Image = "";
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
                 base64Image = await new Promise(r => {
-                    reader.onload = () => r(reader.result);
+                    reader.onload = () => r(reader.result.split(',')[1]); // نأخذ بيانات الصورة فقط بدون الـ header
                     reader.readAsDataURL(fileInput.files[0]);
                 });
             }
 
             const payload = {
-                action: "signup", // مهمة جداً ليفهم الأب سكريبت ما سيحدث
+                action: "signup",
                 name: formData.get('fullName'),
                 age: formData.get('age'),
                 email: formData.get('email'),
@@ -174,32 +174,26 @@
                 image: base64Image
             };
 
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                const res = await response.json();
-                if(res.status === "success") {
-                    document.getElementById('successScreen').style.display = 'flex';
-                } else {
-                    alert("Error: " + res.message);
-                }
-            } catch (err) {
-                // نظرًا لأن Apps Script قد يواجه CORS، في حال نجاح الإرسال بدون رد سليم
+            // البدء في عملية الـ fetch
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // نستخدم no-cors لتجنب مشاكل الـ Redirect في Apps Script
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                // في حالة no-cors لا يمكننا قراءة النص الراجع "Success"
+                // لذا سنفترض النجاح ونظهر شاشة النجاح
                 document.getElementById('successScreen').style.display = 'flex';
-            } finally {
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Connection Failed. Please try again.");
+            })
+            .finally(() => {
                 submitBtn.innerText = "INITIATE REGISTRATION";
                 submitBtn.disabled = false;
-            }
+            });
         };
     </script>
 </body>
 </html>
-
-
-
-
-
-
-

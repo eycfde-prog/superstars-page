@@ -126,7 +126,6 @@
     </div>
 
     <script>
-        // ضع رابط الـ Web App الخاص بك هنا
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby64-yVdV8ywLLwQYNg2X-VNO0ODqWavjxoxoSjOzBAOVhfA0GLZ75AQV08fgJBq9Q_5w/exec";
 
         function toggleXboxSection() {
@@ -134,7 +133,6 @@
             document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
         }
 
-        // تحديث شكل رفع الملف عند اختيار صورة
         document.getElementById('imageInput').onchange = function() {
             if(this.files[0]) {
                 document.getElementById('fileName').innerText = "IDENTIFIED: " + this.files[0].name;
@@ -146,7 +144,6 @@
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
             
-            // تغيير حالة الزر أثناء الإرسال
             submitBtn.innerText = "UPLOADING TO COMMAND CENTER...";
             submitBtn.disabled = true;
 
@@ -154,13 +151,12 @@
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
 
-            // تحويل الصورة إلى Base64
             const fileInput = document.getElementById('imageInput');
             let base64Image = "";
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
                 base64Image = await new Promise(r => {
-                    reader.onload = () => r(reader.result.split(',')[1]); // نأخذ بيانات الصورة فقط بدون الـ header
+                    reader.onload = () => r(reader.result.split(',')[1]);
                     reader.readAsDataURL(fileInput.files[0]);
                 });
             }
@@ -174,20 +170,27 @@
                 image: base64Image
             };
 
-            // البدء في عملية الـ fetch
+            // البدء في عملية الإرسال
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // نستخدم no-cors لتجنب مشاكل الـ Redirect في Apps Script
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload) 
             })
-            .then(() => {
-                // في حالة no-cors لا يمكننا قراءة النص الراجع "Success"
-                // لذا سنفترض النجاح ونظهر شاشة النجاح
-                document.getElementById('successScreen').style.display = 'flex';
+            .then(response => response.text()) // نحول الرد لنص لقراءته
+            .then(result => {
+                const cleanResult = result.trim();
+                
+                if (cleanResult === "Already Registered") {
+                    alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
+                } else if (cleanResult === "Success") {
+                    // إظهار شاشة النجاح المصممة بدلاً من alert التقليدي
+                    document.getElementById('successScreen').style.display = 'flex';
+                } else {
+                    alert("حدث خطأ: " + result);
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert("Connection Failed. Please try again.");
+                alert("تعذر الاتصال بالسيرفر، تأكد من الإنترنت.");
             })
             .finally(() => {
                 submitBtn.innerText = "INITIATE REGISTRATION";

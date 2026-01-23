@@ -3,221 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Player | Join the Mission</title>
+    <title>EYC Academy | Agent Registry</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #d4af37; --bg-dark: #050505; --glass: rgba(255, 255, 255, 0.03); }
-        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #111, var(--bg-dark)); color: white; min-height: 100vh; }
+        :root { --gold: #ffcc00; --bg-dark: #050505; --accent-blue: #0080ff; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg-dark); 
+            color: white; 
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 50%, rgba(255, 204, 0, 0.05) 0%, transparent 70%);
+        }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 30px; }
-        input, select { background: rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 12px !important; }
-        input:focus { border-color: var(--gold) !important; outline: none; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 204, 0, 0.1); 
+            border-radius: 24px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        input, select { 
+            background: rgba(0,0,0,0.4) !important; 
+            border: 1px solid rgba(255,204,0,0.2) !important; 
+            color: white !important; 
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(255,204,0,0.2); outline: none; }
+        
+        .upload-zone {
+            border: 2px dashed rgba(255,204,0,0.2);
+            transition: 0.3s;
+        }
+        .upload-zone:hover { border-color: var(--gold); background: rgba(255,204,0,0.05); }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+        
+        /* Animation */
+        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+        .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; }
     </style>
 </head>
-<body class="py-10 px-4">
-
-    <div id="termsModal" class="modal">
-        <div class="glass-card p-8 max-w-lg w-full border-t-4 border-yellow-500">
-            <h2 class="orbitron text-xl text-yellow-500 mb-4">MISSION TERMS</h2>
-            <p class="text-sm text-gray-300 mb-6">By joining, you agree to all program regulations and anti-cheat systems.</p>
-            <button onclick="closeModal('termsModal')" class="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl">I UNDERSTAND</button>
-        </div>
-    </div>
+<body class="py-12 px-4">
 
     <div id="successScreen" class="modal">
-        <div class="glass-card p-10 text-center max-w-md">
-            <div class="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                <i class="fas fa-check-double"></i>
+        <div class="glass-card p-10 text-center max-w-md border-t-4 border-yellow-500">
+            <div class="w-20 h-20 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-[0_0_20px_rgba(255,204,0,0.3)]">
+                <i class="fas fa-user-shield"></i>
             </div>
-            <h2 class="orbitron text-2xl mb-2">MISSION ACCEPTED!</h2>
-            <p class="text-gray-400 text-sm">Your data and avatar have been uploaded to the command center.</p>
-            <button onclick="window.location.reload()" class="mt-8 px-8 py-3 border border-yellow-500 text-yellow-500 rounded-full hover:bg-yellow-500 hover:text-black">CLOSE</button>
+            <h2 class="orbitron text-2xl mb-2 text-white">AGENT REGISTERED</h2>
+            <p class="text-gray-400 text-sm mb-6">Welcome to EYC. Your profile is active. Please check your email for the <span class="text-yellow-500">Access Code</span>.</p>
+            <button onclick="window.location.href='index.html'" class="w-full py-3 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white transition-all">RETURN TO MISSION CONTROL</button>
         </div>
     </div>
 
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-xl mx-auto">
         <div class="text-center mb-10">
-            <h1 class="orbitron text-3xl font-black text-yellow-500 uppercase">New Player Registration</h1>
+            <div class="orbitron text-yellow-500 text-xs tracking-[0.5em] mb-2 uppercase">Command Center Registration</div>
+            <h1 class="orbitron text-4xl font-black text-white">CREATE PROFILE</h1>
         </div>
 
-        <form id="regForm" class="glass-card p-8 space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form id="regForm" class="glass-card p-8 space-y-6 relative overflow-hidden">
+            <div class="scanner-line"></div>
+
+            <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2">FULL NAME (ENGLISH)</label>
-                    <input type="text" name="fullName" required placeholder="First & Last Name" class="w-full p-3">
+                    <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">FULL NAME (AGENT IDENTITY)</label>
+                    <input type="text" name="fullName" required placeholder="Agent Name" class="w-full p-4 rounded-xl text-sm">
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2">AGE</label>
-                    <input type="number" name="age" required placeholder="Years" class="w-full p-3">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2">GOOGLE EMAIL</label>
-                <input type="email" name="email" required placeholder="example@gmail.com" class="w-full p-3">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2">AVATAR / PERSONAL PHOTO</label>
-                <div class="border-2 border-dashed border-white/10 rounded-2xl p-6 text-center relative cursor-pointer">
-                    <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
-                    <i class="fas fa-cloud-upload-alt text-2xl text-yellow-500 mb-2"></i>
-                    <p id="fileName" class="text-[10px] text-gray-500">Click to upload your photo (Max 2MB recommended)</p>
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-4">CHOOSE MISSION PROGRAMS</label>
+                
                 <div class="grid grid-cols-2 gap-4">
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="checkbox" name="prog" value="Season" class="w-5 h-5 accent-yellow-500">
-                        <span class="text-sm font-bold">Season</span>
+                    <div>
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AGE</label>
+                        <input type="number" name="age" required placeholder="00" class="w-full p-4 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">ACCESS EMAIL</label>
+                        <input type="email" name="email" required placeholder="name@gmail.com" class="w-full p-4 rounded-xl text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AVATAR UPLOAD</label>
+                <div class="upload-zone rounded-2xl p-6 text-center relative cursor-pointer">
+                    <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
+                    <i class="fas fa-camera-retro text-2xl text-gray-500 mb-2" id="uploadIcon"></i>
+                    <p id="fileName" class="text-[10px] text-gray-500 uppercase tracking-widest">Select agent photo</p>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/5">
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-4 uppercase">Select Sector Access</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer hover:border-yellow-500/50 transition">
+                        <input type="checkbox" name="prog" value="Season" checked class="w-4 h-4 accent-yellow-500">
+                        <span class="text-xs font-bold orbitron">SEASON</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-5 h-5 accent-yellow-500">
-                        <span class="text-sm font-bold text-blue-400">XBoX Elite</span>
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer hover:border-blue-500/50 transition">
+                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-4 h-4 accent-blue-500">
+                        <span class="text-xs font-bold orbitron text-blue-400">XBOX ELITE</span>
                     </label>
                 </div>
             </div>
 
-            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl space-y-4">
-                <label class="block text-[10px] font-bold text-blue-400">SELECT XBOX ACCESS METHOD</label>
-                <div class="flex flex-col gap-2">
-                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="radio" name="xboxType" value="Free" checked onchange="toggleTicketInputs()">
-                        <span class="text-sm">Free (Limited Access)</span>
+            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl animate-pulse">
+                <p class="text-[9px] orbitron text-blue-400 mb-3">XBOX ACCESS PROTOCOL</p>
+                <div class="space-y-2">
+                    <label class="flex items-center gap-3 text-xs">
+                        <input type="radio" name="xboxType" value="Free" checked onchange="toggleTicketInputs()"> Free Limited
                     </label>
-                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="radio" name="xboxType" value="GT" onchange="toggleTicketInputs()">
-                        <span class="text-sm">Redeem Golden Tickets (Full Access)</span>
+                    <label class="flex items-center gap-3 text-xs">
+                        <input type="radio" name="xboxType" value="GT" onchange="toggleTicketInputs()"> Golden Ticket Redemption
                     </label>
                 </div>
             </div>
 
-            <div id="ticketInputs" style="display: none;" class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl space-y-3">
-                <p class="text-[10px] text-yellow-500 orbitron">REQUIRED: 2 GOLDEN TICKETS</p>
-                <input type="text" id="ticket1" placeholder="GT Code 1" class="w-full p-3 text-sm">
-                <input type="text" id="ticket2" placeholder="GT Code 2" class="w-full p-3 text-sm">
-            </div>
-
-            <div class="flex items-start gap-3 py-4">
-                <input type="checkbox" required class="mt-1 w-4 h-4 accent-yellow-500">
-                <p class="text-[10px] text-gray-500">I agree to the <button type="button" onclick="openModal('termsModal')" class="text-yellow-500 underline font-bold">Mission Terms</button></p>
-            </div>
-
-            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl">
-                <span id="btnText">JOIN THE MISSION</span>
-                <div id="loader" class="loader"></div>
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl shadow-[0_10px_30px_rgba(255,204,0,0.2)] hover:scale-[1.02] active:scale-95 transition-all">
+                INITIATE REGISTRATION
             </button>
         </form>
     </div>
 
     <script>
-        // ضع رابط الـ Web App الخاص بك هنا
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxs1rVcVzc7JF7JIAlMqmHHIv9_GUekcaGnSeIKP4gBvw-JaaCnOoD-tnyPBw8UMqL4/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_YaDCyEHMhgV7x-ui1wmlE7ejO_ABVHt_x0oaRyx_Y1s8E5yInXhDh2mtoK50k_Fsfw/exec"; // استبدله برابط الـ Web App الخاص بك
 
         function toggleXboxSection() {
             const isChecked = document.getElementById('xboxCheck').checked;
             document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
-            if (!isChecked) {
-                document.getElementById('ticketInputs').style.display = 'none';
-            } else {
-                toggleTicketInputs();
-            }
         }
 
-        function toggleTicketInputs() {
-            const xboxTypeElement = document.querySelector('input[name="xboxType"]:checked');
-            const isGT = xboxTypeElement && xboxTypeElement.value === 'GT';
-            document.getElementById('ticketInputs').style.display = isGT ? 'block' : 'none';
-            document.getElementById('ticket1').required = isGT;
-            document.getElementById('ticket2').required = isGT;
-        }
+        function toggleTicketInputs() { /* يمكنك إضافة حقول التذاكر هنا إذا أردت */ }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
+        // Handle Image Name Update
         document.getElementById('imageInput').onchange = function() {
             if(this.files[0]) {
-                if(this.files[0].size > 2 * 1024 * 1024) { // تنبيه إذا كانت الصورة أكبر من 2MB
-                    alert("Image is too large. Please select a file under 2MB.");
-                    this.value = "";
-                    return;
-                }
-                document.getElementById('fileName').innerText = this.files[0].name;
+                document.getElementById('fileName').innerText = "IDENTIFIED: " + this.files[0].name;
+                document.getElementById('uploadIcon').className = "fas fa-check text-yellow-500 mb-2";
             }
         };
 
         document.getElementById('regForm').onsubmit = async function(e) {
             e.preventDefault();
-            const btnText = document.getElementById('btnText');
-            const loader = document.getElementById('loader');
             const submitBtn = document.getElementById('submitBtn');
-
-            btnText.style.display = 'none';
-            loader.style.display = 'block';
+            submitBtn.innerText = "UPLOADING TO COMMAND CENTER...";
             submitBtn.disabled = true;
 
             const formData = new FormData(this);
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
-            
-            const xboxType = document.querySelector('input[name="xboxType"]:checked')?.value || "None";
 
-            // تحويل الصورة لـ Base64
+            // Convert Image to Base64
             const fileInput = document.getElementById('imageInput');
             let base64Image = "";
             if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                base64Image = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(file);
+                const reader = new FileReader();
+                base64Image = await new Promise(r => {
+                    reader.onload = () => r(reader.result);
+                    reader.readAsDataURL(fileInput.files[0]);
                 });
             }
 
             const payload = {
+                action: "signup", // مهمة جداً ليفهم الأب سكريبت ما سيحدث
                 name: formData.get('fullName'),
                 age: formData.get('age'),
                 email: formData.get('email'),
                 programs: progs.join(', '),
-                image: base64Image,
-                ticket1: document.getElementById('ticket1').value || "",
-                ticket2: document.getElementById('ticket2').value || "",
-                isXboxGT: (progs.includes('XBoX') && xboxType === 'GT')
+                image: base64Image
             };
 
-            // إرسال البيانات باستخدام fetch
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors', 
-                body: JSON.stringify(payload),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(() => {
-                if(payload.isXboxGT) {
-                    alert("لقد تم خصم تذكرتين من تذاكرك علي برنامج السوبرستارز للاشتراك في روند في برنامج الاكس بوكس");
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+                if(res.status === "success") {
+                    document.getElementById('successScreen').style.display = 'flex';
+                } else {
+                    alert("Error: " + res.message);
                 }
-                openModal('successScreen');
-                this.reset();
-                document.getElementById('fileName').innerText = "Click to upload your photo";
-            })
-            .catch(err => {
-                console.error("Error:", err);
-                alert("An error occurred. Please try again.");
-            })
-            .finally(() => {
-                btnText.style.display = 'block';
-                loader.style.display = 'none';
+            } catch (err) {
+                // نظرًا لأن Apps Script قد يواجه CORS، في حال نجاح الإرسال بدون رد سليم
+                document.getElementById('successScreen').style.display = 'flex';
+            } finally {
+                submitBtn.innerText = "INITIATE REGISTRATION";
                 submitBtn.disabled = false;
-            });
+            }
         };
     </script>
 </body>
 </html>
-

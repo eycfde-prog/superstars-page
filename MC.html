@@ -1,394 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Activity Hub | Mission Control</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <style>
-        :root {
-            --primary-bg: #050505;
-            --accent-gold: #ffcc00;
-            --season-color: #00ffa3;
-            --xbox-color: #ff3131;
-            --season-grad: linear-gradient(135deg, rgba(0, 255, 163, 0.4), rgba(0, 128, 255, 0.2));
-            --xbox-grad: linear-gradient(135deg, rgba(255, 49, 49, 0.4), rgba(255, 150, 0, 0.2));
+/**
+ * نظام EYC المتكامل - شييت Vens
+ * المطور: Glassy (EYC Team)
+ */
+
+const SIGNUP_SHEET_ID = "1_tfsbzCRDQXmibM3hLnYCFx98s2vzEPg8PI8cmMUE6s"; 
+
+// 1. استقبال طلبات الموقع (تسجيل الدخول وجلب البيانات)
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName("Vens");
+    
+    if (data.action === "login") {
+      const email = data.email.toLowerCase().trim();
+      const studentCode = data.password.trim(); 
+      const rows = sheet.getDataRange().getValues();
+      
+      for (let i = 1; i < rows.length; i++) {
+        // التحقق من الإيميل (العمود C/رقم 2) والكود (العمود F/رقم 5)
+        if (rows[i][2].toString().toLowerCase().trim() === email && rows[i][5].toString() === studentCode) {
+          
+          // وضع علامة صح في العمود X (رقم 23) لتسجيل الحضور
+          sheet.getRange(i + 1, 24).setValue(true);
+          
+          // إرجاع البيانات المطلوبة للصفحة
+          return ContentService.createTextOutput(JSON.stringify({
+            "status": "success",
+            "name": rows[i][0],      // العمود A
+            "image": rows[i][4],     // العمود E (لينك الدرايف)
+            "tokens": rows[i][22],   // العمود W
+            "rank": i                // الترتيب الحالي بناءً على الصف
+          })).setMimeType(ContentService.MimeType.JSON);
         }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": "Wrong Email or Code" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--primary-bg); color: #fff; min-height: 100vh; overflow-x: hidden; position: relative; }
+// 2. وظيفة المزامنة مع شييت الساين اب (لا تتأثر)
+function syncAndProcessStudents() {
+  const ssVens = SpreadsheetApp.getActiveSpreadsheet();
+  const vensSheet = ssVens.getSheetByName("Vens");
+  
+  let ssSignUp;
+  try { ssSignUp = SpreadsheetApp.openById(SIGNUP_SHEET_ID); } catch (e) { return; }
 
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none; }
-        .bg-glow { position: fixed; top: 50%; left: 50%; width: 120vw; height: 120vw; background: radial-gradient(circle, rgba(255,204,0,0.03) 0%, transparent 70%); transform: translate(-50%, -50%); z-index: -2; pointer-events: none; animation: rotateBg 100s linear infinite; }
-        @keyframes rotateBg { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+  const signUpSheet = ssSignUp.getSheetByName("players") || ssSignUp.getSheetByName("Sign-Up (Responses)");
+  const students = signUpSheet.getDataRange().getValues().slice(1); 
+  
+  let vensData = vensSheet.getDataRange().getValues();
+  let existingEmails = vensData.map(row => row[2] ? row[2].toString().toLowerCase().trim() : ""); 
 
-        .user-sparkle-name { position: fixed; top: 20px; right: 20px; z-index: 1100; font-family: 'Orbitron'; font-weight: 900; font-size: 14px; color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold); pointer-events: none; display: none; }
-        .profile-cluster { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; }
-        .float-circle { border-radius: 50%; border: 3px solid var(--accent-gold); display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); box-shadow: 0 0 15px rgba(255,204,0,0.3); overflow: hidden; transition: 0.5s; }
-        .main-img-circle { width: 70px; height: 70px; z-index: 3; }
-        .main-img-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .token-circle { width: 60px; height: 60px; font-size: 10px; text-align: center; color: var(--accent-gold); font-family: 'Orbitron'; flex-direction: column; z-index: 2; }
-        .rank-circle { width: 50px; height: 50px; font-size: 11px; color: #fff; border-color: #fff; font-family: 'Orbitron'; z-index: 1; }
-        #floating-login-btn { width: 100%; height: 100%; background: var(--accent-gold); color: #000; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; font-size: 10px; cursor: pointer; animation: pulseBtn 2s infinite; }
-        @keyframes pulseBtn { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  students.forEach((student) => {
+    let email = student[3] ? student[3].toString().toLowerCase().trim() : ""; 
+    if (email && existingEmails.indexOf(email) === -1) {
+      let studentCode = generateStudentCode(student[1]);
+      let newRow = [
+        student[1], // A الاسم
+        student[2], // B السن
+        student[3], // C الإيميل
+        student[4], // D البرامج
+        student[5], // E الصورة
+        studentCode, // F الكود
+      ];
+      for (let i = 0; i < 16; i++) { newRow.push(0); } // G to V
+      vensSheet.appendRow(newRow);
+    }
+  });
+  refreshCalculations();
+}
 
-        .header-area { padding-top: 30px; text-align: center; z-index: 10; position: relative; transition: 0.5s; }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.5rem, 5vw, 2.5rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; }
-        .toggle-container { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,204,0,0.3); color: #fff; padding: 10px 20px; border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; transition: 0.4s; }
-        .mode-btn.active.season-mode { background: var(--season-color); color: #000; box-shadow: 0 0 15px var(--season-color); }
-        .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; box-shadow: 0 0 15px var(--xbox-color); }
+function generateStudentCode(name) {
+  let parts = name.trim().split(" ");
+  let firstLetter = parts[0] ? parts[0].charAt(0).toUpperCase() : "E";
+  let secondLetter = parts[1] ? parts[1].charAt(0).toUpperCase() : "Y";
+  return firstLetter + secondLetter + "EYCSS" + Math.floor(1000 + Math.random() * 9000);
+}
 
-        #swiper-container { padding: 40px 0; transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .swiper-slide { width: 260px; height: 340px; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.5); transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative; }
+function refreshCalculations() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Vens");
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+  const range = sheet.getRange(2, 1, lastRow - 1, 27);
+  const data = range.getValues();
 
-        .hide-context { opacity: 0; pointer-events: none; transform: translateY(-50px); }
-        .focus-card { 
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) scale(0.45) !important;
-            z-index: 200 !important;
-            margin: 0 !important;
-            border-color: var(--accent-gold) !important;
-            box-shadow: 0 0 50px rgba(255,204,0,0.4) !important;
-        }
+  data.forEach((row) => {
+    let totalTokens = 0;
+    for (let j = 6; j <= 21; j++) { totalTokens += Number(row[j] || 0); }
+    row[22] = totalTokens; // W
+    let stars = totalTokens / 100;
+    row[24] = stars; // Y
+    row[25] = Math.floor(stars / 5); // Z
+    row[26] = getStudentTitle(totalTokens); // AA
+  });
 
-        #mission-radial-container {
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100vw; height: 100vh;
-            display: none; z-index: 150; pointer-events: none;
-        }
-        #mission-radial-container.show { display: block; pointer-events: auto; }
+  range.setValues(data);
+  sheet.getRange(2, 1, lastRow - 1, 27).sort({column: 23, ascending: false});
+}
 
-        .mission-box {
-            position: absolute; width: 70px; height: 70px;
-            background: rgba(20, 20, 20, 0.8);
-            border: 1.5px solid var(--accent-gold);
-            border-radius: 18px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            box-shadow: 0 0 15px rgba(255,204,0,0.2);
-            transition: 0.3s; cursor: pointer;
-            animation: radialOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes radialOut {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-            to { opacity: 1; }
-        }
+function getStudentTitle(tokens) {
+  if (tokens >= 5000) return "EYC MASTER";
+  if (tokens >= 3000) return "EYC PROFISSIONAL";
+  if (tokens >= 2000) return "EYC SPECIALIST";
+  if (tokens >= 1000) return "EYC AGENT";
+  if (tokens >= 750)  return "EYC ADVANCED";
+  if (tokens >= 500)  return "EYC SSS";
+  if (tokens >= 300)  return "EYC SS";
+  if (tokens >= 150)  return "EYC S";
+  if (tokens >= 50)   return "EYC BEGINNER";
+  return "Greeny";
+}
 
-        .mission-box:hover:not(.locked):not(.done) { background: var(--accent-gold); color: #000; transform: translate(-50%, -50%) scale(1.1); }
-        .mission-box.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; border-color: #555; }
-        .mission-box.done { border-color: var(--season-color); cursor: default; }
-        .mission-box i { font-size: 16px; margin-bottom: 5px; }
-        .mission-box span { font-family: 'Orbitron'; font-size: 9px; font-weight: 900; }
-
-        #auth-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-content { background: #111; border: 2px solid var(--accent-gold); padding: 30px; border-radius: 25px; width: 90%; max-width: 350px; text-align: center; }
-        .modal-input { width: 100%; background: #222; border: 1px solid #444; padding: 12px; margin: 8px 0; border-radius: 12px; color: #fff; text-align: center; }
-        .modal-btn { width: 100%; background: var(--accent-gold); color: #000; padding: 12px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; }
-
-        #back-btn { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); border: 2px solid var(--accent-gold); color: #fff; padding: 12px 30px; border-radius: 30px; font-family: 'Orbitron'; z-index: 1000; backdrop-filter: blur(10px); cursor: pointer; }
-
-        @media (max-width: 600px) {
-            .mission-box { width: 60px; height: 60px; }
-            .focus-card { transform: translate(-50%, -50%) scale(0.4) !important; }
-        }
-    </style>
-</head>
-<body>
-
-    <canvas id="rank-canvas"></canvas>
-    <div class="bg-glow"></div>
-
-    <div class="user-sparkle-name" id="user-sparkle-container">
-        <span id="sparkle-name-text"></span>
-        <div id="sp-particles" style="position: absolute; inset: 0;"></div>
-    </div>
-
-    <div class="profile-cluster">
-        <div class="float-circle rank-circle" id="user-rank">#--</div>
-        <div class="float-circle token-circle" id="user-tokens">--<br><span style="font-size:7px">TOKENS</span></div>
-        <div class="float-circle main-img-circle">
-            <img id="user-img" src="" alt="" style="display:none">
-            <div id="floating-login-btn" onclick="openLoginModal()">LOGIN</div>
-        </div>
-    </div>
-
-    <div id="auth-modal">
-        <div class="modal-content">
-            <h2 style="font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 15px; font-size: 18px;">IDENTIFICATION</h2>
-            <input type="email" id="email-input" class="modal-input" placeholder="Email">
-            <input type="password" id="pass-input" class="modal-input" placeholder="Code">
-            <button class="modal-btn" onclick="processLogin()">VERIFY</button>
-            <p onclick="closeLoginModal()" style="color: #ff3131; cursor: pointer; margin-top: 15px; font-size: 11px;">CANCEL</p>
-        </div>
-    </div>
-
-    <div class="header-area" id="header-area">
-        <header class="rank-header">
-            <h1>EYC ACADEMY</h1>
-            <p style="font-size: 10px; letter-spacing: 3px; color: var(--accent-gold); font-family: 'Orbitron';">MISSION CONTROL</p>
-        </header>
-        <div class="toggle-container">
-            <button class="mode-btn active season-mode" id="btn-season" onclick="switchMode('season')">SEASON</button>
-            <button class="mode-btn xbox-mode" id="btn-xbox" onclick="switchMode('xbox')">XBOX ELITE</button>
-        </div>
-    </div>
-
-    <div id="swiper-container" class="swiper">
-        <div class="swiper-wrapper" id="activities-wrapper"></div>
-    </div>
-
-    <div id="mission-radial-container"></div>
-
-    <button id="back-btn" onclick="exitFocusMode()">ABORT MISSION</button>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        const VENS_URL = "https://script.google.com/macros/s/AKfycbyVnaTYS1laLZGdUcLp2sbEZvA1X9kbsZoV7Tl3EzMH5iTbvoJo0i97xUd6LiM0YNcn8g/exec";
-        const RANKS_URL = "https://script.google.com/macros/s/AKfycbwtbuvN0Ai0_efho0f7pK2QuhbkanJEqF-cHnMmIvujHhNVhoE13A5aAm0tNd3kbTbN/exec";
-        const AC_URL = "https://script.google.com/macros/s/AKfycbxSarTCUcps1Nq_M4P_kNuGiyfveduFyjaBhd2D01aguibT-Xbs-a2TmlfAyCk_5SVfIw/exec";
-        
-        const unlockTimes = [
-            { year: 2026, month: 1, day: 20, hour: 0, minute: 0 },  
-            { year: 2026, month: 1, day: 20, hour: 17, minute: 25 },  
-            { year: 2026, month: 1, day: 20, hour: 18, minute: 0 },   
-            { year: 2026, month: 1, day: 20, hour: 19, minute: 30 },  
-            { year: 2026, month: 1, day: 20, hour: 20, minute: 0 },   
-            { year: 2026, month: 1, day: 20, hour: 21, minute: 0 },   
-            { year: 2026, month: 1, day: 20, hour: 21, minute: 30 },  
-            { year: 2026, month: 1, day: 20, hour: 22, minute: 0 },   
-            { year: 2026, month: 1, day: 20, hour: 22, minute: 30 },  
-            { year: 2026, month: 1, day: 20, hour: 23, minute: 0 }    
-        ];
-
-        let currentUser = JSON.parse(localStorage.getItem('eyc_user')) || null;
-        let currentSwiper = null;
-
-        window.onload = () => {
-            renderActivities('season');
-            initCanvas();
-            if(currentUser) { onSuccessfulLogin(); fetchProfileData(); }
-        }
-
-        function isMissionUnlocked(idx) {
-            const now = new Date();
-            const t = unlockTimes[idx];
-            if(!t) return false;
-            return now >= new Date(t.year, t.month-1, t.day, t.hour, t.minute);
-        }
-
-        async function processLogin() {
-            const email = document.getElementById('email-input').value;
-            const password = document.getElementById('pass-input').value;
-            if(!email) return;
-            try {
-                const resp = await fetch(VENS_URL, { method: 'POST', body: JSON.stringify({ action: 'login', email, password }) });
-                const result = await resp.json();
-                if(result.status === "success") {
-                    currentUser = { email, name: result.name };
-                    localStorage.setItem('eyc_user', JSON.stringify(currentUser));
-                    onSuccessfulLogin(); fetchProfileData(); closeLoginModal();
-                } else alert(result.message);
-            } catch(e) { alert("Connection Error"); }
-        }
-
-        function onSuccessfulLogin() {
-            document.getElementById('floating-login-btn').style.display = 'none';
-            document.getElementById('user-img').style.display = 'block';
-            document.getElementById('user-sparkle-container').style.display = 'block';
-            document.getElementById('sparkle-name-text').innerText = currentUser.name;
-            createSparkles();
-        }
-
-        async function fetchProfileData() {
-            try {
-                const resp = await fetch(`${RANKS_URL}?email=${currentUser.email}&name=${encodeURIComponent(currentUser.name)}`);
-                const data = await resp.json();
-                if(data.image) {
-                    document.getElementById('user-img').src = data.image;
-                    document.getElementById('user-tokens').innerHTML = `${data.tokens}<br><span style="font-size:7px">TOKENS</span>`;
-                    document.getElementById('user-rank').innerText = "#" + data.rank;
-                }
-            } catch(e) {}
-        }
-
-        const activities = {
-            season: [
-                { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
-                { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 },
-                { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 },
-                { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 },
-                { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 },
-                { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }
-            ],
-            xbox: [
-                { name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 100 },
-                { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 120 },
-                { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 110 },
-                { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 150 },
-                { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 130 },
-                { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 200 },
-                { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 140 },
-                { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 180 },
-                { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 110 },
-                { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 250 }
-            ]
-        };
-
-        function renderActivities(mode) {
-            const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities[mode].map(act => `
-                <div class="swiper-slide" data-name="${act.name}" onclick="enterFocusMode(this)">
-                    <div style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 8px; font-size:9px; color:var(--accent-gold); font-weight:900;">${act.tk} TK</div>
-                    <i class="fas ${act.icon}" style="font-size: 50px; margin-bottom: 15px; color:${mode === 'season' ? 'var(--season-color)' : 'var(--xbox-color)'}"></i>
-                    <div style="font-family:'Orbitron'; font-size:18px; font-weight:900; text-align:center">${act.name}</div>
-                </div>
-            `).join('');
-            if (currentSwiper) currentSwiper.destroy();
-            currentSwiper = new Swiper('.swiper', { effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto', coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false } });
-        }
-
-        async function enterFocusMode(card) {
-            if(!currentUser) { openLoginModal(); return; }
-            
-            const activityName = card.getAttribute('data-name');
-            // تحويل الاسم ليتوافق مع تسمية الشيت (مثلاً Alike X تصبح Alikex)
-            const sheetActivityName = activityName.replace(/\s+/g, '').toLowerCase();
-
-            // جلب حالة المهام من السكربت
-            let missionStatuses = [];
-            try {
-                const response = await fetch(AC_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "get_status", email: currentUser.email, activity: sheetActivityName })
-                });
-                missionStatuses = await response.json();
-            } catch(e) { console.log("AC Fetch Error"); }
-
-            document.getElementById('header-area').classList.add('hide-context');
-            document.querySelectorAll('.swiper-slide').forEach(s => { if(s !== card) s.style.opacity = '0'; });
-            
-            card.classList.add('focus-card');
-            
-            const radialContainer = document.getElementById('mission-radial-container');
-            radialContainer.innerHTML = '';
-            radialContainer.classList.add('show');
-
-            const totalMissions = 10;
-            const radius = window.innerWidth < 600 ? 130 : 180;
-
-            for (let i = 0; i < totalMissions; i++) {
-                const isDone = missionStatuses[i] === "DONE";
-                const unlocked = isMissionUnlocked(i);
-                
-                const angle = (i / totalMissions) * (Math.PI * 2) - Math.PI/2;
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-
-                const box = document.createElement('div');
-                // إضافة class 'done' إذا كانت المهمة منتهية
-                box.className = `mission-box ${isDone ? 'done' : (unlocked ? '' : 'locked')}`;
-                box.style.left = `calc(50% + ${x}px)`;
-                box.style.top = `calc(50% + ${y}px)`;
-                box.style.animationDelay = `${i * 0.05}s`;
-                box.style.transform = `translate(-50%, -50%)`;
-
-                if (isDone) {
-                    box.innerHTML = `
-                        <i class="fas fa-check-circle" style="color:var(--season-color)"></i>
-                        <span style="color:var(--season-color)">DONE</span>
-                    `;
-                } else {
-                    box.innerHTML = `
-                        <i class="fas ${unlocked ? 'fa-play' : 'fa-lock'}"></i>
-                        <span>M-${i+1}</span>
-                    `;
-                    
-                    if(unlocked) {
-                        box.onclick = () => {
-                            if(activityName === "Alike" || activityName === "Alike X") {
-                                window.location.href = `AS.html?v=${i+1}&email=${encodeURIComponent(currentUser.email)}`;
-                            } else {
-                                alert(`Mission ${i+1} for ${activityName} coming soon!`);
-                            }
-                        };
-                    }
-                }
-                radialContainer.appendChild(box);
-            }
-
-            document.getElementById('back-btn').style.display = 'block';
-        }
-
-        function exitFocusMode() {
-            document.getElementById('header-area').classList.remove('hide-context');
-            document.querySelectorAll('.swiper-slide').forEach(s => { 
-                s.classList.remove('focus-card'); 
-                s.style.opacity = '1'; 
-                s.style.transform = '';
-            });
-            document.getElementById('mission-radial-container').classList.remove('show');
-            document.getElementById('back-btn').style.display = 'none';
-        }
-
-        function switchMode(mode) {
-            document.getElementById('btn-season').classList.toggle('active', mode === 'season');
-            document.getElementById('btn-xbox').classList.toggle('active', mode === 'xbox');
-            renderActivities(mode);
-        }
-
-        function openLoginModal() { document.getElementById('auth-modal').style.display = 'flex'; }
-        function closeLoginModal() { document.getElementById('auth-modal').style.display = 'none'; }
-
-        function createSparkles() {
-            const container = document.getElementById('sp-particles');
-            setInterval(() => {
-                if (container.childElementCount > 15) return;
-                const s = document.createElement('div');
-                s.style.cssText = `position:absolute; left:${Math.random()*100}%; top:${Math.random()*100}%; width:2px; height:2px; background:var(--accent-gold); border-radius:50%; pointer-events:none;`;
-                s.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(3) translateY(-10px)' }], { duration: 1000 });
-                container.appendChild(s);
-                setTimeout(() => s.remove(), 1000);
-            }, 300);
-        }
-
-        function initCanvas() {
-            const canvas = document.getElementById('rank-canvas');
-            const ctx = canvas.getContext('2d');
-            let stars = [];
-            
-            function resize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            window.onresize = resize;
-            resize();
-
-            for(let i=0; i<150; i++) {
-                stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.5, speed: Math.random()*0.5 });
-            }
-
-            function animate() {
-                ctx.clearRect(0,0,canvas.width, canvas.height);
-                ctx.fillStyle = "#fff";
-                stars.forEach(s => {
-                    ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-                    ctx.fill();
-                    s.y += s.speed;
-                    if(s.y > canvas.height) s.y = 0;
-                });
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
-    </script>
-</body>
-</html>
-
-
+function dailyResetAttendance() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Vens");
+  const lastRow = sheet.getLastRow();
+  if (lastRow > 1) { sheet.getRange(2, 24, lastRow - 1, 1).setValue(false); }
+}

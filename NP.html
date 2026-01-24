@@ -126,13 +126,15 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzan4GljbxSEHRfI958R3t3XFoSqK6IeRLvKdcFk57V7xyeDg9UHG4lY_luHupmtgieA/exec";
+        // رابط الـ Deployment الخاص بك
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHl1pcA_A6QeiepZTUFxSQqyHk88ln8eY-yiXwQ54HQo5yTv8-I-MIt8CJy6b6nb257Q/exec";
 
         function toggleXboxSection() {
             const isChecked = document.getElementById('xboxCheck').checked;
             document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
         }
 
+        // تحديث شكل الرفع عند اختيار ملف
         document.getElementById('imageInput').onchange = function() {
             if(this.files[0]) {
                 document.getElementById('fileName').innerText = "IDENTIFIED: " + this.files[0].name;
@@ -144,6 +146,7 @@
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
             
+            // حالة التحميل
             submitBtn.innerText = "UPLOADING TO COMMAND CENTER...";
             submitBtn.disabled = true;
 
@@ -151,6 +154,7 @@
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
 
+            // معالجة الصورة
             const fileInput = document.getElementById('imageInput');
             let base64Image = "";
             if (fileInput.files.length > 0) {
@@ -170,27 +174,27 @@
                 image: base64Image
             };
 
-            // البدء في عملية الإرسال
+            // عملية الإرسال الاحترافية
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify(payload) 
             })
-            .then(response => response.text()) // نحول الرد لنص لقراءته
+            .then(response => response.text())
             .then(result => {
                 const cleanResult = result.trim();
                 
                 if (cleanResult === "Already Registered") {
                     alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
                 } else if (cleanResult === "Success") {
-                    // إظهار شاشة النجاح المصممة بدلاً من alert التقليدي
+                    // إظهار شاشة النجاح الاحترافية
                     document.getElementById('successScreen').style.display = 'flex';
                 } else {
-                    alert("حدث خطأ: " + result);
+                    alert("نظام الأكاديمية: " + result);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert("تعذر الاتصال بالسيرفر، تأكد من الإنترنت.");
+                alert("فشل الاتصال بمركز القيادة. تأكد من الإنترنت.");
             })
             .finally(() => {
                 submitBtn.innerText = "INITIATE REGISTRATION";
@@ -200,6 +204,3 @@
     </script>
 </body>
 </html>
-
-
-

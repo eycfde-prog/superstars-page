@@ -8,240 +8,122 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #ffcc00; --bg-dark: #050505; --accent-blue: #0080ff; }
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: var(--bg-dark); 
-            color: white; 
-            min-height: 100vh;
-            background-image: radial-gradient(circle at 50% 50%, rgba(255, 204, 0, 0.05) 0%, transparent 70%);
-        }
+        :root { --gold: #ffcc00; --bg-dark: #050505; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; min-height: 100vh; background-image: radial-gradient(circle at 50% 50%, rgba(255, 204, 0, 0.05) 0%, transparent 70%); }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255, 204, 0, 0.1); 
-            border-radius: 24px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        input, select { 
-            background: rgba(0,0,0,0.4) !important; 
-            border: 1px solid rgba(255,204,0,0.2) !important; 
-            color: white !important; 
-            transition: 0.3s;
-        }
-        input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(255,204,0,0.2); outline: none; }
-        
-        .upload-zone {
-            border: 2px dashed rgba(255,204,0,0.2);
-            transition: 0.3s;
-        }
-        .upload-zone:hover { border-color: var(--gold); background: rgba(255,204,0,0.05); }
-
-        /* التعديل الجلاسي لرسالة النجاح */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
-        
-        .success-glow {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 300px; height: 300px; background: var(--gold); filter: blur(120px); opacity: 0.1; z-index: -1;
-            animation: pulseGlow 3s infinite;
-        }
-        
-        @keyframes pulseGlow { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.2; } }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 204, 0, 0.1); border-radius: 24px; }
+        input { background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,204,0,0.2) !important; color: white !important; }
+        input:focus { border-color: var(--gold) !important; outline: none; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .agent-code-box { background: rgba(255, 204, 0, 0.1); border: 1px dashed var(--gold); padding: 15px; border-radius: 12px; letter-spacing: 5px; font-size: 1.5rem; color: var(--gold); }
+        .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; top:0; }
         @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
-        .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; }
-
-        .agent-code-box {
-            background: rgba(255, 204, 0, 0.1);
-            border: 1px dashed var(--gold);
-            padding: 15px;
-            border-radius: 12px;
-            letter-spacing: 5px;
-            font-size: 1.5rem;
-            margin: 20px 0;
-            color: var(--gold);
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
-        }
     </style>
 </head>
 <body class="py-12 px-4">
 
     <div id="successScreen" class="modal">
-        <div class="success-glow"></div>
-        <div class="glass-card p-10 text-center max-w-md border-b-4 border-yellow-500 transform transition-all scale-110">
-            <div class="relative w-24 h-24 mx-auto mb-6">
-                <div class="absolute inset-0 bg-yellow-500 rounded-full animate-ping opacity-20"></div>
-                <div class="relative w-24 h-24 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center text-5xl shadow-[0_0_30px_rgba(255,204,0,0.4)]">
-                    <i class="fas fa-shield-check text-yellow-500"></i>
-                </div>
-            </div>
-            
-            <h2 class="orbitron text-3xl font-black mb-2 text-white">ACCESS GRANTED</h2>
-            <p class="text-gray-400 text-sm mb-4">Welcome, <span id="agentNameDisplay" class="text-white font-bold">Agent</span>. Your identity has been verified.</p>
-            
-            <div class="text-[10px] orbitron text-yellow-500/70 mb-1 uppercase tracking-widest">Personal Identification Code</div>
-            <div class="agent-code-box orbitron font-black" id="agentCodeDisplay">---</div>
-            
-            <p class="text-[11px] text-gray-500 mb-8 italic">Screenshot this code. It is your only key to Mission Control.</p>
-            
-            <button onclick="window.location.href='MC.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white hover:scale-105 transition-all shadow-lg shadow-yellow-500/20">
-                ENTER MISSION CONTROL
-            </button>
+        <div class="glass-card p-10 text-center max-w-md border-b-4 border-yellow-500">
+            <h2 class="orbitron text-3xl font-black mb-2 text-white text-yellow-500">ACCESS GRANTED</h2>
+            <p class="text-gray-400 text-sm mb-4 text-center">Welcome, <span id="agentNameDisplay" class="text-white font-bold">Agent</span>.</p>
+            <div class="agent-code-box orbitron font-black text-center" id="agentCodeDisplay">---</div>
+            <p class="text-[11px] text-gray-500 mt-4 italic">Screenshot your Access Code now.</p>
+            <button onclick="window.location.href='MC.html'" class="w-full mt-8 py-4 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white transition-all">ENTER MISSION CONTROL</button>
         </div>
     </div>
 
     <div class="max-w-xl mx-auto">
         <div class="text-center mb-10">
-            <div class="orbitron text-yellow-500 text-xs tracking-[0.5em] mb-2 uppercase">Command Center Registration</div>
             <h1 class="orbitron text-4xl font-black text-white">CREATE PROFILE</h1>
         </div>
 
         <form id="regForm" class="glass-card p-8 space-y-6 relative overflow-hidden">
             <div class="scanner-line"></div>
-
-            <div class="space-y-4">
+            <div>
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">FULL NAME</label>
+                <input type="text" id="fullNameInput" name="fullName" required class="w-full p-4 rounded-xl text-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase">Full Name (Agent Identity)</label>
-                    <input type="text" id="fullNameInput" name="fullName" required placeholder="Agent Name" class="w-full p-4 rounded-xl text-sm">
+                    <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AGE</label>
+                    <input type="number" name="age" required class="w-full p-4 rounded-xl text-sm">
                 </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AGE</label>
-                        <input type="number" name="age" required placeholder="00" class="w-full p-4 rounded-xl text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase text-right">Access Email</label>
-                        <input type="email" name="email" required placeholder="name@gmail.com" class="w-full p-4 rounded-xl text-sm text-right">
-                    </div>
+                <div>
+                    <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">ACCESS EMAIL</label>
+                    <input type="email" name="email" required class="w-full p-4 rounded-xl text-sm">
                 </div>
             </div>
-
             <div>
                 <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AVATAR UPLOAD</label>
-                <div class="upload-zone rounded-2xl p-6 text-center relative cursor-pointer">
-                    <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
-                    <i class="fas fa-camera-retro text-2xl text-gray-500 mb-2" id="uploadIcon"></i>
-                    <p id="fileName" class="text-[10px] text-gray-500 uppercase tracking-widest">Select agent photo</p>
-                </div>
+                <input type="file" id="imageInput" accept="image/*" required class="w-full p-2 text-xs">
+            </div>
+            
+            <div class="flex gap-4">
+                <label class="flex-1 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                    <input type="checkbox" name="prog" value="Season" checked class="mr-2"> <span class="orbitron text-xs">SEASON</span>
+                </label>
+                <label class="flex-1 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                    <input type="checkbox" name="prog" value="XBoX" class="mr-2"> <span class="orbitron text-xs text-blue-400">XBOX</span>
+                </label>
             </div>
 
-            <div class="pt-4 border-t border-white/5">
-                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-4 uppercase">Select Sector Access</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer hover:border-yellow-500/50 transition">
-                        <input type="checkbox" name="prog" value="Season" checked class="w-4 h-4 accent-yellow-500">
-                        <span class="text-xs font-bold orbitron">SEASON</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer hover:border-blue-500/50 transition">
-                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-4 h-4 accent-blue-500">
-                        <span class="text-xs font-bold orbitron text-blue-400">XBOX ELITE</span>
-                    </label>
-                </div>
-            </div>
-
-            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
-                <p class="text-[9px] orbitron text-blue-400 mb-3">XBOX ACCESS PROTOCOL</p>
-                <div class="space-y-2">
-                    <label class="flex items-center gap-3 text-xs">
-                        <input type="radio" name="xboxType" value="Free" checked> Free Limited
-                    </label>
-                    <label class="flex items-center gap-3 text-xs">
-                        <input type="radio" name="xboxType" value="GT"> Golden Ticket Redemption
-                    </label>
-                </div>
-            </div>
-
-            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl shadow-[0_10px_30px_rgba(255,204,0,0.2)] hover:scale-[1.02] active:scale-95 transition-all">
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl hover:scale-105 transition-all">
                 INITIATE REGISTRATION
             </button>
         </form>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3TZeSFqs9KqhxhzjNtRk_OQaPyft0TlBpDzYDEtzyjfi53yEvyqEhNqHk74ZfONN7WA/exec";
-
-        function toggleXboxSection() {
-            const isChecked = document.getElementById('xboxCheck').checked;
-            document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
-        }
-
-        document.getElementById('imageInput').onchange = function() {
-            if(this.files[0]) {
-                document.getElementById('fileName').innerText = "IDENTIFIED: " + this.files[0].name;
-                document.getElementById('uploadIcon').className = "fas fa-check text-yellow-500 mb-2";
-            }
-        };
+        // ضع رابط الـ Deployment الجديد هنا
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTZZ1HGjdX7t60kLAaUfJVb5r-bFuIVPQYQm7xP-5NzHnacYDnEL76Nf_dm0w4eQGtpQ/exec";
 
         document.getElementById('regForm').onsubmit = function(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
-            const fileInput = document.getElementById('imageInput');
-            const file = fileInput.files[0];
+            const file = document.getElementById('imageInput').files[0];
             const formData = new FormData(this);
-            const agentName = document.getElementById('fullNameInput').value;
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
 
-            submitBtn.innerText = "UPLOADING TO COMMAND CENTER...";
+            submitBtn.innerText = "UPLOADING...";
             submitBtn.disabled = true;
 
             const reader = new FileReader();
-
             reader.onload = function(event) {
-                const base64Image = event.target.result;
-
                 const payload = {
-                    action: "signup",
-                    name: agentName,
+                    name: document.getElementById('fullNameInput').value,
                     age: formData.get('age'),
                     email: formData.get('email'),
                     programs: progs.join(', '),
-                    image: base64Image
+                    image: event.target.result
                 };
 
                 fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 })
-                .then(response => response.text())
+                .then(res => res.text())
                 .then(result => {
-                    const cleanResult = result.trim();
-                    if (cleanResult === "Already Registered") {
-                        alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
-                    } else if (cleanResult.includes("Success")) {
-                        // تعديل بسيط: لو السكريبت بيرجع كود الطالب، هنعرضه
-                        // نفترض هنا أن الكود هو كلمة "Success" وبعدها الكود أو نستخدم إيميل الطالب كتمويه
-                        const code = cleanResult.split(":")[1] || "EYC-" + Math.floor(1000 + Math.random() * 9000);
-                        document.getElementById('agentNameDisplay').innerText = agentName;
+                    const cleanRes = result.trim();
+                    if (cleanRes === "Already Registered") {
+                        alert("⚠️ مسجل مسبقاً بهذا البريد!");
+                    } else if (cleanRes.startsWith("Success")) {
+                        const code = cleanRes.split(":")[1];
+                        document.getElementById('agentNameDisplay').innerText = payload.name;
                         document.getElementById('agentCodeDisplay').innerText = code;
                         document.getElementById('successScreen').style.display = 'flex';
                     } else {
-                        alert("نظام الأكاديمية: " + result);
+                        alert("خطأ: " + result);
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("فشل الاتصال بمركز القيادة. تأكد من الإنترنت.");
-                })
+                .catch(() => alert("فشل الاتصال!"))
                 .finally(() => {
-                    submitBtn.innerText = "INITIATE REGISTRATION";
                     submitBtn.disabled = false;
+                    submitBtn.innerText = "INITIATE REGISTRATION";
                 });
             };
-
-            if (file) {
-                reader.readAsDataURL(file);
-            } else {
-                alert("يرجى اختيار صورة أولاً.");
-                submitBtn.disabled = false;
-            }
+            reader.readAsDataURL(file);
         };
     </script>
 </body>
 </html>
-
-
-
-
-

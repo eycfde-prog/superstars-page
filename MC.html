@@ -143,7 +143,8 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbw4HTdiKtDMYNFeJhWjCiUjPMbCbnI87AyPAmx5oNz3Md2pHEAv46XKJMkOfkOtcioGKw/exec';
+        // تأكد من وضع رابط الـ App Script الخاص بك هنا
+        const scriptUrl = 'رابط_السكربت_الخاص_بك'; 
 
         const activities = {
             season: [{ name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 }, { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 }, { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 }, { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 }, { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 }, { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }],
@@ -172,7 +173,6 @@
             });
         }
 
-        // --- Logic Control ---
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         
         function handleCardClick(card, index) {
@@ -191,42 +191,53 @@
             }
         }
 
-        // دمج المنطق البرمجي الخاص بك هنا مع التصميم الملوكي
+        // --- الدالة المحدثة باستخدام JSONP لتخطي حواجز CORS ---
         function verifyCode() {
             const email = document.getElementById('agentEmail').value;
             const code = document.getElementById('agentCode').value;
             const btn = document.getElementById('verifyBtn');
 
+            if (!email || !code) {
+                alert("Please enter both Email and Code");
+                return;
+            }
+
             btn.innerText = "VERIFYING...";
             btn.disabled = true;
 
-            fetch(`${scriptUrl}?email=${email}&code=${code}`)
-            .then(response => response.json())
-            .then(data => {
+            const callbackName = 'googleDocCallback';
+            window[callbackName] = function(data) {
                 if (data.status === "success") {
                     isLogged = true;
                     document.getElementById('loginModal').style.display = 'none';
                     document.getElementById('loginTriggerBtn').style.display = 'none';
                     
-                    // تحديث بيانات الـ Bubbles الملوكية بالبيانات الحقيقية
                     const stack = document.getElementById('profileStack');
                     stack.style.display = 'flex';
-                    document.getElementById('userImg').src = data.image || "https://via.placeholder.com/100";
+                    
+                    let finalImg = data.image || "";
+                    if(finalImg.includes('id=')) {
+                        const id = finalImg.split('id=')[1];
+                        finalImg = `https://drive.google.com/uc?export=view&id=${id}`;
+                    }
+                    
+                    document.getElementById('userImg').src = finalImg;
                     document.getElementById('userScore').innerText = data.totalScore || 0;
-                    document.getElementById('userRank').innerText = "#" + (data.rank || "??");
+                    document.getElementById('userRank').innerText = "#" + data.rank;
                     
                     alert(`Access Granted. Welcome, Agent ${data.name}!`);
                 } else {
-                    alert(data.message);
+                    alert(data.message || "Access Denied");
                     btn.innerText = "ACCESS HUB";
                     btn.disabled = false;
                 }
-            })
-            .catch(err => {
-                alert("Connection Error!");
-                btn.innerText = "ACCESS HUB";
-                btn.disabled = false;
-            });
+                document.body.removeChild(scriptTag);
+                delete window[callbackName];
+            };
+
+            const scriptTag = document.createElement('script');
+            scriptTag.src = `https://script.google.com/macros/s/AKfycbyAbQSFXvXayo9FBa6gziPHrR90H8APW6TO8BWYZ7vr-sKDqVAtEV9enFcGFwCKMaR7uw/exec`;
+            document.body.appendChild(scriptTag);
         }
 
         function openMissions(cardElement, index) {
@@ -293,8 +304,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-

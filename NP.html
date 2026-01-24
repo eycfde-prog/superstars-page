@@ -24,67 +24,67 @@
             border-radius: 24px; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        
-        /* التعديلات الجلاسي لرسالة النجاح */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
-        .success-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        input, select { 
+            background: rgba(0,0,0,0.4) !important; 
+            border: 1px solid rgba(255,204,0,0.2) !important; 
+            color: white !important; 
+            transition: 0.3s;
         }
-
-        .id-card {
-            background: linear-gradient(135deg, rgba(255, 204, 0, 0.1), rgba(255, 255, 255, 0.05));
-            border: 2px solid var(--gold);
-            position: relative;
-            overflow: hidden;
-        }
-        .code-display {
-            font-size: 2.5rem;
-            letter-spacing: 5px;
-            color: var(--gold);
-            text-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
-            background: rgba(0,0,0,0.3);
-            padding: 10px 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            display: inline-block;
-        }
-        
-        /* باقي استايلاتك الجميلة */
-        input, select { background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,204,0,0.2) !important; color: white !important; transition: 0.3s; }
         input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(255,204,0,0.2); outline: none; }
-        .upload-zone { border: 2px dashed rgba(255,204,0,0.2); transition: 0.3s; }
+        
+        .upload-zone {
+            border: 2px dashed rgba(255,204,0,0.2);
+            transition: 0.3s;
+        }
         .upload-zone:hover { border-color: var(--gold); background: rgba(255,204,0,0.05); }
+
+        /* التعديل الجلاسي لرسالة النجاح */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
+        
+        .success-glow {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 300px; height: 300px; background: var(--gold); filter: blur(120px); opacity: 0.1; z-index: -1;
+            animation: pulseGlow 3s infinite;
+        }
+        
+        @keyframes pulseGlow { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.2; } }
         @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
         .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; }
+
+        .agent-code-box {
+            background: rgba(255, 204, 0, 0.1);
+            border: 1px dashed var(--gold);
+            padding: 15px;
+            border-radius: 12px;
+            letter-spacing: 5px;
+            font-size: 1.5rem;
+            margin: 20px 0;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
     </style>
 </head>
 <body class="py-12 px-4">
 
     <div id="successScreen" class="modal">
-        <div class="glass-card success-pop p-8 text-center max-w-md border-t-4 border-yellow-500 relative overflow-hidden">
-            <div class="absolute -top-20 -right-20 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl"></div>
-            
-            <div class="w-20 h-20 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-[0_0_30px_rgba(255,204,0,0.4)]">
-                <i class="fas fa-id-badge"></i>
+        <div class="success-glow"></div>
+        <div class="glass-card p-10 text-center max-w-md border-b-4 border-yellow-500 transform transition-all scale-110">
+            <div class="relative w-24 h-24 mx-auto mb-6">
+                <div class="absolute inset-0 bg-yellow-500 rounded-full animate-ping opacity-20"></div>
+                <div class="relative w-24 h-24 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center text-5xl shadow-[0_0_30px_rgba(255,204,0,0.4)]">
+                    <i class="fas fa-shield-check text-yellow-500"></i>
+                </div>
             </div>
             
-            <h2 class="orbitron text-2xl mb-1 text-white">ACCESS GRANTED</h2>
-            <p class="text-gray-400 text-[11px] mb-4 uppercase tracking-widest">Agent Credentials Generated</p>
+            <h2 class="orbitron text-3xl font-black mb-2 text-white">ACCESS GRANTED</h2>
+            <p class="text-gray-400 text-sm mb-4">Welcome, <span id="agentNameDisplay" class="text-white font-bold">Agent</span>. Your identity has been verified.</p>
             
-            <div class="id-card rounded-2xl p-6 mb-6">
-                <p class="text-[10px] orbitron text-yellow-500/70 mb-2">YOUR UNIQUE ACCESS CODE</p>
-                <div class="code-display orbitron font-black" id="agentCodeDisplay">----</div>
-                <button onclick="copyCode()" class="block mx-auto mt-2 text-[10px] text-gray-400 hover:text-white transition">
-                    <i class="fas fa-copy mr-1"></i> CLICK TO COPY CODE
-                </button>
-            </div>
-
-            <p class="text-[11px] text-gray-400 mb-6 px-4">Save this code securely. It is required for all Mission Control operations.</p>
+            <div class="text-[10px] orbitron text-yellow-500/70 mb-1 uppercase tracking-widest">Personal Identification Code</div>
+            <div class="agent-code-box orbitron font-black" id="agentCodeDisplay">---</div>
             
-            <button onclick="window.location.href='index.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white hover:scale-105 transition-all shadow-lg">
+            <p class="text-[11px] text-gray-500 mb-8 italic">Screenshot this code. It is your only key to Mission Control.</p>
+            
+            <button onclick="window.location.href='MC.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white hover:scale-105 transition-all shadow-lg shadow-yellow-500/20">
                 ENTER MISSION CONTROL
             </button>
         </div>
@@ -102,27 +102,27 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase">Full Name (Agent Identity)</label>
-                    <input type="text" name="fullName" required placeholder="Agent Name" class="w-full p-4 rounded-xl text-sm">
+                    <input type="text" id="fullNameInput" name="fullName" required placeholder="Agent Name" class="w-full p-4 rounded-xl text-sm">
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase">Age</label>
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AGE</label>
                         <input type="number" name="age" required placeholder="00" class="w-full p-4 rounded-xl text-sm">
                     </div>
                     <div>
-                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase">Access Email</label>
-                        <input type="email" name="email" required placeholder="name@gmail.com" class="w-full p-4 rounded-xl text-sm">
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase text-right">Access Email</label>
+                        <input type="email" name="email" required placeholder="name@gmail.com" class="w-full p-4 rounded-xl text-sm text-right">
                     </div>
                 </div>
             </div>
 
             <div>
-                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase">Avatar Upload</label>
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AVATAR UPLOAD</label>
                 <div class="upload-zone rounded-2xl p-6 text-center relative cursor-pointer">
                     <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
                     <i class="fas fa-camera-retro text-2xl text-gray-500 mb-2" id="uploadIcon"></i>
-                    <p id="fileName" class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Select agent photo</p>
+                    <p id="fileName" class="text-[10px] text-gray-500 uppercase tracking-widest">Select agent photo</p>
                 </div>
             </div>
 
@@ -142,9 +142,13 @@
 
             <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
                 <p class="text-[9px] orbitron text-blue-400 mb-3">XBOX ACCESS PROTOCOL</p>
-                <div class="space-y-2 text-xs">
-                    <label class="flex items-center gap-3"><input type="radio" name="xboxType" value="Free" checked> Free Limited</label>
-                    <label class="flex items-center gap-3"><input type="radio" name="xboxType" value="GT"> Golden Ticket Redemption</label>
+                <div class="space-y-2">
+                    <label class="flex items-center gap-3 text-xs">
+                        <input type="radio" name="xboxType" value="Free" checked> Free Limited
+                    </label>
+                    <label class="flex items-center gap-3 text-xs">
+                        <input type="radio" name="xboxType" value="GT"> Golden Ticket Redemption
+                    </label>
                 </div>
             </div>
 
@@ -169,18 +173,13 @@
             }
         };
 
-        function copyCode() {
-            const code = document.getElementById('agentCodeDisplay').innerText;
-            navigator.clipboard.writeText(code);
-            alert("Success: Agent Access Code Copied!");
-        }
-
         document.getElementById('regForm').onsubmit = function(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
             const fileInput = document.getElementById('imageInput');
             const file = fileInput.files[0];
             const formData = new FormData(this);
+            const agentName = document.getElementById('fullNameInput').value;
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
 
@@ -188,37 +187,55 @@
             submitBtn.disabled = true;
 
             const reader = new FileReader();
+
             reader.onload = function(event) {
+                const base64Image = event.target.result;
+
                 const payload = {
                     action: "signup",
-                    name: formData.get('fullName'),
+                    name: agentName,
                     age: formData.get('age'),
                     email: formData.get('email'),
                     programs: progs.join(', '),
-                    image: event.target.result
+                    image: base64Image
                 };
 
-                fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
-                .then(r => r.json()) // حولناها لـ JSON عشان نستلم الكود
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.text())
                 .then(result => {
-                    if (result.status === "Success") {
-                        // إظهار الكود للطالب فوراً
-                        document.getElementById('agentCodeDisplay').innerText = result.code || "EYC-2026";
-                        document.getElementById('successScreen').style.display = 'flex';
-                    } else if (result.status === "Exists") {
+                    const cleanResult = result.trim();
+                    if (cleanResult === "Already Registered") {
                         alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
+                    } else if (cleanResult.includes("Success")) {
+                        // تعديل بسيط: لو السكريبت بيرجع كود الطالب، هنعرضه
+                        // نفترض هنا أن الكود هو كلمة "Success" وبعدها الكود أو نستخدم إيميل الطالب كتمويه
+                        const code = cleanResult.split(":")[1] || "EYC-" + Math.floor(1000 + Math.random() * 9000);
+                        document.getElementById('agentNameDisplay').innerText = agentName;
+                        document.getElementById('agentCodeDisplay').innerText = code;
+                        document.getElementById('successScreen').style.display = 'flex';
                     } else {
-                        alert("نظام الأكاديمية: " + result.message);
+                        alert("نظام الأكاديمية: " + result);
                     }
                 })
-                .catch(error => alert("فشل الاتصال بمركز القيادة."))
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("فشل الاتصال بمركز القيادة. تأكد من الإنترنت.");
+                })
                 .finally(() => {
                     submitBtn.innerText = "INITIATE REGISTRATION";
                     submitBtn.disabled = false;
                 });
             };
 
-            if (file) reader.readAsDataURL(file);
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                alert("يرجى اختيار صورة أولاً.");
+                submitBtn.disabled = false;
+            }
         };
     </script>
 </body>

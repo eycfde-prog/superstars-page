@@ -10,10 +10,10 @@
     <style>
         :root {
             --primary-bg: #050505;
-            --accent-gold: #ffcc00; /* ذهبي أكثر سطوعاً */
+            --accent-gold: #ffcc00;
             --season-color: #00ffa3;
             --xbox-color: #ff3131;
-            --glass-bg: rgba(255, 255, 255, 0.07); /* زودت الشفافية شوية */
+            --glass-bg: rgba(255, 255, 255, 0.07);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -21,7 +21,7 @@
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; }
 
-        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; z-index: 10; position: relative; }
+        .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; z-index: 10; position: relative; transition: 0.5s; }
         .rank-header h1 { 
             font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); 
             background: linear-gradient(to bottom, #fff, var(--accent-gold));
@@ -30,41 +30,37 @@
             filter: drop-shadow(0 0 10px rgba(255, 204, 0, 0.3));
         }
 
-        /* تعديل أزرار التبديل لتكون واضحة وهي مش اكتف */
         .toggle-container {
-            display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; z-index: 10; position: relative;
+            display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; z-index: 10; position: relative; transition: 0.5s;
         }
 
         .mode-btn {
             background: rgba(255,255,255,0.05); 
-            border: 1.5px solid var(--accent-gold); /* إطار ذهبي ثابت للوضوح */
-            color: #ffffff; /* لون أبيض صريح */
+            border: 1.5px solid var(--accent-gold);
+            color: #ffffff; 
             padding: 10px 25px; border-radius: 25px;
             font-family: 'Orbitron'; font-size: 11px; font-weight: 700; 
             cursor: pointer; transition: 0.4s;
-            opacity: 0.6; /* تقليل الشفافية بدل اللون الرمادي */
+            opacity: 0.6;
         }
 
-        /* الحالة النشطة */
         .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); box-shadow: 0 0 20px var(--season-color); opacity: 1; }
         .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); box-shadow: 0 0 20px var(--xbox-color); opacity: 1; }
 
-        /* تعديل الكروت لتكون مريحة للعين على الموبايل */
-        .swiper { width: 100%; padding-top: 20px; padding-bottom: 50px; }
+        .swiper { width: 100%; padding-top: 20px; padding-bottom: 50px; transition: 0.5s; }
         .swiper-slide {
             width: 280px; height: 400px; border-radius: 30px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.15);
-            transition: 0.3s;
+            transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer; position: relative;
-            overflow: hidden;
+            overflow: visible; /* عشان الفقاعات تظهر بره الكارت */
         }
 
-        /* إضافة طبقة إضاءة داخلية للكارت */
         .swiper-slide::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, rgba(255,255,255,0.08) 0%, transparent 70%);
-            pointer-events: none;
+            pointer-events: none; border-radius: 30px;
         }
 
         .token-badge {
@@ -72,34 +68,73 @@
             background: var(--accent-gold); color: #000;
             font-family: 'Orbitron'; font-size: 11px; font-weight: 900;
             padding: 5px 12px; border-radius: 12px; box-shadow: 0 0 15px var(--accent-gold);
+            transition: 0.3s;
         }
 
-        .activity-icon { font-size: 65px; margin-bottom: 20px; filter: drop-shadow(0 0 15px currentColor); }
-        .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; text-align: center; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .activity-code { font-size: 10px; color: var(--accent-gold); letter-spacing: 3px; margin-bottom: 20px; font-weight: 700; }
+        .activity-icon { font-size: 65px; margin-bottom: 20px; filter: drop-shadow(0 0 15px currentColor); transition: 0.5s; }
+        .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; text-align: center; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: 0.5s; }
+        .activity-code { font-size: 10px; color: var(--accent-gold); letter-spacing: 3px; margin-bottom: 20px; font-weight: 700; transition: 0.5s; }
 
-        /* كروت السيزون - أفتح شوية */
         .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.15), rgba(0,0,0,0.9)); border-color: rgba(0,255,163,0.3); }
         .season-card .activity-icon { color: var(--season-color); }
         
-        /* كروت الإكس بوكس - أفتح شوية */
         .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.15), rgba(0,0,0,0.9)); border-color: rgba(255,49,49,0.3); }
         .xbox-card .activity-icon { color: var(--xbox-color); }
 
-        .swipe-hint { text-align: center; font-family: 'Orbitron'; font-size: 10px; color: var(--accent-gold); margin-top: 15px; letter-spacing: 2px; opacity: 0.5; animation: pulse 2s infinite; }
+        .swipe-hint { text-align: center; font-family: 'Orbitron'; font-size: 10px; color: var(--accent-gold); margin-top: 15px; letter-spacing: 2px; opacity: 0.5; animation: pulse 2s infinite; transition: 0.5s; }
+        
+        /* تأثير الغليان والفقاعات */
+        .bubble {
+            position: absolute;
+            width: 50px; height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron'; font-size: 12px; font-weight: 900;
+            color: #fff; cursor: pointer;
+            z-index: 100; opacity: 0;
+            transition: transform 0.3s, background 0.3s, opacity 0.5s;
+            box-shadow: 0 0 15px rgba(255,255,255,0.1);
+        }
+        .bubble:hover { background: var(--accent-gold); color: #000; transform: scale(1.2); }
+
+        /* حالة الكارت المختار */
+        .card-focused {
+            transform: scale(0.85) !important;
+            box-shadow: 0 0 50px rgba(255, 204, 0, 0.2);
+            border-color: var(--accent-gold);
+            cursor: default;
+        }
+
+        .back-btn {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--accent-gold); color: #000;
+            padding: 12px 30px; border-radius: 30px;
+            font-family: 'Orbitron'; font-size: 12px; font-weight: 900;
+            display: none; z-index: 1000; cursor: pointer;
+            border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(var(--x), var(--y)); }
+            100% { transform: translate(0, 0); }
+        }
     </style>
 </head>
 <body>
 
     <canvas id="rank-canvas"></canvas>
 
-    <header class="rank-header">
+    <header class="rank-header" id="mainHeader">
         <h1>EYC ACADEMY</h1>
         <p style="font-size: 11px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">ACTIVITY MISSION CONTROL</p>
     </header>
 
-    <div class="toggle-container">
+    <div class="toggle-container" id="mainToggle">
         <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
         <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
     </div>
@@ -108,11 +143,12 @@
         <div class="swiper-wrapper" id="activities-wrapper"></div>
     </div>
 
-    <div class="swipe-hint">« SWIPE TO EXPLORE »</div>
+    <div class="swipe-hint" id="mainHint">« SWIPE TO EXPLORE »</div>
+    
+    <button class="back-btn" id="backBtn" onclick="resetView()">BACK TO HUB</button>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // ... نفس بيانات الـ activities بدون تغيير ...
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
@@ -137,16 +173,17 @@
         };
 
         let currentSwiper = null;
+        let isFocusMode = false;
 
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities[mode].map(act => `
-                <div class="swiper-slide ${mode}-card">
+            wrapper.innerHTML = activities[mode].map((act, index) => `
+                <div class="swiper-slide ${mode}-card" onclick="focusCard(this, '${act.code}')">
                     <div class="token-badge">${act.tk} TK</div>
                     <div class="activity-code">${act.code}</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
-                    <div style="font-size: 10px; color: #fff; opacity: 0.6; margin-top: 15px; font-family: 'Orbitron'; font-weight: 700;">PROTOCOL ACTIVE</div>
+                    <div class="protocol-text" style="font-size: 10px; color: #fff; opacity: 0.6; margin-top: 15px; font-family: 'Orbitron'; font-weight: 700;">PROTOCOL ACTIVE</div>
                 </div>
             `).join('');
 
@@ -161,11 +198,85 @@
             });
         }
 
+        function focusCard(cardElement, activityCode) {
+            if(isFocusMode) return;
+            isFocusMode = true;
+
+            // اخفاء كل شيء
+            document.getElementById('mainHeader').style.opacity = '0';
+            document.getElementById('mainToggle').style.opacity = '0';
+            document.getElementById('mainHint').style.opacity = '0';
+            document.getElementById('backBtn').style.display = 'block';
+
+            // اخفاء السلايدات التانية
+            document.querySelectorAll('.swiper-slide').forEach(s => {
+                if(s !== cardElement) s.style.opacity = '0';
+            });
+
+            // تمييز الكارت المختار
+            cardElement.classList.add('card-focused');
+            currentSwiper.allowTouchMove = false;
+
+            // توليد الفقاعات
+            createBubbles(cardElement);
+        }
+
+        function createBubbles(parent) {
+            for(let i=1; i<=10; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.innerText = `M${i}`;
+                
+                // توزيع عشوائي حول الكارت
+                const angle = (i / 10) * Math.PI * 2;
+                const radius = 180; 
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+
+                bubble.style.left = `calc(50% - 25px)`;
+                bubble.style.top = `calc(50% - 25px)`;
+                
+                parent.appendChild(bubble);
+
+                // أنيميشن الظهور
+                setTimeout(() => {
+                    bubble.style.opacity = '1';
+                    bubble.style.transform = `translate(${x}px, ${y}px)`;
+                    
+                    // حركة عائمة مستمرة
+                    bubble.style.setProperty('--x', `${(Math.random()-0.5)*20}px`);
+                    bubble.style.setProperty('--y', `${(Math.random()-0.5)*20}px`);
+                    bubble.style.animation = `float ${3 + Math.random()}s infinite ease-in-out`;
+                }, i * 50);
+
+                bubble.onclick = (e) => {
+                    e.stopPropagation();
+                    alert(`Mission M${i} Initiated for Agent!`);
+                };
+            }
+        }
+
+        function resetView() {
+            isFocusMode = false;
+            document.getElementById('mainHeader').style.opacity = '1';
+            document.getElementById('mainToggle').style.opacity = '1';
+            document.getElementById('mainHint').style.opacity = '1';
+            document.getElementById('backBtn').style.display = 'none';
+
+            document.querySelectorAll('.swiper-slide').forEach(s => {
+                s.style.opacity = '1';
+                s.classList.remove('card-focused');
+                const bubbles = s.querySelectorAll('.bubble');
+                bubbles.forEach(b => b.remove());
+            });
+
+            currentSwiper.allowTouchMove = true;
+        }
+
         function switchMode(mode) {
+            if(isFocusMode) return;
             const btnS = document.querySelector('.season-mode');
             const btnX = document.querySelector('.xbox-mode');
-            if ((mode === 'season' && btnS.classList.contains('active')) || (mode === 'xbox' && btnX.classList.contains('active'))) return;
-
             btnS.classList.toggle('active', mode === 'season');
             btnX.classList.toggle('active', mode === 'xbox');
             renderActivities(mode);

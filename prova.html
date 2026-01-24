@@ -149,7 +149,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbx017eMzdCGpZWi9YhvawaFS6GjKQoU9kXiCUPc9YzHw9bb5WwvVccC38A9O_mmVWYOxg/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxEzkRwtGKnU24ZaEZo9ec_EOg2kZUu18GYjckrhay0eqq5cCkByHr2pX1mDm5oy1cTMg/exec';
 
         const activities = {
             season: [{ name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 }, { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 }, { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 }, { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 }, { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 }, { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }],
@@ -220,15 +220,17 @@
                     stack.style.display = 'flex';
                     
                     // --- الكود المطور لمعالجة الصورة ---
-                    let finalImg = data.image || "";
-                    if (finalImg.includes('id=')) {
-                        const id = finalImg.split('id=')[1].split('&')[0]; 
-                        finalImg = `https://drive.google.com/thumbnail?authuser=0&sz=w300&id=${id}`;
-                    } else if (finalImg.startsWith('data:image')) {
-                        // Base64 - تبقى كما هي
-                    } else if (!finalImg.startsWith('http')) {
-                        finalImg = "https://via.placeholder.com/100/ffcc00/000000?text=EYC";
-                    }
+let finalImg = data.image || "";
+
+// إذا كان الرابط لا يبدأ بـ http (يعني العمود فارغ أو فيه نص خطأ)
+if (!finalImg.startsWith('http')) {
+    finalImg = "https://via.placeholder.com/100/ffcc00/000000?text=EYC";
+} else {
+    // التأكد من أن الرابط يحتوي على authuser=0 لضمان الصلاحيات
+    if (finalImg.includes('drive.google.com') && !finalImg.includes('authuser')) {
+        finalImg += "&authuser=0";
+    }
+}
                     document.getElementById('userImg').src = finalImg;
                     // ---------------------------------
 

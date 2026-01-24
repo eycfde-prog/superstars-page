@@ -24,22 +24,39 @@
             border-radius: 24px; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        input, select { 
-            background: rgba(0,0,0,0.4) !important; 
-            border: 1px solid rgba(255,204,0,0.2) !important; 
-            color: white !important; 
-            transition: 0.3s;
-        }
-        input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(255,204,0,0.2); outline: none; }
         
-        .upload-zone {
-            border: 2px dashed rgba(255,204,0,0.2);
-            transition: 0.3s;
+        /* التعديلات الجلاسي لرسالة النجاح */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+        .success-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
-        .upload-zone:hover { border-color: var(--gold); background: rgba(255,204,0,0.05); }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+        .id-card {
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.1), rgba(255, 255, 255, 0.05));
+            border: 2px solid var(--gold);
+            position: relative;
+            overflow: hidden;
+        }
+        .code-display {
+            font-size: 2.5rem;
+            letter-spacing: 5px;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            display: inline-block;
+        }
         
+        /* باقي استايلاتك الجميلة */
+        input, select { background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,204,0,0.2) !important; color: white !important; transition: 0.3s; }
+        input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(255,204,0,0.2); outline: none; }
+        .upload-zone { border: 2px dashed rgba(255,204,0,0.2); transition: 0.3s; }
+        .upload-zone:hover { border-color: var(--gold); background: rgba(255,204,0,0.05); }
         @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
         .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; }
     </style>
@@ -47,13 +64,29 @@
 <body class="py-12 px-4">
 
     <div id="successScreen" class="modal">
-        <div class="glass-card p-10 text-center max-w-md border-t-4 border-yellow-500">
-            <div class="w-20 h-20 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-[0_0_20px_rgba(255,204,0,0.3)]">
-                <i class="fas fa-user-shield"></i>
+        <div class="glass-card success-pop p-8 text-center max-w-md border-t-4 border-yellow-500 relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl"></div>
+            
+            <div class="w-20 h-20 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-[0_0_30px_rgba(255,204,0,0.4)]">
+                <i class="fas fa-id-badge"></i>
             </div>
-            <h2 class="orbitron text-2xl mb-2 text-white">AGENT REGISTERED</h2>
-            <p class="text-gray-400 text-sm mb-6">Welcome to EYC. Your profile is active. Please check your email for the <span class="text-yellow-500">Access Code</span>.</p>
-            <button onclick="window.location.href='MC.html'" class="w-full py-3 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white transition-all">RETURN TO MISSION CONTROL</button>
+            
+            <h2 class="orbitron text-2xl mb-1 text-white">ACCESS GRANTED</h2>
+            <p class="text-gray-400 text-[11px] mb-4 uppercase tracking-widest">Agent Credentials Generated</p>
+            
+            <div class="id-card rounded-2xl p-6 mb-6">
+                <p class="text-[10px] orbitron text-yellow-500/70 mb-2">YOUR UNIQUE ACCESS CODE</p>
+                <div class="code-display orbitron font-black" id="agentCodeDisplay">----</div>
+                <button onclick="copyCode()" class="block mx-auto mt-2 text-[10px] text-gray-400 hover:text-white transition">
+                    <i class="fas fa-copy mr-1"></i> CLICK TO COPY CODE
+                </button>
+            </div>
+
+            <p class="text-[11px] text-gray-400 mb-6 px-4">Save this code securely. It is required for all Mission Control operations.</p>
+            
+            <button onclick="window.location.href='index.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white hover:scale-105 transition-all shadow-lg">
+                ENTER MISSION CONTROL
+            </button>
         </div>
     </div>
 
@@ -68,28 +101,28 @@
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">FULL NAME (AGENT IDENTITY)</label>
+                    <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase">Full Name (Agent Identity)</label>
                     <input type="text" name="fullName" required placeholder="Agent Name" class="w-full p-4 rounded-xl text-sm">
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AGE</label>
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase">Age</label>
                         <input type="number" name="age" required placeholder="00" class="w-full p-4 rounded-xl text-sm">
                     </div>
                     <div>
-                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">ACCESS EMAIL</label>
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase">Access Email</label>
                         <input type="email" name="email" required placeholder="name@gmail.com" class="w-full p-4 rounded-xl text-sm">
                     </div>
                 </div>
             </div>
 
             <div>
-                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AVATAR UPLOAD</label>
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2 uppercase">Avatar Upload</label>
                 <div class="upload-zone rounded-2xl p-6 text-center relative cursor-pointer">
                     <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
                     <i class="fas fa-camera-retro text-2xl text-gray-500 mb-2" id="uploadIcon"></i>
-                    <p id="fileName" class="text-[10px] text-gray-500 uppercase tracking-widest">Select agent photo</p>
+                    <p id="fileName" class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Select agent photo</p>
                 </div>
             </div>
 
@@ -109,13 +142,9 @@
 
             <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
                 <p class="text-[9px] orbitron text-blue-400 mb-3">XBOX ACCESS PROTOCOL</p>
-                <div class="space-y-2">
-                    <label class="flex items-center gap-3 text-xs">
-                        <input type="radio" name="xboxType" value="Free" checked> Free Limited
-                    </label>
-                    <label class="flex items-center gap-3 text-xs">
-                        <input type="radio" name="xboxType" value="GT"> Golden Ticket Redemption
-                    </label>
+                <div class="space-y-2 text-xs">
+                    <label class="flex items-center gap-3"><input type="radio" name="xboxType" value="Free" checked> Free Limited</label>
+                    <label class="flex items-center gap-3"><input type="radio" name="xboxType" value="GT"> Golden Ticket Redemption</label>
                 </div>
             </div>
 
@@ -140,6 +169,12 @@
             }
         };
 
+        function copyCode() {
+            const code = document.getElementById('agentCodeDisplay').innerText;
+            navigator.clipboard.writeText(code);
+            alert("Success: Agent Access Code Copied!");
+        }
+
         document.getElementById('regForm').onsubmit = function(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
@@ -153,57 +188,37 @@
             submitBtn.disabled = true;
 
             const reader = new FileReader();
-
-            // تنفيذ الإرسال داخل onload لضمان جاهزية الـ Base64
             reader.onload = function(event) {
-                const base64Image = event.target.result;
-
                 const payload = {
                     action: "signup",
                     name: formData.get('fullName'),
                     age: formData.get('age'),
                     email: formData.get('email'),
                     programs: progs.join(', '),
-                    image: base64Image // إرسال السلسلة الكاملة شاملة الـ header ليتعامل معها السكريبت
+                    image: event.target.result
                 };
 
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                })
-                .then(response => response.text())
+                fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
+                .then(r => r.json()) // حولناها لـ JSON عشان نستلم الكود
                 .then(result => {
-                    const cleanResult = result.trim();
-                    if (cleanResult === "Already Registered") {
-                        alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
-                    } else if (cleanResult === "Success") {
+                    if (result.status === "Success") {
+                        // إظهار الكود للطالب فوراً
+                        document.getElementById('agentCodeDisplay').innerText = result.code || "EYC-2026";
                         document.getElementById('successScreen').style.display = 'flex';
+                    } else if (result.status === "Exists") {
+                        alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
                     } else {
-                        alert("نظام الأكاديمية: " + result);
+                        alert("نظام الأكاديمية: " + result.message);
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("فشل الاتصال بمركز القيادة. تأكد من الإنترنت.");
-                })
+                .catch(error => alert("فشل الاتصال بمركز القيادة."))
                 .finally(() => {
                     submitBtn.innerText = "INITIATE REGISTRATION";
                     submitBtn.disabled = false;
                 });
             };
 
-            reader.onerror = function() {
-                alert("حدث خطأ أثناء قراءة ملف الصورة.");
-                submitBtn.disabled = false;
-            };
-
-            // بدء عملية القراءة
-            if (file) {
-                reader.readAsDataURL(file);
-            } else {
-                alert("يرجى اختيار صورة أولاً.");
-                submitBtn.disabled = false;
-            }
+            if (file) reader.readAsDataURL(file);
         };
     </script>
 </body>

@@ -43,7 +43,15 @@
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); transition: 0.5s;
         }
         .p-avatar { width: 70px; height: 70px; overflow: hidden; border-width: 3px; }
-        .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* التعديل المطلوب هنا */
+        .p-avatar img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
+
         .p-score { width: 50px; height: 50px; font-family: 'Orbitron'; font-size: 12px; font-weight: 900; color: var(--accent-gold); }
         .p-rank { width: 35px; height: 35px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; background: var(--accent-gold); color: #000; }
 
@@ -143,7 +151,6 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        // رابط السكريبت الخاص بك
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbx017eMzdCGpZWi9YhvawaFS6GjKQoU9kXiCUPc9YzHw9bb5WwvVccC38A9O_mmVWYOxg/exec';
 
         const activities = {
@@ -191,7 +198,6 @@
             }
         }
 
-        // --- دالة التحقق بنظام JSONP لربط الشيت ---
         function verifyCode() {
             const email = document.getElementById('agentEmail').value;
             const code = document.getElementById('agentCode').value;
@@ -215,10 +221,10 @@
                     const stack = document.getElementById('profileStack');
                     stack.style.display = 'flex';
                     
-                    // معالجة رابط الصورة
                     let finalImg = data.image || "";
                     if(finalImg.includes('id=')) {
                         const id = finalImg.split('id=')[1];
+                        // استخدام thumbnail لسرعة التحميل
                         finalImg = `https://drive.google.com/thumbnail?authuser=0&sz=w320&id=${id}`;
                     } else if (!finalImg.startsWith('http')) {
                         finalImg = "https://via.placeholder.com/100/ffcc00/000000?text=EYC";
@@ -234,7 +240,6 @@
                     btn.innerText = "ACCESS HUB";
                     btn.disabled = false;
                 }
-                // تنظيف تاج السكريبت
                 const oldTag = document.getElementById('jsonp-tag');
                 if(oldTag) oldTag.remove();
                 delete window[callbackName];
@@ -295,7 +300,6 @@
             renderActivities(mode);
         }
 
-        // Canvas Animation
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

@@ -126,7 +126,6 @@
     </div>
 
     <script>
-        // رابط الـ Deployment الخاص بك
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHl1pcA_A6QeiepZTUFxSQqyHk88ln8eY-yiXwQ54HQo5yTv8-I-MIt8CJy6b6nb257Q/exec";
 
         function toggleXboxSection() {
@@ -134,7 +133,6 @@
             document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
         }
 
-        // تحديث شكل الرفع عند اختيار ملف
         document.getElementById('imageInput').onchange = function() {
             if(this.files[0]) {
                 document.getElementById('fileName').innerText = "IDENTIFIED: " + this.files[0].name;
@@ -142,64 +140,70 @@
             }
         };
 
-        document.getElementById('regForm').onsubmit = async function(e) {
+        document.getElementById('regForm').onsubmit = function(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
-            
-            // حالة التحميل
-            submitBtn.innerText = "UPLOADING TO COMMAND CENTER...";
-            submitBtn.disabled = true;
-
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
             const formData = new FormData(this);
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
 
-            // معالجة الصورة
-            const fileInput = document.getElementById('imageInput');
-            let base64Image = "";
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                base64Image = await new Promise(r => {
-                    reader.onload = () => r(reader.result.split(',')[1]);
-                    reader.readAsDataURL(fileInput.files[0]);
-                });
-            }
+            submitBtn.innerText = "UPLOADING TO COMMAND CENTER...";
+            submitBtn.disabled = true;
 
-            const payload = {
-                action: "signup",
-                name: formData.get('fullName'),
-                age: formData.get('age'),
-                email: formData.get('email'),
-                programs: progs.join(', '),
-                image: base64Image
+            const reader = new FileReader();
+
+            // تنفيذ الإرسال داخل onload لضمان جاهزية الـ Base64
+            reader.onload = function(event) {
+                const base64Image = event.target.result;
+
+                const payload = {
+                    action: "signup",
+                    name: formData.get('fullName'),
+                    age: formData.get('age'),
+                    email: formData.get('email'),
+                    programs: progs.join(', '),
+                    image: base64Image // إرسال السلسلة الكاملة شاملة الـ header ليتعامل معها السكريبت
+                };
+
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.text())
+                .then(result => {
+                    const cleanResult = result.trim();
+                    if (cleanResult === "Already Registered") {
+                        alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
+                    } else if (cleanResult === "Success") {
+                        document.getElementById('successScreen').style.display = 'flex';
+                    } else {
+                        alert("نظام الأكاديمية: " + result);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("فشل الاتصال بمركز القيادة. تأكد من الإنترنت.");
+                })
+                .finally(() => {
+                    submitBtn.innerText = "INITIATE REGISTRATION";
+                    submitBtn.disabled = false;
+                });
             };
 
-            // عملية الإرسال الاحترافية
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload) 
-            })
-            .then(response => response.text())
-            .then(result => {
-                const cleanResult = result.trim();
-                
-                if (cleanResult === "Already Registered") {
-                    alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
-                } else if (cleanResult === "Success") {
-                    // إظهار شاشة النجاح الاحترافية
-                    document.getElementById('successScreen').style.display = 'flex';
-                } else {
-                    alert("نظام الأكاديمية: " + result);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("فشل الاتصال بمركز القيادة. تأكد من الإنترنت.");
-            })
-            .finally(() => {
-                submitBtn.innerText = "INITIATE REGISTRATION";
+            reader.onerror = function() {
+                alert("حدث خطأ أثناء قراءة ملف الصورة.");
                 submitBtn.disabled = false;
-            });
+            };
+
+            // بدء عملية القراءة
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                alert("يرجى اختيار صورة أولاً.");
+                submitBtn.disabled = false;
+            }
         };
     </script>
 </body>

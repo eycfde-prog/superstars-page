@@ -17,12 +17,12 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; position: relative; }
+        body { background: var(--primary-bg); color: #fff; overflow-x: hidden; height: 100vh; width: 100vw; }
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; }
 
         .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; z-index: 10; position: relative; transition: 0.5s; }
-        .rank-header h1 {  
+        .rank-header h1 { 
             font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); 
             background: linear-gradient(to bottom, #fff, var(--accent-gold));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -52,15 +52,9 @@
             width: 280px; height: 400px; border-radius: 30px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.15);
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s;
             cursor: pointer; position: relative;
             overflow: hidden;
-        }
-
-        .swiper-slide::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.08) 0%, transparent 70%);
-            pointer-events: none;
         }
 
         .token-badge {
@@ -76,56 +70,51 @@
 
         .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.15), rgba(0,0,0,0.9)); border-color: rgba(0,255,163,0.3); }
         .season-card .activity-icon { color: var(--season-color); }
-        
         .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.15), rgba(0,0,0,0.9)); border-color: rgba(255,49,49,0.3); }
         .xbox-card .activity-icon { color: var(--xbox-color); }
 
-        .swipe-hint { text-align: center; font-family: 'Orbitron'; font-size: 10px; color: var(--accent-gold); margin-top: 15px; letter-spacing: 2px; opacity: 0.5; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+        .swipe-hint { text-align: center; font-family: 'Orbitron'; font-size: 10px; color: var(--accent-gold); margin-top: 15px; letter-spacing: 2px; opacity: 0.5; transition: 0.5s; }
 
-        /* --- Mission Hub Styles --- */
-        #mission-hub {
+        /* --- نظام المهمات الجديد (المهمات المنفجرة) --- */
+        #missions-layer {
             position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100;
         }
 
-        .selected-card-clone {
-            transform: scale(0.6); z-index: 101; pointer-events: none;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-        }
-
         .mission-bubble {
-            position: absolute; width: 60px; height: 60px;
+            position: absolute;
+            width: 60px; height: 60px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 204, 0, 0.3);
+            border: 1px solid var(--accent-gold);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Orbitron'; font-size: 12px; font-weight: 900;
-            color: var(--accent-gold); cursor: pointer;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 14px;
+            color: var(--accent-gold);
+            cursor: pointer;
             transition: 0.3s;
-            animation: orbit 10s linear infinite;
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.1);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+            animation: floatBubble 3s ease-in-out infinite;
         }
+        .mission-bubble:hover { background: var(--accent-gold); color: #000; transform: scale(1.1); box-shadow: 0 0 25px var(--accent-gold); }
 
-        .mission-bubble:hover {
-            background: var(--accent-gold); color: #000; scale: 1.2;
-            box-shadow: 0 0 20px var(--accent-gold);
+        @keyframes floatBubble {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .back-btn {
-            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-            background: none; border: 1px solid white; color: white; padding: 10px 20px;
-            border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer;
-            z-index: 110;
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            background: white; color: black; padding: 12px 30px; border-radius: 30px;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 12px;
+            display: none; z-index: 110; cursor: pointer; border: none;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
 
-        @keyframes orbit {
-            from { transform: rotate(0deg) translateX(140px) rotate(0deg); }
-            to { transform: rotate(360deg) translateX(140px) rotate(-360deg); }
+        /* أنميشن الكارت المختار */
+        .selected-card-anim {
+            transform: scale(0.6) !important;
+            z-index: 105;
         }
-
-        /* اخفاء العناصر عند التفعيل */
-        .hidden-mode { opacity: 0; pointer-events: none; scale: 0.8; }
     </style>
 </head>
 <body>
@@ -148,10 +137,8 @@
 
     <div class="swipe-hint" id="mainHint">« SWIPE TO EXPLORE »</div>
 
-    <div id="mission-hub">
-        <div id="hub-center"></div>
-        <button class="back-btn" onclick="closeMissions()">BACK TO CENTER</button>
-    </div>
+    <div id="missions-layer"></div>
+    <button class="back-btn" id="backBtn" onclick="resetView()">CLOSE MISSIONS</button>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
@@ -182,8 +169,8 @@
 
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities[mode].map(act => `
-                <div class="swiper-slide ${mode}-card" onclick="openMissions(this, '${act.name}')">
+            wrapper.innerHTML = activities[mode].map((act, index) => `
+                <div class="swiper-slide ${mode}-card" onclick="openMissions(this, ${index})">
                     <div class="token-badge">${act.tk} TK</div>
                     <div class="activity-code">${act.code}</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
@@ -203,58 +190,81 @@
             });
         }
 
-        function openMissions(cardElement, activityName) {
-            // اخفاء العناصر الاخرى
-            document.getElementById('mainHeader').classList.add('hidden-mode');
-            document.getElementById('mainToggle').classList.add('hidden-mode');
-            document.getElementById('swiper-container').classList.add('hidden-mode');
-            document.getElementById('mainHint').classList.add('hidden-mode');
-
-            const hub = document.getElementById('mission-hub');
-            const center = document.getElementById('hub-center');
-            hub.style.display = 'flex';
+        function openMissions(cardElement, index) {
+            // 1. إخفاء العناصر الأخرى
+            document.getElementById('mainHeader').style.opacity = '0';
+            document.getElementById('mainToggle').style.opacity = '0';
+            document.getElementById('mainHint').style.opacity = '0';
             
-            // استنساخ الكارت
-            center.innerHTML = cardElement.outerHTML;
-            const clone = center.querySelector('.swiper-slide');
-            clone.classList.add('selected-card-clone');
-            clone.removeAttribute('onclick');
+            // 2. إخفاء السلايدات غير المختارة
+            const allSlides = document.querySelectorAll('.swiper-slide');
+            allSlides.forEach(slide => {
+                if (slide !== cardElement) slide.style.opacity = '0';
+            });
 
-            // انشاء الـ 10 فقاعات (مهمات)
-            for (let i = 1; i <= 10; i++) {
-                const bubble = document.createElement('div');
-                bubble.className = 'mission-bubble';
-                bubble.innerText = 'M' + i;
-                // توزيع الانميشن بتأخير مختلف عشان يلفوا حوالين الكارت
-                bubble.style.animationDelay = `-${(i * 1)}s`;
-                bubble.onclick = () => alert(`Starting Mission ${i} for ${activityName}`);
-                hub.appendChild(bubble);
-            }
+            // 3. تصغير الكارت المختار
+            cardElement.classList.add('selected-card-anim');
+            currentSwiper.allowTouchMove = false;
+
+            // 4. إظهار المهمات (الفقاعات)
+            setTimeout(() => {
+                const layer = document.getElementById('missions-layer');
+                layer.innerHTML = '';
+                layer.style.display = 'flex';
+                document.getElementById('backBtn').style.display = 'block';
+
+                const radius = window.innerWidth < 500 ? 130 : 180; // قطر الدائرة
+                for (let i = 1; i <= 10; i++) {
+                    const angle = (i * 36) * (Math.PI / 180);
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+
+                    const bubble = document.createElement('div');
+                    bubble.className = 'mission-bubble';
+                    bubble.innerText = 'M' + i;
+                    bubble.style.left = `calc(50% + ${x}px - 30px)`;
+                    bubble.style.top = `calc(50% + ${y}px - 30px)`;
+                    bubble.style.animationDelay = (i * 0.1) + 's';
+                    
+                    // وظيفة الضغط على المهمة (تقدر تربطها بلينك)
+                    bubble.onclick = (e) => {
+                        e.stopPropagation();
+                        alert(`Starting Mission ${i} for ${cardElement.querySelector('.activity-name').innerText}`);
+                    };
+                    
+                    layer.appendChild(bubble);
+                }
+            }, 500);
         }
 
-        function closeMissions() {
-            document.getElementById('mainHeader').classList.remove('hidden-mode');
-            document.getElementById('mainToggle').classList.remove('hidden-mode');
-            document.getElementById('swiper-container').classList.remove('hidden-mode');
-            document.getElementById('mainHint').classList.remove('hidden-mode');
+        function resetView() {
+            document.getElementById('missions-layer').style.display = 'none';
+            document.getElementById('backBtn').style.display = 'none';
             
-            const hub = document.getElementById('mission-hub');
-            hub.style.display = 'none';
-            // تنظيف الفقاعات القديمة
-            const bubbles = document.querySelectorAll('.mission-bubble');
-            bubbles.forEach(b => b.remove());
+            document.getElementById('mainHeader').style.opacity = '1';
+            document.getElementById('mainToggle').style.opacity = '1';
+            document.getElementById('mainHint').style.opacity = '1';
+
+            const allSlides = document.querySelectorAll('.swiper-slide');
+            allSlides.forEach(slide => {
+                slide.style.opacity = '1';
+                slide.classList.remove('selected-card-anim');
+            });
+
+            currentSwiper.allowTouchMove = true;
         }
 
         function switchMode(mode) {
             const btnS = document.querySelector('.season-mode');
             const btnX = document.querySelector('.xbox-mode');
             if ((mode === 'season' && btnS.classList.contains('active')) || (mode === 'xbox' && btnX.classList.contains('active'))) return;
+
             btnS.classList.toggle('active', mode === 'season');
             btnX.classList.toggle('active', mode === 'xbox');
             renderActivities(mode);
         }
 
-        // Background Animation
+        // --- BACKGROUND EYC ANIMATION ---
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

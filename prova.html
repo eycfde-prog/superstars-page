@@ -20,6 +20,7 @@
         body { background: var(--primary-bg); color: #fff; overflow-x: hidden; height: 100vh; width: 100vw; }
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; }
 
+        /* --- Royal Login Button --- */
         .royal-login-btn {
             position: fixed; top: 20px; right: 20px; z-index: 1000;
             background: linear-gradient(45deg, var(--accent-gold), #fff);
@@ -30,6 +31,7 @@
         }
         .royal-login-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--accent-gold); }
 
+        /* --- Floating Profile Bubbles --- */
         .profile-stack {
             position: fixed; top: 20px; left: 20px; z-index: 1000;
             display: none; flex-direction: column; gap: 10px; align-items: center;
@@ -42,9 +44,11 @@
         }
         .p-avatar { width: 70px; height: 70px; overflow: hidden; border-width: 3px; cursor: pointer; }
         .p-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
         .p-score { width: 50px; height: 50px; font-family: 'Orbitron'; font-size: 12px; font-weight: 900; color: var(--accent-gold); }
         .p-rank { width: 35px; height: 35px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; background: var(--accent-gold); color: #000; }
 
+        /* --- Login Modal --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.9);
             display: none; align-items: center; justify-content: center; z-index: 2000;
@@ -140,8 +144,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        // تأكد من وضع رابط الـ Web App الخاص بك هنا بعد التحديث
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbzDzyCH6OeuQJsSyPIUOKFgt6pIGLZbE3leqNk0isbvuTr7JeCNY9x8nfAHbqru-tXw8w/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxg30bb2V0lJoe0uVTSXzJZ12n7FmijWzihIf2bjH9GTVVGLBfBZeq_abWdD-GOheCz7Q/exec';
 
         const activities = {
             season: [{ name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 }, { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 }, { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 }, { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 }, { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 }, { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }],
@@ -150,12 +153,13 @@
 
         let currentSwiper = null;
 
+        // --- 1. فحص التلقائي عند التحميل ---
         document.addEventListener("DOMContentLoaded", function() {
             const savedAgent = localStorage.getItem('eyc_agent_data');
             if (savedAgent) {
                 const data = JSON.parse(savedAgent);
                 applyAgentData(data);
-                console.log("Session Restored: ✅ Agent Logged In");
+                console.log("Agent session restored:", data.name);
             }
             renderActivities('season');
         });
@@ -165,7 +169,7 @@
             document.getElementById('loginTriggerBtn').style.display = 'none';
             document.getElementById('profileStack').style.display = 'flex';
             
-            // معالجة الصورة (محفوظة كما هي في طلبك الأصلي)
+            // معالجة الصورة المحدثة
             let finalImg = data.image || "";
             if (finalImg.includes('id=')) {
                 const id = finalImg.split('id=')[1].split('&')[0]; 
@@ -192,10 +196,12 @@
             const callbackName = 'googleDocCallback';
             window[callbackName] = function(data) {
                 if (data.status === "success") {
+                    // --- 2. حفظ البيانات سحرياً ---
                     localStorage.setItem('eyc_agent_data', JSON.stringify(data));
+                    
                     document.getElementById('loginModal').style.display = 'none';
                     applyAgentData(data);
-                    alert(`Access Granted. Welcome, Agent ${data.name}! Attendance Marked ✅`);
+                    alert(`Access Granted. Welcome, Agent ${data.name}!`);
                 } else {
                     alert(data.message || "Access Denied");
                     btn.innerText = "ACCESS HUB";
@@ -219,6 +225,7 @@
             }
         }
 
+        // باقي وظائف الصفحة الأصلية...
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act, index) => `

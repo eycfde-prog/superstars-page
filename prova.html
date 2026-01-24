@@ -43,6 +43,7 @@
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); transition: 0.5s;
         }
         .p-avatar { width: 70px; height: 70px; overflow: hidden; border-width: 3px; }
+        
         .p-avatar img { 
             width: 100%; 
             height: 100%; 
@@ -219,21 +220,23 @@
                     const stack = document.getElementById('profileStack');
                     stack.style.display = 'flex';
                     
-                    // --- الكود المطور لمعالجة الصورة ---
-let finalImg = data.image || "";
-
-// إذا كان الرابط لا يبدأ بـ http (يعني العمود فارغ أو فيه نص خطأ)
-if (!finalImg.startsWith('http')) {
-    finalImg = "https://via.placeholder.com/100/ffcc00/000000?text=EYC";
-} else {
-    // التأكد من أن الرابط يحتوي على authuser=0 لضمان الصلاحيات
-    if (finalImg.includes('drive.google.com') && !finalImg.includes('authuser')) {
-        finalImg += "&authuser=0";
-    }
-}
+                    // --- الإصلاح الذكي للصورة هنا ---
+                    let finalImg = data.image || "";
+                    if (finalImg.includes('drive.google.com')) {
+                        let fileId = "";
+                        if (finalImg.includes('id=')) {
+                            fileId = finalImg.split('id=')[1].split('&')[0];
+                        } else if (finalImg.includes('/d/')) {
+                            fileId = finalImg.split('/d/')[1].split('/')[0];
+                        }
+                        if (fileId) {
+                            finalImg = `https://drive.google.com/thumbnail?authuser=0&sz=w320&id=${fileId}`;
+                        }
+                    } else if (!finalImg.startsWith('http')) {
+                        finalImg = "https://via.placeholder.com/100/ffcc00/000000?text=EYC";
+                    }
+                    
                     document.getElementById('userImg').src = finalImg;
-                    // ---------------------------------
-
                     document.getElementById('userScore').innerText = data.totalScore || 0;
                     document.getElementById('userRank').innerText = "#" + data.rank;
                     

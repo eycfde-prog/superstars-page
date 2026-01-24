@@ -75,7 +75,6 @@
 
         .swipe-hint { text-align: center; font-family: 'Orbitron'; font-size: 10px; color: var(--accent-gold); margin-top: 15px; letter-spacing: 2px; opacity: 0.5; transition: 0.5s; }
 
-        /* --- نظام المهمات الجديد (المهمات المنفجرة) --- */
         #missions-layer {
             position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100;
         }
@@ -110,10 +109,27 @@
             box-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
 
-        /* أنميشن الكارت المختار */
         .selected-card-anim {
             transform: scale(0.6) !important;
             z-index: 105;
+        }
+
+        /* --- تصميم نافذة بيانات الطالب المدمجة --- */
+        #student-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+        .student-card {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold);
+            padding: 30px; border-radius: 24px; text-align: center; width: 90%; max-width: 350px;
+        }
+        .student-img {
+            width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent-gold);
+            margin-bottom: 15px; object-fit: cover;
+        }
+        .score-badge {
+            background: var(--accent-gold); color: #000; padding: 5px 15px; border-radius: 10px;
+            font-weight: 900; font-family: 'Orbitron'; display: inline-block; margin-top: 10px;
         }
     </style>
 </head>
@@ -140,8 +156,50 @@
     <div id="missions-layer"></div>
     <button class="back-btn" id="backBtn" onclick="resetView()">CLOSE MISSIONS</button>
 
+    <div id="student-modal">
+        <div class="student-card">
+            <img id="studentImg" src="" class="student-img" alt="Agent">
+            <h2 id="studentName" class="orbitron" style="font-size: 18px; color: #fff;">Agent Name</h2>
+            <div id="studentScore" class="score-badge">000 TK</div>
+            <p id="studentRank" class="orbitron" style="font-size: 12px; margin-top: 15px; color: var(--accent-gold);">RANK: --</p>
+            <button onclick="document.getElementById('student-modal').style.display='none'" class="orbitron" style="margin-top: 20px; background: none; border: 1px solid #fff; color: #fff; padding: 5px 15px; border-radius: 10px; cursor: pointer;">EXIT</button>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
+        // منطق الـ Login المدمج
+        function login() {
+            const email = prompt("ENTER AGENT EMAIL:");
+            if (!email) return;
+            const code = prompt("ENTER ACCESS CODE:");
+            if (!code) return;
+
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbyeSaM3pd9IrrR1JNim6UodInZedZDbjL6kdgYEgx7fynKXdV9B25-HceWdPR5eOcrjlg/exec';
+
+            // إظهار حالة التحميل
+            document.getElementById('mainHint').innerText = "VERIFYING IDENTITY...";
+
+            fetch(`${scriptUrl}?email=${email}&code=${code}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('mainHint').innerText = "« SWIPE TO EXPLORE »";
+                if (data.status === "success") {
+                    document.getElementById('studentName').innerText = data.name;
+                    document.getElementById('studentImg').src = data.image;
+                    document.getElementById('studentScore').innerText = data.totalScore + " TK";
+                    document.getElementById('studentRank').innerText = "RANK: " + data.rank;
+                    document.getElementById('student-modal').style.display = 'flex';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(() => {
+                alert("Connection Failed");
+                document.getElementById('mainHint').innerText = "« SWIPE TO EXPLORE »";
+            });
+        }
+
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 },
@@ -191,29 +249,25 @@
         }
 
         function openMissions(cardElement, index) {
-            // 1. إخفاء العناصر الأخرى
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
             document.getElementById('mainHint').style.opacity = '0';
             
-            // 2. إخفاء السلايدات غير المختارة
             const allSlides = document.querySelectorAll('.swiper-slide');
             allSlides.forEach(slide => {
                 if (slide !== cardElement) slide.style.opacity = '0';
             });
 
-            // 3. تصغير الكارت المختار
             cardElement.classList.add('selected-card-anim');
             currentSwiper.allowTouchMove = false;
 
-            // 4. إظهار المهمات (الفقاعات)
             setTimeout(() => {
                 const layer = document.getElementById('missions-layer');
                 layer.innerHTML = '';
                 layer.style.display = 'flex';
                 document.getElementById('backBtn').style.display = 'block';
 
-                const radius = window.innerWidth < 500 ? 130 : 180; // قطر الدائرة
+                const radius = window.innerWidth < 500 ? 130 : 180;
                 for (let i = 1; i <= 10; i++) {
                     const angle = (i * 36) * (Math.PI / 180);
                     const x = Math.cos(angle) * radius;
@@ -226,10 +280,10 @@
                     bubble.style.top = `calc(50% + ${y}px - 30px)`;
                     bubble.style.animationDelay = (i * 0.1) + 's';
                     
-                    // وظيفة الضغط على المهمة (تقدر تربطها بلينك)
                     bubble.onclick = (e) => {
                         e.stopPropagation();
-                        alert(`Starting Mission ${i} for ${cardElement.querySelector('.activity-name').innerText}`);
+                        // عند الضغط على المهمة يتم استدعاء الـ login
+                        login();
                     };
                     
                     layer.appendChild(bubble);
@@ -240,7 +294,6 @@
         function resetView() {
             document.getElementById('missions-layer').style.display = 'none';
             document.getElementById('backBtn').style.display = 'none';
-            
             document.getElementById('mainHeader').style.opacity = '1';
             document.getElementById('mainToggle').style.opacity = '1';
             document.getElementById('mainHint').style.opacity = '1';
@@ -264,7 +317,6 @@
             renderActivities(mode);
         }
 
-        // --- BACKGROUND EYC ANIMATION ---
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

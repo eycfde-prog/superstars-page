@@ -72,6 +72,7 @@
             display: flex; align-items: center; justify-content: center;
             gap: 8px; margin: 10px 0; font-family: 'Orbitron'; font-weight: 700;
         }
+        /* أيقونات احتياطية في حال عدم وجود صور الـ assets */
         .stat-badge i { color: var(--accent-gold); font-size: 1.2rem; }
         
         .tokens-count { color: var(--accent-gold); font-size: 1.2rem; margin: 15px 0; font-weight: 900; }
@@ -143,7 +144,7 @@
     </div>
 
     <script>
-        // رابط الـ Script الخاص بك مع إضافة بارامتر الأكشن
+        // استبدل هذا الرابط بالرابط الناتج من New Deployment (تأكد من اختيار Anyone)
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxzhibGtMJ8Sadk4ILvkC1fYaqI4UAg1M0gJWFgCZZQtAJcn3e04ORe9q88FQ-tkSjRJw/exec';
 
         async function fetchRanks() {
@@ -168,16 +169,15 @@
                 return;
             }
 
-            // منصة التتويج (أول 3)
             const top3 = data.slice(0, 3);
-            const displayOrder = [1, 0, 2]; // ترتيب العرض: الثاني، الأول، الثالث
+            const displayOrder = [1, 0, 2]; // ترتيب: ثاني، أول، ثالث
             let podiumHTML = '';
 
             displayOrder.forEach(idx => {
                 const student = top3[idx];
                 if (!student) return;
                 
-                const isFirst = idx === 0; 
+                const isFirst = idx === 0; // الطالب الأول هو index 0 في المصفوفة الأصلية المرتبة
                 const rankClass = isFirst ? 'rank-1' : (idx === 1 ? 'rank-2' : 'rank-3');
                 const crown = isFirst ? '<i class="fas fa-crown crown"></i>' : '';
 
@@ -206,7 +206,6 @@
             podiumContainer.innerHTML = podiumHTML;
             podiumContainer.style.display = 'flex';
 
-            // بقية القائمة
             const rest = data.slice(3);
             let listHTML = '';
             rest.forEach((student, index) => {
@@ -236,7 +235,7 @@
             ranksContainer.style.display = 'flex';
         }
 
-        // --- Background Animation ---
+        // --- Background Animation (نفس كودك السابق) ---
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -273,3 +272,4 @@
     </script>
 </body>
 </html>
+

@@ -39,7 +39,7 @@
         .podium {
             display: flex; justify-content: center; align-items: flex-end;
             gap: 25px; margin-bottom: 120px; padding-top: 50px;
-            display: none; /* سيظهر بواسطة JavaScript */
+            display: none;
         }
 
         .podium-item {
@@ -143,18 +143,8 @@
     </div>
 
     <script>
-        // الرابط الخاص بك
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzz0XlsF-Zdo8MOz8-xvsxLPeg0JXCnWE8rx22tC0ISFmsgYCTMiWy6jufz2pUFV8tpUQ/exec';
-
-        // دالة سحرية لتحويل روابط جوجل درايف لتظهر كصور
-        function getImageUrl(url) {
-            if (!url) return 'https://via.placeholder.com/150';
-            if (url.includes('drive.google.com')) {
-                const fileId = url.split('id=')[1] || url.split('/d/')[1].split('/')[0];
-                return `https://drive.google.com/thumbnail?sz=w300&id=${fileId.split('&')[0]}`;
-            }
-            return url;
-        }
+        // رابط الـ Script الخاص بك مع إضافة بارامتر الأكشن
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxzhibGtMJ8Sadk4ILvkC1fYaqI4UAg1M0gJWFgCZZQtAJcn3e04ORe9q88FQ-tkSjRJw/exec';
 
         async function fetchRanks() {
             try {
@@ -178,55 +168,69 @@
                 return;
             }
 
-            // الفصل بين الأوائل والباقي
+            // منصة التتويج (أول 3)
             const top3 = data.slice(0, 3);
-            const displayOrder = [1, 0, 2]; // الترتيب البصري: ثاني (يسار)، أول (وسط)، ثالث (يمين)
+            const displayOrder = [1, 0, 2]; // ترتيب العرض: الثاني، الأول، الثالث
             let podiumHTML = '';
 
-            displayOrder.forEach((idx) => {
+            displayOrder.forEach(idx => {
                 const student = top3[idx];
                 if (!student) return;
                 
                 const isFirst = idx === 0; 
                 const rankClass = isFirst ? 'rank-1' : (idx === 1 ? 'rank-2' : 'rank-3');
                 const crown = isFirst ? '<i class="fas fa-crown crown"></i>' : '';
-                const img = getImageUrl(student.Image);
 
                 podiumHTML += `
                     <div class="podium-item ${rankClass}">
                         ${crown}
                         <div class="avatar-wrapper">
-                            <img src="${img}" class="avatar" onerror="this.src='https://via.placeholder.com/150'">
+                            <img src="${student.Image || 'https://via.placeholder.com/150'}" class="avatar" onerror="this.src='https://via.placeholder.com/150'">
                         </div>
-                        <div class="row-title">${student.Title || 'Agent'}</div>
+                        <div class="row-title">${student.Title || 'Newcomer'}</div>
                         <div class="row-name" style="font-size: 1.5rem; margin: 10px 0;">${student.Name}</div>
+                        
                         <div class="tokens-count">${student.Tokens || 0} TOKENS</div>
-                        <div class="stat-badge"><i class="fas fa-star"></i> <span>${student.Stars || 0} Stars</span></div>
-                        <div class="stat-badge"><i class="fas fa-ticket-alt"></i> <span>${student.GT || 0} GT</span></div>
-                    </div>`;
+                        
+                        <div class="stat-badge">
+                            <i class="fas fa-star"></i>
+                            <span>${student.Stars || 0} Stars</span>
+                        </div>
+                        <div class="stat-badge">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>${student.GT || 0} GT</span>
+                        </div>
+                    </div>
+                `;
             });
             podiumContainer.innerHTML = podiumHTML;
             podiumContainer.style.display = 'flex';
 
-            // القائمة الكاملة (من المركز الرابع)
+            // بقية القائمة
             const rest = data.slice(3);
             let listHTML = '';
             rest.forEach((student, index) => {
-                const img = getImageUrl(student.Image);
                 listHTML += `
                     <div class="rank-row">
                         <div class="row-rank-num">#${index + 4}</div>
-                        <img src="${img}" class="row-avatar" onerror="this.src='https://via.placeholder.com/150'">
+                        <img src="${student.Image || 'https://via.placeholder.com/150'}" class="row-avatar" onerror="this.src='https://via.placeholder.com/150'">
                         <div class="row-info">
                             <span class="row-name">${student.Name}</span>
                             <span class="row-title">${student.Title || 'Superstar'}</span>
                         </div>
                         <div class="row-stats">
-                            <div class="mini-stat" style="color: var(--accent-gold);">${student.Tokens || 0} TK</div>
-                            <div class="mini-stat"><i class="fas fa-star" style="color: #fff;"></i> ${student.Stars || 0}</div>
-                            <div class="mini-stat"><i class="fas fa-ticket-alt" style="color: var(--accent-gold);"></i> ${student.GT || 0} GT</div>
+                            <div class="mini-stat" style="color: var(--accent-gold);">
+                                ${student.Tokens || 0} TK
+                            </div>
+                            <div class="mini-stat">
+                                <i class="fas fa-star" style="color: #fff;"></i> ${student.Stars || 0}
+                            </div>
+                            <div class="mini-stat">
+                                <i class="fas fa-ticket-alt" style="color: var(--accent-gold);"></i> ${student.GT || 0} GT
+                            </div>
                         </div>
-                    </div>`;
+                    </div>
+                `;
             });
             ranksContainer.innerHTML = listHTML;
             ranksContainer.style.display = 'flex';
@@ -250,7 +254,9 @@
                 this.y += this.speedY;
                 if (this.y < -10) this.y = canvas.height + 10;
                 ctx.fillStyle = `rgba(252, 194, 0, ${this.opacity})`;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
         function animate() {

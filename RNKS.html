@@ -39,7 +39,7 @@
         .podium {
             display: flex; justify-content: center; align-items: flex-end;
             gap: 25px; margin-bottom: 120px; padding-top: 50px;
-            display: none;
+            display: none; /* يتم تفعيله عبر JS */
         }
 
         .podium-item {
@@ -72,7 +72,6 @@
             display: flex; align-items: center; justify-content: center;
             gap: 8px; margin: 10px 0; font-family: 'Orbitron'; font-weight: 700;
         }
-        /* أيقونات احتياطية في حال عدم وجود صور الـ assets */
         .stat-badge i { color: var(--accent-gold); font-size: 1.2rem; }
         
         .tokens-count { color: var(--accent-gold); font-size: 1.2rem; margin: 15px 0; font-weight: 900; }
@@ -105,7 +104,6 @@
         .row-title { font-size: 0.75rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
 
         .row-stats { display: flex; gap: 15px; justify-content: flex-end; align-items: center; }
-
         .mini-stat { display: flex; align-items: center; gap: 5px; font-family: 'Orbitron'; font-size: 0.85rem; font-weight: 800; white-space: nowrap; }
 
         .crown { 
@@ -144,8 +142,18 @@
     </div>
 
     <script>
-        // استبدل هذا الرابط بالرابط الناتج من New Deployment (تأكد من اختيار Anyone)
+        // --- ضع رابط Deployment الخاص بك هنا ---
         const scriptURL = 'https://script.google.com/macros/s/AKfycbzjsO9FR9Lp-5YnsI8Lwcx6YTrUenjMym_WmOZ_N6rH5b5I2jRfYFUchjV2Kr42RPJiGg/exec';
+
+        // وظيفة مساعدة لتحويل الروابط إلى صور (خاص بجوجل درايف)
+        function getAvatarUrl(url) {
+            if (!url) return 'https://via.placeholder.com/150';
+            if (url.includes('id=')) {
+                const id = url.split('id=')[1].split('&')[0];
+                return `https://drive.google.com/thumbnail?authuser=0&sz=w300&id=${id}`;
+            }
+            return url;
+        }
 
         async function fetchRanks() {
             try {
@@ -169,15 +177,17 @@
                 return;
             }
 
+            // --- 1. معالجة منصة التتويج (الأوائل الثلاثة) ---
             const top3 = data.slice(0, 3);
-            const displayOrder = [1, 0, 2]; // ترتيب: ثاني، أول، ثالث
+            const displayOrder = [1, 0, 2]; // الترتيب البصري: ثاني (يسار)، أول (وسط)، ثالث (يمين)
             let podiumHTML = '';
 
-            displayOrder.forEach(idx => {
+            displayOrder.forEach((idx) => {
                 const student = top3[idx];
                 if (!student) return;
                 
-                const isFirst = idx === 0; // الطالب الأول هو index 0 في المصفوفة الأصلية المرتبة
+                // في المصفوفة الأصلية المرتبة: index 0 هو الأول، 1 هو الثاني، 2 هو الثالث
+                const isFirst = idx === 0; 
                 const rankClass = isFirst ? 'rank-1' : (idx === 1 ? 'rank-2' : 'rank-3');
                 const crown = isFirst ? '<i class="fas fa-crown crown"></i>' : '';
 
@@ -185,34 +195,32 @@
                     <div class="podium-item ${rankClass}">
                         ${crown}
                         <div class="avatar-wrapper">
-                            <img src="${student.Image || 'https://via.placeholder.com/150'}" class="avatar" onerror="this.src='https://via.placeholder.com/150'">
+                            <img src="${getAvatarUrl(student.Image)}" class="avatar" onerror="this.src='https://via.placeholder.com/150'">
                         </div>
-                        <div class="row-title">${student.Title || 'Newcomer'}</div>
+                        <div class="row-title">${student.Title || 'Agent'}</div>
                         <div class="row-name" style="font-size: 1.5rem; margin: 10px 0;">${student.Name}</div>
-                        
                         <div class="tokens-count">${student.Tokens || 0} TOKENS</div>
-                        
                         <div class="stat-badge">
                             <i class="fas fa-star"></i>
-                            <span>${student.Stars || 0} Stars</span>
+                            <span>${Number(student.Stars || 0).toFixed(1)} Stars</span>
                         </div>
                         <div class="stat-badge">
                             <i class="fas fa-ticket-alt"></i>
-                            <span>${student.GT || 0} GT</span>
+                            <span>${Number(student.GT || 0).toFixed(1)} GT</span>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
             podiumContainer.innerHTML = podiumHTML;
             podiumContainer.style.display = 'flex';
 
+            // --- 2. معالجة باقي القائمة (من المركز الرابع فما فوق) ---
             const rest = data.slice(3);
             let listHTML = '';
             rest.forEach((student, index) => {
                 listHTML += `
                     <div class="rank-row">
                         <div class="row-rank-num">#${index + 4}</div>
-                        <img src="${student.Image || 'https://via.placeholder.com/150'}" class="row-avatar" onerror="this.src='https://via.placeholder.com/150'">
+                        <img src="${getAvatarUrl(student.Image)}" class="row-avatar" onerror="this.src='https://via.placeholder.com/150'">
                         <div class="row-info">
                             <span class="row-name">${student.Name}</span>
                             <span class="row-title">${student.Title || 'Superstar'}</span>
@@ -222,20 +230,19 @@
                                 ${student.Tokens || 0} TK
                             </div>
                             <div class="mini-stat">
-                                <i class="fas fa-star" style="color: #fff;"></i> ${student.Stars || 0}
+                                <i class="fas fa-star" style="color: #fff;"></i> ${Number(student.Stars || 0).toFixed(1)}
                             </div>
                             <div class="mini-stat">
-                                <i class="fas fa-ticket-alt" style="color: var(--accent-gold);"></i> ${student.GT || 0} GT
+                                <i class="fas fa-ticket-alt" style="color: var(--accent-gold);"></i> ${Number(student.GT || 0).toFixed(1)} GT
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
             ranksContainer.innerHTML = listHTML;
             ranksContainer.style.display = 'flex';
         }
 
-        // --- Background Animation (نفس كودك السابق) ---
+        // --- نظام جزيئات الخلفية ---
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -272,5 +279,3 @@
     </script>
 </body>
 </html>
-
-

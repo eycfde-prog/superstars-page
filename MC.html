@@ -31,7 +31,7 @@
         }
         .royal-login-btn.hidden { display: none !important; }
 
-        /* --- Floating Profile Bubbles --- */
+        /* --- Floating Profile Bubbles (Bottom Left & Reversed) --- */
         .profile-stack {
             position: fixed; bottom: 30px; left: 20px; z-index: 1000;
             display: none; flex-direction: column-reverse; gap: 12px; align-items: center;
@@ -68,6 +68,7 @@
             color: #000; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; border: none;
         }
 
+        /* Elements from original */
         .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; z-index: 10; position: relative; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
         .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; z-index: 10; position: relative; }
@@ -141,7 +142,8 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxEx7dNwEH-ewHVHWBEumSWGg7QsRo1n6N2m_VPjsL8t0P9LOXJmFWSB66hI6mtg7BxXA/exec';
+        // استبدل هذا الرابط برابط السكريبت الجديد بعد النشر (Deployment)
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxbI48Qsr1kCOgtGXwO5gBjN9-pyby-wYop1NRctteI1Ho5klj-BMNisLkX2h-_5vVzbg/exec';
 
         const activities = {
             season: [{ name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 }, { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 }, { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 }, { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 }, { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 }, { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }],
@@ -150,33 +152,18 @@
 
         let currentSwiper = null;
 
-        // --- تعديل: التحقق عند التحميل أو الريفرش ---
         window.addEventListener('DOMContentLoaded', () => {
             const savedAgent = localStorage.getItem('eyc_agent_data');
             if (savedAgent) {
                 const data = JSON.parse(savedAgent);
-                // نقوم بعمل تسجيل صامت للتأكد من حالة العمود H من الخادم مباشرة
+                applyAgentData(data);
+                // هذا الجزء هو المسؤول عن تحديث علامة الصح في كل Refresh
                 silentLogin(data.email, data.code);
             }
             renderActivities('season');
         });
 
-        function logoutAgent() {
-            isLogged = false;
-            localStorage.removeItem('eyc_agent_data');
-            document.getElementById('profileStack').style.display = 'none';
-            document.getElementById('loginTriggerBtn').classList.remove('hidden');
-            alert("Security Protocol: Access revoked. Please verify your identity again.");
-        }
-
         function applyAgentData(data) {
-            // التحقق من العمود H (نفترض أن السكربت يرسل خاصية باسم hasCheck أو status)
-            // إذا كانت قيمة العمود H فارغة أو false، نمنع الدخول
-            if (data.status === "error" || data.verified === false || data.columnH === "" || data.columnH === false) {
-                logoutAgent();
-                return;
-            }
-
             isLogged = true;
             document.getElementById('loginTriggerBtn').classList.add('hidden');
             document.getElementById('profileStack').style.display = 'flex';
@@ -195,20 +182,11 @@
         }
 
         function silentLogin(email, code) {
-            const callbackName = 'silentCallback_' + Math.floor(Math.random() * 100000);
+            const callbackName = 'silentCallback';
             window[callbackName] = function(data) {
                 if (data.status === "success") {
-                    // هنا يتم فحص وجود علامة الصح (العمود H)
-                    // ملاحظة: تأكد أن Google Script الخاص بك يرسل قيمة العمود H في JSON
-                    if (data.columnH === "TRUE" || data.columnH === true || data.columnH === "✔") {
-                        localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                        applyAgentData(data);
-                    } else {
-                        // إذا لم توجد علامة صح، يتم تسجيل الخروج وحذف البيانات المحلية
-                        logoutAgent();
-                    }
-                } else {
-                    logoutAgent();
+                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
+                    applyAgentData(data);
                 }
                 delete window[callbackName];
             };
@@ -232,16 +210,7 @@
         }
 
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        
-        function handleCardClick(card, index) { 
-            if(!isLogged) {
-                openLogin();
-            } else {
-                // فحص إضافي سريع قبل فتح المهمة
-                openMissions(card, index);
-            }
-        }
-
+        function handleCardClick(card, index) { if(!isLogged) openLogin(); else openMissions(card, index); }
         function checkEmail() {
             const email = document.getElementById('agentEmail').value;
             if(email) {
@@ -260,19 +229,10 @@
             const callbackName = 'googleDocCallback';
             window[callbackName] = function(data) {
                 if (data.status === "success") {
-                    // التحقق من العمود H عند أول دخول
-                    if (data.columnH === "TRUE" || data.columnH === true || data.columnH === "✔") {
-                        localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                        applyAgentData(data);
-                        document.getElementById('loginModal').style.display = 'none';
-                    } else {
-                        alert("Access Denied: Account not verified by admin (Column H).");
-                        btn.innerText = "ACCESS HUB"; btn.disabled = false;
-                    }
-                } else { 
-                    alert(data.message || "Access Denied"); 
-                    btn.innerText = "ACCESS HUB"; btn.disabled = false; 
-                }
+                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
+                    applyAgentData(data);
+                    document.getElementById('loginModal').style.display = 'none';
+                } else { alert(data.message || "Access Denied"); btn.innerText = "ACCESS HUB"; btn.disabled = false; }
                 delete window[callbackName];
             };
             const scriptTag = document.createElement('script');
@@ -342,10 +302,12 @@
             draw() {
                 this.opacity += this.twinkleSpeed;
                 if (this.opacity > 1 || this.opacity < 0) this.twinkleSpeed *= -1;
+                
                 ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
+
                 this.y -= this.speed;
                 if (this.y < 0) this.y = canvas.height;
             }

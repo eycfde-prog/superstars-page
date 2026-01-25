@@ -29,6 +29,7 @@
             cursor: pointer; border: none; box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
             transition: 0.3s; display: flex; align-items: center; gap: 8px;
         }
+        .royal-login-btn.hidden { display: none !important; }
         .royal-login-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--accent-gold); }
 
         /* --- Floating Profile Bubbles --- */
@@ -42,9 +43,8 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); transition: 0.5s;
         }
-        .p-avatar { width: 70px; height: 70px; overflow: hidden; border-width: 3px; cursor: pointer; }
+        .p-avatar { width: 70px; height: 70px; overflow: hidden; border-width: 3px; }
         .p-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
         .p-score { width: 50px; height: 50px; font-family: 'Orbitron'; font-size: 12px; font-weight: 900; color: var(--accent-gold); }
         .p-rank { width: 35px; height: 35px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; background: var(--accent-gold); color: #000; }
 
@@ -100,7 +100,7 @@
     </button>
 
     <div class="profile-stack" id="profileStack">
-        <div class="p-bubble p-avatar" title="Click to Logout" onclick="logout()"><img src="" id="userImg" alt="Agent"></div>
+        <div class="p-bubble p-avatar"><img src="" id="userImg" alt="Agent"></div>
         <div class="p-bubble p-score" id="userScore">0</div>
         <div class="p-bubble p-rank" id="userRank">#0</div>
     </div>
@@ -108,13 +108,11 @@
     <div class="modal-overlay" id="loginModal">
         <div class="royal-card">
             <h2 class="orbitron" style="color:var(--accent-gold); margin-bottom:10px;">IDENTITY VERIFICATION</h2>
-            
             <div id="emailStep">
                 <p style="font-size:12px; color:#aaa;">Enter your registered agent email</p>
                 <input type="email" id="agentEmail" placeholder="AGENT@EYC.COM">
                 <button class="royal-btn" onclick="checkEmail()">VERIFY EMAIL</button>
             </div>
-
             <div id="codeStep" style="display:none;">
                 <p style="font-size:12px; color:#aaa;">Welcome back, <span id="welcomeName" style="color:#fff;"></span>!</p>
                 <input type="text" id="agentCode" placeholder="ACCESS CODE">
@@ -144,7 +142,8 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwJnC_uTRkDoV582ZEYyEczbzMRsuNAWacuhjTdS_fVN_yvhWFS9NXbMgq9rULfXaeahQ/exec';
+        // تأكد من تحديث الرابط هذا برابط الـ Script الجديد بعد وضع كود الـ doGet المعدل
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbzCX0A8tv7g6vIzjsLcl91V__J-YkcVfulb0DZOu1Arz3mRSZQktQdBVJzfvFdoTtW1gg/exec';
 
         const activities = {
             season: [{ name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 }, { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 }, { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 }, { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 }, { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 }, { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }],
@@ -153,34 +152,86 @@
 
         let currentSwiper = null;
 
-        // --- 1. فحص التلقائي عند التحميل ---
-        document.addEventListener("DOMContentLoaded", function() {
+        // --- وظيفة التحقق من تسجيل الدخول المحفوظ عند تشغيل الصفحة ---
+        window.addEventListener('DOMContentLoaded', () => {
             const savedAgent = localStorage.getItem('eyc_agent_data');
             if (savedAgent) {
                 const data = JSON.parse(savedAgent);
                 applyAgentData(data);
-                console.log("Agent session restored:", data.name);
+                // إعادة التحقق من السيرفر لتحديث النقاط والترتيب وعلامة الصح في الشيت
+                silentLogin(data.email, data.code);
             }
             renderActivities('season');
         });
 
         function applyAgentData(data) {
             isLogged = true;
-            document.getElementById('loginTriggerBtn').style.display = 'none';
+            document.getElementById('loginTriggerBtn').classList.add('hidden');
             document.getElementById('profileStack').style.display = 'flex';
             
-            // معالجة الصورة المحدثة
             let finalImg = data.image || "";
-            if (finalImg.includes('id=')) {
-                const id = finalImg.split('id=')[1].split('&')[0]; 
-                finalImg = `https://drive.google.com/thumbnail?authuser=0&sz=w300&id=${id}`;
-            } else if (!finalImg.startsWith('http') && !finalImg.startsWith('data:image')) {
+            if (finalImg.includes('drive.google.com')) {
+                let fileId = "";
+                if (finalImg.includes('id=')) fileId = finalImg.split('id=')[1].split('&')[0];
+                else if (finalImg.includes('/d/')) fileId = finalImg.split('/d/')[1].split('/')[0];
+                if (fileId) finalImg = `https://drive.google.com/thumbnail?authuser=0&sz=w320&id=${fileId}`;
+            } else if (!finalImg.startsWith('http')) {
                 finalImg = "https://via.placeholder.com/100/ffcc00/000000?text=EYC";
             }
-
+            
             document.getElementById('userImg').src = finalImg;
             document.getElementById('userScore').innerText = data.totalScore || 0;
-            document.getElementById('userRank').innerText = "#" + (data.rank || "0");
+            document.getElementById('userRank').innerText = "#" + data.rank;
+        }
+
+        function silentLogin(email, code) {
+            const callbackName = 'silentCallback';
+            window[callbackName] = function(data) {
+                if (data.status === "success") {
+                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
+                    applyAgentData(data);
+                }
+                delete window[callbackName];
+            };
+            const scriptTag = document.createElement('script');
+            scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
+            document.body.appendChild(scriptTag);
+        }
+
+        function renderActivities(mode) {
+            const wrapper = document.getElementById('activities-wrapper');
+            wrapper.innerHTML = activities[mode].map((act, index) => `
+                <div class="swiper-slide ${mode}-card" onclick="handleCardClick(this, ${index})">
+                    <div class="token-badge">${act.tk} TK</div>
+                    <div class="activity-code" style="position: absolute; bottom: 20px; font-family: 'Orbitron'; font-size: 10px; opacity: 0.5;">${act.code}</div>
+                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
+                    <div class="activity-name">${act.name}</div>
+                    <div style="font-size: 10px; color: #fff; opacity: 0.6; margin-top: 15px; font-family: 'Orbitron'; font-weight: 700;">PROTOCOL ACTIVE</div>
+                </div>
+            `).join('');
+
+            if (currentSwiper) currentSwiper.destroy();
+            currentSwiper = new Swiper('.swiper', {
+                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
+                coverflowEffect: { rotate: 15, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
+                speed: 600, grabCursor: true
+            });
+        }
+
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
+        
+        function handleCardClick(card, index) {
+            if(!isLogged) { openLogin(); } 
+            else { openMissions(card, index); }
+        }
+
+        function checkEmail() {
+            const email = document.getElementById('agentEmail').value;
+            if(email) {
+                document.getElementById('emailStep').style.display = 'none';
+                document.getElementById('codeStep').style.display = 'block';
+                document.getElementById('welcomeName').innerText = "Agent"; 
+            } else { alert("Please enter a valid email."); }
         }
 
         function verifyCode() {
@@ -188,7 +239,7 @@
             const code = document.getElementById('agentCode').value;
             const btn = document.getElementById('verifyBtn');
 
-            if (!email || !code) return alert("Please enter both Email and Code");
+            if (!email || !code) { alert("Please enter both Email and Code"); return; }
 
             btn.innerText = "VERIFYING...";
             btn.disabled = true;
@@ -196,11 +247,10 @@
             const callbackName = 'googleDocCallback';
             window[callbackName] = function(data) {
                 if (data.status === "success") {
-                    // --- 2. حفظ البيانات سحرياً ---
-                    localStorage.setItem('eyc_agent_data', JSON.stringify(data));
-                    
-                    document.getElementById('loginModal').style.display = 'none';
+                    // حفظ البيانات في المتصفح ليبقى مسجلاً
+                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
                     applyAgentData(data);
+                    document.getElementById('loginModal').style.display = 'none';
                     alert(`Access Granted. Welcome, Agent ${data.name}!`);
                 } else {
                     alert(data.message || "Access Denied");
@@ -218,51 +268,15 @@
             document.body.appendChild(scriptTag);
         }
 
-        function logout() {
-            if(confirm("Do you want to logout?")) {
-                localStorage.removeItem('eyc_agent_data');
-                location.reload();
-            }
-        }
-
-        // باقي وظائف الصفحة الأصلية...
-        function renderActivities(mode) {
-            const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide ${mode}-card" onclick="handleCardClick(this, ${index})">
-                    <div class="token-badge">${act.tk} TK</div>
-                    <div class="activity-code" style="position: absolute; bottom: 20px; font-family: 'Orbitron'; font-size: 10px; opacity: 0.5;">${act.code}</div>
-                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
-                    <div class="activity-name">${act.name}</div>
-                    <div style="font-size: 10px; color: #fff; opacity: 0.6; margin-top: 15px; font-family: 'Orbitron'; font-weight: 700;">PROTOCOL ACTIVE</div>
-                </div>
-            `).join('');
-            if (currentSwiper) currentSwiper.destroy();
-            currentSwiper = new Swiper('.swiper', {
-                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
-                coverflowEffect: { rotate: 15, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
-                speed: 600, grabCursor: true
-            });
-        }
-
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        function handleCardClick(card, index) { if(!isLogged) openLogin(); else openMissions(card, index); }
-        function checkEmail() {
-            const email = document.getElementById('agentEmail').value;
-            if(email) {
-                document.getElementById('emailStep').style.display = 'none';
-                document.getElementById('codeStep').style.display = 'block';
-                document.getElementById('welcomeName').innerText = "Agent"; 
-            } else alert("Please enter a valid email.");
-        }
-
         function openMissions(cardElement, index) {
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
             document.getElementById('mainHint').style.opacity = '0';
-            document.querySelectorAll('.swiper-slide').forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
+            const allSlides = document.querySelectorAll('.swiper-slide');
+            allSlides.forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
             cardElement.classList.add('selected-card-anim');
             currentSwiper.allowTouchMove = false;
+
             setTimeout(() => {
                 const layer = document.getElementById('missions-layer');
                 layer.innerHTML = '';
@@ -271,11 +285,13 @@
                 const radius = window.innerWidth < 500 ? 130 : 180;
                 for (let i = 1; i <= 10; i++) {
                     const angle = (i * 36) * (Math.PI / 180);
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
                     const bubble = document.createElement('div');
                     bubble.className = 'mission-bubble';
                     bubble.innerText = 'M' + i;
-                    bubble.style.left = `calc(50% + ${Math.cos(angle) * radius}px - 30px)`;
-                    bubble.style.top = `calc(50% + ${Math.sin(angle) * radius}px - 30px)`;
+                    bubble.style.left = `calc(50% + ${x}px - 30px)`;
+                    bubble.style.top = `calc(50% + ${y}px - 30px)`;
                     bubble.onclick = (e) => { e.stopPropagation(); alert(`Mission ${i} Active!`); };
                     layer.appendChild(bubble);
                 }
@@ -288,17 +304,19 @@
             document.getElementById('mainHeader').style.opacity = '1';
             document.getElementById('mainToggle').style.opacity = '1';
             document.getElementById('mainHint').style.opacity = '1';
-            document.querySelectorAll('.swiper-slide').forEach(slide => { slide.style.opacity = '1'; slide.classList.remove('selected-card-anim'); });
+            const allSlides = document.querySelectorAll('.swiper-slide');
+            allSlides.forEach(slide => { slide.style.opacity = '1'; slide.classList.remove('selected-card-anim'); });
             currentSwiper.allowTouchMove = true;
         }
 
         function switchMode(mode) {
-            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
-            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
+            const btnS = document.querySelector('.season-mode');
+            const btnX = document.querySelector('.xbox-mode');
+            btnS.classList.toggle('active', mode === 'season');
+            btnX.classList.toggle('active', mode === 'xbox');
             renderActivities(mode);
         }
 
-        // Canvas Animation
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

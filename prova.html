@@ -19,23 +19,17 @@
         body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; }
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
         
-        /* --- Logo & Header --- */
-        .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        
-        /* ضبط حجم اللوجو */
-        .main-logo {
-            height: 55px; /* الحجم المثالي للديسكتوب */
-            width: auto;
+        /* --- Logo & Top Nav Optimization --- */
+        .top-nav { 
+            position: fixed; top: 15px; left: 15px; right: 15px; 
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000; 
+        }
+        .logo-container { display: flex; align-items: center; }
+        .main-logo { 
+            height: 50px; /* حجم مناسب للديسكتوب */
+            width: auto; 
             filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.4));
             transition: 0.3s;
-        }
-
-        /* ضبط اللوجو للموبايل */
-        @media (max-width: 600px) {
-            .main-logo {
-                height: 40px; /* حجم أصغر قليلاً للموبايل ليناسب الشاشة */
-            }
-            .top-nav { top: 15px; }
         }
         
         .royal-login-btn {
@@ -45,6 +39,13 @@
             cursor: pointer; border: none; box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
         }
         .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold); display: none; font-size: 12px; }
+
+        /* --- Mobile Logo Fix --- */
+        @media (max-width: 600px) {
+            .main-logo { height: 35px; } /* تصغير اللوجو في الموبايل عشان ميزحمش الشاشة */
+            .top-nav { top: 10px; left: 10px; right: 10px; }
+            .royal-login-btn { padding: 6px 12px; font-size: 8px; }
+        }
 
         /* --- Profile Bubbles & Sparks --- */
         .profile-stack { position: fixed; bottom: 30px; left: 20px; z-index: 1000; display: none; flex-direction: column-reverse; gap: 10px; align-items: center; }
@@ -56,7 +57,7 @@
         .p-score { width: 45px; height: 45px; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; color: var(--accent-gold); }
         .p-rank { width: 30px; height: 30px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; background: var(--accent-gold); color: #000; }
 
-        /* --- Unified Login Modal --- */
+        /* --- Login Modal --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
         .royal-card { background: #0a0a0f; border: 1px solid rgba(255,204,0,0.3); padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; }
         .royal-card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #000; border: 1px solid #333; color: #fff; text-align: center; font-family: 'Orbitron'; font-size: 12px; }
@@ -66,7 +67,7 @@
         .new-profile-btn { background: transparent; color: #fff; border: 1px solid #444; font-family: 'Orbitron'; font-size: 10px; padding: 10px; border-radius: 10px; cursor: pointer; }
 
         /* Headers */
-        .rank-header { text-align: center; padding-top: 60px; margin-bottom: 10px; position: relative; }
+        .rank-header { text-align: center; padding-top: 80px; margin-bottom: 10px; position: relative; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; color: #fff; }
         .rank-header p { font-size: 9px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
 
@@ -76,7 +77,7 @@
         .mode-btn.season-mode.active { background: var(--season-color); color: #000; border-color: var(--season-color); }
         .mode-btn.xbox-mode.active { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); }
 
-        /* Swiper Fixes */
+        /* Swiper */
         .swiper { width: 100%; padding-bottom: 40px; }
         .swiper-slide { width: 220px; height: 320px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.5s; }
         .token-badge { position: absolute; top: 20px; left: 20px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 8px; }
@@ -298,19 +299,36 @@
             renderActivities(mode);
         }
 
+        // --- Swirling Starry Background ---
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
-
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         class Star {
             constructor() {
                 this.dist = Math.random() * Math.max(canvas.width, canvas.height);
                 this.angle = Math.random() * Math.PI * 2;
-                this.size = Math.random() * 1.5;
-                this.speed = (Math.random() * 0.001) + 0.0005;
+                this.size = Math.random() * 1.2;
+                this.speed = (Math.random() * 0.001) + 0.0003;
             }
             draw() {
                 this.angle += this.speed;
                 const x = canvas.width/2 + Math.cos(this.angle) * this.dist;
-                const y = canvas.height/2 + Math.sin(this
+                const y = canvas.height/2 + Math.sin(this.angle) * this.dist;
+                ctx.fillStyle = "rgba(255,255,255," + (Math.random() * 0.5 + 0.5) + ")";
+                ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI*2); ctx.fill();
+            }
+        }
+        function animate() {
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => s.draw());
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for (let i = 0; i < 200; i++) stars.push(new Star());
+        animate();
+    </script>
+</body>
+</html>

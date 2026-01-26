@@ -18,6 +18,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--primary-bg); color: #fff; overflow-x: hidden; height: 100vh; width: 100vw; }
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.8; }
+        
         /* --- Royal Login Button --- */
         .royal-login-btn {
             position: fixed; top: 20px; right: 20px; z-index: 1000;
@@ -28,7 +29,8 @@
             transition: 0.3s; display: flex; align-items: center; gap: 8px;
         }
         .royal-login-btn.hidden { display: none !important; }
-        /* --- Floating Profile Bubbles (Bottom Left & Reversed) --- */
+
+        /* --- Floating Profile Bubbles --- */
         .profile-stack {
             position: fixed; bottom: 30px; left: 20px; z-index: 1000;
             display: none; flex-direction: column-reverse; gap: 12px; align-items: center;
@@ -43,6 +45,7 @@
         .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .p-score { width: 55px; height: 55px; font-family: 'Orbitron'; font-size: 13px; font-weight: 900; color: var(--accent-gold); border-color: rgba(255,204,0,0.5); }
         .p-rank { width: 38px; height: 38px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; background: var(--accent-gold); color: #000; }
+
         /* --- Login Modal --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.9);
@@ -63,6 +66,12 @@
             width: 100%; padding: 15px; border-radius: 12px; background: var(--accent-gold);
             color: #000; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; border: none;
         }
+        .forgot-link {
+            display: block; margin-top: 15px; font-size: 10px; font-family: 'Orbitron';
+            color: var(--accent-gold); text-decoration: none; cursor: pointer; opacity: 0.7;
+        }
+
+        /* Standard Layout */
         .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; z-index: 10; position: relative; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
         .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; z-index: 10; position: relative; }
@@ -87,14 +96,17 @@
 </head>
 <body>
     <canvas id="rank-canvas"></canvas>
+    
     <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">
         <i class="fas fa-crown"></i> AGENT LOGIN
     </button>
+
     <div class="profile-stack" id="profileStack">
         <div class="p-bubble p-rank" id="userRank">#0</div>
         <div class="p-bubble p-score" id="userScore">0</div>
         <div class="p-bubble p-avatar"><img src="" id="userImg" alt="Agent"></div>
     </div>
+
     <div class="modal-overlay" id="loginModal">
         <div class="royal-card">
             <h2 class="orbitron" style="color:var(--accent-gold); margin-bottom:10px;">IDENTITY VERIFICATION</h2>
@@ -107,44 +119,52 @@
                 <p style="font-size:12px; color:#aaa;">Welcome back, <span id="welcomeName" style="color:#fff;"></span>!</p>
                 <input type="text" id="agentCode" placeholder="ACCESS CODE">
                 <button class="royal-btn" id="verifyBtn" onclick="verifyCode()">ACCESS HUB</button>
+                <span class="forgot-link" onclick="forgotCode()">FORGOT ACCESS CODE?</span>
             </div>
         </div>
     </div>
+
     <header class="rank-header" id="mainHeader">
         <h1>EYC ACADEMY</h1>
         <p style="font-size: 11px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">ACTIVITY MISSION CONTROL</p>
     </header>
+
     <div class="toggle-container" id="mainToggle">
         <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
         <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
     </div>
+
     <div id="swiper-container" class="swiper">
         <div class="swiper-wrapper" id="activities-wrapper"></div>
     </div>
+
     <div class="swipe-hint" id="mainHint">« SWIPE TO EXPLORE »</div>
+
     <div id="missions-layer"></div>
     <button class="back-btn" id="backBtn" onclick="resetView()">CLOSE MISSIONS</button>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        // استبدل هذا الرابط برابط الـ Script الجديد بعد النشر (Deploy)
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbyE5nTmO8q8fE7EdPD4CxTenR2EEcYbcsc82_5BAeno3yU52p4i3TZR0UbTeutGv4Cz1w/exec';
-
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwvuPUENsBdQeSrd3-RUD7tMaiveY_qvkVRuhRzkxOmmVyrmsk3gtjs1IVmSH26XrOGjg/exec';
+        
         const activities = {
             season: [{ name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 }, { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 }, { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 }, { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 }, { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 }, { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }],
             xbox: [{ name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 100 }, { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 120 }, { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 110 }, { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 150 }, { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 130 }, { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 200 }, { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 140 }, { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 180 }, { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 110 }, { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 250 }]
         };
+
         let currentSwiper = null;
 
         window.addEventListener('DOMContentLoaded', () => {
+            renderActivities('season');
             const savedAgent = localStorage.getItem('eyc_agent_data');
             if (savedAgent) {
                 const data = JSON.parse(savedAgent);
-                // محاولة تسجيل دخول صامت للتأكد من وجود علامة الصح في الشيت
+                // عند تحديث الصفحة، نقوم بعمل تسجيل صامت للتأكد من وجود علامة AC في الشيت
                 silentLogin(data.email, data.code);
+            } else {
+                setTimeout(openLogin, 1000); // إجبار الدخول لو مفيش بيانات
             }
-            renderActivities('season');
         });
 
         function applyAgentData(data) {
@@ -172,22 +192,15 @@
                     localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
                     applyAgentData(data);
                 } else {
-                    // إذا لم يجد الصح أو حدث خطأ، نمسح البيانات ونظهر زر الدخول
-                    console.log("Session verification failed");
+                    // إذا فشل (تم مسح الـ AC من الشيت مثلاً)، نطلب منه يسجل تاني
                     localStorage.removeItem('eyc_agent_data');
-                    logoutUI();
+                    openLogin();
                 }
                 delete window[callbackName];
             };
             const scriptTag = document.createElement('script');
             scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
             document.body.appendChild(scriptTag);
-        }
-
-        function logoutUI() {
-            isLogged = false;
-            document.getElementById('loginTriggerBtn').classList.remove('hidden');
-            document.getElementById('profileStack').style.display = 'none';
         }
 
         function renderActivities(mode) {
@@ -205,8 +218,7 @@
         }
 
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        function handleCardClick(card, index) { if(!isLogged) openLogin(); else openMissions(card, index); }
-        
+
         function checkEmail() {
             const email = document.getElementById('agentEmail').value;
             if(email) {
@@ -221,16 +233,14 @@
             const code = document.getElementById('agentCode').value;
             const btn = document.getElementById('verifyBtn');
             btn.innerText = "VERIFYING..."; btn.disabled = true;
+            
             const callbackName = 'googleDocCallback';
             window[callbackName] = function(data) {
                 if (data.status === "success") {
                     localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
                     applyAgentData(data);
                     document.getElementById('loginModal').style.display = 'none';
-                } else { 
-                    alert(data.message || "Access Denied: Please check your Email/Code and ensure you are registered."); 
-                    btn.innerText = "ACCESS HUB"; btn.disabled = false; 
-                }
+                } else { alert(data.message || "Access Denied"); btn.innerText = "ACCESS HUB"; btn.disabled = false; }
                 delete window[callbackName];
             };
             const scriptTag = document.createElement('script');
@@ -238,6 +248,26 @@
             document.body.appendChild(scriptTag);
         }
 
+        function forgotCode() {
+            const email = document.getElementById('agentEmail').value;
+            if(!email) { alert("Please enter your email first"); return; }
+            
+            const btn = document.querySelector('.forgot-link');
+            btn.innerText = "TRANSMITTING...";
+            
+            const callbackName = 'forgotCallback';
+            window[callbackName] = function(data) {
+                alert(data.message);
+                btn.innerText = "FORGOT ACCESS CODE?";
+                delete window[callbackName];
+            };
+            const scriptTag = document.createElement('script');
+            scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&forgot=true&callback=${callbackName}`;
+            document.body.appendChild(scriptTag);
+        }
+
+        function handleCardClick(card, index) { if(!isLogged) openLogin(); else openMissions(card, index); }
+        
         function openMissions(cardElement, index) {
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
@@ -280,7 +310,7 @@
             renderActivities(mode);
         }
 
-        // --- STARRY NIGHT BACKGROUND ANIMATION ---
+        // Starry Night
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -299,18 +329,11 @@
                 this.opacity += this.twinkleSpeed;
                 if (this.opacity > 1 || this.opacity < 0) this.twinkleSpeed *= -1;
                 ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                this.y -= this.speed;
-                if (this.y < 0) this.y = canvas.height;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+                this.y -= this.speed; if (this.y < 0) this.y = canvas.height;
             }
         }
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(s => s.draw());
-            requestAnimationFrame(animate);
-        }
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => s.draw()); requestAnimationFrame(animate); }
         window.addEventListener('resize', initCanvas);
         initCanvas();
         for (let i = 0; i < 150; i++) stars.push(new Star());

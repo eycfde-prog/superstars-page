@@ -19,6 +19,7 @@
         body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; }
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
         
+        /* --- Logo & Top Nav Optimization --- */
         .top-nav { 
             position: fixed; top: 15px; left: 15px; right: 15px; 
             display: flex; justify-content: space-between; align-items: center; z-index: 1000; 
@@ -45,6 +46,7 @@
             .royal-login-btn { padding: 6px 12px; font-size: 8px; }
         }
 
+        /* --- Profile Bubbles --- */
         .profile-stack { position: fixed; bottom: 30px; left: 20px; z-index: 1000; display: none; flex-direction: column-reverse; gap: 10px; align-items: center; }
         .p-bubble { border-radius: 50%; border: 2px solid var(--accent-gold); backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; }
         .p-avatar { width: 65px; height: 65px; overflow: hidden; border-width: 3px; position: relative; }
@@ -54,6 +56,7 @@
         .p-score { width: 45px; height: 45px; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; color: var(--accent-gold); }
         .p-rank { width: 30px; height: 30px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; background: var(--accent-gold); color: #000; }
 
+        /* --- Modal --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
         .royal-card { background: #0a0a0f; border: 1px solid rgba(255,204,0,0.3); padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; }
         .royal-card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #000; border: 1px solid #333; color: #fff; text-align: center; font-family: 'Orbitron'; font-size: 12px; }
@@ -84,6 +87,7 @@
         .mission-bubble { position: absolute; width: 55px; height: 55px; background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); cursor: pointer; animation: floatBubble 3s ease-in-out infinite; }
         @keyframes floatBubble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 20px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 10px; }
+        .selected-card-anim { transform: scale(0.5) translateY(-50px) !important; opacity: 0.4 !important; }
     </style>
 </head>
 <body>
@@ -136,7 +140,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbye_DlT6-AY0_UixG0gZZqwmgg_U5ZNTHvPFbRstRpix8idorXyVCDMaCag-U5fG9Y6Xg/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbweE2lPN5GNOH1pOhZDTCv0g2ExvAc6R370Yqui0k1MUwKc3r26sv4SMWhOTYC0YuqALg/exec';
         
         const activities = {
             season: [
@@ -165,7 +169,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             renderActivities('season');
-            checkSavedAgent();
+            checkSavedAgent(); 
         });
 
         function renderActivities(mode) {
@@ -189,47 +193,33 @@
             });
         }
 
-        function openLogin() { 
-            document.getElementById('loginModal').style.display = 'flex'; 
-            document.getElementById('errorMsg').style.display = 'none';
-        }
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
 
-        // --- تعديل وظيفة التحقق لإظهار الرسائل بشكل سليم ---
         function verifyCode() {
-            const email = document.getElementById('agentEmail').value.trim();
-            const code = document.getElementById('agentCode').value.trim();
+            const email = document.getElementById('agentEmail').value;
+            const code = document.getElementById('agentCode').value;
             const btn = document.getElementById('verifyBtn');
             const err = document.getElementById('errorMsg');
             
-            if(!email || !code) {
-                err.innerText = "Please fill all fields!";
-                err.style.display = 'block';
-                return;
-            }
-
-            btn.innerText = "AUTHENTICATING..."; 
-            btn.disabled = true;
-            err.style.display = 'none';
+            if(!email || !code) return;
+            btn.innerText = "AUTHENTICATING..."; btn.disabled = true;
             
-            const callbackName = 'loginCallback_' + Math.floor(Math.random() * 100000);
+            const callbackName = 'loginCallback';
             window[callbackName] = function(data) {
                 if (data.status === "success") {
                     localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
                     applyAgentData(data);
                     document.getElementById('loginModal').style.display = 'none';
+                    err.style.display = 'none';
                 } else {
-                    err.innerText = "Access Denied: Check Email/Code!";
+                    err.innerText = data.message || "Invalid Credentials!";
                     err.style.display = 'block';
-                    btn.innerText = "INITIALIZE LOGIN"; 
-                    btn.disabled = false;
                 }
-                const oldScript = document.getElementById('jsonp_script');
-                if(oldScript) oldScript.remove();
+                btn.innerText = "INITIALIZE LOGIN"; btn.disabled = false;
                 delete window[callbackName];
             };
             
             const scriptTag = document.createElement('script');
-            scriptTag.id = 'jsonp_script';
             scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
             document.body.appendChild(scriptTag);
         }
@@ -258,7 +248,7 @@
             const saved = localStorage.getItem('eyc_agent_data');
             if(saved) {
                 const data = JSON.parse(saved);
-                const callbackName = 'checkCallback_' + Math.floor(Math.random() * 100000);
+                const callbackName = 'silentCheckCallback';
                 
                 window[callbackName] = function(response) {
                     if (response.status === "success") {
@@ -267,16 +257,14 @@
                     } else {
                         localStorage.removeItem('eyc_agent_data');
                         isLogged = false;
-                        // لا نستخدم reload هنا لتجنب اللوب اللانهائي، نكتفي بإعادة الواجهة للوضع الأصلي
                         document.getElementById('loginTriggerBtn').style.display = 'block';
-                        document.getElementById('userName').style.display = 'none';
-                        document.getElementById('profileStack').style.display = 'none';
                     }
                     delete window[callbackName];
                 };
                 
                 const scriptTag = document.createElement('script');
-                scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(data.email)}&code=${encodeURIComponent(data.code)}&callback=${callbackName}`;
+                // نرسل silent=true لمنع تحديث خانة AC عبثاً
+                scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(data.email)}&code=${encodeURIComponent(data.code)}&silent=true&callback=${callbackName}`;
                 document.body.appendChild(scriptTag);
             }
         }

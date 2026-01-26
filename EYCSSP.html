@@ -10,7 +10,7 @@
     <style>
         :root {
             --primary-bg: #050505;
-            --accent-gold: #ffcc00; /* ذهبي أكثر سطوعاً */
+            --accent-gold: #ffcc00; 
             --gold-glow: rgba(255, 204, 0, 0.4);
             --strong-glow: rgba(255, 204, 0, 0.6);
             --glass-border: rgba(255, 204, 0, 0.3);
@@ -20,7 +20,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--primary-bg); color: var(--text-color); min-height: 100vh; overflow-x: hidden; }
 
-        /* تعديل وضوح الحروف في الخلفية */
         #letter-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.6; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.2) 0%, #050505 100%); z-index: -1; }
 
@@ -62,24 +61,39 @@
             cursor: pointer;
         }
 
-        /* جعل الدوائر ذهبية أكثر ووضوح أعلى */
+        /* --- نجوم تدور حوالين الزرار --- */
+        .star-orbit {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .star {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        /* --- الحلقات (الشرطات بقت أرفع وأشيك) --- */
         .core-ring {
             position: absolute; border-radius: 50%;
-            border: 12px dashed var(--accent-gold); /* سمك أكبر وذهبي فاقع */
-            filter: drop-shadow(0 0 20px var(--strong-glow));
+            border: 2px dashed var(--accent-gold); /* جعلت الشرطات أنحف */
+            filter: drop-shadow(0 0 10px var(--gold-glow));
         }
 
         .ring-outer {
-            width: 300px; height: 300px;
-            opacity: 0.7;
-            animation: rotateRight 30s linear infinite; 
+            width: 280px; height: 280px;
+            opacity: 0.4;
+            animation: rotateRight 20s linear infinite; 
         }
 
         .ring-inner {
-            width: 240px; height: 240px;
-            border-width: 8px;
-            opacity: 0.5;
-            animation: rotateLeft 30s linear infinite;
+            width: 220px; height: 220px;
+            opacity: 0.3;
+            animation: rotateLeft 15s linear infinite;
         }
 
         @keyframes rotateRight { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -105,17 +119,16 @@
             margin-top: 30px; width: 100%; padding: 0 20px;
         }
 
-        /* الأزرار مع إطار ذهبي وهالة واضحة */
         .nav-btn {
             width: 100%; max-width: 280px;
             padding: 14px; border-radius: 12px;
             background: rgba(255, 255, 255, 0.05); color: #fff;
-            border: 2px solid var(--accent-gold); /* إطار ذهبي واضح */
+            border: 2px solid var(--accent-gold); 
             backdrop-filter: blur(10px);
             cursor: pointer; transition: 0.3s; font-family: 'Orbitron'; 
             text-decoration: none; text-align: center; font-size: 0.8rem;
             font-weight: 700; letter-spacing: 2px;
-            box-shadow: 0 0 15px var(--gold-glow); /* هالة ذهبية حول الزر */
+            box-shadow: 0 0 15px var(--gold-glow); 
         }
 
         .nav-btn:hover { 
@@ -155,6 +168,8 @@
 
     <section class="mission-control">
         <div class="core-container" onclick="startMission()">
+            <div class="star-orbit" id="starOrbit"></div>
+            
             <div class="core-ring ring-outer"></div>
             <div class="core-ring ring-inner"></div>
             <div class="main-core-btn">
@@ -175,6 +190,35 @@
     </footer>
 
     <script>
+        // دالة إنشاء النجوم الدوارة
+        function createStars() {
+            const orbit = document.getElementById('starOrbit');
+            const count = 12; // عدد النجوم
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const angle = (i / count) * Math.PI * 2;
+                const radius = 130 + Math.random() * 20; // المسافة من المركز
+                const speed = 0.01 + Math.random() * 0.02;
+                
+                let currentAngle = angle;
+                
+                function moveStar() {
+                    currentAngle += speed;
+                    const x = Math.cos(currentAngle) * radius + 160; // 160 هي نصف عرض الحاوية
+                    const y = Math.sin(currentAngle) * radius + 160;
+                    star.style.left = x + 'px';
+                    star.style.top = y + 'px';
+                    // تأثير نبض خفيف للنجوم
+                    star.style.opacity = Math.sin(currentAngle * 2) * 0.5 + 0.5;
+                    requestAnimationFrame(moveStar);
+                }
+                orbit.appendChild(star);
+                moveStar();
+            }
+        }
+        createStars();
+
         function startMission() {
             const flash = document.getElementById('lightning-flash');
             flash.style.animation = "flashEffect 0.5s ease-out forwards";
@@ -192,17 +236,15 @@
             init() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                // تعديل الحروف لتكون EYC فقط
                 const chars = ["E", "Y", "C"];
                 this.char = chars[Math.floor(Math.random()*chars.length)];
-                this.fontSize = Math.random() * 20 + 15; // كبرت الحروف شوية
+                this.fontSize = Math.random() * 20 + 15; 
                 this.speed = Math.random() * 0.4 + 0.1;
-                this.opacity = Math.random() * 0.4 + 0.2; // زودت الوضوح
+                this.opacity = Math.random() * 0.4 + 0.2; 
             }
             update() {
                 this.y -= this.speed;
                 if (this.y < -30) this.y = canvas.height + 30;
-                // لون ذهبي واضح للحروف في الخلفية
                 ctx.fillStyle = `rgba(255, 204, 0, ${this.opacity})`;
                 ctx.font = `900 ${this.fontSize}px Orbitron`;
                 ctx.fillText(this.char, this.x, this.y);

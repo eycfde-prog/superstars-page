@@ -15,12 +15,9 @@
             --xbox-color: #ff3131;
             --glass: rgba(255, 255, 255, 0.05);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--primary-bg); color: #fff; overflow-x: hidden; height: 100vh; width: 100vw; }
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.8; }
-
-        /* --- Royal Login Button --- */
         .royal-login-btn {
             position: fixed; top: 20px; right: 20px; z-index: 1000;
             background: linear-gradient(45deg, var(--accent-gold), #fff);
@@ -30,8 +27,6 @@
             transition: 0.3s; display: flex; align-items: center; gap: 8px;
         }
         .royal-login-btn.hidden { display: none !important; }
-
-        /* --- Floating Profile Bubbles (Bottom Left & Reversed) --- */
         .profile-stack {
             position: fixed; bottom: 30px; left: 20px; z-index: 1000;
             display: none; flex-direction: column-reverse; gap: 12px; align-items: center;
@@ -46,8 +41,6 @@
         .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .p-score { width: 55px; height: 55px; font-family: 'Orbitron'; font-size: 13px; font-weight: 900; color: var(--accent-gold); border-color: rgba(255,204,0,0.5); }
         .p-rank { width: 38px; height: 38px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; background: var(--accent-gold); color: #000; }
-
-        /* --- Login Modal --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.9);
             display: none; align-items: center; justify-content: center; z-index: 2000;
@@ -67,8 +60,6 @@
             width: 100%; padding: 15px; border-radius: 12px; background: var(--accent-gold);
             color: #000; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; border: none;
         }
-
-        /* Elements from original */
         .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; z-index: 10; position: relative; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
         .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; z-index: 10; position: relative; }
@@ -82,7 +73,6 @@
         .activity-name { font-family: 'Orbitron'; font-size: 24px; font-weight: 900; text-align: center; }
         .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.15), rgba(0,0,0,0.9)); border-color: rgba(0,255,163,0.3); }
         .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.15), rgba(0,0,0,0.9)); border-color: rgba(255,49,49,0.3); }
-        
         #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; }
         .mission-bubble { position: absolute; width: 60px; height: 60px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid var(--accent-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; font-size: 14px; color: var(--accent-gold); cursor: pointer; transition: 0.3s; animation: floatBubble 3s ease-in-out infinite; }
         @keyframes floatBubble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
@@ -92,19 +82,15 @@
     </style>
 </head>
 <body>
-
     <canvas id="rank-canvas"></canvas>
-
     <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">
         <i class="fas fa-crown"></i> AGENT LOGIN
     </button>
-
     <div class="profile-stack" id="profileStack">
         <div class="p-bubble p-rank" id="userRank">#0</div>
         <div class="p-bubble p-score" id="userScore">0</div>
         <div class="p-bubble p-avatar"><img src="" id="userImg" alt="Agent"></div>
     </div>
-
     <div class="modal-overlay" id="loginModal">
         <div class="royal-card">
             <h2 class="orbitron" style="color:var(--accent-gold); margin-bottom:10px;">IDENTITY VERIFICATION</h2>
@@ -120,21 +106,17 @@
             </div>
         </div>
     </div>
-
     <header class="rank-header" id="mainHeader">
         <h1>EYC ACADEMY</h1>
         <p style="font-size: 11px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">ACTIVITY MISSION CONTROL</p>
     </header>
-
     <div class="toggle-container" id="mainToggle">
         <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
         <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
     </div>
-
     <div id="swiper-container" class="swiper">
         <div class="swiper-wrapper" id="activities-wrapper"></div>
     </div>
-
     <div class="swipe-hint" id="mainHint">« SWIPE TO EXPLORE »</div>
     <div id="missions-layer"></div>
     <button class="back-btn" id="backBtn" onclick="resetView()">CLOSE MISSIONS</button>
@@ -142,14 +124,11 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        // استبدل هذا الرابط برابط السكريبت الجديد بعد النشر (Deployment)
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxbI48Qsr1kCOgtGXwO5gBjN9-pyby-wYop1NRctteI1Ho5klj-BMNisLkX2h-_5vVzbg/exec';
-
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxiTS11Vh_rtyL5hVycUA6WoHOUhhUvV3WO00shRPRGWZ_XefFCkN9W9a6bcnVgjJrJYg/exec';
         const activities = {
             season: [{ name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 }, { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 }, { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 }, { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 }, { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 }, { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }],
             xbox: [{ name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 100 }, { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 120 }, { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 110 }, { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 150 }, { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 130 }, { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 200 }, { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 140 }, { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 180 }, { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 110 }, { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 250 }]
         };
-
         let currentSwiper = null;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -157,7 +136,7 @@
             if (savedAgent) {
                 const data = JSON.parse(savedAgent);
                 applyAgentData(data);
-                // هذا الجزء هو المسؤول عن تحديث علامة الصح في كل Refresh
+                // تنفيذ الدخول الصامت فوراً عند الريفرش للتأكد من علامة الصح في الشيت
                 silentLogin(data.email, data.code);
             }
             renderActivities('season');
@@ -182,7 +161,7 @@
         }
 
         function silentLogin(email, code) {
-            const callbackName = 'silentCallback';
+            const callbackName = 'silentCallback_' + Math.floor(Math.random() * 100000);
             window[callbackName] = function(data) {
                 if (data.status === "success") {
                     localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
@@ -211,6 +190,7 @@
 
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         function handleCardClick(card, index) { if(!isLogged) openLogin(); else openMissions(card, index); }
+        
         function checkEmail() {
             const email = document.getElementById('agentEmail').value;
             if(email) {
@@ -225,14 +205,18 @@
             const code = document.getElementById('agentCode').value;
             const btn = document.getElementById('verifyBtn');
             btn.innerText = "VERIFYING..."; btn.disabled = true;
-
+            
             const callbackName = 'googleDocCallback';
             window[callbackName] = function(data) {
                 if (data.status === "success") {
                     localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
                     applyAgentData(data);
                     document.getElementById('loginModal').style.display = 'none';
-                } else { alert(data.message || "Access Denied"); btn.innerText = "ACCESS HUB"; btn.disabled = false; }
+                } else { 
+                    alert(data.message || "Access Denied"); 
+                    btn.innerText = "ACCESS HUB"; 
+                    btn.disabled = false; 
+                }
                 delete window[callbackName];
             };
             const scriptTag = document.createElement('script');
@@ -286,9 +270,7 @@
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
-
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-
         class Star {
             constructor() { this.init(); }
             init() {
@@ -302,23 +284,19 @@
             draw() {
                 this.opacity += this.twinkleSpeed;
                 if (this.opacity > 1 || this.opacity < 0) this.twinkleSpeed *= -1;
-                
                 ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
-
                 this.y -= this.speed;
                 if (this.y < 0) this.y = canvas.height;
             }
         }
-
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             stars.forEach(s => s.draw());
             requestAnimationFrame(animate);
         }
-
         window.addEventListener('resize', initCanvas);
         initCanvas();
         for (let i = 0; i < 150; i++) stars.push(new Star());

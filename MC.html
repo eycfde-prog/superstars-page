@@ -18,7 +18,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--primary-bg); color: #fff; overflow-x: hidden; height: 100vh; width: 100vw; }
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.8; }
-        
+        /* --- Royal Login Button --- */
         .royal-login-btn {
             position: fixed; top: 20px; right: 20px; z-index: 1000;
             background: linear-gradient(45deg, var(--accent-gold), #fff);
@@ -28,7 +28,7 @@
             transition: 0.3s; display: flex; align-items: center; gap: 8px;
         }
         .royal-login-btn.hidden { display: none !important; }
-
+        /* --- Floating Profile Bubbles (Bottom Left & Reversed) --- */
         .profile-stack {
             position: fixed; bottom: 30px; left: 20px; z-index: 1000;
             display: none; flex-direction: column-reverse; gap: 12px; align-items: center;
@@ -43,7 +43,7 @@
         .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .p-score { width: 55px; height: 55px; font-family: 'Orbitron'; font-size: 13px; font-weight: 900; color: var(--accent-gold); border-color: rgba(255,204,0,0.5); }
         .p-rank { width: 38px; height: 38px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; background: var(--accent-gold); color: #000; }
-
+        /* --- Login Modal --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.9);
             display: none; align-items: center; justify-content: center; z-index: 2000;
@@ -63,14 +63,12 @@
             width: 100%; padding: 15px; border-radius: 12px; background: var(--accent-gold);
             color: #000; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; border: none;
         }
-
         .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; z-index: 10; position: relative; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
         .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; z-index: 10; position: relative; }
         .mode-btn { background: rgba(255,255,255,0.05); border: 1.5px solid var(--accent-gold); color: #ffffff; padding: 10px 25px; border-radius: 25px; font-family: 'Orbitron'; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.4s; opacity: 0.6; }
         .mode-btn.active.season-mode { background: var(--season-color); color: #000; border-color: var(--season-color); box-shadow: 0 0 20px var(--season-color); opacity: 1; }
         .mode-btn.active.xbox-mode { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); box-shadow: 0 0 20px var(--xbox-color); opacity: 1; }
-        
         .swiper { width: 100%; padding-top: 20px; padding-bottom: 50px; }
         .swiper-slide { width: 280px; height: 400px; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.15); transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative; overflow: hidden; }
         .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; padding: 5px 12px; border-radius: 12px; }
@@ -89,17 +87,14 @@
 </head>
 <body>
     <canvas id="rank-canvas"></canvas>
-    
     <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">
         <i class="fas fa-crown"></i> AGENT LOGIN
     </button>
-
     <div class="profile-stack" id="profileStack">
         <div class="p-bubble p-rank" id="userRank">#0</div>
         <div class="p-bubble p-score" id="userScore">0</div>
         <div class="p-bubble p-avatar"><img src="" id="userImg" alt="Agent"></div>
     </div>
-
     <div class="modal-overlay" id="loginModal">
         <div class="royal-card">
             <h2 class="orbitron" style="color:var(--accent-gold); margin-bottom:10px;">IDENTITY VERIFICATION</h2>
@@ -115,21 +110,17 @@
             </div>
         </div>
     </div>
-
     <header class="rank-header" id="mainHeader">
         <h1>EYC ACADEMY</h1>
         <p style="font-size: 11px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron';">ACTIVITY MISSION CONTROL</p>
     </header>
-
     <div class="toggle-container" id="mainToggle">
         <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
         <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
     </div>
-
     <div id="swiper-container" class="swiper">
         <div class="swiper-wrapper" id="activities-wrapper"></div>
     </div>
-
     <div class="swipe-hint" id="mainHint">« SWIPE TO EXPLORE »</div>
     <div id="missions-layer"></div>
     <button class="back-btn" id="backBtn" onclick="resetView()">CLOSE MISSIONS</button>
@@ -137,20 +128,20 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxorVAYILaGkVlGaeMgY9yHDMT4G_lHR0EmthpDZP1_D8qHZoPsxPmk_jvJCN6dIA9atA/exec';
-        
+        // استبدل هذا الرابط برابط الـ Script الجديد بعد النشر (Deploy)
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbyE5nTmO8q8fE7EdPD4CxTenR2EEcYbcsc82_5BAeno3yU52p4i3TZR0UbTeutGv4Cz1w/exec';
+
         const activities = {
             season: [{ name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 50 }, { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 40 }, { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 30 }, { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 60 }, { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 45 }, { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 35 }],
             xbox: [{ name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 100 }, { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 120 }, { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 110 }, { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 150 }, { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 130 }, { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 200 }, { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 140 }, { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 180 }, { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 110 }, { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 250 }]
         };
-
         let currentSwiper = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedAgent = localStorage.getItem('eyc_agent_data');
             if (savedAgent) {
                 const data = JSON.parse(savedAgent);
-                // عند فتح الصفحة أو الريفرش، نتأكد من السيرفر أن علامة الصح موجودة
+                // محاولة تسجيل دخول صامت للتأكد من وجود علامة الصح في الشيت
                 silentLogin(data.email, data.code);
             }
             renderActivities('season');
@@ -174,7 +165,6 @@
             document.getElementById('userRank').innerText = "#" + (data.rank || "0");
         }
 
-        // دالة التحقق الصامت (تستخدم عند الريفرش)
         function silentLogin(email, code) {
             const callbackName = 'silentCallback';
             window[callbackName] = function(data) {
@@ -182,20 +172,22 @@
                     localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
                     applyAgentData(data);
                 } else {
-                    // إذا لم يجد علامة الصح أو البيانات خاطئة، امسح الدخول واطلب التسجيل
+                    // إذا لم يجد الصح أو حدث خطأ، نمسح البيانات ونظهر زر الدخول
+                    console.log("Session verification failed");
                     localStorage.removeItem('eyc_agent_data');
-                    isLogged = false;
-                    document.getElementById('loginTriggerBtn').classList.remove('hidden');
-                    document.getElementById('profileStack').style.display = 'none';
-                    if(data.status === "unverified") {
-                        alert("⚠️ Your account is not verified (No ✅ found). Please register again.");
-                    }
+                    logoutUI();
                 }
                 delete window[callbackName];
             };
             const scriptTag = document.createElement('script');
             scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
             document.body.appendChild(scriptTag);
+        }
+
+        function logoutUI() {
+            isLogged = false;
+            document.getElementById('loginTriggerBtn').classList.remove('hidden');
+            document.getElementById('profileStack').style.display = 'none';
         }
 
         function renderActivities(mode) {
@@ -213,15 +205,8 @@
         }
 
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
+        function handleCardClick(card, index) { if(!isLogged) openLogin(); else openMissions(card, index); }
         
-        function handleCardClick(card, index) { 
-            if(!isLogged) {
-                openLogin(); 
-            } else {
-                openMissions(card, index);
-            }
-        }
-
         function checkEmail() {
             const email = document.getElementById('agentEmail').value;
             if(email) {
@@ -236,7 +221,6 @@
             const code = document.getElementById('agentCode').value;
             const btn = document.getElementById('verifyBtn');
             btn.innerText = "VERIFYING..."; btn.disabled = true;
-
             const callbackName = 'googleDocCallback';
             window[callbackName] = function(data) {
                 if (data.status === "success") {
@@ -244,9 +228,8 @@
                     applyAgentData(data);
                     document.getElementById('loginModal').style.display = 'none';
                 } else { 
-                    alert(data.message || "Access Denied: Missing Verification"); 
-                    btn.innerText = "ACCESS HUB"; 
-                    btn.disabled = false; 
+                    alert(data.message || "Access Denied: Please check your Email/Code and ensure you are registered."); 
+                    btn.innerText = "ACCESS HUB"; btn.disabled = false; 
                 }
                 delete window[callbackName];
             };
@@ -297,7 +280,7 @@
             renderActivities(mode);
         }
 
-        // --- STARRY NIGHT BACKGROUND ---
+        // --- STARRY NIGHT BACKGROUND ANIMATION ---
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];

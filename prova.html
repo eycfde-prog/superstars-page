@@ -26,7 +26,7 @@
         }
         .logo-container { display: flex; align-items: center; }
         .main-logo { 
-            height: 50px; /* حجم مناسب للديسكتوب */
+            height: 50px; 
             width: auto; 
             filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.4));
             transition: 0.3s;
@@ -40,14 +40,13 @@
         }
         .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold); display: none; font-size: 12px; }
 
-        /* --- Mobile Logo Fix --- */
         @media (max-width: 600px) {
-            .main-logo { height: 35px; } /* تصغير اللوجو في الموبايل عشان ميزحمش الشاشة */
+            .main-logo { height: 35px; }
             .top-nav { top: 10px; left: 10px; right: 10px; }
             .royal-login-btn { padding: 6px 12px; font-size: 8px; }
         }
 
-        /* --- Profile Bubbles & Sparks --- */
+        /* --- Profile Bubbles --- */
         .profile-stack { position: fixed; bottom: 30px; left: 20px; z-index: 1000; display: none; flex-direction: column-reverse; gap: 10px; align-items: center; }
         .p-bubble { border-radius: 50%; border: 2px solid var(--accent-gold); backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; }
         .p-avatar { width: 65px; height: 65px; overflow: hidden; border-width: 3px; position: relative; }
@@ -66,7 +65,6 @@
         .submit-btn { background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-weight: 900; padding: 12px; border-radius: 10px; border: none; cursor: pointer; }
         .new-profile-btn { background: transparent; color: #fff; border: 1px solid #444; font-family: 'Orbitron'; font-size: 10px; padding: 10px; border-radius: 10px; cursor: pointer; }
 
-        /* Headers */
         .rank-header { text-align: center; padding-top: 80px; margin-bottom: 10px; position: relative; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; color: #fff; }
         .rank-header p { font-size: 9px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
@@ -143,7 +141,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwvuPUENsBdQeSrd3-RUD7tMaiveY_qvkVRuhRzkxOmmVyrmsk3gtjs1IVmSH26XrOGjg/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxODETv1cdNAVoMYIvgIam-yyGyJNd36pZAfDJ2kDkrIsCRxtqC2GMn3nxmEeHkYjqkSw/exec';
         
         const activities = {
             season: [
@@ -214,7 +212,7 @@
                     applyAgentData(data);
                     document.getElementById('loginModal').style.display = 'none';
                 } else {
-                    err.innerText = "Check your email for access code!";
+                    err.innerText = "Access Denied! Check your credentials.";
                     err.style.display = 'block';
                     btn.innerText = "INITIALIZE LOGIN"; btn.disabled = false;
                 }
@@ -246,11 +244,31 @@
             document.getElementById('userRank').innerText = "#" + (data.rank || "0");
         }
 
+        // --- الدالة المحدثة للتحقق من الجلسة ---
         function checkSavedAgent() {
             const saved = localStorage.getItem('eyc_agent_data');
             if(saved) {
                 const data = JSON.parse(saved);
+                
+                // إظهار البيانات المسجلة مسبقاً فوراً لتحسين تجربة المستخدم
                 applyAgentData(data);
+
+                // التأكد من السيرفر (Google Sheets) أن الدخول لا يزال صالحاً (العلامة ✅ موجودة)
+                const callbackName = 'reVerifyCallback';
+                window[callbackName] = function(response) {
+                    if (response.status !== "success") {
+                        // إذا تم مسح العلامة ✅ من الشيت، نقوم بمسح البيانات والطلب من المستخدم تسجيل الدخول مجدداً
+                        localStorage.removeItem('eyc_agent_data');
+                        isLogged = false;
+                        location.reload(); 
+                    }
+                    delete window[callbackName];
+                };
+
+                const scriptTag = document.createElement('script');
+                // نرسل الباراميترز للتحقق دون الحاجة لتغيير شيء في الشيت
+                scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(data.email)}&code=${encodeURIComponent(data.code)}&checkOnly=true&callback=${callbackName}`;
+                document.body.appendChild(scriptTag);
             }
         }
 

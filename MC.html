@@ -71,7 +71,7 @@
             color: var(--accent-gold); text-decoration: none; cursor: pointer; opacity: 0.7;
         }
 
-        /* Standard Layout */
+        /* Layout */
         .rank-header { text-align: center; padding-top: 30px; margin-bottom: 20px; z-index: 10; position: relative; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 2.8rem); background: linear-gradient(to bottom, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; }
         .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; z-index: 10; position: relative; }
@@ -148,9 +148,28 @@
         let isLogged = false;
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbwvuPUENsBdQeSrd3-RUD7tMaiveY_qvkVRuhRzkxOmmVyrmsk3gtjs1IVmSH26XrOGjg/exec';
         
+        // --- Updated Activity Values ---
         const activities = {
-            season: [{ name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: 5 }, { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: 5 }, { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: 5 }, { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: 5 }, { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: 5 }, { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: 5 }],
-            xbox: [{ name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: 5 }, { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: 5 }, { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: 5 }, { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: 10+ }, { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: 5 }, { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: 10+ }, { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: 5 }, { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: 5 }, { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: 5 }, { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: 10+ }]
+            season: [
+                { name: 'Golden Ear', code: 'ESGE', icon: 'fa-ear-listen', tk: '5' },
+                { name: 'Seeds', code: 'ESS', icon: 'fa-seedling', tk: '5' },
+                { name: 'Label', code: 'ESL', icon: 'fa-tag', tk: '5' },
+                { name: 'Grammar', code: 'ESG', icon: 'fa-magnifying-glass', tk: '5' },
+                { name: 'Vivid', code: 'ESV', icon: 'fa-eye', tk: '5' },
+                { name: 'Alike', code: 'ESA', icon: 'fa-equals', tk: '5' }
+            ],
+            xbox: [
+                { name: 'Alike X', code: 'EXA', icon: 'fa-clone', tk: '5' },
+                { name: 'Vivid X', code: 'EXV', icon: 'fa-stopwatch', tk: '5' },
+                { name: 'Seeds X', code: 'EXS', icon: 'fa-puzzle-piece', tk: '5' },
+                { name: 'Dictation X', code: 'EXD', icon: 'fa-pen-nib', tk: '10+' },
+                { name: 'Golden Ear X', code: 'EXGE', icon: 'fa-filter', tk: '5' },
+                { name: 'Elmagazine X', code: 'ESXEL', icon: 'fa-microphone-lines', tk: '10+' },
+                { name: 'Grammar X', code: 'EXG', icon: 'fa-network-wired', tk: '5' },
+                { name: 'Figurative X', code: 'EXFF', icon: 'fa-mask', tk: '5' },
+                { name: 'Label X', code: 'EXL', icon: 'fa-industry', tk: '5' },
+                { name: 'SSS X', code: 'EXSSS', icon: 'fa-bolt', tk: '10+' }
+            ]
         };
 
         let currentSwiper = null;
@@ -160,10 +179,9 @@
             const savedAgent = localStorage.getItem('eyc_agent_data');
             if (savedAgent) {
                 const data = JSON.parse(savedAgent);
-                // عند تحديث الصفحة، نقوم بعمل تسجيل صامت للتأكد من وجود علامة AC في الشيت
                 silentLogin(data.email, data.code);
             } else {
-                setTimeout(openLogin, 1000); // إجبار الدخول لو مفيش بيانات
+                setTimeout(openLogin, 1000);
             }
         });
 
@@ -192,7 +210,6 @@
                     localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
                     applyAgentData(data);
                 } else {
-                    // إذا فشل (تم مسح الـ AC من الشيت مثلاً)، نطلب منه يسجل تاني
                     localStorage.removeItem('eyc_agent_data');
                     openLogin();
                 }
@@ -251,10 +268,8 @@
         function forgotCode() {
             const email = document.getElementById('agentEmail').value;
             if(!email) { alert("Please enter your email first"); return; }
-            
             const btn = document.querySelector('.forgot-link');
             btn.innerText = "TRANSMITTING...";
-            
             const callbackName = 'forgotCallback';
             window[callbackName] = function(data) {
                 alert(data.message);
@@ -310,7 +325,7 @@
             renderActivities(mode);
         }
 
-        // Starry Night
+        // Starry Night Animation
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -341,4 +356,3 @@
     </script>
 </body>
 </html>
-

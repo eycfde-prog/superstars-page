@@ -182,6 +182,26 @@
 
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
 
+        // دالة موحدة للتأكد من البيانات مع الشيت
+        function fetchAgentFromSheet(email, code, successCallback, failCallback) {
+            const callbackName = 'syncCallback_' + Math.floor(Math.random() * 1000);
+            window[callbackName] = function(data) {
+                if (data.status === "success") {
+                    successCallback(data);
+                } else {
+                    failCallback();
+                }
+                delete window[callbackName];
+                const script = document.getElementById(callbackName);
+                if(script) script.remove();
+            };
+            
+            const scriptTag = document.createElement('script');
+            scriptTag.id = callbackName;
+            scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
+            document.body.appendChild(scriptTag);
+        }
+
         function verifyCode() {
             const email = document.getElementById('agentEmail').value;
             const code = document.getElementById('agentCode').value;
@@ -190,24 +210,16 @@
             
             if(!email || !code) return;
             btn.innerText = "AUTHENTICATING..."; btn.disabled = true;
-            
-            const callbackName = 'loginCallback';
-            window[callbackName] = function(data) {
-                if (data.status === "success") {
-                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                    applyAgentData(data);
-                    document.getElementById('loginModal').style.display = 'none';
-                } else {
-                    err.innerText = "Check your email for access code!";
-                    err.style.display = 'block';
-                    btn.innerText = "INITIALIZE LOGIN"; btn.disabled = false;
-                }
-                delete window[callbackName];
-            };
-            
-            const scriptTag = document.createElement('script');
-            scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
-            document.body.appendChild(scriptTag);
+
+            fetchAgentFromSheet(email, code, (data) => {
+                localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
+                applyAgentData(data);
+                document.getElementById('loginModal').style.display = 'none';
+            }, () => {
+                err.innerText = "Check your email for access code!";
+                err.style.display = 'block';
+                btn.innerText = "INITIALIZE LOGIN"; btn.disabled = false;
+            });
         }
 
         function applyAgentData(data) {
@@ -230,11 +242,24 @@
             document.getElementById('userRank').innerText = "#" + (data.rank || "0");
         }
 
+        // تعديل مهم: التحقق من الشيت عند الريفرش
         function checkSavedAgent() {
             const saved = localStorage.getItem('eyc_agent_data');
             if(saved) {
                 const data = JSON.parse(saved);
+                // نعرض البيانات القديمة مؤقتاً لسرعة التحميل
                 applyAgentData(data);
+                
+                // لكن نطلب تحديث من الشيت في الخلفية للتأكد إنه لسه موجود
+                fetchAgentFromSheet(data.email, data.code, (newData) => {
+                    // تحديث البيانات لو اتغيرت (زي السكور مثلاً)
+                    localStorage.setItem('eyc_agent_data', JSON.stringify({...newData, email: data.email, code: data.code}));
+                    applyAgentData(newData);
+                }, () => {
+                    // لو الشيت رد إن الطالب مش موجود.. نمسح كل حاجة ونعمل Logout
+                    localStorage.removeItem('eyc_agent_data');
+                    location.reload(); 
+                });
             }
         }
 
@@ -286,8 +311,6 @@
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
-        let angleOffset = 0;
-
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         class Star {
             constructor() {

@@ -129,6 +129,37 @@
         let isLogged = false;
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbwsuyxBY2X2DQa29tLMADlFnZ3HXbJBIWuYAJ6ercgp3RpQGMioS_d-3T833ZKExtPN-g/exec';
         
+        // --- 1. تعريف الكول باك عالمياً لضمان رؤيتها من السكريبت الخارجي ---
+        window.loginCallback = function(data) {
+            const btn = document.getElementById('verifyBtn');
+            const err = document.getElementById('errorMsg');
+
+            if (data.status === "success") {
+                const email = document.getElementById('agentEmail').value || (localStorage.getItem('temp_email'));
+                const code = document.getElementById('agentCode').value || (localStorage.getItem('temp_code'));
+                
+                localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
+                applyAgentData(data);
+                document.getElementById('loginModal').style.display = 'none';
+                
+                localStorage.removeItem('temp_email');
+                localStorage.removeItem('temp_code');
+            } else {
+                err.innerText = data.message || "Invalid Email or Access Code!";
+                err.style.display = 'block';
+                btn.innerText = "INITIALIZE LOGIN"; 
+                btn.disabled = false;
+                
+                // إذا كان الفشل في التحقق الصامت (يعني الطالب تم حذفه من الشيت)
+                if(!document.getElementById('agentEmail').value) {
+                    localStorage.removeItem('eyc_agent_data');
+                    location.reload();
+                }
+            }
+            const oldTag = document.getElementById('jsonp-script');
+            if(oldTag) oldTag.remove();
+        };
+
         const activities = {
             season: [
                 { name: 'Golden Ear', icon: 'fa-ear-listen', tk: '5' },
@@ -179,33 +210,40 @@
 
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
 
+        // --- 2. دالة تسجيل الدخول ---
         function verifyCode() {
-            const email = document.getElementById('agentEmail').value;
-            const code = document.getElementById('agentCode').value;
+            const email = document.getElementById('agentEmail').value.trim();
+            const code = document.getElementById('agentCode').value.trim();
             const btn = document.getElementById('verifyBtn');
             const err = document.getElementById('errorMsg');
             
             if(!email || !code) return;
-            btn.innerText = "AUTHENTICATING..."; btn.disabled = true;
-            
-            const callbackName = 'loginCallback';
-            window[callbackName] = function(data) {
-                if (data.status === "success") {
-                    // تخزين البريد والكود مع البيانات المستلمة
-                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                    applyAgentData(data);
-                    document.getElementById('loginModal').style.display = 'none';
-                } else {
-                    err.innerText = "Check your email for access code!";
-                    err.style.display = 'block';
-                    btn.innerText = "INITIALIZE LOGIN"; btn.disabled = false;
-                }
-                delete window[callbackName];
-            };
+
+            btn.innerText = "AUTHENTICATING..."; 
+            btn.disabled = true;
+            err.style.display = 'none';
+
+            localStorage.setItem('temp_email', email);
+            localStorage.setItem('temp_code', code);
             
             const scriptTag = document.createElement('script');
-            scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
+            scriptTag.id = 'jsonp-script';
+            scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=loginCallback`;
             document.body.appendChild(scriptTag);
+        }
+
+        // --- 3. دالة التحقق الصامت عند التحميل ---
+        function checkSavedAgent() {
+            const saved = localStorage.getItem('eyc_agent_data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                applyAgentData(data); // عرض البيانات المخزنة فوراً
+
+                const checkTag = document.createElement('script');
+                checkTag.id = 'jsonp-script';
+                checkTag.src = `${scriptUrl}?email=${encodeURIComponent(data.email)}&code=${encodeURIComponent(data.code)}&callback=loginCallback`;
+                document.body.appendChild(checkTag);
+            }
         }
 
         function applyAgentData(data) {
@@ -226,41 +264,6 @@
             document.getElementById('userImg').src = finalImg;
             document.getElementById('userScore').innerText = data.totalScore || 0;
             document.getElementById('userRank').innerText = "#" + (data.rank || "0");
-        }
-
-        // --- الوظيفة المطورة للتحقق الصامت من حالة العميل ---
-        function checkSavedAgent() {
-            const saved = localStorage.getItem('eyc_agent_data');
-            if (saved) {
-                const data = JSON.parse(saved);
-                
-                // 1. عرض البيانات فوراً لتجربة سريعة
-                applyAgentData(data);
-
-                // 2. التحقق من "جوجل شيت" في الخلفية
-                const callbackName = 'checkStatusCallback';
-                window[callbackName] = function(status) {
-                    // التحقق من وجود العلامة ✅ أو الكود أو وجود الطالب أصلاً
-                    // ملاحظة: الحقول status.verifiedStatus أو status.status هي التي يرجعها السكريبت
-                    if (status.status === "error" || !status.code) {
-                        console.warn("Access Revoked: Credentials no longer valid in Sheet.");
-                        localStorage.removeItem('eyc_agent_data');
-                        alert("Session expired or access revoked. Please login again.");
-                        location.reload();
-                    } else {
-                        console.log("Agent status verified: Active");
-                    }
-                    delete window[callbackName];
-                    const oldScript = document.getElementById('status-checker');
-                    if(oldScript) oldScript.remove();
-                };
-
-                const scriptTag = document.createElement('script');
-                scriptTag.id = 'status-checker';
-                // نرسل نفس طلب تسجيل الدخول كتحقق صامت
-                scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(data.email)}&code=${encodeURIComponent(data.code)}&callback=${callbackName}`;
-                document.body.appendChild(scriptTag);
-            }
         }
 
         function openMissions(cardElement, index) {
@@ -340,4 +343,3 @@
     </script>
 </body>
 </html>
-

@@ -23,33 +23,6 @@
         .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
         .logo-placeholder img { height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
         
-        .royal-login-btn {
-            background: linear-gradient(45deg, var(--accent-gold), #fff);
-            color: #000; padding: 8px 16px; border-radius: 12px;
-            font-family: 'Orbitron'; font-weight: 900; font-size: 10px;
-            cursor: pointer; border: none; box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
-        }
-        .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold); display: none; font-size: 12px; }
-
-        /* --- Profile Bubbles & Sparks --- */
-        .profile-stack { position: fixed; bottom: 30px; left: 20px; z-index: 1000; display: none; flex-direction: column-reverse; gap: 10px; align-items: center; }
-        .p-bubble { border-radius: 50%; border: 2px solid var(--accent-gold); backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; }
-        .p-avatar { width: 65px; height: 65px; overflow: hidden; border-width: 3px; position: relative; }
-        .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .p-avatar.spark::after { content: ''; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 2px; height: 40px; background: var(--accent-gold); filter: blur(2px); animation: sparkAnim 0.5s infinite alternate; }
-        @keyframes sparkAnim { from { opacity: 0.2; height: 20px; } to { opacity: 1; height: 50px; } }
-        .p-score { width: 45px; height: 45px; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; color: var(--accent-gold); }
-        .p-rank { width: 30px; height: 30px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; background: var(--accent-gold); color: #000; }
-
-        /* --- Unified Login Modal --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-        .royal-card { background: #0a0a0f; border: 1px solid rgba(255,204,0,0.3); padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; }
-        .royal-card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #000; border: 1px solid #333; color: #fff; text-align: center; font-family: 'Orbitron'; font-size: 12px; }
-        .royal-card input:focus { border-color: var(--accent-gold); outline: none; }
-        .btn-group { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .submit-btn { background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-weight: 900; padding: 12px; border-radius: 10px; border: none; cursor: pointer; }
-        .new-profile-btn { background: transparent; color: #fff; border: 1px solid #444; font-family: 'Orbitron'; font-size: 10px; padding: 10px; border-radius: 10px; cursor: pointer; }
-
         /* Headers */
         .rank-header { text-align: center; padding-top: 60px; margin-bottom: 10px; position: relative; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; color: #fff; }
@@ -84,28 +57,7 @@
         <div class="logo-placeholder">
             <img src="logo.png" alt="EYC Logo">
         </div>
-        <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
-        <div class="user-name-display" id="userName"></div>
-    </div>
-
-    <div class="profile-stack" id="profileStack">
-        <div class="p-bubble p-rank" id="userRank">#0</div>
-        <div class="p-bubble p-score" id="userScore">0</div>
-        <div class="p-bubble p-avatar" id="avatarBox"><img src="" id="userImg" alt="Agent"></div>
-    </div>
-
-    <div class="modal-overlay" id="loginModal">
-        <div class="royal-card">
-            <h2 class="orbitron" style="color:var(--accent-gold); margin-bottom:15px; font-size:16px;">ACCESS TERMINAL</h2>
-            <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
-            <input type="password" id="agentCode" placeholder="ACCESS CODE">
-            <div class="btn-group">
-                <button class="submit-btn" id="verifyBtn" onclick="verifyCode()">INITIALIZE LOGIN</button>
-                <button class="new-profile-btn" onclick="window.location.href='NP.html'">+ CREATE NEW AGENT</button>
-            </div>
-            <p id="errorMsg" style="color:var(--xbox-color); font-size:10px; margin-top:10px; display:none;"></p>
         </div>
-    </div>
 
     <header class="rank-header" id="mainHeader">
         <h1>MISSION HUB</h1>
@@ -126,8 +78,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        let isLogged = false;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwTk22Uq2GykkaIoxcdfwJd3iTyCpe5PsQ2izlIsdTOugME_NG-7G8vv7i1Lt54K5hu9Q/exec';
+        // الدخول مفعل دائماً الآن
+        const isLogged = true;
         
         const activities = {
             season: [
@@ -156,7 +108,6 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             renderActivities('season');
-            checkSavedAgent();
         });
 
         function renderActivities(mode) {
@@ -180,89 +131,6 @@
             });
         }
 
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-
-        // دالة موحدة للتأكد من البيانات مع الشيت
-        function fetchAgentFromSheet(email, code, successCallback, failCallback) {
-            const callbackName = 'syncCallback_' + Math.floor(Math.random() * 1000);
-            window[callbackName] = function(data) {
-                if (data.status === "success") {
-                    successCallback(data);
-                } else {
-                    failCallback();
-                }
-                delete window[callbackName];
-                const script = document.getElementById(callbackName);
-                if(script) script.remove();
-            };
-            
-            const scriptTag = document.createElement('script');
-            scriptTag.id = callbackName;
-            scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
-            document.body.appendChild(scriptTag);
-        }
-
-        function verifyCode() {
-            const email = document.getElementById('agentEmail').value;
-            const code = document.getElementById('agentCode').value;
-            const btn = document.getElementById('verifyBtn');
-            const err = document.getElementById('errorMsg');
-            
-            if(!email || !code) return;
-            btn.innerText = "AUTHENTICATING..."; btn.disabled = true;
-
-            fetchAgentFromSheet(email, code, (data) => {
-                localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                applyAgentData(data);
-                document.getElementById('loginModal').style.display = 'none';
-            }, () => {
-                err.innerText = "Check your email for access code!";
-                err.style.display = 'block';
-                btn.innerText = "INITIALIZE LOGIN"; btn.disabled = false;
-            });
-        }
-
-        function applyAgentData(data) {
-            isLogged = true;
-            document.getElementById('loginTriggerBtn').style.display = 'none';
-            const nameDisp = document.getElementById('userName');
-            nameDisp.innerText = data.name || "AGENT ACTIVE";
-            nameDisp.style.display = 'block';
-            
-            document.getElementById('profileStack').style.display = 'flex';
-            document.getElementById('avatarBox').classList.add('spark');
-            
-            let finalImg = data.image || "https://via.placeholder.com/100/ffcc00/000000?text=EYC";
-            if (finalImg.includes('drive.google.com')) {
-                let fileId = finalImg.includes('id=') ? finalImg.split('id=')[1].split('&')[0] : finalImg.split('/d/')[1].split('/')[0];
-                finalImg = `https://drive.google.com/thumbnail?authuser=0&sz=w320&id=${fileId}`;
-            }
-            document.getElementById('userImg').src = finalImg;
-            document.getElementById('userScore').innerText = data.totalScore || 0;
-            document.getElementById('userRank').innerText = "#" + (data.rank || "0");
-        }
-
-        // تعديل مهم: التحقق من الشيت عند الريفرش
-        function checkSavedAgent() {
-            const saved = localStorage.getItem('eyc_agent_data');
-            if(saved) {
-                const data = JSON.parse(saved);
-                // نعرض البيانات القديمة مؤقتاً لسرعة التحميل
-                applyAgentData(data);
-                
-                // لكن نطلب تحديث من الشيت في الخلفية للتأكد إنه لسه موجود
-                fetchAgentFromSheet(data.email, data.code, (newData) => {
-                    // تحديث البيانات لو اتغيرت (زي السكور مثلاً)
-                    localStorage.setItem('eyc_agent_data', JSON.stringify({...newData, email: data.email, code: data.code}));
-                    applyAgentData(newData);
-                }, () => {
-                    // لو الشيت رد إن الطالب مش موجود.. نمسح كل حاجة ونعمل Logout
-                    localStorage.removeItem('eyc_agent_data');
-                    location.reload(); 
-                });
-            }
-        }
-
         function openMissions(cardElement, index) {
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
@@ -284,8 +152,7 @@
                     bubble.style.left = `calc(50% + ${x}px - 27px)`; bubble.style.top = `calc(50% + ${y}px - 27px)`;
                     bubble.onclick = (e) => { 
                         e.stopPropagation(); 
-                        if(!isLogged) openLogin(); 
-                        else alert(`Mission ${i} Transmitting...`); 
+                        alert(`Mission ${i} Transmitting...`); 
                     };
                     layer.appendChild(bubble);
                 }
@@ -308,6 +175,7 @@
             renderActivities(mode);
         }
 
+        // Star Background Animation
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -340,5 +208,3 @@
     </script>
 </body>
 </html>
-
-

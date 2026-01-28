@@ -2,264 +2,240 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Activity Hub | Starry Mission</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Ranks | EYC Superstars</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
     <style>
         :root {
-            --primary-bg: #020205;
-            --accent-gold: #ffcc00;
-            --season-color: #00ffa3;
-            --xbox-color: #ff3131;
-            --glass: rgba(255, 255, 255, 0.05);
-            --danger: #ff1f1f;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; position: relative; }
-        
-        /* Scanline Effect for Command Center Feel */
-        body::before {
-            content: " ";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2000;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-            opacity: 0.3;
+            --primary-bg: #050505;
+            --accent-gold: #fcc200;
+            --accent-silver: #e0e0e0;
+            --accent-bronze: #cd7f32;
+            --accent-elite: #00ffa3; /* لون أخضر للـ Tiers العالية */
+            --gold-glow: rgba(252, 194, 0, 0.4);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --matrix-green: #00ff41;
         }
 
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
-        
-        /* --- Logo & Header --- */
-        .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .logo-placeholder img { height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
-        
-        .rank-header { text-align: center; padding-top: 60px; margin-bottom: 10px; position: relative; }
+        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--primary-bg); color: var(--text-color); overflow-x: hidden; }
+
+        /* Matrix Scan Overlay */
+        #matrix-loader {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 1s ease;
+        }
+        .scan-line {
+            position: absolute; width: 100%; height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--matrix-green), transparent);
+            opacity: 0.1; top: -100px; animation: scanMove 2s linear infinite;
+        }
+        @keyframes scanMove { 0% { top: -100px; } 100% { top: 100%; } }
+
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        .rank-header { text-align: center; margin-bottom: 80px; position: relative; }
         .rank-header h1 { 
-            font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; color: #fff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
-            animation: glitch 3s infinite;
-        }
-        @keyframes glitch {
-            0% { transform: skew(0deg); }
-            2% { transform: skew(10deg); color: var(--danger); }
-            4% { transform: skew(-10deg); }
-            6% { transform: skew(0deg); }
+            font-family: 'Orbitron'; font-size: clamp(2.5rem, 6vw, 4rem); 
+            letter-spacing: 5px; font-weight: 900;
+            background: linear-gradient(to bottom, #fff 30%, var(--accent-gold) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px var(--gold-glow));
         }
 
-        /* Live Data Ticker */
-        .live-status {
-            font-family: 'Orbitron';
-            font-size: 8px;
-            color: var(--season-color);
-            background: rgba(0, 255, 163, 0.1);
-            padding: 2px 10px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-top: 5px;
-            border-left: 3px solid var(--season-color);
-            animation: pulse 1s infinite;
+        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 25px; margin-bottom: 120px; display: none; }
+        .podium-item {
+            background: linear-gradient(145deg, rgba(30,30,30,0.9) 0%, rgba(5,5,5,1) 100%);
+            backdrop-filter: blur(20px); border: 2px solid var(--glass-border);
+            border-radius: 30px; padding: 35px 20px; text-align: center; position: relative;
+            transition: 0.5s; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
+        .rank-1 { width: 340px; height: 520px; order: 2; border-color: var(--accent-gold); box-shadow: 0 0 40px var(--gold-glow); }
+        .rank-2 { width: 280px; height: 440px; order: 1; border-color: var(--accent-silver); }
+        .rank-3 { width: 280px; height: 400px; order: 3; border-color: var(--accent-bronze); }
 
-        .toggle-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold); color: #fff; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; opacity: 0.5; transition: 0.3s; position: relative; overflow: hidden; }
-        .mode-btn.active { opacity: 1; box-shadow: 0 0 15px currentColor; }
-        .mode-btn.season-mode.active { background: var(--season-color); color: #000; border-color: var(--season-color); }
-        .mode-btn.xbox-mode.active { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); }
-
-        .swiper { width: 100%; padding-bottom: 40px; }
-        .swiper-slide { 
-            width: 220px; height: 320px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.5s; cursor: pointer; 
+        /* Tier Badges */
+        .tier-tag {
+            font-family: 'Orbitron'; font-size: 0.6rem; font-weight: 900;
+            padding: 4px 12px; border-radius: 50px; text-transform: uppercase;
+            letter-spacing: 2px; margin-bottom: 10px; display: inline-block;
         }
-        .swiper-slide-active { border: 1px solid var(--accent-gold); box-shadow: 0 0 30px rgba(255, 204, 0, 0.2); }
+        .tier-legendary { background: var(--accent-gold); color: #000; box-shadow: 0 0 15px var(--accent-gold); }
+        .tier-elite { background: var(--accent-elite); color: #000; }
+        .tier-star { background: var(--glass-bg); border: 1px solid #fff; color: #fff; }
+
+        /* Rank Row & Social Proof */
+        .rank-list { display: flex; flex-direction: column; gap: 15px; display: none; }
+        .rank-row {
+            display: grid; grid-template-columns: 60px 80px 1.5fr 1fr 200px;
+            align-items: center; background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid transparent; padding: 15px 25px; border-radius: 12px;
+            transition: 0.3s; backdrop-filter: blur(10px);
+        }
+        .rank-row:hover { background: rgba(255, 255, 255, 0.07); transform: translateX(10px); border-left-color: var(--accent-gold); }
         
-        .token-badge { position: absolute; top: 20px; left: 20px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 8px; }
-        .activity-icon { font-size: 50px; margin-bottom: 15px; filter: drop-shadow(0 0 15px currentColor); }
-        .activity-name { font-family: 'Orbitron'; font-size: 18px; font-weight: 900; text-align: center; padding: 0 10px; }
-        
-        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; background: rgba(0,0,0,0.8); }
-        
-        /* Tactical Mission Bubbles */
-        .mission-bubble { 
-            position: absolute; width: 60px; height: 60px; 
-            background: rgba(255, 204, 0, 0.05); 
-            border: 2px solid var(--accent-gold); 
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); 
-            cursor: pointer; transition: 0.3s;
-            box-shadow: 0 0 10px var(--accent-gold);
-        }
-        .mission-bubble::before {
-            content: ''; position: absolute; inset: -10px; border: 1px solid var(--accent-gold); border-radius: 50%;
-            opacity: 0.3; animation: radarPulse 2s linear infinite;
-        }
-        @keyframes radarPulse {
-            0% { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(1.5); opacity: 0; }
+        .row-achievement { 
+            font-size: 0.75rem; color: var(--accent-elite); 
+            font-style: italic; opacity: 0.8;
+            border-left: 1px solid rgba(255,255,255,0.2); padding-left: 15px;
         }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--glass-border); }
+        .row-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--glass-border); }
 
-        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--danger); color: #fff; padding: 12px 30px; border-radius: 2px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: 1px solid #fff; font-size: 10px; letter-spacing: 2px; }
-        .selected-card-anim { transform: scale(0.4) translateY(-100px) !important; opacity: 0.2 !important; filter: blur(5px); }
+        .tokens-count { color: var(--accent-gold); font-family: 'Orbitron'; font-weight: 900; }
+        .crown { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); font-size: 3rem; color: var(--accent-gold); filter: drop-shadow(0 0 15px var(--accent-gold)); animation: crownFloat 3s infinite ease-in-out; }
+        @keyframes crownFloat { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-10px); } }
+
+        @media (max-width: 900px) {
+            .rank-row { grid-template-columns: 40px 60px 1fr 80px; }
+            .row-achievement { display: none; } /* إخفاء الإنجاز في الموبايل لعدم الزحمة */
+        }
     </style>
 </head>
 <body>
+
+    <div id="matrix-loader">
+        <div class="scan-line"></div>
+        <div style="font-family: 'Orbitron'; color: var(--matrix-green); letter-spacing: 5px; font-size: 0.8rem;">
+            [ SYSTEM SCAN IN PROGRESS... ]
+        </div>
+        <div id="loading-percent" style="font-family: 'Orbitron'; color: var(--matrix-green); margin-top: 10px;">0%</div>
+    </div>
+
     <canvas id="rank-canvas"></canvas>
-    
-    <div class="top-nav">
-        <div class="logo-placeholder"><img src="assets/logo.png" alt="EYC Logo"></div>
+
+    <div class="container">
+        <header class="rank-header">
+            <div style="color: var(--accent-gold); letter-spacing: 10px; font-weight: bold; font-family: 'Orbitron'; font-size: 0.7rem; margin-bottom: 10px;">TACTICAL LEADERBOARD V2.0</div>
+            <h1>HALL OF FAME</h1>
+        </header>
+
+        <div class="podium" id="podium-container"></div>
+        <div class="rank-list" id="ranks-container"></div>
     </div>
 
-    <header class="rank-header" id="mainHeader">
-        <h1>MISSION HUB</h1>
-        <div class="live-status">● SYSTEM ACTIVE: RECEIVING DATA...</div>
-    </header>
-
-    <div class="toggle-container" id="mainToggle">
-        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON MODE</button>
-        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">ELITE PROTOCOL</button>
-    </div>
-
-    <div id="swiper-container" class="swiper">
-        <div class="swiper-wrapper" id="activities-wrapper"></div>
-    </div>
-
-    <div id="missions-layer"></div>
-    <button class="back-btn" id="backBtn" onclick="resetView()">ABORT & RETURN</button>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const activities = {
-            season: [
-                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
-                { name: 'Seeds', code: 'SS', icon: 'fa-seedling', tk: '5' },
-                { name: 'Label', code: 'LS', icon: 'fa-tag', tk: '5' },
-                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass', tk: '5' },
-                { name: 'Vivid', code: 'VS', icon: 'fa-eye', tk: '5' },
-                { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' }
-            ],
-            xbox: [
-                { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: '5' },
-                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: '5' },
-                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: '5' },
-                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '10+' },
-                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: '5' },
-                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines', tk: '10+' },
-                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: '5' },
-                { name: 'Figurative X', code: 'FX', icon: 'fa-mask', tk: '5' },
-                { name: 'Label X', code: 'LX', icon: 'fa-industry', tk: '5' },
-                { name: 'Sing Sang Sung X', code: 'SSSX', icon: 'fa-bolt', tk: '10+' }
-            ]
-        };
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxvmrP9fQQMcsMEUB447lvn_ZuVw0gWYMeIiFeR01tXIcpXTdeYlkB6WcMQymfrBbFY0Q/exec';
 
-        let currentSwiper = null;
-        let activeMode = 'season';
-
-        window.addEventListener('DOMContentLoaded', () => { renderActivities('season'); });
-
-        function renderActivities(mode) {
-            activeMode = mode;
-            const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide ${mode}-card" onclick="openMissions(this, ${index})">
-                    <div class="token-badge">${act.tk} TK</div>
-                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
-                    <div class="activity-name">${act.name}</div>
-                </div>
-            `).join('');
-            
-            if (currentSwiper) currentSwiper.destroy();
-            currentSwiper = new Swiper('.swiper', { 
-                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
-                coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: true },
-                grabCursor: true 
-            });
+        async function fetchRanks() {
+            simulateLoading();
+            try {
+                const response = await fetch(scriptURL);
+                const data = await response.json();
+                setTimeout(() => {
+                    document.getElementById('matrix-loader').style.opacity = '0';
+                    setTimeout(() => document.getElementById('matrix-loader').remove(), 1000);
+                    renderData(data);
+                }, 1500); // تأخير بسيط لإظهار الـ Matrix Scan
+            } catch (error) {
+                console.error('Error!', error.message);
+            }
         }
 
-        function openMissions(cardElement, index) {
-            const actData = activities[activeMode][index];
-            document.getElementById('mainHeader').style.opacity = '0.2';
-            document.getElementById('mainToggle').style.opacity = '0';
-            
-            const allSlides = document.querySelectorAll('.swiper-slide');
-            allSlides.forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
-            cardElement.classList.add('selected-card-anim');
-            currentSwiper.allowTouchMove = false;
+        function simulateLoading() {
+            let p = 0;
+            const interval = setInterval(() => {
+                p += Math.floor(Math.random() * 20);
+                if (p > 100) p = 100;
+                document.getElementById('loading-percent').innerText = `${p}%`;
+                if (p === 100) clearInterval(interval);
+            }, 150);
+        }
 
-            setTimeout(() => {
-                const layer = document.getElementById('missions-layer');
-                layer.innerHTML = ''; layer.style.display = 'flex';
-                document.getElementById('backBtn').style.display = 'block';
+        function renderData(data) {
+            const podiumContainer = document.getElementById('podium-container');
+            const ranksContainer = document.getElementById('ranks-container');
+
+            // Podium Logic
+            const top3 = data.slice(0, 3);
+            const displayOrder = [1, 0, 2];
+            let podiumHTML = '';
+            displayOrder.forEach(idx => {
+                const s = top3[idx]; if (!s) return;
+                const isFirst = idx === 0;
+                const tierClass = isFirst ? 'tier-legendary' : (idx === 1 ? 'tier-elite' : 'tier-star');
+                const tierName = isFirst ? 'Legendary' : (idx === 1 ? 'Elite' : 'Master');
                 
-                const radius = window.innerWidth < 500 ? 130 : 180;
-                for (let i = 1; i <= 10; i++) {
-                    const angle = (i * 36) * (Math.PI / 180);
-                    const x = Math.cos(angle) * radius; const y = Math.sin(angle) * radius;
-                    const bubble = document.createElement('div');
-                    bubble.className = 'mission-bubble'; bubble.innerHTML = `<span>M${i}</span>`;
-                    bubble.style.left = `calc(50% + ${x}px - 30px)`; bubble.style.top = `calc(50% + ${y}px - 30px)`;
-                    
-                    bubble.onclick = (e) => { 
-                        e.stopPropagation();
-                        const targetPage = activeMode === 'season' ? 'MissionNormal.html' : 'MissionX.html';
-                        window.location.href = `${targetPage}?act=${actData.code}&m=${i}&name=${encodeURIComponent(actData.name)}`;
-                    };
-                    layer.appendChild(bubble);
-                }
-            }, 400);
-        }
-
-        function resetView() {
-            document.getElementById('missions-layer').style.display = 'none';
-            document.getElementById('backBtn').style.display = 'none';
-            document.getElementById('mainHeader').style.opacity = '1';
-            document.getElementById('mainToggle').style.opacity = '1';
-            document.querySelectorAll('.swiper-slide').forEach(slide => { 
-                slide.style.opacity = '1'; slide.classList.remove('selected-card-anim'); 
+                podiumHTML += `
+                    <div class="podium-item rank-${idx+1}">
+                        ${isFirst ? '<i class="fas fa-crown crown"></i>' : ''}
+                        <div class="tier-tag ${tierClass}">${tierName}</div>
+                        <div style="width: ${isFirst?150:120}px; height: ${isFirst?150:120}px; margin: 0 auto 15px;">
+                            <img src="${s.Image || 'https://via.placeholder.com/150'}" class="avatar">
+                        </div>
+                        <div style="font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 700;">${s.Name}</div>
+                        <div class="tokens-count" style="margin: 10px 0;">${s.Tokens || 0} TK</div>
+                        <div style="font-size: 0.8rem; opacity: 0.7;">${s.Stars || 0} Stars | ${s.GT || 0} GT</div>
+                    </div>
+                `;
             });
-            currentSwiper.allowTouchMove = true;
+            podiumContainer.innerHTML = podiumHTML;
+            podiumContainer.style.display = 'flex';
+
+            // List Logic
+            let listHTML = '';
+            data.slice(3).forEach((s, i) => {
+                const rankPos = i + 4;
+                const achievement = s.LastAction || "System: On Active Duty"; // استبدل بـ LastAction من بياناتك
+                
+                listHTML += `
+                    <div class="rank-row">
+                        <div style="font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold);">#${rankPos}</div>
+                        <img src="${s.Image || 'https://via.placeholder.com/150'}" class="row-avatar">
+                        <div>
+                            <span style="font-family: 'Orbitron'; font-weight: 700; display: block;">${s.Name}</span>
+                            <span style="font-size: 0.7rem; color: var(--accent-gold); text-transform: uppercase;">${s.Title || 'Superstar'}</span>
+                        </div>
+                        <div class="tokens-count">${s.Tokens || 0} TK</div>
+                        <div class="row-achievement">
+                            <i class="fas fa-bolt"></i> ${achievement}
+                        </div>
+                    </div>
+                `;
+            });
+            ranksContainer.innerHTML = listHTML;
+            ranksContainer.style.display = 'flex';
         }
 
-        function switchMode(mode) {
-            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
-            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
-            renderActivities(mode);
-        }
-
-        // Background Logic (Same as original but more subtle)
+        // Particle Background
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
-        let stars = [];
+        let particles = [];
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        class Star {
-            constructor() {
-                this.dist = Math.random() * Math.max(canvas.width, canvas.height);
-                this.angle = Math.random() * Math.PI * 2;
-                this.size = Math.random() * 1.2;
-                this.speed = (Math.random() * 0.0008) + 0.0003;
+        class Particle {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.speedY = Math.random() * -0.5 - 0.2;
+                this.opacity = Math.random() * 0.5;
             }
-            draw() {
-                this.angle += this.speed;
-                const x = canvas.width/2 + Math.cos(this.angle) * this.dist;
-                const y = canvas.height/2 + Math.sin(this.angle) * this.dist;
-                ctx.fillStyle = "rgba(255,255,255," + (Math.random() * 0.3 + 0.3) + ")";
-                ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI*2); ctx.fill();
+            update() {
+                this.y += this.speedY;
+                if (this.y < -10) this.y = canvas.height + 10;
+                ctx.fillStyle = `rgba(252, 194, 0, ${this.opacity})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2); ctx.fill();
             }
         }
         function animate() {
-            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(s => s.draw());
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            particles.forEach(p => p.update());
             requestAnimationFrame(animate);
         }
         window.addEventListener('resize', initCanvas);
         initCanvas();
-        for (let i = 0; i < 150; i++) stars.push(new Star());
+        particles = Array.from({length: 50}, () => new Particle());
         animate();
+
+        fetchRanks();
     </script>
 </body>
 </html>

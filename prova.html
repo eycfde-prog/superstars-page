@@ -1,203 +1,744 @@
+نقطة الضعف: التصميم الحالي "هادئ" زيادة عن اللزوم بالنسبة لمركز قيادة. مركز القيادة لازم يحسسني بـ Urgency (أهمية) و Live Data (بيانات حية).
+
+الفكرة (Command Center) مبتكرة، لكن التنفيذ البصري لسه "آمن" (Safe) ومحتاج جرأة أكبر في الـ Gamification.
+
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC | Mission Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <title>EYC Activity Hub | Starry Mission</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <style>
+
         :root {
+
             --primary-bg: #020205;
+
             --accent-gold: #ffcc00;
-            --neon-green: #00ffa3;
-            --neon-blue: #00d1ff;
-            --neon-red: #ff3131;
+
+            --season-color: #00ffa3;
+
+            --xbox-color: #ff3131;
+
             --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; }
+
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+
         
-        body { 
-            background: var(--primary-bg); 
-            color: #fff; 
-            height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            overflow: hidden;
-        }
 
-        .mission-outer-frame {
-            width: 95vw;
-            max-width: 500px;
-            height: 90vh;
-            background: rgba(10, 10, 15, 0.8);
-            border: 2px solid var(--neon-green);
-            box-shadow: inset 0 0 20px rgba(0, 255, 163, 0.2), 0 0 30px rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            z-index: 5;
-        }
+        /* --- Logo & Header --- */
 
-        /* Header Styles */
-        .mission-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; }
-        .center-logo-area { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 10; }
-        .center-logo-area img { width: 45px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
-        .vs-badge { font-family: 'Orbitron'; font-weight: 900; font-size: 16px; color: #fff; text-shadow: 0 0 10px var(--accent-gold); display: block; }
-        .agent-side, .activity-side { display: flex; align-items: center; gap: 8px; width: 42%; }
-        .activity-side { flex-direction: row-reverse; text-align: right; }
-        .circle-frame { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--neon-green); box-shadow: 0 0 15px var(--neon-green); overflow: hidden; background: var(--glass); flex-shrink: 0; }
-        .circle-frame img { width: 100%; height: 100%; object-fit: cover; }
-        .info-box { font-family: 'Orbitron'; }
-        .info-box span { display: block; font-size: 9px; color: #aaa; }
-        .info-box b { display: block; font-size: 10px; color: var(--accent-gold); white-space: nowrap; }
-        .token-tag { background: var(--accent-gold); color: #000; font-size: 8px; padding: 2px 5px; border-radius: 4px; font-weight: 900; }
+        .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
 
-        /* Difficulty Bar */
-        .difficulty-bar { display: flex; justify-content: space-around; margin-bottom: 10px; }
-        .diff-card { display: flex; align-items: center; gap: 4px; cursor: pointer; transition: 0.3s; }
-        .diff-btn { width: 60px; padding: 4px; border-radius: 6px; font-family: 'Orbitron'; font-weight: 900; text-align: center; font-size: 12px; }
-        .diff-tk { background: #ffff00; color: #000; font-size: 8px; font-weight: 900; padding: 2px 4px; border-radius: 3px; }
-        .btn-a { background: var(--neon-green); color: #000; }
-        .btn-b { background: var(--neon-blue); color: #000; }
-        .btn-c { background: var(--neon-red); color: #fff; }
+        .logo-placeholder img { height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
 
-        /* Content Area */
-        .activity-content-frame { flex-grow: 1; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: 15px; margin-bottom: 15px; backdrop-filter: blur(10px); overflow: hidden; }
-        .activity-iframe { width: 100%; height: 100%; border: none; }
+        
 
-        /* Action Buttons */
-        .action-container { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
-        .nav-btn { padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; font-family: 'Orbitron'; font-size: 12px; cursor: pointer; transition: 0.3s; flex: 1; text-align: center; text-decoration: none; }
-        .submit-btn { flex: 2; padding: 15px; background: linear-gradient(to right, #b8860b, var(--accent-gold)); border: none; border-radius: 12px; color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3); transition: 0.3s; }
+        .rank-header { text-align: center; padding-top: 60px; margin-bottom: 10px; position: relative; }
 
-        /* --- Glassy Animation & Position --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
-            display: none; z-index: 1000;
-        }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; color: #fff; }
 
-        .glassy-container {
-            position: absolute;
-            left: 30px; /* Positioned at the bottom left */
-            bottom: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            z-index: 1001;
-            /* Animation to emerge from the button location */
-            animation: emergeFromButton 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        .rank-header p { font-size: 9px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
 
-        .speech-bubble {
-            background: #fff; border-radius: 20px; padding: 15px; color: #1a1a1a;
-            position: relative; margin-bottom: 15px; text-align: right; 
-            font-size: 14px; font-weight: 600; line-height: 1.5;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            direction: rtl;
-            width: 250px;
-        }
 
-        .speech-bubble::after {
-            content: ''; position: absolute; bottom: -10px; left: 40px;
-            border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent;
-        }
 
-        .glassy-img {
-            width: 220px; /* Increased Size as requested */
-            filter: drop-shadow(0 0 25px var(--neon-blue));
-            animation: floatGhost 3s ease-in-out infinite;
-            transform-origin: bottom left;
-        }
+        .toggle-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
 
-        .close-guide-btn {
-            background: var(--accent-gold); color: #000; border: none;
-            padding: 5px 15px; border-radius: 8px; font-family: 'Orbitron';
-            font-size: 11px; font-weight: 900; cursor: pointer; margin-top: 10px;
-            width: 100%;
-        }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold); color: #fff; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; opacity: 0.5; transition: 0.3s; }
 
-        @keyframes floatGhost {
-            0%, 100% { transform: translateY(0) rotate(-1deg); }
-            50% { transform: translateY(-20px) rotate(1deg); }
-        }
+        .mode-btn.active { opacity: 1; box-shadow: 0 0 15px currentColor; }
 
-        @keyframes emergeFromButton {
-            from { 
-                opacity: 0; 
-                transform: scale(0.1) translate(-50px, 50px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: scale(1) translate(0, 0); 
-            }
-        }
+        .mode-btn.season-mode.active { background: var(--season-color); color: #000; border-color: var(--season-color); }
 
-        .side-line { position: absolute; top: 10%; height: 80%; width: 3px; background: var(--neon-green); }
-        .line-left { left: -1.5px; } .line-right { right: -1.5px; }
+        .mode-btn.xbox-mode.active { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); }
+
+
+
+        .swiper { width: 100%; padding-bottom: 40px; }
+
+        .swiper-slide { width: 220px; height: 320px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.5s; cursor: pointer; }
+
+        .token-badge { position: absolute; top: 20px; left: 20px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 8px; }
+
+        .activity-icon { font-size: 50px; margin-bottom: 15px; }
+
+        .activity-name { font-family: 'Orbitron'; font-size: 18px; font-weight: 900; text-align: center; padding: 0 10px; }
+
+        .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.1), rgba(0,0,0,0.9)); }
+
+        .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.1), rgba(0,0,0,0.9)); }
+
+
+
+        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; }
+
+        .mission-bubble { position: absolute; width: 55px; height: 55px; background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); cursor: pointer; animation: floatBubble 3s ease-in-out infinite; }
+
+        @keyframes floatBubble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 20px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 10px; }
+
+        .selected-card-anim { transform: scale(0.5) translateY(-50px) !important; opacity: 0.4 !important; }
 
     </style>
+
 </head>
+
 <body>
 
-    <div class="mission-outer-frame">
-        <div class="side-line line-left"></div>
-        <div class="side-line line-right"></div>
+    <canvas id="rank-canvas"></canvas>
 
-        <header class="mission-header">
-            <div class="agent-side">
-                <div class="circle-frame"><img src="https://via.placeholder.com/100" id="studentImg"></div>
-                <div class="info-box"><span>AGENT</span><b>BROWSER</b><div class="token-tag">5 TK</div></div>
-            </div>
-            <div class="center-logo-area"><img src="logo.png"><span class="vs-badge">VS</span></div>
-            <div class="activity-side">
-                <div class="circle-frame"><img src="https://via.placeholder.com/100" id="activityLogo"></div>
-                <div class="info-box"><span>MISSION</span><b>GOLDEN EAR</b><div class="token-tag" style="background:var(--neon-blue)">M 1</div></div>
-            </div>
-        </header>
+    
 
-        <div class="difficulty-bar">
-            <div class="diff-card"><div class="diff-btn btn-a">A</div><div class="diff-tk">2 TK</div></div>
-            <div class="diff-card"><div class="diff-btn btn-b">B</div><div class="diff-tk">3 TK</div></div>
-            <div class="diff-card"><div class="diff-btn btn-c">C</div><div class="diff-tk">5 TK</div></div>
-        </div>
+    <div class="top-nav">
 
-        <div class="activity-content-frame">
-            <iframe src="AS.html" class="activity-iframe"></iframe>
-        </div>
+        <div class="logo-placeholder"><img src="assets/logo.png" alt="EYC Logo"></div>
 
-        <div class="action-container">
-            <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
-            <button class="submit-btn" onclick="submitMission()">SUBMIT</button>
-            <a href="MC.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
-        </div>
     </div>
 
-    <div class="modal-overlay" id="guideModal" onclick="toggleGuide(false)">
-        <div class="glassy-container" onclick="event.stopPropagation()">
-            <div class="speech-bubble">
-                <p>هاي! أنا <strong>Glassy</strong> مساعدك الذكي.<br>اقرأ المحتوى جيداً، اختر الصعوبة، واضغط Submit لنبدأ المهمة!</p>
-                <button class="close-guide-btn" onclick="toggleGuide(false)">فهمت!</button>
-            </div>
-            <img src="assets/Glassy.png" alt="Glassy" class="glassy-img">
-        </div>
+
+
+    <header class="rank-header" id="mainHeader">
+
+        <h1>MISSION HUB</h1>
+
+        <p>NAVIGATION HELM</p>
+
+    </header>
+
+
+
+    <div class="toggle-container" id="mainToggle">
+
+        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
+
+        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
+
     </div>
+
+
+
+    <div id="swiper-container" class="swiper">
+
+        <div class="swiper-wrapper" id="activities-wrapper"></div>
+
+    </div>
+
+
+
+    <div id="missions-layer"></div>
+
+    <button class="back-btn" id="backBtn" onclick="resetView()">BACK TO HELM</button>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-        function toggleGuide(show) {
-            const modal = document.getElementById('guideModal');
-            modal.style.display = show ? 'block' : 'none';
+
+        const activities = {
+
+            season: [
+
+                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
+
+                { name: 'Seeds', code: 'SS', icon: 'fa-seedling', tk: '5' },
+
+                { name: 'Label', code: 'LS', icon: 'fa-tag', tk: '5' },
+
+                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass', tk: '5' },
+
+                { name: 'Vivid', code: 'VS', icon: 'fa-eye', tk: '5' },
+
+                { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' }
+
+            ],
+
+            xbox: [
+
+                { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: '5' },
+
+                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: '5' },
+
+                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: '5' },
+
+                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '10+' },
+
+                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: '5' },
+
+                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines', tk: '10+' },
+
+                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: '5' },
+
+                { name: 'Figurative X', code: 'FX', icon: 'fa-mask', tk: '5' },
+
+                { name: 'Label X', code: 'LX', icon: 'fa-industry', tk: '5' },
+
+                { name: 'Sing Sang Sung X', code: 'SSSX', icon: 'fa-bolt', tk: '10+' }
+
+            ]
+
+        };
+
+
+
+        let currentSwiper = null;
+
+        let activeMode = 'season';
+
+
+
+        window.addEventListener('DOMContentLoaded', () => { renderActivities('season'); });
+
+
+
+        function renderActivities(mode) {
+
+            activeMode = mode;
+
+            const wrapper = document.getElementById('activities-wrapper');
+
+            wrapper.innerHTML = activities[mode].map((act, index) => `
+
+                <div class="swiper-slide ${mode}-card" onclick="openMissions(this, ${index})">
+
+                    <div class="token-badge">${act.tk} TK</div>
+
+                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
+
+                    <div class="activity-name">${act.name}</div>
+
+                </div>
+
+            `).join('');
+
+            
+
+            if (currentSwiper) currentSwiper.destroy();
+
+            currentSwiper = new Swiper('.swiper', { 
+
+                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
+
+                coverflowEffect: { rotate: 5, stretch: 0, depth: 80, modifier: 1, slideShadows: false },
+
+                grabCursor: true 
+
+            });
+
         }
 
-        function submitMission() {
-            alert("Mission Synchronizing with Command Center...");
+
+
+        function openMissions(cardElement, index) {
+
+            const actData = activities[activeMode][index];
+
+            document.getElementById('mainHeader').style.opacity = '0';
+
+            document.getElementById('mainToggle').style.opacity = '0';
+
+            
+
+            const allSlides = document.querySelectorAll('.swiper-slide');
+
+            allSlides.forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
+
+            cardElement.classList.add('selected-card-anim');
+
+            currentSwiper.allowTouchMove = false;
+
+
+
+            setTimeout(() => {
+
+                const layer = document.getElementById('missions-layer');
+
+                layer.innerHTML = ''; layer.style.display = 'flex';
+
+                document.getElementById('backBtn').style.display = 'block';
+
+                
+
+                const radius = window.innerWidth < 500 ? 120 : 160;
+
+                for (let i = 1; i <= 10; i++) {
+
+                    const angle = (i * 36) * (Math.PI / 180);
+
+                    const x = Math.cos(angle) * radius; const y = Math.sin(angle) * radius;
+
+                    const bubble = document.createElement('div');
+
+                    bubble.className = 'mission-bubble'; bubble.innerText = 'M' + i;
+
+                    bubble.style.left = `calc(50% + ${x}px - 27px)`; bubble.style.top = `calc(50% + ${y}px - 27px)`;
+
+                    
+
+                    bubble.onclick = (e) => { 
+
+                        e.stopPropagation();
+
+                        // توجيه الطالب بناءً على نوع النشاط
+
+                        const targetPage = activeMode === 'season' ? 'MissionNormal.html' : 'MissionX.html';
+
+                        window.location.href = `${targetPage}?act=${actData.code}&m=${i}&name=${encodeURIComponent(actData.name)}`;
+
+                    };
+
+                    layer.appendChild(bubble);
+
+                }
+
+            }, 400);
+
         }
+
+
+
+        function resetView() {
+
+            document.getElementById('missions-layer').style.display = 'none';
+
+            document.getElementById('backBtn').style.display = 'none';
+
+            document.getElementById('mainHeader').style.opacity = '1';
+
+            document.getElementById('mainToggle').style.opacity = '1';
+
+            document.querySelectorAll('.swiper-slide').forEach(slide => { 
+
+                slide.style.opacity = '1'; slide.classList.remove('selected-card-anim'); 
+
+            });
+
+            currentSwiper.allowTouchMove = true;
+
+        }
+
+
+
+        function switchMode(mode) {
+
+            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
+
+            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
+
+            renderActivities(mode);
+
+        }
+
+
+
+        // Star Background
+
+        const canvas = document.getElementById('rank-canvas');
+
+        const ctx = canvas.getContext('2d');
+
+        let stars = [];
+
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+
+        class Star {
+
+            constructor() {
+
+                this.dist = Math.random() * Math.max(canvas.width, canvas.height);
+
+                this.angle = Math.random() * Math.PI * 2;
+
+                this.size = Math.random() * 1.5;
+
+                this.speed = (Math.random() * 0.001) + 0.0005;
+
+            }
+
+            draw() {
+
+                this.angle += this.speed;
+
+                const x = canvas.width/2 + Math.cos(this.angle) * this.dist;
+
+                const y = canvas.height/2 + Math.sin(this.angle) * this.dist;
+
+                ctx.fillStyle = "rgba(255,255,255," + (Math.random() * 0.5 + 0.5) + ")";
+
+                ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI*2); ctx.fill();
+
+            }
+
+        }
+
+        function animate() {
+
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(s => s.draw());
+
+            requestAnimationFrame(animate);
+
+        }
+
+        window.addEventListener('resize', initCanvas);
+
+        initCanvas();
+
+        for (let i = 0; i < 200; i++) stars.push(new Star());
+
+        animate();
+
     </script>
+
 </body>
+
 </html>
+
+النصيحة المبتكرة: بدل ما تكون مجرد صفحة تسجيل بيانات، لازم تكون "Character Creation". المستخدم مش "بيسجل"، هو "بيصمم بطل" (Avatar). الـ UI هنا لازم يتغير من "Input Fields" لـ "Identity Building".
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EYC Academy | Agent Registry</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+
+        :root { --gold: #ffcc00; --bg-dark: #050505; --accent-blue: #0080ff; }
+
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; min-height: 100vh; background-image: radial-gradient(circle at 50% 50%, rgba(255, 204, 0, 0.05) 0%, transparent 70%); }
+
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 204, 0, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+
+        input, select { background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,204,0,0.2) !important; color: white !important; transition: 0.3s; }
+
+        input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(255,204,0,0.2); outline: none; }
+
+        .upload-zone { border: 2px dashed rgba(255,204,0,0.2); transition: 0.3s; }
+
+        .upload-zone:hover { border-color: var(--gold); background: rgba(255,204,0,0.05); }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
+
+        .success-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: var(--gold); filter: blur(120px); opacity: 0.1; z-index: -1; animation: pulseGlow 3s infinite; }
+
+        @keyframes pulseGlow { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.2; } }
+
+        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+
+        .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; }
+
+        .agent-code-box { background: rgba(255, 204, 0, 0.1); border: 1px dashed var(--gold); padding: 15px; border-radius: 12px; letter-spacing: 5px; font-size: 1.5rem; margin: 20px 0; color: var(--gold); text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
+
+    </style>
+
+</head>
+
+<body class="py-12 px-4">
+
+
+
+    <div id="successScreen" class="modal">
+
+        <div class="success-glow"></div>
+
+        <div class="glass-card p-10 text-center max-w-md border-b-4 border-yellow-500 transform transition-all scale-110">
+
+            <div class="relative w-24 h-24 mx-auto mb-6">
+
+                <div class="absolute inset-0 bg-yellow-500 rounded-full animate-ping opacity-20"></div>
+
+                <div class="relative w-24 h-24 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center text-5xl">
+
+                    <i class="fas fa-shield-check"></i>
+
+                </div>
+
+            </div>
+
+            <h2 class="orbitron text-3xl font-black mb-2">ACCESS GRANTED</h2>
+
+            <p class="text-gray-400 text-sm mb-4">Welcome, <span id="agentNameDisplay" class="text-white font-bold">Agent</span>.</p>
+
+            <div class="agent-code-box orbitron font-black" id="agentCodeDisplay">---</div>
+
+            <button onclick="window.location.href='MC.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white transition-all">ENTER MISSION CONTROL</button>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="max-w-xl mx-auto">
+
+        <div class="text-center mb-10">
+
+            <div class="orbitron text-yellow-500 text-xs tracking-[0.5em] mb-2">COMMAND CENTER</div>
+
+            <h1 class="orbitron text-4xl font-black">CREATE PROFILE</h1>
+
+        </div>
+
+
+
+        <form id="regForm" class="glass-card p-8 space-y-6 relative overflow-hidden">
+
+            <div class="scanner-line"></div>
+
+            <div class="space-y-4">
+
+                <div>
+
+                    <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">FULL NAME (IDENTITY)</label>
+
+                    <input type="text" id="fullNameInput" name="fullName" required placeholder="Agent Name" class="w-full p-4 rounded-xl text-sm">
+
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+
+                    <div>
+
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AGE</label>
+
+                        <input type="number" name="age" required placeholder="00" class="w-full p-4 rounded-xl text-sm">
+
+                    </div>
+
+                    <div>
+
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">ACCESS EMAIL</label>
+
+                        <input type="email" name="email" required placeholder="name@gmail.com" class="w-full p-4 rounded-xl text-sm">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div>
+
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AVATAR UPLOAD</label>
+
+                <div class="upload-zone rounded-2xl p-6 text-center relative cursor-pointer">
+
+                    <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
+
+                    <i class="fas fa-camera-retro text-2xl text-gray-500 mb-2" id="uploadIcon"></i>
+
+                    <p id="fileName" class="text-[10px] text-gray-500 uppercase">Select agent photo</p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="pt-4 border-t border-white/5">
+
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-4 uppercase">Select Sector Access</label>
+
+                <div class="grid grid-cols-2 gap-4">
+
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+
+                        <input type="checkbox" name="prog" value="Season" checked class="w-4 h-4 accent-yellow-500">
+
+                        <span class="text-xs font-bold orbitron">SEASON</span>
+
+                    </label>
+
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+
+                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-4 h-4 accent-blue-500">
+
+                        <span class="text-xs font-bold orbitron text-blue-400">XBOX ELITE</span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl hover:scale-105 transition-all">
+
+                INITIATE REGISTRATION
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+
+    <script>
+
+        // ضع الرابط الجديد هنا بعد عمل New Deployment
+
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsuyxBY2X2DQa29tLMADlFnZ3HXbJBIWuYAJ6ercgp3RpQGMioS_d-3T833ZKExtPN-g/exec";
+
+
+
+        function toggleXboxSection() {
+
+            // منطق إظهار خيارات XBOX لو أردت إضافتها لاحقاً
+
+        }
+
+
+
+        document.getElementById('imageInput').onchange = function() {
+
+            if(this.files[0]) {
+
+                document.getElementById('fileName').innerText = "IDENTIFIED: " + this.files[0].name;
+
+                document.getElementById('uploadIcon').className = "fas fa-check text-yellow-500 mb-2";
+
+            }
+
+        };
+
+
+
+        document.getElementById('regForm').onsubmit = function(e) {
+
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+
+            const file = document.getElementById('imageInput').files[0];
+
+            const agentName = document.getElementById('fullNameInput').value;
+
+            const progs = [];
+
+            document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
+
+
+
+            submitBtn.innerText = "SYNCHRONIZING...";
+
+            submitBtn.disabled = true;
+
+
+
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+
+                const payload = {
+
+                    name: agentName,
+
+                    age: document.getElementsByName('age')[0].value,
+
+                    email: document.getElementsByName('email')[0].value,
+
+                    programs: progs.join(', '),
+
+                    image: event.target.result
+
+                };
+
+
+
+                fetch(SCRIPT_URL, {
+
+                    method: 'POST',
+
+                    body: JSON.stringify(payload)
+
+                })
+
+                .then(res => res.text())
+
+                .then(result => {
+
+                    const cleanRes = result.trim();
+
+                    if (cleanRes === "Already Registered") {
+
+                        alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
+
+                    } else if (cleanRes.startsWith("Success")) {
+
+                        const code = cleanRes.split(":")[1];
+
+                        document.getElementById('agentNameDisplay').innerText = agentName;
+
+                        document.getElementById('agentCodeDisplay').innerText = code;
+
+                        document.getElementById('successScreen').style.display = 'flex';
+
+                    } else {
+
+                        alert("نظام الأكاديمية: " + result);
+
+                    }
+
+                })
+
+                .catch(() => alert("فشل في الاتصال بالسيرفر!"))
+
+                .finally(() => {
+
+                    submitBtn.innerText = "INITIATE REGISTRATION";
+
+                    submitBtn.disabled = false;
+
+                });
+
+            };
+
+            reader.readAsDataURL(file);
+
+        };
+
+    </script>
+
+</body>
+
+</html>
+

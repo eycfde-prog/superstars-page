@@ -23,7 +23,6 @@
         .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
         .logo-placeholder img { height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
         
-        /* Headers */
         .rank-header { text-align: center; padding-top: 60px; margin-bottom: 10px; position: relative; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; color: #fff; }
         .rank-header p { font-size: 9px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
@@ -34,12 +33,11 @@
         .mode-btn.season-mode.active { background: var(--season-color); color: #000; border-color: var(--season-color); }
         .mode-btn.xbox-mode.active { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); }
 
-        /* Swiper Fixes */
         .swiper { width: 100%; padding-bottom: 40px; }
-        .swiper-slide { width: 220px; height: 320px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.5s; }
+        .swiper-slide { width: 220px; height: 320px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.5s; cursor: pointer; }
         .token-badge { position: absolute; top: 20px; left: 20px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 8px; }
         .activity-icon { font-size: 50px; margin-bottom: 15px; }
-        .activity-name { font-family: 'Orbitron'; font-size: 18px; font-weight: 900; }
+        .activity-name { font-family: 'Orbitron'; font-size: 18px; font-weight: 900; text-align: center; padding: 0 10px; }
         .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.1), rgba(0,0,0,0.9)); }
         .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.1), rgba(0,0,0,0.9)); }
 
@@ -54,10 +52,8 @@
     <canvas id="rank-canvas"></canvas>
     
     <div class="top-nav">
-        <div class="logo-placeholder">
-            <img src="logo.png" alt="EYC Logo">
-        </div>
-        </div>
+        <div class="logo-placeholder"><img src="assets/logo.png" alt="EYC Logo"></div>
+    </div>
 
     <header class="rank-header" id="mainHeader">
         <h1>MISSION HUB</h1>
@@ -78,39 +74,36 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // الدخول مفعل دائماً الآن
-        const isLogged = true;
-        
         const activities = {
             season: [
-                { name: 'Golden Ear', icon: 'fa-ear-listen', tk: '5' },
-                { name: 'Seeds', icon: 'fa-seedling', tk: '5' },
-                { name: 'Label', icon: 'fa-tag', tk: '5' },
-                { name: 'Grammar', icon: 'fa-magnifying-glass', tk: '5' },
-                { name: 'Vivid', icon: 'fa-eye', tk: '5' },
-                { name: 'Alike', icon: 'fa-equals', tk: '5' }
+                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
+                { name: 'Seeds', code: 'SS', icon: 'fa-seedling', tk: '5' },
+                { name: 'Label', code: 'LS', icon: 'fa-tag', tk: '5' },
+                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass', tk: '5' },
+                { name: 'Vivid', code: 'VS', icon: 'fa-eye', tk: '5' },
+                { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' }
             ],
             xbox: [
-                { name: 'Alike X', icon: 'fa-clone', tk: '5' },
-                { name: 'Vivid X', icon: 'fa-stopwatch', tk: '5' },
-                { name: 'Seeds X', icon: 'fa-puzzle-piece', tk: '5' },
-                { name: 'Dictation X', icon: 'fa-pen-nib', tk: '10+' },
-                { name: 'Golden Ear X', icon: 'fa-filter', tk: '5' },
-                { name: 'Elmagazine X', icon: 'fa-microphone-lines', tk: '10+' },
-                { name: 'Grammar X', icon: 'fa-network-wired', tk: '5' },
-                { name: 'Figurative X', icon: 'fa-mask', tk: '5' },
-                { name: 'Label X', icon: 'fa-industry', tk: '5' },
-                { name: 'SSS X', icon: 'fa-bolt', tk: '10+' }
+                { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: '5' },
+                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: '5' },
+                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: '5' },
+                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '10+' },
+                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: '5' },
+                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines', tk: '10+' },
+                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: '5' },
+                { name: 'Figurative X', code: 'FX', icon: 'fa-mask', tk: '5' },
+                { name: 'Label X', code: 'LX', icon: 'fa-industry', tk: '5' },
+                { name: 'Sing Sang Sung X', code: 'SSSX', icon: 'fa-bolt', tk: '10+' }
             ]
         };
 
         let currentSwiper = null;
+        let activeMode = 'season';
 
-        window.addEventListener('DOMContentLoaded', () => {
-            renderActivities('season');
-        });
+        window.addEventListener('DOMContentLoaded', () => { renderActivities('season'); });
 
         function renderActivities(mode) {
+            activeMode = mode;
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act, index) => `
                 <div class="swiper-slide ${mode}-card" onclick="openMissions(this, ${index})">
@@ -122,18 +115,17 @@
             
             if (currentSwiper) currentSwiper.destroy();
             currentSwiper = new Swiper('.swiper', { 
-                effect: 'coverflow', 
-                centeredSlides: true, 
-                slidesPerView: 'auto',
-                initialSlide: 3, 
+                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
                 coverflowEffect: { rotate: 5, stretch: 0, depth: 80, modifier: 1, slideShadows: false },
                 grabCursor: true 
             });
         }
 
         function openMissions(cardElement, index) {
+            const actData = activities[activeMode][index];
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
+            
             const allSlides = document.querySelectorAll('.swiper-slide');
             allSlides.forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
             cardElement.classList.add('selected-card-anim');
@@ -143,6 +135,7 @@
                 const layer = document.getElementById('missions-layer');
                 layer.innerHTML = ''; layer.style.display = 'flex';
                 document.getElementById('backBtn').style.display = 'block';
+                
                 const radius = window.innerWidth < 500 ? 120 : 160;
                 for (let i = 1; i <= 10; i++) {
                     const angle = (i * 36) * (Math.PI / 180);
@@ -150,9 +143,12 @@
                     const bubble = document.createElement('div');
                     bubble.className = 'mission-bubble'; bubble.innerText = 'M' + i;
                     bubble.style.left = `calc(50% + ${x}px - 27px)`; bubble.style.top = `calc(50% + ${y}px - 27px)`;
+                    
                     bubble.onclick = (e) => { 
-                        e.stopPropagation(); 
-                        alert(`Mission ${i} Transmitting...`); 
+                        e.stopPropagation();
+                        // توجيه الطالب بناءً على نوع النشاط
+                        const targetPage = activeMode === 'season' ? 'MissionNormal.html' : 'MissionX.html';
+                        window.location.href = `${targetPage}?act=${actData.code}&m=${i}&name=${encodeURIComponent(actData.name)}`;
                     };
                     layer.appendChild(bubble);
                 }
@@ -164,8 +160,9 @@
             document.getElementById('backBtn').style.display = 'none';
             document.getElementById('mainHeader').style.opacity = '1';
             document.getElementById('mainToggle').style.opacity = '1';
-            const allSlides = document.querySelectorAll('.swiper-slide');
-            allSlides.forEach(slide => { slide.style.opacity = '1'; slide.classList.remove('selected-card-anim'); });
+            document.querySelectorAll('.swiper-slide').forEach(slide => { 
+                slide.style.opacity = '1'; slide.classList.remove('selected-card-anim'); 
+            });
             currentSwiper.allowTouchMove = true;
         }
 
@@ -175,7 +172,7 @@
             renderActivities(mode);
         }
 
-        // Star Background Animation
+        // Star Background
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -196,8 +193,7 @@
             }
         }
         function animate() {
-            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; 
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             stars.forEach(s => s.draw());
             requestAnimationFrame(animate);
         }

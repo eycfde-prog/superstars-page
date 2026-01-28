@@ -14,7 +14,6 @@
         .green-glow { text-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(46, 204, 113, 0.1); border-radius: 20px; }
         
-        /* Word Seeds Styling */
         .word-seed {
             background: rgba(46, 204, 113, 0.1);
             border: 1px dashed var(--seed-green);
@@ -25,7 +24,6 @@
         }
         .word-seed:hover { background: var(--seed-green); color: #000; transform: translateY(-3px); }
 
-        /* Story Area */
         textarea {
             width: 100%; height: 220px; background: rgba(0, 0, 0, 0.4) !important;
             border: 1px solid rgba(46, 204, 113, 0.2) !important;
@@ -34,7 +32,6 @@
         }
         textarea:focus { border-color: var(--seed-green) !important; box-shadow: 0 0 20px rgba(46, 204, 113, 0.1); }
 
-        /* Counter Box */
         .counter-badge {
             position: absolute; bottom: 15px; left: 15px;
             padding: 5px 12px; border-radius: 10px; font-size: 10px; font-weight: 900;
@@ -89,7 +86,7 @@
     </div>
 
 <script>
-    // بيانات النشاط (الـ 6 كلمات)
+    // الـ 6 كلمات المطلوبة حسب الـ Guide
     const missionSeeds = ["Adventure", "Mystery", "Key", "Forest", "Shadow", "Discovery"];
     
     function initSeeds() {
@@ -104,13 +101,13 @@
 
     function analyzeText() {
         const text = document.getElementById('storyInput').value.trim();
-        const words = text ? text.split(/\s+/).length : 0;
+        const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
         const badge = document.getElementById('wordCountBadge');
         const btn = document.getElementById('submitBtn');
 
         badge.innerText = `${words} / 120 WORDS`;
 
-        // شرط العدد (100 - 120 كلمة)
+        // شرط الجايد: من 100 لـ 120 كلمة
         if (words >= 100 && words <= 120) {
             badge.className = "counter-badge count-ok orbitron";
             btn.disabled = false;
@@ -135,12 +132,13 @@
 
     window.onload = initSeeds;
 
-    // Terminal Protocol
+    // Terminal Protocol Integration
     window.checkAnswers = function() {
-        const words = document.getElementById('storyInput').value.trim().split(/\s+/).length;
+        const text = document.getElementById('storyInput').value.trim();
+        const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
         return {
             status: (words >= 100 && words <= 120) ? "COMPLETED" : "IN_PROGRESS",
-            progress: (words / 100) * 100
+            progress: Math.min((words / 100) * 100, 100)
         };
     };
 </script>

@@ -13,16 +13,30 @@
             --accent-gold: #fcc200;
             --accent-silver: #e0e0e0;
             --accent-bronze: #cd7f32;
+            --accent-elite: #00ffa3; /* لون أخضر للـ Tiers العالية */
             --gold-glow: rgba(252, 194, 0, 0.4);
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
             --text-color: #ffffff;
-            --card-gradient: linear-gradient(145deg, rgba(30,30,30,0.9) 0%, rgba(5,5,5,1) 100%);
+            --matrix-green: #00ff41;
         }
 
         html { scroll-behavior: smooth; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--primary-bg); color: var(--text-color); overflow-x: hidden; }
+
+        /* Matrix Scan Overlay */
+        #matrix-loader {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 1s ease;
+        }
+        .scan-line {
+            position: absolute; width: 100%; height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--matrix-green), transparent);
+            opacity: 0.1; top: -100px; animation: scanMove 2s linear infinite;
+        }
+        @keyframes scanMove { 0% { top: -100px; } 100% { top: 100%; } }
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.5; }
         .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
@@ -36,106 +50,72 @@
             filter: drop-shadow(0 0 20px var(--gold-glow));
         }
 
-        .podium {
-            display: flex; justify-content: center; align-items: flex-end;
-            gap: 25px; margin-bottom: 120px; padding-top: 50px;
-            display: none;
-        }
-
+        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 25px; margin-bottom: 120px; display: none; }
         .podium-item {
-            background: var(--card-gradient);
-            backdrop-filter: blur(20px);
-            border: 2px solid var(--glass-border);
-            border-radius: 30px; padding: 35px 20px;
-            text-align: center; position: relative;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            background: linear-gradient(145deg, rgba(30,30,30,0.9) 0%, rgba(5,5,5,1) 100%);
+            backdrop-filter: blur(20px); border: 2px solid var(--glass-border);
+            border-radius: 30px; padding: 35px 20px; text-align: center; position: relative;
+            transition: 0.5s; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
-
-        .podium-item:hover { transform: translateY(-10px); border-color: var(--accent-gold); }
-
-        .rank-1 { width: 340px; height: 520px; order: 2; border-color: var(--accent-gold); z-index: 5; }
+        .rank-1 { width: 340px; height: 520px; order: 2; border-color: var(--accent-gold); box-shadow: 0 0 40px var(--gold-glow); }
         .rank-2 { width: 280px; height: 440px; order: 1; border-color: var(--accent-silver); }
         .rank-3 { width: 280px; height: 400px; order: 3; border-color: var(--accent-bronze); }
 
-        .avatar-wrapper { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
-        .rank-1 .avatar-wrapper { width: 160px; height: 160px; }
-        
-        .avatar { 
-            width: 100%; height: 100%; border-radius: 50%; object-fit: cover; 
-            border: 4px solid var(--glass-border); position: relative; z-index: 2; 
+        /* Tier Badges */
+        .tier-tag {
+            font-family: 'Orbitron'; font-size: 0.6rem; font-weight: 900;
+            padding: 4px 12px; border-radius: 50px; text-transform: uppercase;
+            letter-spacing: 2px; margin-bottom: 10px; display: inline-block;
         }
+        .tier-legendary { background: var(--accent-gold); color: #000; box-shadow: 0 0 15px var(--accent-gold); }
+        .tier-elite { background: var(--accent-elite); color: #000; }
+        .tier-star { background: var(--glass-bg); border: 1px solid #fff; color: #fff; }
 
-        .rank-1 .avatar { border-color: var(--accent-gold); box-shadow: 0 0 30px var(--gold-glow); }
-
-        .stat-badge {
-            display: flex; align-items: center; justify-content: center;
-            gap: 8px; margin: 10px 0; font-family: 'Orbitron'; font-weight: 700;
-        }
-        .stat-badge i { color: var(--accent-gold); font-size: 1.1rem; }
-        
-        .tokens-count { color: var(--accent-gold); font-size: 1.4rem; margin: 15px 0; font-weight: 900; font-family: 'Orbitron'; }
-
-        .rank-list { display: flex; flex-direction: column; gap: 20px; display: none; }
-        
+        /* Rank Row & Social Proof */
+        .rank-list { display: flex; flex-direction: column; gap: 15px; display: none; }
         .rank-row {
-            display: grid;
-            grid-template-columns: 80px 100px 1fr 300px;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            padding: 15px 25px;
-            border-radius: 20px;
-            transition: 0.3s ease;
-            backdrop-filter: blur(10px);
+            display: grid; grid-template-columns: 60px 80px 1.5fr 1fr 200px;
+            align-items: center; background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid transparent; padding: 15px 25px; border-radius: 12px;
+            transition: 0.3s; backdrop-filter: blur(10px);
         }
-
-        .rank-row:hover {
-            background: rgba(252, 194, 0, 0.05);
-            border-color: var(--accent-gold);
-            transform: scale(1.01);
-        }
-
-        .row-rank-num { font-family: 'Orbitron'; font-weight: 900; font-size: 1.5rem; color: var(--accent-gold); }
-        .row-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent-gold); object-fit: cover; }
+        .rank-row:hover { background: rgba(255, 255, 255, 0.07); transform: translateX(10px); border-left-color: var(--accent-gold); }
         
-        .row-info { padding-left: 20px; }
-        .row-name { font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 700; color: #fff; display: block; }
-        .row-title { font-size: 0.75rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
-
-        .row-stats { display: flex; gap: 20px; justify-content: flex-end; align-items: center; }
-
-        .mini-stat { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron'; font-size: 0.9rem; font-weight: 800; white-space: nowrap; }
-
-        .crown { 
-            position: absolute; top: -45px; left: 50%; transform: translateX(-50%); 
-            font-size: 3.5rem; color: var(--accent-gold); 
-            filter: drop-shadow(0 0 15px var(--accent-gold));
-            animation: crownFloat 3s infinite ease-in-out;
+        .row-achievement { 
+            font-size: 0.75rem; color: var(--accent-elite); 
+            font-style: italic; opacity: 0.8;
+            border-left: 1px solid rgba(255,255,255,0.2); padding-left: 15px;
         }
 
-        @keyframes crownFloat { 0%, 100% { transform: translateX(-50%) translateY(0) rotate(-5deg); } 50% { transform: translateX(-50%) translateY(-15px) rotate(5deg); } }
+        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--glass-border); }
+        .row-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--glass-border); }
+
+        .tokens-count { color: var(--accent-gold); font-family: 'Orbitron'; font-weight: 900; }
+        .crown { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); font-size: 3rem; color: var(--accent-gold); filter: drop-shadow(0 0 15px var(--accent-gold)); animation: crownFloat 3s infinite ease-in-out; }
+        @keyframes crownFloat { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-10px); } }
 
         @media (max-width: 900px) {
-            .podium { flex-direction: column; align-items: center; gap: 40px; }
-            .rank-1, .rank-2, .rank-3 { width: 90%; height: auto; order: initial; }
-            .rank-row { grid-template-columns: 50px 70px 1fr; gap: 10px; padding: 10px; }
-            .row-stats { grid-column: 1 / span 4; justify-content: space-around; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; margin-top: 10px; }
-            .row-name { font-size: 0.9rem; }
+            .rank-row { grid-template-columns: 40px 60px 1fr 80px; }
+            .row-achievement { display: none; } /* إخفاء الإنجاز في الموبايل لعدم الزحمة */
         }
     </style>
 </head>
 <body>
 
+    <div id="matrix-loader">
+        <div class="scan-line"></div>
+        <div style="font-family: 'Orbitron'; color: var(--matrix-green); letter-spacing: 5px; font-size: 0.8rem;">
+            [ SYSTEM SCAN IN PROGRESS... ]
+        </div>
+        <div id="loading-percent" style="font-family: 'Orbitron'; color: var(--matrix-green); margin-top: 10px;">0%</div>
+    </div>
+
     <canvas id="rank-canvas"></canvas>
 
     <div class="container">
         <header class="rank-header">
-            <div style="color: var(--accent-gold); letter-spacing: 10px; font-weight: bold; font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 10px;">GLOBAL LEADERBOARD</div>
+            <div style="color: var(--accent-gold); letter-spacing: 10px; font-weight: bold; font-family: 'Orbitron'; font-size: 0.7rem; margin-bottom: 10px;">TACTICAL LEADERBOARD V2.0</div>
             <h1>HALL OF FAME</h1>
-            <div id="loading-status" style="margin-top: 20px; font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent-gold);">
-                <i class="fas fa-sync fa-spin"></i> ACCESSING ENCRYPTED DATA...
-            </div>
         </header>
 
         <div class="podium" id="podium-container"></div>
@@ -143,77 +123,80 @@
     </div>
 
     <script>
-        // ضع الرابط الخاص بك هنا بعد عمل Deploy
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxvmrP9fQQMcsMEUB447lvn_ZuVw0gWYMeIiFeR01tXIcpXTdeYlkB6WcMQymfrBbFY0Q/exec';
 
         async function fetchRanks() {
+            simulateLoading();
             try {
                 const response = await fetch(scriptURL);
                 const data = await response.json();
-                renderData(data);
+                setTimeout(() => {
+                    document.getElementById('matrix-loader').style.opacity = '0';
+                    setTimeout(() => document.getElementById('matrix-loader').remove(), 1000);
+                    renderData(data);
+                }, 1500); // تأخير بسيط لإظهار الـ Matrix Scan
             } catch (error) {
-                document.getElementById('loading-status').innerHTML = "<span style='color: #ff4444;'>CONNECTION ERROR: Check Script Permissions</span>";
                 console.error('Error!', error.message);
             }
+        }
+
+        function simulateLoading() {
+            let p = 0;
+            const interval = setInterval(() => {
+                p += Math.floor(Math.random() * 20);
+                if (p > 100) p = 100;
+                document.getElementById('loading-percent').innerText = `${p}%`;
+                if (p === 100) clearInterval(interval);
+            }, 150);
         }
 
         function renderData(data) {
             const podiumContainer = document.getElementById('podium-container');
             const ranksContainer = document.getElementById('ranks-container');
-            document.getElementById('loading-status').style.display = 'none';
 
-            if (!data || data.length === 0) {
-                document.getElementById('loading-status').innerHTML = "NO DATA FOUND";
-                document.getElementById('loading-status').style.display = 'block';
-                return;
-            }
-
-            // الـ 3 الأوائل للمنصة
+            // Podium Logic
             const top3 = data.slice(0, 3);
-            const displayOrder = [1, 0, 2]; // الترتيب البصري: 2nd, 1st, 3rd
+            const displayOrder = [1, 0, 2];
             let podiumHTML = '';
-
             displayOrder.forEach(idx => {
-                const student = top3[idx];
-                if (!student) return;
-                
+                const s = top3[idx]; if (!s) return;
                 const isFirst = idx === 0;
-                const rankClass = isFirst ? 'rank-1' : (idx === 1 ? 'rank-2' : 'rank-3');
-                const crown = isFirst ? '<i class="fas fa-crown crown"></i>' : '';
-
+                const tierClass = isFirst ? 'tier-legendary' : (idx === 1 ? 'tier-elite' : 'tier-star');
+                const tierName = isFirst ? 'Legendary' : (idx === 1 ? 'Elite' : 'Master');
+                
                 podiumHTML += `
-                    <div class="podium-item ${rankClass}">
-                        ${crown}
-                        <div class="avatar-wrapper">
-                            <img src="${student.Image || 'https://via.placeholder.com/150'}" class="avatar" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="podium-item rank-${idx+1}">
+                        ${isFirst ? '<i class="fas fa-crown crown"></i>' : ''}
+                        <div class="tier-tag ${tierClass}">${tierName}</div>
+                        <div style="width: ${isFirst?150:120}px; height: ${isFirst?150:120}px; margin: 0 auto 15px;">
+                            <img src="${s.Image || 'https://via.placeholder.com/150'}" class="avatar">
                         </div>
-                        <div class="row-title">${student.Title || 'Newcomer'}</div>
-                        <div class="row-name" style="font-size: 1.5rem; margin: 10px 0;">${student.Name}</div>
-                        <div class="tokens-count">${student.Tokens || 0} TK</div>
-                        <div class="stat-badge"><i class="fas fa-star"></i> <span>${student.Stars || 0} Stars</span></div>
-                        <div class="stat-badge"><i class="fas fa-ticket-alt"></i> <span>${student.GT || 0} GT</span></div>
+                        <div style="font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 700;">${s.Name}</div>
+                        <div class="tokens-count" style="margin: 10px 0;">${s.Tokens || 0} TK</div>
+                        <div style="font-size: 0.8rem; opacity: 0.7;">${s.Stars || 0} Stars | ${s.GT || 0} GT</div>
                     </div>
                 `;
             });
             podiumContainer.innerHTML = podiumHTML;
             podiumContainer.style.display = 'flex';
 
-            // البقية في القائمة
-            const rest = data.slice(3);
+            // List Logic
             let listHTML = '';
-            rest.forEach((student, index) => {
+            data.slice(3).forEach((s, i) => {
+                const rankPos = i + 4;
+                const achievement = s.LastAction || "System: On Active Duty"; // استبدل بـ LastAction من بياناتك
+                
                 listHTML += `
                     <div class="rank-row">
-                        <div class="row-rank-num">#${index + 4}</div>
-                        <img src="${student.Image || 'https://via.placeholder.com/150'}" class="row-avatar" onerror="this.src='https://via.placeholder.com/150'">
-                        <div class="row-info">
-                            <span class="row-name">${student.Name}</span>
-                            <span class="row-title">${student.Title || 'Superstar'}</span>
+                        <div style="font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold);">#${rankPos}</div>
+                        <img src="${s.Image || 'https://via.placeholder.com/150'}" class="row-avatar">
+                        <div>
+                            <span style="font-family: 'Orbitron'; font-weight: 700; display: block;">${s.Name}</span>
+                            <span style="font-size: 0.7rem; color: var(--accent-gold); text-transform: uppercase;">${s.Title || 'Superstar'}</span>
                         </div>
-                        <div class="row-stats">
-                            <div class="mini-stat" style="color: var(--accent-gold);">${student.Tokens || 0} TK</div>
-                            <div class="mini-stat"><i class="fas fa-star"></i> ${student.Stars || 0}</div>
-                            <div class="mini-stat" style="color: var(--accent-gold);"><i class="fas fa-ticket-alt"></i> ${student.GT || 0} GT</div>
+                        <div class="tokens-count">${s.Tokens || 0} TK</div>
+                        <div class="row-achievement">
+                            <i class="fas fa-bolt"></i> ${achievement}
                         </div>
                     </div>
                 `;
@@ -222,7 +205,7 @@
             ranksContainer.style.display = 'flex';
         }
 
-        // Background Animation
+        // Particle Background
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -232,7 +215,6 @@
             init() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
                 this.speedY = Math.random() * -0.5 - 0.2;
                 this.opacity = Math.random() * 0.5;
             }
@@ -240,7 +222,7 @@
                 this.y += this.speedY;
                 if (this.y < -10) this.y = canvas.height + 10;
                 ctx.fillStyle = `rgba(252, 194, 0, ${this.opacity})`;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2); ctx.fill();
             }
         }
         function animate() {
@@ -250,7 +232,7 @@
         }
         window.addEventListener('resize', initCanvas);
         initCanvas();
-        particles = Array.from({length: 60}, () => new Particle());
+        particles = Array.from({length: 50}, () => new Particle());
         animate();
 
         fetchRanks();

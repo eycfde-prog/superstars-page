@@ -16,35 +16,10 @@
         .input-alike { background: rgba(0,0,0,0.4); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; text-transform: uppercase; outline: none; }
         .input-alike:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.2); }
         .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin-loader 1s linear infinite; display: inline-block; }
-        @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
-        #loadingScreen { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: none; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="p-4 flex flex-col items-center">
-
-    <div id="loadingScreen">
-        <div class="text-center">
-            <div class="loader mb-4 w-12 h-12"></div>
-            <p class="orbitron text-xs tracking-widest">CONNECTING TO EYC SERVERS...</p>
-        </div>
-    </div>
-
-    <div id="successOverlay" class="modal-overlay">
-        <div class="text-center">
-            <i class="fas fa-award text-8xl text-yellow-500 mb-6 block"></i>
-            <h2 class="text-4xl font-black orbitron golden-text mb-4">MISSION COMPLETE</h2>
-            <p class="text-gray-400 text-lg">أحسنت! النتيجة النهائية:</p>
-            <div class="my-4">
-                <span id="displayScore" class="text-white font-black text-6xl orbitron">0</span>
-                <span class="text-yellow-500 font-bold block mt-2">TOKENS EARNED</span>
-            </div>
-            <p id="statsMsg" class="text-gray-500 text-sm mt-2 orbitron"></p>
-            <button onclick="window.location.reload()" class="mt-8 px-10 py-3 border border-white/20 rounded-full orbitron text-xs hover:bg-white hover:text-black transition">CONTINUE</button>
-        </div>
-    </div>
 
     <div id="mainContent" class="w-full max-w-6xl">
         <header class="text-center my-10 relative">
@@ -53,6 +28,7 @@
             <p class="text-gray-400 mt-6 max-w-xl mx-auto text-sm leading-relaxed">اكتب الكلمة الإنجليزية المناسبة لكل معنى. الكلمات في كل كارت لها نفس النطق (Homophones) ولكن تختلف في الكتابة والمعنى.</p>
         </header>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16" id="alikeGrid"></div>
 
         <footer>
             <p>© 2026 EYC ACADEMY - MISSION CONTROL SYSTEM</p>
@@ -60,12 +36,8 @@
     </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxHjAll9T4UOAAevSVEWjw_peEYuv69DIuiufYvUJ1oYXfUcscszEuqX7au_cy0pSfV/exec";
-    
     const params = new URLSearchParams(window.location.search);
-    const userEmail = params.get('email') || "GUEST"; // افتراض زائر إذا لم يوجد إيميل
     const vNum = parseInt(params.get('v')) || 1;
-    const ACTIVITY_NAME = "Alike";
 
     const allMissions = {
         1: [{ m1: "ابن", m2: "شمس" }, { m1: "هنا", m2: "يسمع" }, { m1: "بحر", m2: "يرى" }, { m1: "أسبوع", m2: "ضعيف" }, { m1: "طريق", m2: "ركب" }, { m1: "دقيق", m2: "وردة" }, { m1: "ساعة", m2: "ملكنا" }, { m1: "يشترى", m2: "بواسطة" }, { m1: "أزرق", m2: "نفخ" }, { m1: "ثمانية", m2: "أكل" }],
@@ -108,57 +80,6 @@
             </div>
         `).join('');
     }
-
-    async function submitAllData() {
-        const btn = document.getElementById('finalSubmitBtn');
-        let answersArray = [];
-        let missing = false;
-
-        for(let i=0; i<wordsData.length; i++) {
-            const a1 = document.getElementById(`ans-${i}-1`).value.trim();
-            const a2 = document.getElementById(`ans-${i}-2`).value.trim();
-            if(!a1 || !a2) missing = true;
-            answersArray.push(a1);
-            answersArray.push(a2);
-        }
-
-        if(missing) {
-            alert("أكمل جميع الكلمات يا بطل!");
-            return;
-        }
-
-        btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> SENDING DATA...';
-
-        try {
-            const payload = {
-                action: "submit_activity",
-                email: userEmail,
-                activityName: ACTIVITY_NAME,
-                missionNum: vNum,
-                answer: answersArray.join("/")
-            };
-
-            const response = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', // نتخطى القيود لضمان وصول البيانات
-                body: JSON.stringify(payload)
-            });
-
-            // بما أن الوضع no-cors لن يعيد JSON، سنظهر صفحة النجاح فوراً
-            document.getElementById('displayScore').innerText = "DONE";
-            document.getElementById('statsMsg').innerText = "تم إرسال إجاباتك بنجاح.";
-            document.getElementById('successOverlay').style.display = 'flex';
-            document.getElementById('mainContent').style.display = 'none';
-
-        } catch (e) {
-            document.getElementById('displayScore').innerText = "SENT";
-            document.getElementById('statsMsg').innerText = "تمت محاولة الحفظ بنجاح.";
-            document.getElementById('successOverlay').style.display = 'flex';
-            document.getElementById('mainContent').style.display = 'none';
-        }
-    }
 </script>
 </body>
 </html>
-

@@ -3,83 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alike | EYC Academy</title>
+    <title>Activity Content | Label X</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #f1c40f; --bg-deep: #020617; }
-        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
+        :root { --gold: #f1c40f; --bg-deep: transparent; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg-deep); color: #fff; margin: 0; padding: 15px; overflow-x: hidden; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; transition: 0.3s; }
-        .glass-card:hover { border-color: var(--gold); transform: translateY(-5px); }
-        .input-alike { background: rgba(0,0,0,0.4); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; text-transform: uppercase; outline: none; }
-        .input-alike:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.2); }
-        .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
+        .golden-text { background: linear-gradient(to bottom, #fff 20%, var(--gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; }
+        
+        .input-dark {
+            background: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(241, 196, 15, 0.2) !important;
+            color: white !important;
+        }
+        .input-dark:focus { border-color: var(--gold) !important; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center">
+<body>
 
-    <div id="mainContent" class="w-full max-w-6xl">
-        <header class="text-center my-10 relative">
-            <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <p id="versionTag" class="text-yellow-500 orbitron mt-2 tracking-[5px] text-sm uppercase">VERSION --</p>
-            <p class="text-gray-400 mt-6 max-w-xl mx-auto text-sm leading-relaxed">اكتب الكلمة الإنجليزية المناسبة لكل معنى. الكلمات في كل كارت لها نفس النطق (Homophones) ولكن تختلف في الكتابة والمعنى.</p>
-        </header>
+    <div class="w-full max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6 px-2">
+            <div>
+                <h2 class="golden-text orbitron font-black text-xl">LABEL X</h2>
+                <p class="text-[9px] text-gray-500 orbitron tracking-[2px]">MISSION CONTROL: ACTIVE</p>
+            </div>
+            <div class="glass-card px-4 py-2 text-center border-l-2 border-yellow-500">
+                <p class="text-[8px] text-gray-500 font-bold orbitron">EST. REWARD</p>
+                <p class="text-yellow-500 font-black orbitron text-xs">250 TK</p>
+            </div>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16" id="alikeGrid"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="labelGrid">
+            </div>
 
-        <footer>
-            <p>© 2026 EYC ACADEMY - MISSION CONTROL SYSTEM</p>
-        </footer>
+        <div class="mt-8 mb-10 text-center">
+            <button onclick="finalSubmit()" id="mainSubmitBtn" class="bg-yellow-500 text-black px-10 py-3 rounded-full font-black orbitron text-sm hover:scale-105 transition-all shadow-lg shadow-yellow-500/20">
+                TRANSMIT ALL DATA <i class="fas fa-broadcast-tower ml-2"></i>
+            </button>
+        </div>
     </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const vNum = parseInt(params.get('v')) || 1;
+    // بناءً على تعليمات مستر عز (Guide.html): النشاط يتطلب 10 جمل بناءً على 10 حالات
+    const missionCases = [
+        "Present Simple (Daily Habit)",
+        "Present Continuous (Right now)",
+        "Past Simple (Finished action)",
+        "Future (Plan for tomorrow)",
+        "Present Perfect (Experience)",
+        "Comparative (Better than)",
+        "Superlative (The best)",
+        "Conditional Type 1 (If... will)",
+        "Passive Voice (Done by)",
+        "Modals (Must / Should)"
+    ];
 
-    const allMissions = {
-        1: [{ m1: "ابن", m2: "شمس" }, { m1: "هنا", m2: "يسمع" }, { m1: "بحر", m2: "يرى" }, { m1: "أسبوع", m2: "ضعيف" }, { m1: "طريق", m2: "ركب" }, { m1: "دقيق", m2: "وردة" }, { m1: "ساعة", m2: "ملكنا" }, { m1: "يشترى", m2: "بواسطة" }, { m1: "أزرق", m2: "نفخ" }, { m1: "ثمانية", m2: "أكل" }],
-        2: [{ m1: "جديد", m2: "عرف" }, { m1: "لا", m2: "يعرف" }, { m1: "فارغ", m2: "دب" }, { m1: "حق", m2: "يكتب" }, { m1: "اثنان", m2: "إلى (أيضاً)" }, { m1: "لحم", m2: "يقابل" }, { m1: "صنع", m2: "خادمة" }, { m1: "رئيسي", m2: "شعر حصان" }, { m1: "ليكون", m2: "نحلة" }, { m1: "من خلال", m2: "رمى" }],
-        3: [{ m1: "قطعة", m2: "سلام" }, { m1: "إجازة", m2: "فرامل" }, { m1: "سلم", m2: "تحديق" }, { m1: "ذيل", m2: "قصة" }, { m1: "ليلة", m2: "فارس" }, { m1: "بعض", m2: "مجموع" }, { m1: "شعر", m2: "أرنب بري" }, { m1: "كامل", m2: "حفرة" }, { m1: "فولاذ", m2: "يسرق" }, { m1: "غزال", m2: "عزيزي" }],
-        4: [{ m1: "بحر", m2: "يرى" }, { m1: "لوحة", m2: "بملل" }, { m1: "بحار", m2: "تخفيض" }, { m1: "عقدة", m2: "ليس" }, { m1: "وحيد", m2: "قرض" }, { m1: "بريد", m2: "ذكر" }, { m1: "شاحب", m2: "دلو" }, { m1: "سهل", m2: "طائرة" }, { m1: "جذر", m2: "طريق" }, { m1: "ألم", m2: "لوح زجاج" }],
-        5: [{ m1: "مسموح", m2: "بصوت عال" }, { m1: "مذبح", m2: "يغير" }, { m1: "ممر", m2: "جزيرة" }, { m1: "عاري", m2: "دب" }, { m1: "قاعدة", m2: "جهير" }, { m1: "توت", m2: "يدفن" }, { m1: "مبنى", m2: "يرفع" }, { m1: "خضار", m2: "ينوح" }, { m1: "طقم", m2: "حلو" }, { m1: "مؤخرة", m2: "بحر" }],
-        6: [{ m1: "طوق", m2: "حزام" }, { m1: "مجلس", m2: "نصيحة" }, { m1: "فحص", m2: "شيك" }, { m1: "تكملة", m2: "مديح" }, { m1: "خشن", m2: "دورة" }, { m1: "تيار", m2: "زبيب" }, { m1: "موت", m2: "مصبوغ" }, { m1: "حصيف", m2: "منفصل" }, { m1: "جنين", m2: "برغوث" }, { m1: "مكسب", m2: "طريقة مشي" }],
-        7: [{ m1: "ذنب", m2: "مذهب" }, { m1: "مقدس", m2: "بالكامل" }, { m1: "خامل", m2: "صنم" }, { m1: "يخيط", m2: "لذلك" }, { m1: "صبر", m2: "مرضى" }, { m1: "وجود", m2: "هدايا" }, { m1: "أرباح", m2: "نبي" }, { m1: "مطر", m2: "عنان" }, { m1: "موقع", m2: "رؤية" }, { m1: "روح", m2: "نعل" }],
-        8: [{ m1: "ورق", m2: "ثابت" }, { m1: "مدير", m2: "مبدأ" }, { m1: "رصيف", m2: "نظير" }, { m1: "غائب", m2: "خشب" }, { m1: "طالع", m2: "مناخ" }, { m1: "إناء", m2: "عرق" }, { m1: "أقلية", m2: "عامل" }, { m1: "ضياع", m2: "فضفاض" }, { m1: "تأثير", m2: "يؤثر" }, { m1: "موعظة", m2: "رصيف" }],
-        9: [{ m1: "تمرد", m2: "قصة" }, { m1: "أساسي", m2: "موسيقى" }, { m1: "موافق", m2: "إبحار" }, { m1: "حذاء", m2: "يختار" }, { m1: "تذكرة", m2: "مظهر" }, { m1: "تربية", m2: "قراءة" }, { m1: "جمجمة", m2: "مجدف" }, { m1: "تصفية", m2: "لحن" }, { m1: "مأوى", m2: "مكان" }, { m1: "عامل", m2: "بركان" }],
-        10: [{ m1: "تحفة", m2: "سرقة" }, { m1: "دليل", m2: "جناية" }, { m1: "براءة", m2: "تصريح" }, { m1: "أغنية", m2: "مشهد" }, { m1: "حطام", m2: "رائحة" }, { m1: "برلمان", m2: "توازن" }, { m1: "تعهد", m2: "محرك" }, { m1: "غضب", m2: "صفحة" }, { m1: "نسيج", m2: "مبهم" }, { m1: "عرش", m2: "مرمى" }]
-    };
-
-    const wordsData = allMissions[vNum] || allMissions[1];
-
-    window.onload = () => {
-        document.getElementById('versionTag').innerText = `MISSION V.0${vNum}`;
-        renderGrid();
-    };
-
-    function renderGrid() {
-        const grid = document.getElementById('alikeGrid');
-        grid.innerHTML = wordsData.map((pair, index) => `
-            <div class="glass-card p-6 flex flex-col gap-4">
-                <div class="flex items-center justify-between">
-                    <span class="text-[10px] orbitron text-yellow-500 opacity-60">CASE ${index + 1}</span>
-                    <i class="fas fa-bolt text-[10px] text-gray-600"></i>
+    function initLabelX() {
+        const grid = document.getElementById('labelGrid');
+        grid.innerHTML = missionCases.map((title, i) => `
+            <div class="glass-card p-4 group transition-all duration-300">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="orbitron text-[9px] text-yellow-500 font-bold">CASE_0${i+1}</span>
+                    <span class="text-[10px] text-gray-400 font-bold italic">${title}</span>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex flex-col gap-2">
-                        <label class="text-xs text-gray-400 text-center">${pair.m1}</label>
-                        <input type="text" id="ans-${index}-1" class="input-alike" placeholder="..." autocomplete="off">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-xs text-gray-400 text-center">${pair.m2}</label>
-                        <input type="text" id="ans-${index}-2" class="input-alike" placeholder="..." autocomplete="off">
-                    </div>
+                <div class="relative">
+                    <textarea 
+                        id="case-${i}" 
+                        class="w-full input-dark rounded-xl px-4 py-3 text-xs focus:outline-none h-16 resize-none" 
+                        placeholder="Write your sentence here..."></textarea>
                 </div>
             </div>
         `).join('');
     }
+
+    async function finalSubmit() {
+        const btn = document.getElementById('mainSubmitBtn');
+        let answers = [];
+        
+        for(let i=0; i<missionCases.length; i++) {
+            const val = document.getElementById(`case-${i}`).value.trim();
+            if(val) answers.push(val);
+        }
+
+        if(answers.length < 10) {
+            alert("Mission Incomplete: All 10 cases must be analyzed!");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = 'TRANSMITTING... <i class="fas fa-sync fa-spin ml-2"></i>';
+
+        // محاكاة الإرسال
+        setTimeout(() => {
+            btn.innerHTML = 'MISSION ACCOMPLISHED ✅';
+            btn.className = "bg-green-600 text-white px-10 py-3 rounded-full font-black orbitron text-sm cursor-default";
+            // تعطيل المدخلات بعد النجاح
+            document.querySelectorAll('textarea').forEach(t => t.disabled = true);
+        }, 2000);
+    }
+
+    // تشغيل النشاط عند التحميل
+    window.onload = initLabelX;
+
+    // بروتوكول التوافق مع Terminal
+    window.checkAnswers = function() {
+        const filled = [...document.querySelectorAll('textarea')].filter(t => t.value.trim().length > 5).length;
+        return {
+            status: filled >= 10 ? "COMPLETED" : "IN_PROGRESS",
+            progress: (filled / 10) * 100
+        };
+    };
 </script>
 </body>
 </html>

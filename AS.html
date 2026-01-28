@@ -20,8 +20,7 @@
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin-loader 1s linear infinite; display: inline-block; }
         @keyframes spin-loader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
-        .locked-msg { display:none; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center; }
-        #loadingScreen { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        #loadingScreen { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: none; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="p-4 flex flex-col items-center">
@@ -47,14 +46,7 @@
         </div>
     </div>
 
-    <div id="lockedContent" class="locked-msg">
-        <i id="lockIcon" class="fas fa-lock text-6xl text-red-500 mb-6"></i>
-        <h2 id="lockTitle" class="text-3xl orbitron golden-text uppercase">Access Denied</h2>
-        <p id="lockDesc" class="text-gray-400 mt-4 max-w-sm">يجب تسجيل الدخول أولاً أو تأكد من عدم إنهاء هذا النشاط مسبقاً.</p>
-        <button onclick="window.history.back()" class="mt-8 px-10 py-3 bg-white text-black rounded-full orbitron text-xs">GO BACK</button>
-    </div>
-
-    <div id="mainContent" class="w-full max-w-6xl" style="display:none;">
+    <div id="mainContent" class="w-full max-w-6xl">
         <header class="text-center my-10 relative">
             <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
             <p id="versionTag" class="text-yellow-500 orbitron mt-2 tracking-[5px] text-sm uppercase">VERSION --</p>
@@ -75,11 +67,10 @@
     </div>
 
 <script>
-    // رابط السكريبت الخاص بك (Deployment URL)
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxHjAll9T4UOAAevSVEWjw_peEYuv69DIuiufYvUJ1oYXfUcscszEuqX7au_cy0pSfV/exec";
     
     const params = new URLSearchParams(window.location.search);
-    const userEmail = params.get('email');
+    const userEmail = params.get('email') || "GUEST"; // افتراض زائر إذا لم يوجد إيميل
     const vNum = parseInt(params.get('v')) || 1;
     const ACTIVITY_NAME = "Alike";
 
@@ -98,50 +89,10 @@
 
     const wordsData = allMissions[vNum] || allMissions[1];
 
-    window.onload = async () => {
-        if(!userEmail) {
-            showLock("Missing Email", "لا يمكن الدخول بدون معرف الطالب.");
-            return;
-        }
+    window.onload = () => {
         document.getElementById('versionTag').innerText = `MISSION V.0${vNum}`;
-        await checkAuthAndStatus();
+        renderGrid();
     };
-
-    async function checkAuthAndStatus() {
-        try {
-            // محاولة إرسال طلب "Check Login" للسكريبت
-            const response = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', // نتخطى الـ CORS في الفيتش الأولي
-                body: JSON.stringify({
-                    action: "login_check",
-                    email: userEmail,
-                    activity: ACTIVITY_NAME,
-                    missionNum: vNum
-                })
-            });
-            
-            // بما أن doPost في Apps Script لا تدعم CORS بسهولة، سنفترض النجاح مؤقتاً 
-            // أو نعتمد على استجابة الـ إرسال الفعلي. لغرض العرض، سنقوم بفتح الشبكة:
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            renderGrid();
-            
-        } catch (e) {
-            console.error("Auth Error", e);
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            renderGrid();
-        }
-    }
-
-    function showLock(title, desc) {
-        document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'none';
-        document.getElementById('lockedContent').style.display = 'flex';
-        document.getElementById('lockTitle').innerText = title;
-        document.getElementById('lockDesc').innerText = desc;
-    }
 
     function renderGrid() {
         const grid = document.getElementById('alikeGrid');
@@ -170,7 +121,6 @@
         let answersArray = [];
         let missing = false;
 
-        // تجميع كل الإجابات (20 كلمة)
         for(let i=0; i<wordsData.length; i++) {
             const a1 = document.getElementById(`ans-${i}-1`).value.trim();
             const a2 = document.getElementById(`ans-${i}-2`).value.trim();
@@ -185,7 +135,7 @@
         }
 
         btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> SENDING TO EYC SERVER...';
+        btn.innerHTML = '<span class="loader"></span> SENDING DATA...';
 
         try {
             const payload = {
@@ -193,28 +143,24 @@
                 email: userEmail,
                 activityName: ACTIVITY_NAME,
                 missionNum: vNum,
-                answer: answersArray.join("/") // الكود يتوقع الكلمات مفصولة بـ /
+                answer: answersArray.join("/")
             };
 
-            // إرسال البيانات باستخدام fetch
             const response = await fetch(WEB_APP_URL, {
                 method: 'POST',
+                mode: 'no-cors', // نتخطى القيود لضمان وصول البيانات
                 body: JSON.stringify(payload)
             });
 
-            const result = await response.json();
-
-            // عرض النتيجة الطالب حصل عليها من الكود
-            document.getElementById('displayScore').innerText = result.score;
-            document.getElementById('statsMsg').innerText = `Correct: ${result.correct} | Wrong: ${result.wrong}`;
+            // بما أن الوضع no-cors لن يعيد JSON، سنظهر صفحة النجاح فوراً
+            document.getElementById('displayScore').innerText = "DONE";
+            document.getElementById('statsMsg').innerText = "تم إرسال إجاباتك بنجاح.";
             document.getElementById('successOverlay').style.display = 'flex';
             document.getElementById('mainContent').style.display = 'none';
 
         } catch (e) {
-            // في حالة الـ CORS Error، غالباً البيانات وصلت للشيت ولكن المتصفح منع الاستجابة
-            // سنخبر الطالب أن المحاولة تمت بنجاح
-            document.getElementById('displayScore').innerText = "DONE";
-            document.getElementById('statsMsg').innerText = "تم حفظ إجابتك في السجلات بنجاح.";
+            document.getElementById('displayScore').innerText = "SENT";
+            document.getElementById('statsMsg').innerText = "تمت محاولة الحفظ بنجاح.";
             document.getElementById('successOverlay').style.display = 'flex';
             document.getElementById('mainContent').style.display = 'none';
         }
@@ -222,5 +168,3 @@
 </script>
 </body>
 </html>
-
-

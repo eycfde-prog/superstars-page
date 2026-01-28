@@ -12,20 +12,21 @@
         body { font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; min-height: 100vh; background-image: radial-gradient(circle at 50% 50%, rgba(255, 204, 0, 0.05) 0%, transparent 70%); }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 204, 0, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        input, select { background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,204,0,0.2) !important; color: white !important; transition: 0.3s; }
+        input { background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,204,0,0.2) !important; color: white !important; transition: 0.3s; outline: none; }
+        input:focus { border-color: var(--gold) !important; }
         
         /* Avatar Creator Styles */
         .avatar-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; }
         .step-screen { display: none; text-align: center; width: 100%; max-width: 500px; animation: fadeIn 0.5s ease; }
         .step-screen.active { display: block; }
-        .option-box { border: 2px solid rgba(255,204,0,0.2); border-radius: 15px; cursor: pointer; transition: 0.3s; overflow: hidden; position: relative; }
+        .option-box { border: 2px solid rgba(255,204,0,0.2); border-radius: 15px; cursor: pointer; transition: 0.3s; overflow: hidden; position: relative; background: rgba(255,255,255,0.02); }
         .option-box:hover, .option-box.selected { border-color: var(--gold); background: rgba(255,204,0,0.1); transform: translateY(-5px); }
         .color-dot { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; margin: 0 auto; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
-        .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; }
+        .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; pointer-events: none; }
         @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
         .agent-code-box { background: rgba(255, 204, 0, 0.1); border: 1px dashed var(--gold); padding: 15px; border-radius: 12px; letter-spacing: 5px; font-size: 1.5rem; margin: 20px 0; color: var(--gold); text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
     </style>
@@ -33,16 +34,18 @@
 <body class="py-12 px-4">
 
     <div id="avatarModal" class="avatar-modal">
-        <div class="glass-card p-8 w-full max-w-lg relative">
+        <div class="glass-card p-8 w-full max-w-lg relative overflow-hidden">
+            <div class="scanner-line"></div>
+            
             <div id="step1" class="step-screen active">
                 <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 1: Gender Selection</h3>
                 <div class="grid grid-cols-2 gap-6">
-                    <div class="option-box p-4" onclick="selectGender('male')">
-                        <i class="fas fa-user-ninja text-4xl mb-2"></i>
+                    <div class="option-box p-6" onclick="selectGender('male')">
+                        <i class="fas fa-user-ninja text-4xl mb-3 text-yellow-500"></i>
                         <p class="orbitron text-xs">MALE AGENT</p>
                     </div>
-                    <div class="option-box p-4" onclick="selectGender('female')">
-                        <i class="fas fa-user-astronaut text-4xl mb-2"></i>
+                    <div class="option-box p-6" onclick="selectGender('female')">
+                        <i class="fas fa-user-astronaut text-4xl mb-3 text-yellow-500"></i>
                         <p class="orbitron text-xs">FEMALE AGENT</p>
                     </div>
                 </div>
@@ -50,7 +53,7 @@
 
             <div id="step2" class="step-screen">
                 <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 2: Skin Tone</h3>
-                <div class="flex justify-center gap-3">
+                <div class="flex flex-wrap justify-center gap-4">
                     <div onclick="selectSkin('#3d251e')" class="option-box p-2"><div class="color-dot" style="background:#3d251e"></div></div>
                     <div onclick="selectSkin('#8d5524')" class="option-box p-2"><div class="color-dot" style="background:#8d5524"></div></div>
                     <div onclick="selectSkin('#c68642')" class="option-box p-2"><div class="color-dot" style="background:#c68642"></div></div>
@@ -60,8 +63,8 @@
             </div>
 
             <div id="step3" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 3: Eye Color</h3>
-                <div id="eyeOptions" class="flex flex-wrap justify-center gap-3"></div>
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 3: Eye Module</h3>
+                <div id="eyeOptions" class="grid grid-cols-3 gap-3"></div>
             </div>
 
             <div id="step4" class="step-screen">
@@ -70,28 +73,29 @@
             </div>
 
             <div id="step5" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 5: Hair Color</h3>
-                <div id="hairColorOptions" class="flex justify-center gap-3"></div>
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 5: Pigment Selection</h3>
+                <div id="hairColorOptions" class="grid grid-cols-3 gap-3"></div>
             </div>
 
             <div id="step6" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 6: Face Style</h3>
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 6: Final Face Structure</h3>
                 <div id="faceOptions" class="grid grid-cols-3 gap-3"></div>
             </div>
 
-            <div class="mt-8 flex justify-between">
-                <button id="prevBtn" onclick="prevStep()" class="text-gray-500 orbitron text-xs hover:text-white transition">BACK</button>
-                <div id="progressDots" class="flex gap-2 items-center"></div>
-                <button id="nextBtn" class="hidden text-yellow-500 orbitron text-xs font-bold">NEXT</button>
+            <div class="mt-8 flex justify-between items-center border-t border-white/10 pt-4">
+                <button onclick="prevStep()" class="text-gray-500 orbitron text-[10px] hover:text-white transition">BACK</button>
+                <div id="stepIndicator" class="text-yellow-500 orbitron text-[10px]">STEP 1/6</div>
+                <button onclick="closeAvatarModal()" class="text-red-500 orbitron text-[10px] hover:text-red-400">CANCEL</button>
             </div>
         </div>
     </div>
 
     <div id="successScreen" class="modal">
-        <div class="glass-card p-10 text-center max-w-md border-b-4 border-yellow-500 transform transition-all scale-110">
+        <div class="glass-card p-10 text-center max-w-md border-b-4 border-yellow-500 transform transition-all">
             <h2 class="orbitron text-3xl font-black mb-2 uppercase">Access Granted</h2>
+            <p class="text-gray-400 text-sm mb-4">Identity Synchronized</p>
             <div class="agent-code-box orbitron font-black" id="agentCodeDisplay">---</div>
-            <button onclick="window.location.href='MC.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl">ENTER MISSION CONTROL</button>
+            <button onclick="window.location.href='MC.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white transition-all">ENTER MISSION CONTROL</button>
         </div>
     </div>
 
@@ -104,17 +108,17 @@
             <div class="scanner-line"></div>
             
             <div class="space-y-4">
-                <input type="text" id="fullNameInput" required placeholder="FULL NAME" class="w-full p-4 rounded-xl text-sm">
+                <input type="text" id="fullNameInput" required placeholder="FULL NAME" class="w-full p-4 rounded-xl text-sm orbitron">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="number" name="age" required placeholder="AGE" class="w-full p-4 rounded-xl text-sm">
-                    <input type="email" name="email" required placeholder="EMAIL" class="w-full p-4 rounded-xl text-sm">
+                    <input type="number" name="age" required placeholder="AGE" class="w-full p-4 rounded-xl text-sm orbitron">
+                    <input type="email" name="email" required placeholder="EMAIL" class="w-full p-4 rounded-xl text-sm orbitron">
                 </div>
             </div>
 
             <div class="pt-4">
                 <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">IDENTITY VISUALIZATION</label>
-                <div id="avatarPreviewBox" onclick="openAvatarModal()" class="upload-zone rounded-2xl p-6 text-center cursor-pointer border-2 border-dashed border-yellow-500/30">
-                    <div id="previewImage" class="w-20 h-20 bg-yellow-500/10 rounded-full mx-auto mb-3 flex items-center justify-center border border-yellow-500/50">
+                <div id="avatarPreviewBox" onclick="openAvatarModal()" class="group rounded-2xl p-6 text-center cursor-pointer border-2 border-dashed border-yellow-500/30 hover:border-yellow-500/60 transition-all bg-black/20">
+                    <div id="previewImage" class="w-20 h-20 bg-yellow-500/10 rounded-full mx-auto mb-3 flex items-center justify-center border border-yellow-500/50 group-hover:scale-110 transition-transform">
                         <i class="fas fa-user-plus text-yellow-500"></i>
                     </div>
                     <p id="avatarStatus" class="orbitron text-[10px] text-yellow-500">INITIALIZE AVATAR CREATION</p>
@@ -122,15 +126,20 @@
                 <input type="hidden" id="finalAvatarData" name="avatarData" required>
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl">INITIATE REGISTRATION</button>
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl hover:scale-105 transition-all shadow-lg shadow-yellow-500/20">
+                INITIATE REGISTRATION
+            </button>
         </form>
     </div>
 
     <script>
+        // ضع رابط الـ Apps Script الخاص بك هنا
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTk22Uq2GykkaIoxcdfwJd3iTyCpe5PsQ2izlIsdTOugME_NG-7G8vv7i1Lt54K5hu9Q/exec";
+        
         let currentStep = 1;
         let avatarData = { gender: '', skin: '', eyes: '', hair: '', hairColor: '', face: '' };
 
+        // Modal Functions
         function openAvatarModal() { document.getElementById('avatarModal').style.display = 'flex'; }
         function closeAvatarModal() { document.getElementById('avatarModal').style.display = 'none'; }
 
@@ -140,19 +149,19 @@
             goToStep(2);
         }
 
-        function selectSkin(color) { avatarData.skin = color; goToStep(3); }
+        function selectSkin(color) {
+            avatarData.skin = color;
+            goToStep(3);
+        }
 
         function renderDynamicOptions() {
-            // منطق توليد الخيارات بناءً على النوع (ولد/بنت)
-            const eyesCount = avatarData.gender === 'female' ? 5 : 3;
-            const hairCount = 5; // طول الشعر
-            const hColorCount = avatarData.gender === 'female' ? 5 : 3;
-            const faceCount = avatarData.gender === 'female' ? 5 : 3;
-
-            renderSteps('eyeOptions', eyesCount, 'eyes', 'fa-eye');
-            renderSteps('hairOptions', hairCount, 'hair', 'fa-cut');
-            renderSteps('hairColorOptions', hColorCount, 'hairColor', 'fa-palette');
-            renderSteps('faceOptions', faceCount, 'face', 'fa-smile');
+            // منطق توليد الخيارات بناءً على النوع (بنت 5، ولد 3)
+            const count = avatarData.gender === 'female' ? 5 : 3;
+            
+            renderSteps('eyeOptions', count, 'eyes', 'fa-eye');
+            renderSteps('hairOptions', 5, 'hair', 'fa-cut'); // الشعر 5 للكل
+            renderSteps('hairColorOptions', count, 'hairColor', 'fa-palette');
+            renderSteps('faceOptions', count, 'face', 'fa-smile');
         }
 
         function renderSteps(containerId, count, key, icon) {
@@ -160,9 +169,9 @@
             container.innerHTML = '';
             for(let i=1; i<=count; i++) {
                 container.innerHTML += `
-                    <div onclick="selectOption('${key}', '${i}')" class="option-box p-3">
-                        <i class="fas ${icon} opacity-50 mb-1"></i>
-                        <p class="text-[10px]">Opt ${i}</p>
+                    <div onclick="selectOption('${key}', '${i}')" class="option-box p-3 text-center">
+                        <i class="fas ${icon} opacity-50 mb-1 text-yellow-500"></i>
+                        <p class="orbitron text-[9px]">TYPE ${i}</p>
                     </div>`;
             }
         }
@@ -176,25 +185,37 @@
         function goToStep(s) {
             document.querySelectorAll('.step-screen').forEach(el => el.classList.remove('active'));
             document.getElementById('step' + s).classList.add('active');
+            document.getElementById('stepIndicator').innerText = `STEP ${s}/6`;
             currentStep = s;
         }
 
-        function prevStep() { if(currentStep > 1) goToStep(currentStep - 1); else closeAvatarModal(); }
+        function prevStep() { 
+            if(currentStep > 1) goToStep(currentStep - 1); 
+            else closeAvatarModal(); 
+        }
 
         function finishAvatar() {
-            // هنا نقوم بتمثيل الأفاتار بصورة وهمية حالياً أو دمجها بـ Canvas
-            // كحل بسيط سنضع نصاً يدل على النجاح
-            document.getElementById('avatarStatus').innerText = "AVATAR READY: " + avatarData.gender.toUpperCase() + " AGENT";
-            document.getElementById('previewImage').innerHTML = `<i class="fas fa-check-circle text-4xl text-green-500"></i>`;
-            document.getElementById('finalAvatarData').value = JSON.stringify(avatarData);
+            const statusText = document.getElementById('avatarStatus');
+            const previewBox = document.getElementById('previewImage');
+            
+            statusText.innerText = "AGENT VISUALIZED: " + avatarData.gender.toUpperCase();
+            statusText.classList.replace('text-yellow-500', 'text-green-500');
+            previewBox.innerHTML = `<i class="fas fa-check-circle text-4xl text-green-500"></i>`;
+            previewBox.style.borderColor = "#22c55e";
+            
+            // تحويل الكائن إلى نص بسيط ليتم تخزينه في الشيت
+            const summary = `G:${avatarData.gender}|S:${avatarData.skin}|E:${avatarData.eyes}|H:${avatarData.hair}|C:${avatarData.hairColor}|F:${avatarData.face}`;
+            document.getElementById('finalAvatarData').value = summary;
+            
             closeAvatarModal();
         }
 
         // Form Submission logic
         document.getElementById('regForm').onsubmit = function(e) {
             e.preventDefault();
+            
             if(!document.getElementById('finalAvatarData').value) {
-                alert("Please create your avatar first!");
+                alert("ACCESS DENIED: Please complete Agent Visualization first.");
                 return;
             }
             
@@ -206,7 +227,7 @@
                 name: document.getElementById('fullNameInput').value,
                 age: document.getElementsByName('age')[0].value,
                 email: document.getElementsByName('email')[0].value,
-                image: document.getElementById('finalAvatarData').value // نرسل بيانات الشخصية كـ JSON أو صورة
+                image: document.getElementById('finalAvatarData').value 
             };
 
             fetch(SCRIPT_URL, {
@@ -215,12 +236,17 @@
             })
             .then(res => res.text())
             .then(result => {
-                if(result.trim().startsWith("Success")) {
-                    document.getElementById('agentCodeDisplay').innerText = result.split(":")[1];
+                const cleanRes = result.trim();
+                if(cleanRes.startsWith("Success")) {
+                    document.getElementById('agentCodeDisplay').innerText = cleanRes.split(":")[1];
                     document.getElementById('successScreen').style.display = 'flex';
                 } else {
-                    alert(result);
+                    alert("SYSTEM ERROR: " + cleanRes);
                 }
+            })
+            .catch(err => {
+                alert("COMMUNICATION ERROR: Check your connection.");
+                console.error(err);
             })
             .finally(() => {
                 submitBtn.innerText = "INITIATE REGISTRATION";

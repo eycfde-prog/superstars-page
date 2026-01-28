@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Activity Hub | Command Center</title>
+    <title>EYC Activity Hub | Starry Mission</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -14,73 +14,101 @@
             --season-color: #00ffa3;
             --xbox-color: #ff3131;
             --glass: rgba(255, 255, 255, 0.05);
-            --terminal-green: rgba(0, 255, 163, 0.5);
+            --danger: #ff1f1f;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; position: relative; }
         
-        /* تأثير الـ Scanlines والشبكة لتعزيز مظهر مركز القيادة */
+        /* Scanline Effect for Command Center Feel */
         body::before {
             content: " ";
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 4px, 3px 100%;
-            z-index: 2000; pointer-events: none; opacity: 0.3;
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2000;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            opacity: 0.3;
         }
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
         
-        /* --- Status Bar (Live Data Feel) --- */
-        .status-bar {
-            position: fixed; top: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8);
-            border-bottom: 1px solid var(--glass); display: flex; justify-content: space-between;
-            padding: 5px 20px; font-family: 'Orbitron'; font-size: 8px; z-index: 1001; color: var(--terminal-green);
-        }
-        .live-indicator { display: flex; align-items: center; gap: 5px; }
-        .dot { width: 5px; height: 5px; background: var(--season-color); border-radius: 50%; animation: blink 1s infinite; }
-
         /* --- Logo & Header --- */
-        .top-nav { position: fixed; top: 25px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .logo-placeholder img { height: 35px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
+        .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        .logo-placeholder img { height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
         
-        .rank-header { text-align: center; padding-top: 70px; margin-bottom: 15px; position: relative; }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.6rem; letter-spacing: 6px; color: #fff; text-shadow: 0 0 10px var(--accent-gold); }
-        .rank-header p { font-size: 8px; letter-spacing: 5px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; opacity: 0.8; }
+        .rank-header { text-align: center; padding-top: 60px; margin-bottom: 10px; position: relative; }
+        .rank-header h1 { 
+            font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            animation: glitch 3s infinite;
+        }
+        @keyframes glitch {
+            0% { transform: skew(0deg); }
+            2% { transform: skew(10deg); color: var(--danger); }
+            4% { transform: skew(-10deg); }
+            6% { transform: skew(0deg); }
+        }
 
-        .toggle-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; position: relative; z-index: 1001; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 22px; border-radius: 4px; font-family: 'Orbitron'; font-size: 9px; cursor: pointer; transition: 0.4s; position: relative; overflow: hidden; }
-        .mode-btn::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: 0.5s; }
-        .mode-btn:hover::after { left: 100%; }
+        /* Live Data Ticker */
+        .live-status {
+            font-family: 'Orbitron';
+            font-size: 8px;
+            color: var(--season-color);
+            background: rgba(0, 255, 163, 0.1);
+            padding: 2px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 5px;
+            border-left: 3px solid var(--season-color);
+            animation: pulse 1s infinite;
+        }
+
+        .toggle-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold); color: #fff; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; opacity: 0.5; transition: 0.3s; position: relative; overflow: hidden; }
+        .mode-btn.active { opacity: 1; box-shadow: 0 0 15px currentColor; }
+        .mode-btn.season-mode.active { background: var(--season-color); color: #000; border-color: var(--season-color); }
+        .mode-btn.xbox-mode.active { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); }
+
+        .swiper { width: 100%; padding-bottom: 40px; }
+        .swiper-slide { 
+            width: 220px; height: 320px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.5s; cursor: pointer; 
+        }
+        .swiper-slide-active { border: 1px solid var(--accent-gold); box-shadow: 0 0 30px rgba(255, 204, 0, 0.2); }
         
-        .mode-btn.active { border-color: var(--accent-gold); box-shadow: inset 0 0 10px rgba(255,204,0,0.2); }
-        .mode-btn.season-mode.active { background: rgba(0, 255, 163, 0.1); color: var(--season-color); border-color: var(--season-color); }
-        .mode-btn.xbox-mode.active { background: rgba(255, 49, 49, 0.1); color: var(--xbox-color); border-color: var(--xbox-color); }
-
-        .swiper { width: 100%; padding-bottom: 50px; }
-        .swiper-slide { width: 200px; height: 300px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.5s; cursor: pointer; background: rgba(255,255,255,0.03); }
+        .token-badge { position: absolute; top: 20px; left: 20px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 8px; }
+        .activity-icon { font-size: 50px; margin-bottom: 15px; filter: drop-shadow(0 0 15px currentColor); }
+        .activity-name { font-family: 'Orbitron'; font-size: 18px; font-weight: 900; text-align: center; padding: 0 10px; }
         
-        /* تحسين شكل الكروت لتبدو كأنها شاشات بيانات */
-        .token-badge { position: absolute; top: 15px; right: 15px; border: 1px solid var(--accent-gold); color: var(--accent-gold); font-family: 'Orbitron'; font-size: 9px; padding: 2px 8px; border-radius: 4px; }
-        .activity-icon { font-size: 45px; margin-bottom: 15px; filter: drop-shadow(0 0 15px currentColor); }
-        .activity-name { font-family: 'Orbitron'; font-size: 14px; font-weight: 700; text-align: center; letter-spacing: 2px; }
-
-        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; background: rgba(0,0,0,0.9); }
-        .mission-bubble { position: absolute; width: 60px; height: 60px; background: rgba(0,0,0,0.6); border: 2px solid var(--accent-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); cursor: pointer; box-shadow: 0 0 15px rgba(255,204,0,0.3); transition: 0.3s; }
-        .mission-bubble:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--accent-gold); }
+        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; background: rgba(0,0,0,0.8); }
         
-        .back-btn { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: transparent; color: var(--accent-gold); padding: 12px 30px; border: 1px solid var(--accent-gold); border-radius: 4px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; font-size: 10px; cursor: pointer; letter-spacing: 3px; }
+        /* Tactical Mission Bubbles */
+        .mission-bubble { 
+            position: absolute; width: 60px; height: 60px; 
+            background: rgba(255, 204, 0, 0.05); 
+            border: 2px solid var(--accent-gold); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); 
+            cursor: pointer; transition: 0.3s;
+            box-shadow: 0 0 10px var(--accent-gold);
+        }
+        .mission-bubble::before {
+            content: ''; position: absolute; inset: -10px; border: 1px solid var(--accent-gold); border-radius: 50%;
+            opacity: 0.3; animation: radarPulse 2s linear infinite;
+        }
+        @keyframes radarPulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
 
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--danger); color: #fff; padding: 12px 30px; border-radius: 2px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: 1px solid #fff; font-size: 10px; letter-spacing: 2px; }
+        .selected-card-anim { transform: scale(0.4) translateY(-100px) !important; opacity: 0.2 !important; filter: blur(5px); }
     </style>
 </head>
 <body>
-    <div class="status-bar">
-        <div class="live-indicator"><div class="dot"></div> SYSTEM ONLINE: MISSION_READY</div>
-        <div id="live-coords">COORDS: 30.0444° N, 31.2357° E</div>
-        <div id="sync-status">SYNC: 100%</div>
-    </div>
-
     <canvas id="rank-canvas"></canvas>
     
     <div class="top-nav">
@@ -88,12 +116,12 @@
     </div>
 
     <header class="rank-header" id="mainHeader">
-        <h1 id="glitch-title">MISSION HUB</h1>
-        <p>TERMINAL ACCESS GRANTED</p>
+        <h1>MISSION HUB</h1>
+        <div class="live-status">● SYSTEM ACTIVE: RECEIVING DATA...</div>
     </header>
 
     <div class="toggle-container" id="mainToggle">
-        <button class="mode-btn active season-mode" onclick="switchMode('season')">CORE MISSIONS</button>
+        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON MODE</button>
         <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">ELITE PROTOCOL</button>
     </div>
 
@@ -102,7 +130,7 @@
     </div>
 
     <div id="missions-layer"></div>
-    <button class="back-btn" id="backBtn" onclick="resetView()">TERMINATE SESSION</button>
+    <button class="back-btn" id="backBtn" onclick="resetView()">ABORT & RETURN</button>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
@@ -132,14 +160,6 @@
         let currentSwiper = null;
         let activeMode = 'season';
 
-        // محاكي للبيانات المتغيرة لإعطاء شعور بالـ Live Data
-        setInterval(() => {
-            const lat = (Math.random() * 100).toFixed(4);
-            const lon = (Math.random() * 100).toFixed(4);
-            document.getElementById('live-coords').innerText = `LOC: ${lat}° N, ${lon}° E`;
-            document.getElementById('sync-status').innerText = `LATENCY: ${Math.floor(Math.random() * 50)}ms`;
-        }, 3000);
-
         window.addEventListener('DOMContentLoaded', () => { renderActivities('season'); });
 
         function renderActivities(mode) {
@@ -163,13 +183,12 @@
 
         function openMissions(cardElement, index) {
             const actData = activities[activeMode][index];
-            document.getElementById('mainHeader').style.opacity = '0';
+            document.getElementById('mainHeader').style.opacity = '0.2';
             document.getElementById('mainToggle').style.opacity = '0';
             
             const allSlides = document.querySelectorAll('.swiper-slide');
             allSlides.forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
-            cardElement.style.transform = "scale(0.8) translateY(-100px)";
-            cardElement.style.opacity = "0.2";
+            cardElement.classList.add('selected-card-anim');
             currentSwiper.allowTouchMove = false;
 
             setTimeout(() => {
@@ -182,7 +201,7 @@
                     const angle = (i * 36) * (Math.PI / 180);
                     const x = Math.cos(angle) * radius; const y = Math.sin(angle) * radius;
                     const bubble = document.createElement('div');
-                    bubble.className = 'mission-bubble'; bubble.innerHTML = `<span style="font-size:8px; display:block;">MSN</span>${i}`;
+                    bubble.className = 'mission-bubble'; bubble.innerHTML = `<span>M${i}</span>`;
                     bubble.style.left = `calc(50% + ${x}px - 30px)`; bubble.style.top = `calc(50% + ${y}px - 30px)`;
                     
                     bubble.onclick = (e) => { 
@@ -201,7 +220,7 @@
             document.getElementById('mainHeader').style.opacity = '1';
             document.getElementById('mainToggle').style.opacity = '1';
             document.querySelectorAll('.swiper-slide').forEach(slide => { 
-                slide.style.opacity = '1'; slide.style.transform = 'none';
+                slide.style.opacity = '1'; slide.classList.remove('selected-card-anim'); 
             });
             currentSwiper.allowTouchMove = true;
         }
@@ -212,7 +231,7 @@
             renderActivities(mode);
         }
 
-        // Star Background
+        // Background Logic (Same as original but more subtle)
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -228,12 +247,12 @@
                 this.angle += this.speed;
                 const x = canvas.width/2 + Math.cos(this.angle) * this.dist;
                 const y = canvas.height/2 + Math.sin(this.angle) * this.dist;
-                ctx.fillStyle = "rgba(255,255,255," + (Math.random() * 0.5 + 0.3) + ")";
+                ctx.fillStyle = "rgba(255,255,255," + (Math.random() * 0.3 + 0.3) + ")";
                 ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI*2); ctx.fill();
             }
         }
         function animate() {
-            ctx.fillStyle = 'rgba(2, 2, 5, 0.3)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             stars.forEach(s => s.draw());
             requestAnimationFrame(animate);
         }

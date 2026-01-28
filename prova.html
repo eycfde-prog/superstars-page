@@ -1,116 +1,296 @@
-<div class="max-w-xl mx-auto mt-4">
-    <button onclick="openAvatarCreator()" class="w-full py-4 border-2 border-dashed border-yellow-500/50 text-yellow-500 orbitron font-bold rounded-2xl hover:bg-yellow-500/10 transition-all flex items-center justify-center gap-3">
-        <i class="fas fa-user-astronaut"></i> DESIGN YOUR AVATAR (STORY MODE)
-    </button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYC Academy | Agent Registry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --gold: #ffcc00; --bg-dark: #050505; --accent-blue: #0080ff; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; min-height: 100vh; background-image: radial-gradient(circle at 50% 50%, rgba(255, 204, 0, 0.05) 0%, transparent 70%); }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 204, 0, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        input, select { background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,204,0,0.2) !important; color: white !important; transition: 0.3s; }
+        input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(255,204,0,0.2); outline: none; }
+        .upload-zone { border: 2px dashed rgba(255,204,0,0.2); transition: 0.3s; }
+        .upload-zone:hover { border-color: var(--gold); background: rgba(255,204,0,0.05); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
+        .success-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: var(--gold); filter: blur(120px); opacity: 0.1; z-index: -1; animation: pulseGlow 3s infinite; }
+        @keyframes pulseGlow { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.2; } }
+        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+        .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; z-index: 10; pointer-events: none; }
+        .agent-code-box { background: rgba(255, 204, 0, 0.1); border: 1px dashed var(--gold); padding: 15px; border-radius: 12px; letter-spacing: 5px; font-size: 1.5rem; margin: 20px 0; color: var(--gold); text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
+    </style>
+</head>
+<body class="py-12 px-4">
 
-<div id="avatarModal" class="modal flex-col">
-    <div class="glass-card p-8 w-full max-w-lg relative overflow-hidden">
-        <div id="stepProgress" class="h-1 bg-yellow-500 absolute top-0 left-0 transition-all" style="width: 15%"></div>
-        
-        <div class="flex justify-between items-center mb-8">
-            <h3 id="stepTitle" class="orbitron text-yellow-500 text-lg font-black">STEP 01: SELECT GENDER</h3>
-            <span class="text-[10px] text-gray-500" id="stepCounter">1 / 6</span>
-        </div>
-
-        <div id="stepContent" class="min-h-[300px] flex flex-col justify-center">
+    <div id="successScreen" class="modal">
+        <div class="success-glow"></div>
+        <div class="glass-card p-10 text-center max-w-md border-b-4 border-yellow-500 transform transition-all scale-110">
+            <div class="relative w-24 h-24 mx-auto mb-6">
+                <div class="absolute inset-0 bg-yellow-500 rounded-full animate-ping opacity-20"></div>
+                <div class="relative w-24 h-24 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center text-5xl">
+                    <i class="fas fa-shield-check"></i>
+                </div>
             </div>
-
-        <div class="mt-8 flex gap-4">
-            <button id="prevStep" onclick="changeStep(-1)" class="flex-1 py-3 bg-white/5 rounded-xl orbitron text-xs hidden">BACK</button>
-            <button id="nextStep" onclick="changeStep(1)" class="flex-[2] py-3 bg-yellow-500 text-black orbitron font-black rounded-xl">NEXT PROTOCOL</button>
+            <h2 class="orbitron text-3xl font-black mb-2 text-white">ACCESS GRANTED</h2>
+            <p class="text-gray-400 text-sm mb-4">Welcome, <span id="agentNameDisplay" class="text-white font-bold">Agent</span>.</p>
+            <div class="agent-code-box orbitron font-black" id="agentCodeDisplay">---</div>
+            <button onclick="window.location.href='MC.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white transition-all">ENTER MISSION CONTROL</button>
         </div>
     </div>
-</div>
 
-<script>
-    // بيانات صانع الشخصيات
-    let currentStep = 1;
-    let avatarData = { gender: '', skin: '', eyes: '', hairLength: '', hairColor: '', faceStyle: '' };
-    
-    const steps = {
-        1: { title: "SELECT GENDER", type: "gender" },
-        2: { title: "SKIN COMPLEXION", type: "skin" },
-        3: { title: "EYE AUGMENTATION", type: "eyes" },
-        4: { title: "HAIR STRUCTURE", type: "hairLength" },
-        5: { title: "CHROME COLOR", type: "hairColor" },
-        6: { title: "FACE TOPOLOGY", type: "faceStyle" }
-    };
+    <div id="avatarModal" class="modal flex-col">
+        <div class="glass-card p-8 w-full max-w-lg relative overflow-hidden">
+            <div id="stepProgress" class="h-1 bg-yellow-500 absolute top-0 left-0 transition-all" style="width: 15%"></div>
+            
+            <div class="flex justify-between items-center mb-8">
+                <h3 id="stepTitle" class="orbitron text-yellow-500 text-lg font-black uppercase">STEP 01: SELECT GENDER</h3>
+                <span class="text-[10px] text-gray-500 orbitron" id="stepCounter">1 / 6</span>
+            </div>
 
-    function openAvatarCreator() {
-        document.getElementById('avatarModal').style.display = 'flex';
-        renderStep();
-    }
-
-    function renderStep() {
-        const content = document.getElementById('stepContent');
-        const title = document.getElementById('stepTitle');
-        const counter = document.getElementById('stepCounter');
-        const progress = document.getElementById('stepProgress');
-        
-        title.innerText = `STEP 0${currentStep}: ${steps[currentStep].title}`;
-        counter.innerText = `${currentStep} / 6`;
-        progress.style.width = `${(currentStep / 6) * 100}%`;
-        content.innerHTML = '';
-
-        document.getElementById('prevStep').style.display = currentStep === 1 ? 'none' : 'block';
-        document.getElementById('nextStep').innerText = currentStep === 6 ? 'FINALIZE AGENT' : 'NEXT PROTOCOL';
-
-        const grid = document.createElement('div');
-        grid.className = "grid grid-cols-2 gap-4";
-
-        if(currentStep === 1) { // النوع
-            grid.innerHTML = `
-                <div onclick="setAvatarProp('gender', 'boy')" class="p-6 border-2 ${avatarData.gender === 'boy' ? 'border-yellow-500 bg-yellow-500/10' : 'border-white/10'} rounded-2xl text-center cursor-pointer hover:border-yellow-500/50">
-                    <i class="fas fa-mars text-4xl mb-2 text-blue-400"></i><p class="orbitron text-xs">BOY</p>
+            <div id="stepContent" class="min-h-[300px] flex flex-col justify-center">
                 </div>
-                <div onclick="setAvatarProp('gender', 'girl')" class="p-6 border-2 ${avatarData.gender === 'girl' ? 'border-yellow-500 bg-yellow-500/10' : 'border-white/10'} rounded-2xl text-center cursor-pointer hover:border-yellow-500/50">
-                    <i class="fas fa-venus text-4xl mb-2 text-pink-400"></i><p class="orbitron text-xs">GIRL</p>
-                </div>`;
-        } else if(currentStep === 2) { // لون البشرة
-            grid.className = "flex justify-between gap-2";
-            const colors = ['#4e342e', '#8d6e63', '#d7ccc8', '#ffccbc', '#fff9c4'];
-            colors.forEach(c => {
-                grid.innerHTML += `<div onclick="setAvatarProp('skin', '${c}')" style="background:${c}" class="w-12 h-12 rounded-full cursor-pointer border-2 ${avatarData.skin === c ? 'border-white' : 'border-transparent'}"></div>`;
-            });
-        } else {
-            // منطق الاختيارات المتغيرة (5 للبنات و3 للولاد)
-            const count = avatarData.gender === 'girl' ? 5 : 3;
-            grid.className = "grid grid-cols-3 gap-3";
-            for(let i=1; i<=count; i++) {
-                grid.innerHTML += `
-                    <div onclick="setAvatarProp('${steps[currentStep].type}', ${i})" class="p-4 border border-white/10 rounded-xl text-center cursor-pointer hover:bg-white/5">
-                        <i class="fas fa-microchip text-yellow-500/50 mb-2"></i>
-                        <p class="text-[8px] orbitron">OPT-0${i}</p>
+
+            <div class="mt-8 flex gap-4">
+                <button id="prevStep" onclick="changeStep(-1)" class="flex-1 py-3 bg-white/5 rounded-xl orbitron text-xs hidden">BACK</button>
+                <button id="nextStep" onclick="changeStep(1)" class="flex-[2] py-3 bg-yellow-500 text-black orbitron font-black rounded-xl">NEXT PROTOCOL</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-xl mx-auto">
+        <div class="text-center mb-10">
+            <div class="orbitron text-yellow-500 text-xs tracking-[0.5em] mb-2">COMMAND CENTER</div>
+            <h1 class="orbitron text-4xl font-black text-white">CREATE PROFILE</h1>
+        </div>
+
+        <form id="regForm" class="glass-card p-8 space-y-6 relative overflow-hidden">
+            <div class="scanner-line"></div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">FULL NAME (IDENTITY)</label>
+                    <input type="text" id="fullNameInput" name="fullName" required placeholder="Agent Name" class="w-full p-4 rounded-xl text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AGE</label>
+                        <input type="number" name="age" required placeholder="00" class="w-full p-4 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">ACCESS EMAIL</label>
+                        <input type="email" name="email" required placeholder="name@gmail.com" class="w-full p-4 rounded-xl text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AVATAR SELECTION</label>
+                
+                <div class="upload-zone rounded-2xl p-6 text-center relative cursor-pointer">
+                    <input type="file" id="imageInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <i class="fas fa-camera-retro text-2xl text-gray-500 mb-2" id="uploadIcon"></i>
+                    <p id="fileName" class="text-[10px] text-gray-500 orbitron uppercase">Select agent photo</p>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="h-[1px] bg-white/10 flex-1"></div>
+                    <span class="text-[8px] orbitron text-gray-500">OR</span>
+                    <div class="h-[1px] bg-white/10 flex-1"></div>
+                </div>
+
+                <button type="button" onclick="openAvatarCreator()" class="w-full py-4 border-2 border-dashed border-yellow-500/50 text-yellow-500 orbitron font-bold rounded-2xl hover:bg-yellow-500/10 transition-all flex items-center justify-center gap-3">
+                    <i class="fas fa-user-astronaut"></i> DESIGN YOUR AVATAR (STORY MODE)
+                </button>
+            </div>
+
+            <div class="pt-4 border-t border-white/5">
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-4 uppercase">Select Sector Access</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="checkbox" name="prog" value="Season" checked class="w-4 h-4 accent-yellow-500">
+                        <span class="text-xs font-bold orbitron">SEASON</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" class="w-4 h-4 accent-blue-500">
+                        <span class="text-xs font-bold orbitron text-blue-400">XBOX ELITE</span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl hover:scale-105 transition-all">
+                INITIATE REGISTRATION
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsuyxBY2X2DQa29tLMADlFnZ3HXbJBIWuYAJ6ercgp3RpQGMioS_d-3T833ZKExtPN-g/exec";
+        
+        // --- منطق صانع الشخصية (Avatar Creator) ---
+        let currentStep = 1;
+        let avatarData = { gender: '', skin: '', eyes: '', hairLength: '', hairColor: '', faceStyle: '' };
+        let generatedAvatarBase64 = null; // لتخزين "الصورة" المصممة
+        
+        const steps = {
+            1: { title: "SELECT GENDER", type: "gender" },
+            2: { title: "SKIN COMPLEXION", type: "skin" },
+            3: { title: "EYE AUGMENTATION", type: "eyes" },
+            4: { title: "HAIR STRUCTURE", type: "hairLength" },
+            5: { title: "CHROME COLOR", type: "hairColor" },
+            6: { title: "FACE TOPOLOGY", type: "faceStyle" }
+        };
+
+        function openAvatarCreator() {
+            document.getElementById('avatarModal').style.display = 'flex';
+            renderStep();
+        }
+
+        function renderStep() {
+            const content = document.getElementById('stepContent');
+            const title = document.getElementById('stepTitle');
+            const counter = document.getElementById('stepCounter');
+            const progress = document.getElementById('stepProgress');
+            
+            title.innerText = `STEP 0${currentStep}: ${steps[currentStep].title}`;
+            counter.innerText = `${currentStep} / 6`;
+            progress.style.width = `${(currentStep / 6) * 100}%`;
+            content.innerHTML = '';
+
+            document.getElementById('prevStep').style.display = currentStep === 1 ? 'none' : 'block';
+            document.getElementById('nextStep').innerText = currentStep === 6 ? 'FINALIZE AGENT' : 'NEXT PROTOCOL';
+
+            const grid = document.createElement('div');
+            grid.className = "grid grid-cols-2 gap-4";
+
+            if(currentStep === 1) {
+                grid.innerHTML = `
+                    <div onclick="setAvatarProp('gender', 'boy')" class="p-6 border-2 ${avatarData.gender === 'boy' ? 'border-yellow-500 bg-yellow-500/10' : 'border-white/10'} rounded-2xl text-center cursor-pointer hover:border-yellow-500/50">
+                        <i class="fas fa-mars text-4xl mb-2 text-blue-400"></i><p class="orbitron text-xs">BOY</p>
+                    </div>
+                    <div onclick="setAvatarProp('gender', 'girl')" class="p-6 border-2 ${avatarData.gender === 'girl' ? 'border-yellow-500 bg-yellow-500/10' : 'border-white/10'} rounded-2xl text-center cursor-pointer hover:border-yellow-500/50">
+                        <i class="fas fa-venus text-4xl mb-2 text-pink-400"></i><p class="orbitron text-xs">GIRL</p>
                     </div>`;
+            } else if(currentStep === 2) {
+                grid.className = "flex justify-between gap-2";
+                const colors = ['#4e342e', '#8d6e63', '#d7ccc8', '#ffccbc', '#fff9c4'];
+                colors.forEach(c => {
+                    grid.innerHTML += `<div onclick="setAvatarProp('skin', '${c}')" style="background:${c}" class="w-12 h-12 rounded-full cursor-pointer border-2 ${avatarData.skin === c ? 'border-white' : 'border-transparent'}"></div>`;
+                });
+            } else {
+                const count = avatarData.gender === 'girl' ? 5 : 3;
+                grid.className = "grid grid-cols-3 gap-3";
+                for(let i=1; i<=count; i++) {
+                    grid.innerHTML += `
+                        <div onclick="setAvatarProp('${steps[currentStep].type}', ${i})" class="p-4 border ${avatarData[steps[currentStep].type] == i ? 'border-yellow-500 bg-yellow-500/10' : 'border-white/10'} rounded-xl text-center cursor-pointer hover:bg-white/5">
+                            <i class="fas fa-microchip text-yellow-500/50 mb-2"></i>
+                            <p class="text-[8px] orbitron">OPT-0${i}</p>
+                        </div>`;
+                }
             }
+            content.appendChild(grid);
         }
-        content.appendChild(grid);
-    }
 
-    function setAvatarProp(prop, value) {
-        avatarData[prop] = value;
-        // تشغيل صوت خفيف عند الاختيار
-        new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3').play();
-        renderStep();
-    }
-
-    function changeStep(dir) {
-        if(dir === 1 && !avatarData[steps[currentStep].type]) {
-            alert("Please select an option to proceed.");
-            return;
+        function setAvatarProp(prop, value) {
+            avatarData[prop] = value;
+            new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3').play();
+            renderStep();
         }
-        currentStep += dir;
-        if(currentStep > 6) finalizeAvatar();
-        else renderStep();
-    }
 
-    function finalizeAvatar() {
-        // هنا نقوم "بتوليد" الصورة (تخيلياً في هذا الكود أو ربطها بـ Canvas)
-        alert("Avatar Sync Complete! Identity generated.");
-        document.getElementById('avatarModal').style.display = 'none';
-        document.getElementById('fileName').innerText = "AVATAR_GENERATED.PNG";
-        document.getElementById('uploadIcon').className = "fas fa-user-check text-yellow-500 mb-2";
-        // يمكن حفظ الاختيارات في Hidden Input ليرسلها الفورم للسيرفر
-    }
-</script>
+        function changeStep(dir) {
+            if(dir === 1 && !avatarData[steps[currentStep].type]) {
+                alert("Please select an option to proceed.");
+                return;
+            }
+            currentStep += dir;
+            if(currentStep > 6) finalizeAvatar();
+            else renderStep();
+        }
+
+        function finalizeAvatar() {
+            // محاكاة إنشاء صورة: سنرسل بيانات JSON كبديل للصورة في هذه النسخة
+            // أو يمكنك استخدام رابط صورة افتراضية بناءً على النوع
+            generatedAvatarBase64 = "STORY_MODE_AVATAR:" + JSON.stringify(avatarData);
+            
+            alert("Avatar Sync Complete! Identity generated.");
+            document.getElementById('avatarModal').style.display = 'none';
+            document.getElementById('fileName').innerText = "AVATAR_GENERATED.PNG";
+            document.getElementById('uploadIcon').className = "fas fa-user-check text-yellow-500 mb-2";
+            
+            // إلغاء صورة الرفع التقليدية إذا وجدت
+            document.getElementById('imageInput').required = false;
+        }
+
+        // --- منطق التسجيل (Registration Logic) ---
+        document.getElementById('imageInput').onchange = function() {
+            if(this.files[0]) {
+                generatedAvatarBase64 = null; // مسح الأفاتار المصمم يدوياً
+                document.getElementById('fileName').innerText = "IDENTIFIED: " + this.files[0].name;
+                document.getElementById('uploadIcon').className = "fas fa-check text-yellow-500 mb-2";
+            }
+        };
+
+        document.getElementById('regForm').onsubmit = function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const fileInput = document.getElementById('imageInput');
+            const agentName = document.getElementById('fullNameInput').value;
+            const progs = [];
+            document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
+
+            if (!fileInput.files[0] && !generatedAvatarBase64) {
+                alert("Please upload a photo or design your avatar first.");
+                return;
+            }
+
+            submitBtn.innerText = "SYNCHRONIZING...";
+            submitBtn.disabled = true;
+
+            const sendData = (imageContent) => {
+                const payload = {
+                    name: agentName,
+                    age: document.getElementsByName('age')[0].value,
+                    email: document.getElementsByName('email')[0].value,
+                    programs: progs.join(', '),
+                    image: imageContent
+                };
+
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.text())
+                .then(result => {
+                    const cleanRes = result.trim();
+                    if (cleanRes === "Already Registered") {
+                        alert("⚠️ عذراً! هذا البريد الإلكتروني مسجل لدينا بالفعل.");
+                    } else if (cleanRes.startsWith("Success")) {
+                        const code = cleanRes.split(":")[1];
+                        document.getElementById('agentNameDisplay').innerText = agentName;
+                        document.getElementById('agentCodeDisplay').innerText = code;
+                        document.getElementById('successScreen').style.display = 'flex';
+                    } else {
+                        alert("نظام الأكاديمية: " + result);
+                    }
+                })
+                .catch(() => alert("فشل في الاتصال بالسيرفر!"))
+                .finally(() => {
+                    submitBtn.innerText = "INITIATE REGISTRATION";
+                    submitBtn.disabled = false;
+                });
+            };
+
+            if (fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (event) => sendData(event.target.result);
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                sendData(generatedAvatarBase64);
+            }
+        };
+    </script>
+</body>
+</html>

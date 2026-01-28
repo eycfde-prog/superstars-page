@@ -13,275 +13,219 @@
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 204, 0, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         input, select { background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,204,0,0.2) !important; color: white !important; transition: 0.3s; }
-        input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(255,204,0,0.2); outline: none; }
-        .upload-zone { border: 2px dashed rgba(255,204,0,0.2); transition: 0.3s; }
-        .upload-zone:hover { border-color: var(--gold); background: rgba(255,204,0,0.05); }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
-        .success-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: var(--gold); filter: blur(120px); opacity: 0.1; z-index: -1; animation: pulseGlow 3s infinite; }
-        @keyframes pulseGlow { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.2; } }
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
-        .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; }
-        .agent-code-box { background: rgba(255, 204, 0, 0.1); border: 1px dashed var(--gold); padding: 15px; border-radius: 12px; letter-spacing: 5px; font-size: 1.5rem; margin: 20px 0; color: var(--gold); text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
         
         /* Avatar Creator Styles */
-        .option-card { background: rgba(255, 255, 255, 0.05); border: 2px solid transparent; transition: 0.3s; cursor: pointer; }
-        .option-card:hover { border-color: var(--gold); background: rgba(255, 204, 0, 0.1); }
-        .option-card.selected { border-color: var(--gold); background: rgba(255, 204, 0, 0.2); box-shadow: 0 0 15px rgba(255, 204, 0, 0.3); }
-        .color-box { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; cursor: pointer; transition: 0.2s; }
-        .color-box:hover { transform: scale(1.1); }
+        .avatar-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; }
+        .step-screen { display: none; text-align: center; width: 100%; max-width: 500px; animation: fadeIn 0.5s ease; }
+        .step-screen.active { display: block; }
+        .option-box { border: 2px solid rgba(255,204,0,0.2); border-radius: 15px; cursor: pointer; transition: 0.3s; overflow: hidden; position: relative; }
+        .option-box:hover, .option-box.selected { border-color: var(--gold); background: rgba(255,204,0,0.1); transform: translateY(-5px); }
+        .color-dot { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; margin: 0 auto; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
+        .scanner-line { height: 2px; width: 100%; background: var(--gold); position: absolute; animation: scan 2s linear infinite; opacity: 0.5; }
+        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+        .agent-code-box { background: rgba(255, 204, 0, 0.1); border: 1px dashed var(--gold); padding: 15px; border-radius: 12px; letter-spacing: 5px; font-size: 1.5rem; margin: 20px 0; color: var(--gold); text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
     </style>
 </head>
 <body class="py-12 px-4">
 
-    <div id="successScreen" class="modal">
-        <div class="success-glow"></div>
-        <div class="glass-card p-10 text-center max-w-md border-b-4 border-yellow-500 transform transition-all scale-110">
-            <div class="relative w-24 h-24 mx-auto mb-6">
-                <div class="absolute inset-0 bg-yellow-500 rounded-full animate-ping opacity-20"></div>
-                <div class="relative w-24 h-24 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center text-5xl">
-                    <i class="fas fa-shield-check"></i>
+    <div id="avatarModal" class="avatar-modal">
+        <div class="glass-card p-8 w-full max-w-lg relative">
+            <div id="step1" class="step-screen active">
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 1: Gender Selection</h3>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="option-box p-4" onclick="selectGender('male')">
+                        <i class="fas fa-user-ninja text-4xl mb-2"></i>
+                        <p class="orbitron text-xs">MALE AGENT</p>
+                    </div>
+                    <div class="option-box p-4" onclick="selectGender('female')">
+                        <i class="fas fa-user-astronaut text-4xl mb-2"></i>
+                        <p class="orbitron text-xs">FEMALE AGENT</p>
+                    </div>
                 </div>
             </div>
-            <h2 class="orbitron text-3xl font-black mb-2">ACCESS GRANTED</h2>
-            <p class="text-gray-400 text-sm mb-4">Welcome, <span id="agentNameDisplay" class="text-white font-bold">Agent</span>.</p>
-            <div class="agent-code-box orbitron font-black" id="agentCodeDisplay">---</div>
-            <button onclick="window.location.href='MC.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl hover:bg-white transition-all">ENTER MISSION CONTROL</button>
+
+            <div id="step2" class="step-screen">
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 2: Skin Tone</h3>
+                <div class="flex justify-center gap-3">
+                    <div onclick="selectSkin('#3d251e')" class="option-box p-2"><div class="color-dot" style="background:#3d251e"></div></div>
+                    <div onclick="selectSkin('#8d5524')" class="option-box p-2"><div class="color-dot" style="background:#8d5524"></div></div>
+                    <div onclick="selectSkin('#c68642')" class="option-box p-2"><div class="color-dot" style="background:#c68642"></div></div>
+                    <div onclick="selectSkin('#f1c27d')" class="option-box p-2"><div class="color-dot" style="background:#f1c27d"></div></div>
+                    <div onclick="selectSkin('#ffdbac')" class="option-box p-2"><div class="color-dot" style="background:#ffdbac"></div></div>
+                </div>
+            </div>
+
+            <div id="step3" class="step-screen">
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 3: Eye Color</h3>
+                <div id="eyeOptions" class="flex flex-wrap justify-center gap-3"></div>
+            </div>
+
+            <div id="step4" class="step-screen">
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 4: Hair Style</h3>
+                <div id="hairOptions" class="grid grid-cols-3 gap-3"></div>
+            </div>
+
+            <div id="step5" class="step-screen">
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 5: Hair Color</h3>
+                <div id="hairColorOptions" class="flex justify-center gap-3"></div>
+            </div>
+
+            <div id="step6" class="step-screen">
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">Step 6: Face Style</h3>
+                <div id="faceOptions" class="grid grid-cols-3 gap-3"></div>
+            </div>
+
+            <div class="mt-8 flex justify-between">
+                <button id="prevBtn" onclick="prevStep()" class="text-gray-500 orbitron text-xs hover:text-white transition">BACK</button>
+                <div id="progressDots" class="flex gap-2 items-center"></div>
+                <button id="nextBtn" class="hidden text-yellow-500 orbitron text-xs font-bold">NEXT</button>
+            </div>
         </div>
     </div>
 
-    <div id="avatarModal" class="modal">
-        <div class="glass-card p-8 w-full max-w-lg relative overflow-hidden">
-            <div class="scanner-line"></div>
-            <div id="stepContainer"></div>
-            <div class="flex justify-between mt-8 border-t border-white/10 pt-4">
-                <button id="prevBtn" onclick="prevStep()" class="px-6 py-2 text-xs orbitron font-bold text-gray-400 hover:text-white">BACK</button>
-                <div id="stepIndicator" class="text-[10px] orbitron text-yellow-500 self-center">STEP 1/6</div>
-                <button id="nextBtn" onclick="nextStep()" class="px-6 py-2 bg-yellow-500 text-black text-xs orbitron font-bold rounded-lg">NEXT</button>
-            </div>
+    <div id="successScreen" class="modal">
+        <div class="glass-card p-10 text-center max-w-md border-b-4 border-yellow-500 transform transition-all scale-110">
+            <h2 class="orbitron text-3xl font-black mb-2 uppercase">Access Granted</h2>
+            <div class="agent-code-box orbitron font-black" id="agentCodeDisplay">---</div>
+            <button onclick="window.location.href='MC.html'" class="w-full py-4 bg-yellow-500 text-black font-black orbitron rounded-xl">ENTER MISSION CONTROL</button>
         </div>
     </div>
 
     <div class="max-w-xl mx-auto">
         <div class="text-center mb-10">
-            <div class="orbitron text-yellow-500 text-xs tracking-[0.5em] mb-2">COMMAND CENTER</div>
-            <h1 class="orbitron text-4xl font-black">CREATE PROFILE</h1>
+            <h1 class="orbitron text-4xl font-black uppercase tracking-tighter text-white">Create <span class="text-yellow-500">Agent</span></h1>
         </div>
 
         <form id="regForm" class="glass-card p-8 space-y-6 relative overflow-hidden">
             <div class="scanner-line"></div>
             
             <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">FULL NAME (IDENTITY)</label>
-                    <input type="text" id="fullNameInput" name="fullName" required placeholder="Agent Name" class="w-full p-4 rounded-xl text-sm">
-                </div>
+                <input type="text" id="fullNameInput" required placeholder="FULL NAME" class="w-full p-4 rounded-xl text-sm">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AGE</label>
-                        <input type="number" name="age" required placeholder="00" class="w-full p-4 rounded-xl text-sm">
+                    <input type="number" name="age" required placeholder="AGE" class="w-full p-4 rounded-xl text-sm">
+                    <input type="email" name="email" required placeholder="EMAIL" class="w-full p-4 rounded-xl text-sm">
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">IDENTITY VISUALIZATION</label>
+                <div id="avatarPreviewBox" onclick="openAvatarModal()" class="upload-zone rounded-2xl p-6 text-center cursor-pointer border-2 border-dashed border-yellow-500/30">
+                    <div id="previewImage" class="w-20 h-20 bg-yellow-500/10 rounded-full mx-auto mb-3 flex items-center justify-center border border-yellow-500/50">
+                        <i class="fas fa-user-plus text-yellow-500"></i>
                     </div>
-                    <div>
-                        <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">ACCESS EMAIL</label>
-                        <input type="email" name="email" required placeholder="name@gmail.com" class="w-full p-4 rounded-xl text-sm">
-                    </div>
+                    <p id="avatarStatus" class="orbitron text-[10px] text-yellow-500">INITIALIZE AVATAR CREATION</p>
                 </div>
+                <input type="hidden" id="finalAvatarData" name="avatarData" required>
             </div>
 
-            <div>
-                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-2">AVATAR SELECTION</label>
-                <div class="upload-zone rounded-2xl p-6 text-center relative cursor-pointer mb-2">
-                    <input type="file" id="imageInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
-                    <i class="fas fa-camera-retro text-2xl text-gray-500 mb-2" id="uploadIcon"></i>
-                    <p id="fileName" class="text-[10px] text-gray-500 uppercase">Select agent photo</p>
-                </div>
-                
-                <div class="space-y-2">
-                    <p class="text-[10px] orbitron font-bold text-gray-500 uppercase text-center">— OR DESIGN YOUR AGENT —</p>
-                    <button type="button" onclick="openAvatarCreator()" class="w-full py-3 border-2 border-yellow-500/30 text-yellow-500 orbitron text-[10px] font-bold rounded-xl hover:bg-yellow-500 hover:text-black transition-all">
-                        <i class="fas fa-user-gear mr-2"></i> LAUNCH CHARACTER CREATOR
-                    </button>
-                    <input type="hidden" id="avatarData" name="avatarData">
-                </div>
-            </div>
-
-            <div class="pt-4 border-t border-white/5">
-                <label class="block text-[10px] orbitron font-bold text-yellow-500 mb-4 uppercase">Select Sector Access</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="checkbox" name="prog" value="Season" checked class="w-4 h-4 accent-yellow-500">
-                        <span class="text-xs font-bold orbitron">SEASON</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" class="w-4 h-4 accent-blue-500">
-                        <span class="text-xs font-bold orbitron text-blue-400">XBOX ELITE</span>
-                    </label>
-                </div>
-            </div>
-
-            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl hover:scale-105 transition-all">
-                INITIATE REGISTRATION
-            </button>
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl">INITIATE REGISTRATION</button>
         </form>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsuyxBY2X2DQa29tLMADlFnZ3HXbJBIWuYAJ6ercgp3RpQGMioS_d-3T833ZKExtPN-g/exec";
-
-        // --- Avatar Creator Script ---
+        const SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL_HERE";
         let currentStep = 1;
-        const totalSteps = 6;
-        let selections = { gender: '', skin: '', step3: '', step4: '', step5: '', step6: '' };
+        let avatarData = { gender: '', skin: '', eyes: '', hair: '', hairColor: '', face: '' };
 
-        function openAvatarCreator() {
-            document.getElementById('avatarModal').style.display = 'flex';
-            renderStep();
+        function openAvatarModal() { document.getElementById('avatarModal').style.display = 'flex'; }
+        function closeAvatarModal() { document.getElementById('avatarModal').style.display = 'none'; }
+
+        function selectGender(g) {
+            avatarData.gender = g;
+            renderDynamicOptions();
+            goToStep(2);
         }
 
-        function renderStep() {
-            const container = document.getElementById('stepContainer');
-            const nextBtn = document.getElementById('nextBtn');
-            const prevBtn = document.getElementById('prevBtn');
-            document.getElementById('stepIndicator').innerText = `STEP ${currentStep}/${totalSteps}`;
-            
-            prevBtn.disabled = currentStep === 1;
-            
-            let html = `<h2 class="orbitron text-xl font-black mb-6 text-center text-yellow-500">${getStepTitle(currentStep)}</h2>`;
-            
-            if (currentStep === 1) {
-                html += `<div class="grid grid-cols-2 gap-6">
-                    <div class="option-card p-6 rounded-2xl text-center ${selections.gender === 'male' ? 'selected' : ''}" onclick="selectOption('gender', 'male')">
-                        <i class="fas fa-user-tie text-4xl mb-3"></i><p class="orbitron text-xs">MALE</p>
-                    </div>
-                    <div class="option-card p-6 rounded-2xl text-center ${selections.gender === 'female' ? 'selected' : ''}" onclick="selectOption('gender', 'female')">
-                        <i class="fas fa-user-graduate text-4xl mb-3"></i><p class="orbitron text-xs">FEMALE</p>
-                    </div>
-                </div>`;
-            } else if (currentStep === 2) {
-                const colors = ['#3d2516', '#7a4a2b', '#c68642', '#e0ac69', '#f7d3a2'];
-                html += `<div class="flex justify-center gap-4">`;
-                colors.forEach(c => {
-                    html += `<div class="color-box ${selections.skin === c ? 'ring-4 ring-yellow-500' : ''}" style="background:${c}" onclick="selectOption('skin', '${c}')"></div>`;
-                });
-                html += `</div>`;
-            } else {
-                const count = selections.gender === 'female' ? 5 : 3;
-                html += `<div class="grid grid-cols-2 gap-4">`;
-                for(let i=1; i<=count; i++) {
-                    html += `<div class="option-card p-4 rounded-xl text-center ${selections['step'+currentStep] === i ? 'selected' : ''}" onclick="selectOption('step${currentStep}', ${i})">
-                                <p class="orbitron text-[10px]">MODULE ${i}</p>
-                             </div>`;
-                }
-                html += `</div>`;
-            }
+        function selectSkin(color) { avatarData.skin = color; goToStep(3); }
 
-            container.innerHTML = html;
-            nextBtn.innerText = currentStep === totalSteps ? "FINALIZE" : "NEXT";
+        function renderDynamicOptions() {
+            // منطق توليد الخيارات بناءً على النوع (ولد/بنت)
+            const eyesCount = avatarData.gender === 'female' ? 5 : 3;
+            const hairCount = 5; // طول الشعر
+            const hColorCount = avatarData.gender === 'female' ? 5 : 3;
+            const faceCount = avatarData.gender === 'female' ? 5 : 3;
+
+            renderSteps('eyeOptions', eyesCount, 'eyes', 'fa-eye');
+            renderSteps('hairOptions', hairCount, 'hair', 'fa-cut');
+            renderSteps('hairColorOptions', hColorCount, 'hairColor', 'fa-palette');
+            renderSteps('faceOptions', faceCount, 'face', 'fa-smile');
         }
 
-        function selectOption(key, value) {
-            selections[key] = value;
-            renderStep();
-        }
-
-        function getStepTitle(step) {
-            const titles = ["", "IDENTITY TYPE", "SKIN TONE", "EYE SCAN", "HAIR MODULE", "PIGMENTATION", "FACIAL STRUCTURE"];
-            return titles[step];
-        }
-
-        function nextStep() {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                renderStep();
-            } else {
-                finalizeAvatar();
+        function renderSteps(containerId, count, key, icon) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for(let i=1; i<=count; i++) {
+                container.innerHTML += `
+                    <div onclick="selectOption('${key}', '${i}')" class="option-box p-3">
+                        <i class="fas ${icon} opacity-50 mb-1"></i>
+                        <p class="text-[10px]">Opt ${i}</p>
+                    </div>`;
             }
         }
 
-        function prevStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                renderStep();
-            }
+        function selectOption(key, val) {
+            avatarData[key] = val;
+            if(currentStep < 6) goToStep(currentStep + 1);
+            else finishAvatar();
         }
 
-        function finalizeAvatar() {
-            const avatarString = `AVATAR-${selections.gender}-${selections.skin}-${selections.step3}-${selections.step4}-${selections.step5}-${selections.step6}`;
-            document.getElementById('avatarData').value = avatarString;
-            document.getElementById('fileName').innerText = "AVATAR CONSTRUCTED: " + selections.gender.toUpperCase();
-            document.getElementById('uploadIcon').className = "fas fa-robot text-yellow-500 mb-2";
-            document.getElementById('imageInput').required = false; // لم يعد الملف مطلوباً
-            document.getElementById('avatarModal').style.display = 'none';
-            alert("Character Synced!");
+        function goToStep(s) {
+            document.querySelectorAll('.step-screen').forEach(el => el.classList.remove('active'));
+            document.getElementById('step' + s).classList.add('active');
+            currentStep = s;
         }
 
-        // --- Form Submission Logic ---
-        document.getElementById('imageInput').onchange = function() {
-            if(this.files[0]) {
-                document.getElementById('avatarData').value = ""; // تفريغ بيانات الأفاتار لو تم اختيار صورة
-                document.getElementById('fileName').innerText = "IDENTIFIED: " + this.files[0].name;
-                document.getElementById('uploadIcon').className = "fas fa-check text-yellow-500 mb-2";
-            }
-        };
+        function prevStep() { if(currentStep > 1) goToStep(currentStep - 1); else closeAvatarModal(); }
 
+        function finishAvatar() {
+            // هنا نقوم بتمثيل الأفاتار بصورة وهمية حالياً أو دمجها بـ Canvas
+            // كحل بسيط سنضع نصاً يدل على النجاح
+            document.getElementById('avatarStatus').innerText = "AVATAR READY: " + avatarData.gender.toUpperCase() + " AGENT";
+            document.getElementById('previewImage').innerHTML = `<i class="fas fa-check-circle text-4xl text-green-500"></i>`;
+            document.getElementById('finalAvatarData').value = JSON.stringify(avatarData);
+            closeAvatarModal();
+        }
+
+        // Form Submission logic
         document.getElementById('regForm').onsubmit = function(e) {
             e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            const file = document.getElementById('imageInput').files[0];
-            const avatarData = document.getElementById('avatarData').value;
-            const agentName = document.getElementById('fullNameInput').value;
-
-            if (!file && !avatarData) {
-                alert("Please upload a photo or design your avatar!");
+            if(!document.getElementById('finalAvatarData').value) {
+                alert("Please create your avatar first!");
                 return;
             }
-
+            
+            const submitBtn = document.getElementById('submitBtn');
             submitBtn.innerText = "SYNCHRONIZING...";
             submitBtn.disabled = true;
 
-            const sendData = (imgValue) => {
-                const progs = [];
-                document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
-                
-                const payload = {
-                    name: agentName,
-                    age: document.getElementsByName('age')[0].value,
-                    email: document.getElementsByName('email')[0].value,
-                    programs: progs.join(', '),
-                    image: imgValue
-                };
-
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                })
-                .then(res => res.text())
-                .then(result => {
-                    const cleanRes = result.trim();
-                    if (cleanRes === "Already Registered") {
-                        alert("⚠️ This email is already registered!");
-                    } else if (cleanRes.startsWith("Success")) {
-                        const code = cleanRes.split(":")[1];
-                        document.getElementById('agentNameDisplay').innerText = agentName;
-                        document.getElementById('agentCodeDisplay').innerText = code;
-                        document.getElementById('successScreen').style.display = 'flex';
-                    } else {
-                        alert("System Error: " + result);
-                    }
-                })
-                .catch(() => alert("Connection Failed!"))
-                .finally(() => {
-                    submitBtn.innerText = "INITIATE REGISTRATION";
-                    submitBtn.disabled = false;
-                });
+            const payload = {
+                name: document.getElementById('fullNameInput').value,
+                age: document.getElementsByName('age')[0].value,
+                email: document.getElementsByName('email')[0].value,
+                image: document.getElementById('finalAvatarData').value // نرسل بيانات الشخصية كـ JSON أو صورة
             };
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => sendData(event.target.result);
-                reader.readAsDataURL(file);
-            } else {
-                sendData(avatarData); // إرسال كود الأفاتار في حال عدم وجود صورة
-            }
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.text())
+            .then(result => {
+                if(result.trim().startsWith("Success")) {
+                    document.getElementById('agentCodeDisplay').innerText = result.split(":")[1];
+                    document.getElementById('successScreen').style.display = 'flex';
+                } else {
+                    alert(result);
+                }
+            })
+            .finally(() => {
+                submitBtn.innerText = "INITIATE REGISTRATION";
+                submitBtn.disabled = false;
+            });
         };
     </script>
 </body>

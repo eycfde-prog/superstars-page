@@ -13,31 +13,16 @@
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 30px; }
         
-        input, select { 
-            background: rgba(0,0,0,0.5) !important; 
-            border: 1px solid rgba(255,255,255,0.1) !important; 
-            color: white !important; 
-            border-radius: 12px !important;
-            transition: 0.3s;
-        }
-        input:focus, select:focus { border-color: var(--gold) !important; outline: none; }
+        input, select { background: rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 12px !important; }
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.5s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        #avatarImg { width: 220px; height: 220px; filter: drop-shadow(0 10px 20px rgba(212, 175, 55, 0.2)); }
+        .control-label { font-size: 10px; color: var(--gold); letter-spacing: 2px; font-weight: 900; margin-bottom: 8px; display: block; }
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        
-        /* Flash Screen Logic */
-        .step-screen { display: none; animation: fadeIn 0.5s ease-in-out; }
-        .step-screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .avatar-preview-box {
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            padding: 20px;
-        }
-        #avatarImg { width: 220px; height: 220px; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.8)); }
-
-        .control-label { font-size: 10px; color: var(--gold); letter-spacing: 2px; margin-bottom: 8px; display: block; font-weight: 900; }
-        
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -50,173 +35,165 @@
                 <i class="fas fa-shield-alt animate-pulse"></i>
             </div>
             <h2 class="orbitron text-2xl mb-2 text-yellow-500 font-black">IDENTITY FORGED</h2>
-            <p class="text-gray-400 text-sm mb-6">Your access protocol is now active. Save your unique Hunter Code:</p>
-            <div class="bg-black/60 border border-yellow-500/30 p-4 rounded-2xl mb-8">
-                <span class="text-[10px] block text-gray-500 mb-1 orbitron">SECRET ACCESS CODE</span>
+            <div class="bg-black/60 border border-yellow-500/30 p-4 rounded-2xl mb-8 mt-4">
                 <span id="displayStudentCode" class="text-3xl font-black text-white tracking-widest orbitron">----</span>
             </div>
-            <button onclick="window.location.reload()" class="w-full py-4 bg-yellow-500 text-black orbitron font-bold rounded-full hover:bg-yellow-400 transition-all">Start Missions</button>
+            <button onclick="window.location.reload()" class="w-full py-4 bg-yellow-500 text-black orbitron font-bold rounded-full hover:bg-yellow-400 transition-all shadow-lg">Start Missions</button>
         </div>
     </div>
 
     <div class="max-w-4xl mx-auto">
         <header class="text-center mb-8">
-            <h1 class="orbitron text-4xl font-black text-white">CHARACTER <span class="text-yellow-500">CREATOR</span></h1>
+            <h1 class="orbitron text-4xl font-black text-white italic">CHARACTER <span class="text-yellow-500">CREATOR</span></h1>
         </header>
 
         <form id="regForm" class="glass-card p-8 lg:p-12">
-            
-            <div class="flex flex-col lg:flex-row gap-12 items-center">
-                
-                <div class="lg:w-1/2 flex flex-col items-center border-b lg:border-b-0 lg:border-r border-white/10 pb-8 lg:pb-0 lg:pr-12">
-                    <div class="avatar-preview-box mb-6">
-                        <img id="avatarImg" src="" alt="Hunter">
+            <div class="flex justify-center mb-10">
+                <div class="relative bg-white/5 p-6 rounded-full border border-white/10">
+                    <img id="avatarImg" src="" alt="Avatar Preview">
+                </div>
+            </div>
+
+            <div class="step-content active" id="step1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="control-label">SELECT BASE STYLE</label>
+                        <select id="gender" onchange="toggleHijabOption(); updateAvatar();" class="w-full p-4">
+                            <option value="ShortHair">Male Style</option>
+                            <option value="LongHair">Female Style</option>
+                        </select>
                     </div>
-                    <div class="flex gap-4">
-                        <button type="button" onclick="randomAvatar()" class="px-4 py-2 text-[10px] orbitron border border-yellow-500/30 rounded-full hover:bg-yellow-500/10 transition-all">
-                            <i class="fas fa-dice mr-1"></i> RANDOM
-                        </button>
+                    <div>
+                        <label class="control-label">SKIN TONE</label>
+                        <select id="skinColor" onchange="updateAvatar()" class="w-full p-4">
+                            <option value="Light">Light</option>
+                            <option value="Pale">Pale</option>
+                            <option value="Tanned">Tanned</option>
+                            <option value="Brown">Brown</option>
+                            <option value="DarkBrown">Dark Brown</option>
+                            <option value="Black">Black</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" onclick="nextStep(2)" class="mt-8 w-full py-4 bg-white/10 border border-white/20 orbitron font-bold rounded-xl hover:bg-yellow-500 hover:text-black transition-all">NEXT: HAIR & FACE</button>
+            </div>
+
+            <div class="step-content" id="step2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="control-label">HAIR STYLE / HEADWEAR</label>
+                        <select id="topType" onchange="updateAvatar()" class="w-full p-4">
+                            <option value="ShortHairShortFlat">Short Flat</option>
+                            <option value="ShortHairTheCaesar">Caesar</option>
+                            <option value="ShortHairDreads01">Dreads</option>
+                            <option value="ShortHairFrizzle">Frizzle</option>
+                            <option value="LongHairStraight">Long Straight</option>
+                            <option value="LongHairCurvy">Long Curvy</option>
+                            <option value="LongHairBob">Bob</option>
+                            <option value="LongHairDreads">Long Dreads</option>
+                            <option value="NoHair">Bald</option>
+                            <option id="hijabOption" value="Hijab" style="display:none;">Hijab (Modest Style)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="control-label">HAIR COLOR</label>
+                        <select id="hairColor" onchange="updateAvatar()" class="w-full p-4">
+                            <option value="Black">Black</option>
+                            <option value="BrownDark">Dark Brown</option>
+                            <option value="BlondeGolden">Golden Blonde</option>
+                            <option value="SilverGray">Silver</option>
+                            <option value="Red">Red</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="control-label">EYE EXPRESSION</label>
+                        <select id="eyeType" onchange="updateAvatar()" class="w-full p-4">
+                            <option value="Default">Normal</option>
+                            <option value="Happy">Happy</option>
+                            <option value="Squint">Focus</option>
+                            <option value="EyeRoll">Eye Roll</option>
+                            <option value="Side">Side Look</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="control-label">MOUTH TYPE</label>
+                        <select id="mouthType" onchange="updateAvatar()" class="w-full p-4">
+                            <option value="Default">Default</option>
+                            <option value="Smile">Smile</option>
+                            <option value="Serious">Serious</option>
+                            <option value="Twinkle">Twinkle</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-8">
+                    <button type="button" onclick="nextStep(1)" class="w-1/3 py-4 border border-white/10 rounded-xl orbitron text-xs">BACK</button>
+                    <button type="button" onclick="nextStep(3)" class="w-2/3 py-4 bg-white/10 border border-white/20 orbitron font-bold rounded-xl hover:bg-yellow-500 hover:text-black transition-all">NEXT: OUTFIT</button>
+                </div>
+            </div>
+
+            <div class="step-content" id="step3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="control-label">CLOTHING</label>
+                        <select id="clotheType" onchange="updateAvatar()" class="w-full p-4">
+                            <option value="Hoodie">Hoodie</option>
+                            <option value="BlazerShirt">Blazer & Shirt</option>
+                            <option value="GraphicShirt">Graphic Tee</option>
+                            <option value="Overall">Overall Suit</option>
+                            <option value="ShirtCrewNeck">Crew Neck</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="control-label">ACCESSORIES</label>
+                        <select id="accessoriesType" onchange="updateAvatar()" class="w-full p-4">
+                            <option value="Blank">None</option>
+                            <option value="Prescription02">Reading Glasses</option>
+                            <option value="Sunglasses">Sunglasses</option>
+                            <option value="Round">Round Glasses</option>
+                            <option value="Wayfarers">Wayfarers</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-8">
+                    <button type="button" onclick="nextStep(2)" class="w-1/3 py-4 border border-white/10 rounded-xl orbitron text-xs">BACK</button>
+                    <button type="button" onclick="nextStep(4)" class="w-2/3 py-4 bg-white/10 border border-white/20 orbitron font-bold rounded-xl hover:bg-yellow-500 hover:text-black transition-all">NEXT: FINAL DATA</button>
+                </div>
+            </div>
+
+            <div class="step-content" id="step4">
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <input type="text" name="fullName" required placeholder="FULL NAME (ENGLISH)" class="w-full p-4">
+                        <input type="number" name="age" required placeholder="AGE" class="w-full p-4">
+                    </div>
+                    <input type="email" name="email" required placeholder="GOOGLE EMAIL" class="w-full p-4">
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 cursor-pointer">
+                            <input type="checkbox" name="prog" value="Season" class="w-5 h-5 accent-yellow-500">
+                            <span class="text-sm font-bold">Season</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 cursor-pointer">
+                            <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-5 h-5 accent-blue-500">
+                            <span class="text-sm font-bold text-blue-400">XBoX Elite</span>
+                        </label>
+                    </div>
+
+                    <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                        <label class="flex items-center gap-3 p-3 bg-black/40 rounded-lg cursor-not-allowed">
+                            <input type="radio" name="xboxType" value="Free" checked>
+                            <span class="text-xs text-blue-300 font-bold uppercase tracking-widest">Free Tier (Current Protocol)</span>
+                        </label>
+                        <input type="hidden" id="ticket1" value=""><input type="hidden" id="ticket2" value="">
                     </div>
                 </div>
 
-                <div class="lg:w-1/2 w-full">
-                    
-                    <div class="step-screen active" id="step1">
-                        <h3 class="orbitron text-yellow-500 text-sm mb-6 underline underline-offset-8">PHASE 01: BIOMETRICS</h3>
-                        <div class="space-y-6">
-                            <div>
-                                <label class="control-label">GENDER STYLE</label>
-                                <select onchange="updateAvatar()" id="gender" class="w-full p-4">
-                                    <option value="ShortHair">Hunter (Male Style)</option>
-                                    <option value="LongHair">Huntress (Female Style)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="control-label">SKIN TONE</label>
-                                <select onchange="updateAvatar()" id="skinColor" class="w-full p-4">
-                                    <option value="Light">Light</option>
-                                    <option value="Pale">Pale</option>
-                                    <option value="Tanned">Tanned</option>
-                                    <option value="Brown">Brown</option>
-                                    <option value="DarkBrown">Dark Brown</option>
-                                    <option value="Black">Black</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="button" onclick="nextStep(2)" class="mt-10 w-full py-4 bg-white/5 border border-white/10 orbitron text-xs hover:border-yellow-500 transition-all">NEXT PHASE <i class="fas fa-arrow-right ml-2"></i></button>
-                    </div>
-
-                    <div class="step-screen" id="step2">
-                        <h3 class="orbitron text-yellow-500 text-sm mb-6 underline underline-offset-8">PHASE 02: FEATURES</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="control-label">EYE TYPE</label>
-                                <select onchange="updateAvatar()" id="eyeType" class="w-full p-3 text-xs">
-                                    <option value="Default">Default</option>
-                                    <option value="Happy">Happy</option>
-                                    <option value="Squint">Focused</option>
-                                    <option value="EyeRoll">Skeptical</option>
-                                    <option value="Side">Side Look</option>
-                                    <option value="Wink">Wink</option>
-                                    <option value="Hearts">Elite (Hearts)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="control-label">HAIR / HEADWEAR</label>
-                                <select onchange="updateAvatar()" id="topType" class="w-full p-3 text-xs">
-                                    <option value="Hijab">HIJAB (Pious Hunter)</option>
-                                    <option value="Turban">TURBAN</option>
-                                    <option value="WinterHat1">WINTER CAP</option>
-                                    <option value="ShortHairShortFlat">FLAT TOP</option>
-                                    <option value="ShortHairTheCaesar">CAESAR</option>
-                                    <option value="ShortHairDreads01">DREADS</option>
-                                    <option value="LongHairStraight">STRAIGHT LONG</option>
-                                    <option value="LongHairCurvy">CURVY LONG</option>
-                                    <option value="LongHairBob">BOB CUT</option>
-                                    <option value="NoHair">BALD</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="control-label">HAIR COLOR</label>
-                                <select onchange="updateAvatar()" id="hairColor" class="w-full p-3 text-xs">
-                                    <option value="Black">Midnight Black</option>
-                                    <option value="BrownDark">Dark Brown</option>
-                                    <option value="SilverGray">Silver</option>
-                                    <option value="Auburn">Auburn</option>
-                                    <option value="BlondeGolden">Golden</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="flex gap-2 mt-8">
-                            <button type="button" onclick="nextStep(1)" class="w-1/3 py-4 bg-white/5 orbitron text-[10px]">BACK</button>
-                            <button type="button" onclick="nextStep(3)" class="w-2/3 py-4 bg-white/5 border border-yellow-500/50 orbitron text-xs">NEXT PHASE</button>
-                        </div>
-                    </div>
-
-                    <div class="step-screen" id="step3">
-                        <h3 class="orbitron text-yellow-500 text-sm mb-6 underline underline-offset-8">PHASE 03: EQUIPMENT</h3>
-                        <div class="space-y-6">
-                            <div>
-                                <label class="control-label">OUTFIT STYLE</label>
-                                <select onchange="updateAvatar()" id="clotheType" class="w-full p-4">
-                                    <option value="Hoodie">HOODIE</option>
-                                    <option value="BlazerShirt">ELITE BLAZER</option>
-                                    <option value="GraphicShirt">COMBAT TEE</option>
-                                    <option value="Overall">MISSION SUIT</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="control-label">ACCESSORIES</label>
-                                <select onchange="updateAvatar()" id="accessoriesType" class="w-full p-4">
-                                    <option value="Blank">NONE</option>
-                                    <option value="Prescription02">GLASSES</option>
-                                    <option value="Sunglasses">SUNGLASSES</option>
-                                    <option value="Wayfarers">WAYFARERS</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="flex gap-2 mt-10">
-                            <button type="button" onclick="nextStep(2)" class="w-1/3 py-4 bg-white/5 orbitron text-[10px]">BACK</button>
-                            <button type="button" onclick="nextStep(4)" class="w-2/3 py-4 bg-yellow-500 text-black orbitron text-xs font-black">SAVE LOOK</button>
-                        </div>
-                    </div>
-
-                    <div class="step-screen" id="step4">
-                        <h3 class="orbitron text-yellow-500 text-sm mb-6 underline underline-offset-8">FINAL PHASE: DATA SYNC</h3>
-                        <div class="space-y-4">
-                            <input type="text" name="fullName" required placeholder="FULL NAME (ENGLISH)" class="w-full p-4">
-                            <input type="number" name="age" required placeholder="AGE" class="w-full p-4">
-                            <input type="email" name="email" required placeholder="ACADEMY EMAIL" class="w-full p-4">
-                            
-                            <div class="grid grid-cols-2 gap-4">
-                                <label class="p-4 bg-white/5 rounded-xl border border-white/5 cursor-pointer has-[:checked]:border-yellow-500">
-                                    <input type="checkbox" name="prog" value="Season" class="hidden peer">
-                                    <span class="text-xs orbitron opacity-50 peer-checked:opacity-100">SEASON</span>
-                                </label>
-                                <label class="p-4 bg-white/5 rounded-xl border border-white/5 cursor-pointer has-[:checked]:border-blue-500">
-                                    <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="hidden peer">
-                                    <span class="text-xs orbitron text-blue-400 opacity-50 peer-checked:opacity-100">XBoX ELITE</span>
-                                </label>
-                            </div>
-
-                            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                                <label class="flex items-center gap-3">
-                                    <input type="radio" name="xboxType" value="Free" checked class="accent-blue-500">
-                                    <span class="text-[10px] orbitron text-blue-300">FREE ACCESS GRANTED</span>
-                                </label>
-                                <input type="hidden" id="ticket1" value=""><input type="hidden" id="ticket2" value="">
-                            </div>
-                        </div>
-
-                        <div class="flex gap-2 mt-8">
-                            <button type="button" onclick="nextStep(3)" class="w-1/4 py-4 bg-white/5 orbitron text-[10px]">BACK</button>
-                            <button type="submit" id="submitBtn" class="w-3/4 py-4 bg-yellow-500 text-black orbitron font-black rounded-xl flex items-center justify-center gap-3">
-                                <span id="btnText">FORGE IDENTITY</span>
-                                <div id="loader" class="loader"></div>
-                            </button>
-                        </div>
-                    </div>
-
+                <div class="flex gap-4 mt-8">
+                    <button type="button" onclick="nextStep(3)" class="w-1/3 py-4 border border-white/10 rounded-xl orbitron text-xs">BACK</button>
+                    <button type="submit" id="submitBtn" class="w-2/3 py-4 bg-yellow-500 text-black orbitron font-black rounded-xl hover:scale-105 transition-all flex justify-center items-center gap-2">
+                        <span id="btnText">FORGE IDENTITY</span>
+                        <div id="loader" class="loader"></div>
+                    </button>
                 </div>
             </div>
         </form>
@@ -225,9 +202,23 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOenTfwP0rJCq_LQwLluZSS-e2FEb9j3gTm66t7VuKOHdx4MLftHuH_47ER_UYG8ce/exec";
 
-        function nextStep(step) {
-            document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('step' + step).classList.add('active');
+        function nextStep(stepNum) {
+            document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + stepNum).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleHijabOption() {
+            const gender = document.getElementById('gender').value;
+            const hijab = document.getElementById('hijabOption');
+            if(gender === "LongHair") {
+                hijab.style.display = "block";
+            } else {
+                hijab.style.display = "none";
+                if(document.getElementById('topType').value === "Hijab") {
+                    document.getElementById('topType').value = "ShortHairShortFlat";
+                }
+            }
         }
 
         function updateAvatar() {
@@ -235,21 +226,13 @@
             const hairColor = document.getElementById('hairColor').value;
             const skin = document.getElementById('skinColor').value;
             const eye = document.getElementById('eyeType').value;
+            const mouth = document.getElementById('mouthType').value;
             const cloth = document.getElementById('clotheType').value;
             const acc = document.getElementById('accessoriesType').value;
             
-            const baseUrl = "https://avataaars.io/?avatarStyle=Transparent";
-            const params = `&topType=${top}&accessoriesType=${acc}&hairColor=${hairColor}&facialHairType=Blank&clotheType=${cloth}&eyeType=${eye}&eyebrowType=Default&mouthType=Default&skinColor=${skin}`;
-            
-            document.getElementById('avatarImg').src = baseUrl + params;
-        }
-
-        function randomAvatar() {
-            const selects = document.querySelectorAll('select');
-            selects.forEach(s => {
-                s.selectedIndex = Math.floor(Math.random() * s.options.length);
-            });
-            updateAvatar();
+            // Build URL
+            const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}&accessoriesType=${acc}&hairColor=${hairColor}&facialHairType=Blank&clotheType=${cloth}&eyeType=${eye}&eyebrowType=Default&mouthType=${mouth}&skinColor=${skin}`;
+            document.getElementById('avatarImg').src = url;
         }
 
         function toggleXboxSection() {
@@ -267,13 +250,14 @@
             loader.style.display = 'block';
             submitBtn.disabled = true;
 
+            const formData = new FormData(this);
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
             
             const data = {
-                name: this.fullName.value,
-                age: this.age.value,
-                email: this.email.value,
+                name: formData.get('fullName'),
+                age: formData.get('age'),
+                email: formData.get('email'),
                 programs: progs.join(', '),
                 image: document.getElementById('avatarImg').src,
                 ticket1: "",
@@ -287,15 +271,13 @@
                 });
                 const result = await response.json();
                 if (result.status === "success" || result.result === "success") {
-                    document.getElementById('displayStudentCode').innerText = result.code || "SUCCESS";
+                    document.getElementById('displayStudentCode').innerText = result.code || "ACTIVE";
                     document.getElementById('successScreen').style.display = 'flex';
                 } else {
-                    alert("Error: " + result.message);
+                    alert("⚠️ PROTOCOL ERROR: " + (result.message || "Retry later"));
                 }
             } catch (err) {
-                // Fallback for no-cors
-                document.getElementById('displayStudentCode').innerText = "REGISTERED";
-                document.getElementById('successScreen').style.display = 'flex';
+                alert("Identity sync sent to Archives. Check your connection.");
             } finally {
                 btnText.style.display = 'block';
                 loader.style.display = 'none';

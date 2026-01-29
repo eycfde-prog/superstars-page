@@ -63,7 +63,6 @@
         
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Mobile specific adjustments */
         @media (max-width: 480px) {
             .rank-header h1 { font-size: 1.5rem; }
             .swiper-slide { width: 180px; height: 260px; }
@@ -120,7 +119,6 @@
         let currentSwiper = null;
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbwsuyxBY2X2DQa29tLMADlFnZ3HXbJBIWuYAJ6ercgp3RpQGMioS_d-3T833ZKExtPN-g/exec';
         
-        // --- الأنشطة والكود الخاص بكل نشاط للربط مع MIF ---
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
@@ -167,10 +165,10 @@
             });
         }
 
+        // الدالة المعدلة كما طلبت تماماً
         function openMissions(cardElement, index, mode) {
             const actData = activities[mode][index];
             
-            // UI Transition
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
             
@@ -187,7 +185,6 @@
             
             currentSwiper.allowTouchMove = false;
 
-            // Render 10 Mission Bubbles
             setTimeout(() => {
                 const layer = document.getElementById('missions-layer');
                 layer.innerHTML = ''; 
@@ -197,7 +194,7 @@
                 const radius = window.innerWidth < 500 ? 130 : 170;
                 
                 for (let i = 1; i <= 10; i++) {
-                    const angle = (i * 36 - 90) * (Math.PI / 180); // Start from top
+                    const angle = (i * 36 - 90) * (Math.PI / 180); 
                     const x = Math.cos(angle) * radius; 
                     const y = Math.sin(angle) * radius;
                     
@@ -213,13 +210,13 @@
                         if(!isLogged) {
                             openLogin();
                         } else {
-                            // نظام الربط الذكي:
-                            // Season -> MissionNormal.html?act=GES1
-                            // Xbox -> MissionX.html?act=GEX1
-                            const missionCode = actData.code + i;
+                            // التوجيه الذكي بناءً على نوع الكرت
                             const targetPage = (mode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                            
-                            window.location.href = `${targetPage}?act=${missionCode}&name=${encodeURIComponent(actData.name)}&m=${i}`;
+                            const actCode = actData.code + i;
+                            const mNum = i;
+                            const actName = actData.name;
+
+                            window.location.href = `${targetPage}?act=${actCode}&m=${mNum}&name=${encodeURIComponent(actName)}`;
                         }
                     };
                     layer.appendChild(bubble);
@@ -237,7 +234,6 @@
             renderActivities(mode);
         }
 
-        // --- Auth ---
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         
         function verifyCode() {

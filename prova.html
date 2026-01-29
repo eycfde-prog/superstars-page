@@ -1,42 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EYC Academy | Agent Registry</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --gold: #ffcc00; --bg-dark: #050505; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; min-height: 100vh; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg-dark); color: white; min-height: 100vh; overflow-x: hidden; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 204, 0, 0.1); border-radius: 24px; }
-        input { background: rgba(0,0,0,0.4)!important; border: 1px solid rgba(255,204,0,0.2)!important; color: white!important; }
+        input { background: rgba(0,0,0,0.4)!important; border: 1px solid rgba(255,204,0,0.2)!important; color: white!important; text-align: right; }
         .avatar-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .step-screen { display: none; text-align: center; width: 100%; }
+        .step-screen { display: none; text-align: center; width: 100%; animation: fadeIn 0.4s ease; }
         .step-screen.active { display: block; }
-        .option-box { border: 2px solid rgba(255,204,0,0.2); border-radius: 15px; cursor: pointer; transition: 0.3s; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .option-box:hover, .option-box.selected { border-color: var(--gold); background: rgba(255,204,0,0.1); }
-        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; }
+        .option-box { border: 2px solid rgba(255,204,0,0.2); border-radius: 15px; cursor: pointer; transition: 0.3s; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); }
+        .option-box:hover, .option-box.selected { border-color: var(--gold); background: rgba(255,204,0,0.1); transform: scale(1.05); }
+        .color-dot { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="py-12 px-4">
 
     <div id="avatarModal" class="avatar-modal">
-        <div class="glass-card p-8 w-full max-w-md relative">
+        <div class="glass-card p-8 w-full max-w-md relative border-t-4 border-yellow-500">
             
             <div id="step1" class="step-screen active">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Select Gender</h3>
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase tracking-widest">اختيار النوع</h3>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="option-box" onclick="setGender('male')"><i class="fas fa-user text-4xl mb-2"></i><p>MALE</p></div>
-                    <div class="option-box" onclick="setGender('female')"><i class="fas fa-user-female text-4xl mb-2"></i><p>FEMALE</p></div>
+                    <div class="option-box" onclick="setGender('male')">
+                        <i class="fas fa-mars text-4xl mb-2 text-blue-400"></i>
+                        <p class="font-bold">ذكر</p>
+                    </div>
+                    <div class="option-box" onclick="setGender('female')">
+                        <i class="fas fa-venus text-4xl mb-2 text-pink-400"></i>
+                        <p class="font-bold">أنثى</p>
+                    </div>
                 </div>
             </div>
 
             <div id="step2" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Skin Tone</h3>
-                <div class="flex justify-center flex-wrap gap-2">
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase">لون البشرة</h3>
+                <div class="flex justify-center flex-wrap gap-3">
                     <div onclick="setSkin('#3d251e')" class="option-box"><div class="color-dot" style="background:#3d251e"></div></div>
                     <div onclick="setSkin('#8d5524')" class="option-box"><div class="color-dot" style="background:#8d5524"></div></div>
                     <div onclick="setSkin('#c68642')" class="option-box"><div class="color-dot" style="background:#c68642"></div></div>
@@ -46,58 +53,63 @@
             </div>
 
             <div id="step3" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Eye Color</h3>
-                <div id="eyeOptions" class="flex flex-wrap justify-center gap-2">
-                    <div onclick="setEyes('#4a2c2a')" class="option-box"><div class="color-dot" style="background:#4a2c2a"></div><p class="text-[8px] mt-1">Brown</p></div>
-                    <div onclick="setEyes('#2a4a2c')" class="option-box"><div class="color-dot" style="background:#2a4a2c"></div><p class="text-[8px] mt-1">Green</p></div>
-                    <div onclick="setEyes('#2a3a4a')" class="option-box"><div class="color-dot" style="background:#2a3a4a"></div><p class="text-[8px] mt-1">Blue</p></div>
-                </div>
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase">لون العين</h3>
+                <div id="eyeOptions" class="flex flex-wrap justify-center gap-3">
+                    </div>
             </div>
 
             <div id="step4" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Hair Color</h3>
-                <div class="flex flex-wrap justify-center gap-2">
-                    <div onclick="setHairColor('#000000')" class="option-box"><div class="color-dot" style="background:#000000"></div></div>
-                    <div onclick="setHairColor('#4b3621')" class="option-box"><div class="color-dot" style="background:#4b3621"></div></div>
-                    <div onclick="setHairColor('#fdf5e6')" class="option-box"><div class="color-dot" style="background:#fdf5e6"></div></div>
-                </div>
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase">لون الشعر</h3>
+                <div id="hairColorOptions" class="flex flex-wrap justify-center gap-3">
+                    </div>
             </div>
 
             <div id="step5" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Add Accessories</h3>
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase">الإكسسوارات</h3>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="option-box" onclick="setAccessory('none')"><i class="fas fa-times text-4xl mb-2"></i><p>None</p></div>
-                    <div class="option-box" onclick="setAccessory('glasses')"><i class="fas fa-glasses text-4xl mb-2"></i><p>Glasses</p></div>
+                    <div class="option-box" onclick="setAccessory('none')">
+                        <i class="fas fa-ban text-4xl mb-2 text-gray-500"></i>
+                        <p>بدون</p>
+                    </div>
+                    <div class="option-box" onclick="setAccessory('glasses')">
+                        <i class="fas fa-glasses text-4xl mb-2 text-white"></i>
+                        <p>نظارة</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-8 flex justify-between">
-                <button onclick="prevStep()" class="text-gray-400 orbitron text-xs">BACK</button>
-                <div id="stepIndicator" class="text-yellow-500 orbitron text-xs">1 / 5</div>
+            <div class="mt-8 flex justify-between items-center border-t border-white/10 pt-4">
+                <button onclick="prevStep()" class="text-gray-400 hover:text-white transition">رجوع</button>
+                <div id="stepIndicator" class="text-yellow-500 orbitron text-xs font-bold">1 / 5</div>
             </div>
         </div>
     </div>
 
     <div class="max-w-xl mx-auto">
         <div class="text-center mb-10">
-            <h1 class="orbitron text-4xl font-black">AGENT REGISTRY</h1>
+            <h1 class="orbitron text-4xl font-black text-white">AGENT <span class="text-yellow-500">REGISTRY</span></h1>
+            <p class="text-gray-500 text-sm mt-2">نظام تسجيل العملاء - أكاديمية EYC</p>
         </div>
 
         <form id="regForm" class="glass-card p-8 space-y-6">
-            <input type="text" id="fullName" required placeholder="FULL NAME" class="w-full p-4 rounded-xl">
-            <div class="grid grid-cols-2 gap-4">
-                <input type="number" id="age" required placeholder="AGE" class="w-full p-4 rounded-xl">
-                <input type="email" id="email" required placeholder="EMAIL" class="w-full p-4 rounded-xl">
+            <div class="space-y-4">
+                <input type="text" id="fullName" required placeholder="الاسم الكامل" class="w-full p-4 rounded-xl">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" id="age" required placeholder="العمر" class="w-full p-4 rounded-xl">
+                    <input type="email" id="email" required placeholder="البريد الإلكتروني" class="w-full p-4 rounded-xl">
+                </div>
             </div>
 
-            <div id="avatarZone" onclick="openAvatarModal()" class="border-2 border-dashed border-yellow-500/30 rounded-2xl p-6 text-center cursor-pointer hover:bg-yellow-500/5">
-                <div id="previewContainer" class="w-32 h-32 bg-white/5 rounded-full mx-auto mb-3 flex items-center justify-center overflow-hidden border-2 border-yellow-500/20">
+            <div id="avatarZone" onclick="openAvatarModal()" class="border-2 border-dashed border-yellow-500/30 rounded-2xl p-6 text-center cursor-pointer hover:bg-yellow-500/5 transition group">
+                <div id="previewContainer" class="w-32 h-32 bg-white/5 rounded-full mx-auto mb-3 flex items-center justify-center overflow-hidden border-2 border-yellow-500/20 group-hover:border-yellow-500 transition">
                     <i class="fas fa-user-plus text-3xl text-yellow-500"></i>
                 </div>
-                <p class="orbitron text-[10px] text-yellow-500">CLICK TO CONSTRUCT AGENT FACE</p>
+                <p id="avatarStatus" class="orbitron text-[10px] text-yellow-500 font-bold uppercase">صمم شخصيتك الآن</p>
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl">INITIATE REGISTRATION</button>
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl hover:bg-white transition-all shadow-lg shadow-yellow-500/20">
+                إرسال البيانات للقيادة
+            </button>
         </form>
     </div>
 
@@ -106,15 +118,45 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZgOfNcYCbHtPQ0HPnBdthidc5UgIsDL-NPVCgvyXgSco-QSZFcTiPZ8JEQ6GeSRkd5A/exec";
         let currentStep = 1;
-        let avatarConfig = { gender: '', skin: '#f1c27d', eyes: '#4a2c2a', hColor: '#000000', acc: 'none' };
+        let avatarConfig = { 
+            gender: '', skin: '#f1c27d', eyes: '#2a4a2c', 
+            hColor: '#000000', acc: 'none', hairStyle: 1 
+        };
 
         function openAvatarModal() { document.getElementById('avatarModal').style.display = 'flex'; }
         
-        function setGender(g) { avatarConfig.gender = g; nextStep(); }
+        function setGender(g) { 
+            avatarConfig.gender = g; 
+            updateDynamicOptions();
+            nextStep(); 
+        }
+
         function setSkin(s) { avatarConfig.skin = s; nextStep(); }
         function setEyes(e) { avatarConfig.eyes = e; nextStep(); }
         function setHairColor(hc) { avatarConfig.hColor = hc; nextStep(); }
         function setAccessory(a) { avatarConfig.acc = a; finishAvatar(); }
+
+        function updateDynamicOptions() {
+            const isFemale = avatarConfig.gender === 'female';
+            
+            // خيارات العين
+            const eyeDiv = document.getElementById('eyeOptions');
+            eyeDiv.innerHTML = '';
+            const colors = ['#4a2c2a', '#2a4a2c', '#2a3a4a', '#555', '#333'];
+            const count = isFemale ? 5 : 3;
+            for(let i=0; i<count; i++){
+                eyeDiv.innerHTML += `<div onclick="setEyes('${colors[i]}')" class="option-box"><div class="color-dot" style="background:${colors[i]}"></div></div>`;
+            }
+
+            // خيارات لون الشعر
+            const hairDiv = document.getElementById('hairColorOptions');
+            hairDiv.innerHTML = '';
+            const hColors = ['#000', '#4b3621', '#8b4513', '#d2b48c', '#fff'];
+            const hCount = isFemale ? 5 : 3;
+            for(let i=0; i<hCount; i++){
+                hairDiv.innerHTML += `<div onclick="setHairColor('${hColors[i]}')" class="option-box"><div class="color-dot" style="background:${hColors[i]}"></div></div>`;
+            }
+        }
 
         function nextStep() {
             document.getElementById(`step${currentStep}`).classList.remove('active');
@@ -133,6 +175,7 @@
 
         function finishAvatar() {
             document.getElementById('avatarModal').style.display = 'none';
+            document.getElementById('avatarStatus').innerText = "تم تجهيز الأفاتار بنجاح";
             drawAvatar();
         }
 
@@ -141,64 +184,78 @@
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, 400, 400);
 
-            // 1. Background
-            ctx.fillStyle = "#111";
+            // 1. الخلفية
+            ctx.fillStyle = "#1a1a1a";
             ctx.fillRect(0,0,400,400);
 
-            // 2. Face Shape
+            // 2. الرقبة
             ctx.fillStyle = avatarConfig.skin;
+            ctx.fillRect(180, 280, 40, 40);
+
+            // 3. شكل الوجه (بيضوي)
             ctx.beginPath();
-            ctx.arc(200, 200, 120, 0, Math.PI * 2);
+            ctx.ellipse(200, 190, 90, 110, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // 3. Eyes (White part)
-            ctx.fillStyle = "white";
-            ctx.beginPath(); ctx.arc(160, 180, 20, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(240, 180, 20, 0, Math.PI * 2); ctx.fill();
-
-            // 4. Pupils (Colored part)
-            ctx.fillStyle = avatarConfig.eyes;
-            ctx.beginPath(); ctx.arc(160, 180, 10, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(240, 180, 10, 0, Math.PI * 2); ctx.fill();
-
-            // 5. Mouth (Smile)
-            ctx.strokeStyle = "rgba(0,0,0,0.5)";
-            ctx.lineWidth = 5;
-            ctx.beginPath();
-            ctx.arc(200, 240, 40, 0, Math.PI);
-            ctx.stroke();
-
-            // 6. Hair
-            ctx.fillStyle = avatarConfig.hColor;
-            if(avatarConfig.gender === 'male') {
-                // Short hair on top
-                ctx.beginPath();
-                ctx.arc(200, 140, 80, Math.PI, 0);
-                ctx.fill();
-            } else {
-                // Long hair around
-                ctx.fillRect(80, 120, 40, 200); // left side
-                ctx.fillRect(280, 120, 40, 200); // right side
-                ctx.beginPath(); ctx.arc(200, 140, 120, Math.PI, 0); ctx.fill();
+            // 4. الشعر (الخلفي للبنات)
+            if(avatarConfig.gender === 'female') {
+                ctx.fillStyle = avatarConfig.hColor;
+                ctx.fillRect(110, 180, 180, 150);
             }
 
-            // 7. Accessory (Glasses)
+            // 5. العيون
+            ctx.fillStyle = "white";
+            ctx.beginPath(); ctx.arc(165, 185, 15, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(235, 185, 15, 0, Math.PI * 2); ctx.fill();
+
+            // 6. نني العين (ملون)
+            ctx.fillStyle = avatarConfig.eyes;
+            ctx.beginPath(); ctx.arc(165, 185, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(235, 185, 8, 0, Math.PI * 2); ctx.fill();
+
+            // 7. الفم (ابتسامة)
+            ctx.strokeStyle = "rgba(0,0,0,0.3)";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(200, 240, 25, 0.2 * Math.PI, 0.8 * Math.PI);
+            ctx.stroke();
+
+            // 8. الشعر الأمامي
+            ctx.fillStyle = avatarConfig.hColor;
+            if(avatarConfig.gender === 'male') {
+                ctx.beginPath();
+                ctx.arc(200, 130, 95, Math.PI, 0);
+                ctx.fill();
+            } else {
+                ctx.beginPath();
+                ctx.arc(200, 140, 100, Math.PI, 0);
+                ctx.fill();
+                // قصة الشعر الأمامية
+                ctx.beginPath();
+                ctx.moveTo(100, 140);
+                ctx.quadraticCurveTo(200, 100, 300, 140);
+                ctx.fill();
+            }
+
+            // 9. الإكسسوارات (النظارة)
             if(avatarConfig.acc === 'glasses') {
-                ctx.strokeStyle = "#fff";
-                ctx.lineWidth = 3;
-                ctx.strokeRect(135, 165, 50, 30);
-                ctx.strokeRect(215, 165, 50, 30);
-                ctx.beginPath(); ctx.moveTo(185, 180); ctx.lineTo(215, 180); ctx.stroke();
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(140, 175, 45, 25);
+                ctx.strokeRect(215, 175, 45, 25);
+                ctx.beginPath(); ctx.moveTo(185, 187); ctx.lineTo(215, 187); ctx.stroke();
             }
 
             const imageData = canvas.toDataURL("image/png");
-            document.getElementById('previewContainer').innerHTML = `<img src="${imageData}" class="w-full h-full">`;
+            document.getElementById('previewContainer').innerHTML = `<img src="${imageData}" class="w-full h-full object-cover">`;
         }
 
         document.getElementById('regForm').onsubmit = function(e) {
             e.preventDefault();
+            if(!avatarConfig.gender) return alert("من فضلك صمم الأفاتار الخاص بك أولاً!");
+
             const btn = document.getElementById('submitBtn');
-            btn.innerText = "UPLOADING...";
+            btn.innerText = "جاري إرسال البيانات...";
             btn.disabled = true;
 
             const payload = {
@@ -208,15 +265,23 @@
                 image: document.getElementById('avatarCanvas').toDataURL("image/png")
             };
 
-            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
             .then(res => res.text())
             .then(res => {
                 if(res.includes("Success")) {
-                    alert("Registration Successful!");
+                    alert("تم التسجيل بنجاح في الأكاديمية!");
                     location.reload();
-                } else { alert(res); }
+                } else {
+                    alert(res);
+                }
             })
-            .finally(() => { btn.innerText = "INITIATE REGISTRATION"; btn.disabled = false; });
+            .finally(() => {
+                btn.innerText = "إرسال البيانات للقيادة";
+                btn.disabled = false;
+            });
         };
     </script>
 </body>

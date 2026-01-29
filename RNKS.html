@@ -13,7 +13,7 @@
             --accent-gold: #fcc200;
             --accent-silver: #e0e0e0;
             --accent-bronze: #cd7f32;
-            --accent-elite: #00ffa3; /* لون أخضر للـ Tiers العالية */
+            --accent-elite: #00ffa3; 
             --gold-glow: rgba(252, 194, 0, 0.4);
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
@@ -25,7 +25,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--primary-bg); color: var(--text-color); overflow-x: hidden; }
 
-        /* Matrix Scan Overlay */
         #matrix-loader {
             position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -61,7 +60,6 @@
         .rank-2 { width: 280px; height: 440px; order: 1; border-color: var(--accent-silver); }
         .rank-3 { width: 280px; height: 400px; order: 3; border-color: var(--accent-bronze); }
 
-        /* Tier Badges */
         .tier-tag {
             font-family: 'Orbitron'; font-size: 0.6rem; font-weight: 900;
             padding: 4px 12px; border-radius: 50px; text-transform: uppercase;
@@ -71,7 +69,6 @@
         .tier-elite { background: var(--accent-elite); color: #000; }
         .tier-star { background: var(--glass-bg); border: 1px solid #fff; color: #fff; }
 
-        /* Rank Row & Social Proof */
         .rank-list { display: flex; flex-direction: column; gap: 15px; display: none; }
         .rank-row {
             display: grid; grid-template-columns: 60px 80px 1.5fr 1fr 200px;
@@ -95,8 +92,8 @@
         @keyframes crownFloat { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-10px); } }
 
         @media (max-width: 900px) {
-            .rank-row { grid-template-columns: 40px 60px 1fr 80px; }
-            .row-achievement { display: none; } /* إخفاء الإنجاز في الموبايل لعدم الزحمة */
+            .rank-row { grid-template-columns: 40px 60px 1fr 100px; }
+            .row-achievement { display: none; }
         }
     </style>
 </head>
@@ -134,7 +131,7 @@
                     document.getElementById('matrix-loader').style.opacity = '0';
                     setTimeout(() => document.getElementById('matrix-loader').remove(), 1000);
                     renderData(data);
-                }, 1500); // تأخير بسيط لإظهار الـ Matrix Scan
+                }, 1500);
             } catch (error) {
                 console.error('Error!', error.message);
             }
@@ -162,7 +159,9 @@
                 const s = top3[idx]; if (!s) return;
                 const isFirst = idx === 0;
                 const tierClass = isFirst ? 'tier-legendary' : (idx === 1 ? 'tier-elite' : 'tier-star');
-                const tierName = isFirst ? 'Legendary' : (idx === 1 ? 'Elite' : 'Master');
+                
+                // التعديل: جلب اللقب من عمود s.Title
+                const tierName = s.Title || (isFirst ? 'Legendary' : 'Superstar');
                 
                 podiumHTML += `
                     <div class="podium-item rank-${idx+1}">
@@ -184,7 +183,7 @@
             let listHTML = '';
             data.slice(3).forEach((s, i) => {
                 const rankPos = i + 4;
-                const achievement = s.LastAction || "System: On Active Duty"; // استبدل بـ LastAction من بياناتك
+                const achievement = s.LastAction || "System: On Active Duty";
                 
                 listHTML += `
                     <div class="rank-row">
@@ -194,7 +193,10 @@
                             <span style="font-family: 'Orbitron'; font-weight: 700; display: block;">${s.Name}</span>
                             <span style="font-size: 0.7rem; color: var(--accent-gold); text-transform: uppercase;">${s.Title || 'Superstar'}</span>
                         </div>
-                        <div class="tokens-count">${s.Tokens || 0} TK</div>
+                        <div>
+                            <div class="tokens-count">${s.Tokens || 0} TK</div>
+                            <div style="font-size: 0.65rem; opacity: 0.6; margin-top: 4px;">${s.Stars || 0} Stars | ${s.GT || 0} GT</div>
+                        </div>
                         <div class="row-achievement">
                             <i class="fas fa-bolt"></i> ${achievement}
                         </div>

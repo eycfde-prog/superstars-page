@@ -13,129 +13,151 @@
             --accent-gold: #ffcc00;
             --season-color: #00ffa3;
             --xbox-color: #ff3131;
-            --glass: rgba(255, 255, 255, 0.05);
+            --glass: rgba(255, 255, 255, 0.03);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; position: relative; }
 
-        /* --- Live Data Overlay --- */
+        /* --- Live Status Bar (Cyberpunk Style) --- */
         .live-status-bar {
-            position: fixed; top: 0; width: 100%; background: rgba(255, 204, 0, 0.1);
-            font-family: 'Orbitron'; font-size: 8px; padding: 2px 10px; z-index: 2000;
-            display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,204,0,0.2);
-            color: var(--accent-gold);
+            position: fixed; top: 0; width: 100%; background: linear-gradient(to bottom, rgba(255,204,0,0.1), transparent);
+            font-family: 'Orbitron'; font-size: 8px; padding: 5px 15px; z-index: 2000;
+            display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,204,0,0.1);
+            color: var(--accent-gold); letter-spacing: 1px;
         }
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
 
-        /* --- Login & Profile UI (Professional Integration) --- */
+        /* --- Profile UI --- */
         .auth-btn {
-            position: fixed; top: 25px; right: 20px;
+            position: fixed; top: 30px; right: 20px;
             background: var(--accent-gold); color: #000;
-            padding: 8px 18px; border-radius: 12px;
+            padding: 10px 20px; border-radius: 12px;
             font-family: 'Orbitron'; font-size: 10px; font-weight: 900;
             cursor: pointer; z-index: 1100; border: none;
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
             transition: 0.3s;
         }
 
         #user-profile { display: none; }
         
-        .user-name-top {
-            position: fixed; top: 25px; right: 20px;
-            font-family: 'Orbitron'; color: var(--accent-gold);
+        .user-info-box {
+            position: fixed; top: 30px; right: 20px;
             text-align: right; z-index: 1100;
-            filter: drop-shadow(0 0 5px rgba(255,204,0,0.5));
+            background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 15px;
+            backdrop-filter: blur(5px); border: 1px solid rgba(255,204,0,0.2);
         }
 
         .user-avatar-bottom {
-            position: fixed; bottom: 20px; left: 20px;
-            width: 65px; height: 65px; border-radius: 50%;
+            position: fixed; bottom: 25px; left: 25px;
+            width: 70px; height: 70px; border-radius: 20px;
             border: 2px solid var(--accent-gold); z-index: 1100;
-            box-shadow: 0 0 20px var(--accent-gold);
-            object-fit: cover; background: #000;
+            box-shadow: 0 0 25px rgba(255,204,0,0.4);
+            object-fit: cover; background: #000; transform: rotate(-5deg);
         }
 
         .stat-circle {
-            position: fixed; bottom: 95px; left: 20px;
-            background: rgba(0,0,0,0.85); border: 1px solid #fff;
-            width: 50px; height: 50px; border-radius: 50%;
+            position: fixed; bottom: 110px; left: 25px;
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            width: 55px; height: 55px; border-radius: 15px;
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; font-size: 8px; z-index: 1100;
-            font-family: 'Orbitron'; transition: 0.3s;
+            font-family: 'Orbitron'; backdrop-filter: blur(10px);
         }
 
-        /* --- Auth Modal --- */
+        /* --- Login Modal --- */
         #loginModal {
             display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.95); z-index: 3000;
-            align-items: center; justify-content: center; backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.96); z-index: 3000;
+            align-items: center; justify-content: center; backdrop-filter: blur(15px);
         }
         .login-card {
-            background: #0a0a0a; border: 1px solid var(--accent-gold);
-            padding: 35px; border-radius: 25px; width: 320px; text-align: center;
-            box-shadow: 0 0 30px rgba(255,204,0,0.2);
+            background: #080808; border: 1px solid var(--accent-gold);
+            padding: 40px 30px; border-radius: 30px; width: 340px; text-align: center;
+            position: relative; overflow: hidden;
         }
-        .login-card h3 { font-family: 'Orbitron'; color: var(--accent-gold); margin-bottom: 20px; letter-spacing: 2px; }
+        .login-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, var(--accent-gold), transparent 30%);
+            animation: rotate 4s linear infinite; opacity: 0.1;
+        }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
         .login-card input {
-            width: 100%; padding: 12px; margin: 10px 0;
-            background: #111; border: 1px solid #333; color: white; border-radius: 10px;
-            font-size: 13px; outline: none;
+            width: 100%; padding: 15px; margin: 12px 0;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
+            color: white; border-radius: 15px; font-size: 14px; transition: 0.3s;
         }
-        .login-card input:focus { border-color: var(--accent-gold); }
-        .login-card button { width: 100%; margin-top: 15px; padding: 12px; border-radius: 10px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; }
+        .login-card input:focus { border-color: var(--accent-gold); background: rgba(255,204,0,0.05); }
 
         /* --- Missions UI --- */
-        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; }
+        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
+        #missions-layer * { pointer-events: auto; }
         
         .mission-bubble { 
-            position: absolute; width: 55px; height: 55px; 
-            background: rgba(0,0,0,0.6); border: 1px solid var(--accent-gold); 
+            position: absolute; width: 60px; height: 60px; 
+            background: #000; border: 2px solid var(--accent-gold); 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
             font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); 
-            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 10px rgba(255,204,0,0.2);
+            cursor: pointer; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 15px rgba(255,204,0,0.3);
+            scale: 0;
         }
+        .mission-bubble.active-pop { scale: 1; }
 
-        .locked-bubble { opacity: 0.4; filter: grayscale(1); }
+        .locked-bubble { opacity: 0.3; filter: grayscale(1); border-color: #444; color: #444; }
         .locked-bubble::after {
-            content: "\f023"; font-family: "Font Awesome 6 Free"; font-weight: 900;
-            position: absolute; font-size: 14px; color: #ff3131; top: -5px; right: -5px;
-            background: #000; border-radius: 50%; width: 22px; height: 22px;
+            content: "\f023"; font-family: "Font Awesome 6 Free";
+            position: absolute; font-size: 10px; color: #ff3131; top: -5px; right: -5px;
+            background: #000; border-radius: 50%; width: 20px; height: 20px;
             display: flex; align-items: center; justify-content: center; border: 1px solid #ff3131;
         }
 
-        .coming-soon-popup {
-            position: absolute; background: var(--xbox-color);
-            color: white; font-size: 8px; padding: 4px 8px;
-            border-radius: 5px; top: -30px; white-space: nowrap;
-            font-family: 'Orbitron'; animation: fadeInUp 0.3s forwards;
+        /* --- Header & Tabs --- */
+        .rank-header { text-align: center; padding-top: 80px; margin-bottom: 20px; }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: 2rem; letter-spacing: 5px; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        
+        .mode-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .tab-btn {
+            background: transparent; border: 1px solid rgba(255,255,255,0.1);
+            color: #555; padding: 10px 25px; border-radius: 12px;
+            font-family: 'Orbitron'; font-size: 10px; font-weight: 900; cursor: pointer; transition: 0.4s;
         }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .rank-header { text-align: center; padding-top: 70px; margin-bottom: 10px; transition: 0.5s; }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; }
-        .rank-header p { font-size: 9px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
+        .tab-btn.active-season { color: #000; background: var(--season-color); border-color: var(--season-color); box-shadow: 0 0 20px rgba(0,255,163,0.3); }
+        .tab-btn.active-xbox { color: #fff; background: var(--xbox-color); border-color: var(--xbox-color); box-shadow: 0 0 20px rgba(255,49,49,0.3); }
 
         .back-btn { 
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            background: #fff; color: #000; padding: 10px 25px; border-radius: 20px; 
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); 
+            background: #fff; color: #000; padding: 12px 30px; border-radius: 30px; 
             font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 1200; 
-            border: none; font-size: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.5); 
+            border: none; font-size: 11px; box-shadow: 0 0 30px rgba(255,255,255,0.4); 
         }
 
-        .swiper-slide { cursor: pointer; transition: 0.5s; }
-        .selected-card-anim { transform: scale(0.5) translateY(-80px) !important; opacity: 0.3 !important; }
+        .swiper { width: 100%; padding-top: 20px; padding-bottom: 50px; }
+        .swiper-slide { 
+            width: 260px; height: 350px;
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(255,255,255,0.08); 
+            border-radius: 30px; padding: 40px 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        .selected-card-anim { transform: scale(0.4) translateY(-120px) !important; opacity: 0.1 !important; filter: blur(5px); }
+        
+        .coming-soon-popup {
+            position: absolute; background: var(--xbox-color); color: white;
+            font-size: 8px; padding: 4px 8px; border-radius: 5px; top: -35px;
+            font-family: 'Orbitron'; animation: fadeInUp 0.3s forwards;
+        }
     </style>
 </head>
 <body>
 
     <div class="live-status-bar">
-        <span>SYSTEM: ACTIVE</span>
+        <span><i class="fas fa-satellite animate-pulse mr-1"></i> SYSTEM: ONLINE</span>
         <span id="p-clock">00:00:00</span>
-        <span>CORE: 32°C</span>
+        <span>LATENCY: 24ms</span>
     </div>
 
     <div id="auth-section">
@@ -143,43 +165,45 @@
     </div>
 
     <div id="user-profile">
-        <div class="user-name-top">
-            <span id="p-name" style="font-size: 14px; display: block; font-weight: 900;">HUNTER</span>
-            <span id="p-title" style="font-size: 8px; color: #fff; opacity: 0.7;">RECRUIT</span>
+        <div class="user-info-box">
+            <span id="p-name" style="font-size: 14px; display: block; font-weight: 900; color: var(--accent-gold);">HUNTER</span>
+            <span id="p-title" style="font-size: 8px; color: #fff; opacity: 0.6; text-transform: uppercase;">RECRUIT</span>
         </div>
         <img id="p-img" class="user-avatar-bottom" src="" alt="Avatar">
-        <div class="stat-circle" style="left: 20px;">
-            <span id="p-score" style="color: var(--accent-gold); font-weight: bold; font-size: 11px;">0</span>
-            <span style="font-size: 5px;">TOKENS</span>
+        <div class="stat-circle" style="left: 25px;">
+            <span id="p-score" style="color: var(--accent-gold); font-weight: bold; font-size: 14px;">0</span>
+            <span style="font-size: 6px;">TOKENS</span>
         </div>
-        <div class="stat-circle" style="left: 75px;">
-            <span id="p-rank" style="color: #fff; font-weight: bold; font-size: 11px;">#0</span>
-            <span style="font-size: 5px;">RANK</span>
+        <div class="stat-circle" style="left: 90px;">
+            <span id="p-rank" style="color: #fff; font-weight: bold; font-size: 14px;">#0</span>
+            <span style="font-size: 6px;">RANK</span>
         </div>
     </div>
 
     <div id="loginModal">
         <div class="login-card">
-            <i class="fas fa-shield-halved" style="color: var(--accent-gold); font-size: 30px; margin-bottom: 10px;"></i>
+            <div class="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/20">
+                <i class="fas fa-fingerprint text-yellow-500 text-2xl"></i>
+            </div>
             <h3>SECURITY CHECK</h3>
             <input type="email" id="loginEmail" placeholder="Academy Email">
             <input type="text" id="loginCode" placeholder="Passcode (EYC-xxxx)">
-            <button onclick="performLogin()" style="background: var(--accent-gold); color: #000; border: none;">VERIFY IDENTITY</button>
-            <p onclick="forgotCode()" style="font-size: 10px; margin-top: 20px; cursor: pointer; color: #666; text-decoration: underline;">Request Passcode to Email</p>
-            <button onclick="toggleLoginModal(false)" style="background:transparent; border:none; color:#555; margin-top:10px; font-size:10px;">ABORT MISSION</button>
+            <button onclick="performLogin()" style="background: var(--accent-gold); color: #000; border: none; padding: 15px; border-radius: 15px; width: 100%; font-family: 'Orbitron'; font-weight: 900; margin-top: 10px;">VERIFY IDENTITY</button>
+            <p onclick="forgotCode()" style="font-size: 10px; margin-top: 20px; cursor: pointer; color: #555; text-decoration: underline;">Request Signal Recovery</p>
+            <button onclick="toggleLoginModal(false)" style="background:transparent; border:none; color:#333; margin-top:15px; font-size:10px;">ABORT ACCESS</button>
         </div>
     </div>
 
     <canvas id="rank-canvas"></canvas>
 
     <header class="rank-header" id="mainHeader">
-        <h1>MISSION HUB</h1>
-        <p>NAVIGATION HELM</p>
+        <h1>MISSION <span style="color: var(--accent-gold)">HUB</span></h1>
+        <p style="font-size: 8px; letter-spacing: 3px; color: #555; font-family: 'Orbitron';">SELECT OPERATION THEATER</p>
     </header>
 
-    <div class="toggle-container" id="mainToggle" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
-        <button id="btn-season" class="auth-btn" style="position: static; background: var(--season-color);" onclick="switchMode('season')">SEASON</button>
-        <button id="btn-xbox" class="auth-btn" style="position: static; background: transparent; border: 1px solid var(--xbox-color); color: #fff;" onclick="switchMode('xbox')">XBOX ELITE</button>
+    <div class="mode-toggle" id="mainToggle">
+        <button id="btn-season" class="tab-btn active-season" onclick="switchMode('season')">SEASON</button>
+        <button id="btn-xbox" class="tab-btn" onclick="switchMode('xbox')">XBOX ELITE</button>
     </div>
 
     <div id="swiper-container" class="swiper">
@@ -187,7 +211,7 @@
     </div>
 
     <div id="missions-layer"></div>
-    <button class="back-btn" id="backBtn" onclick="resetView()">BACK TO HELM</button>
+    <button class="back-btn" id="backBtn" onclick="resetView()">RETURN TO HELM</button>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
@@ -206,12 +230,12 @@
                 { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' }
             ],
             xbox: [
-                { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: '5' },
-                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: '5' },
-                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: '5' },
-                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '10+' },
-                { name: 'Label X', code: 'LX', icon: 'fa-industry', tk: '5' },
-                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: '5' }
+                { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: '10' },
+                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: '10' },
+                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: '10' },
+                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '20' },
+                { name: 'Label X', code: 'LX', icon: 'fa-industry', tk: '10' },
+                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: '10' }
             ]
         };
 
@@ -219,7 +243,7 @@
             checkSession();
             renderActivities('season');
             setInterval(() => {
-                document.getElementById('p-clock').innerText = new Date().toLocaleTimeString();
+                document.getElementById('p-clock').innerText = new Date().toLocaleTimeString('en-GB');
             }, 1000);
         };
 
@@ -227,11 +251,11 @@
             if (currentUser) {
                 document.getElementById('auth-section').style.display = 'none';
                 document.getElementById('user-profile').style.display = 'block';
-                document.getElementById('p-name').innerText = currentUser.name;
-                document.getElementById('p-title').innerText = currentUser.title;
+                document.getElementById('p-name').innerText = currentUser.name.split(' ')[0];
+                document.getElementById('p-title').innerText = currentUser.title || 'Recruit';
                 document.getElementById('p-img').src = currentUser.image;
-                document.getElementById('p-score').innerText = currentUser.totalScore;
-                document.getElementById('p-rank').innerText = "#" + currentUser.rank;
+                document.getElementById('p-score').innerText = currentUser.totalScore || 0;
+                document.getElementById('p-rank').innerText = "#" + (currentUser.rank || '0');
             }
         }
 
@@ -244,6 +268,10 @@
             const code = document.getElementById('loginCode').value;
             if(!email || !code) return alert("Credentials Required");
 
+            const btn = document.querySelector('#loginModal button');
+            btn.innerText = "VERIFYING...";
+            btn.disabled = true;
+
             try {
                 const resp = await fetch(`${SCRIPT_URL}?email=${email}&code=${code}`);
                 const result = await resp.json();
@@ -252,39 +280,38 @@
                     location.reload();
                 } else {
                     alert("ACCESS DENIED: Identity Not Found");
+                    btn.innerText = "VERIFY IDENTITY";
+                    btn.disabled = false;
                 }
-            } catch (e) { alert("Connection Timeout"); }
-        }
-
-        async function forgotCode() {
-            const email = document.getElementById('loginEmail').value;
-            if(!email) return alert("Enter email first");
-            alert("Requesting Passcode...");
-            await fetch(`${SCRIPT_URL}?email=${email}&forgot=true`);
-            alert("Check your inbox for the recovery signal!");
+            } catch (e) { alert("Connection Timeout"); btn.disabled = false; }
         }
 
         function renderActivities(mode) {
             activeMode = mode;
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:25px; padding:40px 20px; display:flex; flex-direction:column; align-items:center;" onclick="openMissions(this, ${index})">
-                    <div style="font-size:50px; margin-bottom:20px; color:var(--accent-gold);"><i class="fas ${act.icon}"></i></div>
-                    <div class="activity-name" style="font-family:'Orbitron'; font-weight:900;">${act.name}</div>
-                    <div style="margin-top:15px; font-size:10px; background:var(--accent-gold); color:#000; padding:4px 10px; border-radius:5px; font-family:'Orbitron'; font-weight:900;">${act.tk} TK</div>
+                <div class="swiper-slide" onclick="openMissions(this, ${index})">
+                    <div style="font-size:60px; margin-bottom:25px; color:${mode==='season'?'var(--season-color)':'var(--xbox-color)'}; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));">
+                        <i class="fas ${act.icon}"></i>
+                    </div>
+                    <div class="activity-name" style="font-family:'Orbitron'; font-weight:900; letter-spacing:2px; font-size:16px;">${act.name}</div>
+                    <div style="margin-top:20px; font-size:10px; border: 1px solid rgba(255,255,255,0.2); color:#fff; padding:6px 15px; border-radius:30px; font-family:'Orbitron';">
+                        VALUE: <span style="color:var(--accent-gold)">${act.tk} TK</span>
+                    </div>
                 </div>
             `).join('');
             
             if (currentSwiper) currentSwiper.destroy();
-            currentSwiper = new Swiper('.swiper', { effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto', grabCursor: true });
+            currentSwiper = new Swiper('.swiper', { 
+                effect: 'coverflow', 
+                centeredSlides: true, 
+                slidesPerView: 'auto',
+                coverflowEffect: { rotate: 30, stretch: 0, depth: 100, modifier: 1, slideShadows: false }
+            });
         }
 
         function openMissions(cardElement, index) {
-            // التحقق من الدخول عند محاولة فتح أي دائرة
-            if (!currentUser) {
-                toggleLoginModal(true);
-                return;
-            }
+            if (!currentUser) { toggleLoginModal(true); return; }
 
             const actData = activities[activeMode][index];
             document.getElementById('mainHeader').style.opacity = '0';
@@ -297,31 +324,31 @@
                 layer.innerHTML = ''; layer.style.display = 'flex';
                 document.getElementById('backBtn').style.display = 'block';
                 
-                const radius = window.innerWidth < 500 ? 120 : 160;
-                // توليد الـ 10 دوائر (الـ 160 يتم توزيعهم بنفس المنطق)
+                const radius = window.innerWidth < 500 ? 130 : 170;
+                // توليد 10 مهام لكل نشاط
                 for (let i = 1; i <= 10; i++) {
-                    const angle = (i * 36) * (Math.PI / 180);
-                    const x = Math.cos(angle) * radius; const y = Math.sin(angle) * radius;
+                    const angle = (i * 36 - 90) * (Math.PI / 180);
+                    const x = Math.cos(angle) * radius; 
+                    const y = Math.sin(angle) * radius;
                     
                     const bubble = document.createElement('div');
                     bubble.className = 'mission-bubble';
                     
-                    // القفل: 9 من كل 10 مقفلين (مثال: فقط M1 مفتوحة)
-                    const isLocked = (i !== 1);
+                    // منطق القفل: المهمة الأولى فقط مفتوحة لو لسه بيبدأ
+                    const isLocked = (i > 1); 
                     if (isLocked) bubble.classList.add('locked-bubble');
                     
                     bubble.innerText = 'M' + i;
-                    bubble.style.left = `calc(50% + ${x}px - 27px)`;
-                    bubble.style.top = `calc(50% + ${y}px - 27px)`;
+                    bubble.style.left = `calc(50% + ${x}px - 30px)`;
+                    bubble.style.top = `calc(50% + ${y}px - 30px)`;
+                    
+                    // تأثير ظهور تدريجي
+                    setTimeout(() => bubble.classList.add('active-pop'), i * 50);
                     
                     bubble.onclick = (e) => {
                         e.stopPropagation();
                         if (isLocked) {
-                            const popup = document.createElement('div');
-                            popup.className = 'coming-soon-popup';
-                            popup.innerText = 'Coming Soon..';
-                            bubble.appendChild(popup);
-                            setTimeout(() => popup.remove(), 1000);
+                            showComingSoon(bubble);
                         } else {
                             const target = activeMode === 'season' ? 'MissionNormal.html' : 'MissionX.html';
                             window.location.href = `${target}?act=${actData.code}&m=${i}&name=${encodeURIComponent(actData.name)}`;
@@ -332,49 +359,62 @@
             }, 400);
         }
 
+        function showComingSoon(el) {
+            if (el.querySelector('.coming-soon-popup')) return;
+            const popup = document.createElement('div');
+            popup.className = 'coming-soon-popup';
+            popup.innerText = 'LOCKED';
+            el.appendChild(popup);
+            setTimeout(() => popup.remove(), 1000);
+        }
+
         function resetView() {
-            document.getElementById('missions-layer').style.display = 'none';
-            document.getElementById('backBtn').style.display = 'none';
-            document.getElementById('mainHeader').style.opacity = '1';
-            document.getElementById('mainToggle').style.opacity = '1';
-            document.querySelectorAll('.swiper-slide').forEach(s => s.classList.remove('selected-card-anim'));
-            currentSwiper.allowTouchMove = true;
+            const bubbles = document.querySelectorAll('.mission-bubble');
+            bubbles.forEach(b => b.classList.remove('active-pop'));
+            
+            setTimeout(() => {
+                document.getElementById('missions-layer').style.display = 'none';
+                document.getElementById('backBtn').style.display = 'none';
+                document.getElementById('mainHeader').style.opacity = '1';
+                document.getElementById('mainToggle').style.opacity = '1';
+                document.querySelectorAll('.swiper-slide').forEach(s => s.classList.remove('selected-card-anim'));
+                currentSwiper.allowTouchMove = true;
+            }, 300);
         }
 
         function switchMode(mode) {
-            document.getElementById('btn-season').style.background = mode === 'season' ? 'var(--season-color)' : 'transparent';
-            document.getElementById('btn-xbox').style.background = mode === 'xbox' ? 'var(--xbox-color)' : 'transparent';
+            document.getElementById('btn-season').className = mode === 'season' ? 'tab-btn active-season' : 'tab-btn';
+            document.getElementById('btn-xbox').className = mode === 'xbox' ? 'tab-btn active-xbox' : 'tab-btn';
             renderActivities(mode);
         }
 
-        // Star Background
+        // Starry Background Logic
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
         function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         class Star {
             constructor() {
-                this.dist = Math.random() * Math.max(canvas.width, canvas.height);
-                this.angle = Math.random() * Math.PI * 2;
-                this.size = Math.random() * 1.5;
-                this.speed = (Math.random() * 0.001) + 0.0005;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.2;
+                this.speed = Math.random() * 0.5 + 0.1;
             }
             draw() {
-                this.angle += this.speed;
-                const x = canvas.width/2 + Math.cos(this.angle) * this.dist;
-                const y = canvas.height/2 + Math.sin(this.angle) * this.dist;
-                ctx.fillStyle = "rgba(255,255,255,0.8)";
-                ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI*2); ctx.fill();
+                this.y -= this.speed;
+                if (this.y < 0) this.y = canvas.height;
+                ctx.fillStyle = "rgba(255,255,255,0.5)";
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
             }
         }
         function animate() {
-            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             stars.forEach(s => s.draw());
             requestAnimationFrame(animate);
         }
         window.onresize = initCanvas;
         initCanvas();
-        for (let i = 0; i < 200; i++) stars.push(new Star());
+        for (let i = 0; i < 150; i++) stars.push(new Star());
         animate();
     </script>
 </body>

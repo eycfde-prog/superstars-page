@@ -2,278 +2,318 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hunter Identity | EYC Academy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EYC Activity Hub | Starry Mission</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
-        :root { --gold: #d4af37; --bg-dark: #050505; --glass: rgba(255, 255, 255, 0.03); }
-        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #111, var(--bg-dark)); color: white; min-height: 100vh; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 30px; }
-        
-        input, select { 
-            background: rgba(0,0,0,0.5) !important; 
-            border: 1px solid rgba(255,255,255,0.1) !important; 
-            color: white !important; 
-            border-radius: 12px !important;
-            transition: 0.3s;
+        :root {
+            --primary-bg: #020205;
+            --accent-gold: #ffcc00;
+            --season-color: #00ffa3;
+            --xbox-color: #ff3131;
+            --glass: rgba(255, 255, 255, 0.05);
         }
-        input:focus, select:focus { border-color: var(--gold) !important; outline: none; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; }
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
         
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        /* --- Logo & Header --- */
+        .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        .logo-placeholder img { height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
         
-        .avatar-container {
-            position: relative;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
-            padding: 20px;
-            border-radius: 50%;
+        .royal-login-btn {
+            background: linear-gradient(45deg, var(--accent-gold), #fff);
+            color: #000; padding: 8px 16px; border-radius: 12px;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 10px;
+            cursor: pointer; border: none; box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
         }
-        #avatarImg { width: 180px; height: 180px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
-        
-        .control-group { margin-bottom: 15px; }
-        .control-label { font-size: 9px; color: var(--gold); letter-spacing: 1px; margin-bottom: 6px; display: block; font-weight: 900; text-transform: uppercase; }
-        
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold); display: none; font-size: 12px; }
 
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        /* --- Profile Bubbles & Sparks --- */
+        .profile-stack { position: fixed; bottom: 30px; left: 20px; z-index: 1000; display: none; flex-direction: column-reverse; gap: 10px; align-items: center; }
+        .p-bubble { border-radius: 50%; border: 2px solid var(--accent-gold); backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; }
+        .p-avatar { width: 65px; height: 65px; overflow: hidden; border-width: 3px; position: relative; }
+        .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .p-avatar.spark::after { content: ''; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 2px; height: 40px; background: var(--accent-gold); filter: blur(2px); animation: sparkAnim 0.5s infinite alternate; }
+        @keyframes sparkAnim { from { opacity: 0.2; height: 20px; } to { opacity: 1; height: 50px; } }
+        .p-score { width: 45px; height: 45px; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; color: var(--accent-gold); }
+        .p-rank { width: 30px; height: 30px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; background: var(--accent-gold); color: #000; }
+
+        /* --- Unified Login Modal --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
+        .royal-card { background: #0a0a0f; border: 1px solid rgba(255,204,0,0.3); padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; }
+        .royal-card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #000; border: 1px solid #333; color: #fff; text-align: center; font-family: 'Orbitron'; font-size: 12px; }
+        .royal-card input:focus { border-color: var(--accent-gold); outline: none; }
+        .btn-group { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .submit-btn { background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-weight: 900; padding: 12px; border-radius: 10px; border: none; cursor: pointer; }
+        .new-profile-btn { background: transparent; color: #fff; border: 1px solid #444; font-family: 'Orbitron'; font-size: 10px; padding: 10px; border-radius: 10px; cursor: pointer; }
+
+        /* Headers */
+        .rank-header { text-align: center; padding-top: 60px; margin-bottom: 10px; position: relative; }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; color: #fff; }
+        .rank-header p { font-size: 9px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
+
+        .toggle-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold); color: #fff; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; opacity: 0.5; transition: 0.3s; }
+        .mode-btn.active { opacity: 1; box-shadow: 0 0 15px currentColor; }
+        .mode-btn.season-mode.active { background: var(--season-color); color: #000; border-color: var(--season-color); }
+        .mode-btn.xbox-mode.active { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); }
+
+        /* Swiper Fixes */
+        .swiper { width: 100%; padding-bottom: 40px; }
+        .swiper-slide { width: 220px; height: 320px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.5s; }
+        .token-badge { position: absolute; top: 20px; left: 20px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 8px; }
+        .activity-icon { font-size: 50px; margin-bottom: 15px; }
+        .activity-name { font-family: 'Orbitron'; font-size: 18px; font-weight: 900; }
+        .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.1), rgba(0,0,0,0.9)); }
+        .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.1), rgba(0,0,0,0.9)); }
+
+        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; }
+        .mission-bubble { position: absolute; width: 55px; height: 55px; background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); cursor: pointer; animation: floatBubble 3s ease-in-out infinite; }
+        @keyframes floatBubble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 20px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 10px; }
+        .selected-card-anim { transform: scale(0.5) translateY(-50px) !important; opacity: 0.4 !important; }
     </style>
 </head>
-<body class="py-10 px-4">
+<body>
+    <canvas id="rank-canvas"></canvas>
+    
+    <div class="top-nav">
+        <div class="logo-placeholder">
+            <img src="logo.png" alt="EYC Logo">
+        </div>
+        <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
+        <div class="user-name-display" id="userName"></div>
+    </div>
 
-    <div id="successScreen" class="modal">
-        <div class="glass-card p-10 text-center max-w-md border-t-4 border-green-500">
-            <div class="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                <i class="fas fa-user-check"></i>
+    <div class="profile-stack" id="profileStack">
+        <div class="p-bubble p-rank" id="userRank">#0</div>
+        <div class="p-bubble p-score" id="userScore">0</div>
+        <div class="p-bubble p-avatar" id="avatarBox"><img src="" id="userImg" alt="Agent"></div>
+    </div>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="royal-card">
+            <h2 class="orbitron" style="color:var(--accent-gold); margin-bottom:15px; font-size:16px;">ACCESS TERMINAL</h2>
+            <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
+            <input type="password" id="agentCode" placeholder="ACCESS CODE">
+            <div class="btn-group">
+                <button class="submit-btn" id="verifyBtn" onclick="verifyCode()">INITIALIZE LOGIN</button>
+                <button class="new-profile-btn" onclick="window.location.href='NP.html'">+ CREATE NEW AGENT</button>
             </div>
-            <h2 class="orbitron text-2xl mb-2 text-green-400">MISSION ACCEPTED</h2>
-            <p class="text-gray-400 text-sm mb-6">Your identity has been forged in the EYC archives.</p>
-            <button onclick="window.location.reload()" class="px-10 py-3 bg-green-600 text-white orbitron font-bold rounded-full hover:bg-green-500 transition-all">START ADVENTURE</button>
+            <p id="errorMsg" style="color:var(--xbox-color); font-size:10px; margin-top:10px; display:none;"></p>
         </div>
     </div>
 
-    <div class="max-w-5xl mx-auto">
-        <header class="text-center mb-12">
-            <div class="inline-block px-4 py-1 border border-yellow-500/30 rounded-full mb-4">
-                <span class="text-[10px] orbitron text-yellow-500 tracking-[5px]">ENCRYPTED REGISTRATION</span>
-            </div>
-            <h1 class="orbitron text-5xl font-black text-white">FORGE <span class="text-yellow-500">IDENTITY</span></h1>
-        </header>
+    <header class="rank-header" id="mainHeader">
+        <h1>MISSION HUB</h1>
+        <p>NAVIGATION HELM</p>
+    </header>
 
-        <form id="regForm" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <div class="lg:col-span-5 glass-card p-8 flex flex-col items-center">
-                <div class="avatar-container mb-8">
-                    <img id="avatarImg" src="" alt="Hunter Avatar">
-                </div>
-
-                <div class="w-full grid grid-cols-2 gap-4 h-[350px] overflow-y-auto pr-2 custom-scroll">
-                    <div class="control-group col-span-2">
-                        <label class="control-label"><i class="fas fa-venus-mars mr-1"></i> Gender Style</label>
-                        <select onchange="updateAvatar()" id="gender" class="w-full p-3 text-xs">
-                            <option value="ShortHair">Male Style</option>
-                            <option value="LongHair">Female Style</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Skin Color</label>
-                        <select onchange="updateAvatar()" id="skinColor" class="w-full p-3 text-xs">
-                            <option value="Light">Light</option>
-                            <option value="Pale">Pale</option>
-                            <option value="Tanned">Tanned</option>
-                            <option value="Brown">Brown</option>
-                            <option value="DarkBrown">Dark Brown</option>
-                            <option value="Black">Black</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Eye Type</label>
-                        <select onchange="updateAvatar()" id="eyeType" class="w-full p-3 text-xs">
-                            <option value="Default">Default</option>
-                            <option value="Happy">Happy</option>
-                            <option value="Squint">Squint</option>
-                            <option value="EyeRoll">Eye Roll</option>
-                            <option value="Side">Looking Side</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Hair Style</label>
-                        <select onchange="updateAvatar()" id="topType" class="w-full p-3 text-xs">
-                            <optgroup label="Short Styles">
-                                <option value="ShortHairShortFlat">Flat Top</option>
-                                <option value="ShortHairTheCaesar">Caesar</option>
-                                <option value="ShortHairDreads01">Dreads</option>
-                            </optgroup>
-                            <optgroup label="Long Styles">
-                                <option value="LongHairStraight">Straight</option>
-                                <option value="LongHairCurvy">Curvy</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Hair Color</label>
-                        <select onchange="updateAvatar()" id="hairColor" class="w-full p-3 text-xs">
-                            <option value="Black">Black</option>
-                            <option value="BrownDark">Dark Brown</option>
-                            <option value="SilverGray">Silver</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Outfit</label>
-                        <select onchange="updateAvatar()" id="clotheType" class="w-full p-3 text-xs">
-                            <option value="Hoodie">Hoodie</option>
-                            <option value="BlazerShirt">Blazer & Shirt</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Accessory</label>
-                        <select onchange="updateAvatar()" id="accessoriesType" class="w-full p-3 text-xs">
-                            <option value="Blank">None</option>
-                            <option value="Prescription02">Glasses</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="button" onclick="randomAvatar()" class="mt-6 w-full py-3 border border-yellow-500/20 rounded-xl text-[10px] orbitron hover:bg-yellow-500/10 transition-all">
-                    <i class="fas fa-dice mr-2"></i> RANDOMIZE HUNTER
-                </button>
-            </div>
-
-            <div class="lg:col-span-7 glass-card p-10 space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="relative">
-                        <label class="block text-[10px] font-black text-gray-500 mb-3 tracking-widest">FULL NAME (ENGLISH)</label>
-                        <input type="text" name="fullName" required placeholder="Ex: John Doe" class="w-full p-4">
-                    </div>
-                    <div class="relative">
-                        <label class="block text-[10px] font-black text-gray-500 mb-3 tracking-widest">AGE</label>
-                        <input type="number" name="age" required placeholder="Years" class="w-full p-4">
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <label class="block text-[10px] font-black text-gray-500 mb-3 tracking-widest">ACADEMY EMAIL</label>
-                    <input type="email" name="email" required placeholder="hunter@eyc-academy.com" class="w-full p-4">
-                </div>
-
-                <div class="space-y-4">
-                    <label class="block text-[10px] font-black text-gray-500 tracking-widest">MISSION CLEARANCE</label>
-                    <div class="grid grid-cols-2 gap-4">
-                        <label class="flex items-center gap-4 p-5 bg-black/40 rounded-2xl border border-white/5 cursor-pointer hover:border-yellow-500/30 transition-all">
-                            <input type="checkbox" name="prog" value="Season" class="w-6 h-6 accent-yellow-500">
-                            <div><span class="block text-sm font-bold">Season</span></div>
-                        </label>
-                        <label class="flex items-center gap-4 p-5 bg-black/40 rounded-2xl border border-white/5 cursor-pointer hover:border-blue-500/30 transition-all">
-                            <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-6 h-6 accent-blue-500">
-                            <div><span class="block text-sm font-bold text-blue-400">XBoX Elite</span></div>
-                        </label>
-                    </div>
-                </div>
-
-                <div id="xboxSubMethod" style="display: none;" class="p-6 bg-blue-500/5 border border-blue-500/20 rounded-2xl">
-                    <div id="ticketInputs" class="grid grid-cols-2 gap-4">
-                        <input type="text" id="ticket1" placeholder="TICKET 01" class="p-3 text-xs">
-                        <input type="text" id="ticket2" placeholder="TICKET 02" class="p-3 text-xs">
-                    </div>
-                </div>
-
-                <button type="submit" id="submitBtn" class="w-full py-6 bg-yellow-500 text-black orbitron font-black rounded-3xl flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-yellow-500/10">
-                    <span id="btnText">FINALIZE IDENTITY</span>
-                    <div id="loader" class="loader"></div>
-                </button>
-            </div>
-        </form>
+    <div class="toggle-container" id="mainToggle">
+        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
+        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
     </div>
 
+    <div id="swiper-container" class="swiper">
+        <div class="swiper-wrapper" id="activities-wrapper"></div>
+    </div>
+
+    <div id="missions-layer"></div>
+    <button class="back-btn" id="backBtn" onclick="resetView()">BACK TO HELM</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1bTW4JlJvqA9HF_XtWsICwZLsZSdMxzHiyKYe0NBOmrpY9GOZ2kjQG_SLmj1TO1bT2Q/exec";
-
-        function updateAvatar() {
-            const top = document.getElementById('topType').value;
-            const hairColor = document.getElementById('hairColor').value;
-            const skin = document.getElementById('skinColor').value;
-            const eye = document.getElementById('eyeType').value;
-            const cloth = document.getElementById('clotheType').value;
-            const acc = document.getElementById('accessoriesType').value;
-            const baseUrl = "https://avataaars.io/?avatarStyle=Transparent";
-            const params = `&topType=${top}&accessoriesType=${acc}&hairColor=${hairColor}&facialHairType=Blank&clotheType=${cloth}&eyeType=${eye}&eyebrowType=Default&mouthType=Default&skinColor=${skin}`;
-            document.getElementById('avatarImg').src = baseUrl + params;
-        }
-
-        function randomAvatar() {
-            const selects = document.querySelectorAll('#regForm select');
-            selects.forEach(s => {
-                s.selectedIndex = Math.floor(Math.random() * s.options.length);
-            });
-            updateAvatar();
-        }
-
-        function toggleXboxSection() {
-            const isChecked = document.getElementById('xboxCheck').checked;
-            document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
-        }
-
-        // الكود المحدث للـ onSubmit
-        document.getElementById('regForm').onsubmit = async function(e) {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            const loader = document.getElementById('loader');
-            const btnText = document.getElementById('btnText');
-
-            btnText.style.display = 'none';
-            loader.style.display = 'block';
-            submitBtn.disabled = true;
-
-            const formData = new FormData(this);
-            const progs = [];
-            document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
-            
-            const data = {
-                name: formData.get('fullName'),
-                age: formData.get('age'),
-                email: formData.get('email'),
-                programs: progs.join(', '),
-                image: document.getElementById('avatarImg').src,
-                ticket1: document.getElementById('ticket1').value || "",
-                ticket2: document.getElementById('ticket2').value || ""
-            };
-
-            try {
-                // إرسال حقيقي وانتظار الرد (بدون no-cors)
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-
-                if (result.status === "success" || result.result === "success") {
-                    document.getElementById('successScreen').style.display = 'flex';
-                    this.reset();
-                } else {
-                    alert("⚠️ تنبيه: " + (result.message || "حدث خطأ غير معروف"));
-                }
-            } catch (err) {
-                console.log(err);
-                // ملاحظة: إذا ظهر Error هنا رغم أن البيانات وصلت للشيت، فهذا يعني أن App Script لم يرد بـ JSON صحيح
-                alert("تنبيه: تم إرسال الطلب. إذا لم تظهر رسالة نجاح، تأكد من صحة البيانات أو الإيميل.");
-            } finally {
-                btnText.style.display = 'block';
-                loader.style.display = 'none';
-                submitBtn.disabled = false;
-            }
+        let isLogged = false;
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwsuyxBY2X2DQa29tLMADlFnZ3HXbJBIWuYAJ6ercgp3RpQGMioS_d-3T833ZKExtPN-g/exec';
+        
+        const activities = {
+            season: [
+                { name: 'Golden Ear', icon: 'fa-ear-listen', tk: '5' },
+                { name: 'Seeds', icon: 'fa-seedling', tk: '5' },
+                { name: 'Label', icon: 'fa-tag', tk: '5' },
+                { name: 'Grammar', icon: 'fa-magnifying-glass', tk: '5' },
+                { name: 'Vivid', icon: 'fa-eye', tk: '5' },
+                { name: 'Alike', icon: 'fa-equals', tk: '5' }
+            ],
+            xbox: [
+                { name: 'Alike X', icon: 'fa-clone', tk: '5' },
+                { name: 'Vivid X', icon: 'fa-stopwatch', tk: '5' },
+                { name: 'Seeds X', icon: 'fa-puzzle-piece', tk: '5' },
+                { name: 'Dictation X', icon: 'fa-pen-nib', tk: '10+' },
+                { name: 'Golden Ear X', icon: 'fa-filter', tk: '5' },
+                { name: 'Elmagazine X', icon: 'fa-microphone-lines', tk: '10+' },
+                { name: 'Grammar X', icon: 'fa-network-wired', tk: '5' },
+                { name: 'Figurative X', icon: 'fa-mask', tk: '5' },
+                { name: 'Label X', icon: 'fa-industry', tk: '5' },
+                { name: 'SSS X', icon: 'fa-bolt', tk: '10+' }
+            ]
         };
 
-        window.onload = updateAvatar;
+        let currentSwiper = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderActivities('season');
+            checkSavedAgent();
+        });
+
+        function renderActivities(mode) {
+            const wrapper = document.getElementById('activities-wrapper');
+            wrapper.innerHTML = activities[mode].map((act, index) => `
+                <div class="swiper-slide ${mode}-card" onclick="openMissions(this, ${index})">
+                    <div class="token-badge">${act.tk} TK</div>
+                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
+                    <div class="activity-name">${act.name}</div>
+                </div>
+            `).join('');
+            
+            if (currentSwiper) currentSwiper.destroy();
+            currentSwiper = new Swiper('.swiper', { 
+                effect: 'coverflow', 
+                centeredSlides: true, 
+                slidesPerView: 'auto',
+                initialSlide: 3, 
+                coverflowEffect: { rotate: 5, stretch: 0, depth: 80, modifier: 1, slideShadows: false },
+                grabCursor: true 
+            });
+        }
+
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
+
+        function verifyCode() {
+            const email = document.getElementById('agentEmail').value;
+            const code = document.getElementById('agentCode').value;
+            const btn = document.getElementById('verifyBtn');
+            const err = document.getElementById('errorMsg');
+            
+            if(!email || !code) return;
+            btn.innerText = "AUTHENTICATING..."; btn.disabled = true;
+            
+            const callbackName = 'loginCallback';
+            window[callbackName] = function(data) {
+                if (data.status === "success") {
+                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
+                    applyAgentData(data);
+                    document.getElementById('loginModal').style.display = 'none';
+                } else {
+                    err.innerText = "Check your email for access code!";
+                    err.style.display = 'block';
+                    btn.innerText = "INITIALIZE LOGIN"; btn.disabled = false;
+                }
+                delete window[callbackName];
+            };
+            
+            const scriptTag = document.createElement('script');
+            scriptTag.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
+            document.body.appendChild(scriptTag);
+        }
+
+        function applyAgentData(data) {
+            isLogged = true;
+            document.getElementById('loginTriggerBtn').style.display = 'none';
+            const nameDisp = document.getElementById('userName');
+            nameDisp.innerText = data.name || "AGENT ACTIVE";
+            nameDisp.style.display = 'block';
+            
+            document.getElementById('profileStack').style.display = 'flex';
+            document.getElementById('avatarBox').classList.add('spark');
+            
+            let finalImg = data.image || "https://via.placeholder.com/100/ffcc00/000000?text=EYC";
+            if (finalImg.includes('drive.google.com')) {
+                let fileId = finalImg.includes('id=') ? finalImg.split('id=')[1].split('&')[0] : finalImg.split('/d/')[1].split('/')[0];
+                finalImg = `https://drive.google.com/thumbnail?authuser=0&sz=w320&id=${fileId}`;
+            }
+            document.getElementById('userImg').src = finalImg;
+            document.getElementById('userScore').innerText = data.totalScore || 0;
+            document.getElementById('userRank').innerText = "#" + (data.rank || "0");
+        }
+
+        function checkSavedAgent() {
+            const saved = localStorage.getItem('eyc_agent_data');
+            if(saved) {
+                const data = JSON.parse(saved);
+                applyAgentData(data);
+            }
+        }
+
+        function openMissions(cardElement, index) {
+            document.getElementById('mainHeader').style.opacity = '0';
+            document.getElementById('mainToggle').style.opacity = '0';
+            const allSlides = document.querySelectorAll('.swiper-slide');
+            allSlides.forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
+            cardElement.classList.add('selected-card-anim');
+            currentSwiper.allowTouchMove = false;
+
+            setTimeout(() => {
+                const layer = document.getElementById('missions-layer');
+                layer.innerHTML = ''; layer.style.display = 'flex';
+                document.getElementById('backBtn').style.display = 'block';
+                const radius = window.innerWidth < 500 ? 120 : 160;
+                for (let i = 1; i <= 10; i++) {
+                    const angle = (i * 36) * (Math.PI / 180);
+                    const x = Math.cos(angle) * radius; const y = Math.sin(angle) * radius;
+                    const bubble = document.createElement('div');
+                    bubble.className = 'mission-bubble'; bubble.innerText = 'M' + i;
+                    bubble.style.left = `calc(50% + ${x}px - 27px)`; bubble.style.top = `calc(50% + ${y}px - 27px)`;
+                    bubble.onclick = (e) => { 
+                        e.stopPropagation(); 
+                        if(!isLogged) openLogin(); 
+                        else alert(`Mission ${i} Transmitting...`); 
+                    };
+                    layer.appendChild(bubble);
+                }
+            }, 400);
+        }
+
+        function resetView() {
+            document.getElementById('missions-layer').style.display = 'none';
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('mainHeader').style.opacity = '1';
+            document.getElementById('mainToggle').style.opacity = '1';
+            const allSlides = document.querySelectorAll('.swiper-slide');
+            allSlides.forEach(slide => { slide.style.opacity = '1'; slide.classList.remove('selected-card-anim'); });
+            currentSwiper.allowTouchMove = true;
+        }
+
+        function switchMode(mode) {
+            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
+            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
+            renderActivities(mode);
+        }
+
+        const canvas = document.getElementById('rank-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let angleOffset = 0;
+
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class Star {
+            constructor() {
+                this.dist = Math.random() * Math.max(canvas.width, canvas.height);
+                this.angle = Math.random() * Math.PI * 2;
+                this.size = Math.random() * 1.5;
+                this.speed = (Math.random() * 0.001) + 0.0005;
+            }
+            draw() {
+                this.angle += this.speed;
+                const x = canvas.width/2 + Math.cos(this.angle) * this.dist;
+                const y = canvas.height/2 + Math.sin(this.angle) * this.dist;
+                ctx.fillStyle = "rgba(255,255,255," + (Math.random() * 0.5 + 0.5) + ")";
+                ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI*2); ctx.fill();
+            }
+        }
+        function animate() {
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => s.draw());
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for (let i = 0; i < 200; i++) stars.push(new Star());
+        animate();
     </script>
 </body>
 </html>

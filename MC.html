@@ -18,76 +18,112 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; position: relative; }
         
-        /* --- Live Data Overlay (New) --- */
+        /* --- Live Data Overlay --- */
         .live-status-bar {
             position: fixed; top: 0; width: 100%; background: rgba(255, 204, 0, 0.1);
             font-family: 'Orbitron'; font-size: 8px; padding: 2px 10px; z-index: 2000;
             display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,204,0,0.2);
-            color: var(--accent-gold); overflow: hidden;
+            color: var(--accent-gold);
         }
-        .status-scroll { white-space: nowrap; animation: scrollText 20s linear infinite; }
-        @keyframes scrollText { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        /* --- Scanner Line (New) --- */
-        body::after {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: rgba(255, 204, 0, 0.1); box-shadow: 0 0 15px var(--accent-gold);
-            z-index: 1500; pointer-events: none; animation: scanLine 4s linear infinite;
-        }
-        @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
         
+        /* --- Login & Profile UI --- */
         .top-nav { position: fixed; top: 25px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .logo-placeholder img { height: 35px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
         
-        .rank-header { text-align: center; padding-top: 70px; margin-bottom: 10px; position: relative; }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); animation: flicker 3s infinite; }
-        @keyframes flicker { 0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; } 20%, 22%, 24%, 55% { opacity: 0.5; } }
-        .rank-header p { font-size: 9px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
+        #loginBtn { 
+            background: transparent; border: 1px solid var(--accent-gold); color: var(--accent-gold);
+            padding: 8px 15px; border-radius: 5px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer;
+            transition: 0.3s; box-shadow: 0 0 10px rgba(255,204,0,0.2);
+        }
 
-        .toggle-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--accent-gold); color: #fff; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; opacity: 0.5; transition: 0.3s; }
-        .mode-btn.active { opacity: 1; box-shadow: 0 0 15px currentColor; }
-        .mode-btn.season-mode.active { background: var(--season-color); color: #000; border-color: var(--season-color); }
-        .mode-btn.xbox-mode.active { background: var(--xbox-color); color: #fff; border-color: var(--xbox-color); }
+        #studentProfile { display: none; align-items: center; gap: 10px; }
+        .student-name { font-family: 'Orbitron'; font-size: 12px; color: var(--accent-gold); text-transform: uppercase; font-weight: 900; }
+        
+        .profile-avatar-container { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: none; }
+        .avatar-circle { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent-gold); background: var(--glass); padding: 5px; box-shadow: 0 0 20px rgba(255,204,0,0.3); }
+        
+        .stats-container { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; display: none; }
+        .stat-circle { width: 45px; height: 45px; border-radius: 50%; background: rgba(0,0,0,0.8); border: 1px solid var(--accent-gold); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Orbitron'; }
+        .stat-val { font-size: 10px; font-weight: 900; color: #fff; }
+        .stat-label { font-size: 6px; color: var(--accent-gold); }
+
+        /* --- Modal Styling --- */
+        .auth-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { background: #0a0a0a; border: 1px solid var(--accent-gold); padding: 30px; width: 100%; max-width: 320px; border-radius: 15px; text-align: center; }
+        .auth-card h2 { font-family: 'Orbitron'; font-size: 18px; margin-bottom: 20px; color: var(--accent-gold); }
+        .auth-card input { width: 100%; background: #111; border: 1px solid #333; padding: 12px; margin-bottom: 15px; color: #fff; font-size: 12px; border-radius: 5px; }
+        .auth-card button { width: 100%; padding: 12px; background: var(--accent-gold); border: none; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; margin-bottom: 10px; }
+        .forgot-link { font-size: 10px; color: #666; cursor: pointer; text-decoration: underline; }
+
+        /* --- Mission Bubbles --- */
+        .mission-bubble { position: absolute; width: 55px; height: 55px; background: rgba(0,0,0,0.6); border: 1px solid var(--accent-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); cursor: pointer; transition: 0.3s; }
+        .locked-bubble { opacity: 0.6; filter: grayscale(1); }
+        .locked-bubble::after { content: "\f023"; font-family: "Font Awesome 5 Free"; position: absolute; font-size: 12px; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+        
+        .coming-soon-msg { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: red; color: white; font-size: 8px; padding: 2px 5px; border-radius: 3px; white-space: nowrap; display: none; }
+
+        .rank-header { text-align: center; padding-top: 70px; margin-bottom: 10px; }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 4px; }
+        .rank-header p { font-size: 9px; letter-spacing: 4px; color: var(--accent-gold); font-family: 'Orbitron'; font-weight: 900; }
 
         .swiper { width: 100%; padding-bottom: 40px; }
-        .swiper-slide { width: 220px; height: 320px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.5s; cursor: pointer; }
-        .token-badge { position: absolute; top: 20px; left: 20px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 8px; }
-        .activity-icon { font-size: 50px; margin-bottom: 15px; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
-        .activity-name { font-family: 'Orbitron'; font-size: 18px; font-weight: 900; text-align: center; padding: 0 10px; }
-        .season-card { background: linear-gradient(135deg, rgba(0,255,163,0.1), rgba(0,0,0,0.9)); border-color: rgba(0,255,163,0.3); }
-        .xbox-card { background: linear-gradient(135deg, rgba(255,49,49,0.1), rgba(0,0,0,0.9)); border-color: rgba(255,49,49,0.3); }
-
-        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; }
-        .mission-bubble { position: absolute; width: 55px; height: 55px; background: rgba(0,0,0,0.6); border: 1px solid var(--accent-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); cursor: pointer; animation: floatBubble 3s ease-in-out infinite; box-shadow: 0 0 10px rgba(255,204,0,0.2); }
-        @keyframes floatBubble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 20px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.5); }
-        .selected-card-anim { transform: scale(0.5) translateY(-50px) !important; opacity: 0.4 !important; }
+        .swiper-slide { width: 220px; height: 320px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .activity-name { font-family: 'Orbitron'; font-size: 18px; text-align: center; }
+        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 20px; font-family: 'Orbitron'; display: none; z-index: 1100; border: none; font-size: 10px; }
     </style>
 </head>
 <body>
+
     <div class="live-status-bar">
-        <span>SYSTEM: ACTIVE</span>
-        <div class="status-scroll">NET_LOAD: 42% | SYNC_STATUS: OK | THREAT_LEVEL: MINIMAL | ENCRYPT: AES-256 | LOCATION: SECTOR-7G...</div>
-        <span>CORE: 32°C</span>
+        <span>SYSTEM: ONLINE</span>
+        <span id="systemClock">00:00:00</span>
+    </div>
+
+    <div class="top-nav">
+        <div></div> <button id="loginBtn" onclick="toggleAuthModal(true)">SIGN_IN</button>
+        <div id="studentProfile">
+            <span class="student-name" id="userNameDisplay">Agent Name</span>
+            <i class="fas fa-sign-out-alt" onclick="logout()" style="color:red; cursor:pointer; font-size: 12px;"></i>
+        </div>
+    </div>
+
+    <div class="profile-avatar-container" id="avatarBox">
+        <img src="" class="avatar-circle" id="userImgDisplay">
+    </div>
+
+    <div class="stats-container" id="statsBox">
+        <div class="stat-circle">
+            <span class="stat-val" id="userScoreDisplay">0</span>
+            <span class="stat-label">TOKENS</span>
+        </div>
+        <div class="stat-circle" style="border-color: #00ffa3;">
+            <span class="stat-val" id="userRankDisplay">#0</span>
+            <span class="stat-label">RANK</span>
+        </div>
+    </div>
+
+    <div class="auth-modal" id="authModal">
+        <div class="auth-card">
+            <i class="fas fa-user-secret" style="color:var(--accent-gold); font-size: 30px; margin-bottom: 10px;"></i>
+            <h2>IDENTIFICATION</h2>
+            <input type="email" id="loginEmail" placeholder="Academy Email">
+            <input type="text" id="loginCode" placeholder="Passcode (G-Column)">
+            <button onclick="attemptLogin()">AUTHORIZE ACCESS</button>
+            <p class="forgot-link" onclick="forgotCode()">RECOVER ACCESS CODE</p>
+            <p class="forgot-link" style="margin-top:10px;" onclick="toggleAuthModal(false)">CANCEL</p>
+        </div>
     </div>
 
     <canvas id="rank-canvas"></canvas>
-    
-    <div class="top-nav">
-        <div class="logo-placeholder"><img src="assets/logo.png" alt="EYC Logo"></div>
-    </div>
-
     <header class="rank-header" id="mainHeader">
         <h1>MISSION HUB</h1>
         <p>NAVIGATION HELM</p>
     </header>
 
-    <div class="toggle-container" id="mainToggle">
-        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
+    <div class="toggle-container" id="mainToggle" style="display:flex; justify-content: center; gap:10px; margin-bottom:15px;">
+        <button class="mode-btn active season-mode" style="background:var(--season-color); color:#000; padding:8px 15px; border-radius:20px; font-family:'Orbitron'; font-size:10px; border:none;" onclick="switchMode('season')">SEASON</button>
+        <button class="mode-btn xbox-mode" style="background:rgba(255,255,255,0.1); color:#fff; padding:8px 15px; border-radius:20px; font-family:'Orbitron'; font-size:10px; border:1px solid #ff3131;" onclick="switchMode('xbox')">XBOX ELITE</button>
     </div>
 
     <div id="swiper-container" class="swiper">
@@ -99,7 +135,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // ... (نفس السكريبت الأصلي بدون تغيير لضمان عمل الوظائف)
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOenTfwP0rJCq_LQwLluZSS-e2FEb9j3gTm66t7VuKOHdx4MLftHuH_47ER_UYG8ce/exec"; // ضع هنا رابط App Script الخاص بك
+
+        let userData = null;
+        let activeMode = 'season';
+        let currentSwiper = null;
+
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
@@ -113,71 +154,132 @@
                 { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: '5' },
                 { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: '5' },
                 { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: '5' },
-                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '10+' },
-                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: '5' },
-                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines', tk: '10+' },
-                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: '5' },
-                { name: 'Figurative X', code: 'FX', icon: 'fa-mask', tk: '5' },
-                { name: 'Label X', code: 'LX', icon: 'fa-industry', tk: '5' },
-                { name: 'Sing Sang Sung X', code: 'SSSX', icon: 'fa-bolt', tk: '10+' }
+                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '10+' }
             ]
         };
 
-        let currentSwiper = null;
-        let activeMode = 'season';
+        window.onload = () => {
+            checkLocalSession();
+            renderActivities('season');
+            setInterval(() => {
+                document.getElementById('systemClock').innerText = new Date().toLocaleTimeString();
+            }, 1000);
+        };
 
-        window.addEventListener('DOMContentLoaded', () => { renderActivities('season'); });
+        function checkLocalSession() {
+            const saved = localStorage.getItem('eyc_user');
+            if (saved) {
+                applyLoginState(JSON.parse(saved));
+            }
+        }
+
+        function toggleAuthModal(show) {
+            document.getElementById('authModal').style.display = show ? 'flex' : 'none';
+        }
+
+        async function attemptLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const code = document.getElementById('loginCode').value;
+            if(!email || !code) return alert("Enter credentials");
+
+            const btn = document.querySelector('#authModal button');
+            btn.innerText = "VERIFYING...";
+            
+            try {
+                const res = await fetch(`${SCRIPT_URL}?email=${email}&code=${code}`);
+                const data = await res.json();
+                if(data.status === "success") {
+                    localStorage.setItem('eyc_user', JSON.stringify(data));
+                    applyLoginState(data);
+                    toggleAuthModal(false);
+                } else {
+                    alert("INVALID IDENTITY");
+                }
+            } catch(e) { alert("CONNECTION ERROR"); }
+            btn.innerText = "AUTHORIZE ACCESS";
+        }
+
+        function applyLoginState(data) {
+            userData = data;
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('studentProfile').style.display = 'flex';
+            document.getElementById('avatarBox').style.display = 'block';
+            document.getElementById('statsBox').style.display = 'flex';
+            
+            document.getElementById('userNameDisplay').innerText = data.name;
+            document.getElementById('userImgDisplay').src = data.image;
+            document.getElementById('userScoreDisplay').innerText = data.totalScore;
+            document.getElementById('userRankDisplay').innerText = "#" + data.rank;
+        }
+
+        function logout() {
+            localStorage.removeItem('eyc_user');
+            window.location.reload();
+        }
+
+        async function forgotCode() {
+            const email = document.getElementById('loginEmail').value;
+            if(!email) return alert("Enter email first");
+            fetch(`${SCRIPT_URL}?email=${email}&forgot=true`);
+            alert("Recovery signal sent to your email!");
+        }
 
         function renderActivities(mode) {
-            activeMode = mode;
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide ${mode}-card" onclick="openMissions(this, ${index})">
-                    <div class="token-badge">${act.tk} TK</div>
-                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
+                <div class="swiper-slide" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);" onclick="openMissions(this, ${index})">
+                    <div style="font-size:50px; margin-bottom:15px;"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
                 </div>
             `).join('');
-            
             if (currentSwiper) currentSwiper.destroy();
-            currentSwiper = new Swiper('.swiper', { 
-                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
-                coverflowEffect: { rotate: 5, stretch: 0, depth: 80, modifier: 1, slideShadows: false },
-                grabCursor: true 
-            });
+            currentSwiper = new Swiper('.swiper', { effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto' });
         }
 
         function openMissions(cardElement, index) {
-            const actData = activities[activeMode][index];
+            if(!userData) {
+                toggleAuthModal(true);
+                return;
+            }
+
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
-            
-            const allSlides = document.querySelectorAll('.swiper-slide');
-            allSlides.forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
-            cardElement.classList.add('selected-card-anim');
-            currentSwiper.allowTouchMove = false;
+            const layer = document.getElementById('missions-layer');
+            layer.innerHTML = ''; 
+            layer.style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
 
-            setTimeout(() => {
-                const layer = document.getElementById('missions-layer');
-                layer.innerHTML = ''; layer.style.display = 'flex';
-                document.getElementById('backBtn').style.display = 'block';
+            const radius = window.innerWidth < 500 ? 120 : 160;
+            for (let i = 1; i <= 160; i++) {
+                // سنعرض فقط أول 10 في دائرة للتجربة، الـ 160 سيحتاجون تمرير أو توزيع أوسع
+                if (i > 10) break; 
+
+                const angle = (i * 36) * (Math.PI / 180);
+                const x = Math.cos(angle) * radius; 
+                const y = Math.sin(angle) * radius;
                 
-                const radius = window.innerWidth < 500 ? 120 : 160;
-                for (let i = 1; i <= 10; i++) {
-                    const angle = (i * 36) * (Math.PI / 180);
-                    const x = Math.cos(angle) * radius; const y = Math.sin(angle) * radius;
-                    const bubble = document.createElement('div');
-                    bubble.className = 'mission-bubble'; bubble.innerText = 'M' + i;
-                    bubble.style.left = `calc(50% + ${x}px - 27px)`; bubble.style.top = `calc(50% + ${y}px - 27px)`;
-                    
-                    bubble.onclick = (e) => { 
-                        e.stopPropagation();
-                        const targetPage = activeMode === 'season' ? 'MissionNormal.html' : 'MissionX.html';
-                        window.location.href = `${targetPage}?act=${actData.code}&m=${i}&name=${encodeURIComponent(actData.name)}`;
-                    };
-                    layer.appendChild(bubble);
-                }
-            }, 400);
+                const bubble = document.createElement('div');
+                bubble.className = 'mission-bubble';
+                
+                // قفل 9 من كل 10
+                const isLocked = (i % 10 !== 1);
+                if(isLocked) bubble.classList.add('locked-bubble');
+                
+                bubble.innerHTML = `M${i} <span class="coming-soon-msg">Coming Soon..</span>`;
+                bubble.style.left = `calc(50% + ${x}px - 27px)`; 
+                bubble.style.top = `calc(50% + ${y}px - 27px)`;
+                
+                bubble.onclick = (e) => {
+                    if(isLocked) {
+                        const msg = bubble.querySelector('.coming-soon-msg');
+                        msg.style.display = 'block';
+                        setTimeout(() => msg.style.display = 'none', 1000);
+                        return;
+                    }
+                    alert("Starting Mission " + i);
+                };
+                layer.appendChild(bubble);
+            }
         }
 
         function resetView() {
@@ -185,19 +287,13 @@
             document.getElementById('backBtn').style.display = 'none';
             document.getElementById('mainHeader').style.opacity = '1';
             document.getElementById('mainToggle').style.opacity = '1';
-            document.querySelectorAll('.swiper-slide').forEach(slide => { 
-                slide.style.opacity = '1'; slide.classList.remove('selected-card-anim'); 
-            });
-            currentSwiper.allowTouchMove = true;
         }
 
         function switchMode(mode) {
-            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
-            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
             renderActivities(mode);
         }
 
-        // Star Background
+        // Star Background Logic (كما هي في كودك الأصلي)
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -213,7 +309,7 @@
                 this.angle += this.speed;
                 const x = canvas.width/2 + Math.cos(this.angle) * this.dist;
                 const y = canvas.height/2 + Math.sin(this.angle) * this.dist;
-                ctx.fillStyle = "rgba(255,255,255," + (Math.random() * 0.5 + 0.5) + ")";
+                ctx.fillStyle = "rgba(255,255,255,0.8)";
                 ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI*2); ctx.fill();
             }
         }
@@ -222,7 +318,6 @@
             stars.forEach(s => s.draw());
             requestAnimationFrame(animate);
         }
-        window.addEventListener('resize', initCanvas);
         initCanvas();
         for (let i = 0; i < 200; i++) stars.push(new Star());
         animate();

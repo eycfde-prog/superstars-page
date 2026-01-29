@@ -119,6 +119,7 @@
         let currentSwiper = null;
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbwsuyxBY2X2DQa29tLMADlFnZ3HXbJBIWuYAJ6ercgp3RpQGMioS_d-3T833ZKExtPN-g/exec';
         
+        // الأنشطة والأكواد الموحدة بناءً على طلبك
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
@@ -165,7 +166,6 @@
             });
         }
 
-        // الدالة المعدلة كما طلبت تماماً
         function openMissions(cardElement, index, mode) {
             const actData = activities[mode][index];
             
@@ -201,7 +201,7 @@
                     const bubble = document.createElement('div');
                     bubble.className = 'mission-bubble';
                     bubble.style.animationDelay = `${i * 0.05}s`;
-                    bubble.innerHTML = `<span>${i}</span>`;
+                    bubble.innerHTML = `<span>M${i}</span>`;
                     bubble.style.left = `calc(50% + ${x}px - 25px)`;
                     bubble.style.top = `calc(50% + ${y}px - 25px)`;
                     
@@ -210,13 +210,23 @@
                         if(!isLogged) {
                             openLogin();
                         } else {
-                            // التوجيه الذكي بناءً على نوع الكرت
+                            // المنطق الذكي للتوجيه:
+                            // 1. تحديد الصفحة الهدف بناءً على النوع (Normal أو X)
                             const targetPage = (mode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                            const actCode = actData.code + i;
-                            const mNum = i;
-                            const actName = actData.name;
+                            
+                            // 2. بناء كود الملف (مثل GES1 أو GEX1)
+                            const fileCode = actData.code + i; 
+                            
+                            // 3. إرسال البيانات للصفحة التالية
+                            // act: كود النشاط (GES, GEX...) | m: رقم المهمة | name: اسم النشاط للعرض | file: كود الملف الأساسي
+                            const params = new URLSearchParams({
+                                act: actData.code,
+                                m: i,
+                                name: actData.name,
+                                file: fileCode
+                            });
 
-                            window.location.href = `${targetPage}?act=${actCode}&m=${mNum}&name=${encodeURIComponent(actName)}`;
+                            window.location.href = `${targetPage}?${params.toString()}`;
                         }
                     };
                     layer.appendChild(bubble);

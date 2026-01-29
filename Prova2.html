@@ -3,296 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Activity Hub | Starry Mission</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>EYC | Mission Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
         :root {
-            --primary-bg: #020205;
-            --accent-gold: #ffcc00;
-            --neon-blue: #00d2ff;
-            --season-color: #00ffa3;
-            --xbox-color: #ff3131;
-            --ui-border: rgba(255, 204, 0, 0.4);
+            --primary-bg: #020205; --accent-gold: #ffcc00; --neon-green: #00ffa3;
+            --neon-blue: #00d1ff; --neon-red: #ff3131; --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1); --disabled-gray: #222;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; }
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
-
-        /* --- Profile HUD --- */
-        .profile-stack { position: fixed; bottom: 25px; left: 25px; z-index: 1000; display: none; width: 100px; height: 100px; }
-        .profile-stack::before { content: ''; position: absolute; inset: -10px; border: 1px dashed var(--accent-gold); border-radius: 50%; opacity: 0.3; animation: rotate 10s linear infinite; }
-        .p-avatar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; border: 2px solid var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); border-radius: 50%; overflow: hidden; background: #000; }
-        .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .p-score { position: absolute; top: -5px; right: -5px; width: 40px; height: 40px; background: #000; border: 2px solid var(--neon-blue); color: var(--neon-blue); font-size: 9px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; }
-        .p-rank { position: absolute; bottom: -5px; left: -5px; width: 32px; height: 32px; background: var(--accent-gold); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; font-size: 8px; }
-
-        /* --- Header --- */
-        .top-nav { position: fixed; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .logo-placeholder img { height: 35px; width: auto; filter: drop-shadow(0 0 8px var(--accent-gold)); }
-        .royal-login-btn { background: linear-gradient(45deg, var(--accent-gold), #fff); color: #000; padding: 6px 12px; border-radius: 8px; font-family: 'Orbitron'; font-weight: 900; font-size: 9px; cursor: pointer; border: none; }
-        .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); font-size: 11px; display: none; }
-
-        /* --- Swiper Cards --- */
-        .swiper { width: 100%; padding-top: 20px; padding-bottom: 40px; }
-        .swiper-slide { width: 220px; height: 310px; background: rgba(10, 10, 20, 0.85) !important; border: 1px solid var(--ui-border); clip-path: polygon(15% 0, 100% 0, 100% 85%, 85% 100%, 0 100%, 0 15%); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; cursor: pointer; transition: 0.4s; }
-        .token-badge { position: absolute; top: 25px; left: 25px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; padding: 3px 8px; }
-        .activity-icon { font-size: 45px; margin-bottom: 15px; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
-        .activity-name { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; color: #fff; text-align: center; padding: 0 10px; }
-
-        /* --- Mission Hub (Orbit) --- */
-        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
-        .mission-bubble { position: absolute; width: 54px; height: 54px; border: 2px solid var(--neon-blue); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 13px; cursor: pointer; transition: 0.3s; pointer-events: auto; }
-        .mission-bubble:active { transform: scale(0.9); background: var(--neon-blue); }
-
-        /* --- UI Controls --- */
-        .rank-header { text-align: center; padding-top: 70px; transition: 0.4s; }
-        .toggle-container { display: flex; justify-content: center; gap: 8px; margin: 15px 0; transition: 0.4s; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--ui-border); color: #fff; padding: 8px 15px; border-radius: 4px; font-family: 'Orbitron'; font-size: 9px; cursor: pointer; opacity: 0.4; transition: 0.3s; }
-        .mode-btn.active { opacity: 1; box-shadow: 0 0 15px var(--accent-gold); background: rgba(255, 204, 0, 0.1); border-color: var(--accent-gold); }
-        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent-gold); color: #000; padding: 12px 25px; border-radius: 5px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 11px; box-shadow: 0 0 20px rgba(255,204,0,0.4); }
-
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-        .royal-card { background: #0a0a0f; border: 1px solid var(--accent-gold); padding: 30px; width: 85%; max-width: 320px; text-align: center; clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); }
-        .royal-card input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; font-size: 13px; outline: none; }
-        .royal-card input:focus { border-color: var(--accent-gold); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--primary-bg); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        @media (max-width: 480px) {
-            .rank-header h1 { font-size: 1.5rem; }
-            .swiper-slide { width: 180px; height: 260px; }
-            .activity-icon { font-size: 35px; }
-            .mission-bubble { width: 45px; height: 45px; font-size: 11px; }
+        .mission-outer-frame { 
+            width: 95vw; max-width: 500px; height: 90vh; 
+            background: rgba(10, 10, 15, 0.85); border: 2px solid var(--neon-blue); 
+            border-radius: 20px; position: relative; display: flex; flex-direction: column; padding: 15px;
+            box-shadow: 0 0 30px rgba(0, 209, 255, 0.2);
         }
+
+        .mission-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; }
+        .center-logo-area { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .center-logo-area img { width: 45px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
+
+        .agent-side, .activity-side { display: flex; align-items: center; gap: 8px; width: 42%; }
+        .activity-side { flex-direction: row-reverse; text-align: right; }
+
+        .circle-frame { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); overflow: hidden; background: var(--glass); }
+        .circle-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+        .info-box { font-family: 'Orbitron'; }
+        .info-box span { display: block; font-size: 8px; color: #aaa; }
+        .info-box b { display: block; font-size: 10px; color: var(--accent-gold); white-space: nowrap; }
+        .token-tag { background: var(--accent-gold); color: #000; font-size: 8px; padding: 2px 5px; border-radius: 4px; font-weight: 900; margin-top: 2px; display: inline-block; }
+
+        /* Difficulty Bar */
+        .difficulty-bar { display: flex; justify-content: space-around; margin-bottom: 10px; transition: 0.4s; }
+        .diff-btn { 
+            width: 75px; padding: 8px; border-radius: 6px; font-family: 'Orbitron'; 
+            font-weight: 900; text-align: center; font-size: 10px; cursor: pointer;
+            background: var(--disabled-gray); color: #888; border: 1px solid #444; transition: 0.3s;
+        }
+        .diff-btn.active { background: var(--neon-blue); color: #000; border-color: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); }
+
+        .activity-content-frame { flex-grow: 1; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--glass-border); border-radius: 15px; margin-bottom: 15px; overflow: hidden; }
+        .activity-iframe { width: 100%; height: 100%; border: none; }
+
+        .action-container { display: flex; gap: 10px; align-items: center; }
+        .nav-btn { padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .submit-btn { flex: 2; padding: 15px; background: linear-gradient(to right, #b8860b, var(--accent-gold)); border: none; border-radius: 12px; color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 16px; cursor: pointer; }
+
+        /* Glassy Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); display: none; z-index: 1000; }
+        .glassy-container { position: absolute; left: 20px; bottom: 20px; display: flex; flex-direction: column; align-items: flex-start; z-index: 1001; animation: emerge 0.5s ease-out; }
+        .speech-bubble { background: #fff; border-radius: 20px; padding: 15px; color: #1a1a1a; position: relative; margin-bottom: 15px; text-align: right; direction: rtl; width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 40px; border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent; }
+        .glassy-img { width: 180px; filter: drop-shadow(0 0 20px var(--neon-blue)); animation: float 3s ease-in-out infinite; }
+        .guide-iframe { width: 100%; height: 160px; border: none; margin-top: 10px; border-radius: 10px; background: #f0f0f0; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes emerge { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <canvas id="rank-canvas"></canvas>
-    
-    <div class="top-nav">
-        <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
-        <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
-        <div class="user-name-display" id="userName"></div>
-    </div>
+    <div class="mission-outer-frame">
+        <header class="mission-header">
+            <div class="agent-side">
+                <div class="circle-frame"><img src="assets/Student.png" id="studentImg"></div>
+                <div class="info-box"><span>AGENT</span><b id="agentName">BROWSER</b><div class="token-tag" id="currentTokens">...</div></div>
+            </div>
+            <div class="center-logo-area"><img src="assets/logo.png"></div>
+            <div class="activity-side">
+                <div class="circle-frame"><img src="" id="activityLogo"></div>
+                <div class="info-box"><span id="actCodeDisplay">MISSION</span><b id="actNameDisplay">...</b><div class="token-tag" id="missionNum" style="background:var(--neon-blue)">M 1</div></div>
+            </div>
+        </header>
 
-    <div class="profile-stack" id="profileStack">
-        <div class="p-rank" id="userRank">#0</div>
-        <div class="p-score" id="userScore">0</div>
-        <div class="p-avatar" id="avatarBox"><img src="" id="userImg" alt="Agent"></div>
-    </div>
+        <div class="difficulty-bar" id="difficultyBar">
+            <div class="diff-btn active" data-lvl="A">LVL A</div>
+            <div class="diff-btn" data-lvl="B">LVL B</div>
+            <div class="diff-btn" data-lvl="C">LVL C</div>
+        </div>
 
-    <header class="rank-header" id="mainHeader">
-        <h1 style="font-family:'Orbitron'; letter-spacing:3px;">MISSION HUB</h1>
-        <p style="font-size:8px; color:var(--accent-gold); font-family:'Orbitron'; letter-spacing:2px;">CENTRAL NAVIGATION HELM</p>
-    </header>
+        <div class="activity-content-frame">
+            <iframe id="mainIframe" src="" class="activity-iframe"></iframe>
+        </div>
 
-    <div class="toggle-container" id="mainToggle">
-        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
-    </div>
-
-    <div id="swiper-container" class="swiper">
-        <div class="swiper-wrapper" id="activities-wrapper"></div>
-    </div>
-
-    <div id="missions-layer"></div>
-    <button class="back-btn" id="backBtn" onclick="resetView()">TERMINATE SESSION</button>
-
-    <div class="modal-overlay" id="loginModal">
-        <div class="royal-card">
-            <h2 style="color:var(--accent-gold); font-family:'Orbitron'; margin-bottom:15px; font-size:18px;">ACCESS TERMINAL</h2>
-            <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
-            <input type="password" id="agentCode" placeholder="ACCESS CODE">
-            <button class="submit-btn" id="verifyBtn" onclick="verifyCode()" style="background:var(--accent-gold); color:#000; font-family:'Orbitron'; font-weight:900; padding:12px; width:100%; border:none; cursor:pointer; margin-top:10px;">INITIALIZE</button>
-            <p id="errorMsg" style="color:#ff3131; font-size:10px; margin-top:10px; display:none;"></p>
+        <div class="action-container">
+            <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
+            <button class="submit-btn" onclick="submitMission()">SUBMIT</button>
+            <a href="index.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        let isLogged = false;
-        let currentSwiper = null;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwsuyxBY2X2DQa29tLMADlFnZ3HXbJBIWuYAJ6ercgp3RpQGMioS_d-3T833ZKExtPN-g/exec';
-        
-        const activities = {
-            season: [
-                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
-                { name: 'Seeds', code: 'SS', icon: 'fa-seedling', tk: '5' },
-                { name: 'Label', code: 'LS', icon: 'fa-tag', tk: '5' },
-                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass', tk: '5' },
-                { name: 'Vivid', code: 'VS', icon: 'fa-eye', tk: '5' },
-                { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' }
-            ],
-            xbox: [
-                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: '5' },
-                { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: '5' },
-                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: '5' },
-                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: '5' },
-                { name: 'Label X', code: 'LX', icon: 'fa-industry', tk: '5' },
-                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: '5' },
-                { name: 'Figurative X', code: 'FX', icon: 'fa-mask', tk: '5' },
-                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '10+' },
-                { name: 'SSS X', code: 'SSSX', icon: 'fa-bolt', tk: '10+' },
-                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines', tk: '10+' }
-            ]
-        };
+    <div class="modal-overlay" id="guideModal" onclick="toggleGuide(false)">
+        <div class="glassy-container" onclick="event.stopPropagation()">
+            <div class="speech-bubble">
+                <p>هاي يا بطل! أنا <strong>Glassy</strong>، ركز في التعليمات:</p>
+                <iframe id="guideFrame" src="" class="guide-iframe"></iframe>
+                <button class="nav-btn" style="width:100%; margin-top:10px; background:var(--accent-gold); color:#000; font-weight: bold;" onclick="toggleGuide(false)">انطلق!</button>
+            </div>
+            <img src="assets/Glassy.png" class="glassy-img">
+        </div>
+    </div>
 
-        window.addEventListener('DOMContentLoaded', () => {
-            renderActivities('season');
-            checkSavedAgent();
-            initStars();
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const actCode = urlParams.get('act') || 'GE'; 
+    const mNum = urlParams.get('m') || '1';  
+    const actName = urlParams.get('name') || 'Activity'; 
+
+    // تحديث البيانات الأساسية
+    document.getElementById('actNameDisplay').innerText = actName;
+    document.getElementById('actCodeDisplay').innerText = actCode;
+    document.getElementById('missionNum').innerText = 'M ' + mNum;
+    document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
+
+    function loadMission(level) {
+        let fileName = "";
+        const diffBar = document.getElementById('difficultyBar');
+        
+        // التحقق: هل النشاط إكس بوكس (ينتهي بـ X)؟
+        if (actCode.endsWith('X')) {
+            fileName = `${actCode}${mNum}${level}.html`;
+            // تحديث التوكنز تخيلياً (A=2, B=3, C=5) أو اتركها ثابتة حسب رغبتك
+            const tks = level === 'A' ? '2' : (level === 'B' ? '3' : '5');
+            document.getElementById('currentTokens').innerText = tks + ' TK';
+        } else {
+            // نشاط سيزون: بياخد حرف S
+            fileName = `${actCode}S${mNum}.html`;
+            document.getElementById('currentTokens').innerText = '5 TK';
+            // إخفاء شريط المستويات تماماً
+            diffBar.style.opacity = '0';
+            diffBar.style.pointerEvents = 'none';
+            diffBar.style.height = '0';
+            diffBar.style.margin = '0';
+        }
+
+        document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
+        
+        // تحديث حالة الزراير النشطة
+        document.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.getAttribute('data-lvl') === level) btn.classList.add('active');
         });
+    }
 
-        function renderActivities(mode) {
-            const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide" onclick="openMissions(this, ${index})">
-                    <div class="token-badge">${act.tk} TK</div>
-                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
-                    <div class="activity-name">${act.name}</div>
-                </div>
-            `).join('');
-            
-            if (currentSwiper) currentSwiper.destroy();
-            currentSwiper = new Swiper('.swiper', { 
-                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
-                coverflowEffect: { rotate: 10, stretch: 0, depth: 100, modifier: 1, slideShadows: false }
-            });
+    window.onload = () => {
+        // تشغيل المهمة فوراً (المستوى A هو الافتراضي)
+        loadMission('A'); 
+
+        // جلب صورة وبيانات الطالب من التخزين
+        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+        if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
+        if(saved.image) {
+            let img = saved.image;
+            if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
+            document.getElementById('studentImg').src = img;
         }
+    };
 
-        // --- الدالة المستبدلة بناءً على طلبك ---
-        function openMissions(el, idx) {
-            const mode = document.querySelector('.mode-btn.active').classList.contains('season-mode') ? 'season' : 'xbox';
-            const actData = activities[mode][idx];
-            
-            // الأكواد المختصرة لكل نشاط عشان تطابق أسماء الملفات في MIF
-            const codes = {
-                'Golden Ear': 'GE', 'Seeds': 'S', 'Label': 'L', 'Grammar': 'G', 'Vivid': 'V', 'Alike': 'A',
-                'Golden Ear X': 'GEX', 'Alike X': 'AX', 'Seeds X': 'SX', 'Grammar X': 'GX', 
-                'Label X': 'LX', 'Vivid X': 'VX', 'Figurative X': 'FX', 'Dictation X': 'DX', 
-                'SSS X': 'SSSX', 'Elmagazine X': 'ELX'
-            };
-            
-            const actCode = codes[actData.name] || 'ACT';
-            
-            // تأثيرات بصرية عند الفتح
-            document.getElementById('mainHeader').style.opacity = '0';
-            document.getElementById('mainToggle').style.opacity = '0';
-            el.style.position = "fixed";
-            el.style.top = "50%";
-            el.style.left = "50%";
-            el.style.transform = "translate(-50%, -50%) scale(0.6)";
-            el.style.zIndex = "100";
-            el.style.pointerEvents = "none";
-            document.querySelectorAll('.swiper-slide').forEach(slide => { if (slide !== el) slide.style.opacity = '0'; });
-            currentSwiper.allowTouchMove = false;
+    // برمجة أزرار المستويات
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.onclick = () => loadMission(btn.getAttribute('data-lvl'));
+    });
 
-            const layer = document.getElementById('missions-layer');
-            layer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            layer.innerHTML = '';
-
-            // إنشاء 10 دوائر للمهمات
-            for(let i=1; i<=10; i++) {
-                const b = document.createElement('div');
-                b.className = 'mission-bubble';
-                b.innerText = 'M'+i;
-                
-                // توزيع الدوائر بشكل دائري منسق للموبايل
-                const angle = (i * 36) * (Math.PI / 180);
-                const radius = window.innerWidth < 500 ? 120 : 160; 
-                b.style.left = `calc(50% + ${Math.cos(angle) * radius}px - 27px)`;
-                b.style.top = `calc(50% + ${Math.sin(angle) * radius}px - 27px)`;
-                b.style.animation = `popIn 0.4s forwards ${i * 0.05}s`;
-
-                b.onclick = () => {
-                    if(!isLogged) {
-                        alert("Login Required!");
-                        openLogin();
-                    } else {
-                        // التوجيه لصفحة الـ Terminal مع البيانات
-                        const targetPage = (mode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                        window.location.href = `${targetPage}?act=${actCode}&m=${i}&name=${encodeURIComponent(actData.name)}`;
-                    }
-                };
-                layer.appendChild(b);
-            }
+    function toggleGuide(show) {
+        if(show) {
+            document.getElementById('guideFrame').src = `assets/MIF/Guides/${actCode}.html`;
         }
+        document.getElementById('guideModal').style.display = show ? 'block' : 'none';
+    }
 
-        function resetView() {
-            location.reload(); 
-        }
-
-        function switchMode(mode) {
-            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
-            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
-            renderActivities(mode);
-        }
-
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        
-        function verifyCode() {
-            const email = document.getElementById('agentEmail').value.trim();
-            const code = document.getElementById('agentCode').value.trim();
-            const btn = document.getElementById('verifyBtn');
-            const err = document.getElementById('errorMsg');
-            if(!email || !code) return;
-            
-            btn.innerText = "AUTHENTICATING...";
-            btn.disabled = true;
-            
-            const callbackName = 'cb_' + Date.now();
-            window[callbackName] = function(data) {
-                if(data.status === "success") {
-                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                    applyAgentData(data);
-                    document.getElementById('loginModal').style.display = 'none';
-                } else {
-                    err.innerText = "ACCESS DENIED"; err.style.display = 'block';
-                    btn.innerText = "INITIALIZE"; btn.disabled = false;
-                }
-                delete window[callbackName];
-            };
-            const script = document.createElement('script');
-            script.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
-            document.body.appendChild(script);
-        }
-
-        function applyAgentData(data) {
-            isLogged = true;
-            document.getElementById('loginTriggerBtn').style.display = 'none';
-            document.getElementById('userName').innerText = data.name.split(' ')[0];
-            document.getElementById('userName').style.display = 'block';
-            document.getElementById('profileStack').style.display = 'block';
-            document.getElementById('userScore').innerText = data.totalScore || 0;
-            document.getElementById('userRank').innerText = "#" + (data.rank || 0);
-            let imgUrl = data.image || "";
-            if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
-            document.getElementById('userImg').src = imgUrl;
-        }
-
-        function checkSavedAgent() {
-            const saved = localStorage.getItem('eyc_agent_data');
-            if(saved) applyAgentData(JSON.parse(saved));
-        }
-
-        function initStars() {
-            const canvas = document.getElementById('rank-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            let stars = Array.from({length: 100}, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.2, vel: Math.random() * 0.3 + 0.1 }));
-            function anim() {
-                ctx.clearRect(0,0,canvas.width, canvas.height);
-                ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-                stars.forEach(s => { s.y -= s.vel; if(s.y < 0) s.y = canvas.height; ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); });
-                requestAnimationFrame(anim);
-            }
-            anim();
-        }
-    </script>
+    function submitMission() {
+        alert("Mission Data Synchronized with EYC Central!");
+    }
+</script>
 </body>
 </html>

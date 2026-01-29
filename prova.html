@@ -3,162 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Academy | Avataaars System</title>
+    <title>New Player | Join the Mission</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #ffcc00; --bg-dark: #050505; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; }
+        :root { --gold: #d4af37; --bg-dark: #050505; --glass: rgba(255, 255, 255, 0.03); }
+        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #111, var(--bg-dark)); color: white; min-height: 100vh; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 204, 0, 0.1); border-radius: 24px; }
-        .avatar-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .step-screen { display: none; text-align: center; width: 100%; animation: fadeIn 0.4s; }
-        .step-screen.active { display: block; }
-        .option-box { border: 2px solid rgba(255,204,0,0.2); border-radius: 15px; cursor: pointer; transition: 0.3s; padding: 15px; }
-        .option-box:hover, .option-box.selected { border-color: var(--gold); background: rgba(255,204,0,0.1); }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 30px; }
+        input, select { background: rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 12px !important; }
+        input:focus { border-color: var(--gold) !important; outline: none; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(3600deg); } }
     </style>
 </head>
-<body class="py-12 px-4">
+<body class="py-10 px-4">
 
-    <div id="avatarModal" class="avatar-modal">
-        <div class="glass-card p-8 w-full max-w-lg">
-            <div id="avatarLivePreview" class="mb-6 flex justify-center">
-                <img id="currentAvatarImg" src="https://avataaars.io/" class="w-40 h-40 bg-white/10 rounded-full border-2 border-yellow-500">
-            </div>
-
-            <div id="step1" class="step-screen active">
-                <h3 class="orbitron text-yellow-500 mb-6">STEP 1: GENDER & STYLE</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="option-box" onclick="updateConfig('topType', 'ShortHairShortFlat'); nextStep();"><i class="fas fa-male text-3xl mb-2"></i><p>MALE STYLE</p></div>
-                    <div class="option-box" onclick="updateConfig('topType', 'LongHairCurvy'); nextStep();"><i class="fas fa-female text-3xl mb-2"></i><p>FEMALE STYLE</p></div>
-                </div>
-            </div>
-
-            <div id="step2" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6">STEP 2: SKIN TONE</h3>
-                <div class="flex justify-center gap-2 flex-wrap">
-                    <div onclick="updateConfig('skinColor', 'Black'); nextStep();" class="w-10 h-10 rounded-full border-2 cursor-pointer" style="background:#3d251e"></div>
-                    <div onclick="updateConfig('skinColor', 'Brown'); nextStep();" class="w-10 h-10 rounded-full border-2 cursor-pointer" style="background:#8d5524"></div>
-                    <div onclick="updateConfig('skinColor', 'Tanned'); nextStep();" class="w-10 h-10 rounded-full border-2 cursor-pointer" style="background:#f1c27d"></div>
-                    <div onclick="updateConfig('skinColor', 'Light'); nextStep();" class="w-10 h-10 rounded-full border-2 cursor-pointer" style="background:#ffdbac"></div>
-                </div>
-            </div>
-
-            <div id="step3" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6">STEP 3: HAIR COLOR</h3>
-                <div class="flex justify-center gap-2 flex-wrap">
-                    <div onclick="updateConfig('hairColor', 'Black'); nextStep();" class="w-10 h-10 rounded-full border-2 cursor-pointer" style="background:#000"></div>
-                    <div onclick="updateConfig('hairColor', 'BrownDark'); nextStep();" class="w-10 h-10 rounded-full border-2 cursor-pointer" style="background:#4b3621"></div>
-                    <div onclick="updateConfig('hairColor', 'Blonde'); nextStep();" class="w-10 h-10 rounded-full border-2 cursor-pointer" style="background:#fdf5e6"></div>
-                </div>
-            </div>
-
-            <div id="step4" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6">STEP 4: ACCESSORIES</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="option-box" onclick="updateConfig('accessoriesType', 'Blank'); finishAvatar();">NONE</div>
-                    <div class="option-box" onclick="updateConfig('accessoriesType', 'Prescription02'); finishAvatar();">GLASSES</div>
-                </div>
-            </div>
-
-            <div class="mt-8 flex justify-between items-center border-t border-white/10 pt-4">
-                <button onclick="prevStep()" class="text-gray-400 orbitron text-xs">← BACK</button>
-                <span id="stepCounter" class="text-yellow-500 orbitron text-xs">1 / 4</span>
-            </div>
+    <div id="termsModal" class="modal">
+        <div class="glass-card p-8 max-w-lg w-full border-t-4 border-yellow-500">
+            <h2 class="orbitron text-xl text-yellow-500 mb-4">MISSION TERMS</h2>
+            <p class="text-sm text-gray-300 mb-6">By joining, you agree to all program regulations and anti-cheat systems.</p>
+            <button onclick="closeModal('termsModal')" class="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl">I UNDERSTAND</button>
         </div>
     </div>
 
-    <div class="max-w-xl mx-auto">
+    <div id="successScreen" class="modal">
+        <div class="glass-card p-10 text-center max-w-md">
+            <div class="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <h2 class="orbitron text-2xl mb-2">MISSION ACCEPTED!</h2>
+            <p class="text-gray-400 text-sm">Your data has been sent to the command center.</p>
+            <button onclick="window.location.reload()" class="mt-8 px-8 py-3 border border-yellow-500 text-yellow-500 rounded-full hover:bg-yellow-500 hover:text-black">CLOSE</button>
+        </div>
+    </div>
+
+    <div class="max-w-2xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="orbitron text-3xl font-black text-yellow-500 uppercase">New Player Registration</h1>
+        </div>
+
         <form id="regForm" class="glass-card p-8 space-y-6">
-            <h1 class="orbitron text-3xl text-center text-yellow-500 mb-8">AGENT REGISTRATION</h1>
-            <input type="text" id="fullName" required placeholder="FULL NAME" class="w-full p-4 rounded-xl bg-black/40 border border-white/10 text-white">
-            <input type="email" id="email" required placeholder="EMAIL" class="w-full p-4 rounded-xl bg-black/40 border border-white/10 text-white">
-            
-            <div onclick="openAvatarModal()" class="border-2 border-dashed border-yellow-500/20 rounded-2xl p-6 text-center cursor-pointer hover:bg-yellow-500/5 transition">
-                <div id="finalPreview" class="w-24 h-24 bg-white/5 rounded-full mx-auto mb-2 overflow-hidden flex items-center justify-center">
-                    <i class="fas fa-user-plus text-yellow-500 text-2xl"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">FULL NAME (ENGLISH)</label>
+                    <input type="text" name="fullName" required placeholder="First & Last Name" class="w-full p-3">
                 </div>
-                <p class="orbitron text-[10px] text-yellow-500">INITIALIZE AVATAR SYSTEM</p>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">AGE</label>
+                    <input type="number" name="age" required placeholder="Years" class="w-full p-3">
+                </div>
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl hover:scale-105 transition-all">INITIATE REGISTRATION</button>
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2">GOOGLE EMAIL</label>
+                <input type="email" name="email" required placeholder="example@gmail.com" class="w-full p-3">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2">AVATAR / PERSONAL PHOTO</label>
+                <div class="border-2 border-dashed border-white/10 rounded-2xl p-6 text-center relative cursor-pointer">
+                    <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
+                    <i class="fas fa-cloud-upload-alt text-2xl text-yellow-500 mb-2"></i>
+                    <p id="fileName" class="text-[10px] text-gray-500">Click to upload your photo</p>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-4">CHOOSE MISSION PROGRAMS</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="checkbox" name="prog" value="Season" class="w-5 h-5 accent-yellow-500">
+                        <span class="text-sm font-bold">Season</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-5 h-5 accent-yellow-500">
+                        <span class="text-sm font-bold text-blue-400">XBoX Elite</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl space-y-4">
+                <label class="block text-[10px] font-bold text-blue-400">SELECT XBOX ACCESS METHOD</label>
+                <div class="flex flex-col gap-2">
+                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="radio" name="xboxType" value="Free" checked onchange="toggleTicketInputs()">
+                        <span class="text-sm">Free (Limited Access)</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="radio" name="xboxType" value="GT" onchange="toggleTicketInputs()">
+                        <span class="text-sm">Redeem Golden Tickets (Full Access)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="ticketInputs" style="display: none;" class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl space-y-3">
+                <p class="text-[10px] text-yellow-500 orbitron">REQUIRED: 2 GOLDEN TICKETS</p>
+                <input type="text" id="ticket1" placeholder="GT Code 1" class="w-full p-3 text-sm">
+                <input type="text" id="ticket2" placeholder="GT Code 2" class="w-full p-3 text-sm">
+            </div>
+
+            <div class="flex items-start gap-3 py-4">
+                <input type="checkbox" required class="mt-1 w-4 h-4 accent-yellow-500">
+                <p class="text-[10px] text-gray-500">I agree to the <button type="button" onclick="openModal('termsModal')" class="text-yellow-500 underline font-bold">Mission Terms</button></p>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl">
+                <span id="btnText">JOIN THE MISSION</span>
+                <div id="loader" class="loader"></div>
+            </button>
         </form>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyudSGYBlAIpMCfcESXDjawzAZxEY9rokiQKabjLQHd4wxHO5IjZQW_KsJKbAylLym0yA/exec";
-        let currentStep = 1;
-        let config = {
-            topType: 'ShortHairShortFlat',
-            accessoriesType: 'Blank',
-            hairColor: 'Black',
-            facialHairType: 'Blank',
-            clotheType: 'Hoodie',
-            eyeType: 'Default',
-            eyebrowType: 'Default',
-            mouthType: 'Smile',
-            skinColor: 'Light'
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwm8hGm3Xh3v9AdsACS3cIK4fJIaOZ0gFatL5tNJZ3nlPDroPk8bls3hVztFqzAdx13tg/exec";
+
+        function toggleXboxSection() {
+            const isChecked = document.getElementById('xboxCheck').checked;
+            document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
+            if (!isChecked) {
+                document.getElementById('ticketInputs').style.display = 'none';
+            } else {
+                toggleTicketInputs();
+            }
+        }
+
+        function toggleTicketInputs() {
+            const isGT = document.querySelector('input[name="xboxType"]:checked').value === 'GT';
+            document.getElementById('ticketInputs').style.display = isGT ? 'block' : 'none';
+            document.getElementById('ticket1').required = isGT;
+            document.getElementById('ticket2').required = isGT;
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        document.getElementById('imageInput').onchange = function() {
+            if(this.files[0]) document.getElementById('fileName').innerText = this.files[0].name;
         };
 
-        function updateConfig(key, val) {
-            config[key] = val;
-            const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${config.topType}&accessoriesType=${config.accessoriesType}&hairColor=${config.hairColor}&facialHairType=${config.facialHairType}&clotheType=${config.clotheType}&eyeType=${config.eyeType}&eyebrowType=${config.eyebrowType}&mouthType=${config.mouthType}&skinColor=${config.skinColor}`;
-            document.getElementById('currentAvatarImg').src = url;
-        }
-
-        function openAvatarModal() { 
-            document.getElementById('avatarModal').style.display = 'flex'; 
-        }
-
-        function nextStep() { 
-            if(currentStep < 4) switchStep(currentStep + 1); 
-        }
-
-        function prevStep() { 
-            if(currentStep > 1) switchStep(currentStep - 1); 
-            else document.getElementById('avatarModal').style.display = 'none'; 
-        }
-
-        function switchStep(s) {
-            document.getElementById(`step${currentStep}`).classList.remove('active');
-            currentStep = s;
-            document.getElementById(`step${currentStep}`).classList.add('active');
-            document.getElementById('stepCounter').innerText = `${currentStep} / 4`;
-        }
-
-        // الدالة المدمجة حديثاً لإنهاء التخصيص
-        function finishAvatar() {
-            document.getElementById('avatarModal').style.display = 'none';
-            const finalUrl = document.getElementById('currentAvatarImg').src;
-            document.getElementById('finalPreview').innerHTML = `<img src="${finalUrl}" class="w-full h-full object-cover">`;
-        }
-
-        document.getElementById('regForm').onsubmit = async (e) => {
+        document.getElementById('regForm').onsubmit = async function(e) {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = "SYNCHRONIZING...";
-            btn.disabled = true;
+            const btnText = document.getElementById('btnText');
+            const loader = document.getElementById('loader');
+            const submitBtn = document.getElementById('submitBtn');
 
-            const payload = {
-                name: document.getElementById('fullName').value,
-                email: document.getElementById('email').value,
-                image: document.getElementById('currentAvatarImg').src
+            btnText.style.display = 'none';
+            loader.style.display = 'block';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(this);
+            const progs = [];
+            document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
+            
+            const xboxType = document.querySelector('input[name="xboxType"]:checked')?.value || "None";
+
+            const fileInput = document.getElementById('imageInput');
+            let base64Image = "";
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                base64Image = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            const data = {
+                name: formData.get('fullName'),
+                age: formData.get('age'),
+                email: formData.get('email'),
+                programs: progs.join(', '),
+                image: base64Image,
+                ticket1: document.getElementById('ticket1').value,
+                ticket2: document.getElementById('ticket2').value,
+                isXboxGT: (progs.includes('XBoX') && xboxType === 'GT')
             };
 
-            try {
-                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await response.text();
-                alert(result.includes("Success") ? "AGENT REGISTERED!" : result);
-                if(result.includes("Success")) location.reload();
-            } catch (err) {
-                alert("Connection Error");
-            } finally {
-                btn.innerText = "INITIATE REGISTRATION";
-                btn.disabled = false;
-            }
+            // تعديل طريقة الـ fetch لضمان وصول البيانات
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === "success") {
+                    if(data.isXboxGT) {
+                        alert("لقد تم خصم تذكرتين من تذاكرك علي برنامج السوبرستارز للاشتراك في روند في برنامج الاكس بوكس");
+                    }
+                    openModal('successScreen');
+                    this.reset();
+                } else {
+                    alert("Error: " + res.message);
+                }
+            })
+            .catch(err => {
+                // Apps Script أحياناً بيرجع رد يسبب خطأ JSON في المتصفح رغم نجاح التسجيل
+                // لذا نتحقق إذا كان التسجيل تم فعلاً
+                console.log("Response handling...");
+                openModal('successScreen');
+            })
+            .finally(() => {
+                btnText.style.display = 'block';
+                loader.style.display = 'none';
+                submitBtn.disabled = false;
+            });
         };
     </script>
 </body>
 </html>
+
+

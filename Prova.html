@@ -8,176 +8,231 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary-bg: #020205; --accent-gold: #ffcc00; --neon-green: #00ffa3;
-            --neon-blue: #00d1ff; --neon-red: #ff3131; --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1); --disabled-gray: #444;
+            --primary-bg: #020205;
+            --accent-gold: #ffcc00;
+            --neon-green: #00ffa3;
+            --neon-blue: #00d1ff;
+            --neon-red: #ff3131;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --disabled-gray: #222;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--primary-bg); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        
-        .mission-outer-frame { 
-            width: 95vw; max-width: 500px; height: 90vh; 
-            background: rgba(10, 10, 15, 0.8); border: 2px solid var(--neon-green); 
-            box-shadow: inset 0 0 20px rgba(0, 255, 163, 0.2), 0 0 30px rgba(0, 0, 0, 0.5); 
-            border-radius: 20px; position: relative; display: flex; flex-direction: column; padding: 15px; z-index: 5; 
+
+        .mission-outer-frame {
+            width: 95vw; max-width: 500px; height: 95vh;
+            background: rgba(10, 10, 15, 0.9);
+            border: 2px solid var(--neon-green);
+            box-shadow: inset 0 0 20px rgba(0, 255, 163, 0.2), 0 0 30px rgba(0, 0, 0, 0.5);
+            border-radius: 20px; position: relative;
+            display: flex; flex-direction: column; padding: 15px; z-index: 5;
         }
 
-        .mission-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; }
-        .center-logo-area { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 10; }
-        .center-logo-area img { width: 45px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
-
+        /* Header */
+        .mission-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; position: relative; }
+        .center-logo-area { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .center-logo-area img { width: 40px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
+        
         .agent-side, .activity-side { display: flex; align-items: center; gap: 8px; width: 42%; }
         .activity-side { flex-direction: row-reverse; text-align: right; }
-
-        .circle-frame { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--neon-green); box-shadow: 0 0 15px var(--neon-green); overflow: hidden; background: var(--glass); flex-shrink: 0; }
+        
+        .circle-frame { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--neon-green); overflow: hidden; background: var(--glass); }
         .circle-frame img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .info-box span { display: block; font-size: 8px; color: #aaa; font-family: 'Orbitron'; }
+        .info-box b { display: block; font-size: 9px; color: var(--accent-gold); font-family: 'Orbitron'; }
+        .token-tag { background: var(--accent-gold); color: #000; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-top: 2px; display: inline-block; }
 
-        .info-box { font-family: 'Orbitron'; }
-        .info-box span { display: block; font-size: 9px; color: #aaa; }
-        .info-box b { display: block; font-size: 10px; color: var(--accent-gold); white-space: nowrap; }
-        .token-tag { background: var(--accent-gold); color: #000; font-size: 8px; padding: 2px 5px; border-radius: 4px; font-weight: 900; }
+        /* Difficulty Bar */
+        .difficulty-bar { display: flex; justify-content: space-around; margin-bottom: 10px; gap: 5px; }
+        .diff-btn { 
+            flex: 1; padding: 8px; border-radius: 6px; font-family: 'Orbitron'; font-weight: 900; 
+            text-align: center; font-size: 11px; cursor: pointer; transition: 0.3s;
+            background: var(--disabled-gray); color: #555; border: 1px solid var(--glass-border);
+        }
+        .diff-btn.active { background: var(--neon-blue); color: #000; box-shadow: 0 0 10px var(--neon-blue); border-color: #fff; }
+        .diff-btn.enabled { color: #fff; background: rgba(0, 209, 255, 0.1); border-color: var(--neon-blue); }
 
-        .difficulty-bar { display: flex; justify-content: space-around; margin-bottom: 10px; transition: 0.3s; }
-        .diff-btn { width: 80px; padding: 6px; border-radius: 6px; font-family: 'Orbitron'; font-weight: 900; text-align: center; font-size: 12px; background: var(--disabled-gray); color: #fff; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
-
-        .activity-content-frame { flex-grow: 1; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: 15px; margin-bottom: 15px; overflow: hidden; }
+        /* Iframe Area */
+        .activity-content-frame { flex-grow: 1; background: #000; border: 1px solid var(--glass-border); border-radius: 15px; margin-bottom: 15px; overflow: hidden; }
         .activity-iframe { width: 100%; height: 100%; border: none; }
 
-        .action-container { display: flex; gap: 10px; align-items: center; }
-        .nav-btn { padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; font-family: 'Orbitron'; font-size: 12px; cursor: pointer; flex: 1; text-align: center; text-decoration: none; }
-        .submit-btn { flex: 2; padding: 15px; background: linear-gradient(to right, #b8860b, var(--accent-gold)); border: none; border-radius: 12px; color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 16px; cursor: pointer; }
+        /* Actions */
+        .action-container { display: flex; gap: 8px; }
+        .nav-btn { padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; flex: 1; text-align: center; text-decoration: none; }
+        .submit-btn { flex: 2; padding: 12px; background: linear-gradient(to right, #b8860b, var(--accent-gold)); border: none; border-radius: 10px; color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 14px; cursor: pointer; }
 
-        /* Modal Guide */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px); display: none; z-index: 1000; }
-        .glassy-container { position: absolute; left: 30px; bottom: 30px; display: flex; flex-direction: column; align-items: flex-start; z-index: 1001; }
-        .speech-bubble { background: #fff; border-radius: 20px; padding: 15px; color: #1a1a1a; position: relative; margin-bottom: 15px; text-align: right; direction: rtl; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 40px; border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent; }
-        .glassy-img { width: 180px; filter: drop-shadow(0 0 20px var(--neon-blue)); animation: floatGhost 3s ease-in-out infinite; }
-        .guide-iframe { width: 100%; height: 200px; border: none; margin-top: 10px; border-radius: 10px; background: #f9f9f9; }
-
-        @keyframes floatGhost { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        /* Guide Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; z-index: 1000; }
+        .glassy-container { position: absolute; left: 20px; bottom: 20px; display: flex; flex-direction: column; width: 280px; animation: emerge 0.5s ease-out; }
+        .speech-bubble { background: #fff; border-radius: 20px; padding: 15px; color: #111; position: relative; margin-bottom: 10px; direction: rtl; font-size: 13px; line-height: 1.4; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 30px; border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent; }
+        .glassy-img { width: 180px; filter: drop-shadow(0 0 15px var(--neon-blue)); animation: float 3s ease-in-out infinite; }
+        
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes emerge { from { opacity: 0; transform: scale(0.5) translateY(50px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        
+        .side-line { position: absolute; top: 10%; height: 80%; width: 2px; background: var(--neon-green); }
+        .line-left { left: 0; } .line-right { right: 0; }
     </style>
 </head>
 <body>
+
     <div class="mission-outer-frame">
+        <div class="side-line line-left"></div>
+        <div class="side-line line-right"></div>
+
         <header class="mission-header">
             <div class="agent-side">
-                <div class="circle-frame"><img src="assets/Student.png" id="studentImg"></div>
-                <div class="info-box"><span>AGENT</span><b id="agentName">BROWSER</b><div class="token-tag">5 TK</div></div>
+                <div class="circle-frame"><img src="assets/student.png" id="studentImg"></div>
+                <div class="info-box">
+                    <span>AGENT</span><b id="studentName">EXPLORER</b>
+                    <div class="token-tag" id="mainTokenDisplay">-- TK</div>
+                </div>
             </div>
-            <div class="center-logo-area"><img src="assets/logo.png"></div>
+            <div class="center-logo-area"><img src="assets/EYC_Logo.png"><span class="vs-badge">VS</span></div>
             <div class="activity-side">
                 <div class="circle-frame"><img src="" id="activityLogo"></div>
-                <div class="info-box"><span id="missionCodeDisplay">MISSION</span><b id="activityNameDisplay">...</b><div class="token-tag" id="missionNum" style="background:var(--neon-blue)">M 1</div></div>
+                <div class="info-box">
+                    <span>MISSION</span><b id="activityNameDisplay">LOADING...</b>
+                    <div class="token-tag" id="missionCodeDisplay" style="background:var(--neon-blue)">M-?</div>
+                </div>
             </div>
         </header>
 
-        <div class="difficulty-bar" id="difficultyBar">
-            <div class="diff-btn">LEVEL A</div>
-            <div class="diff-btn">LEVEL B</div>
-            <div class="diff-btn">LEVEL C</div>
+        <div class="difficulty-bar" id="diffBar">
+            <div class="diff-btn" id="btnA" onclick="changeLevel('A')">LEVEL A</div>
+            <div class="diff-btn" id="btnB" onclick="changeLevel('B')">LEVEL B</div>
+            <div class="diff-btn" id="btnC" onclick="changeLevel('C')">LEVEL C</div>
         </div>
 
         <div class="activity-content-frame">
-            <iframe id="mainIframe" src="" class="activity-iframe"></iframe>
+            <iframe src="about:blank" id="missionIframe" class="activity-iframe"></iframe>
         </div>
 
         <div class="action-container">
             <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
-            <button class="submit-btn" onclick="submitMission()">SUBMIT</button>
-            <a href="index.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
+            <button class="submit-btn" onclick="submitMission()">SUBMIT MISSION</button>
+            <a href="index.html" class="nav-btn">BACK</a>
         </div>
     </div>
 
     <div class="modal-overlay" id="guideModal" onclick="toggleGuide(false)">
         <div class="glassy-container" onclick="event.stopPropagation()">
-            <div class="speech-bubble">
-                <p>هاي يا بطل! أنا <strong>Glassy</strong>، شوف التعليمات هنا:</p>
-                <iframe id="guideFrame" src="" class="guide-iframe"></iframe>
-                <button class="nav-btn" style="width:100%; margin-top:10px; background:var(--accent-gold); color:#000" onclick="toggleGuide(false)">فهمت!</button>
+            <div class="speech-bubble" id="guideContent">
+                جاري تحميل الدليل...
             </div>
-            <img src="assets/Glassy.png" class="glassy-img">
+            <img src="assets/Glassy.png" alt="Glassy" class="glassy-img">
         </div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const actCode = urlParams.get('act') || 'GE'; 
-        const missionNum = urlParams.get('m') || '1';  
-        const actName = urlParams.get('name') || 'Activity'; 
-
-        // تحديث الواجهة
-        document.getElementById('activityNameDisplay').innerText = actName;
-        document.getElementById('missionCodeDisplay').innerText = actCode;
-        document.getElementById('missionNum').innerText = 'M ' + missionNum;
-        document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
-
-        function loadMission(level) {
-            let fileName = "";
-            const diffBar = document.getElementById('difficultyBar');
-            
-            if (actCode.endsWith('X')) {
-                // نظام Xbox: الملفات مثل GEX1A.html
-                fileName = `${actCode}${missionNum}${level}.html`;
-                diffBar.style.opacity = '1';
-                diffBar.style.pointerEvents = 'auto';
-            } else {
-                // نظام Season: الملفات مثل GE S1.html (أو GES1.html حسب تسميتك)
-                // ملحوظة: الكود الخاص بك يضيف حرف S
-                fileName = `${actCode}S${missionNum}.html`;
-                
-                // تعطيل بار المستويات للسيزون
-                diffBar.style.opacity = '0.3';
-                diffBar.style.pointerEvents = 'none';
-            }
-
-            document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
-            
-            // تحديث تمييز الزر النشط
-            document.querySelectorAll('.diff-btn').forEach(btn => {
-                btn.style.background = "var(--disabled-gray)";
-                btn.style.borderColor = "rgba(255,255,255,0.05)";
-                if(btn.innerText.endsWith(level)) {
-                    btn.style.background = "var(--neon-green)";
-                    btn.style.color = "#000";
-                } else {
-                    btn.style.color = "#fff";
-                }
-            });
-        }
-
-        window.onload = () => {
-            // التحميل المبدئي
-            loadMission('A'); 
-
-            // جلب بيانات العميل
-            const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
-            if(saved.image) {
-                let imgUrl = saved.image;
-                if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
-                document.getElementById('studentImg').src = imgUrl;
-            }
+        // 1. قاعدة بيانات الأنشطة
+        const activitiesConfig = {
+            "GES": { name: "Golden Ear", type: "single", tokens: 10 },
+            "AS":  { name: "Alike", type: "single", tokens: 10 },
+            "SS":  { name: "Seeds", type: "single", tokens: 10 },
+            "GS":  { name: "Grammar", type: "single", tokens: 10 },
+            "LS":  { name: "Label", type: "single", tokens: 10 },
+            "VS":  { name: "Vivid", type: "single", tokens: 10 },
+            "GEX": { name: "Golden EarX", type: "multi", tokens: {A:15, B:25, C:40} },
+            "AX":  { name: "AlikeX", type: "multi", tokens: {A:15, B:25, C:40} },
+            "SX":  { name: "SeedsX", type: "multi", tokens: {A:15, B:25, C:40} },
+            "GX":  { name: "GrammarX", type: "multi", tokens: {A:15, B:25, C:40} },
+            "LX":  { name: "LabelX", type: "multi", tokens: {A:15, B:25, C:40} },
+            "VX":  { name: "VividX", type: "multi", tokens: {A:15, B:25, C:40} },
+            "FX":  { name: "FigurativeX", type: "multi", tokens: {A:15, B:25, C:40} },
+            "DX":  { name: "DictationX", type: "multi", tokens: {A:15, B:25, C:40} },
+            "SSSX":{ name: "Sing Sang SungX", type: "multi", tokens: {A:15, B:25, C:40} },
+            "ELX": { name: "ElmagazineX", type: "multi", tokens: {A:15, B:25, C:40} }
         };
 
-        // ربط أزرار المستويات
-        document.querySelectorAll('.diff-btn').forEach(btn => {
-            btn.onclick = () => {
-                const level = btn.innerText.slice(-1);
-                loadMission(level);
-            };
-        });
+        // 2. قراءة البيانات من الرابط (URL)
+        const params = new URLSearchParams(window.location.search);
+        let actCode = params.get('act') || 'GEX'; // كود النشاط
+        let missionNum = params.get('m') || '1'; // رقم المهمة
+        let currentLevel = params.get('level') || 'A'; // المستوى الافتراضي
 
-        function toggleGuide(show) {
-            if(show) {
-                document.getElementById('guideFrame').src = `assets/MIF/Guides/${actCode}.html`;
+        const config = activitiesConfig[actCode];
+
+        // 3. وظيفة تحديث الصفحة بالكامل
+        function updateUI() {
+            // تحديث النصوص واللوجو
+            document.getElementById('activityNameDisplay').innerText = config.name;
+            document.getElementById('missionCodeDisplay').innerText = `M ${missionNum}`;
+            document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
+            
+            // التعامل مع المستويات (Single vs Multi)
+            if (config.type === "single") {
+                // إخفاء/تعطيل أزرار الصعوبة
+                document.querySelectorAll('.diff-btn').forEach(b => {
+                    b.style.opacity = "0.3";
+                    b.style.cursor = "not-allowed";
+                    b.innerText = "LOCKED";
+                });
+                document.getElementById('mainTokenDisplay').innerText = `${config.tokens} TK`;
+                
+                // بناء رابط الملف (مثال: MIF/GES1.html)
+                const fileName = `assets/MIF/${actCode}${missionNum}.html`;
+                document.getElementById('missionIframe').src = fileName;
+            } 
+            else {
+                // تفعيل أزرار الصعوبة
+                ['A', 'B', 'C'].forEach(lvl => {
+                    const btn = document.getElementById(`btn${lvl}`);
+                    btn.classList.add('enabled');
+                    btn.classList.toggle('active', lvl === currentLevel);
+                    btn.innerText = `LEVEL ${lvl}`;
+                });
+                
+                // تحديث التوكنز حسب المستوى المختار
+                document.getElementById('mainTokenDisplay').innerText = `${config.tokens[currentLevel]} TK`;
+                
+                // بناء رابط الملف (مثال: MIF/GEX1A.html)
+                const fileName = `assets/MIF/${actCode}${missionNum}${currentLevel}.html`;
+                document.getElementById('missionIframe').src = fileName;
             }
-            document.getElementById('guideModal').style.display = show ? 'block' : 'none';
+        }
+
+        // 4. تغيير المستوى
+        function changeLevel(lvl) {
+            if (config.type === "multi") {
+                currentLevel = lvl;
+                updateUI();
+            }
+        }
+
+        // 5. نظام الجايد الذكي
+        async function toggleGuide(show) {
+            const modal = document.getElementById('guideModal');
+            if (show) {
+                modal.style.display = 'block';
+                try {
+                    // جلب الدليل من الملف الخارجي
+                    const response = await fetch('assets/MIF/Guide.html');
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // البحث عن العنصر الذي يحمل كود النشاط داخل ملف الجايد
+                    const guideText = doc.getElementById(actCode)?.innerHTML || "لا يوجد شرح متاح لهذا النشاط حالياً.";
+                    document.getElementById('guideContent').innerHTML = `<strong>نشاط ${config.name}:</strong><br>${guideText}`;
+                } catch (e) {
+                    document.getElementById('guideContent').innerText = "خطأ في تحميل الدليل.";
+                }
+            } else {
+                modal.style.display = 'none';
+            }
         }
 
         function submitMission() {
-            alert("Mission Synchronizing with EYC Hub... Good job Agent!");
+            alert(`Mission ${actCode}-${missionNum} (${currentLevel}) has been submitted!`);
         }
+
+        // تشغيل الوظيفة عند التحميل
+        window.onload = updateUI;
     </script>
 </body>
 </html>

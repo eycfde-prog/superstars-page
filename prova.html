@@ -16,26 +16,27 @@
         .avatar-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         .step-screen { display: none; text-align: center; width: 100%; }
         .step-screen.active { display: block; }
-        .option-box { border: 2px solid rgba(255,204,0,0.2); border-radius: 15px; cursor: pointer; transition: 0.3s; padding: 15px; }
+        .option-box { border: 2px solid rgba(255,204,0,0.2); border-radius: 15px; cursor: pointer; transition: 0.3s; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .option-box:hover, .option-box.selected { border-color: var(--gold); background: rgba(255,204,0,0.1); }
-        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; margin: 0 auto; }
+        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; }
     </style>
 </head>
 <body class="py-12 px-4">
 
     <div id="avatarModal" class="avatar-modal">
         <div class="glass-card p-8 w-full max-w-md relative">
+            
             <div id="step1" class="step-screen active">
                 <h3 class="orbitron text-yellow-500 mb-6 uppercase">Select Gender</h3>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="option-box" onclick="setGender('male')"><i class="fas fa-male text-4xl"></i><p>MALE</p></div>
-                    <div class="option-box" onclick="setGender('female')"><i class="fas fa-female text-4xl"></i><p>FEMALE</p></div>
+                    <div class="option-box" onclick="setGender('male')"><i class="fas fa-user text-4xl mb-2"></i><p>MALE</p></div>
+                    <div class="option-box" onclick="setGender('female')"><i class="fas fa-user-female text-4xl mb-2"></i><p>FEMALE</p></div>
                 </div>
             </div>
 
             <div id="step2" class="step-screen">
                 <h3 class="orbitron text-yellow-500 mb-6 uppercase">Skin Tone</h3>
-                <div class="flex justify-center gap-2">
+                <div class="flex justify-center flex-wrap gap-2">
                     <div onclick="setSkin('#3d251e')" class="option-box"><div class="color-dot" style="background:#3d251e"></div></div>
                     <div onclick="setSkin('#8d5524')" class="option-box"><div class="color-dot" style="background:#8d5524"></div></div>
                     <div onclick="setSkin('#c68642')" class="option-box"><div class="color-dot" style="background:#c68642"></div></div>
@@ -46,27 +47,33 @@
 
             <div id="step3" class="step-screen">
                 <h3 class="orbitron text-yellow-500 mb-6 uppercase">Eye Color</h3>
-                <div id="eyeOptions" class="flex flex-wrap justify-center gap-2"></div>
+                <div id="eyeOptions" class="flex flex-wrap justify-center gap-2">
+                    <div onclick="setEyes('#4a2c2a')" class="option-box"><div class="color-dot" style="background:#4a2c2a"></div><p class="text-[8px] mt-1">Brown</p></div>
+                    <div onclick="setEyes('#2a4a2c')" class="option-box"><div class="color-dot" style="background:#2a4a2c"></div><p class="text-[8px] mt-1">Green</p></div>
+                    <div onclick="setEyes('#2a3a4a')" class="option-box"><div class="color-dot" style="background:#2a3a4a"></div><p class="text-[8px] mt-1">Blue</p></div>
+                </div>
             </div>
 
             <div id="step4" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Hair Style</h3>
-                <div id="hairOptions" class="grid grid-cols-3 gap-2"></div>
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Hair Color</h3>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <div onclick="setHairColor('#000000')" class="option-box"><div class="color-dot" style="background:#000000"></div></div>
+                    <div onclick="setHairColor('#4b3621')" class="option-box"><div class="color-dot" style="background:#4b3621"></div></div>
+                    <div onclick="setHairColor('#fdf5e6')" class="option-box"><div class="color-dot" style="background:#fdf5e6"></div></div>
+                </div>
             </div>
 
             <div id="step5" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Hair Color</h3>
-                <div id="hairColorOptions" class="flex justify-center gap-2"></div>
-            </div>
-
-            <div id="step6" class="step-screen">
-                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Face Style</h3>
-                <div id="faceOptions" class="grid grid-cols-3 gap-2"></div>
+                <h3 class="orbitron text-yellow-500 mb-6 uppercase">Add Accessories</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="option-box" onclick="setAccessory('none')"><i class="fas fa-times text-4xl mb-2"></i><p>None</p></div>
+                    <div class="option-box" onclick="setAccessory('glasses')"><i class="fas fa-glasses text-4xl mb-2"></i><p>Glasses</p></div>
+                </div>
             </div>
 
             <div class="mt-8 flex justify-between">
                 <button onclick="prevStep()" class="text-gray-400 orbitron text-xs">BACK</button>
-                <div id="stepIndicator" class="text-yellow-500 orbitron text-xs">1 / 6</div>
+                <div id="stepIndicator" class="text-yellow-500 orbitron text-xs">1 / 5</div>
             </div>
         </div>
     </div>
@@ -84,87 +91,133 @@
             </div>
 
             <div id="avatarZone" onclick="openAvatarModal()" class="border-2 border-dashed border-yellow-500/30 rounded-2xl p-6 text-center cursor-pointer hover:bg-yellow-500/5">
-                <div id="previewContainer" class="w-24 h-24 bg-white/5 rounded-full mx-auto mb-3 flex items-center justify-center overflow-hidden">
-                    <i class="fas fa-user-astronaut text-3xl text-yellow-500"></i>
+                <div id="previewContainer" class="w-32 h-32 bg-white/5 rounded-full mx-auto mb-3 flex items-center justify-center overflow-hidden border-2 border-yellow-500/20">
+                    <i class="fas fa-user-plus text-3xl text-yellow-500"></i>
                 </div>
-                <p id="avatarText" class="orbitron text-[10px] text-yellow-500">CONSTRUCT YOUR AVATAR</p>
+                <p class="orbitron text-[10px] text-yellow-500">CLICK TO CONSTRUCT AGENT FACE</p>
             </div>
 
             <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl">INITIATE REGISTRATION</button>
         </form>
     </div>
 
-    <div id="successScreen" class="fixed inset-0 bg-black z-[3000] hidden flex-center items-center justify-center p-6">
-       <div class="glass-card p-10 text-center max-w-sm">
-           <h2 class="orbitron text-2xl text-yellow-500 mb-4">ACCESS GRANTED</h2>
-           <div id="agentCodeDisplay" class="text-4xl font-bold mb-6 tracking-widest text-white">---</div>
-           <button onclick="location.reload()" class="bg-white text-black px-8 py-3 rounded-lg font-bold">DONE</button>
-       </div>
-    </div>
+    <canvas id="avatarCanvas" width="400" height="400" style="display:none;"></canvas>
 
-    <canvas id="avatarCanvas" width="400" height="400" class="hidden"></canvas>
+    <script>
+        const SCRIPT_URL = "انقل_رابط_الاسكريبت_هنا";
+        let currentStep = 1;
+        let avatarConfig = { gender: '', skin: '#f1c27d', eyes: '#4a2c2a', hColor: '#000000', acc: 'none' };
 
-<script>
-    const SCRIPT_URL = "انقل_رابط_الاسكريبت_هنا";
-    let currentStep = 1;
-    let avatarConfig = { gender: '', skin: '#f1c27d', eyes: 'blue', hair: 1, hColor: '#4b2c20', face: 1 };
+        function openAvatarModal() { document.getElementById('avatarModal').style.display = 'flex'; }
+        
+        function setGender(g) { avatarConfig.gender = g; nextStep(); }
+        function setSkin(s) { avatarConfig.skin = s; nextStep(); }
+        function setEyes(e) { avatarConfig.eyes = e; nextStep(); }
+        function setHairColor(hc) { avatarConfig.hColor = hc; nextStep(); }
+        function setAccessory(a) { avatarConfig.acc = a; finishAvatar(); }
 
-    // ... (دوال التنقل بين الخطوات كما هي) ...
-
-    function finishAvatar() {
-        document.getElementById('avatarModal').style.display = 'none';
-        drawAvatar(); // استدعاء دالة الرسم الاحترافية
-        document.getElementById('avatarText').innerText = "AVATAR READY";
-    }
-
-    function drawAvatar() {
-        const canvas = document.getElementById('avatarCanvas');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, 400, 400);
-
-        // 1. رسم شكل الوجه (Base Face)
-        ctx.fillStyle = avatarConfig.skin;
-        ctx.beginPath();
-        // تغيير شكل الوجه بناءً على اختيار Step 6
-        if(avatarConfig.face == 1) ctx.arc(200, 200, 150, 0, Math.PI * 2); 
-        else ctx.roundRect(80, 80, 240, 280, 100);
-        ctx.fill();
-
-        // 2. رسم العيون (Eyes)
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.ellipse(140, 180, 25, 15, 0, 0, Math.PI * 2);
-        ctx.ellipse(260, 180, 25, 15, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // نني العين (Pupils)
-        ctx.fillStyle = avatarConfig.eyes || "black";
-        ctx.beginPath();
-        ctx.arc(140, 180, 10, 0, Math.PI * 2);
-        ctx.arc(260, 180, 10, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 3. رسم الفم (Mouth)
-        ctx.strokeStyle = "rgba(0,0,0,0.3)";
-        ctx.lineWidth = 5;
-        ctx.beginPath();
-        ctx.arc(200, 260, 40, 0.2 * Math.PI, 0.8 * Math.PI); // ابتسامة
-        ctx.stroke();
-
-        // 4. رسم الشعر (Hair) - يتأثر بالنوع ولون الشعر
-        ctx.fillStyle = avatarConfig.hColor;
-        if (avatarConfig.gender === 'male') {
-            ctx.fillRect(80, 80, 240, 60); // شعر قصير
-        } else {
-            ctx.fillRect(50, 80, 300, 200); // شعر طويل يغطي الجوانب
-            ctx.clearRect(100, 130, 200, 250); // فتحة للوجه
+        function nextStep() {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep++;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById('stepIndicator').innerText = `${currentStep} / 5`;
         }
 
-        // تحويل الرسم لصورة وعرضها
-        const imageData = canvas.toDataURL("image/png");
-        document.getElementById('previewContainer').innerHTML = `<img src="${imageData}" class="w-full h-full object-cover">`;
-        document.getElementById('finalAvatarData').value = imageData;
-    }
-</script>
+        function prevStep() {
+            if(currentStep === 1) return document.getElementById('avatarModal').style.display = 'none';
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById('stepIndicator').innerText = `${currentStep} / 5`;
+        }
+
+        function finishAvatar() {
+            document.getElementById('avatarModal').style.display = 'none';
+            drawAvatar();
+        }
+
+        function drawAvatar() {
+            const canvas = document.getElementById('avatarCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 400, 400);
+
+            // 1. Background
+            ctx.fillStyle = "#111";
+            ctx.fillRect(0,0,400,400);
+
+            // 2. Face Shape
+            ctx.fillStyle = avatarConfig.skin;
+            ctx.beginPath();
+            ctx.arc(200, 200, 120, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 3. Eyes (White part)
+            ctx.fillStyle = "white";
+            ctx.beginPath(); ctx.arc(160, 180, 20, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(240, 180, 20, 0, Math.PI * 2); ctx.fill();
+
+            // 4. Pupils (Colored part)
+            ctx.fillStyle = avatarConfig.eyes;
+            ctx.beginPath(); ctx.arc(160, 180, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(240, 180, 10, 0, Math.PI * 2); ctx.fill();
+
+            // 5. Mouth (Smile)
+            ctx.strokeStyle = "rgba(0,0,0,0.5)";
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.arc(200, 240, 40, 0, Math.PI);
+            ctx.stroke();
+
+            // 6. Hair
+            ctx.fillStyle = avatarConfig.hColor;
+            if(avatarConfig.gender === 'male') {
+                // Short hair on top
+                ctx.beginPath();
+                ctx.arc(200, 140, 80, Math.PI, 0);
+                ctx.fill();
+            } else {
+                // Long hair around
+                ctx.fillRect(80, 120, 40, 200); // left side
+                ctx.fillRect(280, 120, 40, 200); // right side
+                ctx.beginPath(); ctx.arc(200, 140, 120, Math.PI, 0); ctx.fill();
+            }
+
+            // 7. Accessory (Glasses)
+            if(avatarConfig.acc === 'glasses') {
+                ctx.strokeStyle = "#fff";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(135, 165, 50, 30);
+                ctx.strokeRect(215, 165, 50, 30);
+                ctx.beginPath(); ctx.moveTo(185, 180); ctx.lineTo(215, 180); ctx.stroke();
+            }
+
+            const imageData = canvas.toDataURL("image/png");
+            document.getElementById('previewContainer').innerHTML = `<img src="${imageData}" class="w-full h-full">`;
+        }
+
+        document.getElementById('regForm').onsubmit = function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "UPLOADING...";
+            btn.disabled = true;
+
+            const payload = {
+                name: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                age: document.getElementById('age').value,
+                image: document.getElementById('avatarCanvas').toDataURL("image/png")
+            };
+
+            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
+            .then(res => res.text())
+            .then(res => {
+                if(res.includes("Success")) {
+                    alert("Registration Successful!");
+                    location.reload();
+                } else { alert(res); }
+            })
+            .finally(() => { btn.innerText = "INITIATE REGISTRATION"; btn.disabled = false; });
+        };
+    </script>
 </body>
 </html>

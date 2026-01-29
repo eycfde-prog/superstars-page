@@ -9,10 +9,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --gold: #d4af37; --bg-dark: #050505; --glass: rgba(255, 255, 255, 0.03); }
-        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #111, var(--bg-dark)); color: white; min-height: 100vh; }
+        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #111, var(--bg-dark)); color: white; min-height: 100vh; overflow-x: hidden; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 30px; }
         
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.5s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         input, select { 
             background: rgba(0,0,0,0.5) !important; 
             border: 1px solid rgba(255,255,255,0.1) !important; 
@@ -22,187 +27,207 @@
         }
         input:focus, select:focus { border-color: var(--gold) !important; outline: none; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
         
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         
-        .avatar-container {
-            position: relative;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
-            padding: 20px;
-            border-radius: 50%;
+        .avatar-preview-container {
+            position: sticky;
+            top: 20px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
         }
-        #avatarImg { width: 180px; height: 180px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+        #avatarImg { width: 220px; height: 220px; filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3)); }
         
-        .control-group { margin-bottom: 15px; }
-        .control-label { font-size: 9px; color: var(--gold); letter-spacing: 1px; margin-bottom: 6px; display: block; font-weight: 900; text-transform: uppercase; }
-        
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
     </style>
 </head>
 <body class="py-10 px-4">
 
     <div id="successScreen" class="modal">
-        <div class="glass-card p-10 text-center max-w-md border-t-4 border-yellow-500 shadow-2xl shadow-yellow-500/20">
-            <div class="w-20 h-20 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                <i class="fas fa-shield-alt animate-pulse"></i>
-            </div>
-            <h2 class="orbitron text-2xl mb-2 text-yellow-500 font-black">IDENTITY FORGED</h2>
-            <p class="text-gray-400 text-sm mb-6">Your access protocol is now active. Save your unique Hunter Code:</p>
+        <div class="glass-card p-8 text-center max-w-lg border-t-4 border-yellow-500 shadow-2xl">
+            <h2 class="orbitron text-2xl mb-6 text-yellow-500 font-black">IDENTITY FORGED</h2>
             
+            <div class="flex flex-col items-center mb-6">
+                <img id="finalAvatar" src="" class="w-32 h-32 bg-black/40 rounded-full border-2 border-yellow-500/50 mb-4" alt="Hunter">
+                <h3 id="finalName" class="text-xl font-bold orbitron">HUNTER NAME</h3>
+            </div>
+
             <div class="bg-black/60 border border-yellow-500/30 p-4 rounded-2xl mb-8">
                 <span class="text-[10px] block text-gray-500 mb-1 orbitron">SECRET ACCESS CODE</span>
                 <span id="displayStudentCode" class="text-3xl font-black text-white tracking-widest orbitron">----</span>
             </div>
 
-            <button onclick="location.href='MC.html'" class="w-full py-4 bg-yellow-500 text-black orbitron font-bold rounded-full hover:bg-yellow-400 transition-all shadow-lg">Start Missions</button>
+            <button onclick="location.reload()" class="w-full py-4 bg-yellow-500 text-black orbitron font-bold rounded-full hover:bg-yellow-400 transition-all">ENTER HEADQUARTERS</button>
         </div>
     </div>
 
-    <div class="max-w-5xl mx-auto">
-        <header class="text-center mb-12">
-            <div class="inline-block px-4 py-1 border border-yellow-500/30 rounded-full mb-4">
-                <span class="text-[10px] orbitron text-yellow-500 tracking-[5px]">ENCRYPTED REGISTRATION</span>
-            </div>
-            <h1 class="orbitron text-5xl font-black text-white">FORGE <span class="text-yellow-500">IDENTITY</span></h1>
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="orbitron text-4xl md:text-6xl font-black text-white">FORGE <span class="text-yellow-500 text-glow">IDENTITY</span></h1>
+            <p class="text-gray-500 text-xs mt-2 tracking-[4px]">CONSTRUCT YOUR VIRTUAL OPERATIVE</p>
         </header>
 
         <form id="regForm" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <div class="lg:col-span-5 glass-card p-8 flex flex-col items-center">
-                <div class="avatar-container mb-8">
-                    <img id="avatarImg" src="" alt="Hunter Avatar">
+            <div class="lg:col-span-5 flex flex-col items-center justify-start">
+                <div class="avatar-preview-container p-10 rounded-full mb-6">
+                    <img id="avatarImg" src="https://avataaars.io/" alt="Hunter Avatar">
                 </div>
-
-                <div class="w-full grid grid-cols-2 gap-4 h-[350px] overflow-y-auto pr-2 custom-scroll">
-                    <div class="control-group col-span-2">
-                        <label class="control-label"><i class="fas fa-venus-mars mr-1"></i> Gender Style</label>
-                        <select onchange="updateAvatar()" id="gender" class="w-full p-3 text-xs">
-                            <option value="ShortHair">Male Style</option>
-                            <option value="LongHair">Female Style</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Skin Color</label>
-                        <select onchange="updateAvatar()" id="skinColor" class="w-full p-3 text-xs">
-                            <option value="Light">Light</option>
-                            <option value="Pale">Pale</option>
-                            <option value="Tanned">Tanned</option>
-                            <option value="Brown">Brown</option>
-                            <option value="DarkBrown">Dark Brown</option>
-                            <option value="Black">Black</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Eye Type</label>
-                        <select onchange="updateAvatar()" id="eyeType" class="w-full p-3 text-xs">
-                            <option value="Default">Default</option>
-                            <option value="Happy">Happy</option>
-                            <option value="Squint">Squint</option>
-                            <option value="EyeRoll">Eye Roll</option>
-                            <option value="Side">Side Look</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Hair Style</label>
-                        <select onchange="updateAvatar()" id="topType" class="w-full p-3 text-xs">
-                            <option value="ShortHairShortFlat">Flat Top</option>
-                            <option value="ShortHairTheCaesar">Caesar</option>
-                            <option value="ShortHairDreads01">Dreads</option>
-                            <option value="LongHairStraight">Straight</option>
-                            <option value="LongHairCurvy">Curvy</option>
-                            <option value="Hijab">Hijab</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Hair Color</label>
-                        <select onchange="updateAvatar()" id="hairColor" class="w-full p-3 text-xs">
-                            <option value="Black">Black</option>
-                            <option value="BrownDark">Dark Brown</option>
-                            <option value="SilverGray">Silver</option>
-                            <option value="BlondeGolden">Golden</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Outfit</label>
-                        <select onchange="updateAvatar()" id="clotheType" class="w-full p-3 text-xs">
-                            <option value="Hoodie">Hoodie</option>
-                            <option value="BlazerShirt">Blazer</option>
-                            <option value="Overall">Combat Suit</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label">Accessory</label>
-                        <select onchange="updateAvatar()" id="accessoriesType" class="w-full p-3 text-xs">
-                            <option value="Blank">None</option>
-                            <option value="Prescription02">Glasses</option>
-                            <option value="Kurt">Shades</option>
-                        </select>
-                    </div>
+                <div class="text-center">
+                    <span class="text-yellow-500 orbitron text-xs tracking-widest">LIVE BIOMETRIC FEED</span>
                 </div>
-
-                <button type="button" onclick="randomAvatar()" class="mt-6 w-full py-3 border border-yellow-500/20 rounded-xl text-[10px] orbitron hover:bg-yellow-500/10 transition-all">
-                    <i class="fas fa-dice mr-2"></i> RANDOMIZE HUNTER
-                </button>
             </div>
 
-            <div class="lg:col-span-7 glass-card p-10 space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="relative">
-                        <label class="block text-[10px] font-black text-gray-500 mb-3 tracking-widest">FULL NAME</label>
-                        <input type="text" id="inputName" name="fullName" required placeholder="Ex: John Doe" class="w-full p-4">
+            <div class="lg:col-span-7 glass-card p-8 md:p-12 relative overflow-hidden">
+                
+                <div id="step1" class="step-content active">
+                    <h3 class="orbitron text-yellow-500 mb-6 flex items-center gap-2">
+                        <span class="bg-yellow-500 text-black w-6 h-6 rounded-full flex items-center justify-center text-[10px]">01</span>
+                        DNA MODIFICATION
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-2 orbitron">GENDER BASE</label>
+                            <select onchange="updateAvatar(); toggleHijabOption();" id="gender" class="w-full p-4">
+                                <option value="ShortHair">Male Style</option>
+                                <option value="LongHair">Female Style</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-2 orbitron">SKIN TONE</label>
+                            <select onchange="updateAvatar()" id="skinColor" class="w-full p-4">
+                                <option value="Light">Light</option>
+                                <option value="Tanned">Tanned</option>
+                                <option value="Brown">Brown</option>
+                                <option value="DarkBrown">Dark Brown</option>
+                                <option value="Black">Black</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] text-gray-400 mb-2 orbitron">HAIR / HEADWEAR</label>
+                            <select onchange="updateAvatar()" id="topType" class="w-full p-4">
+                                <option value="ShortHairShortFlat">Flat Top</option>
+                                <option value="ShortHairTheCaesar">Caesar</option>
+                                <option value="ShortHairFrizzle">Curly Short</option>
+                                <option value="LongHairStraight">Straight Long</option>
+                                <option value="LongHairBigHair">Big Hair</option>
+                                <option id="hijabOption" value="Hijab" style="display:none;">Hijab (Modest Style)</option>
+                                <option value="NoHair">Bald</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="relative">
-                        <label class="block text-[10px] font-black text-gray-500 mb-3 tracking-widest">AGE</label>
-                        <input type="number" name="age" required placeholder="Years" class="w-full p-4">
+                    <button type="button" onclick="nextStep(2)" class="mt-8 w-full py-4 border border-yellow-500/50 text-yellow-500 orbitron hover:bg-yellow-500 hover:text-black transition-all">NEXT PROTOCOL <i class="fas fa-arrow-right ml-2"></i></button>
+                </div>
+
+                <div id="step2" class="step-content">
+                    <h3 class="orbitron text-yellow-500 mb-6 flex items-center gap-2">
+                        <span class="bg-yellow-500 text-black w-6 h-6 rounded-full flex items-center justify-center text-[10px]">02</span>
+                        VISUAL CUSTOMIZATION
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-2 orbitron">EYE EXPRESSION</label>
+                            <select onchange="updateAvatar()" id="eyeType" class="w-full p-4">
+                                <option value="Default">Normal</option>
+                                <option value="Happy">Happy</option>
+                                <option value="Squint">Focused</option>
+                                <option value="Side">Suspicious</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-2 orbitron">HAIR COLOR</label>
+                            <select onchange="updateAvatar()" id="hairColor" class="w-full p-4">
+                                <option value="Black">Black</option>
+                                <option value="BrownDark">Brown</option>
+                                <option value="SilverGray">Silver</option>
+                                <option value="BlondeGolden">Gold</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-2 orbitron">OUTFIT</label>
+                            <select onchange="updateAvatar()" id="clotheType" class="w-full p-4">
+                                <option value="Hoodie">Stealth Hoodie</option>
+                                <option value="BlazerShirt">Academy Uniform</option>
+                                <option value="Overall">Tech Suit</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-2 orbitron">GEAR</label>
+                            <select onchange="updateAvatar()" id="accessoriesType" class="w-full p-4">
+                                <option value="Blank">None</option>
+                                <option value="Prescription02">Tactical Glasses</option>
+                                <option value="Round">Round Lens</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-8">
+                        <button type="button" onclick="nextStep(1)" class="w-1/3 py-4 border border-white/10 text-gray-400 orbitron">BACK</button>
+                        <button type="button" onclick="nextStep(3)" class="w-2/3 py-4 border border-yellow-500/50 text-yellow-500 orbitron hover:bg-yellow-500 hover:text-black transition-all">NEXT PROTOCOL</button>
                     </div>
                 </div>
 
-                <div class="relative">
-                    <label class="block text-[10px] font-black text-gray-500 mb-3 tracking-widest">ACADEMY EMAIL</label>
-                    <input type="email" name="email" required placeholder="hunter@eyc-academy.com" class="w-full p-4">
-                </div>
+                <div id="step3" class="step-content">
+                    <h3 class="orbitron text-yellow-500 mb-6 flex items-center gap-2">
+                        <span class="bg-yellow-500 text-black w-6 h-6 rounded-full flex items-center justify-center text-[10px]">03</span>
+                        PERSONAL DATA & CLEARANCE
+                    </h3>
+                    <div class="space-y-4">
+                        <input type="text" name="fullName" id="userNameInput" required placeholder="FULL NAME (ENGLISH)" class="w-full p-4">
+                        <input type="email" name="email" required placeholder="ACADEMY EMAIL" class="w-full p-4">
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                                <input type="checkbox" name="prog" value="Season" class="accent-yellow-500">
+                                <span class="text-sm font-bold">Season</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                                <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="accent-blue-500">
+                                <span class="text-sm font-bold text-blue-400">XBoX Elite</span>
+                            </label>
+                        </div>
 
-                <div class="space-y-4">
-                    <label class="block text-[10px] font-black text-gray-500 tracking-widest">MISSION CLEARANCE</label>
-                    <div class="grid grid-cols-2 gap-4">
-                        <label class="flex items-center gap-4 p-5 bg-black/40 rounded-2xl border border-white/5 cursor-pointer hover:border-yellow-500/30 transition-all">
-                            <input type="checkbox" name="prog" value="Season" class="w-6 h-6 accent-yellow-500">
-                            <div><span class="block text-sm font-bold">Season</span></div>
-                        </label>
-                        <label class="flex items-center gap-4 p-5 bg-black/40 rounded-2xl border border-white/5 cursor-pointer hover:border-blue-500/30 transition-all">
-                            <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-6 h-6 accent-blue-500">
-                            <div><span class="block text-sm font-bold text-blue-400">XBoX Elite</span></div>
-                        </label>
+                        <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+                            <label class="block text-[9px] text-blue-400 mb-2 orbitron">XBOX SELECTION</label>
+                            <select id="xboxPlan" class="w-full p-3 text-xs">
+                                <option value="Free">Free Access (Standard)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-8">
+                        <button type="button" onclick="nextStep(2)" class="w-1/3 py-4 border border-white/10 text-gray-400 orbitron">BACK</button>
+                        <button type="submit" id="submitBtn" class="w-2/3 py-4 bg-yellow-500 text-black orbitron font-black shadow-xl hover:scale-105 transition-all">
+                            <span id="btnText">FINALIZE IDENTITY</span>
+                            <div id="loader" class="loader mx-auto"></div>
+                        </button>
                     </div>
                 </div>
 
-                <div id="xboxSubMethod" style="display: none;" class="p-6 bg-blue-500/5 border border-blue-500/20 rounded-2xl">
-                    <label class="block text-[10px] text-blue-400 mb-2 font-black">XBOX TIER</label>
-                    <select class="w-full p-3">
-                        <option>Free Tier (Standard)</option>
-                        <option>Elite Tier</option>
-                    </select>
-                </div>
-
-                <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl flex items-center justify-center gap-4 hover:shadow-[0_0_30px_rgba(212,175,55,0.3)] transition-all">
-                    <span id="btnText">INITIALIZE SYSTEM</span>
-                    <div id="loader" class="loader"></div>
-                </button>
             </div>
         </form>
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOenTfwP0rJCq_LQwLluZSS-e2FEb9j3gTm66t7VuKOHdx4MLftHuH_47ER_UYG8ce/exec";
+
+        function nextStep(step) {
+            document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+        }
+
+        function toggleHijabOption() {
+            const gender = document.getElementById('gender').value;
+            const hijab = document.getElementById('hijabOption');
+            if(gender === 'LongHair') {
+                hijab.style.display = 'block';
+            } else {
+                hijab.style.display = 'none';
+                if(document.getElementById('topType').value === 'Hijab') {
+                    document.getElementById('topType').value = 'ShortHairShortFlat';
+                }
+            }
+            updateAvatar();
+        }
 
         function updateAvatar() {
             const top = document.getElementById('topType').value;
@@ -214,16 +239,9 @@
             
             const baseUrl = "https://avataaars.io/?avatarStyle=Transparent";
             const params = `&topType=${top}&accessoriesType=${acc}&hairColor=${hairColor}&facialHairType=Blank&clotheType=${cloth}&eyeType=${eye}&eyebrowType=Default&mouthType=Default&skinColor=${skin}`;
-            document.getElementById('avatarImg').src = baseUrl + params;
-        }
-
-        function randomAvatar() {
-            const selects = document.querySelectorAll('.lg\\:col-span-5 select');
-            selects.forEach(s => {
-                const options = s.options;
-                s.selectedIndex = Math.floor(Math.random() * options.length);
-            });
-            updateAvatar();
+            
+            const finalUrl = baseUrl + params;
+            document.getElementById('avatarImg').src = finalUrl;
         }
 
         function toggleXboxSection() {
@@ -244,13 +262,16 @@
             const formData = new FormData(this);
             const progs = [];
             document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
+            
+            const avatarUrl = document.getElementById('avatarImg').src;
+            const hunterName = document.getElementById('userNameInput').value;
 
             const data = {
-                name: document.getElementById('inputName').value,
-                age: formData.get('age'),
+                name: hunterName,
                 email: formData.get('email'),
                 programs: progs.join(', '),
-                image: document.getElementById('avatarImg').src
+                image: avatarUrl,
+                xboxType: document.getElementById('xboxCheck').checked ? "Free" : "None"
             };
 
             try {
@@ -261,15 +282,15 @@
                 const result = await response.json();
 
                 if (result.status === "success" || result.result === "success") {
-                    document.getElementById('displayStudentCode').innerText = result.code || "ACT-" + Math.floor(Math.random()*999);
+                    document.getElementById('finalAvatar').src = avatarUrl;
+                    document.getElementById('finalName').innerText = hunterName;
+                    document.getElementById('displayStudentCode').innerText = result.code || "ACT-99";
                     document.getElementById('successScreen').style.display = 'flex';
                 } else {
-                    alert("⚠️ Error: " + result.message);
+                    alert("⚠️ PROTOCOL ERROR: " + result.message);
                 }
             } catch (err) {
-                // For demo purposes, if the script fails, show success anyway or handle error
-                alert("Connection error, but identity stored locally.");
-                document.getElementById('successScreen').style.display = 'flex';
+                alert("⚠️ CONNECTION LOST: Data may have been sent. Check email.");
             } finally {
                 btnText.style.display = 'block';
                 loader.style.display = 'none';

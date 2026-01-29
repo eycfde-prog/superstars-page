@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Player | Build Your Avatar</title>
+    <title>Hunter Identity | EYC Academy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -12,131 +12,216 @@
         body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #111, var(--bg-dark)); color: white; min-height: 100vh; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 30px; }
-        input, select { background: rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 12px !important; }
-        input:focus, select:focus { border-color: var(--gold) !important; outline: none; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         
-        /* Avatar Styles */
-        #avatarPreview { width: 150px; height: 150px; margin: 0 auto; background: rgba(255,255,255,0.05); border-radius: 50%; border: 2px solid var(--gold); }
-        .control-label { font-size: 10px; color: #888; margin-bottom: 5px; display: block; font-weight: bold; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
+        input, select { 
+            background: rgba(0,0,0,0.5) !important; 
+            border: 1px solid rgba(255,255,255,0.1) !important; 
+            color: white !important; 
+            border-radius: 12px !important;
+            transition: 0.3s;
+        }
+        input:focus, select:focus { border-color: var(--gold) !important; outline: none; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        
+        /* Avatar Visuals */
+        .avatar-container {
+            position: relative;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            padding: 20px;
+            border-radius: 50%;
+        }
+        #avatarImg { width: 180px; height: 180px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+        
+        .control-group { margin-bottom: 15px; }
+        .control-label { font-size: 9px; color: var(--gold); letter-spacing: 1px; margin-bottom: 6px; display: block; font-weight: 900; text-transform: uppercase; }
+        
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
     </style>
 </head>
 <body class="py-10 px-4">
 
     <div id="successScreen" class="modal">
-        <div class="glass-card p-10 text-center max-w-md">
+        <div class="glass-card p-10 text-center max-w-md border-t-4 border-green-500">
             <div class="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                <i class="fas fa-check-double"></i>
+                <i class="fas fa-user-check"></i>
             </div>
-            <h2 class="orbitron text-2xl mb-2 text-green-400">IDENTITY CREATED</h2>
-            <p id="playerCodeDisplay" class="text-white font-black text-xl orbitron my-4"></p>
-            <p class="text-gray-400 text-sm">Welcome to EYC Academy, Hunter.</p>
-            <button onclick="window.location.reload()" class="mt-8 px-8 py-3 border border-yellow-500 text-yellow-500 rounded-full hover:bg-yellow-500 hover:text-black">REBOOT</button>
+            <h2 class="orbitron text-2xl mb-2 text-green-400">MISSION ACCEPTED</h2>
+            <p class="text-gray-400 text-sm mb-6">Your identity has been forged in the EYC archives.</p>
+            <button onclick="window.location.reload()" class="px-10 py-3 bg-green-600 text-white orbitron font-bold rounded-full hover:bg-green-500 transition-all">START ADVENTURE</button>
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto">
-        <header class="text-center mb-10">
-            <h1 class="orbitron text-4xl font-black text-yellow-500 tracking-widest">NEW PLAYER</h1>
-            <p class="text-[10px] text-gray-500 orbitron">INITIALIZING HUNTER PROTOCOL</p>
+    <div class="max-w-5xl mx-auto">
+        <header class="text-center mb-12">
+            <div class="inline-block px-4 py-1 border border-yellow-500/30 rounded-full mb-4">
+                <span class="text-[10px] orbitron text-yellow-500 tracking-[5px]">ENCRYPTED REGISTRATION</span>
+            </div>
+            <h1 class="orbitron text-5xl font-black text-white">FORGE <span class="text-yellow-500">IDENTITY</span></h1>
         </header>
 
-        <form id="regForm" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-1 glass-card p-6 flex flex-col items-center">
-                <h3 class="orbitron text-xs text-yellow-500 mb-6">AVATAR STUDIO</h3>
-                <img id="avatarImg" src="https://avataaars.io/" alt="Avatar" class="w-40 h-40 mb-6">
-                
-                <div class="w-full space-y-4">
-                    <div>
-                        <span class="control-label">HAIR / TOP</span>
-                        <select onchange="updateAvatar()" id="topType" class="w-full p-2 text-xs">
-                            <option value="ShortHairShortFlat">Short Flat</option>
-                            <option value="LongHairStraight">Long Straight</option>
-                            <option value="LongHairCurvy">Long Curvy</option>
-                            <option value="ShortHairTheCaesar">The Caesar</option>
-                            <option value="ShortHairDreads01">Dreads</option>
-                            <option value="Eyepatch">Eyepatch</option>
+        <form id="regForm" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-5 glass-card p-8 flex flex-col items-center">
+                <div class="avatar-container mb-8">
+                    <img id="avatarImg" src="" alt="Hunter Avatar">
+                </div>
+
+                <div class="w-full grid grid-cols-2 gap-4 h-[350px] overflow-y-auto pr-2 custom-scroll">
+                    <div class="control-group col-span-2">
+                        <label class="control-label"><i class="fas fa-venus-mars mr-1"></i> Gender Style</label>
+                        <select onchange="updateAvatar()" id="gender" class="w-full p-3 text-xs">
+                            <option value="ShortHair">Male Style</option>
+                            <option value="LongHair">Female Style</option>
                         </select>
                     </div>
-                    <div>
-                        <span class="control-label">ACCESSORIES</span>
-                        <select onchange="updateAvatar()" id="accessoriesType" class="w-full p-2 text-xs">
+
+                    <div class="control-group">
+                        <label class="control-label">Skin Color</label>
+                        <select onchange="updateAvatar()" id="skinColor" class="w-full p-3 text-xs">
+                            <option value="Light">Light</option>
+                            <option value="Pale">Pale</option>
+                            <option value="Tanned">Tanned</option>
+                            <option value="Brown">Brown</option>
+                            <option value="DarkBrown">Dark Brown</option>
+                            <option value="Black">Black</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Eye Type</label>
+                        <select onchange="updateAvatar()" id="eyeType" class="w-full p-3 text-xs">
+                            <option value="Default">Default</option>
+                            <option value="Happy">Happy</option>
+                            <option value="Squint">Squint</option>
+                            <option value="EyeRoll">Eye Roll</option>
+                            <option value="Side">Looking Side</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Hair Style</label>
+                        <select onchange="updateAvatar()" id="topType" class="w-full p-3 text-xs">
+                            <optgroup label="Short Styles">
+                                <option value="ShortHairShortFlat">Flat Top</option>
+                                <option value="ShortHairTheCaesar">Caesar</option>
+                                <option value="ShortHairDreads01">Dreads</option>
+                                <option value="ShortHairFrizzle">Frizzle</option>
+                                <option value="ShortHairShaggyMullet">Shaggy</option>
+                            </optgroup>
+                            <optgroup label="Long Styles">
+                                <option value="LongHairStraight">Straight</option>
+                                <option value="LongHairCurvy">Curvy</option>
+                                <option value="LongHairBob">Bob</option>
+                                <option value="LongHairDreads">Long Dreads</option>
+                                <option value="LongHairFro">Fro</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Hair Color</label>
+                        <select onchange="updateAvatar()" id="hairColor" class="w-full p-3 text-xs">
+                            <option value="Black">Black</option>
+                            <option value="BrownDark">Dark Brown</option>
+                            <option value="BlondeGolden">Golden Blonde</option>
+                            <option value="SilverGray">Silver</option>
+                            <option value="Red">Red</option>
+                            <option value="PastelPink">Pink</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Outfit</label>
+                        <select onchange="updateAvatar()" id="clotheType" class="w-full p-3 text-xs">
+                            <option value="Hoodie">Hoodie</option>
+                            <option value="BlazerShirt">Blazer & Shirt</option>
+                            <option value="GraphicShirt">Graphic Tee</option>
+                            <option value="Overall">Overall</option>
+                            <option value="ShirtCrewNeck">Crew Neck</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Accessory</label>
+                        <select onchange="updateAvatar()" id="accessoriesType" class="w-full p-3 text-xs">
                             <option value="Blank">None</option>
                             <option value="Prescription02">Glasses</option>
                             <option value="Sunglasses">Sunglasses</option>
-                            <option value="Round">Round Glasses</option>
-                        </select>
-                    </div>
-                    <div>
-                        <span class="control-label">CLOTHES</span>
-                        <select onchange="updateAvatar()" id="clotheType" class="w-full p-2 text-xs">
-                            <option value="Hoodie">Hoodie</option>
-                            <option value="Overall">Overall</option>
-                            <option value="BlazerShirt">Blazer</option>
-                            <option value="GraphicShirt">Graphic Tee</option>
+                            <option value="Wayfarers">Wayfarers</option>
+                            <option value="Round">Round</option>
                         </select>
                     </div>
                 </div>
-                <button type="button" onclick="randomAvatar()" class="mt-6 text-[10px] orbitron text-yellow-500/50 hover:text-yellow-500 transition-colors">
-                    <i class="fas fa-random"></i> RANDOMIZE
+
+                <button type="button" onclick="randomAvatar()" class="mt-6 w-full py-3 border border-yellow-500/20 rounded-xl text-[10px] orbitron hover:bg-yellow-500/10 transition-all">
+                    <i class="fas fa-dice mr-2"></i> RANDOMIZE HUNTER
                 </button>
             </div>
 
-            <div class="lg:col-span-2 glass-card p-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-500 mb-2">FULL NAME (ENGLISH)</label>
-                        <input type="text" name="fullName" required placeholder="First & Last Name" class="w-full p-3">
+            <div class="lg:col-span-7 glass-card p-10 space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="relative">
+                        <label class="block text-[10px] font-black text-gray-500 mb-3 tracking-widest">FULL NAME (ENGLISH)</label>
+                        <input type="text" name="fullName" required placeholder="Ex: John Doe" class="w-full p-4">
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-500 mb-2">AGE</label>
-                        <input type="number" name="age" required placeholder="Years" class="w-full p-3">
+                    <div class="relative">
+                        <label class="block text-[10px] font-black text-gray-500 mb-3 tracking-widest">AGE</label>
+                        <input type="number" name="age" required placeholder="Years" class="w-full p-4">
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-500 mb-2">GOOGLE EMAIL</label>
-                    <input type="email" name="email" required placeholder="example@gmail.com" class="w-full p-3">
+                <div class="relative">
+                    <label class="block text-[10px] font-black text-gray-500 mb-3 tracking-widest">ACADEMY EMAIL</label>
+                    <input type="email" name="email" required placeholder="hunter@eyc-academy.com" class="w-full p-4">
                 </div>
 
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-500 mb-4">CHOOSE MISSION PROGRAMS</label>
+                <div class="space-y-4">
+                    <label class="block text-[10px] font-black text-gray-500 tracking-widest">MISSION CLEARANCE</label>
                     <div class="grid grid-cols-2 gap-4">
-                        <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
-                            <input type="checkbox" name="prog" value="Season" class="w-5 h-5 accent-yellow-500">
-                            <span class="text-sm font-bold">Season</span>
+                        <label class="flex items-center gap-4 p-5 bg-black/40 rounded-2xl border border-white/5 cursor-pointer hover:border-yellow-500/30 transition-all">
+                            <input type="checkbox" name="prog" value="Season" class="w-6 h-6 accent-yellow-500">
+                            <div>
+                                <span class="block text-sm font-bold">Season</span>
+                                <span class="text-[9px] text-gray-500 uppercase">Standard Access</span>
+                            </div>
                         </label>
-                        <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
-                            <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-5 h-5 accent-yellow-500">
-                            <span class="text-sm font-bold text-blue-400">XBoX Elite</span>
+                        <label class="flex items-center gap-4 p-5 bg-black/40 rounded-2xl border border-white/5 cursor-pointer hover:border-blue-500/30 transition-all">
+                            <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-6 h-6 accent-blue-500">
+                            <div>
+                                <span class="block text-sm font-bold text-blue-400">XBoX Elite</span>
+                                <span class="text-[9px] text-gray-500 uppercase">Pro Hunter</span>
+                            </div>
                         </label>
                     </div>
                 </div>
 
-                <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl space-y-4">
-                    <label class="block text-[10px] font-bold text-blue-400">SELECT XBOX ACCESS METHOD</label>
-                    <div class="flex flex-col gap-2">
+                <div id="xboxSubMethod" style="display: none;" class="p-6 bg-blue-500/5 border border-blue-500/20 rounded-2xl animate-pulse-slow">
+                    <label class="block text-[10px] font-black text-blue-400 mb-4 tracking-widest">XBoX ACCESS PROTOCOL</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
                             <input type="radio" name="xboxType" value="Free" checked onchange="toggleTicketInputs()">
-                            <span class="text-sm">Free (Limited Access)</span>
+                            <span class="text-xs">Free Tier</span>
                         </label>
                         <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
                             <input type="radio" name="xboxType" value="GT" onchange="toggleTicketInputs()">
-                            <span class="text-sm">Redeem Golden Tickets (Full Access)</span>
+                            <span class="text-xs">Golden Ticket</span>
                         </label>
+                    </div>
+                    
+                    <div id="ticketInputs" style="display: none;" class="mt-4 grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                        <input type="text" id="ticket1" placeholder="CODE 01" class="p-3 text-xs">
+                        <input type="text" id="ticket2" placeholder="CODE 02" class="p-3 text-xs">
                     </div>
                 </div>
 
-                <div id="ticketInputs" style="display: none;" class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl space-y-3">
-                    <p class="text-[10px] text-yellow-500 orbitron">REQUIRED: 2 GOLDEN TICKETS</p>
-                    <input type="text" id="ticket1" placeholder="GT Code 1" class="w-full p-3 text-sm">
-                    <input type="text" id="ticket2" placeholder="GT Code 2" class="w-full p-3 text-sm">
-                </div>
-
-                <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl flex items-center justify-center gap-3">
-                    <span id="btnText">FINALIZE REGISTRATION</span>
+                <button type="submit" id="submitBtn" class="w-full py-6 bg-yellow-500 text-black orbitron font-black rounded-3xl flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-yellow-500/10">
+                    <span id="btnText">FINALIZE IDENTITY</span>
                     <div id="loader" class="loader"></div>
                 </button>
             </div>
@@ -147,17 +232,23 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcOhNnV2PWqFeYDDSqkApvj5L2wm08s_CVU2aNTq69R3IV2F6Q8knx68eYjvrqVEXJMw/exec";
 
         function updateAvatar() {
+            const gender = document.getElementById('gender').value;
             const top = document.getElementById('topType').value;
-            const acc = document.getElementById('accessoriesType').value;
+            const hairColor = document.getElementById('hairColor').value;
+            const skin = document.getElementById('skinColor').value;
+            const eye = document.getElementById('eyeType').value;
             const cloth = document.getElementById('clotheType').value;
+            const acc = document.getElementById('accessoriesType').value;
             
-            // تعديل الرابط ليتناسب مع خيارات الطالب
-            const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}&accessoriesType=${acc}&hairColor=Black&facialHairType=Blank&clotheType=${cloth}&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light`;
-            document.getElementById('avatarImg').src = url;
+            // API Avataaars URL Construction
+            const baseUrl = "https://avataaars.io/?avatarStyle=Transparent";
+            const params = `&topType=${top}&accessoriesType=${acc}&hairColor=${hairColor}&facialHairType=Blank&clotheType=${cloth}&eyeType=${eye}&eyebrowType=Default&mouthType=Default&skinColor=${skin}`;
+            
+            document.getElementById('avatarImg').src = baseUrl + params;
         }
 
         function randomAvatar() {
-            const selects = document.querySelectorAll('select');
+            const selects = document.querySelectorAll('#regForm select');
             selects.forEach(s => {
                 const options = s.options;
                 s.selectedIndex = Math.floor(Math.random() * options.length);
@@ -172,9 +263,9 @@
         }
 
         function toggleTicketInputs() {
-            const xboxTypeRadio = document.querySelector('input[name="xboxType"]:checked');
-            const isGT = xboxTypeRadio && xboxTypeRadio.value === 'GT' && document.getElementById('xboxCheck').checked;
-            document.getElementById('ticketInputs').style.display = isGT ? 'block' : 'none';
+            const xboxRadio = document.querySelector('input[name="xboxType"]:checked');
+            const isGT = xboxRadio && xboxRadio.value === 'GT' && document.getElementById('xboxCheck').checked;
+            document.getElementById('ticketInputs').style.display = isGT ? 'grid' : 'none';
         }
 
         document.getElementById('regForm').onsubmit = async function(e) {
@@ -196,27 +287,25 @@
                 age: formData.get('age'),
                 email: formData.get('email'),
                 programs: progs.join(', '),
-                image: document.getElementById('avatarImg').src, // إرسال رابط الأفاتار كصورة
-                ticket1: document.getElementById('ticket1').value,
-                ticket2: document.getElementById('ticket2').value,
+                image: document.getElementById('avatarImg').src,
+                ticket1: document.getElementById('ticket1').value || "",
+                ticket2: document.getElementById('ticket2').value || "",
                 isXboxGT: (progs.includes('XBoX') && document.querySelector('input[name="xboxType"]:checked')?.value === 'GT')
             };
 
             try {
-                const response = await fetch(SCRIPT_URL, {
+                // إرسال البيانات للـ Google Apps Script
+                await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // لضمان الإرسال لـ Apps Script
+                    mode: 'no-cors',
                     cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 
-                // في حالة no-cors لا يمكن قراءة الـ JSON لكن يمكننا افتراض النجاح إذا لم يحدث Error
-                document.getElementById('playerCodeDisplay').innerText = "REGISTRATION SENT";
                 document.getElementById('successScreen').style.display = 'flex';
                 this.reset();
             } catch (err) {
-                alert("Critical Error during transmission.");
+                alert("Identity sync failed. Check your connection.");
             } finally {
                 btnText.style.display = 'block';
                 loader.style.display = 'none';
@@ -224,7 +313,6 @@
             }
         };
 
-        // Initialize avatar
         window.onload = updateAvatar;
     </script>
 </body>

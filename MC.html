@@ -74,7 +74,7 @@
     <canvas id="rank-canvas"></canvas>
     
     <div class="top-nav">
-        <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
+        <div class="logo-placeholder"><img src="assets/logo.png" alt="EYC"></div>
         <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
         <div class="user-name-display" id="userName"></div>
     </div>
@@ -120,12 +120,12 @@
         
         const activities = {
             season: [
-                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
-                { name: 'Seeds', code: 'SS', icon: 'fa-seedling', tk: '5' },
-                { name: 'Label', code: 'LS', icon: 'fa-tag', tk: '5' },
-                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass', tk: '5' },
-                { name: 'Vivid', code: 'VS', icon: 'fa-eye', tk: '5' },
-                { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' }
+                { name: 'Golden Ear', code: 'GE', icon: 'fa-ear-listen', tk: '5' },
+                { name: 'Seeds', code: 'S', icon: 'fa-seedling', tk: '5' },
+                { name: 'Label', code: 'L', icon: 'fa-tag', tk: '5' },
+                { name: 'Grammar', code: 'G', icon: 'fa-magnifying-glass', tk: '5' },
+                { name: 'Vivid', code: 'V', icon: 'fa-eye', tk: '5' },
+                { name: 'Alike', code: 'A', icon: 'fa-equals', tk: '5' }
             ],
             xbox: [
                 { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: '5' },
@@ -164,20 +164,13 @@
             });
         }
 
-        // --- الدالة المستبدلة بناءً على طلبك ---
+        // --- الدالة المحدثة للربط بين الهب والترمينال ---
         function openMissions(el, idx) {
             const mode = document.querySelector('.mode-btn.active').classList.contains('season-mode') ? 'season' : 'xbox';
             const actData = activities[mode][idx];
             
-            // الأكواد المختصرة لكل نشاط عشان تطابق أسماء الملفات في MIF
-            const codes = {
-                'Golden Ear': 'GE', 'Seeds': 'S', 'Label': 'L', 'Grammar': 'G', 'Vivid': 'V', 'Alike': 'A',
-                'Golden Ear X': 'GEX', 'Alike X': 'AX', 'Seeds X': 'SX', 'Grammar X': 'GX', 
-                'Label X': 'LX', 'Vivid X': 'VX', 'Figurative X': 'FX', 'Dictation X': 'DX', 
-                'SSS X': 'SSSX', 'Elmagazine X': 'ELX'
-            };
-            
-            const actCode = codes[actData.name] || 'ACT';
+            // نستخدم الكود مباشرة من مصفوفة الـ activities
+            const actCode = actData.code;
             
             // تأثيرات بصرية عند الفتح
             document.getElementById('mainHeader').style.opacity = '0';
@@ -202,7 +195,6 @@
                 b.className = 'mission-bubble';
                 b.innerText = 'M'+i;
                 
-                // توزيع الدوائر بشكل دائري منسق للموبايل
                 const angle = (i * 36) * (Math.PI / 180);
                 const radius = window.innerWidth < 500 ? 120 : 160; 
                 b.style.left = `calc(50% + ${Math.cos(angle) * radius}px - 27px)`;
@@ -211,12 +203,11 @@
 
                 b.onclick = () => {
                     if(!isLogged) {
-                        alert("Login Required!");
+                        alert("برجاء تسجيل الدخول أولاً يا بطل!");
                         openLogin();
                     } else {
-                        // التوجيه لصفحة الـ Terminal مع البيانات
-                        const targetPage = (mode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                        window.location.href = `${targetPage}?act=${actCode}&m=${i}&name=${encodeURIComponent(actData.name)}`;
+                        // التوجيه لصفحة Terminal.html (الصفحة التي صممناها سوياً)
+                        window.location.href = `Terminal.html?act=${actCode}&m=${i}&name=${encodeURIComponent(actData.name)}`;
                     }
                 };
                 layer.appendChild(b);

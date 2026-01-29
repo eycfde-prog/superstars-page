@@ -44,12 +44,13 @@
 
         /* --- Mission Hub (Orbit) --- */
         #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
-        .mission-bubble { position: absolute; width: 54px; height: 54px; border: 2px solid var(--neon-blue); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 13px; cursor: pointer; transition: 0.3s; pointer-events: auto; }
+        .mission-bubble { position: absolute; width: 50px; height: 50px; border: 2px solid var(--neon-blue); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 13px; cursor: pointer; transition: 0.3s; pointer-events: auto; opacity: 0; transform: scale(0); animation: popIn 0.4s forwards; }
+        @keyframes popIn { to { opacity: 1; transform: scale(1); } }
         .mission-bubble:active { transform: scale(0.9); background: var(--neon-blue); }
 
         /* --- UI Controls --- */
-        .rank-header { text-align: center; padding-top: 70px; transition: 0.4s; }
-        .toggle-container { display: flex; justify-content: center; gap: 8px; margin: 15px 0; transition: 0.4s; }
+        .rank-header { text-align: center; padding-top: 70px; }
+        .toggle-container { display: flex; justify-content: center; gap: 8px; margin: 15px 0; }
         .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--ui-border); color: #fff; padding: 8px 15px; border-radius: 4px; font-family: 'Orbitron'; font-size: 9px; cursor: pointer; opacity: 0.4; transition: 0.3s; }
         .mode-btn.active { opacity: 1; box-shadow: 0 0 15px var(--accent-gold); background: rgba(255, 204, 0, 0.1); border-color: var(--accent-gold); }
         .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent-gold); color: #000; padding: 12px 25px; border-radius: 5px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 11px; box-shadow: 0 0 20px rgba(255,204,0,0.4); }
@@ -74,7 +75,7 @@
     <canvas id="rank-canvas"></canvas>
     
     <div class="top-nav">
-        <div class="logo-placeholder"><img src="assets/logo.png" alt="EYC"></div>
+        <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
         <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
         <div class="user-name-display" id="userName"></div>
     </div>
@@ -120,12 +121,12 @@
         
         const activities = {
             season: [
-                { name: 'Golden Ear', code: 'GE', icon: 'fa-ear-listen', tk: '5' },
-                { name: 'Seeds', code: 'S', icon: 'fa-seedling', tk: '5' },
-                { name: 'Label', code: 'L', icon: 'fa-tag', tk: '5' },
-                { name: 'Grammar', code: 'G', icon: 'fa-magnifying-glass', tk: '5' },
-                { name: 'Vivid', code: 'V', icon: 'fa-eye', tk: '5' },
-                { name: 'Alike', code: 'A', icon: 'fa-equals', tk: '5' }
+                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
+                { name: 'Seeds', code: 'SS', icon: 'fa-seedling', tk: '5' },
+                { name: 'Label', code: 'LS', icon: 'fa-tag', tk: '5' },
+                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass', tk: '5' },
+                { name: 'Vivid', code: 'VS', icon: 'fa-eye', tk: '5' },
+                { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' }
             ],
             xbox: [
                 { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: '5' },
@@ -150,7 +151,7 @@
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide" onclick="openMissions(this, ${index})">
+                <div class="swiper-slide" onclick="openMissions(this, ${index}, '${mode}')">
                     <div class="token-badge">${act.tk} TK</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
@@ -164,54 +165,63 @@
             });
         }
 
-        // --- الدالة المحدثة للربط بين الهب والترمينال ---
-        function openMissions(el, idx) {
-            const mode = document.querySelector('.mode-btn.active').classList.contains('season-mode') ? 'season' : 'xbox';
-            const actData = activities[mode][idx];
+        // الدالة المعدلة كما طلبت تماماً
+        function openMissions(cardElement, index, mode) {
+            const actData = activities[mode][index];
             
-            // نستخدم الكود مباشرة من مصفوفة الـ activities
-            const actCode = actData.code;
-            
-            // تأثيرات بصرية عند الفتح
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
-            el.style.position = "fixed";
-            el.style.top = "50%";
-            el.style.left = "50%";
-            el.style.transform = "translate(-50%, -50%) scale(0.6)";
-            el.style.zIndex = "100";
-            el.style.pointerEvents = "none";
-            document.querySelectorAll('.swiper-slide').forEach(slide => { if (slide !== el) slide.style.opacity = '0'; });
+            
+            cardElement.style.position = "fixed";
+            cardElement.style.top = "50%";
+            cardElement.style.left = "50%";
+            cardElement.style.transform = "translate(-50%, -50%) scale(0.6)";
+            cardElement.style.zIndex = "100";
+            cardElement.style.pointerEvents = "none";
+
+            document.querySelectorAll('.swiper-slide').forEach(slide => { 
+                if (slide !== cardElement) slide.style.opacity = '0'; 
+            });
+            
             currentSwiper.allowTouchMove = false;
 
-            const layer = document.getElementById('missions-layer');
-            layer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            layer.innerHTML = '';
-
-            // إنشاء 10 دوائر للمهمات
-            for(let i=1; i<=10; i++) {
-                const b = document.createElement('div');
-                b.className = 'mission-bubble';
-                b.innerText = 'M'+i;
+            setTimeout(() => {
+                const layer = document.getElementById('missions-layer');
+                layer.innerHTML = ''; 
+                layer.style.display = 'flex';
+                document.getElementById('backBtn').style.display = 'block';
                 
-                const angle = (i * 36) * (Math.PI / 180);
-                const radius = window.innerWidth < 500 ? 120 : 160; 
-                b.style.left = `calc(50% + ${Math.cos(angle) * radius}px - 27px)`;
-                b.style.top = `calc(50% + ${Math.sin(angle) * radius}px - 27px)`;
-                b.style.animation = `popIn 0.4s forwards ${i * 0.05}s`;
+                const radius = window.innerWidth < 500 ? 130 : 170;
+                
+                for (let i = 1; i <= 10; i++) {
+                    const angle = (i * 36 - 90) * (Math.PI / 180); 
+                    const x = Math.cos(angle) * radius; 
+                    const y = Math.sin(angle) * radius;
+                    
+                    const bubble = document.createElement('div');
+                    bubble.className = 'mission-bubble';
+                    bubble.style.animationDelay = `${i * 0.05}s`;
+                    bubble.innerHTML = `<span>${i}</span>`;
+                    bubble.style.left = `calc(50% + ${x}px - 25px)`;
+                    bubble.style.top = `calc(50% + ${y}px - 25px)`;
+                    
+                    bubble.onclick = (e) => {
+                        e.stopPropagation();
+                        if(!isLogged) {
+                            openLogin();
+                        } else {
+                            // التوجيه الذكي بناءً على نوع الكرت
+                            const targetPage = (mode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
+                            const actCode = actData.code + i;
+                            const mNum = i;
+                            const actName = actData.name;
 
-                b.onclick = () => {
-                    if(!isLogged) {
-                        alert("برجاء تسجيل الدخول أولاً يا بطل!");
-                        openLogin();
-                    } else {
-                        // التوجيه لصفحة Terminal.html (الصفحة التي صممناها سوياً)
-                        window.location.href = `Terminal.html?act=${actCode}&m=${i}&name=${encodeURIComponent(actData.name)}`;
-                    }
-                };
-                layer.appendChild(b);
-            }
+                            window.location.href = `${targetPage}?act=${actCode}&m=${mNum}&name=${encodeURIComponent(actName)}`;
+                        }
+                    };
+                    layer.appendChild(bubble);
+                }
+            }, 400);
         }
 
         function resetView() {

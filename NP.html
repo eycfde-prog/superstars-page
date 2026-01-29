@@ -88,7 +88,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-[10px] text-gray-400 mb-2 orbitron">GENDER BASE</label>
-                            <select onchange="updateAvatar(); toggleHijabOption();" id="gender" class="w-full p-4">
+                            <select onchange="toggleHijabOption()" id="gender" class="w-full p-4">
                                 <option value="ShortHair">Male Style</option>
                                 <option value="LongHair">Female Style</option>
                             </select>
@@ -106,13 +106,20 @@
                         <div class="md:col-span-2">
                             <label class="block text-[10px] text-gray-400 mb-2 orbitron">HAIR / HEADWEAR</label>
                             <select onchange="updateAvatar()" id="topType" class="w-full p-4">
-                                <option value="ShortHairShortFlat">Flat Top</option>
-                                <option value="ShortHairTheCaesar">Caesar</option>
-                                <option value="ShortHairFrizzle">Curly Short</option>
-                                <option value="LongHairStraight">Straight Long</option>
-                                <option value="LongHairBigHair">Big Hair</option>
-                                <option id="hijabOption" value="Hijab" style="display:none;">Hijab (Modest Style)</option>
-                                <option value="NoHair">Bald</option>
+                                <option value="NoHair">Bald / Shaved</option>
+                                
+                                <optgroup label="Masculine Styles" id="maleStyles">
+                                    <option value="ShortHairShortFlat">Flat Top</option>
+                                    <option value="ShortHairTheCaesar">Caesar</option>
+                                    <option value="ShortHairFrizzle">Curly Short</option>
+                                </optgroup>
+
+                                <optgroup label="Feminine Styles" id="femaleStyles" style="display:none;">
+                                    <option value="LongHairStraight">Straight Long</option>
+                                    <option value="LongHairBigHair">Big Hair</option>
+                                    <option value="LongHairCurly">Long Curly</option>
+                                    <option value="Hijab" id="hijabOption" style="display:none;">Hijab (Modest Style)</option>
+                                </optgroup>
                             </select>
                         </div>
                     </div>
@@ -217,14 +224,23 @@
 
         function toggleHijabOption() {
             const gender = document.getElementById('gender').value;
-            const hijab = document.getElementById('hijabOption');
-            if(gender === 'LongHair') {
-                hijab.style.display = 'block';
+            const hijabOption = document.getElementById('hijabOption');
+            const femaleStyles = document.getElementById('femaleStyles');
+            const maleStyles = document.getElementById('maleStyles');
+            const topType = document.getElementById('topType');
+
+            if (gender === 'LongHair') {
+                // Female logic
+                hijabOption.style.display = 'block';
+                femaleStyles.style.display = 'block';
+                maleStyles.style.display = 'none';
+                topType.value = 'LongHairStraight'; // Default female hair
             } else {
-                hijab.style.display = 'none';
-                if(document.getElementById('topType').value === 'Hijab') {
-                    document.getElementById('topType').value = 'ShortHairShortFlat';
-                }
+                // Male logic
+                hijabOption.style.display = 'none';
+                femaleStyles.style.display = 'none';
+                maleStyles.style.display = 'block';
+                topType.value = 'ShortHairShortFlat'; // Default male hair
             }
             updateAvatar();
         }
@@ -238,6 +254,7 @@
             const acc = document.getElementById('accessoriesType').value;
             
             const baseUrl = "https://avataaars.io/?avatarStyle=Transparent";
+            // Note: If top is Hijab, hairColor applies to the Hijab fabric in most implementations
             const params = `&topType=${top}&accessoriesType=${acc}&hairColor=${hairColor}&facialHairType=Blank&clotheType=${cloth}&eyeType=${eye}&eyebrowType=Default&mouthType=Default&skinColor=${skin}`;
             
             const finalUrl = baseUrl + params;

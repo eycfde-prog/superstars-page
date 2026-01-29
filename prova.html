@@ -88,7 +88,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZgOfNcYCbHtPQ0HPnBdthidc5UgIsDL-NPVCgvyXgSco-QSZFcTiPZ8JEQ6GeSRkd5A/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwiTgShsFGsT8926yv_1muFnqx3gHeeW54tV9OLrgq4vr40377fziyG12PDdTec5C6wFw/exec";
         let currentStep = 1;
         let config = {
             topType: 'ShortHairShortFlat',
@@ -108,9 +108,18 @@
             document.getElementById('currentAvatarImg').src = url;
         }
 
-        function openAvatarModal() { document.getElementById('avatarModal').style.display = 'flex'; }
-        function nextStep() { if(currentStep < 4) switchStep(currentStep + 1); }
-        function prevStep() { if(currentStep > 1) switchStep(currentStep - 1); else document.getElementById('avatarModal').style.display = 'none'; }
+        function openAvatarModal() { 
+            document.getElementById('avatarModal').style.display = 'flex'; 
+        }
+
+        function nextStep() { 
+            if(currentStep < 4) switchStep(currentStep + 1); 
+        }
+
+        function prevStep() { 
+            if(currentStep > 1) switchStep(currentStep - 1); 
+            else document.getElementById('avatarModal').style.display = 'none'; 
+        }
 
         function switchStep(s) {
             document.getElementById(`step${currentStep}`).classList.remove('active');
@@ -119,9 +128,11 @@
             document.getElementById('stepCounter').innerText = `${currentStep} / 4`;
         }
 
+        // الدالة المدمجة حديثاً لإنهاء التخصيص
         function finishAvatar() {
             document.getElementById('avatarModal').style.display = 'none';
-            document.getElementById('finalPreview').innerHTML = `<img src="${document.getElementById('currentAvatarImg').src}" class="w-full h-full">`;
+            const finalUrl = document.getElementById('currentAvatarImg').src;
+            document.getElementById('finalPreview').innerHTML = `<img src="${finalUrl}" class="w-full h-full object-cover">`;
         }
 
         document.getElementById('regForm').onsubmit = async (e) => {
@@ -133,7 +144,7 @@
             const payload = {
                 name: document.getElementById('fullName').value,
                 email: document.getElementById('email').value,
-                image: document.getElementById('currentAvatarImg').src // إرسال رابط الأفاتار كصورة
+                image: document.getElementById('currentAvatarImg').src
             };
 
             try {

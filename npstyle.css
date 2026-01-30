@@ -5,157 +5,191 @@
     --neon-blue: #00d2ff;
 }
 
+* { -webkit-tap-highlight-color: transparent; }
+
 body { 
     font-family: 'Poppins', sans-serif; 
-    background: var(--bg-dark); 
+    background: var(--bg-dark);
     color: white; 
-    margin: 0; padding: 0;
-    overflow-x: hidden;
-    height: 100vh;
-}
-
-/* --- Layout Elements --- */
-.identity-engine {
-    height: 100vh;
+    min-height: 100vh; 
+    margin: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    position: relative;
-    padding: 20px;
+    justify-content: center;
+    overflow-x: hidden;
 }
 
-.step-panel {
-    display: none;
+.orbitron { font-family: 'Orbitron', sans-serif; }
+
+/* --- Identity Forge Layout --- */
+.forge-container {
     width: 100%;
     max-width: 500px;
-    animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.step-panel.active {
-    display: flex;
-    flex-direction: column;
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateX(50px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-/* --- Avatar Stage --- */
-.avatar-stage {
+    padding: 20px;
     position: relative;
-    margin-bottom: 2rem;
-    background: radial-gradient(circle, rgba(255, 204, 0, 0.1) 0%, transparent 70%);
+}
+
+.glass-card { 
+    background: rgba(10, 10, 15, 0.9); 
+    backdrop-filter: blur(20px); 
+    border: 1px solid rgba(255, 204, 0, 0.2); 
+    border-radius: 40px; 
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+/* --- Avatar Section --- */
+.avatar-view {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 25px;
+}
+
+.avatar-view::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border: 2px dashed var(--gold);
+    border-radius: 50%;
+    animation: rotate 15s linear infinite;
+    opacity: 0.3;
 }
 
 #avatarImg { 
-    width: 200px; 
-    height: 200px; 
-    filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.3)); 
-}
-
-/* --- Customizer Tabs --- */
-.tabs-scroll {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
     width: 100%;
-    scrollbar-width: none;
-}
-.tabs-scroll::-webkit-scrollbar { display: none; }
-
-.tab-btn {
-    white-space: nowrap;
-    background: rgba(255,255,255,0.05);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-family: 'Orbitron';
-    border: 1px solid rgba(255,204,0,0.1);
-    transition: 0.3s;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,204,0,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-.tab-btn.active {
+.random-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
     background: var(--gold);
-    color: #000;
-}
-
-/* --- Options Grid --- */
-.options-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 5px;
-}
-
-.option-item {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    font-size: 9px;
-    transition: 0.3s;
-}
-
-.option-item:hover, .option-item.selected {
-    border-color: var(--gold);
-    background: rgba(255,204,0,0.1);
-}
-
-/* --- Form --- */
-.custom-input { 
-    background: rgba(255,255,255,0.05) !important; 
-    border: 1px solid rgba(255,204,0,0.2) !important; 
-    color: white !important; 
-    border-radius: 12px !important;
-    padding: 15px !important;
-    font-family: 'Poppins';
-}
-
-.checkbox-container {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 12px;
+    color: black;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 15px var(--gold);
+    z-index: 10;
+    border: none;
 }
 
-/* --- Success Modal --- */
+/* --- Form Elements --- */
+.custom-input { 
+    background: rgba(255,255,255,0.05) !important; 
+    border: 1px solid rgba(255,255,255,0.1) !important; 
+    color: white !important; 
+    border-radius: 15px !important;
+    padding: 15px !important;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.custom-input:focus { border-color: var(--gold) !important; background: rgba(255,204,0,0.05) !important; }
+
+.checkbox-container {
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    padding: 15px; 
+    background: rgba(255,255,255,0.03); 
+    border-radius: 15px; 
+    border: 1px solid rgba(255,255,255,0.05); 
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.checkbox-container:has(input:checked) {
+    border-color: var(--gold);
+    background: rgba(255,204,0,0.05);
+}
+
+/* --- Step Logic --- */
+.step-content { display: none; }
+.step-content.active { 
+    display: block; 
+    animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
+
+/* --- Buttons --- */
+.nav-buttons { display: flex; gap: 10px; margin-top: 25px; }
+
+.btn-primary {
+    flex: 2;
+    background: var(--gold);
+    color: black;
+    font-family: 'Orbitron';
+    font-weight: 900;
+    padding: 16px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-secondary {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    font-family: 'Orbitron';
+    border-radius: 15px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.skip-btn {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    text-decoration: none;
+    font-family: 'Orbitron';
+    cursor: pointer;
+}
+
+/* --- Success Screen --- */
 .modal { 
     display: none; 
     position: fixed; 
     inset: 0; 
-    background: #000; 
+    background: var(--bg-dark); 
     z-index: 2000; 
     align-items: center; 
     justify-content: center; 
+    padding: 20px; 
 }
 
-.id-card {
-    background: #0a0a0f;
+.final-card {
+    background: #000;
     border: 1px solid var(--gold);
-    width: 90%;
-    max-width: 350px;
-    padding: 30px;
+    border-radius: 35px;
+    padding: 40px 25px;
     text-align: center;
-    clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 50px rgba(255, 204, 0, 0.2);
 }
 
-.loader { 
-    border: 3px solid rgba(255,255,255,0.1); 
-    border-top: 3px solid var(--gold); 
-    border-radius: 50%; width: 20px; height: 20px; 
-    animation: spin 1s linear infinite; 
-    display: none;
+@keyframes slideUp { 
+    from { opacity: 0; transform: translateY(30px); } 
+    to { opacity: 1; transform: translateY(0); } 
 }
 
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.loader {
+    width: 20px; height: 20px; border: 3px solid #000; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; margin: 0 auto;
+}
 @keyframes spin { to { transform: rotate(360deg); } }

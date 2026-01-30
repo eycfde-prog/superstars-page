@@ -65,42 +65,181 @@
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const actCode = urlParams.get('act') || 'GES'; 
-        const mNum = urlParams.get('m') || '1';  
-        const actName = urlParams.get('name') || 'Activity'; 
 
-        document.getElementById('actNameDisplay').innerText = actName;
-        document.getElementById('actCodeDisplay').innerText = actCode;
-        document.getElementById('missionNum').innerText = 'M ' + mNum;
-        document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
+    const urlParams = new URLSearchParams(window.location.search);
 
-        function initMission() {
-            const fileName = `${actCode}${mNum}.html`;
-            document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
+    const actCode = urlParams.get('act') || 'GES'; 
+
+    const mNum = urlParams.get('m') || '1';  
+
+    const actName = urlParams.get('name') || 'Activity'; 
+
+
+
+    // رابط الـ App Script الخاص بك (ضعه هنا بعد النشر)
+
+    const SCRIPT_URL = "ضع_رابط_السكريبت_هنا";
+
+
+
+    document.getElementById('actNameDisplay').innerText = actName;
+
+    document.getElementById('actCodeDisplay').innerText = actCode;
+
+    document.getElementById('missionNum').innerText = 'M ' + mNum;
+
+    document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
+
+
+
+    function initMission() {
+
+        const fileName = `${actCode}${mNum}.html`;
+
+        document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
+
+    }
+
+
+
+    window.onload = () => {
+
+        initMission(); 
+
+        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+
+        if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
+
+        if(saved.image) {
+
+            let img = saved.image;
+
+            if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
+
+            document.getElementById('studentImg').src = img;
+
         }
 
-        window.onload = () => {
-            initMission(); 
-            const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
-            if(saved.image) {
-                let img = saved.image;
-                if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
-                document.getElementById('studentImg').src = img;
-            }
-        };
+    };
 
-        function toggleGuide(show) {
-            if(show) {
-                document.getElementById('guideFrame').src = `assets/MIF/Guide.html#${actCode}`;
-            }
-            document.getElementById('guideModal').style.display = show ? 'block' : 'none';
+
+
+    function toggleGuide(show) {
+
+        if(show) {
+
+            document.getElementById('guideFrame').src = `assets/MIF/Guide.html#${actCode}`;
+
         }
 
-        function submitMission() {
-            alert("Mission Data Synchronized!");
+        document.getElementById('guideModal').style.display = show ? 'block' : 'none';
+
+    }
+
+
+
+    async function submitMission() {
+
+    const submitBtn = document.querySelector('.submit-btn');
+
+    const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+
+    const studentEmail = saved.email || "no-email@test.com";
+
+
+
+    const iframe = document.getElementById('mainIframe');
+
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+    
+
+    // هنا نقوم بجمع كل الـ inputs اللي داخل النشاط مهما كان عددها
+
+    const allInputs = iframeDoc.querySelectorAll('input[type="text"]');
+
+    let combinedAnswers = [];
+
+    
+
+    allInputs.forEach(input => {
+
+        if(input.value.trim() !== "") {
+
+            combinedAnswers.push(input.value.trim());
+
         }
-    </script>
+
+    });
+
+
+
+    if (combinedAnswers.length === 0) {
+
+        alert("يا بطل، لم تكتب أي إجابات بعد!");
+
+        return;
+
+    }
+
+
+
+    // تحويل الإجابات لنص واحد مفصول بمسافات
+
+    const finalString = combinedAnswers.join(" ");
+
+
+
+    submitBtn.innerText = "SENDING...";
+
+    submitBtn.disabled = true;
+
+
+
+    try {
+
+        // نرسل النص المجمع للـ App Script
+
+        await fetch(SCRIPT_URL, {
+
+            method: "POST",
+
+            mode: "no-cors",
+
+            headers: { "Content-Type": "application/json" },
+
+            body: JSON.stringify({
+
+                email: studentEmail,
+
+                activity: actCode,
+
+                answer: finalString // النص المجمع (مثلاً: "to too son sun...")
+
+            })
+
+        });
+
+
+
+        alert("تم إرسال المهمة بنجاح! جاري التقييم...");
+
+        submitBtn.innerText = "DONE";
+
+        
+
+    } catch (error) {
+
+        alert("خطأ في الاتصال");
+
+        submitBtn.innerText = "SUBMIT";
+
+        submitBtn.disabled = false;
+
+    }
+
+}
+
+</script>
 </body>
 </html>

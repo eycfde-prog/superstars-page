@@ -10,7 +10,7 @@
 </head>
 <body>
     <canvas id="rank-canvas"></canvas>
-    <audio id="tickSound" src="assets/Tick.mp3"></audio> 
+    <audio id="tickSound" src="assets/Tick.wav"></audio> 
 
     <div class="top-nav">
         <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
@@ -91,7 +91,7 @@
         };
 
         const dial = document.getElementById('vaultDial');
-        const tickSound = document.getElementById('Tick.wav');
+        const tickSound = document.getElementById('tickSound');
 
         function initVault() {
             const list = activities[currentMode];
@@ -111,47 +111,77 @@
         let startAngle = 0;
         let velocity = 0;
         let lastTime = 0;
+        let lastAngle = 0;
 
-        dial.addEventListener('touchstart', (e) => {
+        function getAngle(x, y) {
+            const rect = dial.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            return Math.atan2(y - cy, x - cx) * 180 / Math.PI;
+        }
+
+        function handleStart(e) {
             isDragging = true;
-            const touch = e.touches[0];
-            startAngle = getAngle(touch.clientX, touch.clientY) - currentRotation;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            startAngle = getAngle(clientX, clientY) - currentRotation;
             velocity = 0;
             dial.style.transition = 'none';
-        }, { passive: false });
+            lastTime = Date.now();
+        }
 
-        window.addEventListener('touchmove', (e) => {
+        function handleMove(e) {
             if (!isDragging) return;
-            const touch = e.touches[0];
-            const angle = getAngle(touch.clientX, touch.clientY);
+            if (e.cancelable) e.preventDefault();
+
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const angle = getAngle(clientX, clientY);
             const newRotation = angle - startAngle;
             
-            if (Math.abs(newRotation - currentRotation) > 5) {
+            const step = 360 / activities[currentMode].length;
+            if (Math.abs(newRotation - lastAngle) > step / 2) {
                 tickSound.currentTime = 0;
                 tickSound.play().catch(()=>{});
+                lastAngle = newRotation;
             }
 
             const now = Date.now();
-            velocity = (newRotation - currentRotation) / (now - lastTime || 1);
+            const dt = now - lastTime || 1;
+            velocity = (newRotation - currentRotation) / dt;
             currentRotation = newRotation;
             lastTime = now;
             
             dial.style.transform = `rotate(${currentRotation}deg)`;
             updateSelection();
-        }, { passive: false });
+        }
 
-        window.addEventListener('touchend', () => {
+        function handleEnd() {
+            if (!isDragging) return;
             isDragging = false;
             applyInertia();
-        });
+        }
+
+        // Touch Events
+        dial.addEventListener('touchstart', handleStart, { passive: false });
+        window.addEventListener('touchmove', handleMove, { passive: false });
+        window.addEventListener('touchend', handleEnd);
+
+        // Mouse Events
+        dial.addEventListener('mousedown', handleStart);
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
 
         function applyInertia() {
-            if (Math.abs(velocity) < 0.1) {
+            if (isDragging) return;
+            
+            if (Math.abs(velocity) < 0.05) {
                 snapToSection();
                 return;
             }
-            currentRotation += velocity * 15;
-            velocity *= 0.95;
+            
+            currentRotation += velocity * 16;
+            velocity *= 0.94; // Friction
             dial.style.transform = `rotate(${currentRotation}deg)`;
             updateSelection();
             requestAnimationFrame(applyInertia);
@@ -160,18 +190,12 @@
         function snapToSection() {
             const list = activities[currentMode];
             const step = 360 / list.length;
+            // Negative sign correction for natural feel
             const snappedIndex = Math.round(-currentRotation / step);
             currentRotation = -(snappedIndex * step);
-            dial.style.transition = "transform 0.6s cubic-bezier(0.2, 1, 0.3, 1)";
+            dial.style.transition = "transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
             dial.style.transform = `rotate(${currentRotation}deg)`;
             updateSelection();
-        }
-
-        function getAngle(x, y) {
-            const rect = dial.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
-            return Math.atan2(y - cy, x - cx) * 180 / Math.PI;
         }
 
         function updateSelection() {
@@ -222,6 +246,7 @@
         function switchMode(mode) {
             currentMode = mode;
             currentRotation = 0;
+            dial.style.transition = 'none';
             dial.style.transform = `rotate(0deg)`;
             document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
             document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');

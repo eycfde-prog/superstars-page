@@ -6,69 +6,29 @@
     <title>EYC | Mission Terminal</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-bg: #020205; --accent-gold: #ffcc00; --neon-green: #00ffa3;
-            --neon-blue: #00d1ff; --neon-red: #ff3131; --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1); --disabled-gray: #222;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--primary-bg); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        
-        .mission-outer-frame { 
-            width: 95vw; max-width: 500px; height: 90vh; 
-            background: rgba(10, 10, 15, 0.85); border: 2px solid var(--neon-blue); 
-            border-radius: 20px; position: relative; display: flex; flex-direction: column; padding: 15px;
-            box-shadow: 0 0 30px rgba(0, 209, 255, 0.2);
-        }
-
-        .mission-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; }
-        .center-logo-area { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; }
-        .center-logo-area img { width: 45px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
-
-        .agent-side, .activity-side { display: flex; align-items: center; gap: 8px; width: 42%; }
-        .activity-side { flex-direction: row-reverse; text-align: right; }
-
-        .circle-frame { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); overflow: hidden; background: var(--glass); }
-        .circle-frame img { width: 100%; height: 100%; object-fit: cover; }
-
-        .info-box { font-family: 'Orbitron'; }
-        .info-box span { display: block; font-size: 8px; color: #aaa; }
-        .info-box b { display: block; font-size: 10px; color: var(--accent-gold); white-space: nowrap; }
-        .token-tag { background: var(--accent-gold); color: #000; font-size: 8px; padding: 2px 5px; border-radius: 4px; font-weight: 900; margin-top: 2px; display: inline-block; }
-
-        /* تم إخفاء شريط الصعوبة في هذه الصفحة لأنها للأنشطة العادية */
-        .difficulty-bar { display: none; }
-
-        .activity-content-frame { flex-grow: 1; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--glass-border); border-radius: 15px; margin-bottom: 15px; overflow: hidden; }
-        .activity-iframe { width: 100%; height: 100%; border: none; }
-
-        .action-container { display: flex; gap: 10px; align-items: center; }
-        .nav-btn { padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .submit-btn { flex: 2; padding: 15px; background: linear-gradient(to right, #b8860b, var(--accent-gold)); border: none; border-radius: 12px; color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 16px; cursor: pointer; }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); display: none; z-index: 1000; }
-        .glassy-container { position: absolute; left: 20px; bottom: 20px; display: flex; flex-direction: column; align-items: flex-start; z-index: 1001; animation: emerge 0.5s ease-out; }
-        .speech-bubble { background: #fff; border-radius: 20px; padding: 15px; color: #1a1a1a; position: relative; margin-bottom: 15px; text-align: right; direction: rtl; width: 280px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 40px; border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent; }
-        .glassy-img { width: 180px; filter: drop-shadow(0 0 20px var(--neon-blue)); animation: float 3s ease-in-out infinite; }
-        .guide-iframe { width: 100%; height: 200px; border: none; margin-top: 10px; border-radius: 10px; background: #f9f9f9; }
-
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        @keyframes emerge { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    <link rel="stylesheet" href="missionstyle.css">
 </head>
 <body>
     <div class="mission-outer-frame">
         <header class="mission-header">
             <div class="agent-side">
                 <div class="circle-frame"><img src="assets/Student.png" id="studentImg"></div>
-                <div class="info-box"><span>AGENT</span><b id="agentName">BROWSER</b><div class="token-tag" id="currentTokens">5 TK</div></div>
+                <div class="info-box">
+                    <span>AGENT</span>
+                    <b id="agentName">BROWSER</b>
+                    <div class="token-tag" id="currentTokens">5 TK</div>
+                </div>
             </div>
+
             <div class="center-logo-area"><img src="assets/logo.png"></div>
+
             <div class="activity-side">
                 <div class="circle-frame"><img src="" id="activityLogo"></div>
-                <div class="info-box"><span id="actCodeDisplay">CODE</span><b id="actNameDisplay">...</b><div class="token-tag" id="missionNum" style="background:var(--neon-blue)">M 1</div></div>
+                <div class="info-box">
+                    <span id="actCodeDisplay">CODE</span>
+                    <b id="actNameDisplay">...</b>
+                    <div class="token-tag" id="missionNum" style="background:var(--neon-blue)">M 1</div>
+                </div>
             </div>
         </header>
 
@@ -88,58 +48,50 @@
             <div class="speech-bubble">
                 <p>هاي يا بطل! ركز في التعليمات:</p>
                 <iframe id="guideFrame" src="" class="guide-iframe"></iframe>
-                <button class="nav-btn" style="width:100%; margin-top:10px; background:var(--accent-gold); color:#000; font-weight: bold;" onclick="toggleGuide(false)">فهمت!</button>
+                <button class="nav-btn-guide" onclick="toggleGuide(false)">فهمت!</button>
             </div>
             <img src="assets/Glassy.png" class="glassy-img">
         </div>
     </div>
 
-<script>
-    // 1. استقبال البيانات من الصفحة السابقة (MC.html)
-    const urlParams = new URLSearchParams(window.location.search);
-    const actCode = urlParams.get('act') || 'GES'; 
-    const mNum = urlParams.get('m') || '1';  
-    const actName = urlParams.get('name') || 'Activity'; 
+    <script>
+        // LOGIC - خط أحمر
+        const urlParams = new URLSearchParams(window.location.search);
+        const actCode = urlParams.get('act') || 'GES'; 
+        const mNum = urlParams.get('m') || '1';  
+        const actName = urlParams.get('name') || 'Activity'; 
 
-    // 2. تحديث واجهة المستخدم
-    document.getElementById('actNameDisplay').innerText = actName;
-    document.getElementById('actCodeDisplay').innerText = actCode;
-    document.getElementById('missionNum').innerText = 'M ' + mNum;
-    
-    // ربط اللوجو بملف الـ AL بنفس اسم الكود (GES, AS, SS...)
-    document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
+        document.getElementById('actNameDisplay').innerText = actName;
+        document.getElementById('actCodeDisplay').innerText = actCode;
+        document.getElementById('missionNum').innerText = 'M ' + mNum;
+        document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
 
-    function initMission() {
-        // بناء اسم الملف (مثال: GES + 1 = GES1.html)
-        const fileName = `${actCode}${mNum}.html`;
-        document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
-    }
-
-    window.onload = () => {
-        initMission(); 
-
-        // جلب بيانات الطالب
-        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-        if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
-        if(saved.image) {
-            let img = saved.image;
-            if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
-            document.getElementById('studentImg').src = img;
+        function initMission() {
+            const fileName = `${actCode}${mNum}.html`;
+            document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
         }
-    };
 
-    function toggleGuide(show) {
-        if(show) {
-            // التوجه لملف Guide.html داخل فولدر MIF مع إضافة كود النشاط للبحث عنه
-            // سنرسل الكود في الـ hash لتمكين ملف الجايد من القفز للجزء المطلوب
-            document.getElementById('guideFrame').src = `assets/MIF/Guide.html#${actCode}`;
+        window.onload = () => {
+            initMission(); 
+            const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+            if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
+            if(saved.image) {
+                let img = saved.image;
+                if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
+                document.getElementById('studentImg').src = img;
+            }
+        };
+
+        function toggleGuide(show) {
+            if(show) {
+                document.getElementById('guideFrame').src = `assets/MIF/Guide.html#${actCode}`;
+            }
+            document.getElementById('guideModal').style.display = show ? 'block' : 'none';
         }
-        document.getElementById('guideModal').style.display = show ? 'block' : 'none';
-    }
 
-    function submitMission() {
-        alert("Mission Data Synchronized!");
-    }
-</script>
+        function submitMission() {
+            alert("Mission Data Synchronized!");
+        }
+    </script>
 </body>
 </html>

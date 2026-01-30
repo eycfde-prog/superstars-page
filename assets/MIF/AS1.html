@@ -3,63 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity Content | Alike</title>
+    <title>Alike Activity | Mission</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #ffcc00; }
-        /* خلفية شفافة تماماً عشان تظهر خلفية الـ Mission Terminal */
         body { font-family: 'Cairo', sans-serif; background: transparent; color: white; overflow-x: hidden; padding: 10px; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(5px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 15px; 
-        }
-        
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
         .input-alike { 
-            background: rgba(0,0,0,0.5); 
-            border: 1px solid rgba(255,255,255,0.2); 
-            border-radius: 8px; 
-            padding: 10px; 
-            text-align: center; 
-            width: 100%; 
-            color: var(--gold); 
-            font-family: 'Orbitron'; 
-            outline: none; 
-            font-size: 14px;
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; 
+            padding: 10px; text-align: center; width: 100%; color: var(--gold); 
+            font-family: 'Orbitron'; outline: none; font-size: 14px; direction: ltr; /* English input */
         }
         .input-alike:focus { border-color: var(--gold); }
-        
-        /* إخفاء السكرول بار */
+        .label-ar { direction: rtl; display: block; width: 100%; font-weight: bold; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        footer { margin-top: 20px; text-align: center; font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Orbitron'; }
     </style>
 </head>
 <body>
 
-    <div id="activityWrapper" class="grid grid-cols-1 gap-4 w-full">
-        </div>
+    <div id="activityWrapper" class="grid grid-cols-1 gap-4 w-full"></div>
+    
+    <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v9.6</footer>
 
 <script>
-    // جلب رقم المهمة من الرابط (مثلاً AS1A.html أو عن طريق Query Params)
-    // هنا هنعتمد على الـ URL عشان نحدد الداتا
-    const params = new URLSearchParams(window.location.search);
-    const missionID = parseInt(params.get('m')) || 1; 
+    // بيانات المهمة - (يتم تغيير هذه المصفوفة في كل ملف من الـ 10)
+    const currentTask = [
+[{m1:"إلى", m2:"أيضاً", a1:"to", a2:"too"}, {m1:"ابن", m2:"شمس", a1:"son", a2:"sun"}, {m1:"هنا", m2:"يسمع", a1:"here", a2:"hear"}, {m1:"بحر", m2:"يرى", a1:"sea", a2:"see"}, {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}, {m1:"اثنان", m2:"ذهب (ماضي)", a1:"two", a2:"went"}, {m1:"لـ/من أجل", m2:"أربعة", a1:"for", a2:"four"}, {m1:"أنا", m2:"عين", a1:"i", a2:"eye"}, {m1:"كن (فعل أمر)", m2:"نحلة", a1:"be", a2:"bee"}, {m1:"بواسطة", m2:"يشتري", a1:"by", a2:"buy"}]    ];
 
-    // قاعدة بيانات المهمات (كل مصفوفة تمثل مهمة واحدة بـ 10 حالات)
-    const missionsData = {
-        1: [{ m1: "ابن", m2: "شمس", a1: "son", a2: "sun" }, { m1: "هنا", m2: "يسمع", a1: "here", a2: "hear" }, { m1: "بحر", m2: "يرى", a1: "sea", a2: "see" }, { m1: "أسبوع", m2: "ضعيف", a1: "week", a2: "weak" }, { m1: "طريق", m2: "ركب", a1: "road", a2: "rode" }, { m1: "دقيق", m2: "وردة", a1: "flour", a2: "flower" }, { m1: "ساعة", m2: "ملكنا", a1: "hour", a2: "our" }, { m1: "يشترى", m2: "بواسطة", a1: "buy", a2: "by" }, { m1: "أزرق", m2: "نفخ", a1: "blue", a2: "blew" }, { m1: "ثمانية", m2: "أكل", a1: "eight", a2: "ate" }],
-        // تقدر تضيف باقي المهمات هنا بنفس النمط
-    };
-
-    const currentTask = missionsData[missionID] || missionsData[1];
-
-    window.onload = () => {
-        renderActivity();
-    };
+    window.onload = () => { renderActivity(); };
 
     function renderActivity() {
         const wrapper = document.getElementById('activityWrapper');
@@ -68,11 +43,11 @@
                 <span class="text-[9px] orbitron text-yellow-500 opacity-50"># CASE ${index + 1}</span>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="flex flex-col gap-1">
-                        <label class="text-[11px] text-gray-400 text-center">${pair.m1}</label>
+                        <label class="text-[12px] text-gray-300 text-center label-ar">${pair.m1}</label>
                         <input type="text" data-answer="${pair.a1}" class="input-alike task-input" placeholder="..." autocomplete="off">
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="text-[11px] text-gray-400 text-center">${pair.m2}</label>
+                        <label class="text-[12px] text-gray-300 text-center label-ar">${pair.m2}</label>
                         <input type="text" data-answer="${pair.a2}" class="input-alike task-input" placeholder="..." autocomplete="off">
                     </div>
                 </div>
@@ -80,29 +55,18 @@
         `).join('');
     }
 
-    // هذه الدالة سيتم استدعاؤها من الصفحة الأب (Mission Terminal)
     window.checkAnswers = function() {
         let score = 0;
         const inputs = document.querySelectorAll('.task-input');
-        
         inputs.forEach(input => {
-            const userAnswer = input.value.trim().toLowerCase();
-            const correctAnswer = input.getAttribute('data-answer').toLowerCase();
-            
-            if (userAnswer === correctAnswer) {
+            if (input.value.trim().toLowerCase() === input.getAttribute('data-answer').toLowerCase()) {
                 score++;
-                input.style.borderColor = "#00ffa3"; // لون أخضر لو صح
+                input.style.borderColor = "#00ffa3";
             } else {
-                input.style.borderColor = "#ff3131"; // لون أحمر لو غلط
+                input.style.borderColor = "#ff3131";
             }
         });
-
-        const finalResult = (score / inputs.length) * 100;
-        return {
-            points: score,
-            total: inputs.length,
-            percentage: finalResult
-        };
+        return { points: score, total: inputs.length };
     };
 </script>
 </body>

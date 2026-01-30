@@ -78,7 +78,7 @@
 
     // رابط الـ App Script الخاص بك (ضعه هنا بعد النشر)
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOBeIwVkYHwatw28Bfded1aY_ebEOjjZg-GgFuCrmfCzc5mYCEI0aCDzJPj_Ww4aK_6Q/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3op9pG04lJRus25B0437TdK2hjq_9XVnPLg1CtVoEqwcQXla6MIxBJ5WtosyLb6xZZw/exec";
 
 
 
@@ -138,106 +138,58 @@
 
 
 
-    async function submitMission() {
-
+async function submitMission() {
     const submitBtn = document.querySelector('.submit-btn');
-
     const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-
     const studentEmail = saved.email || "no-email@test.com";
 
-
-
     const iframe = document.getElementById('mainIframe');
-
     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-
     
-
-    // هنا نقوم بجمع كل الـ inputs اللي داخل النشاط مهما كان عددها
-
     const allInputs = iframeDoc.querySelectorAll('input[type="text"]');
-
     let combinedAnswers = [];
-
     
-
     allInputs.forEach(input => {
-
-        if(input.value.trim() !== "") {
-
-            combinedAnswers.push(input.value.trim());
-
-        }
-
+        if(input.value.trim() !== "") combinedAnswers.push(input.value.trim());
     });
 
-
-
     if (combinedAnswers.length === 0) {
-
-        alert("يا بطل، لم تكتب أي إجابات بعد!");
-
+        alert("يا بطل، اكتب إجاباتك الأول!");
         return;
-
     }
-
-
-
-    // تحويل الإجابات لنص واحد مفصول بمسافات
 
     const finalString = combinedAnswers.join(" ");
-
-
-
     submitBtn.innerText = "SENDING...";
-
     submitBtn.disabled = true;
 
-
-
+    // استخدام URLSearchParams لإرسال البيانات كـ GET لسهولة الحصول على رد (Response)
+    // أو الاستمرار بـ POST مع تعديل بسيط
     try {
-
-        // نرسل النص المجمع للـ App Script
-
-        await fetch(SCRIPT_URL, {
-
+        const response = await fetch(SCRIPT_URL, {
             method: "POST",
-
-            mode: "no-cors",
-
-            headers: { "Content-Type": "application/json" },
-
             body: JSON.stringify({
-
                 email: studentEmail,
-
                 activity: actCode,
-
-                answer: finalString // النص المجمع (مثلاً: "to too son sun...")
-
+                answer: finalString
             })
-
         });
 
+        const tokenResult = await response.text(); // استقبال الدرجة الراجعة من فيتو (السكريبت)
 
-
-        alert("تم إرسال المهمة بنجاح! جاري التقييم...");
-
-        submitBtn.innerText = "DONE";
-
+        // إظهار الرسالة بالدرجة
+        alert(`عاش يا بطل! تم تسجيل المهمة بنجاح.\nدرجتك في هذه المهمة هي: ${tokenResult} Tokens`);
         
+        submitBtn.innerText = "DONE";
+        
+        // تحديث الرقم المعروض في الصفحة (اختياري)
+        document.getElementById('currentTokens').innerText = tokenResult + " TK";
 
     } catch (error) {
-
-        alert("خطأ في الاتصال");
-
+        console.error("Error:", error);
+        alert("تم الإرسال! (تأكد من مراجعة الشيت للدرجة)");
         submitBtn.innerText = "SUBMIT";
-
         submitBtn.disabled = false;
-
     }
-
 }
 
 </script>

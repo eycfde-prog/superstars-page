@@ -3,83 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alike | EYC Academy</title>
+    <title>Alike Activity | Mission</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #f1c40f; --bg-deep: #020617; }
-        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%); color: white; min-height: 100vh; }
+        :root { --gold: #ffcc00; }
+        body { font-family: 'Cairo', sans-serif; background: transparent; color: white; overflow-x: hidden; padding: 10px; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; transition: 0.3s; }
-        .glass-card:hover { border-color: var(--gold); transform: translateY(-5px); }
-        .input-alike { background: rgba(0,0,0,0.4); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px; text-align: center; width: 100%; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; text-transform: uppercase; outline: none; }
-        .input-alike:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.2); }
-        .golden-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-top: 50px; font-size: 10px; font-family: 'Orbitron'; color: #444; text-align: center; width: 100%; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
+        .input-alike { 
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; 
+            padding: 10px; text-align: center; width: 100%; color: var(--gold); 
+            font-family: 'Orbitron'; outline: none; font-size: 14px; direction: ltr; /* English input */
+        }
+        .input-alike:focus { border-color: var(--gold); }
+        .label-ar { direction: rtl; display: block; width: 100%; font-weight: bold; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        footer { margin-top: 20px; text-align: center; font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Orbitron'; }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center">
+<body>
 
-    <div id="mainContent" class="w-full max-w-6xl">
-        <header class="text-center my-10 relative">
-            <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <p id="versionTag" class="text-yellow-500 orbitron mt-2 tracking-[5px] text-sm uppercase">VERSION --</p>
-            <p class="text-gray-400 mt-6 max-w-xl mx-auto text-sm leading-relaxed">اكتب الكلمة الإنجليزية المناسبة لكل معنى. الكلمات في كل كارت لها نفس النطق (Homophones) ولكن تختلف في الكتابة والمعنى.</p>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16" id="alikeGrid"></div>
-
-        <footer>
-            <p>© 2026 EYC ACADEMY - MISSION CONTROL SYSTEM</p>
-        </footer>
-    </div>
+    <div id="activityWrapper" class="grid grid-cols-1 gap-4 w-full"></div>
+    
+    <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v9.6</footer>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const vNum = parseInt(params.get('v')) || 1;
+    // بيانات المهمة - (يتم تغيير هذه المصفوفة في كل ملف من الـ 10)
+    const currentTask = [{m1:"يرمي", m2:"خلال", a1:"threw", a2:"through"}, {m1:"رئيسي", m2:"عُرف (الحصان)", a1:"main", a2:"mane"}, {m1:"فولاذ", m2:"يسرق", a1:"steel", a2:"steal"}, {m1:"جذر", m2:"طريق", a1:"root", a2:"route"}, {m1:"منبوذ", m2:"صوت (مرتفع)", a1:"outcast", a2:"aloud"}, {m1:"بحار", m2:"شراع", a1:"sailor", a2:"sail"}, {m1:"كامل", m2:"حفرة", a1:"whole", a2:"hole"}, {m1:"ابن", m2:"شمس", a1:"son", a2:"sun"}, {m1:"طقس", m2:"سواء", a1:"weather", a2:"whether"}, {m1:"توت", m2:"مدفون", a1:"berry", a2:"bury"}]
+    window.onload = () => { renderActivity(); };
 
-    const allMissions = {
-        1: [{ m1: "ابن", m2: "شمس" }, { m1: "هنا", m2: "يسمع" }, { m1: "بحر", m2: "يرى" }, { m1: "أسبوع", m2: "ضعيف" }, { m1: "طريق", m2: "ركب" }, { m1: "دقيق", m2: "وردة" }, { m1: "ساعة", m2: "ملكنا" }, { m1: "يشترى", m2: "بواسطة" }, { m1: "أزرق", m2: "نفخ" }, { m1: "ثمانية", m2: "أكل" }],
-        2: [{ m1: "جديد", m2: "عرف" }, { m1: "لا", m2: "يعرف" }, { m1: "فارغ", m2: "دب" }, { m1: "حق", m2: "يكتب" }, { m1: "اثنان", m2: "إلى (أيضاً)" }, { m1: "لحم", m2: "يقابل" }, { m1: "صنع", m2: "خادمة" }, { m1: "رئيسي", m2: "شعر حصان" }, { m1: "ليكون", m2: "نحلة" }, { m1: "من خلال", m2: "رمى" }],
-        3: [{ m1: "قطعة", m2: "سلام" }, { m1: "إجازة", m2: "فرامل" }, { m1: "سلم", m2: "تحديق" }, { m1: "ذيل", m2: "قصة" }, { m1: "ليلة", m2: "فارس" }, { m1: "بعض", m2: "مجموع" }, { m1: "شعر", m2: "أرنب بري" }, { m1: "كامل", m2: "حفرة" }, { m1: "فولاذ", m2: "يسرق" }, { m1: "غزال", m2: "عزيزي" }],
-        4: [{ m1: "بحر", m2: "يرى" }, { m1: "لوحة", m2: "بملل" }, { m1: "بحار", m2: "تخفيض" }, { m1: "عقدة", m2: "ليس" }, { m1: "وحيد", m2: "قرض" }, { m1: "بريد", m2: "ذكر" }, { m1: "شاحب", m2: "دلو" }, { m1: "سهل", m2: "طائرة" }, { m1: "جذر", m2: "طريق" }, { m1: "ألم", m2: "لوح زجاج" }],
-        5: [{ m1: "مسموح", m2: "بصوت عال" }, { m1: "مذبح", m2: "يغير" }, { m1: "ممر", m2: "جزيرة" }, { m1: "عاري", m2: "دب" }, { m1: "قاعدة", m2: "جهير" }, { m1: "توت", m2: "يدفن" }, { m1: "مبنى", m2: "يرفع" }, { m1: "خضار", m2: "ينوح" }, { m1: "طقم", m2: "حلو" }, { m1: "مؤخرة", m2: "بحر" }],
-        6: [{ m1: "طوق", m2: "حزام" }, { m1: "مجلس", m2: "نصيحة" }, { m1: "فحص", m2: "شيك" }, { m1: "تكملة", m2: "مديح" }, { m1: "خشن", m2: "دورة" }, { m1: "تيار", m2: "زبيب" }, { m1: "موت", m2: "مصبوغ" }, { m1: "حصيف", m2: "منفصل" }, { m1: "جنين", m2: "برغوث" }, { m1: "مكسب", m2: "طريقة مشي" }],
-        7: [{ m1: "ذنب", m2: "مذهب" }, { m1: "مقدس", m2: "بالكامل" }, { m1: "خامل", m2: "صنم" }, { m1: "يخيط", m2: "لذلك" }, { m1: "صبر", m2: "مرضى" }, { m1: "وجود", m2: "هدايا" }, { m1: "أرباح", m2: "نبي" }, { m1: "مطر", m2: "عنان" }, { m1: "موقع", m2: "رؤية" }, { m1: "روح", m2: "نعل" }],
-        8: [{ m1: "ورق", m2: "ثابت" }, { m1: "مدير", m2: "مبدأ" }, { m1: "رصيف", m2: "نظير" }, { m1: "غائب", m2: "خشب" }, { m1: "طالع", m2: "مناخ" }, { m1: "إناء", m2: "عرق" }, { m1: "أقلية", m2: "عامل" }, { m1: "ضياع", m2: "فضفاض" }, { m1: "تأثير", m2: "يؤثر" }, { m1: "موعظة", m2: "رصيف" }],
-        9: [{ m1: "تمرد", m2: "قصة" }, { m1: "أساسي", m2: "موسيقى" }, { m1: "موافق", m2: "إبحار" }, { m1: "حذاء", m2: "يختار" }, { m1: "تذكرة", m2: "مظهر" }, { m1: "تربية", m2: "قراءة" }, { m1: "جمجمة", m2: "مجدف" }, { m1: "تصفية", m2: "لحن" }, { m1: "مأوى", m2: "مكان" }, { m1: "عامل", m2: "بركان" }],
-        10: [{ m1: "تحفة", m2: "سرقة" }, { m1: "دليل", m2: "جناية" }, { m1: "براءة", m2: "تصريح" }, { m1: "أغنية", m2: "مشهد" }, { m1: "حطام", m2: "رائحة" }, { m1: "برلمان", m2: "توازن" }, { m1: "تعهد", m2: "محرك" }, { m1: "غضب", m2: "صفحة" }, { m1: "نسيج", m2: "مبهم" }, { m1: "عرش", m2: "مرمى" }]
-    };
-
-    const wordsData = allMissions[vNum] || allMissions[1];
-
-    window.onload = () => {
-        document.getElementById('versionTag').innerText = `MISSION V.0${vNum}`;
-        renderGrid();
-    };
-
-    function renderGrid() {
-        const grid = document.getElementById('alikeGrid');
-        grid.innerHTML = wordsData.map((pair, index) => `
-            <div class="glass-card p-6 flex flex-col gap-4">
-                <div class="flex items-center justify-between">
-                    <span class="text-[10px] orbitron text-yellow-500 opacity-60">CASE ${index + 1}</span>
-                    <i class="fas fa-bolt text-[10px] text-gray-600"></i>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex flex-col gap-2">
-                        <label class="text-xs text-gray-400 text-center">${pair.m1}</label>
-                        <input type="text" id="ans-${index}-1" class="input-alike" placeholder="..." autocomplete="off">
+    function renderActivity() {
+        const wrapper = document.getElementById('activityWrapper');
+        wrapper.innerHTML = currentTask.map((pair, index) => `
+            <div class="glass-card p-4 flex flex-col gap-3">
+                <span class="text-[9px] orbitron text-yellow-500 opacity-50"># CASE ${index + 1}</span>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[12px] text-gray-300 text-center label-ar">${pair.m1}</label>
+                        <input type="text" data-answer="${pair.a1}" class="input-alike task-input" placeholder="..." autocomplete="off">
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-xs text-gray-400 text-center">${pair.m2}</label>
-                        <input type="text" id="ans-${index}-2" class="input-alike" placeholder="..." autocomplete="off">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[12px] text-gray-300 text-center label-ar">${pair.m2}</label>
+                        <input type="text" data-answer="${pair.a2}" class="input-alike task-input" placeholder="..." autocomplete="off">
                     </div>
                 </div>
             </div>
         `).join('');
     }
+
+    window.checkAnswers = function() {
+        let score = 0;
+        const inputs = document.querySelectorAll('.task-input');
+        inputs.forEach(input => {
+            if (input.value.trim().toLowerCase() === input.getAttribute('data-answer').toLowerCase()) {
+                score++;
+                input.style.borderColor = "#00ffa3";
+            } else {
+                input.style.borderColor = "#ff3131";
+            }
+        });
+        return { points: score, total: inputs.length };
+    };
 </script>
 </body>
 </html>

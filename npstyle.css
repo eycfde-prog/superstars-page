@@ -1,154 +1,167 @@
 :root { 
-    --gold: #ffcc00; 
-    --bg-dark: #020205; 
+    --gold: #d4af37; 
+    --bg-dark: #050505; 
     --glass: rgba(255, 255, 255, 0.03); 
-    --neon-blue: #00d2ff;
 }
 
 body { 
     font-family: 'Poppins', sans-serif; 
-    background: var(--bg-dark); 
+    background: radial-gradient(circle at center, #111, var(--bg-dark)); 
     color: white; 
     min-height: 100vh; 
+    margin: 0;
+    padding: 0;
     overflow-x: hidden;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
 }
 
-.orbitron { font-family: 'Orbitron', sans-serif; }
+.orbitron { 
+    font-family: 'Orbitron', sans-serif; 
+}
 
-/* --- Flash Screen Container --- */
-.main-container {
+/* --- Full Screen Step Management --- */
+.step-content { 
+    display: none; 
+    min-height: 80vh;
     width: 100%;
-    max-width: 500px; /* لضمان شكل فلاش سكرين على الموبايل والديسكطوب */
-    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
+.step-content.active { 
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    animation: fadeIn 0.5s ease forwards; 
+}
+
+/* --- Mobile view optimizations --- */
+@media (max-width: 768px) {
+    body { padding: 15px; }
+    h1 { font-size: 2rem !important; }
+    .glass-card { padding: 20px !important; border-radius: 20px; }
+    #avatarImg { width: 150px; height: 150px; }
+    .customizer-tabs { font-size: 12px; gap: 10px !important; }
+    .btn-next, .submit-btn-final, .btn-back { padding: 0.8rem !important; font-size: 14px; }
+}
+
+/* --- Cards & Containers --- */
 .glass-card { 
-    background: rgba(10, 10, 15, 0.95); 
+    background: var(--glass); 
     backdrop-filter: blur(20px); 
-    border: 1px solid rgba(212, 175, 55, 0.2); 
-    border-radius: 35px;
-    padding: 30px;
+    border: 1px solid rgba(212, 175, 55, 0.1); 
+    border-radius: 30px; 
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    position: relative;
 }
 
-/* --- Avatar Responsive Handling --- */
 .avatar-preview-container {
-    text-align: center;
-    margin-bottom: 25px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    margin-bottom: 20px;
 }
 
 #avatarImg { 
-    width: 180px; 
-    height: 180px; 
-    margin: 0 auto;
-    filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.4)); 
+    width: 200px; 
+    height: 200px; 
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3)); 
 }
 
 /* --- Form Elements --- */
 .custom-input { 
-    background: #000 !important; 
-    border: 1px solid rgba(212, 175, 55, 0.3) !important; 
+    background: rgba(0,0,0,0.6) !important; 
+    border: 1px solid rgba(255,255,255,0.1) !important; 
     color: white !important; 
     border-radius: 15px !important;
-    padding: 1rem !important;
-    font-size: 14px;
-    width: 100%;
+    padding: 1.2rem !important;
+    transition: 0.3s;
 }
 
 .custom-input:focus { 
     border-color: var(--gold) !important; 
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); 
 }
 
 .checkbox-container {
     display: flex; 
     align-items: center; 
     gap: 0.75rem; 
-    padding: 12px; 
+    padding: 1.2rem; 
     background: rgba(255,255,255,0.03); 
-    border-radius: 12px; 
+    border-radius: 1rem; 
     border: 1px solid rgba(255,255,255,0.05); 
     cursor: pointer;
     transition: 0.3s;
 }
 
-.checkbox-container:has(input:checked) {
-    border-color: var(--gold);
-    background: rgba(212, 175, 55, 0.05);
-}
-
-/* --- Steps Visibility --- */
-.step-content { display: none; }
-.step-content.active { 
-    display: block; 
-    animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+.checkbox-container:hover { background: rgba(212, 175, 55, 0.05); }
 
 /* --- Buttons --- */
-.btn-primary {
+.btn-next, .submit-btn-final, .btn-back {
+    font-family: 'Orbitron';
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-next {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+}
+
+.btn-next:hover {
     background: var(--gold);
-    color: #000;
-    font-family: 'Orbitron';
+    color: black;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.submit-btn-final {
+    background: var(--gold);
+    color: black;
     font-weight: 900;
-    padding: 15px;
-    border-radius: 12px;
-    width: 100%;
-    cursor: pointer;
-    transition: 0.3s;
-    text-align: center;
 }
 
-.btn-secondary {
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #9ca3af;
-    font-family: 'Orbitron';
-    padding: 12px;
-    border-radius: 12px;
-    width: 100%;
-    margin-top: 10px;
+.btn-back {
+    color: #666;
+    border: 1px solid #333;
 }
 
-/* --- Success Modal --- */
+/* --- UI Components --- */
 .modal { 
     display: none; 
     position: fixed; 
     inset: 0; 
-    background: var(--bg-dark); 
+    background: rgba(0,0,0,0.95); 
     z-index: 2000; 
     align-items: center; 
     justify-content: center; 
     padding: 20px; 
 }
 
-.final-avatar-glow {
-    box-shadow: 0 0 30px var(--gold);
-    border: 3px solid var(--gold);
-}
-
 .loader { 
-    border: 3px solid #333; 
+    border: 3px solid rgba(255,255,255,0.1); 
     border-top: 3px solid var(--gold); 
     border-radius: 50%; 
-    width: 24px; height: 24px; 
+    width: 24px; 
+    height: 24px; 
     animation: spin 1s linear infinite; 
-    display: none; margin: 0 auto;
+    display: none; 
+}
+
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(20px); } 
+    to { opacity: 1; transform: translateY(0); } 
 }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* Mobile Optimization */
-@media (max-width: 480px) {
-    .main-container { padding: 10px; }
-    .glass-card { padding: 20px; border-radius: 25px; }
-    #avatarImg { width: 150px; height: 150px; }
-    .orbitron.text-4xl { font-size: 1.8rem; }
+.text-glow { text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+
+/* Customizer Grid */
+.customizer-grid {
+    scrollbar-width: thin;
+    max-height: 200px;
+    overflow-y: auto;
 }

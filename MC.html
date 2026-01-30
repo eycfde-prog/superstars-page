@@ -103,6 +103,55 @@
             });
         }
 
+        // --- وظيفة التحقق المطورة باستخدام Fetch ---
+        function verifyCode() {
+            const email = document.getElementById('agentEmail').value.trim();
+            const code = document.getElementById('agentCode').value.trim();
+            const btn = document.getElementById('verifyBtn');
+            const err = document.getElementById('errorMsg');
+
+            if (!email || !code) return;
+
+            btn.innerText = "AUTHENTICATING...";
+            btn.disabled = true;
+            err.style.display = 'none';
+
+            fetch(`${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        localStorage.setItem('eyc_agent_data', JSON.stringify({ ...data, email, code }));
+                        applyAgentData(data);
+                        document.getElementById('loginModal').style.display = 'none';
+                    } else {
+                        err.innerText = data.message || "ACCESS DENIED";
+                        err.style.display = 'block';
+                        btn.innerText = "INITIALIZE";
+                        btn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    err.innerText = "CONNECTION ERROR";
+                    err.style.display = 'block';
+                    btn.innerText = "INITIALIZE";
+                    btn.disabled = false;
+                });
+        }
+
+        function applyAgentData(data) {
+            isLogged = true;
+            document.getElementById('loginTriggerBtn').style.display = 'none';
+            document.getElementById('userName').innerText = data.name.split(' ')[0];
+            document.getElementById('userName').style.display = 'block';
+            document.getElementById('profileStack').style.display = 'block';
+            document.getElementById('userScore').innerText = data.totalScore || 0;
+            document.getElementById('userRank').innerText = "#" + (data.rank || 0);
+            let imgUrl = data.image || "";
+            if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
+            document.getElementById('userImg').src = imgUrl;
+        }
+
         function openMissions(cardElement, index, mode) {
             const actData = activities[mode][index];
             document.getElementById('mainHeader').style.opacity = '0';
@@ -155,44 +204,6 @@
         }
 
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        
-        function verifyCode() {
-            const email = document.getElementById('agentEmail').value.trim();
-            const code = document.getElementById('agentCode').value.trim();
-            const btn = document.getElementById('verifyBtn');
-            const err = document.getElementById('errorMsg');
-            if(!email || !code) return;
-            btn.innerText = "AUTHENTICATING...";
-            btn.disabled = true;
-            const callbackName = 'cb_' + Date.now();
-            window[callbackName] = function(data) {
-                if(data.status === "success") {
-                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                    applyAgentData(data);
-                    document.getElementById('loginModal').style.display = 'none';
-                } else {
-                    err.innerText = "ACCESS DENIED"; err.style.display = 'block';
-                    btn.innerText = "INITIALIZE"; btn.disabled = false;
-                }
-                delete window[callbackName];
-            };
-            const script = document.createElement('script');
-            script.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
-            document.body.appendChild(script);
-        }
-
-        function applyAgentData(data) {
-            isLogged = true;
-            document.getElementById('loginTriggerBtn').style.display = 'none';
-            document.getElementById('userName').innerText = data.name.split(' ')[0];
-            document.getElementById('userName').style.display = 'block';
-            document.getElementById('profileStack').style.display = 'block';
-            document.getElementById('userScore').innerText = data.totalScore || 0;
-            document.getElementById('userRank').innerText = "#" + (data.rank || 0);
-            let imgUrl = data.image || "";
-            if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
-            document.getElementById('userImg').src = imgUrl;
-        }
 
         function checkSavedAgent() {
             const saved = localStorage.getItem('eyc_agent_data');

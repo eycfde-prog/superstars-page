@@ -1,344 +1,192 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC | Vault Mission Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-bg: #020205;
-            --accent-gold: #ffcc00;
-            --neon-blue: #00d2ff;
-            --ui-border: rgba(255, 204, 0, 0.4);
-            --vault-grad: radial-gradient(circle, #ffcc00 0%, #b8860b 50%, #5e4506 100%);
-        }
+:root { 
+    --gold: #d4af37; 
+    --bg-dark: #050505; 
+    --glass: rgba(255, 255, 255, 0.03); 
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column; position: relative; }
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+body { 
+    font-family: 'Poppins', sans-serif; 
+    background: radial-gradient(circle at center, #111, var(--bg-dark)); 
+    color: white; 
+    min-height: 100vh; 
+    overflow-x: hidden; 
+}
 
-        /* --- Profile HUD --- */
-        .profile-stack { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: none; width: 80px; height: 80px; }
-        .p-avatar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; border: 2px solid var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); border-radius: 50%; overflow: hidden; background: #000; }
-        .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .p-score { position: absolute; top: -5px; right: -5px; width: 32px; height: 32px; background: #000; border: 2px solid var(--neon-blue); color: var(--neon-blue); font-size: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; }
-        .p-rank { position: absolute; bottom: -5px; left: -5px; width: 28px; height: 28px; background: var(--accent-gold); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; font-size: 8px; }
+.orbitron { 
+    font-family: 'Orbitron', sans-serif; 
+}
 
-        /* --- Header --- */
-        .top-nav { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .logo-placeholder img { height: 30px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
-        .royal-login-btn { background: linear-gradient(45deg, var(--accent-gold), #fff); color: #000; padding: 6px 12px; border-radius: 8px; font-family: 'Orbitron'; font-weight: 900; font-size: 9px; cursor: pointer; border: none; }
-        .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); font-size: 10px; display: none; }
+/* --- Cards & Containers --- */
+.glass-card { 
+    background: var(--glass); 
+    backdrop-filter: blur(15px); 
+    border: 1px solid rgba(212, 175, 55, 0.1); 
+    border-radius: 30px; 
+}
 
-        /* --- Vault Selection System --- */
-        .vault-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; padding-bottom: 40px; }
-        
-        .vault-wrapper { position: relative; width: 80vw; height: 80vw; max-width: 350px; max-height: 350px; display: flex; align-items: center; justify-content: center; transition: all 0.5s ease; }
-        
-        .vault-dial { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: var(--vault-grad); border: 6px solid #222; box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5); touch-action: none; will-change: transform; }
-        
-        .vault-marker { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 4px; height: 25px; background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); z-index: 15; border-radius: 2px; }
+.avatar-preview-container {
+    position: sticky;
+    top: 20px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+}
 
-        .dial-section { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 15px; transform-origin: 50% 50%; }
-        .dial-section i { font-size: 20px; color: #000; opacity: 0.8; }
-        .dial-section span { font-family: 'Orbitron'; font-weight: 900; font-size: 7px; color: #000; margin-top: 4px; text-transform: uppercase; text-align: center; max-width: 50px; line-height: 1; }
+#avatarImg { 
+    width: 220px; 
+    height: 220px; 
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3)); 
+}
 
-        .launch-hub { position: absolute; width: 35%; height: 35%; background: #0a0a0f; border: 3px solid var(--accent-gold); border-radius: 50%; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(255,204,0,0.4); text-align: center; }
-        .launch-hub b { font-family: 'Orbitron'; font-size: 11px; color: var(--accent-gold); width: 80%; overflow: hidden; text-overflow: ellipsis; }
-        .launch-hub span { font-size: 7px; color: #fff; opacity: 0.6; margin-bottom: 2px; }
-        .launch-btn { margin-top: 5px; background: var(--accent-gold); border: none; padding: 4px 10px; border-radius: 4px; font-family: 'Orbitron'; font-weight: 900; font-size: 9px; cursor: pointer; }
+/* --- Form Elements --- */
+.custom-input { 
+    background: rgba(0,0,0,0.5) !important; 
+    border: 1px solid rgba(255,255,255,0.1) !important; 
+    color: white !important; 
+    border-radius: 12px !important;
+    padding: 1rem;
+    transition: 0.3s;
+}
 
-        /* --- Mission Hub --- */
-        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
-        .mission-bubble { position: absolute; width: 45px; height: 45px; border: 2px solid var(--neon-blue); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 11px; cursor: pointer; transition: 0.3s; pointer-events: auto; opacity: 0; transform: scale(0); animation: popIn 0.4s forwards; }
-        @keyframes popIn { to { opacity: 1; transform: scale(1); } }
+.custom-input:focus { 
+    border-color: var(--gold) !important; 
+    outline: none; 
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); 
+}
 
-        /* --- UI Elements --- */
-        .rank-header { text-align: center; padding-top: 75px; flex-shrink: 0; }
-        .rank-header h1 { font-size: 1.2rem; font-family: 'Orbitron'; letter-spacing: 2px; }
-        .toggle-container { display: flex; justify-content: center; gap: 8px; margin: 10px 0; flex-shrink: 0; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--ui-border); color: #fff; padding: 6px 12px; border-radius: 4px; font-family: 'Orbitron'; font-size: 8px; cursor: pointer; opacity: 0.4; }
-        .mode-btn.active { opacity: 1; box-shadow: 0 0 15px var(--accent-gold); border-color: var(--accent-gold); }
-        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent-gold); color: #000; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 10px; }
+.input-label {
+    display: block; 
+    font-size: 10px; 
+    color: #9ca3af; 
+    margin-bottom: 0.5rem; 
+    font-family: 'Orbitron', sans-serif;
+}
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-        .royal-card { background: #0a0a0f; border: 1px solid var(--accent-gold); padding: 25px; width: 85%; max-width: 300px; text-align: center; clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); }
-        .royal-card input { width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; font-size: 12px; outline: none; }
-    </style>
-</head>
-<body>
-    <canvas id="rank-canvas"></canvas>
-    <audio id="tickSound" src="assets/Tick.mp3"></audio>
+.checkbox-container {
+    display: flex; 
+    align-items: center; 
+    gap: 0.75rem; 
+    padding: 1rem; 
+    background: rgba(0,0,0,0.4); 
+    border-radius: 0.75rem; 
+    border: 1px solid rgba(255,255,255,0.05); 
+    cursor: pointer;
+}
 
-    <div class="top-nav">
-        <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
-        <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
-        <div class="user-name-display" id="userName"></div>
-    </div>
+.xbox-panel {
+    padding: 1rem; 
+    background: rgba(59, 130, 246, 0.05); 
+    border: 1px solid rgba(59, 130, 246, 0.2); 
+    border-radius: 0.75rem;
+}
 
-    <div class="profile-stack" id="profileStack">
-        <div class="p-rank" id="userRank">#0</div>
-        <div class="p-score" id="userScore">0</div>
-        <div class="p-avatar" id="avatarBox"><img src="" id="userImg" alt="Agent"></div>
-    </div>
+/* --- Steps Management --- */
+.step-content { display: none; }
+.step-content.active { display: block; animation: fadeIn 0.5s ease; }
 
-    <header class="rank-header" id="mainHeader">
-        <h1>MISSION HUB</h1>
-        <p style="font-size:7px; color:var(--accent-gold); font-family:'Orbitron';">ROTATE THE VAULT DIAL</p>
-    </header>
+.step-header-title {
+    font-family: 'Orbitron'; 
+    color: var(--gold); 
+    margin-bottom: 1.5rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem;
+}
 
-    <div class="toggle-container" id="mainToggle">
-        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
-    </div>
+.step-number {
+    background: var(--gold); 
+    color: black; 
+    width: 1.5rem; 
+    height: 1.5rem; 
+    border-radius: 9999px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 10px;
+}
 
-    <div class="vault-container">
-        <div class="vault-wrapper" id="vaultParent">
-            <div class="vault-marker"></div>
-            <div class="vault-dial" id="vaultDial"></div>
-            <div class="launch-hub">
-                <span id="activityType">SEASON</span>
-                <b id="selectedActivityName">...</b>
-                <button class="launch-btn" onclick="triggerLaunch()">LAUNCH</button>
-            </div>
-        </div>
-    </div>
+/* --- Buttons --- */
+.btn-next {
+    margin-top: 2rem; 
+    width: 100%; 
+    padding: 1rem; 
+    border: 1px solid rgba(212, 175, 55, 0.5); 
+    color: var(--gold); 
+    font-family: 'Orbitron'; 
+    transition: all 0.3s;
+}
 
-    <div id="missions-layer"></div>
-    <button class="back-btn" id="backBtn" onclick="resetView()">TERMINATE SESSION</button>
+.btn-next:hover {
+    background: var(--gold); 
+    color: black;
+}
 
-    <div class="modal-overlay" id="loginModal">
-        <div class="royal-card">
-            <h2 style="color:var(--accent-gold); font-family:'Orbitron'; margin-bottom:12px; font-size:16px;">ACCESS TERMINAL</h2>
-            <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
-            <input type="password" id="agentCode" placeholder="ACCESS CODE">
-            <button class="submit-btn" id="verifyBtn" onclick="verifyCode()" style="background:var(--accent-gold); color:#000; font-family:'Orbitron'; font-weight:900; padding:10px; width:100%; border:none; margin-top:10px;">INITIALIZE</button>
-            <p id="errorMsg" style="color:#ff3131; font-size:9px; margin-top:10px; display:none;"></p>
-        </div>
-    </div>
+.btn-next-half {
+    width: 66.666%; 
+    padding: 1rem; 
+    border: 1px solid rgba(212, 175, 55, 0.5); 
+    color: var(--gold); 
+    font-family: 'Orbitron';
+}
 
-    <script>
-        let isLogged = false;
-        let currentMode = 'season';
-        let currentRotation = 0;
-        let selectedIndex = 0;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbyOenTfwP0rJCq_LQwLluZSS-e2FEb9j3gTm66t7VuKOHdx4MLftHuH_47ER_UYG8ce/exec';
-        
-        const activities = {
-            season: [
-                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen' },
-                { name: 'Seeds', code: 'SS', icon: 'fa-seedling' },
-                { name: 'Label', code: 'LS', icon: 'fa-tag' },
-                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass' },
-                { name: 'Vivid', code: 'VS', icon: 'fa-eye' },
-                { name: 'Alike', code: 'AS', icon: 'fa-equals' }
-            ],
-            xbox: [
-                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter' },
-                { name: 'Alike X', code: 'AX', icon: 'fa-clone' },
-                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece' },
-                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired' },
-                { name: 'Label X', code: 'LX', icon: 'fa-industry' },
-                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch' },
-                { name: 'Figurative X', code: 'FX', icon: 'fa-mask' },
-                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib' },
-                { name: 'SSS X', code: 'SSSX', icon: 'fa-bolt' },
-                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines' }
-            ]
-        };
+.btn-next-half:hover {
+    background: var(--gold); 
+    color: black;
+}
 
-        const dial = document.getElementById('vaultDial');
-        const tickSound = document.getElementById('tickSound');
+.btn-back {
+    width: 33.333%; 
+    padding: 1rem; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    color: #9ca3af; 
+    font-family: 'Orbitron';
+}
 
-        function initVault() {
-            const list = activities[currentMode];
-            const step = 360 / list.length;
-            dial.innerHTML = list.map((act, i) => `
-                <div class="dial-section" style="transform: rotate(${i * step}deg)">
-                    <i class="fas ${act.icon}"></i>
-                    <span>${act.name}</span>
-                </div>
-            `).join('');
-            updateSelection();
-        }
+.submit-btn-final {
+    width: 66.666%; 
+    padding: 1rem; 
+    background: var(--gold); 
+    color: black; 
+    font-family: 'Orbitron'; 
+    font-weight: 900; 
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
+    transition: all 0.3s;
+}
 
-        // --- Touch Engine ---
-        let isDragging = false, startAngle = 0, velocity = 0, lastTimestamp = 0;
+.submit-btn-final:hover {
+    transform: scale(1.05);
+}
 
-        dial.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            dial.style.transition = 'none';
-            const touch = e.touches[0];
-            startAngle = getAngle(touch.clientX, touch.clientY) - currentRotation;
-            velocity = 0;
-            e.preventDefault();
-        }, {passive: false});
+/* --- UI Components --- */
+.modal { 
+    display: none; 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.98); 
+    z-index: 1000; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 20px; 
+}
 
-        window.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const touch = e.touches[0];
-            const angle = getAngle(touch.clientX, touch.clientY);
-            const newRotation = angle - startAngle;
-            
-            const step = 360 / activities[currentMode].length;
-            if (Math.abs(newRotation - currentRotation) > step/3) {
-                tickSound.currentTime = 0;
-                tickSound.play().catch(()=>{});
-            }
+.loader { 
+    border: 3px solid #f3f3f3; 
+    border-top: 3px solid var(--gold); 
+    border-radius: 50%; 
+    width: 24px; 
+    height: 24px; 
+    animation: spin 1s linear infinite; 
+    display: none; 
+}
 
-            velocity = (newRotation - currentRotation) / (e.timeStamp - lastTimestamp || 1);
-            currentRotation = newRotation;
-            lastTimestamp = e.timeStamp;
-            dial.style.transform = `rotate(${currentRotation}deg)`;
-            updateSelection();
-        }, {passive: false});
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
 
-        window.addEventListener('touchend', () => {
-            isDragging = false;
-            applyInertia();
-        });
+@keyframes spin { 
+    0% { transform: rotate(0deg); } 
+    100% { transform: rotate(360deg); } 
+}
 
-        function applyInertia() {
-            if (Math.abs(velocity) < 0.05) { snapToSection(); return; }
-            currentRotation += velocity * 15;
-            velocity *= 0.92;
-            dial.style.transform = `rotate(${currentRotation}deg)`;
-            updateSelection();
-            requestAnimationFrame(applyInertia);
-        }
-
-        function snapToSection() {
-            const step = 360 / activities[currentMode].length;
-            const snappedIndex = Math.round(-currentRotation / step);
-            currentRotation = -(snappedIndex * step);
-            dial.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
-            dial.style.transform = `rotate(${currentRotation}deg)`;
-            updateSelection();
-        }
-
-        function getAngle(x, y) {
-            const rect = dial.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            return Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;
-        }
-
-        function updateSelection() {
-            const list = activities[currentMode];
-            const step = 360 / list.length;
-            let normalized = (-currentRotation % 360 + 360) % 360;
-            selectedIndex = Math.round(normalized / step) % list.length;
-            document.getElementById('selectedActivityName').innerText = list[selectedIndex].name;
-            document.getElementById('activityType').innerText = currentMode.toUpperCase();
-        }
-
-        function triggerLaunch() {
-            const actData = activities[currentMode][selectedIndex];
-            document.getElementById('mainHeader').style.opacity = '0';
-            document.getElementById('mainToggle').style.opacity = '0';
-            const parent = document.getElementById('vaultParent');
-            parent.style.transform = "scale(0.5)";
-            parent.style.opacity = "0.4";
-            parent.style.pointerEvents = "none";
-
-            const layer = document.getElementById('missions-layer');
-            layer.innerHTML = ''; 
-            layer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            
-            const radius = window.innerWidth * 0.35;
-            for (let i = 1; i <= 10; i++) {
-                const angle = (i * 36 - 90) * (Math.PI / 180); 
-                const x = Math.cos(angle) * radius; 
-                const y = Math.sin(angle) * radius;
-                const bubble = document.createElement('div');
-                bubble.className = 'mission-bubble';
-                bubble.style.animationDelay = `${i * 0.04}s`;
-                bubble.innerHTML = `M${i}`;
-                bubble.style.left = `calc(50% + ${x}px - 22px)`;
-                bubble.style.top = `calc(50% + ${y}px - 22px)`;
-                bubble.onclick = () => {
-                    if(!isLogged) openLogin();
-                    else {
-                        const target = (currentMode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                        const params = new URLSearchParams({ act: actData.code, m: i, name: actData.name, file: actData.code + i });
-                        window.location.href = `${target}?${params.toString()}`;
-                    }
-                };
-                layer.appendChild(bubble);
-            }
-        }
-
-        function switchMode(mode) {
-            currentMode = mode;
-            currentRotation = 0;
-            dial.style.transition = 'none';
-            dial.style.transform = `rotate(0deg)`;
-            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
-            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
-            initVault();
-        }
-
-        function resetView() { location.reload(); }
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-
-        function verifyCode() {
-            const email = document.getElementById('agentEmail').value.trim();
-            const code = document.getElementById('agentCode').value.trim();
-            const btn = document.getElementById('verifyBtn');
-            if(!email || !code) return;
-            btn.innerText = "AUTHENTICATING...";
-            const cb = 'cb_' + Date.now();
-            window[cb] = (data) => {
-                if(data.status === "success") {
-                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                    applyAgentData(data);
-                    document.getElementById('loginModal').style.display = 'none';
-                } else {
-                    document.getElementById('errorMsg').style.display = 'block';
-                    btn.innerText = "INITIALIZE";
-                }
-            };
-            const s = document.createElement('script');
-            s.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${cb}`;
-            document.body.appendChild(s);
-        }
-
-        function applyAgentData(data) {
-            isLogged = true;
-            document.getElementById('loginTriggerBtn').style.display = 'none';
-            document.getElementById('userName').innerText = data.name.split(' ')[0];
-            document.getElementById('userName').style.display = 'block';
-            document.getElementById('profileStack').style.display = 'block';
-            document.getElementById('userScore').innerText = data.totalScore || 0;
-            document.getElementById('userRank').innerText = "#" + (data.rank || 0);
-            let img = data.image || "";
-            if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
-            document.getElementById('userImg').src = img;
-        }
-
-        function initStars() {
-            const c = document.getElementById('rank-canvas');
-            const x = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            let stars = Array.from({length: 60}, () => ({ x: Math.random()*c.width, y: Math.random()*c.height, s: Math.random()*1.2 }));
-            function a() {
-                x.clearRect(0,0,c.width,c.height);
-                x.fillStyle = "rgba(255,255,255,0.5)";
-                stars.forEach(s => { s.y -= 0.3; if(s.y<0) s.y=c.height; x.beginPath(); x.arc(s.x,s.y,s.s,0,7); x.fill(); });
-                requestAnimationFrame(a);
-            }
-            a();
-        }
-
-        window.onload = () => {
-            initVault();
-            initStars();
-            const saved = localStorage.getItem('eyc_agent_data');
-            if(saved) applyAgentData(JSON.parse(saved));
-        };
-    </script>
-</body>
-</html>
+.text-glow {
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}

@@ -1,221 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Player | Join the Mission</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --gold: #d4af37; --bg-dark: #050505; --glass: rgba(255, 255, 255, 0.03); }
-        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #111, var(--bg-dark)); color: white; min-height: 100vh; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 30px; }
-        input, select { background: rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 12px !important; }
-        input:focus { border-color: var(--gold) !important; outline: none; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(3600deg); } }
-    </style>
-</head>
-<body class="py-10 px-4">
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #00050a; /* لون الفضاء العميق */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-    <div id="termsModal" class="modal">
-        <div class="glass-card p-8 max-w-lg w-full border-t-4 border-yellow-500">
-            <h2 class="orbitron text-xl text-yellow-500 mb-4">MISSION TERMS</h2>
-            <p class="text-sm text-gray-300 mb-6">By joining, you agree to all program regulations and anti-cheat systems.</p>
-            <button onclick="closeModal('termsModal')" class="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl">I UNDERSTAND</button>
-        </div>
-    </div>
+.space-background {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #00050a 100%);
+}
 
-    <div id="successScreen" class="modal">
-        <div class="glass-card p-10 text-center max-w-md">
-            <div class="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                <i class="fas fa-check-double"></i>
-            </div>
-            <h2 class="orbitron text-2xl mb-2">MISSION ACCEPTED!</h2>
-            <p class="text-gray-400 text-sm">Your data has been sent to the command center.</p>
-            <button onclick="window.location.reload()" class="mt-8 px-8 py-3 border border-yellow-500 text-yellow-500 rounded-full hover:bg-yellow-500 hover:text-black">CLOSE</button>
-        </div>
-    </div>
+.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
 
-    <div class="max-w-2xl mx-auto">
-        <div class="text-center mb-10">
-            <h1 class="orbitron text-3xl font-black text-yellow-500 uppercase">New Player Registration</h1>
-        </div>
+/* تصميم الصندوق الذهبي */
+.box-wrapper {
+    width: 150px;
+    height: 150px;
+    position: relative;
+    cursor: pointer;
+    animation: float 4s ease-in-out infinite; /* حركة الطيران */
+    transition: transform 2s ease-in-out; /* Slow Motion */
+}
 
-        <form id="regForm" class="glass-card p-8 space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2">FULL NAME (ENGLISH)</label>
-                    <input type="text" name="fullName" required placeholder="First & Last Name" class="w-full p-3">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2">AGE</label>
-                    <input type="number" name="age" required placeholder="Years" class="w-full p-3">
-                </div>
-            </div>
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-30px) rotate(5deg); }
+}
 
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2">GOOGLE EMAIL</label>
-                <input type="email" name="email" required placeholder="example@gmail.com" class="w-full p-3">
-            </div>
+.box-body {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #d4af37, #f9f295, #d4af37);
+    border: 2px solid #b8860b;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+}
 
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2">AVATAR / PERSONAL PHOTO</label>
-                <div class="border-2 border-dashed border-white/10 rounded-2xl p-6 text-center relative cursor-pointer">
-                    <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
-                    <i class="fas fa-cloud-upload-alt text-2xl text-yellow-500 mb-2"></i>
-                    <p id="fileName" class="text-[10px] text-gray-500">Click to upload your photo</p>
-                </div>
-            </div>
+.box-lid {
+    width: 110%;
+    height: 40px;
+    background: #f9f295;
+    position: absolute;
+    top: -10px;
+    left: -5%;
+    z-index: 2;
+    border-radius: 5px;
+    transition: transform 2s ease-in-out;
+}
 
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-4">CHOOSE MISSION PROGRAMS</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="checkbox" name="prog" value="Season" class="w-5 h-5 accent-yellow-500">
-                        <span class="text-sm font-bold">Season</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-5 h-5 accent-yellow-500">
-                        <span class="text-sm font-bold text-blue-400">XBoX Elite</span>
-                    </label>
-                </div>
-            </div>
+/* عند فتح الصندوق */
+.box-wrapper.open .box-lid {
+    transform: translateY(-100px) rotate(-20deg);
+    opacity: 0;
+}
 
-            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl space-y-4">
-                <label class="block text-[10px] font-bold text-blue-400">SELECT XBOX ACCESS METHOD</label>
-                <div class="flex flex-col gap-2">
-                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="radio" name="xboxType" value="Free" checked onchange="toggleTicketInputs()">
-                        <span class="text-sm">Free (Limited Access)</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
-                        <input type="radio" name="xboxType" value="GT" onchange="toggleTicketInputs()">
-                        <span class="text-sm">Redeem Golden Tickets (Full Access)</span>
-                    </label>
-                </div>
-            </div>
+.box-wrapper.open {
+    transform: scale(0);
+    opacity: 0;
+}
 
-            <div id="ticketInputs" style="display: none;" class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl space-y-3">
-                <p class="text-[10px] text-yellow-500 orbitron">REQUIRED: 2 GOLDEN TICKETS</p>
-                <input type="text" id="ticket1" placeholder="GT Code 1" class="w-full p-3 text-sm">
-                <input type="text" id="ticket2" placeholder="GT Code 2" class="w-full p-3 text-sm">
-            </div>
+/* تنسيق النتيجة */
+.hidden { display: none; }
 
-            <div class="flex items-start gap-3 py-4">
-                <input type="checkbox" required class="mt-1 w-4 h-4 accent-yellow-500">
-                <p class="text-[10px] text-gray-500">I agree to the <button type="button" onclick="openModal('termsModal')" class="text-yellow-500 underline font-bold">Mission Terms</button></p>
-            </div>
+.congrats-text {
+    color: #f9f295;
+    text-shadow: 0 0 20px #d4af37;
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
 
-            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl">
-                <span id="btnText">JOIN THE MISSION</span>
-                <div id="loader" class="loader"></div>
-            </button>
-        </form>
-    </div>
+.token-container {
+    background: rgba(255, 255, 255, 0.1);
+    border: 3px solid #d4af37;
+    padding: 30px;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    color: #fff;
+    box-shadow: 0 0 50px #d4af37;
+    animation: zoomIn 1.5s forwards;
+}
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwm8hGm3Xh3v9AdsACS3cIK4fJIaOZ0gFatL5tNJZ3nlPDroPk8bls3hVztFqzAdx13tg/exec";
+#token-value {
+    font-size: 4rem;
+    display: block;
+    color: #f9f295;
+}
 
-        function toggleXboxSection() {
-            const isChecked = document.getElementById('xboxCheck').checked;
-            document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
-            if (!isChecked) {
-                document.getElementById('ticketInputs').style.display = 'none';
-            } else {
-                toggleTicketInputs();
-            }
-        }
-
-        function toggleTicketInputs() {
-            const isGT = document.querySelector('input[name="xboxType"]:checked').value === 'GT';
-            document.getElementById('ticketInputs').style.display = isGT ? 'block' : 'none';
-            document.getElementById('ticket1').required = isGT;
-            document.getElementById('ticket2').required = isGT;
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        document.getElementById('imageInput').onchange = function() {
-            if(this.files[0]) document.getElementById('fileName').innerText = this.files[0].name;
-        };
-
-        document.getElementById('regForm').onsubmit = async function(e) {
-            e.preventDefault();
-            const btnText = document.getElementById('btnText');
-            const loader = document.getElementById('loader');
-            const submitBtn = document.getElementById('submitBtn');
-
-            btnText.style.display = 'none';
-            loader.style.display = 'block';
-            submitBtn.disabled = true;
-
-            const formData = new FormData(this);
-            const progs = [];
-            document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
-            
-            const xboxType = document.querySelector('input[name="xboxType"]:checked')?.value || "None";
-
-            const fileInput = document.getElementById('imageInput');
-            let base64Image = "";
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                base64Image = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(file);
-                });
-            }
-
-            const data = {
-                name: formData.get('fullName'),
-                age: formData.get('age'),
-                email: formData.get('email'),
-                programs: progs.join(', '),
-                image: base64Image,
-                ticket1: document.getElementById('ticket1').value,
-                ticket2: document.getElementById('ticket2').value,
-                isXboxGT: (progs.includes('XBoX') && xboxType === 'GT')
-            };
-
-            // تعديل طريقة الـ fetch لضمان وصول البيانات
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(data),
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8',
-                },
-            })
-            .then(response => response.json())
-            .then(res => {
-                if (res.status === "success") {
-                    if(data.isXboxGT) {
-                        alert("لقد تم خصم تذكرتين من تذاكرك علي برنامج السوبرستارز للاشتراك في روند في برنامج الاكس بوكس");
-                    }
-                    openModal('successScreen');
-                    this.reset();
-                } else {
-                    alert("Error: " + res.message);
-                }
-            })
-            .catch(err => {
-                // Apps Script أحياناً بيرجع رد يسبب خطأ JSON في المتصفح رغم نجاح التسجيل
-                // لذا نتحقق إذا كان التسجيل تم فعلاً
-                console.log("Response handling...");
-                openModal('successScreen');
-            })
-            .finally(() => {
-                btnText.style.display = 'block';
-                loader.style.display = 'none';
-                submitBtn.disabled = false;
-            });
-        };
-    </script>
-</body>
-</html>
-
-
+@keyframes zoomIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1.2); opacity: 1; }
+}

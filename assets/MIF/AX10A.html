@@ -1,70 +1,156 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alike Activity | Mission</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Activity Content | Alike X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #ffcc00; }
-        body { font-family: 'Cairo', sans-serif; background: transparent; color: white; overflow-x: hidden; padding: 10px; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
-        .input-alike { 
-            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; 
-            padding: 10px; text-align: center; width: 100%; color: var(--gold); 
-            font-family: 'Orbitron'; outline: none; font-size: 14px; direction: ltr; /* English input */
+        :root { --gold: #fcc200; --xbox-red: #ff3c3c; --glass: rgba(255, 255, 255, 0.05); }
+        
+        /* جعل الخلفية شفافة للاندماج مع Terminal */
+        body { background: transparent; color: white; margin: 0; padding: 15px; font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+        
+        /* Audio Player Styling */
+        .audio-card {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px; padding: 20px; 
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center; margin-bottom: 25px;
         }
-        .input-alike:focus { border-color: var(--gold); }
-        .label-ar { direction: rtl; display: block; width: 100%; font-weight: bold; }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 15px 0; }
+        .circle-btn { 
+            width: 45px; height: 45px; border-radius: 50%; 
+            border: 1px solid var(--gold); background: transparent; 
+            color: var(--gold); cursor: pointer; display: flex; 
+            align-items: center; justify-content: center; transition: 0.3s; 
+        }
+        .circle-btn:hover { background: var(--gold); color: black; }
+        .play-btn { width: 60px; height: 60px; background: var(--gold); color: black; font-size: 20px; border: none; }
+
+        /* Progress Bar */
+        .progress-container { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+        #progress { width: 0%; height: 100%; background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+
+        /* Questions */
+        .question-card {
+            background: var(--glass); border-left: 4px solid var(--gold);
+            padding: 15px; border-radius: 12px; margin-bottom: 15px;
+        }
+        .question-card p { font-size: 14px; margin-bottom: 12px; line-height: 1.4; }
+        .options { display: flex; gap: 10px; }
+        .option {
+            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;
+            border: 1px solid #444; cursor: pointer; transition: 0.3s; 
+            flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: var(--gold);
+        }
+        .option.selected { border-color: var(--gold); background: rgba(252,194,0,0.2); box-shadow: 0 0 10px rgba(252,194,0,0.1); }
+        
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        footer { margin-top: 20px; text-align: center; font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Orbitron'; }
     </style>
 </head>
 <body>
 
-    <div id="activityWrapper" class="grid grid-cols-1 gap-4 w-full"></div>
-    
-    <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v9.6</footer>
+    <div class="audio-card">
+        <p style="font-size: 10px; color: var(--gold); font-family: 'Orbitron'; margin-bottom: 5px;">AUDIO DECODER ACTIVE</p>
+        <audio id="mainAudio"></audio>
+        <div class="controls">
+            <button class="circle-btn" onclick="skip(-5)"><i class="fas fa-undo"></i></button>
+            <button class="circle-btn play-btn" onclick="togglePlay()" id="playBtn"><i class="fas fa-play"></i></button>
+            <button class="circle-btn" onclick="skip(5)"><i class="fas fa-redo"></i></button>
+        </div>
+        <div class="progress-container">
+            <div id="progress"></div>
+        </div>
+    </div>
+
+    <div id="questions-box">
+        </div>
 
 <script>
-    // بيانات المهمة - (يتم تغيير هذه المصفوفة في كل ملف من الـ 10)
-    const currentTask = [{m1:"مكبح (فرامل)", m2:"كسر", a1:"brake", a2:"break"}, {m1:"حطام", m2:"رائحة", a1:"scent", a2:"sent"}, {m1:"ممنوع", m2:"فرقة", a1:"banned", a2:"band"}, {m1:"ميدالية", m2:"تدخل", a1:"medal", a2:"meddle"}, {m1:"تيار", m2:"زبيب", a1:"current", a2:"currant"}, {m1:"تمرين", m2:"طرد الأرواح", a1:"exercise", a2:"exorcise"}, {m1:"ثابت", m2:"أدوات مكتبية", a1:"stationary", a2:"stationery"}, {m1:"رأى", m2:"موقع", a1:"sight", a2:"site"}, {m1:"مبدأ", m2:"مدير مدرسة", a1:"principle", a2:"principal"}, {m1:"ربح", m2:"نبي (نطق متشابه)", a1:"profit", a2:"prophet"}]
-    window.onload = () => { renderActivity(); };
+    const audio = document.getElementById('mainAudio');
+    const playBtn = document.getElementById('playBtn');
+    const progress = document.getElementById('progress');
 
-    function renderActivity() {
-        const wrapper = document.getElementById('activityWrapper');
-        wrapper.innerHTML = currentTask.map((pair, index) => `
-            <div class="glass-card p-4 flex flex-col gap-3">
-                <span class="text-[9px] orbitron text-yellow-500 opacity-50"># CASE ${index + 1}</span>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[12px] text-gray-300 text-center label-ar">${pair.m1}</label>
-                        <input type="text" data-answer="${pair.a1}" class="input-alike task-input" placeholder="..." autocomplete="off">
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[12px] text-gray-300 text-center label-ar">${pair.m2}</label>
-                        <input type="text" data-answer="${pair.a2}" class="input-alike task-input" placeholder="..." autocomplete="off">
-                    </div>
+    // جلب البيانات من الـ URL
+    const params = new URLSearchParams(window.location.search);
+    const mNum = params.get('m') || '1';
+    const level = params.get('level') || 'A';
+
+    // قاعدة بيانات تجريبية (يتم استبدالها بداتا حقيقية لكل نشاط)
+    const missionData = {
+        "1": {
+            audio: `assets/audio/AX${mNum}.wav`,
+            questions: [
+                { q: "Please be __________ about the confidential information.", options: ["Discreet", "Discrete"], correct: 0 },
+                { q: "The patient had an __________ reaction to the new medication.", options: ["Averse", "Adverse"], correct: 1 }
+            ]
+        }
+    };
+
+    const currentData = missionData[mNum] || missionData["1"];
+
+    window.onload = () => {
+        audio.src = currentData.audio;
+        renderQuestions();
+    };
+
+    function renderQuestions() {
+        const box = document.getElementById('questions-box');
+        box.innerHTML = currentData.questions.map((q, qIdx) => `
+            <div class="question-card" data-correct="${q.correct}">
+                <p>${qIdx + 1}. ${q.q}</p>
+                <div class="options">
+                    ${q.options.map((opt, oIdx) => `
+                        <div class="option" onclick="selectOption(this, ${qIdx}, ${oIdx})">${opt}</div>
+                    `).join('')}
                 </div>
             </div>
         `).join('');
     }
 
+    function selectOption(el, qIdx, oIdx) {
+        const parent = el.parentElement;
+        parent.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+        el.classList.add('selected');
+        el.setAttribute('data-selected-idx', oIdx);
+    }
+
+    // التحكم في الصوت
+    function togglePlay() {
+        if (audio.paused) { audio.play(); playBtn.innerHTML = '<i class="fas fa-pause"></i>'; }
+        else { audio.pause(); playBtn.innerHTML = '<i class="fas fa-play"></i>'; }
+    }
+    audio.ontimeupdate = () => { progress.style.width = (audio.currentTime / audio.duration) * 100 + '%'; };
+    function skip(val) { audio.currentTime += val; }
+
+    // بروتوكول التصحيح العالمي
     window.checkAnswers = function() {
         let score = 0;
-        const inputs = document.querySelectorAll('.task-input');
-        inputs.forEach(input => {
-            if (input.value.trim().toLowerCase() === input.getAttribute('data-answer').toLowerCase()) {
-                score++;
-                input.style.borderColor = "#00ffa3";
-            } else {
-                input.style.borderColor = "#ff3131";
+        const cards = document.querySelectorAll('.question-card');
+        
+        cards.forEach(card => {
+            const selected = card.querySelector('.option.selected');
+            const correctIdx = parseInt(card.getAttribute('data-correct'));
+            
+            if (selected) {
+                const selectedIdx = Array.from(card.querySelectorAll('.option')).indexOf(selected);
+                if (selectedIdx === correctIdx) {
+                    score++;
+                    selected.style.borderColor = "#00ffa3";
+                } else {
+                    selected.style.borderColor = "#ff3131";
+                }
             }
         });
-        return { points: score, total: inputs.length };
+
+        return {
+            points: score,
+            total: cards.length,
+            percentage: (score / cards.length) * 100
+        };
     };
 </script>
 </body>

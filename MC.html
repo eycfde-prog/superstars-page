@@ -24,24 +24,26 @@
         <div class="p-avatar" id="avatarBox"><img src="" id="userImg" alt="Agent"></div>
     </div>
 
-    <header class="rank-header" id="mainHeader">
-        <h1 style="font-family:'Orbitron'; letter-spacing:2px;">MISSION HUB</h1>
-        <p style="font-size:7px; color:var(--accent-gold); font-family:'Orbitron';">ROTATE DIAL TO SELECT</p>
-    </header>
+    <div class="ui-wrapper">
+        <header class="rank-header" id="mainHeader">
+            <h1>MISSION HUB</h1>
+            <p>ROTATE DIAL TO SELECT</p>
+        </header>
 
-    <div class="toggle-container" id="mainToggle">
-        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
-    </div>
+        <div class="toggle-container" id="mainToggle">
+            <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
+            <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
+        </div>
 
-    <div class="vault-container">
-        <div class="vault-marker"></div>
-        <div class="vault-wrapper" id="vWrap">
-            <div class="vault-dial" id="vaultDial"></div>
-            <div class="launch-hub">
-                <span id="activityType">SEASON</span>
-                <b id="selectedActivityName">...</b>
-                <button class="launch-btn" onclick="triggerLaunch()">LAUNCH</button>
+        <div class="vault-container">
+            <div class="vault-wrapper" id="vWrap">
+                <div class="vault-marker"></div>
+                <div class="vault-dial" id="vaultDial"></div>
+                <div class="launch-hub">
+                    <span id="activityType">SEASON</span>
+                    <b id="selectedActivityName">...</b>
+                    <button class="launch-btn" onclick="triggerLaunch()">LAUNCH</button>
+                </div>
             </div>
         </div>
     </div>
@@ -51,7 +53,7 @@
 
     <div class="modal-overlay" id="loginModal">
         <div class="royal-card">
-            <h2 style="color:var(--accent-gold); font-family:'Orbitron'; margin-bottom:15px; font-size:16px;">ACCESS TERMINAL</h2>
+            <h2>ACCESS TERMINAL</h2>
             <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
             <input type="password" id="agentCode" placeholder="ACCESS CODE">
             <button class="submit-btn" id="verifyBtn" onclick="verifyCode()">INITIALIZE</button>
@@ -94,7 +96,6 @@
         function initVault() {
             const list = activities[currentMode];
             const step = 360 / list.length;
-            // إضافة كلاس اللون بناءً على المود الحالي
             const iconColorClass = currentMode === 'season' ? 'icon-season' : 'icon-xbox';
             
             dial.innerHTML = list.map((act, i) => `
@@ -117,7 +118,7 @@
             startAngle = getAngle(touch.clientX, touch.clientY) - currentRotation;
             velocity = 0;
             dial.style.transition = 'none';
-        });
+        }, { passive: false });
 
         window.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
@@ -137,7 +138,7 @@
             
             dial.style.transform = `rotate(${currentRotation}deg)`;
             updateSelection();
-        });
+        }, { passive: false });
 
         window.addEventListener('touchend', () => {
             isDragging = false;
@@ -195,7 +196,7 @@
             layer.innerHTML = ''; layer.style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
             
-            const radius = window.innerWidth * 0.35;
+            const radius = Math.min(window.innerWidth, window.innerHeight) * 0.35;
             for (let i = 1; i <= 10; i++) {
                 const angle = (i * 36 - 90) * (Math.PI / 180); 
                 const x = Math.cos(angle) * radius; 

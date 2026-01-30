@@ -1,11 +1,10 @@
 :root {
-    --primary-bg: #020205;
+    var(--primary-bg): #020205;
     --accent-gold: #ffcc00;
     --neon-blue: #00d2ff;
+    --season-color: #00ffa3;
+    --xbox-color: #ff3131;
     --ui-border: rgba(255, 204, 0, 0.4);
-    --vault-grad: radial-gradient(circle at 30% 30%, #fff9ad 0%, #ffcc00 20%, #b8860b 60%, #5e4506 100%);
-    --icon-green: #00ff88;
-    --icon-red: #ff3131;
 }
 
 * { 
@@ -22,8 +21,6 @@ body {
     overflow: hidden; 
     height: 100vh; 
     width: 100vw; 
-    display: flex; 
-    flex-direction: column; 
 }
 
 #rank-canvas { 
@@ -33,7 +30,83 @@ body {
     z-index: -1; 
 }
 
-/* --- Navigation & Profile --- */
+/* --- Profile HUD --- */
+.profile-stack { 
+    position: fixed; 
+    bottom: 25px; 
+    left: 25px; 
+    z-index: 1000; 
+    display: none; 
+    width: 100px; 
+    height: 100px; 
+}
+
+.profile-stack::before { 
+    content: ''; 
+    position: absolute; 
+    inset: -10px; 
+    border: 1px dashed var(--accent-gold); 
+    border-radius: 50%; 
+    opacity: 0.3; 
+    animation: rotate 10s linear infinite; 
+}
+
+.p-avatar { 
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    width: 60px; 
+    height: 60px; 
+    border: 2px solid var(--accent-gold); 
+    box-shadow: 0 0 15px var(--accent-gold); 
+    border-radius: 50%; 
+    overflow: hidden; 
+    background: #000; 
+}
+
+.p-avatar img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
+
+.p-score { 
+    position: absolute; 
+    top: -5px; 
+    right: -5px; 
+    width: 40px; 
+    height: 40px; 
+    background: #000; 
+    border: 2px solid var(--neon-blue); 
+    color: var(--neon-blue); 
+    font-size: 9px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-family: 'Orbitron'; 
+    font-weight: 900; 
+}
+
+.p-rank { 
+    position: absolute; 
+    bottom: -5px; 
+    left: -5px; 
+    width: 32px; 
+    height: 32px; 
+    background: var(--accent-gold); 
+    color: #000; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-family: 'Orbitron'; 
+    font-weight: 900; 
+    font-size: 8px; 
+}
+
+/* --- Header --- */
 .top-nav { 
     position: fixed; 
     top: 15px; 
@@ -45,113 +118,221 @@ body {
     z-index: 1000; 
 }
 
-.logo-placeholder img { height: 30px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
+.logo-placeholder img { 
+    height: 35px; 
+    width: auto; 
+    filter: drop-shadow(0 0 8px var(--accent-gold)); 
+}
 
 .royal-login-btn { 
     background: linear-gradient(45deg, var(--accent-gold), #fff); 
     color: #000; 
     padding: 6px 12px; 
-    border-radius: 6px; 
+    border-radius: 8px; 
     font-family: 'Orbitron'; 
     font-weight: 900; 
-    font-size: 8px; 
+    font-size: 9px; 
     cursor: pointer; 
     border: none; 
 }
 
-.user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); font-size: 10px; display: none; }
-
-.profile-stack { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: none; width: 80px; height: 80px; }
-.p-avatar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; border: 2px solid var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); border-radius: 50%; overflow: hidden; background: #000; }
-.p-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.p-score { position: absolute; top: -5px; right: -5px; width: 30px; height: 30px; background: #000; border: 1px solid var(--neon-blue); color: var(--neon-blue); font-size: 7px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; }
-.p-rank { position: absolute; bottom: -5px; left: -5px; width: 28px; height: 28px; background: var(--accent-gold); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; font-size: 8px; }
-
-/* --- UI Layout --- */
-.ui-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around; /* توزيع العناصر بشكل متوازن */
-    align-items: center;
-    padding: 60px 0 20px;
-    z-index: 10;
+.user-name-display { 
+    font-family: 'Orbitron'; 
+    font-weight: 900; 
+    color: var(--accent-gold); 
+    font-size: 11px; 
+    display: none; 
 }
 
-.rank-header { text-align: center; }
-.rank-header h1 { font-family: 'Orbitron'; font-size: 1.2rem; letter-spacing: 2px; }
-.rank-header p { font-family: 'Orbitron'; font-size: 7px; color: var(--accent-gold); }
-
-.toggle-container { display: flex; gap: 8px; }
-.mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--ui-border); color: #fff; padding: 6px 12px; border-radius: 4px; font-family: 'Orbitron'; font-size: 8px; cursor: pointer; opacity: 0.4; }
-.mode-btn.active { opacity: 1; box-shadow: 0 0 10px var(--accent-gold); background: rgba(255, 204, 0, 0.1); border-color: var(--accent-gold); }
-
-/* --- Vault System (Fixed Marker Issue) --- */
-.vault-container {
-    position: relative;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* --- Swiper Cards --- */
+.swiper { 
+    width: 100%; 
+    padding-top: 20px; 
+    padding-bottom: 40px; 
 }
 
-.vault-wrapper { 
+.swiper-slide { 
+    width: 220px; 
+    height: 310px; 
+    background: rgba(10, 10, 20, 0.85) !important; 
+    border: 1px solid var(--ui-border); 
+    clip-path: polygon(15% 0, 100% 0, 100% 85%, 85% 100%, 0 100%, 0 15%); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
     position: relative; 
-    width: 85vw; 
-    height: 85vw; 
-    max-width: 350px; 
-    max-height: 350px; 
+    cursor: pointer; 
+    transition: 0.4s; 
+}
+
+.token-badge { 
+    position: absolute; 
+    top: 25px; 
+    left: 25px; 
+    background: var(--accent-gold); 
+    color: #000; 
+    font-family: 'Orbitron'; 
+    font-size: 9px; 
+    font-weight: 900; 
+    padding: 3px 8px; 
+}
+
+.activity-icon { 
+    font-size: 45px; 
+    margin-bottom: 15px; 
+    color: #fff; 
+    text-shadow: 0 0 15px rgba(255,255,255,0.3); 
+}
+
+.activity-name { 
+    font-family: 'Orbitron'; 
+    font-size: 16px; 
+    font-weight: 900; 
+    color: #fff; 
+    text-align: center; 
+    padding: 0 10px; 
+}
+
+/* --- Mission Hub (Orbit) --- */
+#missions-layer { 
+    position: fixed; 
+    inset: 0; 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 100; 
+    pointer-events: none; 
+}
+
+.mission-bubble { 
+    position: absolute; 
+    width: 50px; 
+    height: 50px; 
+    border: 2px solid var(--neon-blue); 
+    background: rgba(0, 210, 255, 0.1); 
+    box-shadow: 0 0 15px var(--neon-blue); 
+    border-radius: 50%; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
+    font-family: 'Orbitron'; 
+    font-weight: 900; 
+    color: #fff; 
+    font-size: 13px; 
+    cursor: pointer; 
+    transition: 0.3s; 
+    pointer-events: auto; 
+    opacity: 0; 
+    transform: scale(0); 
+    animation: popIn 0.4s forwards; 
 }
 
-/* حل مشكلة المسافة: المؤشر ملتصق بأعلى الـ wrapper */
-.vault-marker { 
-    position: absolute; 
-    top: -5px; /* تقريب المؤشر جداً من الحافة */
+@keyframes popIn { 
+    to { opacity: 1; transform: scale(1); } 
+}
+
+.mission-bubble:active { 
+    transform: scale(0.9); 
+    background: var(--neon-blue); 
+}
+
+/* --- UI Controls --- */
+.rank-header { 
+    text-align: center; 
+    padding-top: 70px; 
+}
+
+.toggle-container { 
+    display: flex; 
+    justify-content: center; 
+    gap: 8px; 
+    margin: 15px 0; 
+}
+
+.mode-btn { 
+    background: rgba(255,255,255,0.05); 
+    border: 1px solid var(--ui-border); 
+    color: #fff; 
+    padding: 8px 15px; 
+    border-radius: 4px; 
+    font-family: 'Orbitron'; 
+    font-size: 9px; 
+    cursor: pointer; 
+    opacity: 0.4; 
+    transition: 0.3s; 
+}
+
+.mode-btn.active { 
+    opacity: 1; 
+    box-shadow: 0 0 15px var(--accent-gold); 
+    background: rgba(255, 204, 0, 0.1); 
+    border-color: var(--accent-gold); 
+}
+
+.back-btn { 
+    position: fixed; 
+    bottom: 30px; 
     left: 50%; 
     transform: translateX(-50%); 
-    width: 4px; 
-    height: 30px; 
-    background: var(--neon-blue); 
-    box-shadow: 0 0 15px var(--neon-blue); 
-    z-index: 100; 
-    border-radius: 2px; 
+    background: var(--accent-gold); 
+    color: #000; 
+    padding: 12px 25px; 
+    border-radius: 5px; 
+    font-family: 'Orbitron'; 
+    font-weight: 900; 
+    display: none; 
+    z-index: 110; 
+    border: none; 
+    font-size: 11px; 
+    box-shadow: 0 0 20px rgba(255,204,0,0.4); 
 }
 
-.vault-dial { 
-    position: absolute; 
+/* Modal */
+.modal-overlay { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.95); 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 2000; 
+    backdrop-filter: blur(10px); 
+}
+
+.royal-card { 
+    background: #0a0a0f; 
+    border: 1px solid var(--accent-gold); 
+    padding: 30px; 
+    width: 85%; 
+    max-width: 320px; 
+    text-align: center; 
+    clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); 
+}
+
+.royal-card input { 
     width: 100%; 
-    height: 100%; 
-    border-radius: 50%; 
-    background: var(--vault-grad); 
-    border: 6px solid #1a1a1a; 
-    box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5); 
-    touch-action: none; 
+    padding: 12px; 
+    margin: 8px 0; 
+    background: #000; 
+    border: 1px solid #333; 
+    color: #fff; 
+    font-size: 13px; 
+    outline: none; 
 }
 
-.dial-section { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 12%; transform-origin: 50% 50%; }
-.dial-section i { font-size: 1.2rem; transition: color 0.3s ease; }
-.icon-season { color: var(--icon-green) !important; text-shadow: 0 0 5px rgba(0,255,136,0.5); }
-.icon-xbox { color: var(--icon-red) !important; text-shadow: 0 0 5px rgba(255,49,49,0.5); }
-.dial-section span { font-family: 'Orbitron'; font-weight: 800; font-size: 7px; color: #000; margin-top: 4px; text-transform: uppercase; text-align: center; max-width: 55px; line-height: 1; }
+.royal-card input:focus { 
+    border-color: var(--accent-gold); 
+}
 
-.launch-hub { position: absolute; width: 40%; height: 40%; background: #0a0a0f; border: 3px solid var(--accent-gold); border-radius: 50%; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 25px rgba(255,204,0,0.4); }
-.launch-hub b { font-family: 'Orbitron'; font-size: 10px; color: var(--accent-gold); text-align: center; padding: 0 5px; }
-.launch-hub span { font-size: 7px; color: #fff; opacity: 0.6; }
-.launch-btn { margin-top: 5px; background: var(--accent-gold); border: none; padding: 4px 12px; border-radius: 4px; font-family: 'Orbitron'; font-weight: 900; font-size: 9px; cursor: pointer; }
+@keyframes rotate { 
+    from { transform: rotate(0deg); } 
+    to { transform: rotate(360deg); } 
+}
 
-/* --- Mission Bubbles --- */
-#missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
-.mission-bubble { position: absolute; width: 45px; height: 45px; border: 2px solid var(--neon-blue); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 11px; cursor: pointer; transition: 0.3s; pointer-events: auto; animation: popIn 0.4s forwards; }
-
-@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-/* --- Other Elements --- */
-.back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent-gold); color: #000; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 10px; }
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-.royal-card { background: #0a0a0f; border: 1px solid var(--accent-gold); padding: 25px; width: 85%; max-width: 300px; text-align: center; clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); }
-.royal-card h2 { color: var(--accent-gold); font-family: 'Orbitron'; margin-bottom: 15px; font-size: 16px; }
-.royal-card input { width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; font-size: 12px; outline: none; }
-.submit-btn { background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-weight: 900; padding: 10px; width: 100%; border: none; cursor: pointer; }
+@media (max-width: 480px) {
+    .rank-header h1 { font-size: 1.5rem; }
+    .swiper-slide { width: 180px; height: 260px; }
+    .activity-icon { font-size: 35px; }
+    .mission-bubble { width: 45px; height: 45px; font-size: 11px; }
+}

@@ -3,181 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC | Mission Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>EYC Activity Hub | Starry Mission</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary-bg: #020205; --accent-gold: #ffcc00; --neon-green: #00ffa3;
-            --neon-blue: #00d1ff; --neon-red: #ff3131; --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1); --disabled-gray: #444;
+            --primary-bg: #020205;
+            --accent-gold: #ffcc00;
+            --gold-gradient: linear-gradient(145deg, #ffcc00, #b8860b);
+            --neon-blue: #00d2ff;
+            --ui-border: rgba(255, 204, 0, 0.4);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--primary-bg); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column; align-items: center; }
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+
+        /* --- Header & Navigation --- */
+        .top-nav { position: fixed; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        .logo-placeholder img { height: 35px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
+        .royal-login-btn { background: var(--gold-gradient); color: #000; padding: 8px 15px; border-radius: 5px; font-family: 'Orbitron'; font-weight: 900; font-size: 10px; cursor: pointer; border: none; }
         
-        .mission-outer-frame { 
-            width: 95vw; max-width: 500px; height: 90vh; 
-            background: rgba(10, 10, 15, 0.8); border: 2px solid var(--neon-green); 
-            box-shadow: inset 0 0 20px rgba(0, 255, 163, 0.2), 0 0 30px rgba(0, 0, 0, 0.5); 
-            border-radius: 20px; position: relative; display: flex; flex-direction: column; padding: 15px; z-index: 5; 
+        .rank-header { text-align: center; margin-top: 80px; z-index: 10; }
+        .toggle-container { display: flex; justify-content: center; gap: 10px; margin: 20px 0; z-index: 10; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--ui-border); color: #fff; padding: 10px 20px; border-radius: 4px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; transition: 0.3s; }
+        .mode-btn.active { background: var(--gold-gradient); color: #000; box-shadow: 0 0 15px var(--accent-gold); }
+
+        /* --- VAULT DIAL SYSTEM --- */
+        .vault-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
         }
 
-        .mission-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; }
-        .center-logo-area { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 10; }
-        .center-logo-area img { width: 45px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
+        /* القرص الدوار الخارجي */
+        .dial-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #0a0a0f;
+            border: 8px solid #1a1a1a;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,204,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-        .agent-side, .activity-side { display: flex; align-items: center; gap: 8px; width: 42%; }
-        .activity-side { flex-direction: row-reverse; text-align: right; }
+        /* علامات الترقيم والحزوز */
+        .dial-outer::after {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            border-radius: 50%;
+            border: 2px dashed var(--accent-gold);
+            opacity: 0.2;
+        }
 
-        .circle-frame { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--neon-green); box-shadow: 0 0 15px var(--neon-green); overflow: hidden; background: var(--glass); flex-shrink: 0; }
-        .circle-frame img { width: 100%; height: 100%; object-fit: cover; }
+        /* الأقسام داخل القرص */
+        .dial-section {
+            position: absolute;
+            height: 50%;
+            width: 40px;
+            top: 0;
+            transform-origin: bottom center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            transition: 0.3s;
+        }
 
-        .info-box { font-family: 'Orbitron'; }
-        .info-box span { display: block; font-size: 9px; color: #aaa; }
-        .info-box b { display: block; font-size: 10px; color: var(--accent-gold); white-space: nowrap; }
-        .token-tag { background: var(--accent-gold); color: #000; font-size: 8px; padding: 2px 5px; border-radius: 4px; font-weight: 900; }
+        .dial-section i {
+            font-size: 20px;
+            color: rgba(255,255,255,0.3);
+            transition: 0.3s;
+        }
 
-        .difficulty-bar { display: flex; justify-content: space-around; margin-bottom: 10px; transition: 0.3s; }
-        .diff-btn { width: 80px; padding: 6px; border-radius: 6px; font-family: 'Orbitron'; font-weight: 900; text-align: center; font-size: 12px; background: var(--disabled-gray); color: #fff; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .dial-section.active i {
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px var(--accent-gold);
+            transform: scale(1.3);
+        }
 
-        .activity-content-frame { flex-grow: 1; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: 15px; margin-bottom: 15px; overflow: hidden; }
-        .activity-iframe { width: 100%; height: 100%; border: none; }
+        .dial-section.active span {
+            color: #fff;
+            opacity: 1;
+        }
 
-        .action-container { display: flex; gap: 10px; align-items: center; }
-        .nav-btn { padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; font-family: 'Orbitron'; font-size: 12px; cursor: pointer; flex: 1; text-align: center; text-decoration: none; }
-        .submit-btn { flex: 2; padding: 15px; background: linear-gradient(to right, #b8860b, var(--accent-gold)); border: none; border-radius: 12px; color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 16px; cursor: pointer; }
+        .dial-section span {
+            font-family: 'Orbitron';
+            font-size: 8px;
+            margin-top: 10px;
+            text-align: center;
+            opacity: 0.3;
+        }
 
-        /* Modal Guide */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px); display: none; z-index: 1000; }
-        .glassy-container { position: absolute; left: 30px; bottom: 30px; display: flex; flex-direction: column; align-items: flex-start; z-index: 1001; }
-        .speech-bubble { background: #fff; border-radius: 20px; padding: 15px; color: #1a1a1a; position: relative; margin-bottom: 15px; text-align: right; direction: rtl; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 40px; border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent; }
-        .glassy-img { width: 180px; filter: drop-shadow(0 0 20px var(--neon-blue)); animation: floatGhost 3s ease-in-out infinite; }
-        .guide-iframe { width: 100%; height: 200px; border: none; margin-top: 10px; border-radius: 10px; background: #f9f9f9; }
+        /* زر الإطلاق في المنتصف */
+        .launch-hub {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            background: var(--gold-gradient);
+            border-radius: 50%;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.4), inset 0 0 10px rgba(255,255,255,0.5);
+            border: 4px solid #000;
+            transition: 0.2s;
+        }
 
-        @keyframes floatGhost { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .launch-hub:active { transform: scale(0.9); }
+        .launch-hub span { color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 14px; }
+        .launch-hub small { color: #000; font-size: 8px; font-weight: bold; }
+
+        /* المؤشر العلوي الثابت */
+        .dial-pointer {
+            position: absolute;
+            top: -20px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid var(--accent-gold);
+            filter: drop-shadow(0 0 10px var(--accent-gold));
+            z-index: 110;
+        }
+
+        /* طبقة المهمات (M1, M2...) */
+        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 200; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
+        .mission-bubble { position: absolute; width: 55px; height: 55px; border: 2px solid var(--neon-blue); background: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; color: #fff; cursor: pointer; transition: 0.3s; }
+        .mission-bubble:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
+
+        .back-btn { position: fixed; bottom: 30px; background: var(--accent-gold); padding: 10px 20px; border: none; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 300; border-radius: 5px; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .royal-card { background: #0a0a0f; border: 1px solid var(--accent-gold); padding: 30px; width: 85%; max-width: 320px; text-align: center; }
+        .royal-card input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; }
     </style>
 </head>
 <body>
-    <div class="mission-outer-frame">
-        <header class="mission-header">
-            <div class="agent-side">
-                <div class="circle-frame"><img src="assets/Student.png" id="studentImg"></div>
-                <div class="info-box"><span>AGENT</span><b id="agentName">BROWSER</b><div class="token-tag">5 TK</div></div>
+    <canvas id="rank-canvas"></canvas>
+    
+    <div class="top-nav">
+        <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
+        <button class="royal-login-btn" onclick="openLogin()">AGENT LOGIN</button>
+    </div>
+
+    <header class="rank-header">
+        <h1 style="font-family:'Orbitron'; letter-spacing:3px; font-size: 22px;">VAULT MISSION</h1>
+        <p style="font-size:8px; color:var(--accent-gold); font-family:'Orbitron';">ROTATE TO SELECT ACTIVITY</p>
+    </header>
+
+    <div class="toggle-container">
+        <button class="mode-btn active" id="btn-season" onclick="switchMode('season')">SEASON</button>
+        <button class="mode-btn" id="btn-xbox" onclick="switchMode('xbox')">XBOX ELITE</button>
+    </div>
+
+    <div class="vault-container">
+        <div class="dial-pointer"></div>
+        <div class="dial-outer" id="main-dial">
             </div>
-            <div class="center-logo-area"><img src="assets/logo.png"></div>
-            <div class="activity-side">
-                <div class="circle-frame"><img src="" id="activityLogo"></div>
-                <div class="info-box"><span id="missionCodeDisplay">MISSION</span><b id="activityNameDisplay">...</b><div class="token-tag" id="missionNum" style="background:var(--neon-blue)">M 1</div></div>
-            </div>
-        </header>
-
-        <div class="difficulty-bar" id="difficultyBar">
-            <div class="diff-btn">LEVEL A</div>
-            <div class="diff-btn">LEVEL B</div>
-            <div class="diff-btn">LEVEL C</div>
-        </div>
-
-        <div class="activity-content-frame">
-            <iframe id="mainIframe" src="" class="activity-iframe"></iframe>
-        </div>
-
-        <div class="action-container">
-            <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
-            <button class="submit-btn" onclick="submitMission()">SUBMIT</button>
-            <a href="index.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
+        <div class="launch-hub" onclick="handleLaunch()">
+            <span>LAUNCH</span>
+            <small id="selected-name">SELECT</small>
         </div>
     </div>
 
-    <div class="modal-overlay" id="guideModal" onclick="toggleGuide(false)">
-        <div class="glassy-container" onclick="event.stopPropagation()">
-            <div class="speech-bubble">
-                <p>هاي يا بطل! أنا <strong>Glassy</strong>، شوف التعليمات هنا:</p>
-                <iframe id="guideFrame" src="" class="guide-iframe"></iframe>
-                <button class="nav-btn" style="width:100%; margin-top:10px; background:var(--accent-gold); color:#000" onclick="toggleGuide(false)">فهمت!</button>
-            </div>
-            <img src="assets/Glassy.png" class="glassy-img">
+    <div id="missions-layer"></div>
+    <button class="back-btn" id="backBtn" onclick="closeMissions()">ABORT MISSION</button>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="royal-card">
+            <h2 style="color:var(--accent-gold); font-family:'Orbitron'; margin-bottom:15px;">ACCESS TERMINAL</h2>
+            <input type="email" id="agentEmail" placeholder="EMAIL">
+            <input type="password" id="agentCode" placeholder="CODE">
+            <button onclick="verifyCode()" style="background:var(--accent-gold); padding:12px; width:100%; border:none; margin-top:10px; font-family:'Orbitron'; font-weight:900;">INITIALIZE</button>
         </div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const actCode = urlParams.get('act') || 'GE'; 
-        const missionNum = urlParams.get('m') || '1';  
-        const actName = urlParams.get('name') || 'Activity'; 
+        const activities = {
+            season: [
+                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen' },
+                { name: 'Seeds', code: 'SS', icon: 'fa-seedling' },
+                { name: 'Label', code: 'LS', icon: 'fa-tag' },
+                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass' },
+                { name: 'Vivid', code: 'VS', icon: 'fa-eye' },
+                { name: 'Alike', code: 'AS', icon: 'fa-equals' }
+            ],
+            xbox: [
+                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter' },
+                { name: 'Alike X', code: 'AX', icon: 'fa-clone' },
+                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece' },
+                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired' },
+                { name: 'Label X', code: 'LX', icon: 'fa-industry' },
+                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch' },
+                { name: 'Figurative X', code: 'FX', icon: 'fa-mask' },
+                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib' },
+                { name: 'SSS X', code: 'SSSX', icon: 'fa-bolt' },
+                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines' }
+            ]
+        };
 
-        // تحديث الواجهة
-        document.getElementById('activityNameDisplay').innerText = actName;
-        document.getElementById('missionCodeDisplay').innerText = actCode;
-        document.getElementById('missionNum').innerText = 'M ' + missionNum;
-        document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
+        let currentMode = 'season';
+        let currentIndex = 0;
+        let isLogged = false;
 
-        function loadMission(level) {
-            let fileName = "";
-            const diffBar = document.getElementById('difficultyBar');
+        // تهيئة القرص
+        function initDial() {
+            const dial = document.getElementById('main-dial');
+            const data = activities[currentMode];
+            const angleStep = 360 / data.length;
             
-            if (actCode.endsWith('X')) {
-                // نظام Xbox: الملفات مثل GEX1A.html
-                fileName = `${actCode}${missionNum}${level}.html`;
-                diffBar.style.opacity = '1';
-                diffBar.style.pointerEvents = 'auto';
-            } else {
-                // نظام Season: الملفات مثل GE S1.html (أو GES1.html حسب تسميتك)
-                // ملحوظة: الكود الخاص بك يضيف حرف S
-                fileName = `${actCode}S${missionNum}.html`;
-                
-                // تعطيل بار المستويات للسيزون
-                diffBar.style.opacity = '0.3';
-                diffBar.style.pointerEvents = 'none';
-            }
-
-            document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
-            
-            // تحديث تمييز الزر النشط
-            document.querySelectorAll('.diff-btn').forEach(btn => {
-                btn.style.background = "var(--disabled-gray)";
-                btn.style.borderColor = "rgba(255,255,255,0.05)";
-                if(btn.innerText.endsWith(level)) {
-                    btn.style.background = "var(--neon-green)";
-                    btn.style.color = "#000";
-                } else {
-                    btn.style.color = "#fff";
-                }
+            dial.innerHTML = '';
+            data.forEach((act, i) => {
+                const section = document.createElement('div');
+                section.className = 'dial-section';
+                section.style.transform = `rotate(${i * angleStep}deg)`;
+                section.innerHTML = `
+                    <i class="fas ${act.icon}"></i>
+                    <span>${act.name}</span>
+                `;
+                dial.appendChild(section);
             });
+            updateSelection();
+        }
+
+        // دوران القرص عند السحب أو النقر (تبسيط: النقر للدوران)
+        let rotation = 0;
+        document.getElementById('main-dial').addEventListener('click', () => {
+            const data = activities[currentMode];
+            const angleStep = 360 / data.length;
+            rotation -= angleStep;
+            currentIndex = (currentIndex + 1) % data.length;
+            
+            document.getElementById('main-dial').style.transform = `rotate(${rotation}deg)`;
+            updateSelection();
+        });
+
+        function updateSelection() {
+            const sections = document.querySelectorAll('.dial-section');
+            sections.forEach(s => s.classList.remove('active'));
+            sections[currentIndex].classList.add('active');
+            document.getElementById('selected-name').innerText = activities[currentMode][currentIndex].name;
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            currentIndex = 0;
+            rotation = 0;
+            document.getElementById('main-dial').style.transform = `rotate(0deg)`;
+            document.getElementById('btn-season').classList.toggle('active', mode === 'season');
+            document.getElementById('btn-xbox').classList.toggle('active', mode === 'xbox');
+            initDial();
+        }
+
+        function handleLaunch() {
+            const act = activities[currentMode][currentIndex];
+            const layer = document.getElementById('missions-layer');
+            layer.innerHTML = '';
+            layer.style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
+
+            // إنشاء الـ 10 مهمات بشكل دائري
+            for (let i = 1; i <= 10; i++) {
+                const angle = (i * 36 - 90) * (Math.PI / 180);
+                const radius = 130;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+
+                const bubble = document.createElement('div');
+                bubble.className = 'mission-bubble';
+                bubble.innerHTML = `M${i}`;
+                bubble.style.left = `calc(50% + ${x}px - 27px)`;
+                bubble.style.top = `calc(50% + ${y}px - 27px)`;
+                
+                bubble.onclick = () => {
+                    const targetPage = (currentMode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
+                    const params = new URLSearchParams({
+                        act: act.code,
+                        m: i,
+                        file: act.code + i
+                    });
+                    window.location.href = `${targetPage}?${params.toString()}`;
+                };
+                layer.appendChild(bubble);
+            }
+        }
+
+        function closeMissions() {
+            document.getElementById('missions-layer').style.display = 'none';
+            document.getElementById('backBtn').style.display = 'none';
+        }
+
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
+
+        // تهيئة النجوم الخلفية
+        function initStars() {
+            const canvas = document.getElementById('rank-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            let stars = Array.from({length: 80}, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.5, vel: Math.random() * 0.2 + 0.1 }));
+            function anim() {
+                ctx.clearRect(0,0,canvas.width, canvas.height);
+                ctx.fillStyle = "#fff";
+                stars.forEach(s => { s.y -= s.vel; if(s.y < 0) s.y = canvas.height; ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); });
+                requestAnimationFrame(anim);
+            }
+            anim();
         }
 
         window.onload = () => {
-            // التحميل المبدئي
-            loadMission('A'); 
-
-            // جلب بيانات العميل
-            const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
-            if(saved.image) {
-                let imgUrl = saved.image;
-                if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
-                document.getElementById('studentImg').src = imgUrl;
-            }
+            initDial();
+            initStars();
         };
-
-        // ربط أزرار المستويات
-        document.querySelectorAll('.diff-btn').forEach(btn => {
-            btn.onclick = () => {
-                const level = btn.innerText.slice(-1);
-                loadMission(level);
-            };
-        });
-
-        function toggleGuide(show) {
-            if(show) {
-                document.getElementById('guideFrame').src = `assets/MIF/Guides/${actCode}.html`;
-            }
-            document.getElementById('guideModal').style.display = show ? 'block' : 'none';
-        }
-
-        function submitMission() {
-            alert("Mission Synchronizing with EYC Hub... Good job Agent!");
-        }
     </script>
 </body>
 </html>

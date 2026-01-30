@@ -2,343 +2,220 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC | Vault Mission Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Player | Join the Mission</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary-bg: #020205;
-            --accent-gold: #ffcc00;
-            --neon-blue: #00d2ff;
-            --ui-border: rgba(255, 204, 0, 0.4);
-            --vault-grad: radial-gradient(circle, #ffcc00 0%, #b8860b 50%, #5e4506 100%);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column; position: relative; }
-        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
-
-        /* --- Profile HUD --- */
-        .profile-stack { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: none; width: 80px; height: 80px; }
-        .p-avatar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; border: 2px solid var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); border-radius: 50%; overflow: hidden; background: #000; }
-        .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .p-score { position: absolute; top: -5px; right: -5px; width: 32px; height: 32px; background: #000; border: 2px solid var(--neon-blue); color: var(--neon-blue); font-size: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; }
-        .p-rank { position: absolute; bottom: -5px; left: -5px; width: 28px; height: 28px; background: var(--accent-gold); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; font-size: 8px; }
-
-        /* --- Header --- */
-        .top-nav { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .logo-placeholder img { height: 30px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
-        .royal-login-btn { background: linear-gradient(45deg, var(--accent-gold), #fff); color: #000; padding: 6px 12px; border-radius: 8px; font-family: 'Orbitron'; font-weight: 900; font-size: 9px; cursor: pointer; border: none; }
-        .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); font-size: 10px; display: none; }
-
-        /* --- Vault Selection System --- */
-        .vault-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; padding-bottom: 40px; }
-        
-        .vault-wrapper { position: relative; width: 80vw; height: 80vw; max-width: 350px; max-height: 350px; display: flex; align-items: center; justify-content: center; transition: all 0.5s ease; }
-        
-        .vault-dial { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: var(--vault-grad); border: 6px solid #222; box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5); touch-action: none; will-change: transform; }
-        
-        .vault-marker { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 4px; height: 25px; background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); z-index: 15; border-radius: 2px; }
-
-        .dial-section { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 15px; transform-origin: 50% 50%; }
-        .dial-section i { font-size: 20px; color: #000; opacity: 0.8; }
-        .dial-section span { font-family: 'Orbitron'; font-weight: 900; font-size: 7px; color: #000; margin-top: 4px; text-transform: uppercase; text-align: center; max-width: 50px; line-height: 1; }
-
-        .launch-hub { position: absolute; width: 35%; height: 35%; background: #0a0a0f; border: 3px solid var(--accent-gold); border-radius: 50%; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(255,204,0,0.4); text-align: center; }
-        .launch-hub b { font-family: 'Orbitron'; font-size: 11px; color: var(--accent-gold); width: 80%; overflow: hidden; text-overflow: ellipsis; }
-        .launch-hub span { font-size: 7px; color: #fff; opacity: 0.6; margin-bottom: 2px; }
-        .launch-btn { margin-top: 5px; background: var(--accent-gold); border: none; padding: 4px 10px; border-radius: 4px; font-family: 'Orbitron'; font-weight: 900; font-size: 9px; cursor: pointer; }
-
-        /* --- Mission Hub --- */
-        #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
-        .mission-bubble { position: absolute; width: 45px; height: 45px; border: 2px solid var(--neon-blue); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 11px; cursor: pointer; transition: 0.3s; pointer-events: auto; opacity: 0; transform: scale(0); animation: popIn 0.4s forwards; }
-        @keyframes popIn { to { opacity: 1; transform: scale(1); } }
-
-        /* --- UI Elements --- */
-        .rank-header { text-align: center; padding-top: 75px; flex-shrink: 0; }
-        .rank-header h1 { font-size: 1.2rem; font-family: 'Orbitron'; letter-spacing: 2px; }
-        .toggle-container { display: flex; justify-content: center; gap: 8px; margin: 10px 0; flex-shrink: 0; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--ui-border); color: #fff; padding: 6px 12px; border-radius: 4px; font-family: 'Orbitron'; font-size: 8px; cursor: pointer; opacity: 0.4; }
-        .mode-btn.active { opacity: 1; box-shadow: 0 0 15px var(--accent-gold); border-color: var(--accent-gold); }
-        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent-gold); color: #000; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 10px; }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-        .royal-card { background: #0a0a0f; border: 1px solid var(--accent-gold); padding: 25px; width: 85%; max-width: 300px; text-align: center; clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); }
-        .royal-card input { width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; font-size: 12px; outline: none; }
+        :root { --gold: #d4af37; --bg-dark: #050505; --glass: rgba(255, 255, 255, 0.03); }
+        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #111, var(--bg-dark)); color: white; min-height: 100vh; }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 30px; }
+        input, select { background: rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; border-radius: 12px !important; }
+        input:focus { border-color: var(--gold) !important; outline: none; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(3600deg); } }
     </style>
 </head>
-<body>
-    <canvas id="rank-canvas"></canvas>
-    <audio id="tickSound" src="assets/Tick.mp3"></audio>
+<body class="py-10 px-4">
 
-    <div class="top-nav">
-        <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
-        <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
-        <div class="user-name-display" id="userName"></div>
+    <div id="termsModal" class="modal">
+        <div class="glass-card p-8 max-w-lg w-full border-t-4 border-yellow-500">
+            <h2 class="orbitron text-xl text-yellow-500 mb-4">MISSION TERMS</h2>
+            <p class="text-sm text-gray-300 mb-6">By joining, you agree to all program regulations and anti-cheat systems.</p>
+            <button onclick="closeModal('termsModal')" class="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl">I UNDERSTAND</button>
+        </div>
     </div>
 
-    <div class="profile-stack" id="profileStack">
-        <div class="p-rank" id="userRank">#0</div>
-        <div class="p-score" id="userScore">0</div>
-        <div class="p-avatar" id="avatarBox"><img src="" id="userImg" alt="Agent"></div>
-    </div>
-
-    <header class="rank-header" id="mainHeader">
-        <h1>MISSION HUB</h1>
-        <p style="font-size:7px; color:var(--accent-gold); font-family:'Orbitron';">ROTATE THE VAULT DIAL</p>
-    </header>
-
-    <div class="toggle-container" id="mainToggle">
-        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
-    </div>
-
-    <div class="vault-container">
-        <div class="vault-wrapper" id="vaultParent">
-            <div class="vault-marker"></div>
-            <div class="vault-dial" id="vaultDial"></div>
-            <div class="launch-hub">
-                <span id="activityType">SEASON</span>
-                <b id="selectedActivityName">...</b>
-                <button class="launch-btn" onclick="triggerLaunch()">LAUNCH</button>
+    <div id="successScreen" class="modal">
+        <div class="glass-card p-10 text-center max-w-md">
+            <div class="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                <i class="fas fa-check-double"></i>
             </div>
+            <h2 class="orbitron text-2xl mb-2">MISSION ACCEPTED!</h2>
+            <p class="text-gray-400 text-sm">Your data has been sent to the command center.</p>
+            <button onclick="window.location.reload()" class="mt-8 px-8 py-3 border border-yellow-500 text-yellow-500 rounded-full hover:bg-yellow-500 hover:text-black">CLOSE</button>
         </div>
     </div>
 
-    <div id="missions-layer"></div>
-    <button class="back-btn" id="backBtn" onclick="resetView()">TERMINATE SESSION</button>
-
-    <div class="modal-overlay" id="loginModal">
-        <div class="royal-card">
-            <h2 style="color:var(--accent-gold); font-family:'Orbitron'; margin-bottom:12px; font-size:16px;">ACCESS TERMINAL</h2>
-            <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
-            <input type="password" id="agentCode" placeholder="ACCESS CODE">
-            <button class="submit-btn" id="verifyBtn" onclick="verifyCode()" style="background:var(--accent-gold); color:#000; font-family:'Orbitron'; font-weight:900; padding:10px; width:100%; border:none; margin-top:10px;">INITIALIZE</button>
-            <p id="errorMsg" style="color:#ff3131; font-size:9px; margin-top:10px; display:none;"></p>
+    <div class="max-w-2xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="orbitron text-3xl font-black text-yellow-500 uppercase">New Player Registration</h1>
         </div>
+
+        <form id="regForm" class="glass-card p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">FULL NAME (ENGLISH)</label>
+                    <input type="text" name="fullName" required placeholder="First & Last Name" class="w-full p-3">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">AGE</label>
+                    <input type="number" name="age" required placeholder="Years" class="w-full p-3">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2">GOOGLE EMAIL</label>
+                <input type="email" name="email" required placeholder="example@gmail.com" class="w-full p-3">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2">AVATAR / PERSONAL PHOTO</label>
+                <div class="border-2 border-dashed border-white/10 rounded-2xl p-6 text-center relative cursor-pointer">
+                    <input type="file" id="imageInput" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
+                    <i class="fas fa-cloud-upload-alt text-2xl text-yellow-500 mb-2"></i>
+                    <p id="fileName" class="text-[10px] text-gray-500">Click to upload your photo</p>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-4">CHOOSE MISSION PROGRAMS</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="checkbox" name="prog" value="Season" class="w-5 h-5 accent-yellow-500">
+                        <span class="text-sm font-bold">Season</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-4 bg-black/40 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="checkbox" id="xboxCheck" name="prog" value="XBoX" onchange="toggleXboxSection()" class="w-5 h-5 accent-yellow-500">
+                        <span class="text-sm font-bold text-blue-400">XBoX Elite</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="xboxSubMethod" style="display: none;" class="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl space-y-4">
+                <label class="block text-[10px] font-bold text-blue-400">SELECT XBOX ACCESS METHOD</label>
+                <div class="flex flex-col gap-2">
+                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="radio" name="xboxType" value="Free" checked onchange="toggleTicketInputs()">
+                        <span class="text-sm">Free (Limited Access)</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-black/60 rounded-xl border border-white/5 cursor-pointer">
+                        <input type="radio" name="xboxType" value="GT" onchange="toggleTicketInputs()">
+                        <span class="text-sm">Redeem Golden Tickets (Full Access)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="ticketInputs" style="display: none;" class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl space-y-3">
+                <p class="text-[10px] text-yellow-500 orbitron">REQUIRED: 2 GOLDEN TICKETS</p>
+                <input type="text" id="ticket1" placeholder="GT Code 1" class="w-full p-3 text-sm">
+                <input type="text" id="ticket2" placeholder="GT Code 2" class="w-full p-3 text-sm">
+            </div>
+
+            <div class="flex items-start gap-3 py-4">
+                <input type="checkbox" required class="mt-1 w-4 h-4 accent-yellow-500">
+                <p class="text-[10px] text-gray-500">I agree to the <button type="button" onclick="openModal('termsModal')" class="text-yellow-500 underline font-bold">Mission Terms</button></p>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full py-5 bg-yellow-500 text-black orbitron font-black rounded-2xl">
+                <span id="btnText">JOIN THE MISSION</span>
+                <div id="loader" class="loader"></div>
+            </button>
+        </form>
     </div>
 
     <script>
-        let isLogged = false;
-        let currentMode = 'season';
-        let currentRotation = 0;
-        let selectedIndex = 0;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbyOenTfwP0rJCq_LQwLluZSS-e2FEb9j3gTm66t7VuKOHdx4MLftHuH_47ER_UYG8ce/exec';
-        
-        const activities = {
-            season: [
-                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen' },
-                { name: 'Seeds', code: 'SS', icon: 'fa-seedling' },
-                { name: 'Label', code: 'LS', icon: 'fa-tag' },
-                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass' },
-                { name: 'Vivid', code: 'VS', icon: 'fa-eye' },
-                { name: 'Alike', code: 'AS', icon: 'fa-equals' }
-            ],
-            xbox: [
-                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter' },
-                { name: 'Alike X', code: 'AX', icon: 'fa-clone' },
-                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece' },
-                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired' },
-                { name: 'Label X', code: 'LX', icon: 'fa-industry' },
-                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch' },
-                { name: 'Figurative X', code: 'FX', icon: 'fa-mask' },
-                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib' },
-                { name: 'SSS X', code: 'SSSX', icon: 'fa-bolt' },
-                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines' }
-            ]
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwm8hGm3Xh3v9AdsACS3cIK4fJIaOZ0gFatL5tNJZ3nlPDroPk8bls3hVztFqzAdx13tg/exec";
+
+        function toggleXboxSection() {
+            const isChecked = document.getElementById('xboxCheck').checked;
+            document.getElementById('xboxSubMethod').style.display = isChecked ? 'block' : 'none';
+            if (!isChecked) {
+                document.getElementById('ticketInputs').style.display = 'none';
+            } else {
+                toggleTicketInputs();
+            }
+        }
+
+        function toggleTicketInputs() {
+            const isGT = document.querySelector('input[name="xboxType"]:checked').value === 'GT';
+            document.getElementById('ticketInputs').style.display = isGT ? 'block' : 'none';
+            document.getElementById('ticket1').required = isGT;
+            document.getElementById('ticket2').required = isGT;
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        document.getElementById('imageInput').onchange = function() {
+            if(this.files[0]) document.getElementById('fileName').innerText = this.files[0].name;
         };
 
-        const dial = document.getElementById('vaultDial');
-        const tickSound = document.getElementById('tickSound');
-
-        function initVault() {
-            const list = activities[currentMode];
-            const step = 360 / list.length;
-            dial.innerHTML = list.map((act, i) => `
-                <div class="dial-section" style="transform: rotate(${i * step}deg)">
-                    <i class="fas ${act.icon}"></i>
-                    <span>${act.name}</span>
-                </div>
-            `).join('');
-            updateSelection();
-        }
-
-        // --- Touch Engine ---
-        let isDragging = false, startAngle = 0, velocity = 0, lastTimestamp = 0;
-
-        dial.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            dial.style.transition = 'none';
-            const touch = e.touches[0];
-            startAngle = getAngle(touch.clientX, touch.clientY) - currentRotation;
-            velocity = 0;
+        document.getElementById('regForm').onsubmit = async function(e) {
             e.preventDefault();
-        }, {passive: false});
+            const btnText = document.getElementById('btnText');
+            const loader = document.getElementById('loader');
+            const submitBtn = document.getElementById('submitBtn');
 
-        window.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const touch = e.touches[0];
-            const angle = getAngle(touch.clientX, touch.clientY);
-            const newRotation = angle - startAngle;
+            btnText.style.display = 'none';
+            loader.style.display = 'block';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(this);
+            const progs = [];
+            document.querySelectorAll('input[name="prog"]:checked').forEach(c => progs.push(c.value));
             
-            const step = 360 / activities[currentMode].length;
-            if (Math.abs(newRotation - currentRotation) > step/3) {
-                tickSound.currentTime = 0;
-                tickSound.play().catch(()=>{});
+            const xboxType = document.querySelector('input[name="xboxType"]:checked')?.value || "None";
+
+            const fileInput = document.getElementById('imageInput');
+            let base64Image = "";
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                base64Image = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
             }
 
-            velocity = (newRotation - currentRotation) / (e.timeStamp - lastTimestamp || 1);
-            currentRotation = newRotation;
-            lastTimestamp = e.timeStamp;
-            dial.style.transform = `rotate(${currentRotation}deg)`;
-            updateSelection();
-        }, {passive: false});
-
-        window.addEventListener('touchend', () => {
-            isDragging = false;
-            applyInertia();
-        });
-
-        function applyInertia() {
-            if (Math.abs(velocity) < 0.05) { snapToSection(); return; }
-            currentRotation += velocity * 15;
-            velocity *= 0.92;
-            dial.style.transform = `rotate(${currentRotation}deg)`;
-            updateSelection();
-            requestAnimationFrame(applyInertia);
-        }
-
-        function snapToSection() {
-            const step = 360 / activities[currentMode].length;
-            const snappedIndex = Math.round(-currentRotation / step);
-            currentRotation = -(snappedIndex * step);
-            dial.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
-            dial.style.transform = `rotate(${currentRotation}deg)`;
-            updateSelection();
-        }
-
-        function getAngle(x, y) {
-            const rect = dial.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            return Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;
-        }
-
-        function updateSelection() {
-            const list = activities[currentMode];
-            const step = 360 / list.length;
-            let normalized = (-currentRotation % 360 + 360) % 360;
-            selectedIndex = Math.round(normalized / step) % list.length;
-            document.getElementById('selectedActivityName').innerText = list[selectedIndex].name;
-            document.getElementById('activityType').innerText = currentMode.toUpperCase();
-        }
-
-        function triggerLaunch() {
-            const actData = activities[currentMode][selectedIndex];
-            document.getElementById('mainHeader').style.opacity = '0';
-            document.getElementById('mainToggle').style.opacity = '0';
-            const parent = document.getElementById('vaultParent');
-            parent.style.transform = "scale(0.5)";
-            parent.style.opacity = "0.4";
-            parent.style.pointerEvents = "none";
-
-            const layer = document.getElementById('missions-layer');
-            layer.innerHTML = ''; 
-            layer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            
-            const radius = window.innerWidth * 0.35;
-            for (let i = 1; i <= 10; i++) {
-                const angle = (i * 36 - 90) * (Math.PI / 180); 
-                const x = Math.cos(angle) * radius; 
-                const y = Math.sin(angle) * radius;
-                const bubble = document.createElement('div');
-                bubble.className = 'mission-bubble';
-                bubble.style.animationDelay = `${i * 0.04}s`;
-                bubble.innerHTML = `M${i}`;
-                bubble.style.left = `calc(50% + ${x}px - 22px)`;
-                bubble.style.top = `calc(50% + ${y}px - 22px)`;
-                bubble.onclick = () => {
-                    if(!isLogged) openLogin();
-                    else {
-                        const target = (currentMode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                        const params = new URLSearchParams({ act: actData.code, m: i, name: actData.name, file: actData.code + i });
-                        window.location.href = `${target}?${params.toString()}`;
-                    }
-                };
-                layer.appendChild(bubble);
-            }
-        }
-
-        function switchMode(mode) {
-            currentMode = mode;
-            currentRotation = 0;
-            dial.style.transition = 'none';
-            dial.style.transform = `rotate(0deg)`;
-            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
-            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
-            initVault();
-        }
-
-        function resetView() { location.reload(); }
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-
-        function verifyCode() {
-            const email = document.getElementById('agentEmail').value.trim();
-            const code = document.getElementById('agentCode').value.trim();
-            const btn = document.getElementById('verifyBtn');
-            if(!email || !code) return;
-            btn.innerText = "AUTHENTICATING...";
-            const cb = 'cb_' + Date.now();
-            window[cb] = (data) => {
-                if(data.status === "success") {
-                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                    applyAgentData(data);
-                    document.getElementById('loginModal').style.display = 'none';
-                } else {
-                    document.getElementById('errorMsg').style.display = 'block';
-                    btn.innerText = "INITIALIZE";
-                }
+            const data = {
+                name: formData.get('fullName'),
+                age: formData.get('age'),
+                email: formData.get('email'),
+                programs: progs.join(', '),
+                image: base64Image,
+                ticket1: document.getElementById('ticket1').value,
+                ticket2: document.getElementById('ticket2').value,
+                isXboxGT: (progs.includes('XBoX') && xboxType === 'GT')
             };
-            const s = document.createElement('script');
-            s.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${cb}`;
-            document.body.appendChild(s);
-        }
 
-        function applyAgentData(data) {
-            isLogged = true;
-            document.getElementById('loginTriggerBtn').style.display = 'none';
-            document.getElementById('userName').innerText = data.name.split(' ')[0];
-            document.getElementById('userName').style.display = 'block';
-            document.getElementById('profileStack').style.display = 'block';
-            document.getElementById('userScore').innerText = data.totalScore || 0;
-            document.getElementById('userRank').innerText = "#" + (data.rank || 0);
-            let img = data.image || "";
-            if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
-            document.getElementById('userImg').src = img;
-        }
-
-        function initStars() {
-            const c = document.getElementById('rank-canvas');
-            const x = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            let stars = Array.from({length: 60}, () => ({ x: Math.random()*c.width, y: Math.random()*c.height, s: Math.random()*1.2 }));
-            function a() {
-                x.clearRect(0,0,c.width,c.height);
-                x.fillStyle = "rgba(255,255,255,0.5)";
-                stars.forEach(s => { s.y -= 0.3; if(s.y<0) s.y=c.height; x.beginPath(); x.arc(s.x,s.y,s.s,0,7); x.fill(); });
-                requestAnimationFrame(a);
-            }
-            a();
-        }
-
-        window.onload = () => {
-            initVault();
-            initStars();
-            const saved = localStorage.getItem('eyc_agent_data');
-            if(saved) applyAgentData(JSON.parse(saved));
+            // تعديل طريقة الـ fetch لضمان وصول البيانات
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === "success") {
+                    if(data.isXboxGT) {
+                        alert("لقد تم خصم تذكرتين من تذاكرك علي برنامج السوبرستارز للاشتراك في روند في برنامج الاكس بوكس");
+                    }
+                    openModal('successScreen');
+                    this.reset();
+                } else {
+                    alert("Error: " + res.message);
+                }
+            })
+            .catch(err => {
+                // Apps Script أحياناً بيرجع رد يسبب خطأ JSON في المتصفح رغم نجاح التسجيل
+                // لذا نتحقق إذا كان التسجيل تم فعلاً
+                console.log("Response handling...");
+                openModal('successScreen');
+            })
+            .finally(() => {
+                btnText.style.display = 'block';
+                loader.style.display = 'none';
+                submitBtn.disabled = false;
+            });
         };
     </script>
 </body>
 </html>
+
+

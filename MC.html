@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC | Vault Mission Hub</title>
+    <title>EYC Activity Hub | Starry Mission</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
     <link rel="stylesheet" href="mcstyle.css">
 </head>
 <body>
     <canvas id="rank-canvas"></canvas>
-    <audio id="tickSound" src="assets/Tick.wav"></audio> 
-
+    
     <div class="top-nav">
         <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
         <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
@@ -24,28 +26,18 @@
         <div class="p-avatar" id="avatarBox"><img src="" id="userImg" alt="Agent"></div>
     </div>
 
-    <div class="ui-wrapper">
-        <header class="rank-header" id="mainHeader">
-            <h1>MISSION HUB</h1>
-            <p>ROTATE DIAL TO SELECT</p>
-        </header>
+    <header class="rank-header" id="mainHeader">
+        <h1 style="font-family:'Orbitron'; letter-spacing:3px;">MISSION HUB</h1>
+        <p style="font-size:8px; color:var(--accent-gold); font-family:'Orbitron'; letter-spacing:2px;">CENTRAL NAVIGATION HELM</p>
+    </header>
 
-        <div class="toggle-container" id="mainToggle">
-            <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-            <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
-        </div>
+    <div class="toggle-container" id="mainToggle">
+        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
+        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
+    </div>
 
-        <div class="vault-container">
-            <div class="vault-wrapper" id="vWrap">
-                <div class="vault-marker"></div>
-                <div class="vault-dial" id="vaultDial"></div>
-                <div class="launch-hub">
-                    <span id="activityType">SEASON</span>
-                    <b id="selectedActivityName">...</b>
-                    <button class="launch-btn" onclick="triggerLaunch()">LAUNCH</button>
-                </div>
-            </div>
-        </div>
+    <div id="swiper-container" class="swiper">
+        <div class="swiper-wrapper" id="activities-wrapper"></div>
     </div>
 
     <div id="missions-layer"></div>
@@ -53,257 +45,196 @@
 
     <div class="modal-overlay" id="loginModal">
         <div class="royal-card">
-            <h2>ACCESS TERMINAL</h2>
+            <h2 style="color:var(--accent-gold); font-family:'Orbitron'; margin-bottom:15px; font-size:18px;">ACCESS TERMINAL</h2>
             <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
             <input type="password" id="agentCode" placeholder="ACCESS CODE">
-            <button class="submit-btn" id="verifyBtn" onclick="verifyCode()">INITIALIZE</button>
+            <button class="submit-btn" id="verifyBtn" onclick="verifyCode()" style="background:var(--accent-gold); color:#000; font-family:'Orbitron'; font-weight:900; padding:12px; width:100%; border:none; cursor:pointer; margin-top:10px;">INITIALIZE</button>
+            <p id="errorMsg" style="color:#ff3131; font-size:10px; margin-top:10px; display:none;"></p>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         let isLogged = false;
-        let currentMode = 'season';
-        let currentRotation = 0;
-        let selectedIndex = 0;
+        let currentSwiper = null;
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbyOenTfwP0rJCq_LQwLluZSS-e2FEb9j3gTm66t7VuKOHdx4MLftHuH_47ER_UYG8ce/exec';
         
         const activities = {
             season: [
-                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen' },
-                { name: 'Seeds', code: 'SS', icon: 'fa-seedling' },
-                { name: 'Label', code: 'LS', icon: 'fa-tag' },
-                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass' },
-                { name: 'Vivid', code: 'VS', icon: 'fa-eye' },
-                { name: 'Alike', code: 'AS', icon: 'fa-equals' }
+                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
+                { name: 'Seeds', code: 'SS', icon: 'fa-seedling', tk: '5' },
+                { name: 'Label', code: 'LS', icon: 'fa-tag', tk: '5' },
+                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass', tk: '5' },
+                { name: 'Vivid', code: 'VS', icon: 'fa-eye', tk: '5' },
+                { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' }
             ],
             xbox: [
-                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter' },
-                { name: 'Alike X', code: 'AX', icon: 'fa-clone' },
-                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece' },
-                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired' },
-                { name: 'Label X', code: 'LX', icon: 'fa-industry' },
-                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch' },
-                { name: 'Figurative X', code: 'FX', icon: 'fa-mask' },
-                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib' },
-                { name: 'SSS X', code: 'SSSX', icon: 'fa-bolt' },
-                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines' }
+                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: '5' },
+                { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: '5' },
+                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: '5' },
+                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: '5' },
+                { name: 'Label X', code: 'LX', icon: 'fa-industry', tk: '5' },
+                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: '5' },
+                { name: 'Figurative X', code: 'FX', icon: 'fa-mask', tk: '5' },
+                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '10+' },
+                { name: 'SSS X', code: 'SSSX', icon: 'fa-bolt', tk: '10+' },
+                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines', tk: '10+' }
             ]
         };
 
-        const dial = document.getElementById('vaultDial');
-        const tickSound = document.getElementById('tickSound');
+        window.addEventListener('DOMContentLoaded', () => {
+            renderActivities('season');
+            checkSavedAgent();
+            initStars();
+        });
 
-        function initVault() {
-            const list = activities[currentMode];
-            const step = 360 / list.length;
-            const iconColorClass = currentMode === 'season' ? 'icon-season' : 'icon-xbox';
-            
-            dial.innerHTML = list.map((act, i) => `
-                <div class="dial-section" style="transform: rotate(${i * step}deg)">
-                    <i class="fas ${act.icon} ${iconColorClass}"></i>
-                    <span>${act.name}</span>
+        function renderActivities(mode) {
+            const wrapper = document.getElementById('activities-wrapper');
+            wrapper.innerHTML = activities[mode].map((act, index) => `
+                <div class="swiper-slide" onclick="openMissions(this, ${index}, '${mode}')">
+                    <div class="token-badge">${act.tk} TK</div>
+                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
+                    <div class="activity-name">${act.name}</div>
                 </div>
             `).join('');
-            updateSelection();
-        }
-
-        let isDragging = false;
-        let startAngle = 0;
-        let velocity = 0;
-        let lastTime = 0;
-        let lastAngle = 0;
-
-        function getAngle(x, y) {
-            const rect = dial.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
-            return Math.atan2(y - cy, x - cx) * 180 / Math.PI;
-        }
-
-        function handleStart(e) {
-            isDragging = true;
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            startAngle = getAngle(clientX, clientY) - currentRotation;
-            velocity = 0;
-            dial.style.transition = 'none';
-            lastTime = Date.now();
-        }
-
-        function handleMove(e) {
-            if (!isDragging) return;
-            if (e.cancelable) e.preventDefault();
-
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            const angle = getAngle(clientX, clientY);
-            const newRotation = angle - startAngle;
             
-            const step = 360 / activities[currentMode].length;
-            if (Math.abs(newRotation - lastAngle) > step / 2) {
-                tickSound.currentTime = 0;
-                tickSound.play().catch(()=>{});
-                lastAngle = newRotation;
-            }
+            if (currentSwiper) currentSwiper.destroy();
+            currentSwiper = new Swiper('.swiper', { 
+                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
+                coverflowEffect: { rotate: 10, stretch: 0, depth: 100, modifier: 1, slideShadows: false }
+            });
+        }
 
-            const now = Date.now();
-            const dt = now - lastTime || 1;
-            velocity = (newRotation - currentRotation) / dt;
-            currentRotation = newRotation;
-            lastTime = now;
+        function openMissions(cardElement, index, mode) {
+            const actData = activities[mode][index];
             
-            dial.style.transform = `rotate(${currentRotation}deg)`;
-            updateSelection();
-        }
-
-        function handleEnd() {
-            if (!isDragging) return;
-            isDragging = false;
-            applyInertia();
-        }
-
-        // Touch Events
-        dial.addEventListener('touchstart', handleStart, { passive: false });
-        window.addEventListener('touchmove', handleMove, { passive: false });
-        window.addEventListener('touchend', handleEnd);
-
-        // Mouse Events
-        dial.addEventListener('mousedown', handleStart);
-        window.addEventListener('mousemove', handleMove);
-        window.addEventListener('mouseup', handleEnd);
-
-        function applyInertia() {
-            if (isDragging) return;
-            
-            if (Math.abs(velocity) < 0.05) {
-                snapToSection();
-                return;
-            }
-            
-            currentRotation += velocity * 16;
-            velocity *= 0.94; // Friction
-            dial.style.transform = `rotate(${currentRotation}deg)`;
-            updateSelection();
-            requestAnimationFrame(applyInertia);
-        }
-
-        function snapToSection() {
-            const list = activities[currentMode];
-            const step = 360 / list.length;
-            // Negative sign correction for natural feel
-            const snappedIndex = Math.round(-currentRotation / step);
-            currentRotation = -(snappedIndex * step);
-            dial.style.transition = "transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-            dial.style.transform = `rotate(${currentRotation}deg)`;
-            updateSelection();
-        }
-
-        function updateSelection() {
-            const list = activities[currentMode];
-            const step = 360 / list.length;
-            let norm = (-currentRotation % 360 + 360) % 360;
-            selectedIndex = Math.round(norm / step) % list.length;
-            document.getElementById('selectedActivityName').innerText = list[selectedIndex].name;
-            document.getElementById('activityType').innerText = currentMode.toUpperCase();
-        }
-
-        function triggerLaunch() {
-            const actData = activities[currentMode][selectedIndex];
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
-            const vWrap = document.getElementById('vWrap');
-            vWrap.style.transform = "scale(0.5) translateY(-50px)";
-            vWrap.style.opacity = "0.3";
-            vWrap.style.pointerEvents = "none";
-
-            const layer = document.getElementById('missions-layer');
-            layer.innerHTML = ''; layer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
             
-            const radius = Math.min(window.innerWidth, window.innerHeight) * 0.35;
-            for (let i = 1; i <= 10; i++) {
-                const angle = (i * 36 - 90) * (Math.PI / 180); 
-                const x = Math.cos(angle) * radius; 
-                const y = Math.sin(angle) * radius;
-                const b = document.createElement('div');
-                b.className = 'mission-bubble';
-                b.style.animationDelay = `${i * 0.05}s`;
-                b.innerHTML = `M${i}`;
-                b.style.left = `calc(50% + ${x}px - 22px)`;
-                b.style.top = `calc(50% + ${y}px - 22px)`;
-                b.onclick = () => {
-                    if(!isLogged) openLogin();
-                    else {
-                        const target = (currentMode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                        const p = new URLSearchParams({ act: actData.code, m: i, name: actData.name, file: actData.code + i });
-                        window.location.href = `${target}?${p.toString()}`;
-                    }
-                };
-                layer.appendChild(b);
-            }
+            cardElement.style.position = "fixed";
+            cardElement.style.top = "50%";
+            cardElement.style.left = "50%";
+            cardElement.style.transform = "translate(-50%, -50%) scale(0.6)";
+            cardElement.style.zIndex = "100";
+            cardElement.style.pointerEvents = "none";
+
+            document.querySelectorAll('.swiper-slide').forEach(slide => { 
+                if (slide !== cardElement) slide.style.opacity = '0'; 
+            });
+            
+            currentSwiper.allowTouchMove = false;
+
+            setTimeout(() => {
+                const layer = document.getElementById('missions-layer');
+                layer.innerHTML = ''; 
+                layer.style.display = 'flex';
+                document.getElementById('backBtn').style.display = 'block';
+                
+                const radius = window.innerWidth < 500 ? 130 : 170;
+                
+                for (let i = 1; i <= 10; i++) {
+                    const angle = (i * 36 - 90) * (Math.PI / 180); 
+                    const x = Math.cos(angle) * radius; 
+                    const y = Math.sin(angle) * radius;
+                    
+                    const bubble = document.createElement('div');
+                    bubble.className = 'mission-bubble';
+                    bubble.style.animationDelay = `${i * 0.05}s`;
+                    bubble.innerHTML = `<span>M${i}</span>`;
+                    bubble.style.left = `calc(50% + ${x}px - 25px)`;
+                    bubble.style.top = `calc(50% + ${y}px - 25px)`;
+                    
+                    bubble.onclick = (e) => {
+                        e.stopPropagation();
+                        if(!isLogged) {
+                            openLogin();
+                        } else {
+                            const targetPage = (mode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
+                            const fileCode = actData.code + i; 
+                            const params = new URLSearchParams({
+                                act: actData.code,
+                                m: i,
+                                name: actData.name,
+                                file: fileCode
+                            });
+                            window.location.href = `${targetPage}?${params.toString()}`;
+                        }
+                    };
+                    layer.appendChild(bubble);
+                }
+            }, 400);
+        }
+
+        function resetView() {
+            location.reload(); 
         }
 
         function switchMode(mode) {
-            currentMode = mode;
-            currentRotation = 0;
-            dial.style.transition = 'none';
-            dial.style.transform = `rotate(0deg)`;
             document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
             document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
-            initVault();
+            renderActivities(mode);
         }
 
-        function resetView() { location.reload(); }
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         
         function verifyCode() {
-            const email = document.getElementById('agentEmail').value;
-            const code = document.getElementById('agentCode').value;
-            if(!email || !code) return;
+            const email = document.getElementById('agentEmail').value.trim();
+            const code = document.getElementById('agentCode').value.trim();
             const btn = document.getElementById('verifyBtn');
-            btn.innerText = "...";
-            const cb = 'cb_' + Date.now();
-            window[cb] = (d) => {
-                if(d.status === "success") {
-                    localStorage.setItem('eyc_agent_data', JSON.stringify({...d, email, code}));
-                    applyAgentData(d);
+            const err = document.getElementById('errorMsg');
+            if(!email || !code) return;
+            
+            btn.innerText = "AUTHENTICATING...";
+            btn.disabled = true;
+            
+            const callbackName = 'cb_' + Date.now();
+            window[callbackName] = function(data) {
+                if(data.status === "success") {
+                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
+                    applyAgentData(data);
                     document.getElementById('loginModal').style.display = 'none';
+                } else {
+                    err.innerText = "ACCESS DENIED"; err.style.display = 'block';
+                    btn.innerText = "INITIALIZE"; btn.disabled = false;
                 }
-                delete window[cb];
+                delete window[callbackName];
             };
-            const s = document.createElement('script');
-            s.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${cb}`;
-            document.body.appendChild(s);
+            const script = document.createElement('script');
+            script.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
+            document.body.appendChild(script);
         }
 
-        function applyAgentData(d) {
+        function applyAgentData(data) {
             isLogged = true;
             document.getElementById('loginTriggerBtn').style.display = 'none';
-            document.getElementById('userName').innerText = d.name.split(' ')[0];
+            document.getElementById('userName').innerText = data.name.split(' ')[0];
             document.getElementById('userName').style.display = 'block';
             document.getElementById('profileStack').style.display = 'block';
-            document.getElementById('userScore').innerText = d.totalScore;
-            document.getElementById('userRank').innerText = "#" + d.rank;
-            let img = d.image || "";
-            if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
-            document.getElementById('userImg').src = img;
+            document.getElementById('userScore').innerText = data.totalScore || 0;
+            document.getElementById('userRank').innerText = "#" + (data.rank || 0);
+            let imgUrl = data.image || "";
+            if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
+            document.getElementById('userImg').src = imgUrl;
         }
 
-        window.onload = () => {
-            initVault();
-            const c = document.getElementById('rank-canvas');
-            const ctx = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            let s = Array.from({length: 50}, () => ({x: Math.random()*c.width, y: Math.random()*c.height, r: Math.random()}));
+        function checkSavedAgent() {
+            const saved = localStorage.getItem('eyc_agent_data');
+            if(saved) applyAgentData(JSON.parse(saved));
+        }
+
+        function initStars() {
+            const canvas = document.getElementById('rank-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            let stars = Array.from({length: 100}, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.2, vel: Math.random() * 0.3 + 0.1 }));
             function anim() {
-                ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="white";
-                s.forEach(p => { p.y-=0.2; if(p.y<0) p.y=c.height; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill(); });
+                ctx.clearRect(0,0,canvas.width, canvas.height);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+                stars.forEach(s => { s.y -= s.vel; if(s.y < 0) s.y = canvas.height; ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); });
                 requestAnimationFrame(anim);
             }
             anim();
-            const saved = localStorage.getItem('eyc_agent_data');
-            if(saved) applyAgentData(JSON.parse(saved));
-        };
+        }
     </script>
 </body>
 </html>

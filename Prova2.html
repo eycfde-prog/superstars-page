@@ -12,7 +12,8 @@
             --accent-gold: #ffcc00;
             --neon-blue: #00d2ff;
             --ui-border: rgba(255, 204, 0, 0.4);
-            --vault-grad: radial-gradient(circle, #ffcc00 0%, #b8860b 50%, #5e4506 100%);
+            /* تحسين لون الذهب ليبدو معدني أكثر */
+            --vault-grad: radial-gradient(circle at 30% 30%, #fff9ad 0%, #ffcc00 20%, #b8860b 60%, #5e4506 100%);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -20,57 +21,101 @@
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
 
         /* --- Profile HUD --- */
-        .profile-stack { position: fixed; bottom: 25px; left: 25px; z-index: 1000; display: none; width: 100px; height: 100px; }
-        .p-avatar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; border: 2px solid var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); border-radius: 50%; overflow: hidden; background: #000; }
+        .profile-stack { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: none; width: 80px; height: 80px; }
+        .p-avatar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; border: 2px solid var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold); border-radius: 50%; overflow: hidden; background: #000; }
         .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .p-score { position: absolute; top: -5px; right: -5px; width: 35px; height: 35px; background: #000; border: 2px solid var(--neon-blue); color: var(--neon-blue); font-size: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; }
-        .p-rank { position: absolute; bottom: -5px; left: -5px; width: 30px; height: 30px; background: var(--accent-gold); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; font-size: 8px; }
+        .p-score { position: absolute; top: -5px; right: -5px; width: 30px; height: 30px; background: #000; border: 1px solid var(--neon-blue); color: var(--neon-blue); font-size: 7px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; }
+        .p-rank { position: absolute; bottom: -5px; left: -5px; width: 28px; height: 28px; background: var(--accent-gold); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; font-size: 8px; }
 
         /* --- Header --- */
         .top-nav { position: fixed; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .logo-placeholder img { height: 35px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
-        .royal-login-btn { background: linear-gradient(45deg, var(--accent-gold), #fff); color: #000; padding: 8px 15px; border-radius: 8px; font-family: 'Orbitron'; font-weight: 900; font-size: 9px; cursor: pointer; border: none; }
-        .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); font-size: 11px; display: none; }
+        .logo-placeholder img { height: 30px; filter: drop-shadow(0 0 8px var(--accent-gold)); }
+        .royal-login-btn { background: linear-gradient(45deg, var(--accent-gold), #fff); color: #000; padding: 6px 12px; border-radius: 6px; font-family: 'Orbitron'; font-weight: 900; font-size: 8px; cursor: pointer; border: none; }
+        .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); font-size: 10px; display: none; }
 
-        /* --- Vault Selection System --- */
-        .vault-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; }
+        /* --- Responsive Vault System --- */
+        .vault-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; width: 100%; }
         
-        .vault-wrapper { position: relative; width: 320px; height: 320px; display: flex; align-items: center; justify-content: center; }
+        .vault-wrapper { 
+            position: relative; 
+            width: 85vw; /* حجم مرن بناءً على عرض الشاشة */
+            height: 85vw; 
+            max-width: 350px; 
+            max-height: 350px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         
-        .vault-dial { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: var(--vault-grad); border: 8px solid #222; box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.5); touch-action: none; transition: transform 0.1s cubic-bezier(0.1, 0, 0.2, 1); }
+        .vault-dial { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            background: var(--vault-grad); 
+            border: 6px solid #1a1a1a; 
+            box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5); 
+            touch-action: none; 
+            will-change: transform;
+        }
         
-        .vault-marker { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 4px; height: 30px; background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); z-index: 15; border-radius: 2px; }
+        .vault-marker { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 4px; height: 35px; background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); z-index: 15; border-radius: 2px; }
 
-        .dial-section { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 25px; transform-origin: 50% 50%; }
-        .dial-section i { font-size: 24px; color: #000; opacity: 0.8; }
-        .dial-section span { font-family: 'Orbitron'; font-weight: 900; font-size: 8px; color: #000; margin-top: 5px; text-transform: uppercase; text-align: center; max-width: 60px; }
+        .dial-section { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding-top: 10%; /* مسافة نسبية للأيقونات */
+            transform-origin: 50% 50%; 
+        }
+        .dial-section i { font-size: 1.2rem; color: #000; opacity: 0.8; }
+        .dial-section span { font-family: 'Orbitron'; font-weight: 800; font-size: 7px; color: #000; margin-top: 4px; text-transform: uppercase; text-align: center; max-width: 50px; line-height: 1; }
 
-        .launch-hub { position: absolute; width: 120px; height: 120px; background: #0a0a0f; border: 4px solid var(--accent-gold); border-radius: 50%; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(255,204,0,0.4); }
-        .launch-hub b { font-family: 'Orbitron'; font-size: 14px; color: var(--accent-gold); }
-        .launch-hub span { font-size: 8px; color: #fff; opacity: 0.6; }
-        .launch-btn { margin-top: 8px; background: var(--accent-gold); border: none; padding: 5px 15px; border-radius: 4px; font-family: 'Orbitron'; font-weight: 900; font-size: 10px; cursor: pointer; transition: 0.3s; }
-        .launch-btn:active { transform: scale(0.9); }
+        .launch-hub { 
+            position: absolute; 
+            width: 40%; 
+            height: 40%; 
+            background: #0a0a0f; 
+            border: 3px solid var(--accent-gold); 
+            border-radius: 50%; 
+            z-index: 20; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 0 25px rgba(255,204,0,0.4); 
+        }
+        .launch-hub b { font-family: 'Orbitron'; font-size: 10px; color: var(--accent-gold); text-align: center; padding: 0 5px; }
+        .launch-hub span { font-size: 7px; color: #fff; opacity: 0.6; margin-bottom: 2px; }
+        .launch-btn { margin-top: 5px; background: var(--accent-gold); border: none; padding: 4px 12px; border-radius: 4px; font-family: 'Orbitron'; font-weight: 900; font-size: 9px; cursor: pointer; }
 
         /* --- Mission Hub (Orbit) --- */
         #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
-        .mission-bubble { position: absolute; width: 50px; height: 50px; border: 2px solid var(--neon-blue); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 13px; cursor: pointer; transition: 0.3s; pointer-events: auto; opacity: 0; transform: scale(0); animation: popIn 0.4s forwards; }
+        .mission-bubble { position: absolute; width: 45px; height: 45px; border: 2px solid var(--neon-blue); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 11px; cursor: pointer; transition: 0.3s; pointer-events: auto; opacity: 0; transform: scale(0); animation: popIn 0.4s forwards; }
         @keyframes popIn { to { opacity: 1; transform: scale(1); } }
 
         /* --- UI Elements --- */
-        .rank-header { text-align: center; padding-top: 70px; }
-        .toggle-container { display: flex; justify-content: center; gap: 8px; margin: 15px 0; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--ui-border); color: #fff; padding: 8px 15px; border-radius: 4px; font-family: 'Orbitron'; font-size: 9px; cursor: pointer; opacity: 0.4; transition: 0.3s; }
-        .mode-btn.active { opacity: 1; box-shadow: 0 0 15px var(--accent-gold); background: rgba(255, 204, 0, 0.1); border-color: var(--accent-gold); }
-        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent-gold); color: #000; padding: 12px 25px; border-radius: 5px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 11px; }
+        .rank-header { text-align: center; padding-top: 60px; }
+        .rank-header h1 { font-size: 1.2rem; }
+        .toggle-container { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--ui-border); color: #fff; padding: 6px 12px; border-radius: 4px; font-family: 'Orbitron'; font-size: 8px; cursor: pointer; opacity: 0.4; }
+        .mode-btn.active { opacity: 1; box-shadow: 0 0 10px var(--accent-gold); background: rgba(255, 204, 0, 0.1); border-color: var(--accent-gold); }
+        .back-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent-gold); color: #000; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; border: none; font-size: 10px; }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-        .royal-card { background: #0a0a0f; border: 1px solid var(--accent-gold); padding: 30px; width: 85%; max-width: 320px; text-align: center; clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); }
-        .royal-card input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; font-size: 13px; outline: none; }
+        .royal-card { background: #0a0a0f; border: 1px solid var(--accent-gold); padding: 25px; width: 85%; max-width: 300px; text-align: center; clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); }
+        .royal-card input { width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; font-size: 12px; outline: none; }
     </style>
 </head>
 <body>
     <canvas id="rank-canvas"></canvas>
-    <audio id="tickSound" src="assets/Tick.mp3"></audio> <div class="top-nav">
+    <audio id="tickSound" src="assets/Tick.mp3"></audio> 
+
+    <div class="top-nav">
         <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
         <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
         <div class="user-name-display" id="userName"></div>
@@ -83,8 +128,8 @@
     </div>
 
     <header class="rank-header" id="mainHeader">
-        <h1 style="font-family:'Orbitron'; letter-spacing:3px;">MISSION HUB</h1>
-        <p style="font-size:8px; color:var(--accent-gold); font-family:'Orbitron'; letter-spacing:2px;">DRAG TO SELECT ACTIVITY</p>
+        <h1 style="font-family:'Orbitron'; letter-spacing:2px;">MISSION HUB</h1>
+        <p style="font-size:7px; color:var(--accent-gold); font-family:'Orbitron';">ROTATE DIAL TO SELECT</p>
     </header>
 
     <div class="toggle-container" id="mainToggle">
@@ -94,7 +139,7 @@
 
     <div class="vault-container">
         <div class="vault-marker"></div>
-        <div class="vault-wrapper">
+        <div class="vault-wrapper" id="vWrap">
             <div class="vault-dial" id="vaultDial"></div>
             <div class="launch-hub">
                 <span id="activityType">SEASON</span>
@@ -109,11 +154,10 @@
 
     <div class="modal-overlay" id="loginModal">
         <div class="royal-card">
-            <h2 style="color:var(--accent-gold); font-family:'Orbitron'; margin-bottom:15px; font-size:18px;">ACCESS TERMINAL</h2>
+            <h2 style="color:var(--accent-gold); font-family:'Orbitron'; margin-bottom:15px; font-size:16px;">ACCESS TERMINAL</h2>
             <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
             <input type="password" id="agentCode" placeholder="ACCESS CODE">
-            <button class="submit-btn" id="verifyBtn" onclick="verifyCode()" style="background:var(--accent-gold); color:#000; font-family:'Orbitron'; font-weight:900; padding:12px; width:100%; border:none; cursor:pointer; margin-top:10px;">INITIALIZE</button>
-            <p id="errorMsg" style="color:#ff3131; font-size:10px; margin-top:10px; display:none;"></p>
+            <button class="submit-btn" id="verifyBtn" onclick="verifyCode()" style="background:var(--accent-gold); color:#000; font-family:'Orbitron'; font-weight:900; padding:10px; width:100%; border:none; cursor:pointer; margin-top:10px;">INITIALIZE</button>
         </div>
     </div>
 
@@ -150,7 +194,6 @@
         const dial = document.getElementById('vaultDial');
         const tickSound = document.getElementById('tickSound');
 
-        // --- Vault Logic ---
         function initVault() {
             const list = activities[currentMode];
             const step = 360 / list.length;
@@ -165,15 +208,16 @@
 
         let isDragging = false;
         let startAngle = 0;
-        let lastRotation = 0;
         let velocity = 0;
-        let lastTimestamp = 0;
+        let lastRotation = 0;
+        let lastTime = 0;
 
         dial.addEventListener('touchstart', (e) => {
             isDragging = true;
             const touch = e.touches[0];
             startAngle = getAngle(touch.clientX, touch.clientY) - currentRotation;
             velocity = 0;
+            dial.style.transition = 'none';
         });
 
         window.addEventListener('touchmove', (e) => {
@@ -182,16 +226,17 @@
             const angle = getAngle(touch.clientX, touch.clientY);
             const newRotation = angle - startAngle;
             
-            // Check for tick sound
             const step = 360 / activities[currentMode].length;
-            if (Math.abs(newRotation - currentRotation) > step/2) {
+            if (Math.abs(newRotation - currentRotation) > 5) { // تكة كل 5 درجات للنعومة
                 tickSound.currentTime = 0;
-                tickSound.play().catch(() => {});
+                tickSound.play().catch(()=>{});
             }
 
-            velocity = (newRotation - currentRotation) / (e.timeStamp - lastTimestamp);
+            const now = Date.now();
+            velocity = (newRotation - currentRotation) / (now - lastTime || 1);
             currentRotation = newRotation;
-            lastTimestamp = e.timeStamp;
+            lastTime = now;
+            
             dial.style.transform = `rotate(${currentRotation}deg)`;
             updateSelection();
         });
@@ -202,11 +247,11 @@
         });
 
         function applyInertia() {
-            if (Math.abs(velocity) < 0.01) {
+            if (Math.abs(velocity) < 0.1) {
                 snapToSection();
                 return;
             }
-            currentRotation += velocity * 16;
+            currentRotation += velocity * 15;
             velocity *= 0.95;
             dial.style.transform = `rotate(${currentRotation}deg)`;
             updateSelection();
@@ -214,66 +259,64 @@
         }
 
         function snapToSection() {
-            const step = 360 / activities[currentMode].length;
+            const list = activities[currentMode];
+            const step = 360 / list.length;
             const snappedIndex = Math.round(-currentRotation / step);
             currentRotation = -(snappedIndex * step);
-            dial.style.transition = "transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            dial.style.transition = "transform 0.6s cubic-bezier(0.2, 1, 0.3, 1)";
             dial.style.transform = `rotate(${currentRotation}deg)`;
-            setTimeout(() => dial.style.transition = "none", 500);
             updateSelection();
         }
 
         function getAngle(x, y) {
             const rect = dial.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            return Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            return Math.atan2(y - cy, x - cx) * 180 / Math.PI;
         }
 
         function updateSelection() {
             const list = activities[currentMode];
             const step = 360 / list.length;
-            let normalized = (-currentRotation % 360 + 360) % 360;
-            selectedIndex = Math.round(normalized / step) % list.length;
+            let norm = (-currentRotation % 360 + 360) % 360;
+            selectedIndex = Math.round(norm / step) % list.length;
             document.getElementById('selectedActivityName').innerText = list[selectedIndex].name;
             document.getElementById('activityType').innerText = currentMode.toUpperCase();
         }
 
-        // --- Mission Launcher ---
         function triggerLaunch() {
             const actData = activities[currentMode][selectedIndex];
             document.getElementById('mainHeader').style.opacity = '0';
             document.getElementById('mainToggle').style.opacity = '0';
-            document.querySelector('.vault-wrapper').style.transform = "scale(0.6)";
-            document.querySelector('.vault-wrapper').style.opacity = "0.5";
-            document.querySelector('.vault-wrapper').style.pointerEvents = "none";
+            const vWrap = document.getElementById('vWrap');
+            vWrap.style.transform = "scale(0.5) translateY(-50px)";
+            vWrap.style.opacity = "0.3";
+            vWrap.style.pointerEvents = "none";
 
             const layer = document.getElementById('missions-layer');
-            layer.innerHTML = ''; 
-            layer.style.display = 'flex';
+            layer.innerHTML = ''; layer.style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
             
-            const radius = 140;
+            const radius = window.innerWidth * 0.35; // نصف قطر مرن للمهمات
             for (let i = 1; i <= 10; i++) {
                 const angle = (i * 36 - 90) * (Math.PI / 180); 
                 const x = Math.cos(angle) * radius; 
                 const y = Math.sin(angle) * radius;
-                const bubble = document.createElement('div');
-                bubble.className = 'mission-bubble';
-                bubble.style.animationDelay = `${i * 0.05}s`;
-                bubble.innerHTML = `<span>M${i}</span>`;
-                bubble.style.left = `calc(50% + ${x}px - 25px)`;
-                bubble.style.top = `calc(50% + ${y}px - 25px)`;
-                
-                bubble.onclick = () => {
-                    if(!isLogged) { openLogin(); }
+                const b = document.createElement('div');
+                b.className = 'mission-bubble';
+                b.style.animationDelay = `${i * 0.05}s`;
+                b.innerHTML = `M${i}`;
+                b.style.left = `calc(50% + ${x}px - 22px)`;
+                b.style.top = `calc(50% + ${y}px - 22px)`;
+                b.onclick = () => {
+                    if(!isLogged) openLogin();
                     else {
-                        const targetPage = (currentMode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                        const params = new URLSearchParams({ act: actData.code, m: i, name: actData.name, file: actData.code + i });
-                        window.location.href = `${targetPage}?${params.toString()}`;
+                        const target = (currentMode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
+                        const p = new URLSearchParams({ act: actData.code, m: i, name: actData.name, file: actData.code + i });
+                        window.location.href = `${target}?${p.toString()}`;
                     }
                 };
-                layer.appendChild(bubble);
+                layer.appendChild(b);
             }
         }
 
@@ -287,61 +330,53 @@
         }
 
         function resetView() { location.reload(); }
-
-        // --- Login & Data ---
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
+        
         function verifyCode() {
-            const email = document.getElementById('agentEmail').value.trim();
-            const code = document.getElementById('agentCode').value.trim();
-            const btn = document.getElementById('verifyBtn');
+            const email = document.getElementById('agentEmail').value;
+            const code = document.getElementById('agentCode').value;
             if(!email || !code) return;
-            btn.innerText = "AUTHENTICATING...";
-            const callbackName = 'cb_' + Date.now();
-            window[callbackName] = (data) => {
-                if(data.status === "success") {
-                    localStorage.setItem('eyc_agent_data', JSON.stringify({...data, email, code}));
-                    applyAgentData(data);
+            const btn = document.getElementById('verifyBtn');
+            btn.innerText = "...";
+            const cb = 'cb_' + Date.now();
+            window[cb] = (d) => {
+                if(d.status === "success") {
+                    localStorage.setItem('eyc_agent_data', JSON.stringify({...d, email, code}));
+                    applyAgentData(d);
                     document.getElementById('loginModal').style.display = 'none';
-                } else {
-                    document.getElementById('errorMsg').style.display = 'block';
-                    btn.innerText = "INITIALIZE";
                 }
+                delete window[cb];
             };
             const s = document.createElement('script');
-            s.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${callbackName}`;
+            s.src = `${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&callback=${cb}`;
             document.body.appendChild(s);
         }
 
-        function applyAgentData(data) {
+        function applyAgentData(d) {
             isLogged = true;
             document.getElementById('loginTriggerBtn').style.display = 'none';
-            document.getElementById('userName').innerText = data.name.split(' ')[0];
+            document.getElementById('userName').innerText = d.name.split(' ')[0];
             document.getElementById('userName').style.display = 'block';
             document.getElementById('profileStack').style.display = 'block';
-            document.getElementById('userScore').innerText = data.totalScore || 0;
-            document.getElementById('userRank').innerText = "#" + (data.rank || 0);
-            let img = data.image || "";
+            document.getElementById('userScore').innerText = d.totalScore;
+            document.getElementById('userRank').innerText = "#" + d.rank;
+            let img = d.image || "";
             if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
             document.getElementById('userImg').src = img;
         }
 
-        function initStars() {
-            const c = document.getElementById('rank-canvas');
-            const x = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            let stars = Array.from({length: 80}, () => ({ x: Math.random()*c.width, y: Math.random()*c.height, s: Math.random()*1.5 }));
-            function a() {
-                x.clearRect(0,0,c.width,c.height);
-                x.fillStyle = "white";
-                stars.forEach(s => { s.y -= 0.2; if(s.y<0) s.y=c.height; x.beginPath(); x.arc(s.x,s.y,s.s,0,7); x.fill(); });
-                requestAnimationFrame(a);
-            }
-            a();
-        }
-
         window.onload = () => {
             initVault();
-            initStars();
+            const c = document.getElementById('rank-canvas');
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            let s = Array.from({length: 50}, () => ({x: Math.random()*c.width, y: Math.random()*c.height, r: Math.random()}));
+            function anim() {
+                ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="white";
+                s.forEach(p => { p.y-=0.2; if(p.y<0) p.y=c.height; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill(); });
+                requestAnimationFrame(anim);
+            }
+            anim();
             const saved = localStorage.getItem('eyc_agent_data');
             if(saved) applyAgentData(JSON.parse(saved));
         };

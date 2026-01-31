@@ -1,99 +1,91 @@
-const box = document.getElementById('gift-box');
-const result = document.getElementById('result-display');
-
-// عند الضغط على الصندوق
-box.addEventListener('click', () => {
-    box.classList.add('open');
-    
-    // إظهار النتيجة بعد تلاشي الصندوق
-    setTimeout(() => {
-        result.classList.remove('hidden');
-        startFireworks(); 
-    }, 800);
-});
-
-function startFireworks() {
-    const canvas = document.getElementById('fireworks');
-    const ctx = canvas.getContext('2d');
-    
-    // ضبط حجم الكانفاس
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let particles = [];
-    const colors = ['#d4af37', '#f9f295', '#ffffff', '#ffdf00', '#e5c100'];
-
-    class Particle {
-        constructor(x, y, color) {
-            this.x = x;
-            this.y = y;
-            this.color = color;
-            // سرعة عشوائية في جميع الاتجاهات (انفجار)
-            this.velocity = {
-                x: (Math.random() - 0.5) * 8,
-                y: (Math.random() - 0.5) * 8
-            };
-            this.opacity = 1;
-            this.gravity = 0.05;
-        }
-
-        draw() {
-            ctx.save();
-            ctx.globalAlpha = this.opacity;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-            ctx.restore();
-        }
-
-        update() {
-            this.velocity.y += this.gravity; // تأثير الجاذبية
-            this.x += this.velocity.x;
-            this.y += this.velocity.y;
-            this.opacity -= 0.01; // تلاشي تدريجي
-        }
-    }
-
-    function createFirework() {
-        // مكان الانفجار (عشوائي في الشاشة)
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * (canvas.height * 0.6);
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        
-        for (let i = 0; i < 30; i++) {
-            particles.push(new Particle(x, y, color));
-        }
-    }
-
-    function animate() {
-        // تأثير الذيل (Trail effect)
-        ctx.fillStyle = 'rgba(0, 5, 10, 0.2)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        particles.forEach((particle, index) => {
-            if (particle.opacity > 0) {
-                particle.update();
-                particle.draw();
-            } else {
-                particles.splice(index, 1);
-            }
-        });
-
-        // إنشاء انفجار جديد بشكل عشوائي
-        if (Math.random() < 0.05) {
-            createFirework();
-        }
-
-        requestAnimationFrame(animate);
-    }
-
-    animate();
+:root {
+    --gold: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+    --box-size: 150px;
 }
 
-// إعادة ضبط حجم الكانفاس عند تغيير حجم النافذة
-window.addEventListener('resize', () => {
-    const canvas = document.getElementById('fireworks');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
+body { margin: 0; background: #020205; overflow: hidden; font-family: sans-serif; }
+
+.space-scene {
+    width: 100vw; height: 100vh;
+    perspective: 1000px; /* عمق الرؤية */
+    display: flex; justify-content: center; align-items: center;
+}
+
+.view-stage {
+    position: relative;
+    transform-style: preserve-3d;
+    animation: slowFloat 5s ease-in-out infinite;
+}
+
+/* حركة طيران الصندوق */
+@keyframes slowFloat {
+    0%, 100% { transform: translateY(0) rotateY(0deg); }
+    50% { transform: translateY(-40px) rotateY(20deg); }
+}
+
+.box-3d {
+    width: var(--box-size);
+    height: var(--box-size);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.face {
+    position: absolute;
+    width: var(--box-size);
+    height: var(--box-size);
+    background: var(--gold);
+    border: 1px solid rgba(0,0,0,0.2);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+    transition: all 1.2s ease-in-out;
+}
+
+/* ترتيب أوجه الصندوق */
+.front  { transform: translateZ(75px); }
+.back   { transform: rotateY(180deg) translateZ(75px); }
+.right  { transform: rotateY(90deg) translateZ(75px); }
+.left   { transform: rotateY(-90deg) translateZ(75px); }
+.top    { transform: rotateX(90deg) translateZ(75px); transform-origin: top; }
+.bottom { transform: rotateX(-90deg) translateZ(75px); }
+
+/* الأكشن عند الفتح: الجوانب تسقط للخارج */
+.box-3d.is-open .front  { transform: translateZ(75px) rotateX(-90deg); transform-origin: bottom; opacity: 0.8; }
+.box-3d.is-open .right  { transform: rotateY(90deg) translateZ(75px) rotateX(-90deg); transform-origin: bottom; }
+.box-3d.is-open .left   { transform: rotateY(-90deg) translateZ(75px) rotateX(-90deg); transform-origin: bottom; }
+.box-3d.is-open .back   { transform: rotateY(180deg) translateZ(75px) rotateX(-90deg); transform-origin: bottom; }
+.box-3d.is-open .top    { transform: rotateX(90deg) translateZ(150px); opacity: 0; }
+
+/* التوكن الداخلي */
+.inner-content {
+    position: absolute;
+    width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center;
+    transform: translateZ(0);
+    opacity: 0;
+    transition: all 1s delay 0.5s;
+}
+
+.box-3d.is-open .inner-content {
+    opacity: 1;
+    transform: translateZ(50px) scale(1.5); /* بروز التوكن للخارج */
+}
+
+.token-circle {
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, #fff, #ffd700);
+    border-radius: 50%;
+    box-shadow: 0 0 50px #ffd700, 0 0 20px #fff;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; color: #444; font-weight: bold;
+}
+
+#open-btn {
+    position: absolute; bottom: 50px;
+    padding: 15px 30px; background: var(--gold);
+    border: none; border-radius: 25px; cursor: pointer; font-weight: bold;
+}
+
+#fireworks-canvas {
+    position: absolute; top: 0; left: 0; pointer-events: none;
+}

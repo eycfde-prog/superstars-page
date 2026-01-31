@@ -1,89 +1,26 @@
-const box = document.getElementById('box3d');
-const btn = document.getElementById('open-btn');
-const tokensContainer = document.getElementById('tokens-container');
-const canvas = document.getElementById('fireworks-canvas');
-const ctx = canvas.getContext('2d');
+$(".daz-gift-box").on("click", function () {
+  if (!$(this).hasClass("clicked")) {
+    $(this).addClass("clicked");
+  } else {
+    return;
+  }
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+  explodeConfetti(event);
+});
 
-let particles = [];
+function explodeConfetti(event) {
+  const confettiTarget = event.currentTarget.querySelector(".confetti-target");
+  const confettiCount = 75;
+  for (let i = 0; i < confettiCount; i++) {
+    const confetti = document.createElement("div");
+    confetti.className = "confetti";
+    confetti.style.setProperty("--x", Math.random() * 2 - 1); // Random x direction (-1 to 1)
+    confetti.style.setProperty("--y", Math.random()); // Random y direction (0 to 1)
+    confetti.style.backgroundColor = getRandomColor();
+    confettiTarget.appendChild(confetti);
 
-class Particle {
-    constructor(x, y) {
-        this.x = x; this.y = y;
-        this.size = Math.random() * 3 + 2;
-        this.speedX = (Math.random() - 0.5) * 10;
-        this.speedY = (Math.random() - 0.5) * 10;
-        this.color = `hsl(${Math.random() * 50 + 20}, 100%, 50%)`;
-        this.alpha = 1;
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.alpha -= 0.02;
-    }
-    draw() {
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    }
-}
-
-function createTokens(count) {
-    for (let i = 0; i < count; i++) {
-        const token = document.createElement('div');
-        token.className = 'token-item';
-        token.style.backgroundImage = "url('Token.png')"; 
-        tokensContainer.appendChild(token);
-        
-        setTimeout(() => {
-            const angle = (i / count) * Math.PI * 2;
-            const radius = 150; 
-            const x = Math.cos(angle) * radius;
-            const y = Math.sin(angle) * radius;
-            
-            token.style.opacity = "1";
-            token.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1.2) rotateZ(360deg)`;
-        }, i * 200 + 500);
-    }
-}
-
-function celebrate() {
-    for (let i = 0; i < 100; i++) {
-        particles.push(new Particle(window.innerWidth/2, window.innerHeight/2));
-    }
-}
-
-function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach((p, i) => {
-        p.update();
-        p.draw();
-        if (p.alpha <= 0) particles.splice(i, 1);
+    // Remove confetti after animation ends
+    confetti.addEventListener("animationend", () => {
+      confetti.remove();
     });
-    requestAnimationFrame(animate);
-}
-
-btn.addEventListener('click', () => {
-    box.classList.add('is-open');
-    box.style.transform = "rotateX(-10deg) rotateY(0deg) scale(1.1)";
-    
-    btn.style.opacity = '0';
-    setTimeout(() => btn.style.display = 'none', 500);
-
-    setTimeout(() => {
-        createTokens(6);
-        celebrate();
-        animate();
-    }, 800);
-});
-
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
+  }

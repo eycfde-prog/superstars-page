@@ -8,43 +8,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="mcstyle.css">
-    <style>
-        /* إضافة تنسيق زر الخروج هنا لضمان ظهوره */
-        .logout-minimal-btn {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid #ff4444;
-            color: #ff4444;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .logout-minimal-btn:hover {
-            background: #ff4444;
-            color: white;
-            box-shadow: 0 0 10px #ff4444;
-        }
-        .user-info-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-    </style>
 </head>
 <body>
     <canvas id="rank-canvas"></canvas>
     
     <div class="top-nav">
         <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
-        
         <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
-        
-        <div class="user-info-wrapper">
-            <div class="user-name-display" id="userName"></div>
+        <div class="user-info-wrapper" style="display: flex; align-items: center; gap: 15px;">
+            <div class="user-name-display" id="userName" style="display: none;"></div>
             <button id="logoutBtn" onclick="signOut()" style="display: none;" class="logout-minimal-btn">
                 <i class="fas fa-power-off"></i>
             </button>
@@ -88,7 +60,7 @@
     <script>
         let isLogged = false;
         let currentSwiper = null;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxdJAGQNHsloAOviM_SbIK84L1-JIL_MsdguhMMR4VUtC2hznAWZNwvxTlQJ4QApZZR/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwLM8eTnceDjJpM6u_q98NGkGqkOH37ikBXh744AIqzoKo2DhCnDYcwfvtie1DNN3IUDA/exec';
         
         const activities = {
             season: [
@@ -171,33 +143,28 @@
                 });
         }
 
-        // الدالة المحدثة لتطبيق البيانات وإظهار زر الخروج
         function applyAgentData(data) {
             isLogged = true;
             document.getElementById('loginTriggerBtn').style.display = 'none';
-            
             const nameElem = document.getElementById('userName');
             const logoutBtn = document.getElementById('logoutBtn');
             
             nameElem.innerText = data.name.split(' ')[0];
             nameElem.style.display = 'block';
-            if(logoutBtn) logoutBtn.style.display = 'flex'; 
+            if(logoutBtn) logoutBtn.style.display = 'flex';
 
             document.getElementById('profileStack').style.display = 'block';
             document.getElementById('userScore').innerText = data.totalScore || 0;
             document.getElementById('userRank').innerText = "#" + (data.rank || 0);
-            
             let imgUrl = data.image || "";
             if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
             document.getElementById('userImg').src = imgUrl;
         }
 
-        // دالة تسجيل الخروج
         function signOut() {
-            if(confirm("Are you sure you want to terminate the session?")) {
-                localStorage.removeItem('eyc_agent_data');
-                location.reload();
-            }
+            localStorage.removeItem('eyc_agent_data');
+            console.log("Session Terminated. Agent Disconnected.");
+            location.reload();
         }
 
         function openMissions(cardElement, index, mode) {
@@ -241,6 +208,7 @@
                     bubble.className = `mission-bubble ${statusClass}`;
                     bubble.style.animationDelay = `${i * 0.05}s`;
                     bubble.innerHTML = i <= completedCount ? `<i class="fas fa-check"></i>` : `<span>M${i}</span>`;
+                    
                     bubble.style.left = `calc(50% + ${x}px - 25px)`;
                     bubble.style.top = `calc(50% + ${y}px - 25px)`;
 

@@ -52,7 +52,7 @@
             <button class="nav-btn" onclick="toggleGuide(true)">
                 <i class="fas fa-robot"></i> GUIDE
             </button>
-            <button class="submit-btn" id="submitBtn" onclick="submitMission()">SUBMIT</button>
+            <button class="submit-btn" id="submitBtn" onclick="submitMission()">SUBMIT MISSION</button>
             <a href="javascript:history.back()" class="nav-btn">
                 BACK <i class="fas fa-arrow-right"></i>
             </a>
@@ -62,7 +62,7 @@
     <div class="modal-overlay" id="guideModal" onclick="toggleGuide(false)">
         <div class="glassy-container" onclick="event.stopPropagation()">
             <div class="speech-bubble">
-                <p>هاي يا بطل! أنا <strong>Glassy</strong>. شوف دليل المهمة هنا:</p>
+                <p>هاي يا بطل! أنا <strong>Glassy</strong>. اختار مستوى واحد وجاوب عليه، وبالتوفيق!</p>
                 <iframe id="guideFrame" src="" class="guide-iframe"></iframe>
                 <button class="nav-btn close-guide-btn" onclick="toggleGuide(false)">فهمت المطبخ!</button>
             </div>
@@ -71,48 +71,44 @@
     </div>
 
     <script>
-        // 1. تعريف المتغيرات والروابط
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbwcZuej4fcI65QjjkX_WdKf_osnzXT2H88sMhJ8R8r8sWR8iMoHE9zFeX8zWnQx5bAx5A/exec';
         const urlParams = new URLSearchParams(window.location.search);
         const actCode = urlParams.get('act') || 'GEX'; 
         const missionNum = urlParams.get('m') || '1';  
         const actName = urlParams.get('name') || 'Activity'; 
-        let currentLevel = 'A';
+        let currentLevel = 'A'; // المستوى الافتراضي
 
-        // 2. تحديث بيانات الواجهة فور التحميل
+        // تحديث البيانات الأساسية
         document.getElementById('activityNameDisplay').innerText = actName;
         document.getElementById('missionCodeDisplay').innerText = actCode;
         document.getElementById('missionNum').innerText = 'M ' + missionNum;
         document.getElementById('activityLogo').src = `assets/AL/${actCode.replace(/[0-9]/g, '')}.png`;
 
-        // 3. وظيفة تحميل المهمة داخل الـ Iframe بناءً على المستوى
+        // وظيفة تحميل المهمة بناءً على المستوى المختار
         function loadMission(level) {
             currentLevel = level;
-            // اسم الملف المتوقع: GEX1A.html
             const fileName = `${actCode}${missionNum}${level}.html`;
             document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
             
-            // تحديث شكل أزرار المستويات
+            // تحديث تصميم الأزرار لتوضيح المستوى النشط
             document.querySelectorAll('.diff-btn').forEach(btn => {
-                btn.classList.toggle('active-level', btn.getAttribute('data-lv') === level);
                 if(btn.getAttribute('data-lv') === level) {
                     btn.style.background = "var(--neon-green)";
                     btn.style.color = "#000";
+                    btn.style.boxShadow = "0 0 15px var(--neon-green)";
                 } else {
                     btn.style.background = "var(--disabled-gray)";
                     btn.style.color = "#fff";
+                    btn.style.boxShadow = "none";
                 }
             });
         }
 
-        // 4. تحميل بيانات الطالب من الـ LocalStorage
         window.onload = () => {
-            loadMission('A'); 
+            loadMission('A'); // البدء بمستوى A
             const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            if(saved.name) {
-                document.getElementById('agentName').innerText = saved.name.split(' ')[0];
-                document.getElementById('mainTokens').innerText = (saved.totalScore || 0) + ' TK';
-            }
+            if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
+            if(saved.totalScore) document.getElementById('mainTokens').innerText = saved.totalScore + ' TK';
             if(saved.image) {
                 let imgUrl = saved.image;
                 if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
@@ -120,59 +116,60 @@
             }
         };
 
-        // 5. وظيفة الـ Submit (إرسال الإجابة للسحابة)
         function submitMission() {
             const iframe = document.getElementById('mainIframe');
             const submitBtn = document.getElementById('submitBtn');
             
             try {
-                // جلب الإجابة من داخل الـ Iframe (يجب أن يكون الملف في نفس النطاق أو يدعم ذلك)
+                // محاولة جلب الإجابة من المستوى المختار حالياً
                 const studentAnswer = iframe.contentWindow.getAnswer ? iframe.contentWindow.getAnswer() : "NO_DATA";
                 
                 if(studentAnswer === "NO_DATA" || studentAnswer === "") {
-                    alert("Please complete the mission before submitting!");
+                    alert("يا بطل، لازم تجاوب على المهمة في المستوى ده الأول!");
                     return;
                 }
 
-                submitBtn.innerText = "SYNCHRONIZING...";
+                if(!confirm(`هل أنت متأكد من إرسال إجابة المستوى (${currentLevel})؟`)) return;
+
+                submitBtn.innerText = "UPLOADING...";
                 submitBtn.disabled = true;
 
                 const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+                
+                // إرسال البيانات (المهمة + المستوى المختار)
                 const payload = {
                     email: saved.email,
                     activity: actCode,
                     mission: missionNum,
-                    level: currentLevel,
+                    level: currentLevel, // إرسال المستوى المختار فقط
                     answer: studentAnswer
                 };
 
                 fetch(scriptUrl, {
                     method: 'POST',
-                    mode: 'no-cors', // لضمان الإرسال السلس مع App Script
+                    mode: 'no-cors',
                     cache: 'no-cache',
                     body: JSON.stringify(payload)
                 }).then(() => {
-                    alert("Mission Accomplished! Data Synced.");
-                    // تحديث التقدم محلياً (وهمي حتى التحميل القادم)
+                    alert(`تم تأكيد المهمة بنجاح في المستوى ${currentLevel}!`);
+                    
+                    // تحديث التقدم المحلي
                     if(!saved.progress) saved.progress = {};
                     saved.progress[actCode] = Math.max(saved.progress[actCode] || 0, parseInt(missionNum));
                     localStorage.setItem('eyc_agent_data', JSON.stringify(saved));
                     
-                    window.location.href = 'MC.html'; // العودة للهب
+                    window.location.href = 'MC.html';
                 }).catch(err => {
-                    console.error(err);
-                    alert("Sync Error! Try again.");
-                    submitBtn.innerText = "SUBMIT";
+                    alert("عذراً، حدث خطأ في المزامنة.");
+                    submitBtn.innerText = "SUBMIT MISSION";
                     submitBtn.disabled = false;
                 });
 
             } catch (e) {
-                console.error("Iframe Access Error:", e);
-                alert("Terminal Error: Cannot read mission data.");
+                alert("Terminal Error: تأكد من إكمال المهمة داخل الإطار.");
             }
         }
 
-        // تفعيل أزرار المستويات
         document.querySelectorAll('.diff-btn').forEach(btn => {
             btn.onclick = () => loadMission(btn.getAttribute('data-lv'));
         });

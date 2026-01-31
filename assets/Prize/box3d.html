@@ -7,7 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --wood-dark: #3d2314;
+            --wood-dark: #2a180d;
+            --wood-med: #4a2c1d;
             --wood-light: #5d3a24;
             --gold-trim: #ffcc00;
             --box-size: 160px;
@@ -28,7 +29,7 @@
         .space-scene {
             width: 100%;
             height: 100%;
-            perspective: 1200px;
+            perspective: 1500px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -37,7 +38,7 @@
 
         .view-stage {
             transform-style: preserve-3d;
-            transition: transform 1s;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .box-3d {
@@ -45,99 +46,108 @@
             height: var(--box-size);
             position: relative;
             transform-style: preserve-3d;
-            transform: rotateX(-20deg) rotateY(45deg);
+            transform: rotateX(-25deg) rotateY(45deg);
             transition: transform 1.5s ease-in-out;
         }
 
+        /* التصميم العام لكل وجه */
         .face {
             position: absolute;
             width: var(--box-size);
             height: var(--box-size);
-            background: var(--wood-dark);
-            border: 4px solid #2a180d;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.7), 0 0 10px rgba(0,0,0,0.5);
+            background: var(--wood-med);
+            border: 2px solid #1a0f08;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
             display: flex;
             justify-content: center;
             align-items: center;
+            backface-visibility: visible;
         }
 
-        .face::before {
+        /* إضافة الحواف الذهبية والزخرفة */
+        .face::after {
             content: '';
             position: absolute;
-            inset: 10px;
-            border: 1px solid var(--gold-trim);
-            opacity: 0.3;
+            inset: 8px;
+            border: 1px solid rgba(255, 204, 0, 0.2);
+            pointer-events: none;
         }
 
+        /* ترتيب الأوجه لإغلاق الصندوق تماماً */
         .front  { transform: translateZ(80px); background: var(--wood-light); }
-        .front span { color: var(--gold-trim); font-size: 24px; opacity: 0.5; font-weight: 900; }
-        .back   { transform: rotateY(180deg) translateZ(80px); }
-        .right  { transform: rotateY(90deg) translateZ(80px); }
-        .left   { transform: rotateY(-90deg) translateZ(80px); }
-        .bottom { transform: rotateX(-90deg) translateZ(80px); background: #1a0f08; }
+        .back   { transform: rotateY(180deg) translateZ(80px); background: var(--wood-dark); }
+        .right  { transform: rotateY(90deg) translateZ(80px); background: var(--wood-med); }
+        .left   { transform: rotateY(-90deg) translateZ(80px); background: var(--wood-med); }
+        .bottom { transform: rotateX(-90deg) translateZ(80px); background: #000; shadow: 0 0 50px rgba(0,0,0,0.5); }
 
-        /* تعديل الغطاء ونقطة الدوران */
+        /* الغطاء المطور */
         .top { 
             transform: rotateX(90deg) translateZ(80px); 
-            transform-origin: top; /* تم التعديل ليفتح من الحافة الخلفية */
+            transform-origin: top; /* المفصلة من الخلف */
             background: var(--wood-light);
-            border: 6px solid #2a180d;
+            border: 4px solid #3d2314;
             transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
+            z-index: 5;
         }
 
-        .lid-content { text-align: center; transform: rotateX(180deg) rotateZ(180deg); }
-        .lid-text { color: var(--gold-trim); font-size: 18px; font-weight: 900; margin: 0; }
-        .lid-sub { color: #fff; font-size: 8px; letter-spacing: 2px; opacity: 0.7; }
+        .lid-content { 
+            text-align: center; 
+            transform: rotateX(180deg); /* لتعديل اتجاه الكتابة على الغطاء وهو مقفول */
+        }
+        
+        .lid-text { color: var(--gold-trim); font-size: 18px; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .lid-sub { color: #fff; font-size: 9px; letter-spacing: 2px; opacity: 0.8; }
 
-        /* تأثير الفتح الصحيح: الغطاء يرتفع للأعلى وللخلف */
-        .box-3d.is-open .top { 
-            transform: rotateX(90deg) translateZ(80px) rotateX(110deg); 
+        /* تأثير الفتح الاحترافي */
+        .is-open .top { 
+            transform: rotateX(90deg) translateZ(80px) rotateX(120deg); 
         }
 
+        /* حاوية التوكينز */
         .tokens-container {
             position: absolute;
             top: 50%;
             left: 50%;
             transform-style: preserve-3d;
             pointer-events: none;
+            z-index: 10;
         }
 
         .token-item {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             opacity: 0;
             transform: translate(-50%, -50%) scale(0);
-            filter: drop-shadow(0 0 15px var(--gold-trim));
+            filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.6));
             transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         #open-btn {
-            margin-top: 100px;
-            padding: 15px 40px;
-            background: linear-gradient(45deg, #bf953f, #fcf6ba, #aa771c);
+            margin-top: 120px;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 50%, #aa771c 100%);
             border: none;
             border-radius: 50px;
             color: #3d2314;
             font-family: 'Orbitron';
             font-weight: 900;
-            font-size: 14px;
+            letter-spacing: 2px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
-            transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255, 204, 0, 0.3);
+            transition: 0.4s;
             z-index: 100;
         }
 
-        #open-btn:active { transform: scale(0.9); }
+        #open-btn:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 40px rgba(255, 204, 0, 0.4); }
 
         #fireworks-canvas {
             position: absolute;
             inset: 0;
-            pointer-events: none;
+            z-index: 1;
         }
     </style>
 </head>
@@ -147,7 +157,11 @@
         
         <div class="view-stage">
             <div id="box3d" class="box-3d">
-                <div class="face front"><span>EYC</span></div>
+                <div class="face front">
+                    <div style="border: 1px solid var(--gold-trim); padding: 5px; opacity: 0.4;">
+                         <span style="color: var(--gold-trim); font-size: 14px;">EYC</span>
+                    </div>
+                </div>
                 <div class="face back"></div>
                 <div class="face right"></div>
                 <div class="face left"></div>
@@ -163,7 +177,7 @@
             </div>
         </div>
 
-        <button id="open-btn">OPEN VAULT</button>
+        <button id="open-btn">REVEAL REWARD</button>
     </div>
 
     <script>
@@ -181,21 +195,23 @@
         class Particle {
             constructor(x, y) {
                 this.x = x; this.y = y;
-                this.size = Math.random() * 3 + 2;
-                this.speedX = (Math.random() - 0.5) * 10;
-                this.speedY = (Math.random() - 0.5) * 10;
-                this.color = `hsl(${Math.random() * 50 + 20}, 100%, 50%)`;
+                this.size = Math.random() * 4 + 2;
+                this.speedX = (Math.random() - 0.5) * 12;
+                this.speedY = (Math.random() - 0.5) * 12;
+                this.color = `hsl(${Math.random() * 40 + 30}, 100%, 50%)`;
                 this.alpha = 1;
             }
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
-                this.alpha -= 0.02;
+                this.alpha -= 0.015;
             }
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.alpha;
                 ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
@@ -207,23 +223,24 @@
             for (let i = 0; i < count; i++) {
                 const token = document.createElement('div');
                 token.className = 'token-item';
+                // تأكد أن المسار صحيح لصورة التوكين
                 token.style.backgroundImage = "url('Token.png')"; 
                 tokensContainer.appendChild(token);
                 
                 setTimeout(() => {
-                    const angle = (i / count) * Math.PI * 2;
-                    const radius = 150; 
+                    const angle = (i / count) * Math.PI * 2 - (Math.PI / 2);
+                    const radius = window.innerWidth < 500 ? 120 : 180; 
                     const x = Math.cos(angle) * radius;
                     const y = Math.sin(angle) * radius;
                     
                     token.style.opacity = "1";
-                    token.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1.2) rotateZ(360deg)`;
-                }, i * 200 + 500);
+                    token.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1.3) rotateY(360deg)`;
+                }, i * 150 + 800);
             }
         }
 
         function celebrate() {
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 150; i++) {
                 particles.push(new Particle(window.innerWidth/2, window.innerHeight/2));
             }
         }
@@ -239,18 +256,19 @@
         }
 
         btn.addEventListener('click', () => {
+            // انيميشن فتح الصندوق
             box.classList.add('is-open');
-            // تعديل زاوية الرؤية عند الفتح لرؤية المحتوى بشكل أفضل
-            box.style.transform = "rotateX(-30deg) rotateY(0deg) scale(1.1)";
+            box.style.transform = "rotateX(-15deg) rotateY(0deg) scale(1.1)";
             
             btn.style.opacity = '0';
-            setTimeout(() => btn.style.display = 'none', 500);
+            btn.style.pointerEvents = 'none';
 
+            // انطلاق الجوائز
             setTimeout(() => {
-                createTokens(6);
+                createTokens(5); // الـ 5 توكينز بتوعنا
                 celebrate();
                 animate();
-            }, 800);
+            }, 600);
         });
 
         window.addEventListener('resize', () => {

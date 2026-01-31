@@ -32,7 +32,7 @@
         .instruction-text {
             color: var(--gold);
             font-family: 'Orbitron', sans-serif;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 3px;
             font-size: 14px;
@@ -51,109 +51,109 @@
             cursor: pointer;
             z-index: 20;
             transition: transform 0.3s;
+            /* منع اختيار الصورة أو سحبها */
+            -webkit-user-drag: none;
+            user-select: none;
         }
-
-        .daz-gift-box:hover { transform: scale(1.05); }
 
         .gift-box-wrapper {
             width: var(--box-size);
             height: var(--box-size);
             position: relative;
             display: flex;
-            align-items: flex-end; /* لضمان ثبات القاعدة */
+            align-items: flex-end;
         }
 
         .gift-box-top {
             width: 100%;
             position: absolute;
-            bottom: 68%; /* مكان الغطاء وهو قافل بالظبط */
+            bottom: 68.5%; /* تعديل دقيق لمكان الغطاء */
             left: 0;
             transform: scale(1.02);
             transition: all 0.8s cubic-bezier(0.5, -0.5, 0.3, 1.5);
             z-index: 30;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
         }
 
         .gift-box-bottom {
             width: 100%;
             position: relative;
             z-index: 10;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9));
         }
 
-        /* حالة الفتح المذهلة */
+        /* حالة الفتح */
         .daz-gift-box.clicked .gift-box-top {
-            transform: translateY(-250px) translateX(100px) rotate(45deg) scale(0.5);
+            transform: translateY(-300px) translateX(150px) rotate(60deg) scale(0.3);
             opacity: 0;
         }
 
-        /* توهج داخلي عند الفتح */
         .box-glow {
             position: absolute;
-            width: 80%;
-            height: 40%;
-            background: var(--gold);
-            top: 50%;
-            left: 10%;
-            filter: blur(40px);
+            width: 100%;
+            height: 50%;
+            background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+            top: 40%;
+            left: 0;
+            filter: blur(30px);
             opacity: 0;
             transition: 0.5s;
             z-index: 5;
         }
 
-        .clicked .box-glow { opacity: 0.6; }
+        .clicked .box-glow { opacity: 0.8; animation: flicker 0.2s infinite alternate; }
 
-        /* --- نظام خروج التوكينز --- */
-        .tokens-reveal-area {
-            position: absolute;
-            inset: 0;
-            z-index: 15;
-            pointer-events: none;
+        @keyframes flicker {
+            from { opacity: 0.6; transform: scale(1); }
+            to { opacity: 0.9; transform: scale(1.1); }
         }
 
         .token-item {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             background: url('Token.png') no-repeat center/contain;
             opacity: 0;
             left: 50%;
-            top: 60%; /* تخرج من فتحة الصندوق */
+            top: 60%;
             transform: translate(-50%, -50%) scale(0);
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.5);
-            filter: drop-shadow(0 0 15px var(--gold));
+            transition: all 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7));
         }
 
-        @media (max-width: 480px) {
-            .token-item { width: 45px; height: 45px; }
+        /* حركة عائمة للتوكينز بعد خروجها */
+        .token-floating {
+            animation: floatToken 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatToken {
+            from { margin-top: 0px; }
+            to { margin-top: -15px; }
         }
 
         .confetti {
             position: absolute;
-            width: 8px; height: 8px;
-            border-radius: 2px;
+            width: 10px; height: 10px;
             z-index: 40;
             pointer-events: none;
+            border-radius: 2px;
         }
 
         @keyframes explode {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) rotate(360deg); opacity: 0; }
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(720deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="instruction-text" id="status">Tap the Vault to Claim</div>
+    <div class="instruction-text" id="status">TAP THE VAULT TO CLAIM</div>
 
     <div class="daz-gift-box" id="mainBox">
         <div class="gift-box-wrapper">
             <div class="box-glow"></div>
-
             <img class="gift-box-top" src="https://cdn.daz3d.com/file/dazcdn/media/sale-promo/advent/box-top.png" alt="Box Top">
-            
             <div class="tokens-reveal-area" id="tokenArea"></div>
-
             <img class="gift-box-bottom" src="https://cdn.daz3d.com/file/dazcdn/media/sale-promo/advent/box-bottom.png" alt="Box Bottom">
         </div>
     </div>
@@ -168,33 +168,28 @@
             $giftBox.on("click", function () {
                 if (!$(this).hasClass("clicked")) {
                     $(this).addClass("clicked");
-                    $("#status").css("animation", "none").fadeOut();
+                    $("#status").fadeOut();
                     
-                    // 1. انفجار القصاصات (Confetti)
                     explodeConfetti();
 
-                    // 2. خروج التوكينز بترتيب Fan-out
                     setTimeout(() => {
                         spawnTokens(tokenCount);
-                    }, 300);
+                    }, 400);
                 }
             });
 
             function spawnTokens(count) {
                 const area = document.getElementById('tokenArea');
                 const isMobile = window.innerWidth < 480;
-                
-                // التوكينز بتترص في شكل مروحة للأعلى
-                const radius = isMobile ? 120 : 180;
+                const radius = isMobile ? 130 : 200;
 
                 for (let i = 0; i < count; i++) {
                     const token = document.createElement('div');
                     token.className = 'token-item';
                     area.appendChild(token);
 
-                    // توزيع الزوايا (من اليسار لليمين بشكل قوسي)
-                    const startAngle = -Math.PI * 0.8; // يبدأ من اليسار
-                    const endAngle = -Math.PI * 0.2;   // ينتهي لليمين
+                    const startAngle = -Math.PI * 0.85; 
+                    const endAngle = -Math.PI * 0.15;   
                     const angle = startAngle + (i / (count - 1)) * (endAngle - startAngle);
                     
                     const tx = Math.cos(angle) * radius;
@@ -202,27 +197,36 @@
 
                     setTimeout(() => {
                         token.style.opacity = "1";
-                        // الـ Scale بيكبر التوكينز شوية كأنها قريبة من الشاشة
-                        token.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(1.3) rotate(360deg)`;
-                    }, i * 150);
+                        token.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(1.2) rotate(360deg)`;
+                        
+                        // إضافة حركة العوم بعد انتهاء الأنيميشن الأساسي
+                        setTimeout(() => {
+                            token.classList.add('token-floating');
+                        }, 800);
+                        
+                    }, i * 180);
                 }
             }
 
             function explodeConfetti() {
-                const colors = ['#ffd700', '#ffffff', '#ffcc00', '#b38728'];
-                for (let i = 0; i < 60; i++) {
+                const colors = ['#ffd700', '#ffffff', '#ffcc00', '#b38728', '#442e03'];
+                for (let i = 0; i < 80; i++) {
                     const c = document.createElement('div');
                     c.className = 'confetti';
                     c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                     c.style.left = '50%';
-                    c.style.top = '60%';
+                    c.style.top = '50%';
                     
-                    const tx = (Math.random() - 0.5) * 500 + 'px';
-                    const ty = (Math.random() - 0.5) * 500 - 100 + 'px';
+                    // انفجار في كل الاتجاهات
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 200 + Math.random() * 400;
+                    const tx = Math.cos(angle) * dist + 'px';
+                    const ty = Math.sin(angle) * dist + 'px';
+                    
                     c.style.setProperty('--tx', tx);
                     c.style.setProperty('--ty', ty);
                     
-                    c.style.animation = `explode ${1 + Math.random()}s forwards`;
+                    c.style.animation = `explode ${1 + Math.random()}s cubic-bezier(0, .9, .3, 1.2) forwards`;
                     document.body.appendChild(c);
                     
                     setTimeout(() => c.remove(), 2000);

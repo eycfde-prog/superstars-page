@@ -186,37 +186,42 @@
         }
 
         // دالة التحقق الفعلية المربوطة بالأب سكريبت
-        async function verifyCode() {
-            const email = document.getElementById('agentEmail').value;
-            const code = document.getElementById('agentCode').value;
-            const btn = document.getElementById('mainSubmitBtn');
-            
-            if(!email || !code) return alert("Please enter credentials");
+async function verifyCode() {
+    const email = document.getElementById('agentEmail').value.trim();
+    const code = document.getElementById('agentCode').value.trim();
+    const btn = document.getElementById('mainSubmitBtn');
+    const errorLog = document.getElementById('errorLog');
+    
+    if(!email || !code) return alert("Please enter credentials");
 
-            btn.innerText = "VERIFYING...";
-            btn.disabled = true;
+    btn.innerText = "INITIALIZE LOGIN...";
+    btn.disabled = true;
+    errorLog.innerText = "";
 
-            try {
-                // استدعاء الأب سكريبت (JSONP أو Fetch)
-                const response = await fetch(`${SCRIPT_URL}?email=${email}&code=${code}`);
-                const data = await response.json();
+    // استخدام الـ URL مع الـ Parameters كما تتوقع دالة doGet
+    const finalUrl = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`;
 
-                if(data.status === "success") {
-                    applyAgentData(data);
-                    document.getElementById('loginModal').style.display = 'none';
-                    localStorage.setItem('eyc_agent_data', JSON.stringify(data));
-                } else {
-                    document.getElementById('errorLog').innerText = "ACCESS DENIED: Invalid Code";
-                    btn.innerText = "INITIALIZE LOGIN";
-                    btn.disabled = false;
-                }
-            } catch (e) {
-                // للمعاينة فقط إذا لم يكن هناك إنترنت أو السكريبت غير مفعل
-                console.log("Offline Mode/Error: Showing Mock Data");
-                applyAgentData({name: email.split('@')[0], rank: "7", totalScore: "120"});
-                document.getElementById('loginModal').style.display = 'none';
-            }
+    try {
+        // نستخدم fetch مع mode no-cors أو نعتمد على أن الأب سكريبت يرجع JSON
+        const response = await fetch(finalUrl);
+        const data = await response.json();
+
+        if(data.status === "success") {
+            applyAgentData(data);
+            document.getElementById('loginModal').style.display = 'none';
+            localStorage.setItem('eyc_agent_data', JSON.stringify(data));
+        } else {
+            errorLog.innerText = "ACCESS DENIED: " + (data.message || "Invalid Credentials");
+            btn.innerText = "INITIALIZE LOGIN";
+            btn.disabled = false;
         }
+    } catch (e) {
+        console.error("Error:", e);
+        errorLog.innerText = "CONNECTION ERROR: Check Script URL or Internet";
+        btn.innerText = "INITIALIZE LOGIN";
+        btn.disabled = false;
+    }
+}
 
         function applyAgentData(data) {
             document.getElementById('loginTriggerBtn').style.display = 'none';

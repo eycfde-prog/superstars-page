@@ -1,80 +1,90 @@
-const boxWrapper = document.querySelector('.vault-wrapper');
+const box = document.getElementById('box3d');
 const btn = document.getElementById('open-btn');
-const tokenContainer = document.getElementById('tokens-emitter');
+const tokensContainer = document.getElementById('tokens-container');
 const canvas = document.getElementById('fireworks-canvas');
 const ctx = canvas.getContext('2d');
-
-let particles = [];
-const TOKEN_COUNT = 5; // يمكنك تغيير هذا الرقم حسب جائزة الطالب
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// --- خروج التوكينز ---
-function launchTokens(count) {
-    for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-            const token = document.createElement('div');
-            token.className = 'token-item';
-            
-            // حساب مكان التراص (جنب بعض)
-            const xOffset = (i - (count - 1) / 2) * 80;
-            const yOffset = -180; // تطير للأعلى
-            const zOffset = 150;  // تخرج للأمام
-            
-            token.style.setProperty('--target-transform', `translate3d(${xOffset}px, ${yOffset}px, ${zOffset}px) scale(1.2) rotateY(360deg)`);
-            token.style.animation = `flyOut 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards`;
-            
-            tokenContainer.appendChild(token);
-            
-            // العاب نارية صغيرة عند خروج كل توكن
-            createFirework(window.innerWidth/2 + xOffset, window.innerHeight/2 + yOffset);
-        }, i * 200);
-    }
-}
+let particles = [];
 
-// --- العاب نارية ---
 class Particle {
     constructor(x, y) {
         this.x = x; this.y = y;
-        this.vx = (Math.random() - 0.5) * 10;
-        this.vy = (Math.random() - 0.5) * 10;
+        this.size = Math.random() * 3 + 2;
+        this.speedX = (Math.random() - 0.5) * 10;
+        this.speedY = (Math.random() - 0.5) * 10;
+        this.color = `hsl(${Math.random() * 50 + 20}, 100%, 50%)`;
         this.alpha = 1;
-        this.color = `hsl(${Math.random() * 50 + 40}, 100%, 60%)`;
     }
-    update() { this.x += this.vx; this.y += this.vy; this.alpha -= 0.02; }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha -= 0.02;
+    }
     draw() {
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
     }
 }
 
-function createFirework(x, y) {
-    for (let i = 0; i < 30; i++) particles.push(new Particle(x, y));
+function createTokens(count) {
+    for (let i = 0; i < count; i++) {
+        const token = document.createElement('div');
+        token.className = 'token-item';
+        // تعويض المسار إذا كان مختلفاً (تأكد من وجود الصورة في الفولدر)
+        token.style.backgroundImage = "url('Token.png')"; 
+        tokensContainer.appendChild(token);
+        
+        setTimeout(() => {
+            const angle = (i / count) * Math.PI * 2;
+            const radius = 120; // قطر دائرة التوزيع
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            
+            token.style.opacity = "1";
+            token.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1.2) rotateZ(360deg)`;
+        }, i * 200 + 1000); // تتابع خروج التوكينز
+    }
+}
+
+function celebrate() {
+    for (let i = 0; i < 100; i++) {
+        particles.push(new Particle(window.innerWidth/2, window.innerHeight/2));
+    }
 }
 
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles = particles.filter(p => p.alpha > 0);
-    particles.forEach(p => { p.update(); p.draw(); });
+    particles.forEach((p, i) => {
+        p.update();
+        p.draw();
+        if (p.alpha <= 0) particles.splice(i, 1);
+    });
     requestAnimationFrame(animate);
 }
 
 btn.addEventListener('click', () => {
-    // 1. فتح الصندوق
-    boxWrapper.classList.add('is-open');
-    btn.style.display = 'none';
-    document.getElementById('reward-text').style.opacity = '1';
+    // فتح الصندوق
+    box.classList.add('is-open');
+    box.style.transform = "rotateX(-10deg) rotateY(0deg) scale(1.1)";
     
-    // 2. إمالة الصندوق لزاوية رؤية أفضل
-    boxWrapper.style.transform = 'rotateX(10deg) rotateY(0deg) scale(1.1)';
+    btn.style.opacity = '0';
+    setTimeout(() => btn.style.display = 'none', 500);
 
-    // 3. إطلاق التوكينز والألعاب النارية بعد فترة بسيطة من الفتح
+    // خروج التوكينز والألعاب النارية
     setTimeout(() => {
-        launchTokens(TOKEN_COUNT);
+        createTokens(5);
+        celebrate();
         animate();
-    }, 600);
+    }, 800);
+});
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 });

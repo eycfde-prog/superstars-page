@@ -13,7 +13,6 @@
             --box-size: 160px;
         }
 
-        /* تصغير الصندوق قليلاً للموبايل */
         @media (max-width: 480px) {
             :root { --box-size: 130px; }
         }
@@ -33,7 +32,7 @@
         .space-scene {
             width: 100%;
             height: 100%;
-            perspective: 1200px;
+            perspective: 1500px; /* زيادة العمق */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -42,7 +41,6 @@
 
         .view-stage {
             transform-style: preserve-3d;
-            transition: transform 1s;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -62,15 +60,14 @@
             width: var(--box-size);
             height: var(--box-size);
             background: var(--wood-dark);
-            border: 3px solid #2a180d;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.7);
+            border: 2px solid #2a180d;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
             display: flex;
             justify-content: center;
             align-items: center;
-            backface-visibility: visible;
+            backface-visibility: inherit;
         }
 
-        /* الزخرفة الذهبية */
         .face::after {
             content: '';
             position: absolute;
@@ -80,43 +77,44 @@
             pointer-events: none;
         }
 
-        /* توزيع الأوجه لغلق الصندوق بالكامل */
-        .front  { transform: translateZ(calc(var(--box-size) / 2)); background: var(--wood-light); }
+        /* توزيع الأوجه */
+        .front  { transform: rotateY(0deg) translateZ(calc(var(--box-size) / 2)); background: var(--wood-light); }
         .back   { transform: rotateY(180deg) translateZ(calc(var(--box-size) / 2)); }
         .right  { transform: rotateY(90deg) translateZ(calc(var(--box-size) / 2)); }
         .left   { transform: rotateY(-90deg) translateZ(calc(var(--box-size) / 2)); }
         .bottom { transform: rotateX(-90deg) translateZ(calc(var(--box-size) / 2)); background: #1a0f08; }
 
-        /* الغطاء - تعديل الـ transform ليكون فوق الصندوق بالظبط */
+        /* الغطاء المعدل */
         .top { 
             transform: rotateX(90deg) translateZ(calc(var(--box-size) / 2)); 
-            transform-origin: top; /* المفصلة من الخلف */
+            transform-origin: center top; 
             background: var(--wood-light);
-            border: 4px solid #2a180d;
+            z-index: 10;
             transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 5;
         }
 
-        /* محتوى الغطاء مضبوط ليظهر بشكل صحيح للطالب */
         .lid-content { 
             text-align: center; 
-            transform: rotateZ(180deg); /* تعديل اتجاه النص */
+            transform: rotateZ(180deg); 
         }
-        .lid-text { color: var(--gold-trim); font-size: 16px; font-weight: 900; margin: 0; line-height: 1; }
-        .lid-sub { color: #fff; font-size: 7px; letter-spacing: 1px; opacity: 0.8; margin-top: 4px; }
+        .lid-text { color: var(--gold-trim); font-size: 16px; font-weight: 900; margin: 0; }
+        .lid-sub { color: #fff; font-size: 8px; letter-spacing: 1px; opacity: 0.8; margin-top: 4px; }
 
-        /* حركة الفتح الاحترافية */
+        /* حركة الفتح */
         .box-3d.is-open .top { 
             transform: rotateX(90deg) translateZ(calc(var(--box-size) / 2)) rotateX(110deg); 
         }
 
-        /* التوكينز وتأثير خروجها */
+        /* حاوية العملات */
         .tokens-container {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            width: 100%;
+            height: 100%;
             transform-style: preserve-3d;
             pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .token-item {
@@ -127,18 +125,13 @@
             background-repeat: no-repeat;
             background-position: center;
             opacity: 0;
-            transform: translate(-50%, -50%) scale(0);
             filter: drop-shadow(0 0 15px var(--gold-trim));
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 10;
-        }
-
-        @media (max-width: 480px) {
-            .token-item { width: 50px; height: 50px; }
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 20;
         }
 
         #open-btn {
-            margin-top: 80px;
+            margin-top: 100px;
             padding: 15px 40px;
             background: linear-gradient(45deg, #bf953f, #fcf6ba, #aa771c);
             border: none;
@@ -146,14 +139,10 @@
             color: #3d2314;
             font-family: 'Orbitron';
             font-weight: 900;
-            font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5), 0 0 20px rgba(255, 204, 0, 0.2);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             transition: 0.3s;
-            z-index: 100;
         }
-
-        #open-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(255, 204, 0, 0.3); }
 
         #fireworks-canvas {
             position: absolute;
@@ -207,16 +196,15 @@
             constructor(x, y) {
                 this.x = x; this.y = y;
                 this.size = Math.random() * 3 + 2;
-                this.speedX = (Math.random() - 0.5) * 12;
-                this.speedY = (Math.random() - 0.5) * 12;
-                this.color = `hsl(${Math.random() * 40 + 35}, 100%, 50%)`;
+                this.speedX = (Math.random() - 0.5) * 15;
+                this.speedY = (Math.random() - 0.5) * 15;
+                this.color = `hsl(${Math.random() * 40 + 40}, 100%, 60%)`;
                 this.alpha = 1;
             }
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
-                this.speedY += 0.1; // جاذبية خفيفة
-                this.alpha -= 0.015;
+                this.alpha -= 0.01;
             }
             draw() {
                 ctx.save();
@@ -238,19 +226,19 @@
                 
                 setTimeout(() => {
                     const angle = (i / count) * Math.PI * 2 - Math.PI/2;
-                    const isMobile = window.innerWidth < 480;
-                    const radius = isMobile ? 100 : 160; 
+                    const radius = window.innerWidth < 480 ? 120 : 180; 
                     const x = Math.cos(angle) * radius;
                     const y = Math.sin(angle) * radius;
                     
                     token.style.opacity = "1";
-                    token.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1.1) rotateY(360deg)`;
-                }, i * 150 + 600);
+                    // الحركة تجعلها تخرج للأمام وللأطراف
+                    token.style.transform = `translate3d(${x}px, ${y}px, 150px) rotateY(360deg) scale(1.2)`;
+                }, i * 150 + 400);
             }
         }
 
         function celebrate() {
-            for (let i = 0; i < 120; i++) {
+            for (let i = 0; i < 100; i++) {
                 particles.push(new Particle(window.innerWidth/2, window.innerHeight/2));
             }
         }
@@ -267,17 +255,16 @@
 
         btn.addEventListener('click', () => {
             box.classList.add('is-open');
-            // حركة دوران خفيفة للصندوق عند الفتح لزيادة الحماس
-            box.style.transform = "rotateX(-15deg) rotateY(0deg) scale(1.1)";
+            box.style.transform = "rotateX(0deg) rotateY(0deg) scale(1.1)";
             
             btn.style.opacity = '0';
             btn.style.pointerEvents = 'none';
 
             setTimeout(() => {
-                createTokens(5); // جربنا بـ 5 توكينز زي ما طلبت
+                createTokens(5);
                 celebrate();
                 animate();
-            }, 600);
+            }, 500);
         });
     </script>
 </body>

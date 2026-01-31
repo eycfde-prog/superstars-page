@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC | Mission Terminal</title>
+    <title>EYC | Mission Terminal Elite</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="missionx.css">
@@ -17,8 +17,8 @@
                 </div>
                 <div class="info-box">
                     <span>AGENT</span>
-                    <b id="agentName">BROWSER</b>
-                    <div class="token-tag" id="mainTokens">5 TK</div>
+                    <b id="agentName">LOADING...</b>
+                    <div class="token-tag" id="mainTokens">-- TK</div>
                 </div>
             </div>
 
@@ -33,7 +33,7 @@
                 <div class="info-box">
                     <span id="missionCodeDisplay">MISSION</span>
                     <b id="activityNameDisplay">...</b>
-                    <div class="token-tag mission-tag" id="missionNum">M 1</div>
+                    <div class="token-tag mission-tag" id="missionNum">M --</div>
                 </div>
             </div>
         </header>
@@ -52,7 +52,7 @@
             <button class="nav-btn" onclick="toggleGuide(true)">
                 <i class="fas fa-robot"></i> GUIDE
             </button>
-            <button class="submit-btn" onclick="submitMission()">SUBMIT</button>
+            <button class="submit-btn" id="submitBtn" onclick="submitMission()">SUBMIT</button>
             <a href="javascript:history.back()" class="nav-btn">
                 BACK <i class="fas fa-arrow-right"></i>
             </a>
@@ -71,47 +71,48 @@
     </div>
 
     <script>
+        // 1. تعريف المتغيرات والروابط
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwcZuej4fcI65QjjkX_WdKf_osnzXT2H88sMhJ8R8r8sWR8iMoHE9zFeX8zWnQx5bAx5A/exec';
         const urlParams = new URLSearchParams(window.location.search);
-        const actCode = urlParams.get('act') || 'GES'; 
+        const actCode = urlParams.get('act') || 'GEX'; 
         const missionNum = urlParams.get('m') || '1';  
         const actName = urlParams.get('name') || 'Activity'; 
+        let currentLevel = 'A';
 
+        // 2. تحديث بيانات الواجهة فور التحميل
         document.getElementById('activityNameDisplay').innerText = actName;
         document.getElementById('missionCodeDisplay').innerText = actCode;
         document.getElementById('missionNum').innerText = 'M ' + missionNum;
         document.getElementById('activityLogo').src = `assets/AL/${actCode.replace(/[0-9]/g, '')}.png`;
 
+        // 3. وظيفة تحميل المهمة داخل الـ Iframe بناءً على المستوى
         function loadMission(level) {
-            let fileName = "";
-            const isXbox = actCode.includes('X');
-
-            if (isXbox) {
-                fileName = `${actCode}${missionNum}${level}.html`;
-            } else {
-                fileName = `${actCode}${missionNum}.html`;
-                const bar = document.getElementById('difficultyBar');
-                bar.style.opacity = '0.3';
-                bar.style.pointerEvents = 'none';
-            }
-
+            currentLevel = level;
+            // اسم الملف المتوقع: GEX1A.html
+            const fileName = `${actCode}${missionNum}${level}.html`;
             document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
             
+            // تحديث شكل أزرار المستويات
             document.querySelectorAll('.diff-btn').forEach(btn => {
-                btn.style.background = "var(--disabled-gray)";
-                btn.style.borderColor = "transparent";
+                btn.classList.toggle('active-level', btn.getAttribute('data-lv') === level);
                 if(btn.getAttribute('data-lv') === level) {
                     btn.style.background = "var(--neon-green)";
                     btn.style.color = "#000";
                 } else {
+                    btn.style.background = "var(--disabled-gray)";
                     btn.style.color = "#fff";
                 }
             });
         }
 
+        // 4. تحميل بيانات الطالب من الـ LocalStorage
         window.onload = () => {
             loadMission('A'); 
             const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
+            if(saved.name) {
+                document.getElementById('agentName').innerText = saved.name.split(' ')[0];
+                document.getElementById('mainTokens').innerText = (saved.totalScore || 0) + ' TK';
+            }
             if(saved.image) {
                 let imgUrl = saved.image;
                 if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
@@ -119,6 +120,59 @@
             }
         };
 
+        // 5. وظيفة الـ Submit (إرسال الإجابة للسحابة)
+        function submitMission() {
+            const iframe = document.getElementById('mainIframe');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            try {
+                // جلب الإجابة من داخل الـ Iframe (يجب أن يكون الملف في نفس النطاق أو يدعم ذلك)
+                const studentAnswer = iframe.contentWindow.getAnswer ? iframe.contentWindow.getAnswer() : "NO_DATA";
+                
+                if(studentAnswer === "NO_DATA" || studentAnswer === "") {
+                    alert("Please complete the mission before submitting!");
+                    return;
+                }
+
+                submitBtn.innerText = "SYNCHRONIZING...";
+                submitBtn.disabled = true;
+
+                const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+                const payload = {
+                    email: saved.email,
+                    activity: actCode,
+                    mission: missionNum,
+                    level: currentLevel,
+                    answer: studentAnswer
+                };
+
+                fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors', // لضمان الإرسال السلس مع App Script
+                    cache: 'no-cache',
+                    body: JSON.stringify(payload)
+                }).then(() => {
+                    alert("Mission Accomplished! Data Synced.");
+                    // تحديث التقدم محلياً (وهمي حتى التحميل القادم)
+                    if(!saved.progress) saved.progress = {};
+                    saved.progress[actCode] = Math.max(saved.progress[actCode] || 0, parseInt(missionNum));
+                    localStorage.setItem('eyc_agent_data', JSON.stringify(saved));
+                    
+                    window.location.href = 'MC.html'; // العودة للهب
+                }).catch(err => {
+                    console.error(err);
+                    alert("Sync Error! Try again.");
+                    submitBtn.innerText = "SUBMIT";
+                    submitBtn.disabled = false;
+                });
+
+            } catch (e) {
+                console.error("Iframe Access Error:", e);
+                alert("Terminal Error: Cannot read mission data.");
+            }
+        }
+
+        // تفعيل أزرار المستويات
         document.querySelectorAll('.diff-btn').forEach(btn => {
             btn.onclick = () => loadMission(btn.getAttribute('data-lv'));
         });
@@ -129,10 +183,6 @@
                 document.getElementById('guideFrame').src = `assets/MIF/Guides/${baseCode}.html`;
             }
             document.getElementById('guideModal').style.display = show ? 'block' : 'none';
-        }
-
-        function submitMission() { 
-            alert("Mission Synchronizing with EYC Hub..."); 
         }
     </script>
 </body>

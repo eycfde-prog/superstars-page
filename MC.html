@@ -4,21 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EYC Activity Hub | Starry Mission</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <style>
         :root {
             --primary-bg: #020205;
-            --accent-gold: #ffcc00; /* Royal Color */
-            --season-color: #00ffa3; /* Regular Color */
+            --accent-gold: #ffcc00; 
+            --season-color: #00ffa3; 
             --xbox-color: #ff3131;
             --glass: rgba(255, 255, 255, 0.05);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--primary-bg); color: #fff; overflow: hidden; height: 100vh; width: 100vw; }
         
-        /* IGI Style Overlay - الخطوط الانسيابية المتحركة */
         .igi-lines {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: repeating-linear-gradient(0deg, rgba(0, 255, 163, 0.03) 0px, rgba(0, 255, 163, 0.03) 1px, transparent 1px, transparent 2px);
@@ -27,7 +28,6 @@
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
         
-        /* --- Logo & Header --- */
         .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
         .logo-placeholder img { height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
         
@@ -39,7 +39,6 @@
         }
         .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold); display: none; font-size: 12px; }
 
-        /* --- Profile Bubbles --- */
         .profile-stack { position: fixed; bottom: 30px; left: 20px; z-index: 1000; display: none; flex-direction: column-reverse; gap: 10px; align-items: center; }
         .p-bubble { border-radius: 50%; border: 2px solid var(--accent-gold); backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; }
         .p-avatar { width: 65px; height: 65px; overflow: hidden; border-width: 3px; position: relative; }
@@ -47,7 +46,6 @@
         .p-score { width: 45px; height: 45px; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; color: var(--accent-gold); }
         .p-rank { width: 30px; height: 30px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; background: var(--accent-gold); color: #000; }
 
-        /* --- Unified Login Modal --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
         .royal-card { background: #0a0a0f; border: 1px solid rgba(255,204,0,0.3); padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; }
         .royal-card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #000; border: 1px solid #333; color: #fff; text-align: center; font-family: 'Orbitron'; font-size: 12px; }
@@ -55,7 +53,6 @@
         .submit-btn { background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-weight: 900; padding: 12px; border-radius: 10px; border: none; cursor: pointer; }
         .new-profile-btn { background: transparent; color: #fff; border: 1px solid #444; font-family: 'Orbitron'; font-size: 10px; padding: 10px; border-radius: 10px; cursor: pointer; text-decoration: none; }
 
-        /* Headers */
         .rank-header { text-align: center; padding-top: 60px; margin-bottom: 10px; }
         .rank-header h1 { font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 2px; color: #fff; }
         .rank-header p { font-size: 8px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
@@ -66,7 +63,6 @@
         .mode-btn.season-mode.active { background: var(--season-color); color: #000; border-color: var(--season-color); }
         .mode-btn.xbox-mode.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
 
-        /* Swiper */
         .swiper { width: 100%; padding-bottom: 40px; }
         .swiper-slide { width: 200px; height: 280px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); position: relative; }
         .token-badge { position: absolute; top: 15px; left: 15px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 6px; }
@@ -75,11 +71,9 @@
         .season-card { border-color: var(--season-color); background: rgba(0, 255, 163, 0.05); }
         .xbox-card { border-color: var(--accent-gold); background: rgba(255, 204, 0, 0.05); }
 
-        /* Missions Layer */
         #missions-layer { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; background: rgba(0,0,0,0.8); }
         .mission-bubble { position: absolute; width: 50px; height: 50px; background: rgba(0,0,0,0.6); border: 1px solid var(--accent-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); cursor: pointer; font-size: 12px; box-shadow: 0 0 10px var(--accent-gold); }
         
-        /* Bottom Controls */
         .bottom-nav { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; }
         .nav-btn { width: 45px; height: 45px; border-radius: 50%; border: 1px solid #fff; background: rgba(0,0,0,0.5); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-size: 14px; cursor: pointer; }
         .back-btn { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 8px 20px; border-radius: 20px; font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 110; font-size: 10px; border: none; }
@@ -107,9 +101,10 @@
             <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
             <input type="password" id="agentCode" placeholder="ACCESS CODE">
             <div class="btn-group">
-                <button class="submit-btn" onclick="verifyCode()">INITIALIZE LOGIN</button>
+                <button class="submit-btn" id="mainSubmitBtn" onclick="verifyCode()">INITIALIZE LOGIN</button>
                 <a href="NP.html" class="new-profile-btn">NO PROFILE? CREATE ONE</a>
             </div>
+            <p id="errorLog" style="color:red; font-size:10px; margin-top:10px;"></p>
         </div>
     </div>
 
@@ -131,13 +126,16 @@
     <button class="back-btn" id="backBtn" onclick="resetView()">BACK TO HELM</button>
 
     <div class="bottom-nav">
-        <div class="nav-btn" title="Home" onclick="location.href='index.html'"><i class="fas fa-home"></i></div>
-        <div class="nav-btn" style="border-color: var(--xbox-color); color: var(--xbox-color);" title="Logout" onclick="logout()"><i class="fas fa-power-off"></i></div>
+        <div class="nav-btn" onclick="location.reload()"><i class="fas fa-home"></i></div>
+        <div class="nav-btn" style="border-color: var(--xbox-color); color: var(--xbox-color);" onclick="logout()"><i class="fas fa-power-off"></i></div>
     </div>
 
-    <script src="https://script.google.com/macros/s/AKfycbxqV_oCwJpcybygc1ggbzqKAgMPEZzbjgwOFwYA5sY8_e2YsjLMzkm579Y_kzYXV5QNzQ/exec">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
     <script>
-        // --- محاكي البيانات (يتم استبداله بالـ Apps Script) ---
+        // رابط الأب سكريبت الخاص بك
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqV_oCwJpcybygc1ggbzqKAgMPEZzbjgwOFwYA5sY8_e2YsjLMzkm579Y_kzYXV5QNzQ/exec";
+
         const activities = {
             season: [
                 { name: 'Golden Ear', icon: 'fa-ear-listen', tk: '5' },
@@ -166,7 +164,7 @@
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide ${mode}-card" onclick="openMissions(this, ${index})">
+                <div class="swiper-slide ${mode}-card" onclick="openMissions(this, '${act.name}')">
                     <div class="token-badge">${act.tk}</div>
                     <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
                     <div class="activity-name">${act.name}</div>
@@ -187,12 +185,35 @@
             location.reload();
         }
 
-        function verifyCode() {
-            // هنا يتم الربط مع Apps Script مستقبلاً
+        // دالة التحقق الفعلية المربوطة بالأب سكريبت
+        async function verifyCode() {
             const email = document.getElementById('agentEmail').value;
-            if(email) {
-                const mockData = { name: "Agent Player", rank: "1", totalScore: "1500", image: "" };
-                applyAgentData(mockData);
+            const code = document.getElementById('agentCode').value;
+            const btn = document.getElementById('mainSubmitBtn');
+            
+            if(!email || !code) return alert("Please enter credentials");
+
+            btn.innerText = "VERIFYING...";
+            btn.disabled = true;
+
+            try {
+                // استدعاء الأب سكريبت (JSONP أو Fetch)
+                const response = await fetch(`${SCRIPT_URL}?email=${email}&code=${code}`);
+                const data = await response.json();
+
+                if(data.status === "success") {
+                    applyAgentData(data);
+                    document.getElementById('loginModal').style.display = 'none';
+                    localStorage.setItem('eyc_agent_data', JSON.stringify(data));
+                } else {
+                    document.getElementById('errorLog').innerText = "ACCESS DENIED: Invalid Code";
+                    btn.innerText = "INITIALIZE LOGIN";
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                // للمعاينة فقط إذا لم يكن هناك إنترنت أو السكريبت غير مفعل
+                console.log("Offline Mode/Error: Showing Mock Data");
+                applyAgentData({name: email.split('@')[0], rank: "7", totalScore: "120"});
                 document.getElementById('loginModal').style.display = 'none';
             }
         }
@@ -203,16 +224,16 @@
             nameDisp.innerText = data.name;
             nameDisp.style.display = 'block';
             document.getElementById('profileStack').style.display = 'flex';
-            document.getElementById('userScore').innerText = data.totalScore;
-            document.getElementById('userRank').innerText = "#" + data.rank;
+            document.getElementById('userScore').innerText = data.totalScore || 0;
+            document.getElementById('userRank').innerText = "#" + (data.rank || "?");
+            if(data.image) document.getElementById('userImg').src = data.image;
         }
 
-        function openMissions(card, index) {
+        function openMissions(card, actName) {
             const layer = document.getElementById('missions-layer');
             layer.innerHTML = ''; layer.style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
             
-            // توزيع 10 مهام بشكل دائري
             for (let i = 1; i <= 10; i++) {
                 const angle = (i * 36) * (Math.PI / 180);
                 const x = Math.cos(angle) * 110; 
@@ -222,7 +243,7 @@
                 bubble.innerText = 'T' + i;
                 bubble.style.left = `calc(50% + ${x}px - 25px)`;
                 bubble.style.top = `calc(50% + ${y}px - 25px)`;
-                bubble.onclick = () => alert('Starting Task ' + i);
+                bubble.onclick = () => alert(`Starting ${actName} - Task ${i}`);
                 layer.appendChild(bubble);
             }
         }
@@ -238,7 +259,7 @@
             renderActivities(mode);
         }
 
-        // --- تهيئة الخلفية الفضائية ---
+        // --- الخلفية الفضائية ---
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -265,6 +286,10 @@
         for(let i=0; i<100; i++) stars.push(new Star());
         animate();
         renderActivities('season');
+
+        // استعادة البيانات إذا كان مسجلاً مسبقاً
+        const saved = localStorage.getItem('eyc_agent_data');
+        if(saved) applyAgentData(JSON.parse(saved));
     </script>
 </body>
 </html>

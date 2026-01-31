@@ -76,12 +76,13 @@
         .left   { transform: rotateY(-90deg) translateZ(80px); }
         .bottom { transform: rotateX(-90deg) translateZ(80px); background: #1a0f08; }
 
+        /* تعديل الغطاء ونقطة الدوران */
         .top { 
             transform: rotateX(90deg) translateZ(80px); 
-            transform-origin: bottom; 
+            transform-origin: top; /* تم التعديل ليفتح من الحافة الخلفية */
             background: var(--wood-light);
             border: 6px solid #2a180d;
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 2;
         }
 
@@ -89,9 +90,9 @@
         .lid-text { color: var(--gold-trim); font-size: 18px; font-weight: 900; margin: 0; }
         .lid-sub { color: #fff; font-size: 8px; letter-spacing: 2px; opacity: 0.7; }
 
-        /* تأثير الفتح */
+        /* تأثير الفتح الصحيح: الغطاء يرتفع للأعلى وللخلف */
         .box-3d.is-open .top { 
-            transform: rotateX(90deg) translateZ(80px) rotateX(-110deg); 
+            transform: rotateX(90deg) translateZ(80px) rotateX(110deg); 
         }
 
         .tokens-container {
@@ -206,7 +207,6 @@
             for (let i = 0; i < count; i++) {
                 const token = document.createElement('div');
                 token.className = 'token-item';
-                // ملاحظة: تأكد من وجود ملف Token.png في نفس المجلد
                 token.style.backgroundImage = "url('Token.png')"; 
                 tokensContainer.appendChild(token);
                 
@@ -240,7 +240,8 @@
 
         btn.addEventListener('click', () => {
             box.classList.add('is-open');
-            box.style.transform = "rotateX(-10deg) rotateY(0deg) scale(1.1)";
+            // تعديل زاوية الرؤية عند الفتح لرؤية المحتوى بشكل أفضل
+            box.style.transform = "rotateX(-30deg) rotateY(0deg) scale(1.1)";
             
             btn.style.opacity = '0';
             setTimeout(() => btn.style.display = 'none', 500);

@@ -194,43 +194,48 @@
         // --- AUTH LOGIC ---
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         
-        async function verifyCode() {
-            const email = document.getElementById('agentEmail').value.trim();
-            const code = document.getElementById('agentCode').value.trim();
-            const btn = document.getElementById('mainSubmitBtn');
-            const errorLog = document.getElementById('errorLog');
-            
-            if(!email || !code) return alert("Please enter credentials");
+async function verifyCode() {
+    const email = document.getElementById('agentEmail').value.trim();
+    const code = document.getElementById('agentCode').value.trim();
+    const btn = document.getElementById('mainSubmitBtn');
+    const errorLog = document.getElementById('errorLog');
+    
+    if(!email || !code) return alert("Please enter credentials");
 
-            btn.innerText = "INITIALIZING...";
-            btn.disabled = true;
-            errorLog.innerText = "";
+    btn.innerText = "INITIALIZING...";
+    btn.disabled = true;
+    errorLog.innerText = "";
 
-            try {
-                // استخدام redirect: "follow" لحل مشاكل Google Apps Script Redirect
-                const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`, {
-                    method: 'GET',
-                    redirect: 'follow'
-                });
-                const data = await response.json();
+    // Adding a timestamp cache-buster ensures you get fresh data
+    const finalUrl = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&t=${Date.now()}`;
 
-                if(data.status === "success") {
-                    currentAgentData = data;
-                    applyAgentData(data);
-                    document.getElementById('loginModal').style.display = 'none';
-                    localStorage.setItem('eyc_agent_data', JSON.stringify(data));
-                } else {
-                    errorLog.innerText = "ACCESS DENIED: " + (data.message || "Invalid Credentials");
-                    btn.innerText = "INITIALIZE LOGIN";
-                    btn.disabled = false;
-                }
-            } catch (e) {
-                console.error(e);
-                errorLog.innerText = "CONNECTION ERROR: Check URL or Network";
-                btn.innerText = "INITIALIZE LOGIN";
-                btn.disabled = false;
-            }
+    try {
+        const response = await fetch(finalUrl, {
+            method: 'GET',
+            mode: 'cors', // Crucial for cross-domain requests
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+
+        if(data.status === "success") {
+            currentAgentData = data;
+            applyAgentData(data);
+            document.getElementById('loginModal').style.display = 'none';
+            localStorage.setItem('eyc_agent_data', JSON.stringify(data));
+        } else {
+            errorLog.innerText = "ACCESS DENIED: " + (data.message || "Invalid Credentials");
+            btn.innerText = "INITIALIZE LOGIN";
+            btn.disabled = false;
         }
+    } catch (e) {
+        console.error("Fetch Error:", e);
+        errorLog.innerText = "CONNECTION ERROR: Check script deployment or permissions.";
+        btn.innerText = "INITIALIZE LOGIN";
+        btn.disabled = false;
+    }
+}
 
         function applyAgentData(data) {
             currentAgentData = data;

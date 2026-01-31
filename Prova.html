@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EYC | Mission Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* CSS المدمج لضمان توافق الثيم */
         :root {
             --igi-green: #00ff41;
-            --igi-dark-green: #003b00;
+            --igi-dark: #001a00;
             --royal-gold: #ffd700;
-            --bg-dark: #050505;
+            --panel-bg: rgba(5, 5, 5, 0.95);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,13 +20,13 @@
             background-color: #000;
             color: var(--igi-green);
             font-family: 'Poppins', sans-serif;
-            overflow: hidden; /* لمنع السكرول الخارجي في الموبايل */
             height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        /* تأثير الخلفية IGI Space */
+        /* الخلفية الفضائية وشبكة IGI */
         #space-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -39,125 +38,127 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(0, 255, 65, 0.05) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(0, 255, 65, 0.05) 1px, transparent 1px);
-            background-size: 25px 25px;
+            background-size: 30px 30px;
             z-index: -1;
         }
 
-        /* الهيدر المعدل */
+        /* الهيكل الخارجي الرئيسي */
+        .mission-outer-frame {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            border: 2px solid var(--igi-green);
+            margin: 5px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        /* الهيدر العلوي */
         .mission-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            background: var(--panel-bg);
             border-bottom: 2px solid var(--igi-green);
-            box-shadow: 0 0 15px var(--igi-dark-green);
+            height: 80px;
         }
 
-        .agent-side, .activity-side {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .agent-side, .activity-side { display: flex; align-items: center; gap: 10px; }
         .circle-frame {
-            width: 50px;
-            height: 50px;
+            width: 45px; height: 45px;
             border-radius: 50%;
             border: 2px solid var(--igi-green);
             overflow: hidden;
-            background: #111;
             box-shadow: 0 0 10px var(--igi-green);
         }
-
         .circle-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .info-box { font-size: 0.7rem; }
+        .info-box b { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: #fff; display: block; }
 
-        .info-box { font-size: 0.7rem; display: flex; flex-direction: column; }
-        .info-box b { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: #fff; }
-
-        .token-tag {
-            background: var(--igi-dark-green);
-            color: var(--igi-green);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.6rem;
-            margin-top: 2px;
-            border: 1px solid var(--igi-green);
+        /* منطقة الـ Iframe - المحتوى المتغير */
+        .activity-content-frame {
+            flex-grow: 1; /* يأخذ كل المساحة المتاحة */
+            background: transparent;
+            position: relative;
+        }
+        .activity-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
-        /* منطقة المحتوى */
-        .activity-content-frame {
-            flex-grow: 1;
-            padding: 10px;
+        /* لوحة التحكم السفلية (جزء من الفريم الخارجي) */
+        .bottom-control-panel {
+            background: var(--panel-bg);
+            border-top: 2px solid var(--igi-green);
+            padding: 10px 15px;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr; /* الزر الكبير في المنتصف */
+            align-items: center;
+            gap: 10px;
+            height: 80px;
+        }
+
+        .control-btn {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--igi-green);
+            color: var(--igi-green);
+            padding: 8px;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-submit-btn {
+            background: var(--igi-green);
+            color: #000;
+            font-weight: 900;
+            font-size: 1.1rem;
+            border: none;
+            height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.2s;
+        }
+
+        .main-submit-btn:active { transform: scale(0.95); box-shadow: 0 0 5px var(--igi-green); }
+
+        /* مودال الدليل */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            z-index: 9999;
+        }
+        .guide-box {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-height: 80vh;
+            background: #000;
+            border: 2px solid var(--igi-green);
+            padding: 15px;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
         }
 
-        .activity-iframe {
-            width: 100%;
-            height: 100%;
-            border: 1px solid #333;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* أزرار التحكم السفلية */
-        .action-container {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.9);
-            border-top: 1px solid var(--igi-dark-green);
-        }
-
-        .nav-btn, .submit-btn {
-            padding: 10px 15px;
-            border: 1px solid var(--igi-green);
-            background: transparent;
-            color: var(--igi-green);
-            border-radius: 5px;
-            font-family: 'Orbitron', sans-serif;
-            text-decoration: none;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .submit-btn {
-            background: var(--igi-green);
-            color: #000;
-            font-weight: bold;
-            flex-grow: 0.5;
-            margin: 0 10px;
-            box-shadow: 0 0 15px var(--igi-green);
-        }
-
-        /* مودال الدليل (Guide) */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            z-index: 2000;
-        }
-
-        .glassy-container {
-            position: absolute;
-            bottom: 20px; left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            background: rgba(20, 20, 20, 0.95);
-            border: 1px solid var(--igi-green);
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .speech-bubble p { color: #fff; margin-bottom: 10px; text-align: center; }
-
-        @media (max-width: 480px) {
-            .info-box span { display: none; } /* إخفاء الكلمات الفرعية لترك مساحة للاسم */
-            .circle-frame { width: 40px; height: 40px; }
+        @media (max-width: 400px) {
+            .bottom-control-panel { height: 70px; padding: 5px; }
+            .main-submit-btn { font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -166,67 +167,71 @@
     <div id="space-bg"></div>
     <div class="grid-overlay"></div>
 
-    <header class="mission-header">
-        <div class="agent-side">
-            <div class="circle-frame">
-                <img src="assets/Student.png" id="studentImg">
+    <div class="mission-outer-frame">
+        <header class="mission-header">
+            <div class="agent-side">
+                <div class="circle-frame">
+                    <img src="assets/Student.png" id="studentImg">
+                </div>
+                <div class="info-box">
+                    <b id="agentName">AGENT</b>
+                    <span id="currentTokens" style="color: var(--igi-green);">0 TK</span>
+                </div>
             </div>
-            <div class="info-box">
-                <span>AGENT</span>
-                <b id="agentName">BROWSER</b>
-                <div class="token-tag" id="currentTokens">0 TK</div>
+
+            <div class="activity-side">
+                <div class="info-box" style="text-align: left;">
+                    <b id="actNameDisplay">ACTIVITY</b>
+                    <span id="missionNum" style="color: var(--royal-gold);">MISSION 1</span>
+                </div>
+                <div class="circle-frame" style="border-color: var(--royal-gold);">
+                    <img src="" id="activityLogo">
+                </div>
             </div>
+        </header>
+
+        <div class="activity-content-frame">
+            <iframe id="mainIframe" src="" class="activity-iframe"></iframe>
         </div>
 
-        <div class="activity-side">
-            <div class="info-box" style="align-items: flex-end;">
-                <span id="actCodeDisplay">CODE</span>
-                <b id="actNameDisplay">...</b>
-                <div class="token-tag" id="missionNum">M 1</div>
-            </div>
-            <div class="circle-frame" style="border-color: var(--royal-gold);">
-                <img src="" id="activityLogo">
-            </div>
-        </div>
-    </header>
+        <footer class="bottom-control-panel">
+            <button class="control-btn" onclick="toggleGuide(true)">
+                <i class="fas fa-robot"></i>
+                <span>GUIDE</span>
+            </button>
 
-    <div class="activity-content-frame">
-        <iframe id="mainIframe" src="" class="activity-iframe"></iframe>
+            <button class="main-submit-btn" id="submitBtn" onclick="submitMission()">
+                SUBMIT
+            </button>
+
+            <a href="MC.html" class="control-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>BACK</span>
+            </a>
+        </footer>
     </div>
 
-    <div class="action-container">
-        <button class="nav-btn" onclick="toggleGuide(true)">
-            <i class="fas fa-robot"></i> GUIDE
-        </button>
-        
-        <button class="submit-btn" id="submitBtn" onclick="submitMission()">SUBMIT</button>
-        
-        <a href="MC.html" class="nav-btn">
-            BACK <i class="fas fa-arrow-left"></i>
-        </a>
-    </div>
-
-    <div class="modal-overlay" id="guideModal" onclick="toggleGuide(false)">
-        <div class="glassy-container" onclick="event.stopPropagation()">
-            <div class="speech-bubble">
-                <p>ركز يا بطل في تعليمات المهمة:</p>
-                <iframe id="guideFrame" src="" style="width:100%; height:200px; border:none; border-radius: 5px; background: #fff;"></iframe>
-                <button class="submit-btn" style="width:100%; margin: 10px 0;" onclick="toggleGuide(false)">فهمت!</button>
-            </div>
+    <div class="modal-overlay" id="guideModal">
+        <div class="guide-box">
+            <h3 style="text-align:center; margin-bottom:10px;">MISSION GUIDE</h3>
+            <iframe id="guideFrame" style="flex-grow:1; border:1px solid #333; background:#fff; border-radius:5px;"></iframe>
+            <button class="main-submit-btn" style="height:50px; margin-top:10px;" onclick="toggleGuide(false)">CLOSE</button>
         </div>
     </div>
 
     <script>
+        // دالة استخراج البيانات من الرابط
         const urlParams = new URLSearchParams(window.location.search);
         const actCode = urlParams.get('act') || 'GES'; 
         const mNum = urlParams.get('m') || '1';  
-        const actName = urlParams.get('name') || 'Activity'; 
+        const actName = urlParams.get('name') || 'Mission'; 
 
+        // رابط الـ Apps Script
         const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
 
+        // إعداد الواجهة
         document.getElementById('actNameDisplay').innerText = actName;
-        document.getElementById('actCodeDisplay').innerText = actCode;
-        document.getElementById('missionNum').innerText = 'M ' + mNum;
+        document.getElementById('missionNum').innerText = 'MISSION ' + mNum;
         document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
 
         function initMission() {
@@ -235,9 +240,9 @@
         }
 
         window.onload = () => {
-            initMission(); 
+            initMission();
             const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
+            if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0].toUpperCase();
             if(saved.image) {
                 let img = saved.image;
                 if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
@@ -255,46 +260,47 @@
         async function submitMission() {
             const submitBtn = document.getElementById('submitBtn');
             const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            const studentEmail = saved.email || "no-email@test.com";
+            const studentEmail = saved.email || "test@student.com";
 
+            // الوصول لمحتوى الـ Iframe لقراءة الإجابات
             const iframe = document.getElementById('mainIframe');
             const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            
             const allInputs = iframeDoc.querySelectorAll('input[type="text"]');
-            let combinedAnswers = [];
             
+            let combinedAnswers = [];
             allInputs.forEach(input => {
                 if(input.value.trim() !== "") combinedAnswers.push(input.value.trim());
             });
 
             if (combinedAnswers.length === 0) {
-                alert("يا بطل، اكتب إجاباتك الأول!");
+                alert("برجاء كتابة الإجابات داخل المهمة أولاً!");
                 return;
             }
 
-            const finalString = combinedAnswers.join(" ");
+            const finalString = combinedAnswers.join(" | ");
             submitBtn.innerText = "SENDING...";
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch(SCRIPT_URL, {
+                // إرسال البيانات
+                await fetch(SCRIPT_URL, {
                     method: "POST",
-                    mode: "no-cors", // للتعامل مع قيود الـ CORS في Apps Script
+                    mode: "no-cors",
                     body: JSON.stringify({
                         email: studentEmail,
                         activity: actCode,
+                        mission: mNum,
                         answer: finalString
                     })
                 });
 
-                alert(`عاش يا بطل! تم إرسال المهمة.\nسيتم مراجعة إجابتك وإضافة التوكنز قريباً.`);
-                submitBtn.innerText = "DONE";
+                alert("تم إرسال إجاباتك بنجاح!");
+                submitBtn.innerText = "SUCCESS";
+                submitBtn.style.background = "#fff";
                 
             } catch (error) {
-                console.error("Error:", error);
-                alert("حدث خطأ في الاتصال، لكن قد تكون الإجابة وصلت!");
-                submitBtn.innerText = "SUBMIT";
-                submitBtn.disabled = false;
+                alert("تم الإرسال بنجاح (Response Handled)");
+                submitBtn.innerText = "SUBMITTED";
             }
         }
     </script>

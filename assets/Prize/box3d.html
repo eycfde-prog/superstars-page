@@ -11,6 +11,7 @@
             --wood-light: #5d3a24;
             --gold-trim: #ffcc00;
             --box-size: 160px;
+            --transition-speed: 1s;
         }
 
         @media (max-width: 480px) {
@@ -32,7 +33,7 @@
         .space-scene {
             width: 100%;
             height: 100%;
-            perspective: 1500px; /* زيادة العمق */
+            perspective: 2000px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -65,7 +66,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            backface-visibility: inherit;
+            backface-visibility: initial;
+            transition: transform var(--transition-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .face::after {
@@ -77,33 +79,25 @@
             pointer-events: none;
         }
 
-        /* توزيع الأوجه */
-        .front  { transform: rotateY(0deg) translateZ(calc(var(--box-size) / 2)); background: var(--wood-light); }
-        .back   { transform: rotateY(180deg) translateZ(calc(var(--box-size) / 2)); }
-        .right  { transform: rotateY(90deg) translateZ(calc(var(--box-size) / 2)); }
-        .left   { transform: rotateY(-90deg) translateZ(calc(var(--box-size) / 2)); }
-        .bottom { transform: rotateX(-90deg) translateZ(calc(var(--box-size) / 2)); background: #1a0f08; }
+        /* الإعدادات الافتراضية للجوانب (مغلق) */
+        .front  { transform: rotateY(0deg) translateZ(calc(var(--box-size) / 2)); transform-origin: bottom; background: var(--wood-light); }
+        .back   { transform: rotateY(180deg) translateZ(calc(var(--box-size) / 2)); transform-origin: bottom; }
+        .right  { transform: rotateY(90deg) translateZ(calc(var(--box-size) / 2)); transform-origin: bottom; }
+        .left   { transform: rotateY(-90deg) translateZ(calc(var(--box-size) / 2)); transform-origin: bottom; }
+        .top    { transform: rotateX(90deg) translateZ(calc(var(--box-size) / 2)); transform-origin: top; background: var(--wood-light); }
+        .bottom { transform: rotateX(-90deg) translateZ(calc(var(--box-size) / 2)); transform-origin: center; background: #1a0f08; }
 
-        /* الغطاء المعدل */
-        .top { 
-            transform: rotateX(90deg) translateZ(calc(var(--box-size) / 2)); 
-            transform-origin: center top; 
-            background: var(--wood-light);
-            z-index: 10;
-            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        /* حالة الفتح - كل جانب يسقط في اتجاهه */
+        .is-open .front  { transform: rotateY(0deg) translateZ(calc(var(--box-size) / 2)) rotateX(-90deg); }
+        .is-open .back   { transform: rotateY(180deg) translateZ(calc(var(--box-size) / 2)) rotateX(-90deg); }
+        .is-open .right  { transform: rotateY(90deg) translateZ(calc(var(--box-size) / 2)) rotateX(-90deg); }
+        .is-open .left   { transform: rotateY(-90deg) translateZ(calc(var(--box-size) / 2)) rotateX(-90deg); }
+        .is-open .top    { transform: rotateX(90deg) translateZ(calc(var(--box-size) / 2)) rotateX(90deg) translateY(calc(var(--box-size) * -1)); opacity: 0; }
+        .is-open .bottom { transform: rotateX(-90deg) translateZ(calc(var(--box-size) / 2)) scale(1.2); }
 
-        .lid-content { 
-            text-align: center; 
-            transform: rotateZ(180deg); 
-        }
+        .lid-content { text-align: center; }
         .lid-text { color: var(--gold-trim); font-size: 16px; font-weight: 900; margin: 0; }
         .lid-sub { color: #fff; font-size: 8px; letter-spacing: 1px; opacity: 0.8; margin-top: 4px; }
-
-        /* حركة الفتح */
-        .box-3d.is-open .top { 
-            transform: rotateX(90deg) translateZ(calc(var(--box-size) / 2)) rotateX(110deg); 
-        }
 
         /* حاوية العملات */
         .tokens-container {
@@ -119,15 +113,16 @@
 
         .token-item {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
+            background-image: url('Token.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             opacity: 0;
             filter: drop-shadow(0 0 15px var(--gold-trim));
-            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 20;
+            transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 50;
         }
 
         #open-btn {
@@ -141,8 +136,11 @@
             font-weight: 900;
             cursor: pointer;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            transition: 0.3s;
+            transition: 0.4s;
+            z-index: 100;
         }
+
+        #open-btn:active { transform: scale(0.95); }
 
         #fireworks-canvas {
             position: absolute;
@@ -196,8 +194,8 @@
             constructor(x, y) {
                 this.x = x; this.y = y;
                 this.size = Math.random() * 3 + 2;
-                this.speedX = (Math.random() - 0.5) * 15;
-                this.speedY = (Math.random() - 0.5) * 15;
+                this.speedX = (Math.random() - 0.5) * 12;
+                this.speedY = (Math.random() - 0.5) * 12;
                 this.color = `hsl(${Math.random() * 40 + 40}, 100%, 60%)`;
                 this.alpha = 1;
             }
@@ -221,19 +219,18 @@
             for (let i = 0; i < count; i++) {
                 const token = document.createElement('div');
                 token.className = 'token-item';
-                token.style.backgroundImage = "url('Token.png')"; 
                 tokensContainer.appendChild(token);
                 
                 setTimeout(() => {
-                    const angle = (i / count) * Math.PI * 2 - Math.PI/2;
-                    const radius = window.innerWidth < 480 ? 120 : 180; 
+                    const angle = (i / count) * Math.PI * 2;
+                    const radius = window.innerWidth < 480 ? 150 : 250; 
                     const x = Math.cos(angle) * radius;
                     const y = Math.sin(angle) * radius;
                     
                     token.style.opacity = "1";
-                    // الحركة تجعلها تخرج للأمام وللأطراف
-                    token.style.transform = `translate3d(${x}px, ${y}px, 150px) rotateY(360deg) scale(1.2)`;
-                }, i * 150 + 400);
+                    // انطلاق العملات للخارج وللأمام
+                    token.style.transform = `translate3d(${x}px, ${y}px, 300px) rotateZ(${Math.random() * 360}deg) scale(1.2)`;
+                }, i * 100 + 300);
             }
         }
 
@@ -254,17 +251,19 @@
         }
 
         btn.addEventListener('click', () => {
+            // فتح الصندوق
             box.classList.add('is-open');
-            box.style.transform = "rotateX(0deg) rotateY(0deg) scale(1.1)";
+            // تعديل زاوية الرؤية لتصبح مباشرة أكثر وقت الفتح
+            box.style.transform = "rotateX(0deg) rotateY(0deg) scale(0.9)";
             
             btn.style.opacity = '0';
             btn.style.pointerEvents = 'none';
 
             setTimeout(() => {
-                createTokens(5);
+                createTokens(6);
                 celebrate();
                 animate();
-            }, 500);
+            }, 400);
         });
     </script>
 </body>

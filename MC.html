@@ -55,7 +55,7 @@
     <script>
         let isLogged = false;
         let currentSwiper = null;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbx_Bqa-B-1PkEGT2JddeAsUergyKeHbgFiwSb8aUfps91PWQLDCyOpxvtS16VtsRIbcWg/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwcZuej4fcI65QjjkX_WdKf_osnzXT2H88sMhJ8R8r8sWR8iMoHE9zFeX8zWnQx5bAx5A/exec';
         
         const activities = {
             season: [
@@ -152,48 +152,61 @@
             document.getElementById('userImg').src = imgUrl;
         }
 
-        function openMissions(cardElement, index, mode) {
-            const actData = activities[mode][index];
-            document.getElementById('mainHeader').style.opacity = '0';
-            document.getElementById('mainToggle').style.opacity = '0';
-            cardElement.style.position = "fixed";
-            cardElement.style.top = "50%";
-            cardElement.style.left = "50%";
-            cardElement.style.transform = "translate(-50%, -50%) scale(0.6)";
-            cardElement.style.zIndex = "100";
-            cardElement.style.pointerEvents = "none";
-            document.querySelectorAll('.swiper-slide').forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
-            currentSwiper.allowTouchMove = false;
+       function openMissions(cardElement, index, mode) {
+    const actData = activities[mode][index];
+    const savedData = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+    const userProgress = savedData.progress || {};
+    const completedCount = userProgress[actData.code] || 0; // عدد المهام اللي خلصها الطالب في النشاط ده
 
-            setTimeout(() => {
-                const layer = document.getElementById('missions-layer');
-                layer.innerHTML = ''; 
-                layer.style.display = 'flex';
-                document.getElementById('backBtn').style.display = 'block';
-                const radius = window.innerWidth < 500 ? 130 : 170;
-                for (let i = 1; i <= 10; i++) {
-                    const angle = (i * 36 - 90) * (Math.PI / 180); 
-                    const x = Math.cos(angle) * radius; 
-                    const y = Math.sin(angle) * radius;
-                    const bubble = document.createElement('div');
-                    bubble.className = 'mission-bubble';
-                    bubble.style.animationDelay = `${i * 0.05}s`;
-                    bubble.innerHTML = `<span>M${i}</span>`;
-                    bubble.style.left = `calc(50% + ${x}px - 25px)`;
-                    bubble.style.top = `calc(50% + ${y}px - 25px)`;
-                    bubble.onclick = (e) => {
-                        e.stopPropagation();
-                        if(!isLogged) { openLogin(); } else {
-                            const targetPage = (mode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                            const fileCode = actData.code + i; 
-                            const params = new URLSearchParams({ act: actData.code, m: i, name: actData.name, file: fileCode });
-                            window.location.href = `${targetPage}?${params.toString()}`;
-                        }
-                    };
-                    layer.appendChild(bubble);
+    // ... (نفس كود الأنيميشن والاختفاء القديم)
+
+    setTimeout(() => {
+        const layer = document.getElementById('missions-layer');
+        layer.innerHTML = ''; 
+        layer.style.display = 'flex';
+        document.getElementById('backBtn').style.display = 'block';
+
+        const radius = window.innerWidth < 500 ? 130 : 170;
+        for (let i = 1; i <= 10; i++) {
+            const angle = (i * 36 - 90) * (Math.PI / 180); 
+            const x = Math.cos(angle) * radius; 
+            const y = Math.sin(angle) * radius;
+            
+            const bubble = document.createElement('div');
+            
+            // --- المنطق الجديد للالوان والقفل ---
+            let statusClass = 'mission-locked'; // الافتراضي (دهبي)
+            let canClick = true;
+
+            if (i <= completedCount) {
+                statusClass = 'mission-completed'; // أخضر
+                canClick = false; // ممنوع يدخلها تاني
+            } else if (i > completedCount + 1) {
+                // اختياري: لو عايزه ميفتحش المهمة 3 إلا لما يخلص 2
+                // canClick = false; 
+                // statusClass = 'mission-disabled';
+            }
+
+            bubble.className = `mission-bubble ${statusClass}`;
+            bubble.style.animationDelay = `${i * 0.05}s`;
+            bubble.innerHTML = i <= completedCount ? `<i class="fas fa-check"></i>` : `<span>M${i}</span>`;
+            bubble.style.left = `calc(50% + ${x}px - 25px)`;
+            bubble.style.top = `calc(50% + ${y}px - 25px)`;
+
+            bubble.onclick = (e) => {
+                e.stopPropagation();
+                if (!isLogged) { openLogin(); }
+                else if (!canClick) { alert("يا بطل، أنت أتممت هذه المهمة بنجاح بالفعل!"); }
+                else {
+                    const targetPage = (mode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
+                    const params = new URLSearchParams({ act: actData.code, m: i, name: actData.name });
+                    window.location.href = `${targetPage}?${params.toString()}`;
                 }
-            }, 400);
+            };
+            layer.appendChild(bubble);
         }
+    }, 400);
+}
 
         function resetView() { location.reload(); }
 

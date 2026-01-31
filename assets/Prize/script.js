@@ -24,7 +24,7 @@ class Particle {
         this.alpha -= 0.02;
     }
     draw() {
-        ctx.save(); // حفظ حالة الكانفاس
+        ctx.save();
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
         ctx.beginPath();
@@ -38,7 +38,6 @@ function createTokens(count) {
     for (let i = 0; i < count; i++) {
         const token = document.createElement('div');
         token.className = 'token-item';
-        // تأكد أن الصورة بنفس الاسم بجانب الملف
         token.style.backgroundImage = "url('Token.png')"; 
         tokensContainer.appendChild(token);
         
@@ -71,19 +70,16 @@ function animate() {
 }
 
 btn.addEventListener('click', () => {
-    // إضافة الكلاس للعنصر box3d لفتح الغطاء
     box.classList.add('is-open');
-    
-    // تحريك الصندوق نفسه لمواجهة المستخدم
-    box.style.transform = "rotateX(0deg) rotateY(0deg) scale(1.1)";
+    box.style.transform = "rotateX(-10deg) rotateY(0deg) scale(1.1)";
     
     btn.style.opacity = '0';
     setTimeout(() => btn.style.display = 'none', 500);
 
     setTimeout(() => {
-        createTokens(5);
+        createTokens(6);
         celebrate();
-        if (particles.length > 0) animate();
+        animate();
     }, 800);
 });
 

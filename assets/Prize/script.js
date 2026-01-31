@@ -24,11 +24,13 @@ class Particle {
         this.alpha -= 0.02;
     }
     draw() {
+        ctx.save(); // حفظ حالة الكانفاس
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
+        ctx.restore();
     }
 }
 
@@ -36,19 +38,19 @@ function createTokens(count) {
     for (let i = 0; i < count; i++) {
         const token = document.createElement('div');
         token.className = 'token-item';
-        // تعويض المسار إذا كان مختلفاً (تأكد من وجود الصورة في الفولدر)
+        // تأكد أن الصورة بنفس الاسم بجانب الملف
         token.style.backgroundImage = "url('Token.png')"; 
         tokensContainer.appendChild(token);
         
         setTimeout(() => {
             const angle = (i / count) * Math.PI * 2;
-            const radius = 120; // قطر دائرة التوزيع
+            const radius = 150; 
             const x = Math.cos(angle) * radius;
             const y = Math.sin(angle) * radius;
             
             token.style.opacity = "1";
             token.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1.2) rotateZ(360deg)`;
-        }, i * 200 + 1000); // تتابع خروج التوكينز
+        }, i * 200 + 500);
     }
 }
 
@@ -69,18 +71,19 @@ function animate() {
 }
 
 btn.addEventListener('click', () => {
-    // فتح الصندوق
+    // إضافة الكلاس للعنصر box3d لفتح الغطاء
     box.classList.add('is-open');
-    box.style.transform = "rotateX(-10deg) rotateY(0deg) scale(1.1)";
+    
+    // تحريك الصندوق نفسه لمواجهة المستخدم
+    box.style.transform = "rotateX(0deg) rotateY(0deg) scale(1.1)";
     
     btn.style.opacity = '0';
     setTimeout(() => btn.style.display = 'none', 500);
 
-    // خروج التوكينز والألعاب النارية
     setTimeout(() => {
         createTokens(5);
         celebrate();
-        animate();
+        if (particles.length > 0) animate();
     }, 800);
 });
 

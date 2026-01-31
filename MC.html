@@ -27,7 +27,6 @@
         }
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
-        
         .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
         .logo-placeholder img { height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
         
@@ -127,14 +126,13 @@
 
     <div class="bottom-nav">
         <div class="nav-btn" onclick="location.reload()"><i class="fas fa-home"></i></div>
-        <div class="nav-btn" style="border-color: var(--xbox-color); color: var(--xbox-color);" onclick="logout()"><i class="fas fa-power-off"></i></div>
+        <div class="nav-btn" id="logoutBtn" style="border-color: var(--xbox-color); color: var(--xbox-color);" onclick="logout()"><i class="fas fa-power-off"></i></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <script>
-        // رابط الأب سكريبت الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztdWIaBa-rKRNhWu4078glQuev_ySlREMDd-77xPM2M108ZVbDjdm_1UkJIGEf0oX5nw/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzkRM_XzrZ8C5E_X_JcLBJsVvfzowtofjiu7RaurZlX1YUDJRB0VHZThWR2M-MGdbyESg/exec";
 
         const activities = {
             season: [
@@ -180,48 +178,51 @@
 
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         
-        function logout() {
+        async function logout() {
+            const savedData = localStorage.getItem('eyc_agent_data');
+            if(savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('logoutBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                try {
+                    // إخبار السكريبت بمسح علامة الصح
+                    await fetch(`${SCRIPT_URL}?action=logout&email=${encodeURIComponent(data.email)}`);
+                } catch(e) {}
+            }
             localStorage.removeItem('eyc_agent_data');
             location.reload();
         }
 
-        // دالة التحقق الفعلية المربوطة بالأب سكريبت
-async function verifyCode() {
-    const email = document.getElementById('agentEmail').value.trim();
-    const code = document.getElementById('agentCode').value.trim();
-    const btn = document.getElementById('mainSubmitBtn');
-    const errorLog = document.getElementById('errorLog');
-    
-    if(!email || !code) return alert("Please enter credentials");
+        async function verifyCode() {
+            const email = document.getElementById('agentEmail').value.trim();
+            const code = document.getElementById('agentCode').value.trim();
+            const btn = document.getElementById('mainSubmitBtn');
+            const errorLog = document.getElementById('errorLog');
+            
+            if(!email || !code) return alert("Please enter credentials");
 
-    btn.innerText = "INITIALIZE LOGIN...";
-    btn.disabled = true;
-    errorLog.innerText = "";
+            btn.innerText = "INITIALIZING LOGIN...";
+            btn.disabled = true;
+            errorLog.innerText = "";
 
-    // استخدام الـ URL مع الـ Parameters كما تتوقع دالة doGet
-    const finalUrl = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`;
+            try {
+                const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
+                const data = await response.json();
 
-    try {
-        // نستخدم fetch مع mode no-cors أو نعتمد على أن الأب سكريبت يرجع JSON
-        const response = await fetch(finalUrl);
-        const data = await response.json();
-
-        if(data.status === "success") {
-            applyAgentData(data);
-            document.getElementById('loginModal').style.display = 'none';
-            localStorage.setItem('eyc_agent_data', JSON.stringify(data));
-        } else {
-            errorLog.innerText = "ACCESS DENIED: " + (data.message || "Invalid Credentials");
-            btn.innerText = "INITIALIZE LOGIN";
-            btn.disabled = false;
+                if(data.status === "success") {
+                    applyAgentData(data);
+                    document.getElementById('loginModal').style.display = 'none';
+                    localStorage.setItem('eyc_agent_data', JSON.stringify(data));
+                } else {
+                    errorLog.innerText = "ACCESS DENIED: " + (data.message || "Invalid Credentials");
+                    btn.innerText = "INITIALIZE LOGIN";
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                errorLog.innerText = "CONNECTION ERROR: Check Script URL";
+                btn.innerText = "INITIALIZE LOGIN";
+                btn.disabled = false;
+            }
         }
-    } catch (e) {
-        console.error("Error:", e);
-        errorLog.innerText = "CONNECTION ERROR: Check Script URL or Internet";
-        btn.innerText = "INITIALIZE LOGIN";
-        btn.disabled = false;
-    }
-}
 
         function applyAgentData(data) {
             document.getElementById('loginTriggerBtn').style.display = 'none';
@@ -238,7 +239,6 @@ async function verifyCode() {
             const layer = document.getElementById('missions-layer');
             layer.innerHTML = ''; layer.style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
-            
             for (let i = 1; i <= 10; i++) {
                 const angle = (i * 36) * (Math.PI / 180);
                 const x = Math.cos(angle) * 110; 
@@ -292,7 +292,6 @@ async function verifyCode() {
         animate();
         renderActivities('season');
 
-        // استعادة البيانات إذا كان مسجلاً مسبقاً
         const saved = localStorage.getItem('eyc_agent_data');
         if(saved) applyAgentData(JSON.parse(saved));
     </script>

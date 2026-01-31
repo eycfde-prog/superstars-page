@@ -1,0 +1,99 @@
+const box = document.getElementById('gift-box');
+const result = document.getElementById('result-display');
+
+// عند الضغط على الصندوق
+box.addEventListener('click', () => {
+    box.classList.add('open');
+    
+    // إظهار النتيجة بعد تلاشي الصندوق
+    setTimeout(() => {
+        result.classList.remove('hidden');
+        startFireworks(); 
+    }, 800);
+});
+
+function startFireworks() {
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    
+    // ضبط حجم الكانفاس
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+    const colors = ['#d4af37', '#f9f295', '#ffffff', '#ffdf00', '#e5c100'];
+
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            // سرعة عشوائية في جميع الاتجاهات (انفجار)
+            this.velocity = {
+                x: (Math.random() - 0.5) * 8,
+                y: (Math.random() - 0.5) * 8
+            };
+            this.opacity = 1;
+            this.gravity = 0.05;
+        }
+
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.opacity;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        update() {
+            this.velocity.y += this.gravity; // تأثير الجاذبية
+            this.x += this.velocity.x;
+            this.y += this.velocity.y;
+            this.opacity -= 0.01; // تلاشي تدريجي
+        }
+    }
+
+    function createFirework() {
+        // مكان الانفجار (عشوائي في الشاشة)
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * (canvas.height * 0.6);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        for (let i = 0; i < 30; i++) {
+            particles.push(new Particle(x, y, color));
+        }
+    }
+
+    function animate() {
+        // تأثير الذيل (Trail effect)
+        ctx.fillStyle = 'rgba(0, 5, 10, 0.2)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach((particle, index) => {
+            if (particle.opacity > 0) {
+                particle.update();
+                particle.draw();
+            } else {
+                particles.splice(index, 1);
+            }
+        });
+
+        // إنشاء انفجار جديد بشكل عشوائي
+        if (Math.random() < 0.05) {
+            createFirework();
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
+// إعادة ضبط حجم الكانفاس عند تغيير حجم النافذة
+window.addEventListener('resize', () => {
+    const canvas = document.getElementById('fireworks');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});

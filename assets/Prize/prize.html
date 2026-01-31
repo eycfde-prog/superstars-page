@@ -3,21 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Gift Box</title>
-    <link rel="stylesheet" href="prize.css">
+    <title>EYC Exclusive Prize | Browser Design</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS Professional Styles --- */
+        :root {
+            --box-size: 220px;
+            --primary-bg: #1a1a2e;
+            --accent-color: #ffd700;
+            --transition-speed: 0.6s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--primary-bg);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+        }
+
+        .instruction-text {
+            color: white;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .daz-gift-box {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .daz-gift-box:hover {
+            transform: scale(1.05);
+        }
+
+        .gift-box-wrapper {
+            width: var(--box-size);
+            height: var(--box-size);
+            position: relative;
+            transform-origin: bottom;
+        }
+
+        .gift-box-top {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            bottom: 92%;
+            left: 0;
+            transform: scale(1.05);
+            transition: transform var(--transition-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        bottom var(--transition-speed) ease;
+            z-index: 10;
+        }
+
+        .gift-box-bottom {
+            width: 100%;
+            height: auto;
+            display: block;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* حالة الفتح */
+        .daz-gift-box.clicked .gift-box-top {
+            transform: scale(1.1) translateY(-80px) rotate(-20deg);
+            opacity: 0.8;
+        }
+
+        .daz-gift-box.clicked {
+            pointer-events: none; /* يمنع الضغط المتكرر */
+        }
+
+        /* الـ Confetti */
+        .confetti-target {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            top: 20%;
+            left: 50%;
+            border-radius: 2px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .animate-confetti {
+            animation: explode 1.2s forwards cubic-bezier(0.1, 0.5, 0.2, 1);
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                /* حركة عشوائية بناءً على متغيرات الـ JS */
+                transform: translate(calc(var(--x) * 350px), calc(var(--y) * -350px)) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="daz-gift-box">
-  <div class="gift-box-wrapper">
-    <img class="gift-box-top" src="https://cdn.daz3d.com/file/dazcdn/media/sale-promo/advent/box-top.png" alt="Box Top">
-    <div class="confetti-target">
-      <img class="gift-box-bottom" src="https://cdn.daz3d.com/file/dazcdn/media/sale-promo/advent/box-bottom.png" alt="Box Bottom">
-    </div>
-  </div>
-</div>
+    <div class="instruction-text">Click to Open Your Prize</div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="prize.js"></script>
+    <div class="daz-gift-box">
+        <div class="gift-box-wrapper">
+            <img class="gift-box-top" src="https://cdn.daz3d.com/file/dazcdn/media/sale-promo/advent/box-top.png" alt="Box Top">
+            
+            <div class="confetti-target">
+                <img class="gift-box-bottom" src="https://cdn.daz3d.com/file/dazcdn/media/sale-promo/advent/box-bottom.png" alt="Box Bottom">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            const $giftBox = $(".daz-gift-box");
+
+            $giftBox.on("click", function () {
+                if (!$(this).hasClass("clicked")) {
+                    $(this).addClass("clicked");
+                    $(".instruction-text").fadeOut(); // إخفاء النص عند الفتح
+                    explodeConfetti(this);
+                }
+            });
+
+            function explodeConfetti(container) {
+                const target = container.querySelector(".confetti-target");
+                const count = 80;
+                const colors = ['#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93', '#ffffff'];
+
+                for (let i = 0; i < count; i++) {
+                    const confetti = document.createElement("div");
+                    confetti.className = "confetti animate-confetti";
+                    
+                    // تحديد مسار الانفجار (توزيع دائري عشوائي)
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = Math.random() * 1;
+                    const x = Math.cos(angle) * velocity;
+                    const y = Math.sin(angle) * velocity;
+
+                    confetti.style.setProperty("--x", x);
+                    confetti.style.setProperty("--y", y);
+                    
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // أحجام عشوائية للواقعية
+                    const size = Math.random() * 10 + 5 + "px";
+                    confetti.style.width = size;
+                    confetti.style.height = size;
+
+                    target.appendChild(confetti);
+
+                    // تنظيف الـ DOM بعد الانتهاء
+                    confetti.addEventListener("animationend", () => {
+                        confetti.remove();
+                    });
+                }
+            }
+        });
+    </script>
 </body>
 </html>

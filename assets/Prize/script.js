@@ -1,75 +1,99 @@
 const box = document.getElementById('box3d');
 const btn = document.getElementById('open-btn');
+const winText = document.getElementById('win-text');
+const tokenContainer = document.getElementById('tokens-burst-container');
 const canvas = document.getElementById('fireworks-canvas');
 const ctx = canvas.getContext('2d');
 
-// تحديث حجم الكانفاس عند تغيير حجم الشاشة
-function resizeCanvas() {
+let tokenCount = 5; // يمكنك تغيير هذا العدد حسب نتيجة الطالب
+
+function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+window.addEventListener('resize', resize);
+resize();
 
+// --- Fireworks Engine ---
 let particles = [];
-let animationId;
-
-class FireworkParticle {
-    constructor(x, y) {
-        this.x = x; 
-        this.y = y;
-        this.vx = (Math.random() - 0.5) * 12;
-        this.vy = (Math.random() - 0.5) * 12;
+class Particle {
+    constructor(x, y, color) {
+        this.x = x; this.y = y;
+        this.color = color;
+        this.velocity = { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 };
         this.alpha = 1;
-        this.color = `hsl(${Math.random() * 40 + 40}, 100%, 50%)`; 
     }
     draw() {
-        ctx.save();
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
     }
     update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.alpha -= 0.015;
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
+        this.alpha -= 0.01;
     }
 }
 
-function celebrate() {
-    const boxRect = box.getBoundingClientRect();
-    const centerX = boxRect.left + boxRect.width / 2;
-    const centerY = boxRect.top + boxRect.height / 2;
-
-    for (let i = 0; i < 150; i++) {
-        particles.push(new FireworkParticle(centerX, centerY));
+function spawnFireworks() {
+    const x = canvas.width / 2;
+    const y = canvas.height / 2;
+    for (let i = 0; i < 100; i++) {
+        particles.push(new Particle(x, y, `hsl(${Math.random() * 60 + 40}, 100%, 50%)`));
     }
 }
 
-function animate() {
-    ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; // تطابق لون الخلفية
+function animateFireworks() {
+    ctx.fillStyle = 'rgba(2, 2, 5, 0.1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
     particles.forEach((p, i) => {
-        p.update();
-        p.draw();
-        if (p.alpha <= 0) particles.splice(i, 1);
+        if (p.alpha > 0) { p.update(); p.draw(); }
+        else { particles.splice(i, 1); }
     });
-    
-    animationId = requestAnimationFrame(animate);
+    requestAnimationFrame(animateFireworks);
+}
+
+// --- Tokens Burst Logic ---
+function burstTokens(count) {
+    for (let i = 0; i < count; i++) {
+        const token = document.createElement('div');
+        token.className = 'token-item';
+        tokenContainer.appendChild(token);
+
+        // حساب مكان الاستقرار (ترتيب أفقي)
+        const targetX = (i - (count - 1) / 2) * 70; // مسافة بين كل توكين
+        const targetY = -150; // الارتفاع فوق الصندوق
+
+        // Animation باستخدام Keyframes ديناميكية
+        token.animate([
+            { transform: 'translate(-50%, -50%) scale(0) rotate(0deg)', opacity: 0, left: '50%', top: '50%' },
+            { transform: `translate(-50%, -50%) scale(1.2) rotate(${360 + i * 20}deg)`, opacity: 1, offset: 0.5 },
+            { transform: `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(1) rotate(0deg)`, opacity: 1, left: '50%', top: '50%' }
+        ], {
+            duration: 1000 + (i * 200),
+            easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            fill: 'forwards'
+        });
+    }
 }
 
 btn.addEventListener('click', () => {
+    // 1. فتح الصندوق
     box.classList.add('is-open');
-    btn.style.opacity = '0';
-    setTimeout(() => btn.style.display = 'none', 500);
+    btn.style.display = 'none';
     
-    // بدء الألعاب النارية بعد ثانية واحدة من الضغط
+    // 2. إظهار نص الفوز
     setTimeout(() => {
-        celebrate();
-        animate();
-    }, 1000);
+        winText.style.opacity = '1';
+        winText.innerText = `YOU EARNED ${tokenCount} TOKENS!`;
+    }, 500);
+
+    // 3. انفجار التوكينز
+    setTimeout(() => {
+        burstTokens(tokenCount);
+        spawnFireworks();
+        animateFireworks();
+    }, 800);
 });

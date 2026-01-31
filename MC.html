@@ -1,262 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Activity Hub | Starry Mission</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="mcstyle.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Control - MC</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="rank-canvas"></canvas>
-    
-    <div class="top-nav">
-        <div class="logo-placeholder"><img src="logo.png" alt="EYC"></div>
-        <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
-        <div class="user-info-wrapper" style="display: flex; align-items: center; gap: 15px;">
-            <div class="user-name-display" id="userName" style="display: none;"></div>
-            <button id="logoutBtn" onclick="signOut()" style="display: none;" class="logout-minimal-btn">
-                <i class="fas fa-power-off"></i>
-            </button>
+
+    <div id="space-container"></div>
+    <div class="grid-lines"></div>
+
+    <div id="loginModal" class="modal">
+        <div class="login-box">
+            <h2 style="text-align:center">Mission Control</h2>
+            <p style="text-align:center; font-size: 0.8em; color: #888;">سجل دخولك لبدء المهام</p>
+            <input type="email" id="userEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="userCode" placeholder="كود الدخول">
+            <button onclick="login()" style="width:100%; padding:10px; background:#00ff41; border:none; cursor:pointer">دخول</button>
+            <p style="margin-top:15px; font-size:0.9em">
+                ليس لديك بروفايل؟ <a href="NP.html" style="color:#fff">أنشئ بروفايل من هنا</a>
+            </p>
         </div>
     </div>
 
-    <div class="profile-stack" id="profileStack">
-        <div class="p-rank" id="userRank">#0</div>
-        <div class="p-score" id="userScore">0</div>
-        <div class="p-avatar" id="avatarBox"><img src="" id="userImg" alt="Agent"></div>
+    <div id="mainContent" style="display:none">
+        <header class="header-stats">
+            <div class="stat-item">
+                <span class="stat-value" id="studentName">جاري التحميل...</span>
+                <small>المقاتل</small>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="studentPoints">0</span>
+                <small>النقاط</small>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="studentRank">#--</span>
+                <small>الترتيب</small>
+            </div>
+        </header>
+
+        <main class="mission-hub">
+            <h3 class="section-title">المجموعة S (Regular)</h3>
+            <div class="grid-container" id="regularGroup">
+                <div class="mission-card" onclick="openTasks('S1')">Activity S1</div>
+                <div class="mission-card" onclick="openTasks('S2')">Activity S2</div>
+                <div class="mission-card" onclick="openTasks('S3')">Activity S3</div>
+                <div class="mission-card" onclick="openTasks('S4')">Activity S4</div>
+                <div class="mission-card" onclick="openTasks('S5')">Activity S5</div>
+                <div class="mission-card" onclick="openTasks('S6')">Activity S6</div>
+            </div>
+
+            <hr style="margin:30px 0; border:0; border-top:1px solid #333">
+
+            <h3 class="section-title" style="border-color:#ffd700">المجموعة X (Royal)</h3>
+            <div class="grid-container" id="royalGroup">
+                <div class="mission-card royal-card" onclick="openTasks('X1')">Royal X1</div>
+                <div class="mission-card royal-card" onclick="openTasks('X2')">Royal X2</div>
+                <div class="mission-card royal-card" onclick="openTasks('X3')">Royal X3</div>
+                <div class="mission-card royal-card" onclick="openTasks('X4')">Royal X4</div>
+                <div class="mission-card royal-card" onclick="openTasks('X5')">Royal X5</div>
+                <div class="mission-card royal-card" onclick="openTasks('X6')">Royal X6</div>
+                <div class="mission-card royal-card" onclick="openTasks('X7')">Royal X7</div>
+                <div class="mission-card royal-card" onclick="openTasks('X8')">Royal X8</div>
+                <div class="mission-card royal-card" onclick="openTasks('X9')">Royal X9</div>
+                <div class="mission-card royal-card" onclick="openTasks('X10')">Royal X10</div>
+            </div>
+        </main>
     </div>
 
-    <header class="rank-header" id="mainHeader">
-        <h1 class="header-title">MISSION HUB</h1>
-        <p class="header-subtitle">CENTRAL NAVIGATION HELM</p>
-    </header>
-
-    <div class="toggle-container" id="mainToggle">
-        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
-        <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">XBOX ELITE</button>
+    <div class="nav-buttons">
+        <button class="btn-circle" title="Home" onclick="goHome()">H</button>
+        <button class="btn-circle" title="Logout" style="background:#ff4141" onclick="logout()">L</button>
     </div>
 
-    <div id="swiper-container" class="swiper">
-        <div class="swiper-wrapper" id="activities-wrapper"></div>
-    </div>
-
-    <div id="missions-layer"></div>
-    <button class="back-btn" id="backBtn" onclick="resetView()">TERMINATE SESSION</button>
-
-    <div class="modal-overlay" id="loginModal">
-        <div class="royal-card">
-            <h2 class="modal-title">ACCESS TERMINAL</h2>
-            <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
-            <input type="password" id="agentCode" placeholder="ACCESS CODE">
-            <button class="submit-btn" id="verifyBtn" onclick="verifyCode()">INITIALIZE</button>
-            <p id="errorMsg" class="error-msg"></p>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        let isLogged = false;
-        let currentSwiper = null;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwLM8eTnceDjJpM6u_q98NGkGqkOH37ikBXh744AIqzoKo2DhCnDYcwfvtie1DNN3IUDA/exec';
-        
-        const activities = {
-            season: [
-                { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
-                { name: 'Seeds', code: 'SS', icon: 'fa-seedling', tk: '5' },
-                { name: 'Label', code: 'LS', icon: 'fa-tag', tk: '5' },
-                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass', tk: '5' },
-                { name: 'Vivid', code: 'VS', icon: 'fa-eye', tk: '5' },
-                { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' }
-            ],
-            xbox: [
-                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: '5' },
-                { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: '5' },
-                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: '5' },
-                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: '5' },
-                { name: 'Label X', code: 'LX', icon: 'fa-industry', tk: '5' },
-                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: '5' },
-                { name: 'Figurative X', code: 'FX', icon: 'fa-mask', tk: '5' },
-                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: '10+' },
-                { name: 'SSS X', code: 'SSSX', icon: 'fa-bolt', tk: '10+' },
-                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-microphone-lines', tk: '10+' }
-            ]
-        };
-
-        window.addEventListener('DOMContentLoaded', () => {
-            renderActivities('season');
-            checkSavedAgent();
-            initStars();
-        });
-
-        function renderActivities(mode) {
-            const wrapper = document.getElementById('activities-wrapper');
-            wrapper.innerHTML = activities[mode].map((act, index) => `
-                <div class="swiper-slide" onclick="openMissions(this, ${index}, '${mode}')">
-                    <div class="token-badge">${act.tk} TK</div>
-                    <div class="activity-icon"><i class="fas ${act.icon}"></i></div>
-                    <div class="activity-name">${act.name}</div>
-                </div>
-            `).join('');
+        // دالة الدخول (ليتم ربطها بـ Google Apps Script لاحقاً)
+        function login() {
+            const email = document.getElementById('userEmail').value;
+            const code = document.getElementById('userCode').value;
             
-            if (currentSwiper) currentSwiper.destroy();
-            currentSwiper = new Swiper('.swiper', { 
-                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
-                coverflowEffect: { rotate: 10, stretch: 0, depth: 100, modifier: 1, slideShadows: false }
-            });
+            if(email && code) {
+                // هنا نضع كود الـ Apps Script للتأكد
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                // تجريبي لإظهار الاسم
+                document.getElementById('studentName').innerText = email.split('@')[0];
+            }
         }
 
-        function verifyCode() {
-            const email = document.getElementById('agentEmail').value.trim();
-            const code = document.getElementById('agentCode').value.trim();
-            const btn = document.getElementById('verifyBtn');
-            const err = document.getElementById('errorMsg');
-
-            if (!email || !code) return;
-
-            btn.innerText = "AUTHENTICATING...";
-            btn.disabled = true;
-            err.style.display = 'none';
-
-            fetch(`${scriptUrl}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        localStorage.setItem('eyc_agent_data', JSON.stringify({ ...data, email, code }));
-                        applyAgentData(data);
-                        document.getElementById('loginModal').style.display = 'none';
-                    } else {
-                        err.innerText = data.message || "ACCESS DENIED";
-                        err.style.display = 'block';
-                        btn.innerText = "INITIALIZE";
-                        btn.disabled = false;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    err.innerText = "CONNECTION ERROR";
-                    err.style.display = 'block';
-                    btn.innerText = "INITIALIZE";
-                    btn.disabled = false;
-                });
-        }
-
-        function applyAgentData(data) {
-            isLogged = true;
-            document.getElementById('loginTriggerBtn').style.display = 'none';
-            const nameElem = document.getElementById('userName');
-            const logoutBtn = document.getElementById('logoutBtn');
-            
-            nameElem.innerText = data.name.split(' ')[0];
-            nameElem.style.display = 'block';
-            if(logoutBtn) logoutBtn.style.display = 'flex';
-
-            document.getElementById('profileStack').style.display = 'block';
-            document.getElementById('userScore').innerText = data.totalScore || 0;
-            document.getElementById('userRank').innerText = "#" + (data.rank || 0);
-            let imgUrl = data.image || "";
-            if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
-            document.getElementById('userImg').src = imgUrl;
-        }
-
-        function signOut() {
-            localStorage.removeItem('eyc_agent_data');
-            console.log("Session Terminated. Agent Disconnected.");
+        function logout() {
             location.reload();
         }
 
-        function openMissions(cardElement, index, mode) {
-            const actData = activities[mode][index];
-            const savedData = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            const userProgress = savedData.progress || {};
-            const completedCount = userProgress[actData.code] || 0; 
-
-            document.getElementById('mainHeader').style.opacity = '0';
-            document.getElementById('mainToggle').style.opacity = '0';
-            cardElement.style.position = "fixed";
-            cardElement.style.top = "50%";
-            cardElement.style.left = "50%";
-            cardElement.style.transform = "translate(-50%, -50%) scale(0.6)";
-            cardElement.style.zIndex = "100";
-            cardElement.style.pointerEvents = "none";
-            document.querySelectorAll('.swiper-slide').forEach(slide => { if (slide !== cardElement) slide.style.opacity = '0'; });
-            currentSwiper.allowTouchMove = false;
-
-            setTimeout(() => {
-                const layer = document.getElementById('missions-layer');
-                layer.innerHTML = ''; 
-                layer.style.display = 'flex';
-                document.getElementById('backBtn').style.display = 'block';
-
-                const radius = window.innerWidth < 500 ? 130 : 170;
-                for (let i = 1; i <= 10; i++) {
-                    const angle = (i * 36 - 90) * (Math.PI / 180); 
-                    const x = Math.cos(angle) * radius; 
-                    const y = Math.sin(angle) * radius;
-                    
-                    const bubble = document.createElement('div');
-                    let statusClass = 'mission-locked'; 
-                    let canClick = true;
-
-                    if (i <= completedCount) {
-                        statusClass = 'mission-completed';
-                        canClick = false; 
-                    }
-
-                    bubble.className = `mission-bubble ${statusClass}`;
-                    bubble.style.animationDelay = `${i * 0.05}s`;
-                    bubble.innerHTML = i <= completedCount ? `<i class="fas fa-check"></i>` : `<span>M${i}</span>`;
-                    
-                    bubble.style.left = `calc(50% + ${x}px - 25px)`;
-                    bubble.style.top = `calc(50% + ${y}px - 25px)`;
-
-                    bubble.onclick = (e) => {
-                        e.stopPropagation();
-                        if (!isLogged) { 
-                            openLogin(); 
-                        } else if (!canClick) { 
-                            alert("Agent, you have already secured this mission!"); 
-                        } else {
-                            const targetPage = (mode === 'season') ? 'MissionNormal.html' : 'MissionX.html';
-                            const fileCode = actData.code + i; 
-                            const params = new URLSearchParams({ act: actData.code, m: i, name: actData.name, file: fileCode });
-                            window.location.href = `${targetPage}?${params.toString()}`;
-                        }
-                    };
-                    layer.appendChild(bubble);
-                }
-            }, 400);
+        function goHome() {
+            window.location.href = 'home.html'; 
         }
 
-        function resetView() { location.reload(); }
-
-        function switchMode(mode) {
-            document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
-            document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
-            renderActivities(mode);
-        }
-
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-
-        function checkSavedAgent() {
-            const saved = localStorage.getItem('eyc_agent_data');
-            if(saved) applyAgentData(JSON.parse(saved));
-        }
-
-        function initStars() {
-            const canvas = document.getElementById('rank-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            let stars = Array.from({length: 100}, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.2, vel: Math.random() * 0.3 + 0.1 }));
-            function anim() {
-                ctx.clearRect(0,0,canvas.width, canvas.height);
-                ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-                stars.forEach(s => { s.y -= s.vel; if(s.y < 0) s.y = canvas.height; ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); });
-                requestAnimationFrame(anim);
-            }
-            anim();
+        function openTasks(activityID) {
+            alert('فتح مهام النشاط: ' + activityID + '\nهنا تظهر الـ 10 مهام الخاصة بالنشاط');
+            // هنا نربط مع Apps Script لجلب المهام الـ 10 الخاصة بهذا الكود
         }
     </script>
 </body>

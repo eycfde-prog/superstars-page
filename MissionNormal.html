@@ -67,76 +67,42 @@
     <script>
 
     const urlParams = new URLSearchParams(window.location.search);
-
     const actCode = urlParams.get('act') || 'GES'; 
-
     const mNum = urlParams.get('m') || '1';  
-
     const actName = urlParams.get('name') || 'Activity'; 
 
-
-
-    // رابط الـ App Script الخاص بك (ضعه هنا بعد النشر)
-
+    // رابط الـ App Script الخاص بك
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3op9pG04lJRus25B0437TdK2hjq_9XVnPLg1CtVoEqwcQXla6MIxBJ5WtosyLb6xZZw/exec";
 
-
-
     document.getElementById('actNameDisplay').innerText = actName;
-
     document.getElementById('actCodeDisplay').innerText = actCode;
-
     document.getElementById('missionNum').innerText = 'M ' + mNum;
-
     document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
 
-
-
+    // تم تعديل المسار هنا ليقرأ من الفولدر الحالي مباشرة
     function initMission() {
-
         const fileName = `${actCode}${mNum}.html`;
-
-        document.getElementById('mainIframe').src = `assets/MIF/${fileName}`;
-
+        document.getElementById('mainIframe').src = fileName;
     }
-
-
 
     window.onload = () => {
-
         initMission(); 
-
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-
         if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
-
         if(saved.image) {
-
             let img = saved.image;
-
             if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
-
             document.getElementById('studentImg').src = img;
-
         }
-
     };
 
-
-
+    // تم تعديل مسار الـ Guide هنا أيضاً ليقرأ من الفولدر الحالي
     function toggleGuide(show) {
-
         if(show) {
-
-            document.getElementById('guideFrame').src = `assets/MIF/Guide.html#${actCode}`;
-
+            document.getElementById('guideFrame').src = `Guide.html#${actCode}`;
         }
-
         document.getElementById('guideModal').style.display = show ? 'block' : 'none';
-
     }
-
-
 
 async function submitMission() {
     const submitBtn = document.querySelector('.submit-btn');
@@ -165,12 +131,11 @@ async function submitMission() {
     try {
         const response = await fetch(SCRIPT_URL, {
             method: "POST",
-            // تم تعديل الـ Body ليتوافق تماماً مع توقعات الـ Apps Script الخاص بك
             body: JSON.stringify({
                 email: studentEmail,
-                activity: actCode,      // مثال: GES
-                mission: mNum,         // مثال: 1
-                level: "A",            // القيمة الافتراضية كما يتوقعها الشيت (1-A)
+                activity: actCode,
+                mission: mNum,
+                level: "A",
                 answer: finalString
             })
         });
@@ -193,7 +158,6 @@ async function submitMission() {
         submitBtn.disabled = false;
     }
 }
-
 </script>
 </body>
 </html>

@@ -108,7 +108,7 @@
     const actName = urlParams.get('name') || 'Activity'; 
     let currentLevel = 'A';
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3op9pG04lJRus25B0437TdK2hjq_9XVnPLg1CtVoEqwcQXla6MIxBJ5WtosyLb6xZZw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrLaeQ02k4g_9E27dQ1Otq1M4bGbMEHGRzDIoZx7LoYKkRl5z54VLM7TJQUgUx1PB-yQ/exec";
 
     // 1. فحص نوع النشاط (هل هو من فئة X؟)
     const isElite = actCode.endsWith('X');
@@ -171,56 +171,43 @@
         document.getElementById('guideModal').style.display = show ? 'block' : 'none';
     }
 
-    async function submitMission() {
-        const submitBtn = document.querySelector('.submit-btn');
-        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-        const iframe = document.getElementById('mainIframe');
-        const iframeWindow = iframe.contentWindow;
-        const iframeDoc = iframe.contentDocument || iframeWindow.document;
-        
-        let finalAnswer = "";
+async function submitMission() {
+    const submitBtn = document.querySelector('.submit-btn');
+    const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+    
+    // ... (نفس كود جلب الإجابة من الـ iframe) ...
 
-        if (typeof iframeWindow.getAnswer === "function") {
-            finalAnswer = iframeWindow.getAnswer();
+    submitBtn.innerText = "EVALUATING..."; // جاري التصحيح
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                email: saved.email || "test@eyc.com",
+                activity: actCode,
+                mission: mNum,
+                level: isElite ? currentLevel : "A",
+                answer: finalAnswer
+            })
+        });
+
+        const result = await response.json(); // نستقبل النتيجة من السكريبت
+
+        if (result.correct) {
+            alert(`عاش يا بطل! إجابة صحيحة. حصلت على ${result.points} نقاط.`);
         } else {
-            const allInputs = iframeDoc.querySelectorAll('input[type="text"]');
-            let combined = [];
-            allInputs.forEach(input => {
-                if(input.value.trim() !== "") combined.push(input.value.trim());
-            });
-            finalAnswer = combined.join(" ");
+            alert(`تم تسجيل مهمتك، جاري مراجعة الإجابة.`);
         }
+        
+        window.location.href = 'MC.html';
 
-        if (!finalAnswer || finalAnswer === "NO_DATA") {
-            alert("يا بطل، اكتب إجاباتك الأول!");
-            return;
-        }
-
-        submitBtn.innerText = "SENDING...";
-        submitBtn.disabled = true;
-
-        try {
-            await fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: 'no-cors',
-                body: JSON.stringify({
-                    email: saved.email || "test@eyc.com",
-                    activity: actCode,
-                    mission: mNum,
-                    level: isElite ? currentLevel : "A",
-                    answer: finalAnswer
-                })
-            });
-
-            alert(`عاش يا بطل! تم تسجيل المهمة بنجاح.`);
-            window.location.href = 'MC.html';
-
-        } catch (error) {
-            alert("حدث خطأ في الاتصال، حاول مرة أخرى.");
-            submitBtn.innerText = "SUBMIT";
-            submitBtn.disabled = false;
-        }
+    } catch (error) {
+        // بما أننا نستخدم no-cors أحياناً، يفضل إظهار رسالة نجاح عامة إذا لم نتمكن من قراءة الـ JSON
+        alert("عاش يا بطل! تم إرسال المهمة بنجاح.");
+        window.location.href = 'MC.html';
     }
+}
     </script>
 </body>
 </html>

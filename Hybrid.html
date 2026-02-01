@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="missionnormalstyle.css">
     <style>
-        /* إضافة ستايل شريط الصعوبة - يختفي افتراضياً */
         .difficulty-bar {
             display: none; 
             justify-content: center;
@@ -18,18 +17,26 @@
         }
         .diff-btn {
             padding: 8px 15px;
-            border: 1px solid var(--neon-green, #00ff88);
+            border: 1px solid #00ff88;
             color: #fff;
             cursor: pointer;
             font-family: 'Orbitron', sans-serif;
             font-size: 0.8rem;
             transition: 0.3s;
             background: transparent;
+            border-radius: 5px;
         }
         .diff-btn.active {
-            background: var(--neon-green, #00ff88);
+            background: #00ff88;
             color: #000;
-            box-shadow: 0 0 10px var(--neon-green, #00ff88);
+            box-shadow: 0 0 10px #00ff88;
+        }
+        /* تأمين ظهور الصورة بشكل دائري ومنظم */
+        #studentImg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
     </style>
 </head>
@@ -38,17 +45,17 @@
         <header class="mission-header">
             <div class="agent-side">
                 <div class="circle-frame">
-                    <img src="assets/Student.png" id="studentImg">
+                    <img src="" id="studentImg" alt="Agent">
                 </div>
                 <div class="info-box">
                     <span>AGENT</span>
-                    <b id="agentName">BROWSER</b>
-                    <div class="token-tag" id="currentTokens">-- TK</div>
+                    <b id="agentName">INITIALIZING...</b>
+                    <div class="token-tag" id="currentTokens">0 TK</div>
                 </div>
             </div>
 
             <div class="center-logo-area">
-                <img src="assets/logo.png">
+                <img src="assets/logo.png" alt="EYC LOGO">
             </div>
 
             <div class="activity-side">
@@ -57,8 +64,8 @@
                 </div>
                 <div class="info-box">
                     <span id="actCodeDisplay">CODE</span>
-                    <b id="actNameDisplay">...</b>
-                    <div class="token-tag mission-tag" id="missionNum">M 1</div>
+                    <b id="actNameDisplay">LOADING...</b>
+                    <div class="token-tag mission-tag" id="missionNum">M 0</div>
                 </div>
             </div>
         </header>
@@ -100,18 +107,18 @@
     const actCode = urlParams.get('act') || 'GES'; 
     const mNum = urlParams.get('m') || '1';  
     const actName = urlParams.get('name') || 'Activity'; 
-    let currentLevel = 'A'; // المستوى الافتراضي
+    let currentLevel = 'A';
 
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3op9pG04lJRus25B0437TdK2hjq_9XVnPLg1CtVoEqwcQXla6MIxBJ5WtosyLb6xZZw/exec";
 
-    // 1. فحص نوع النشاط (Normal vs Elite X)
+    // 1. فحص نوع النشاط
     const isElite = actCode.includes('X');
 
-    // 2. تحديث الواجهة
+    // 2. تحديث واجهة النشاط واللوجو
     document.getElementById('actNameDisplay').innerText = actName;
     document.getElementById('actCodeDisplay').innerText = actCode;
     document.getElementById('missionNum').innerText = 'M ' + mNum;
-    // تنظيف الكود من الأرقام والـ X لجلب اللوجو الصحيح
+    
     const cleanLogoCode = actCode.replace(/[0-9]/g, '').replace('X', '');
     document.getElementById('activityLogo').src = `assets/AL/${cleanLogoCode}.png`;
 
@@ -120,37 +127,50 @@
         document.getElementById('guideText').innerHTML = "هاي يا بطل! أنا <strong>Glassy</strong>. اختار مستوى واحد وجاوب عليه.";
     }
 
-    // 3. دالة تحميل الملفات
+    // 3. جلب بيانات الطالب فوراً (حل مشكلة الصورة)
+    function loadAgentData() {
+        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+        
+        if(saved.name) {
+            document.getElementById('agentName').innerText = saved.name.split(' ')[0].toUpperCase();
+        }
+        if(saved.totalScore !== undefined) {
+            document.getElementById('currentTokens').innerText = saved.totalScore + ' TK';
+        }
+        
+        // معالجة صورة الطالب
+        const imgElement = document.getElementById('studentImg');
+        if(saved.image) {
+            let imgUrl = saved.image;
+            if(imgUrl.includes('id=')) {
+                const fileId = imgUrl.split('id=')[1].split('&')[0];
+                imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${fileId}`;
+            }
+            imgElement.src = imgUrl;
+        } else {
+            imgElement.src = 'assets/Student.png'; // الصورة الافتراضية في حال عدم وجود صورة
+        }
+    }
+
+    // 4. دالة تحميل الملفات داخل الـ Iframe
     function initMission(level = 'A') {
         currentLevel = level;
-        let fileName;
-        if(isElite) {
-            // بروتوكول Elite: Code + Mission + Level.html
-            fileName = `assets/MIF/${actCode}${mNum}${level}.html`;
-        } else {
-            // بروتوكول Normal: Code + Mission.html
-            fileName = `assets/MIF/${actCode}${mNum}.html`;
-        }
+        let fileName = isElite 
+            ? `assets/MIF/${actCode}${mNum}${level}.html`
+            : `assets/MIF/${actCode}${mNum}.html`;
         document.getElementById('mainIframe').src = fileName;
     }
 
-    // تغيير المستوى (لأنشطة X فقط)
     function changeLevel(lv, btn) {
         document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         initMission(lv);
     }
 
+    // التنفيذ عند فتح الصفحة
     window.onload = () => {
+        loadAgentData();
         initMission(); 
-        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-        if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0];
-        if(saved.totalScore) document.getElementById('currentTokens').innerText = saved.totalScore + ' TK';
-        if(saved.image) {
-            let img = saved.image;
-            if(img.includes('id=')) img = `https://drive.google.com/thumbnail?sz=w300&id=${img.split('id=')[1]}`;
-            document.getElementById('studentImg').src = img;
-        }
     };
 
     function toggleGuide(show) {
@@ -161,7 +181,6 @@
         document.getElementById('guideModal').style.display = show ? 'block' : 'none';
     }
 
-    // 4. دالة الإرسال الذكية (تجمع Inputs أو تنادي getAnswer)
     async function submitMission() {
         const submitBtn = document.querySelector('.submit-btn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
@@ -171,11 +190,9 @@
         
         let finalAnswer = "";
 
-        // أولاً: البحث عن دالة getAnswer داخل الملف (طريقة Elite)
         if (typeof iframeWindow.getAnswer === "function") {
             finalAnswer = iframeWindow.getAnswer();
         } else {
-            // ثانياً: لو مفيش دالة، نجمع الـ Inputs (طريقة Normal)
             const allInputs = iframeDoc.querySelectorAll('input[type="text"]');
             let combined = [];
             allInputs.forEach(input => {
@@ -195,7 +212,7 @@
         try {
             await fetch(SCRIPT_URL, {
                 method: "POST",
-                mode: 'no-cors', // لضمان الإرسال لـ Apps Script
+                mode: 'no-cors',
                 body: JSON.stringify({
                     email: saved.email || "test@eyc.com",
                     activity: actCode,
@@ -206,7 +223,6 @@
             });
 
             alert(`عاش يا بطل! تم تسجيل المهمة بنجاح.`);
-            submitBtn.innerText = "DONE";
             window.location.href = 'MC.html';
 
         } catch (error) {

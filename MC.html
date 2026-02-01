@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Activity Hub | Professional Edition</title>
+    <title>EYC Activity Hub | Unified Helm</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -86,11 +86,8 @@
             cursor: pointer; font-size: 16px; box-shadow: 0 0 15px rgba(255,204,0,0.2);
             transition: 0.3s;
         }
-        .mission-bubble:hover { transform: scale(1.15) !important; background: var(--accent-gold); color: #000; }
         .mission-bubble.completed { border-color: var(--task-done); color: var(--task-done); box-shadow: 0 0 20px var(--task-done); }
         
-        .bottom-nav { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; }
-        .nav-btn { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #fff; background: rgba(0,0,0,0.5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
         .back-btn { 
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); 
             background: #fff; color: #000; padding: 12px 40px; border-radius: 30px; 
@@ -98,10 +95,8 @@
             font-size: 14px; border: none; cursor: pointer; 
         }
 
-        @media (min-width: 1024px) {
-            .rank-header { padding-top: 40px; }
-            .swiper-slide:hover { border-color: var(--accent-gold); transform: translateY(-10px); }
-        }
+        .bottom-nav { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; }
+        .nav-btn { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #fff; background: rgba(0,0,0,0.5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -127,23 +122,22 @@
             <input type="password" id="agentCode" placeholder="ACCESS CODE">
             <div class="btn-group">
                 <button class="submit-btn" id="mainSubmitBtn" onclick="verifyCode()">INITIALIZE LOGIN</button>
-                <a href="NP.html" style="color:white; font-size:10px; text-decoration:none; margin-top:10px;">NO PROFILE? CREATE ONE</a>
             </div>
             <p id="errorLog" style="color:#ff3131; font-size:10px; margin-top:10px; font-weight:bold;"></p>
         </div>
     </div>
 
-    <header class="rank-header" id="mainHeader">
+    <header class="rank-header">
         <h1>MISSION HUB</h1>
         <p>NAVIGATION HELM</p>
     </header>
 
-    <div class="toggle-container" id="mainToggle">
+    <div class="toggle-container">
         <button class="mode-btn active season-mode" onclick="switchMode('season')">REGULAR (S)</button>
         <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">ROYAL (X)</button>
     </div>
 
-    <div id="swiper-container" class="swiper">
+    <div class="swiper">
         <div class="swiper-wrapper" id="activities-wrapper"></div>
     </div>
 
@@ -153,32 +147,36 @@
     <button class="back-btn" id="backBtn" onclick="resetView()">BACK TO HELM</button>
 
     <div class="bottom-nav">
-        <div class="nav-btn" onclick="EYCSSP.html"><i class="fas fa-home"></i></div>
-        <div class="nav-btn" id="logoutBtn" style="border-color: var(--xbox-color); color: var(--xbox-color);" onclick="logout()"><i class="fas fa-power-off"></i></div>
+        <div class="nav-btn" onclick="location.href='EYCSSP.html'"><i class="fas fa-home"></i></div>
+        <div class="nav-btn" id="logoutBtn" style="color: var(--xbox-color);" onclick="logout()"><i class="fas fa-power-off"></i></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec";
         let currentAgentData = null;
 
+        // المصفوفة المحدثة بالأكواد اللي طلبتها بالضبط
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5' },
-                { name: 'Seeds', code: 'SDS', icon: 'fa-seedling', tk: '5' },
-                { name: 'Label', code: 'LBL', icon: 'fa-tag', tk: '5' },
-                { name: 'Grammar', code: 'GMS', icon: 'fa-magnifying-glass', tk: '5' },
-                { name: 'Vivid', code: 'VIV', icon: 'fa-eye', tk: '5' },
-                { name: 'Alike', code: 'ALK', icon: 'fa-equals', tk: '5' }
+                { name: 'Alike', code: 'AS', icon: 'fa-equals', tk: '5' },
+                { name: 'Seeds', code: 'SS', icon: 'fa-seedling', tk: '5' },
+                { name: 'Grammar', code: 'GS', icon: 'fa-magnifying-glass', tk: '5' },
+                { name: 'Label', code: 'LS', icon: 'fa-tag', tk: '5' },
+                { name: 'Vivid', code: 'VS', icon: 'fa-eye', tk: '5' }
             ],
             xbox: [
-                { name: 'Alike X', code: 'ALKX', icon: 'fa-clone', tk: 'Royal' },
-                { name: 'Vivid X', code: 'VIVX', icon: 'fa-stopwatch', tk: 'Royal' },
-                { name: 'Seeds X', code: 'SDSX', icon: 'fa-puzzle-piece', tk: 'Royal' },
-                { name: 'Dictation X', code: 'DICX', icon: 'fa-pen-nib', tk: 'Royal' },
-                { name: 'Golden Ear X', code: 'GESX', icon: 'fa-filter', tk: 'Royal' },
-                { name: 'Grammar X', code: 'GMSX', icon: 'fa-network-wired', tk: 'Royal' }
+                { name: 'Golden Ear X', code: 'GEX', icon: 'fa-filter', tk: 'Royal' },
+                { name: 'Alike X', code: 'AX', icon: 'fa-clone', tk: 'Royal' },
+                { name: 'Seeds X', code: 'SX', icon: 'fa-puzzle-piece', tk: 'Royal' },
+                { name: 'Grammar X', code: 'GX', icon: 'fa-network-wired', tk: 'Royal' },
+                { name: 'Label X', code: 'LX', icon: 'fa-tags', tk: 'Royal' },
+                { name: 'Vivid X', code: 'VX', icon: 'fa-stopwatch', tk: 'Royal' },
+                { name: 'Figurative X', code: 'FX', icon: 'fa-wand-magic-sparkles', tk: 'Royal' },
+                { name: 'Dictation X', code: 'DX', icon: 'fa-pen-nib', tk: 'Royal' },
+                { name: 'Sing Sang Sung X', code: 'SSSX', icon: 'fa-microphone-lines', tk: 'Royal' },
+                { name: 'Elmagazine X', code: 'ELX', icon: 'fa-newspaper', tk: 'Royal' }
             ]
         };
 
@@ -187,7 +185,7 @@
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act) => `
-                <div class="swiper-slide ${mode === 'season' ? 'season-card' : 'xbox-card'}" onclick="openMissions('${act.name}', '${act.code}')">
+                <div class="swiper-slide" onclick="openMissions('${act.name}', '${act.code}')">
                     <div class="token-badge">${act.tk}</div>
                     <div class="activity-icon"><i class="fas ${act.icon}" style="color:${mode === 'season' ? 'var(--season-color)' : 'var(--accent-gold)'}"></i></div>
                     <div class="activity-name">${act.name}</div>
@@ -196,73 +194,42 @@
             
             if (currentSwiper) currentSwiper.destroy();
             currentSwiper = new Swiper('.swiper', { 
-                effect: 'coverflow',
-                centeredSlides: true,
-                slidesPerView: 'auto',
+                effect: 'coverflow', centeredSlides: true, slidesPerView: 'auto',
                 coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
             });
         }
 
-function openMissions(actName, actCode) {
-    const layer = document.getElementById('missions-layer');
-    const container = document.getElementById('missionContainer');
-    
-    // التأكد من تنظيف الحاوية قبل بناء الدوائر الجديدة
-    container.innerHTML = ''; 
-    layer.style.display = 'flex';
-    document.getElementById('backBtn').style.display = 'block';
+        function openMissions(actName, actCode) {
+            const layer = document.getElementById('missions-layer');
+            const container = document.getElementById('missionContainer');
+            container.innerHTML = ''; 
+            layer.style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
 
-    // جلب عدد المهام المكتملة لهذا النشاط تحديداً من الـ LocalStorage
-    const savedData = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-    const completedCount = (savedData.progress && savedData.progress[actCode]) ? parseInt(savedData.progress[actCode]) : 0;
+            const savedData = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+            const completedCount = (savedData.progress && savedData.progress[actCode]) ? parseInt(savedData.progress[actCode]) : 0;
 
-    // بناء الـ 10 مهام لكل كارت
-    for (let i = 1; i <= 10; i++) {
-        const angle = (i * 36) * (Math.PI / 180);
-        const radius = window.innerWidth < 768 ? 120 : 150;
-        const x = Math.cos(angle) * radius; 
-        const y = Math.sin(angle) * radius;
-        
-        const bubble = document.createElement('div');
-        bubble.className = 'mission-bubble';
-        
-        // لو الطالب خلص المهمة دي قبل كدة، لونها يتغير للأخضر
-        if (i <= completedCount) {
-            bubble.classList.add('completed');
+            for (let i = 1; i <= 10; i++) {
+                const angle = (i * 36) * (Math.PI / 180);
+                const radius = window.innerWidth < 768 ? 120 : 150;
+                const x = Math.cos(angle) * radius; 
+                const y = Math.sin(angle) * radius;
+                
+                const bubble = document.createElement('div');
+                bubble.className = 'mission-bubble';
+                if (i <= completedCount) bubble.classList.add('completed');
+                bubble.innerText = 'T' + i;
+                bubble.style.transform = `translate(${x}px, ${y}px)`;
+                
+                // الربط الصارم بالصفحة الهجينة
+                bubble.onclick = function(e) {
+                    e.stopPropagation();
+                    window.location.href = `Hybrid.html?act=${actCode}&m=${i}&name=${encodeURIComponent(actName)}`;
+                };
+                container.appendChild(bubble);
+            }
         }
-        
-        bubble.innerText = 'T' + i;
-        bubble.style.transform = `translate(${x}px, ${y}px)`;
-        
-        // --- الربط الصارم والكامل للبيانات ---
-        // نستخدم طريقة setAttribute لضمان تخزين البيانات داخل الدائرة نفسها
-        bubble.setAttribute('data-act', actCode);
-        bubble.setAttribute('data-mission', i);
-        bubble.setAttribute('data-name', actName);
 
-        bubble.onclick = function(e) {
-            e.stopPropagation();
-            
-            // استخراج البيانات من الدائرة المرفوعة حالياً
-            const finalAct = this.getAttribute('data-act');
-            const finalMiss = this.getAttribute('data-mission');
-            const finalName = encodeURIComponent(this.getAttribute('data-name'));
-
-            // إرسال البيانات الثلاثة الأساسية لصفحة Hybrid
-            // act: الكود (مثل GESX)
-            // m: رقم المهمة (مثل 5)
-            // name: اسم النشاط (مثل Golden Ear X)
-            const destination = `Hybrid.html?act=${finalAct}&m=${finalMiss}&name=${finalName}`;
-            
-            console.log("Navigating to:", destination); // للتدقيق في الـ Console
-            window.location.href = destination;
-        };
-
-        container.appendChild(bubble);
-    }
-}
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        
         async function verifyCode() {
             const email = document.getElementById('agentEmail').value.trim();
             const code = document.getElementById('agentCode').value.trim();
@@ -279,12 +246,9 @@ function openMissions(actName, actCode) {
                     localStorage.setItem('eyc_agent_data', JSON.stringify(data));
                 } else {
                     document.getElementById('errorLog').innerText = "ACCESS DENIED";
-                    btn.innerText = "INITIALIZE LOGIN"; btn.disabled = false;
+                    btn.innerText = "LOGIN"; btn.disabled = false;
                 }
-            } catch (e) { 
-                document.getElementById('errorLog').innerText = "CONNECTION ERROR"; 
-                btn.disabled = false; 
-            }
+            } catch (e) { alert("Connection Error"); btn.disabled = false; }
         }
 
         function applyAgentData(data) {
@@ -295,25 +259,24 @@ function openMissions(actName, actCode) {
             document.getElementById('profileStack').style.display = 'flex';
             document.getElementById('userScore').innerText = (data.totalScore || 0) + ' TK';
             document.getElementById('userRank').innerText = "#" + (data.rank || "?");
-            
             if(data.image) {
                 let imgUrl = data.image;
-                // دعم الصور المصغرة من جوجل درايف
                 if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
                 document.getElementById('userImg').src = imgUrl;
             }
+            renderActivities('season'); // إعادة الرندر لتحديث التمام (Completed)
         }
 
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         function logout() { localStorage.removeItem('eyc_agent_data'); location.reload(); }
         function resetView() { document.getElementById('missions-layer').style.display = 'none'; document.getElementById('backBtn').style.display = 'none'; }
-        
         function switchMode(mode) {
             document.querySelector('.season-mode').classList.toggle('active', mode === 'season');
             document.querySelector('.xbox-mode').classList.toggle('active', mode === 'xbox');
             renderActivities(mode);
         }
 
-        // Star Animation Logic
+        // Star Animation
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -323,15 +286,13 @@ function openMissions(actName, actCode) {
             draw() { this.y += this.speed; if(this.y > canvas.height) this.y = 0; ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill(); }
         }
         function animate() { ctx.clearRect(0,0,canvas.width, canvas.height); stars.forEach(s => s.draw()); requestAnimationFrame(animate); }
-        
         window.addEventListener('resize', initCanvas);
-        initCanvas(); 
-        for(let i=0; i<100; i++) stars.push(new Star()); 
-        animate();
-        renderActivities('season');
-
+        initCanvas(); for(let i=0; i<100; i++) stars.push(new Star()); animate();
+        
+        // التحقق من الجلسة
         const saved = localStorage.getItem('eyc_agent_data');
         if(saved) applyAgentData(JSON.parse(saved));
+        else renderActivities('season');
     </script>
 </body>
 </html>

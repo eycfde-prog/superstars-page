@@ -31,7 +31,6 @@
             color: #000;
             box-shadow: 0 0 10px #00ff88;
         }
-        /* تأمين ظهور الصورة بشكل دائري ومنظم */
         #studentImg {
             width: 100%;
             height: 100%;
@@ -111,34 +110,32 @@
 
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3op9pG04lJRus25B0437TdK2hjq_9XVnPLg1CtVoEqwcQXla6MIxBJ5WtosyLb6xZZw/exec";
 
-    // 1. فحص نوع النشاط
+    // المنطق الجديد: استخراج الكود الأساسي (بدون حرف X وبدون أرقام)
+    // هذا الكود يستخدم لجلب اللوجو والدليل (Guide)
+    const baseCode = actCode.replace('X', '').replace(/[0-9]/g, '');
+
+    // 1. فحص نوع النشاط (Elite X vs Normal)
     const isElite = actCode.includes('X');
 
-    // 2. تحديث واجهة النشاط واللوجو
+    // 2. تحديث الواجهة واللوجو من المسار الجديد: assets/MIF/AL/
     document.getElementById('actNameDisplay').innerText = actName;
     document.getElementById('actCodeDisplay').innerText = actCode;
     document.getElementById('missionNum').innerText = 'M ' + mNum;
     
-    const cleanLogoCode = actCode.replace(/[0-9]/g, '').replace('X', '');
-    document.getElementById('activityLogo').src = `assets/AL/${cleanLogoCode}.png`;
+    // ربط اللوجو بملف الكود الأساسي داخل مجلد AL
+    document.getElementById('activityLogo').src = `assets/MIF/AL/${baseCode}.png`;
 
     if(isElite) {
         document.getElementById('difficultyBar').style.display = 'flex';
         document.getElementById('guideText').innerHTML = "هاي يا بطل! أنا <strong>Glassy</strong>. اختار مستوى واحد وجاوب عليه.";
     }
 
-    // 3. جلب بيانات الطالب فوراً (حل مشكلة الصورة)
+    // 3. جلب بيانات الطالب
     function loadAgentData() {
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+        if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0].toUpperCase();
+        if(saved.totalScore !== undefined) document.getElementById('currentTokens').innerText = saved.totalScore + ' TK';
         
-        if(saved.name) {
-            document.getElementById('agentName').innerText = saved.name.split(' ')[0].toUpperCase();
-        }
-        if(saved.totalScore !== undefined) {
-            document.getElementById('currentTokens').innerText = saved.totalScore + ' TK';
-        }
-        
-        // معالجة صورة الطالب
         const imgElement = document.getElementById('studentImg');
         if(saved.image) {
             let imgUrl = saved.image;
@@ -148,11 +145,11 @@
             }
             imgElement.src = imgUrl;
         } else {
-            imgElement.src = 'assets/Student.png'; // الصورة الافتراضية في حال عدم وجود صورة
+            imgElement.src = 'assets/Student.png';
         }
     }
 
-    // 4. دالة تحميل الملفات داخل الـ Iframe
+    // 4. تحميل النشاط (MIF)
     function initMission(level = 'A') {
         currentLevel = level;
         let fileName = isElite 
@@ -167,26 +164,25 @@
         initMission(lv);
     }
 
-    // التنفيذ عند فتح الصفحة
-    window.onload = () => {
-        loadAgentData();
-        initMission(); 
-    };
-
+    // 5. التحكم في الدليل (Guide) من المسار: assets/MIF/Guides/
     function toggleGuide(show) {
         if(show) {
-            const baseCode = actCode.replace(/[0-9]/g, '').replace('X', '');
+            // استدعاء ملف الدليل بناءً على الكود الأساسي للنشاط
             document.getElementById('guideFrame').src = `assets/MIF/Guides/${baseCode}.html`;
         }
         document.getElementById('guideModal').style.display = show ? 'block' : 'none';
     }
 
+    window.onload = () => {
+        loadAgentData();
+        initMission(); 
+    };
+
     async function submitMission() {
         const submitBtn = document.querySelector('.submit-btn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-        const iframe = document.getElementById('mainIframe');
-        const iframeWindow = iframe.contentWindow;
-        const iframeDoc = iframe.contentDocument || iframeWindow.document;
+        const iframeWindow = document.getElementById('mainIframe').contentWindow;
+        const iframeDoc = document.getElementById('mainIframe').contentDocument || iframeWindow.document;
         
         let finalAnswer = "";
 
@@ -195,9 +191,7 @@
         } else {
             const allInputs = iframeDoc.querySelectorAll('input[type="text"]');
             let combined = [];
-            allInputs.forEach(input => {
-                if(input.value.trim() !== "") combined.push(input.value.trim());
-            });
+            allInputs.forEach(input => { if(input.value.trim() !== "") combined.push(input.value.trim()); });
             finalAnswer = combined.join(" ");
         }
 
@@ -221,10 +215,8 @@
                     answer: finalAnswer
                 })
             });
-
             alert(`عاش يا بطل! تم تسجيل المهمة بنجاح.`);
             window.location.href = 'MC.html';
-
         } catch (error) {
             alert("حدث خطأ في الاتصال، حاول مرة أخرى.");
             submitBtn.innerText = "SUBMIT";

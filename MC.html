@@ -145,7 +145,7 @@
     
     <script>
         // --- CONFIGURATION ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzPcsGNO4X5PNxW-ggo_Q6VblxEv8xd3A0IhimND2Xr6N5jacFOCxdSE6bERJXsVs1jIQ/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBoXNerd7lYTsrjMdwDnQXwB_CZMSuxSM7pT_iZBrkuZxllN1c9IvR-H-k5mxU6aYFIQ/exec";
         
         let currentAgentData = null;
 
@@ -204,23 +204,16 @@ async function verifyCode() {
 
     btn.innerText = "INITIALIZING...";
     btn.disabled = true;
-    errorLog.innerText = "";
 
-    // Adding a timestamp cache-buster ensures you get fresh data
+    // الرابط الصحيح مع الكاش باستر
     const finalUrl = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&t=${Date.now()}`;
 
     try {
-        const response = await fetch(finalUrl, {
-            method: 'GET',
-            mode: 'cors', // Crucial for cross-domain requests
-        });
-
-        if (!response.ok) throw new Error('Network response was not ok');
-
+        // نستخدم fetch بدون وضع headers معقدة لأن Google Script لا يقبل CORS التقليدي بسهولة
+        const response = await fetch(finalUrl);
         const data = await response.json();
 
         if(data.status === "success") {
-            currentAgentData = data;
             applyAgentData(data);
             document.getElementById('loginModal').style.display = 'none';
             localStorage.setItem('eyc_agent_data', JSON.stringify(data));
@@ -231,12 +224,11 @@ async function verifyCode() {
         }
     } catch (e) {
         console.error("Fetch Error:", e);
-        errorLog.innerText = "CONNECTION ERROR: Check script deployment or permissions.";
+        errorLog.innerText = "CONNECTION ERROR: Check Deployment or Internet.";
         btn.innerText = "INITIALIZE LOGIN";
         btn.disabled = false;
     }
 }
-
         function applyAgentData(data) {
             currentAgentData = data;
             document.getElementById('loginTriggerBtn').style.display = 'none';

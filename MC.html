@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Activity Hub | Hybrid Navigator</title>
+    <title>EYC Activity Hub | Professional Edition</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -43,7 +43,7 @@
         .p-bubble { border-radius: 50%; border: 2px solid var(--accent-gold); backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; }
         .p-avatar { width: 65px; height: 65px; overflow: hidden; border-width: 3px; position: relative; }
         .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .p-score { width: 45px; height: 45px; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; color: var(--accent-gold); }
+        .p-score { width: 45px; height: 45px; font-family: 'Orbitron'; font-size: 11px; font-weight: 900; color: var(--accent-gold); text-align: center; }
         .p-rank { width: 30px; height: 30px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; background: var(--accent-gold); color: #000; }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
@@ -153,14 +153,14 @@
     <button class="back-btn" id="backBtn" onclick="resetView()">BACK TO HELM</button>
 
     <div class="bottom-nav">
-        <div class="nav-btn" onclick="location.reload()"><i class="fas fa-home"></i></div>
+        <div class="nav-btn" onclick="EYCSSP.html"><i class="fas fa-home"></i></div>
         <div class="nav-btn" id="logoutBtn" style="border-color: var(--xbox-color); color: var(--xbox-color);" onclick="logout()"><i class="fas fa-power-off"></i></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec"; 
         let currentAgentData = null;
 
         const activities = {
@@ -203,7 +203,6 @@
             });
         }
 
-        // دالة فتح المهام مع الربط بالصفحة الهجينة الموحدة
         function openMissions(actName, actCode) {
             const layer = document.getElementById('missions-layer');
             const container = document.getElementById('missionContainer');
@@ -226,9 +225,10 @@
                 bubble.innerText = 'T' + i;
                 bubble.style.transform = `translate(${x}px, ${y}px)`;
                 
+                // --- الربط الصايع بصفحة Hybrid.html ---
                 bubble.onclick = (e) => {
                     e.stopPropagation();
-                    // التوجيه لصفحة Hybrid.html الموحدة وإرسال البيانات
+                    // التوجه للصفحة الموحدة مع إرسال الكود ورقم المهمة واسم النشاط
                     window.location.href = `Hybrid.html?act=${actCode}&m=${i}&name=${encodeURIComponent(actName)}`;
                 };
                 container.appendChild(bubble);
@@ -264,16 +264,15 @@
         function applyAgentData(data) {
             currentAgentData = data;
             document.getElementById('loginTriggerBtn').style.display = 'none';
-            // عرض الاسم الأول فقط
-            document.getElementById('userName').innerText = data.name ? data.name.split(' ')[0] : 'AGENT';
+            document.getElementById('userName').innerText = data.name.split(' ')[0];
             document.getElementById('userName').style.display = 'block';
             document.getElementById('profileStack').style.display = 'flex';
             document.getElementById('userScore').innerText = (data.totalScore || 0) + ' TK';
             document.getElementById('userRank').innerText = "#" + (data.rank || "?");
             
-            // تحويل رابط الصورة لرابط مصغر لو كان من جوجل درايف
             if(data.image) {
                 let imgUrl = data.image;
+                // دعم الصور المصغرة من جوجل درايف
                 if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
                 document.getElementById('userImg').src = imgUrl;
             }
@@ -288,7 +287,7 @@
             renderActivities(mode);
         }
 
-        // خلفية النجوم المتحركة
+        // Star Animation Logic
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];

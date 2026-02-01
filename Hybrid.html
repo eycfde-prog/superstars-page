@@ -12,6 +12,22 @@
         .diff-btn { padding: 8px 15px; border: 1px solid #00ff88; color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: 0.3s; background: transparent; border-radius: 5px; }
         .diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
         #studentImg { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
+        /* تصميم حالة الإتمام DONE */
+        .done-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(192, 192, 192, 0.9);
+            z-index: 10;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+        }
+        .done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
+        .done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #333; font-weight: 900; }
+        .activity-content-frame { position: relative; }
     </style>
 </head>
 <body>
@@ -43,12 +59,16 @@
         </div>
 
         <div class="activity-content-frame">
+            <div id="doneOverlay" class="done-overlay">
+                <i class="fas fa-check-circle"></i>
+                <span>DONE</span>
+            </div>
             <iframe id="mainIframe" src="" class="activity-iframe"></iframe>
         </div>
 
         <div class="action-container">
             <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
-            <button class="submit-btn" onclick="submitMission()">SUBMIT</button>
+            <button class="submit-btn" id="submitBtn" onclick="submitMission()">SUBMIT</button>
             <a href="MC.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
@@ -65,7 +85,6 @@
     </div>
 
     <script src="CC.js"></script>
-    
     <script>
     const urlParams = new URLSearchParams(window.location.search);
     const actCode = urlParams.get('act') || 'GES'; 
@@ -73,21 +92,12 @@
     const actName = urlParams.get('name') || 'Activity'; 
     let currentLevel = 'A';
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3op9pG04lJRus25B0437TdK2hjq_9XVnPLg1CtVoEqwcQXla6MIxBJ5WtosyLb6xZZw/exec";
+    // رابط Apps Script الخاص بشيت الـ Answers
+    const SCRIPT_URL = "ضع_هنا_رابط_السكريبت_الجديد";
 
     const activitiesData = {
-        season: [
-            { code: 'GES', tk: '5TK' }, { code: 'AS', tk: '5TK' },
-            { code: 'SS', tk: '5TK' }, { code: 'GS', tk: '5TK' },
-            { code: 'LS', tk: '5TK' }, { code: 'VS', tk: '5TK' }
-        ],
-        xbox: [
-            { code: 'GEX', tk: '5TK' }, { code: 'AX', tk: '5TK' },
-            { code: 'SX', tk: '5TK' }, { code: 'GX', tk: '5TK' },
-            { code: 'LX', tk: '5TK' }, { code: 'VX', tk: '5TK' },
-            { code: 'FX', tk: '5TK' }, { code: 'DX', tk: '10+TK' },
-            { code: 'SSSX', tk: '10+TK' }, { code: 'ELX', tk: '10+TK' }
-        ]
+        season: [{ code: 'GES', tk: '5TK' }, { code: 'AS', tk: '5TK' }, { code: 'SS', tk: '5TK' }, { code: 'GS', tk: '5TK' }, { code: 'LS', tk: '5TK' }, { code: 'VS', tk: '5TK' }],
+        xbox: [{ code: 'GEX', tk: '5TK' }, { code: 'AX', tk: '5TK' }, { code: 'SX', tk: '5TK' }, { code: 'GX', tk: '5TK' }, { code: 'LX', tk: '5TK' }, { code: 'VX', tk: '5TK' }, { code: 'FX', tk: '5TK' }, { code: 'DX', tk: '10+TK' }, { code: 'SSSX', tk: '10+TK' }, { code: 'ELX', tk: '10+TK' }]
     };
 
     const isElite = actCode.endsWith('X');
@@ -99,6 +109,30 @@
     if(isElite) {
         document.getElementById('difficultyBar').style.display = 'flex';
         document.getElementById('guideText').innerHTML = "هاي يا بطل! أنا <strong>Glassy</strong>. اختار مستوى واحد وجاوب عليه.";
+    }
+
+    async function checkMissionStatus() {
+        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+        const email = saved.email;
+        
+        // التحقق أولاً من شيت Answers
+        try {
+            const res = await fetch(`${SCRIPT_URL}?email=${email}&activity=${actCode}`);
+            const data = await res.json();
+            
+            if (data.completed && data.completed.includes(mNum.toString())) {
+                showDoneState();
+            }
+        } catch (e) { console.log("Offline or error checking status"); }
+    }
+
+    function showDoneState() {
+        document.getElementById('doneOverlay').style.display = 'flex';
+        document.getElementById('mainIframe').style.opacity = '0.3';
+        const sBtn = document.getElementById('submitBtn');
+        sBtn.disabled = true;
+        sBtn.innerText = "COMPLETED";
+        sBtn.style.background = "#95a5a6";
     }
 
     function getActivityTokens(code) {
@@ -126,6 +160,7 @@
         currentLevel = level;
         let fileName = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
         document.getElementById('mainIframe').src = fileName;
+        checkMissionStatus(); // فحص الحالة عند كل تغيير مستوى
     }
 
     function changeLevel(lv, btn) {
@@ -142,7 +177,7 @@
     }
 
     async function submitMission() {
-        const submitBtn = document.querySelector('.submit-btn');
+        const submitBtn = document.getElementById('submitBtn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         const iframe = document.getElementById('mainIframe');
         const iframeWindow = iframe.contentWindow;
@@ -165,14 +200,11 @@
         submitBtn.innerText = "SENDING...";
         submitBtn.disabled = true;
 
-        // --- عملية التصحيح من ملف CC.js ---
         const evaluation = evaluateMission(actCode, mNum, (isElite ? currentLevel : 'A'), studentAnswer);
 
         try {
-            // إرسال البيانات لجوجل سكريبت (للتخزين فقط)
-            await fetch(SCRIPT_URL, {
+            const response = await fetch(SCRIPT_URL, {
                 method: "POST",
-                mode: 'no-cors',
                 body: JSON.stringify({
                     email: saved.email || "test@eyc.com",
                     activity: actCode,
@@ -184,16 +216,13 @@
                 })
             });
 
-            if(evaluation.correct) {
-                alert(`عاش يا بطل! إجابة صحيحة. حصلت على ${evaluation.points} نقطة.`);
-            } else {
-                alert(`تم تسجيل إجابتك. حاول تركز أكتر المرة الجاية!`);
-            }
-            window.location.href = 'MC.html';
+            const result = await response.json();
+            alert(evaluation.correct ? `أحسنت! نقاطك: ${evaluation.points}` : "تم التسجيل، راجع إجابتك لاحقاً.");
+            showDoneState(); // تفعيل حالة الإتمام فوراً بعد الإرسال الناجح
 
         } catch (error) {
             alert("تم تسجيل المهمة بنجاح!");
-            window.location.href = 'MC.html';
+            showDoneState();
         }
     }
     </script>

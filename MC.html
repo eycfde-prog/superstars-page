@@ -145,7 +145,7 @@
     
     <script>
         // --- CONFIGURATION ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmUgtR7IX4Z_GdUdCtni7cTD7ZpgMIaLZBhgKSkLAmOCJgUa13QUJX1DnVeOP62kBd-A/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec";
         
         let currentAgentData = null;
 
@@ -205,12 +205,16 @@ async function verifyCode() {
     btn.innerText = "INITIALIZING...";
     btn.disabled = true;
 
-    // الرابط الصحيح مع الكاش باستر
+    // إضافة redirect: 'follow' لضمان تتبع رابط جوجل بعد المعالجة
     const finalUrl = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&t=${Date.now()}`;
 
     try {
-        // نستخدم fetch بدون وضع headers معقدة لأن Google Script لا يقبل CORS التقليدي بسهولة
-        const response = await fetch(finalUrl);
+        const response = await fetch(finalUrl, {
+            method: 'GET',
+            mode: 'cors', // تأكد من وجودها
+            redirect: 'follow' 
+        });
+        
         const data = await response.json();
 
         if(data.status === "success") {

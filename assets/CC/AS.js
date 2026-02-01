@@ -4,7 +4,7 @@
  */
 
 const ALIKE_ANSWERS_KEY = {
-    "1": ["to", "too", "son", "sun", "here", "hear", "sea", "see", "no", "know", "two", "too", "for", "four", "i", "eye", "be", "bee", "by", "buy"],
+    "1": ["to", "too", "son", "sun", "here", "hear", "sea", "see", "no", "know", "two", "too"],
     "2": ["week", "weak", "hour", "our", "eight", "ate", "new", "knew", "road", "rode", "write", "right", "blue", "blew", "meat", "meet", "one", "won", "hair", "hare"],
     "3": ["flour", "flower", "peace", "piece", "knight", "night", "aloud", "allowed", "rock", "role", "court", "place", "sun", "son", "bored", "board", "tail", "tale", "deer", "dear"],
     "4": ["threw", "through", "main", "mane", "steel", "steal", "root", "route", "outcast", "aloud", "sailor", "sail", "whole", "hole", "son", "sun", "weather", "whether", "berry", "bury"],

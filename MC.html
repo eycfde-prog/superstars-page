@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Activity Hub | Professional Edition</title>
+    <title>EYC Activity Hub | Hybrid Navigator</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -160,7 +160,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec"; // ضع رابط الـ Apps Script هنا
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec";
         let currentAgentData = null;
 
         const activities = {
@@ -203,6 +203,7 @@
             });
         }
 
+        // دالة فتح المهام مع الربط بالصفحة الهجينة الموحدة
         function openMissions(actName, actCode) {
             const layer = document.getElementById('missions-layer');
             const container = document.getElementById('missionContainer');
@@ -227,8 +228,8 @@
                 
                 bubble.onclick = (e) => {
                     e.stopPropagation();
-                    // الانتقال لصفحة المهمة مع إرسال البيانات
-                    window.location.href = `MissionNormal.html?act=${actCode}&m=${i}&name=${encodeURIComponent(actName)}`;
+                    // التوجيه لصفحة Hybrid.html الموحدة وإرسال البيانات
+                    window.location.href = `Hybrid.html?act=${actCode}&m=${i}&name=${encodeURIComponent(actName)}`;
                 };
                 container.appendChild(bubble);
             }
@@ -263,12 +264,19 @@
         function applyAgentData(data) {
             currentAgentData = data;
             document.getElementById('loginTriggerBtn').style.display = 'none';
-            document.getElementById('userName').innerText = data.name;
+            // عرض الاسم الأول فقط
+            document.getElementById('userName').innerText = data.name ? data.name.split(' ')[0] : 'AGENT';
             document.getElementById('userName').style.display = 'block';
             document.getElementById('profileStack').style.display = 'flex';
-            document.getElementById('userScore').innerText = data.totalScore || 0;
+            document.getElementById('userScore').innerText = (data.totalScore || 0) + ' TK';
             document.getElementById('userRank').innerText = "#" + (data.rank || "?");
-            if(data.image) document.getElementById('userImg').src = data.image;
+            
+            // تحويل رابط الصورة لرابط مصغر لو كان من جوجل درايف
+            if(data.image) {
+                let imgUrl = data.image;
+                if(imgUrl.includes('id=')) imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${imgUrl.split('id=')[1]}`;
+                document.getElementById('userImg').src = imgUrl;
+            }
         }
 
         function logout() { localStorage.removeItem('eyc_agent_data'); location.reload(); }
@@ -280,7 +288,7 @@
             renderActivities(mode);
         }
 
-        // Star Animation Logic
+        // خلفية النجوم المتحركة
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];

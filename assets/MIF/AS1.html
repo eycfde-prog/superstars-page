@@ -36,7 +36,8 @@
         {m1:"ابن", m2:"شمس", a1:"son", a2:"sun"}, 
         {m1:"هنا", m2:"يسمع", a1:"here", a2:"hear"}, 
         {m1:"بحر", m2:"يرى", a1:"sea", a2:"see"}, 
-        {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}, 
+        {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}, 
+
     ];
 
     window.onload = () => { renderActivity(); };
@@ -60,20 +61,39 @@
         `).join('');
     }
 
+    <script>
+    // ... الكود السابق لـ renderActivity ...
+
+    // توحيد الدالة لتكون قابلة للاستدعاء من الصفحة الأم
     window.checkAnswers = function() {
         let score = 0;
+        let studentResponses = [];
         const inputs = document.querySelectorAll('.task-input');
+        
         inputs.forEach(input => {
-            if (input.value.trim().toLowerCase() === input.getAttribute('data-answer').toLowerCase()) {
+            const val = input.value.trim();
+            const correctVal = input.getAttribute('data-answer');
+            studentResponses.push(val); // جمع الإجابات للنص المرسل
+
+            if (val.toLowerCase() === correctVal.toLowerCase()) {
                 score++;
                 input.style.borderColor = "#00ffa3";
             } else {
                 input.style.borderColor = "#ff3131";
             }
         });
-        // إرجاع النتيجة لاستخدامها في الربط مع Apps Script لاحقاً
-        return { points: score, total: inputs.length };
+
+        // "جائزة الترضية": الطالب لا يأخذ 0 أبداً، أقل درجة هي 1
+        let finalPoints = score === 0 ? 1 : score;
+
+        return { 
+            points: finalPoints, 
+            total: inputs.length,
+            answerText: studentResponses.join(", "),
+            isCorrect: score > 0 
+        };
     };
 </script>
 </body>
 </html>
+

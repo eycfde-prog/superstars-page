@@ -30,18 +30,18 @@
     <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v9.6</footer>
 
 <script>
-    // بيانات المهمة - (تم إصلاح الهيكل هنا)
+    // 1. بيانات المهمة
     const currentTask = [
         {m1:"إلى", m2:"أيضاً", a1:"to", a2:"too"}, 
         {m1:"ابن", m2:"شمس", a1:"son", a2:"sun"}, 
         {m1:"هنا", m2:"يسمع", a1:"here", a2:"hear"}, 
         {m1:"بحر", m2:"يرى", a1:"sea", a2:"see"}, 
         {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}, 
-
     ];
 
     window.onload = () => { renderActivity(); };
 
+    // 2. دالة بناء واجهة النشاط
     function renderActivity() {
         const wrapper = document.getElementById('activityWrapper');
         wrapper.innerHTML = currentTask.map((pair, index) => `
@@ -61,10 +61,7 @@
         `).join('');
     }
 
-    <script>
-    // ... الكود السابق لـ renderActivity ...
-
-    // توحيد الدالة لتكون قابلة للاستدعاء من الصفحة الأم
+    // 3. دالة التصحيح الموحدة (المستدعاة من الصفحة الأم)
     window.checkAnswers = function() {
         let score = 0;
         let studentResponses = [];
@@ -73,7 +70,7 @@
         inputs.forEach(input => {
             const val = input.value.trim();
             const correctVal = input.getAttribute('data-answer');
-            studentResponses.push(val); // جمع الإجابات للنص المرسل
+            studentResponses.push(val || "EMPTY"); // جمع الإجابات للنص المرسل
 
             if (val.toLowerCase() === correctVal.toLowerCase()) {
                 score++;
@@ -83,8 +80,8 @@
             }
         });
 
-        // "جائزة الترضية": الطالب لا يأخذ 0 أبداً، أقل درجة هي 1
-        let finalPoints = score === 0 ? 1 : score;
+        // "جائزة الترضية": الطالب لا يأخذ 0 أبداً، أقل درجة هي 1 توكن
+        let finalPoints = (score === 0) ? 1 : score;
 
         return { 
             points: finalPoints, 
@@ -96,4 +93,3 @@
 </script>
 </body>
 </html>
-

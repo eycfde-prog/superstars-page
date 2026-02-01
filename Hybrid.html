@@ -13,14 +13,9 @@
         .diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
         #studentImg { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        /* Reward Overlay Container */
         #rewardContainer {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #2b1055, #000);
-            z-index: 9999;
-            cursor: pointer;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #2b1055, #000); z-index: 9999; cursor: pointer;
         }
         .instruction {
             position: absolute; bottom: 50px; color: white; font-size: 18px;
@@ -100,25 +95,22 @@
 
     <script src="CC.js"></script>
     <script>
-    // --- متغيرات الصندوق ---
+    // --- متغيرات الأنيميشن ---
     const canvas = document.getElementById('rewardCanvas');
     const ctx = canvas.getContext('2d');
-    let width, height, prizeValue = "5";
+    let width, height, prizeValue = "1";
     const tokenImg = new Image(); tokenImg.src = 'assets/Token.png'; 
-    let gameState = 'closed', particles = [], tokens = [], prize = null;
+    let gameState = 'closed', tokens = [], prize = null;
 
-    // --- منطق الصفحة الأصلي ---
+    // --- الإعدادات الأساسية ---
     const urlParams = new URLSearchParams(window.location.search);
     const actCode = urlParams.get('act') || 'GES'; 
     const mNum = urlParams.get('m') || '1';  
     const actName = urlParams.get('name') || 'Activity'; 
     let currentLevel = 'A';
+    
+    // !!! استبدل الرابط التالي برابط الـ Web App الخاص بك !!!
     const SCRIPT_URL = "رابط_السكريبت_الخاص_بك";
-
-    const activitiesData = {
-        season: [{ code: 'GES', tk: '5' }, { code: 'AS', tk: '5' }, { code: 'SS', tk: '5' }, { code: 'GS', tk: '5' }, { code: 'LS', tk: '5' }, { code: 'VS', tk: '5' }],
-        xbox: [{ code: 'GEX', tk: '5' }, { code: 'AX', tk: '5' }, { code: 'SX', tk: '5' }, { code: 'GX', tk: '5' }, { code: 'LX', tk: '5' }, { code: 'VX', tk: '5' }, { code: 'FX', tk: '5' }, { code: 'DX', tk: '10' }, { code: 'SSSX', tk: '10' }, { code: 'ELX', tk: '10' }]
-    };
 
     const isElite = actCode.endsWith('X');
     document.getElementById('actNameDisplay').innerText = actName;
@@ -127,29 +119,15 @@
     document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
     if(isElite) document.getElementById('difficultyBar').style.display = 'flex';
 
-    // --- دوال الصندوق (Canvas Logic) ---
-    function resize() {
-        width = window.innerWidth; height = window.innerHeight;
-        canvas.width = width; canvas.height = height;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+    // --- منطق الصندوق (Box Logic) ---
+    function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
+    window.addEventListener('resize', resize); resize();
 
     class Box {
-        constructor() {
-            this.x = width / 2; this.y = height / 2 + 50;
-            this.w = 150; this.h = 150; this.lidY = this.y - 75 - 20;
-            this.shakeOffset = 0; this.lidVelocity = 0; this.lidRotation = 0;
-        }
+        constructor() { this.x = width / 2; this.y = height / 2 + 50; this.w = 150; this.h = 150; this.lidY = this.y - 75 - 20; this.shakeOffset = 0; this.lidVelocity = 0; this.lidRotation = 0; }
         update() {
-            if (gameState === 'closed') {
-                if (Math.random() > 0.95) this.shakeOffset = (Math.random() - 0.5) * 10;
-                else this.shakeOffset *= 0.9;
-            } else if (gameState === 'opening') {
-                this.shakeOffset = 0; this.lidVelocity -= 1.5;
-                this.lidY += this.lidVelocity; this.lidRotation -= 0.05;
-                if (this.lidY < -200) gameState = 'opened';
-            }
+            if (gameState === 'closed') { if (Math.random() > 0.95) this.shakeOffset = (Math.random() - 0.5) * 10; else this.shakeOffset *= 0.9; }
+            else if (gameState === 'opening') { this.shakeOffset = 0; this.lidVelocity -= 1.5; this.lidY += this.lidVelocity; this.lidRotation -= 0.05; if (this.lidY < -200) gameState = 'opened'; }
         }
         draw() {
             ctx.save(); ctx.translate(this.x + this.shakeOffset, this.y);
@@ -162,47 +140,28 @@
             ctx.fillStyle = '#ffd32a'; ctx.fillRect(-15, -20, 30, 40);
             this.drawBow(ctx); ctx.restore();
         }
-        drawBow(ctx) {
-            ctx.fillStyle = '#ffd32a'; ctx.beginPath();
-            ctx.ellipse(-20, -20, 25, 10, -0.5, 0, Math.PI*2);
-            ctx.ellipse(20, -20, 25, 10, 0.5, 0, Math.PI*2);
-            ctx.fill(); ctx.beginPath(); ctx.arc(0, -20, 10, 0, Math.PI*2); ctx.fill();
-        }
+        drawBow(ctx) { ctx.fillStyle = '#ffd32a'; ctx.beginPath(); ctx.ellipse(-20, -20, 25, 10, -0.5, 0, Math.PI*2); ctx.ellipse(20, -20, 25, 10, 0.5, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(0, -20, 10, 0, Math.PI*2); ctx.fill(); }
     }
 
     class Coupon {
         constructor(x, y) { this.x = x; this.y = y; this.targetY = y - 180; this.scale = 0; }
-        update() { 
-            this.y += (this.targetY - this.y) * 0.05; 
-            if (this.scale < 1) this.scale += 0.05; 
-        }
+        update() { this.y += (this.targetY - this.y) * 0.05; if (this.scale < 1) this.scale += 0.05; }
         draw() {
             ctx.save(); ctx.translate(this.x, this.y); ctx.scale(this.scale, this.scale);
-            ctx.fillStyle = '#ffffff'; ctx.shadowColor = 'rgba(255, 211, 42, 0.5)'; ctx.shadowBlur = 20;
-            ctx.fillRect(-100, -60, 200, 120);
-            ctx.shadowBlur = 0; ctx.strokeStyle = '#ff4757'; ctx.setLineDash([5, 5]); ctx.strokeRect(-90, -50, 180, 100);
-            ctx.fillStyle = '#ff4757'; ctx.font = 'bold 45px Orbitron'; ctx.textAlign = 'center';
-            ctx.fillText('+' + prizeValue + ' TK', 0, 10);
+            ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 20; ctx.shadowColor = '#ffd32a'; ctx.fillRect(-100, -60, 200, 120);
+            ctx.fillStyle = '#ff4757'; ctx.font = 'bold 45px Orbitron'; ctx.textAlign = 'center'; ctx.fillText('+' + prizeValue + ' TK', 0, 10);
             ctx.fillStyle = '#333'; ctx.font = 'bold 20px Arial'; ctx.fillText('EXCELLENT!', 0, 40);
             ctx.restore();
         }
     }
 
     class Token {
-        constructor(x, y) {
-            this.x = x; this.y = y; this.size = 40;
-            this.vx = (Math.random() - 0.5) * 15; this.vy = (Math.random() - 1) * 15 - 10;
-            this.gravity = 0.4; this.rotation = Math.random() * Math.PI*2;
-        }
+        constructor(x, y) { this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * 15; this.vy = (Math.random() - 1) * 15 - 10; this.gravity = 0.4; this.rotation = Math.random() * Math.PI*2; }
         update() { this.vy += this.gravity; this.x += this.vx; this.y += this.vy; this.rotation += 0.1; }
-        draw() {
-            ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
-            ctx.drawImage(tokenImg, -20, -20, 40, 40); ctx.restore();
-        }
+        draw() { ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation); ctx.drawImage(tokenImg, -20, -20, 40, 40); ctx.restore(); }
     }
 
     const box = new Box();
-
     function animate() {
         if (document.getElementById('rewardContainer').style.display === 'block') {
             ctx.clearRect(0, 0, width, height);
@@ -214,83 +173,90 @@
     }
 
     canvas.addEventListener('mousedown', () => {
-        if (gameState !== 'closed') {
-            if (gameState === 'opened') window.location.href = 'MC.html';
-            return;
+        if (gameState === 'opened') window.location.href = 'MC.html';
+        else if (gameState === 'closed') {
+            gameState = 'opening';
+            prize = new Coupon(width / 2, height / 2 + 50);
+            for (let i = 0; i < 8; i++) tokens.push(new Token(width / 2, height / 2));
+            document.querySelector('.instruction').innerText = "رائع! اضغط مرة أخرى للعودة";
         }
-        gameState = 'opening';
-        prize = new Coupon(width / 2, height / 2 + 50);
-        for (let i = 0; i < 5; i++) tokens.push(new Token(width / 2, height / 2));
-        document.querySelector('.instruction').innerText = "رائع! اضغط مرة أخرى للعودة";
     });
 
-    // --- دالة الإرسال المعدلة ---
+    // --- الوظائف الأساسية المعدلة ---
+
+    async function initMission(level = 'A') {
+        currentLevel = level;
+        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+        const iframe = document.getElementById('mainIframe');
+        const overlay = document.getElementById('doneOverlay');
+
+        // تحميل صورة الطالب وبياناته
+        document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
+        document.getElementById('studentImg').src = saved.image || 'assets/Student.png';
+
+        // 1. التحقق: هل المهمة منجزة؟ (من CC.js)
+        const isDone = await checkMissionStatus(saved.email, actCode, mNum, SCRIPT_URL);
+        
+        if (isDone) {
+            overlay.style.display = 'flex';
+            iframe.style.opacity = '0.3';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').style.opacity = '0.5';
+        } else {
+            overlay.style.display = 'none';
+            iframe.style.opacity = '1';
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').style.opacity = '1';
+            iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
+        }
+    }
+
     async function submitMission() {
         const submitBtn = document.getElementById('submitBtn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         const iframe = document.getElementById('mainIframe');
-        
-        let studentAnswer = "";
-        if (typeof iframe.contentWindow.getAnswer === "function") {
-            studentAnswer = iframe.contentWindow.getAnswer();
-        } else {
-            const allInputs = (iframe.contentDocument || iframe.contentWindow.document).querySelectorAll('input[type="text"]');
-            let combined = [];
-            allInputs.forEach(input => { if(input.value.trim() !== "") combined.push(input.value.trim()); });
-            studentAnswer = combined.join(" ");
-        }
-
-        if (!studentAnswer) { alert("اكتب إجابتك أولاً!"); return; }
 
         submitBtn.innerText = "EVALUATING...";
         submitBtn.disabled = true;
 
-        const evaluation = evaluateMission(actCode, mNum, (isElite ? currentLevel : 'A'), studentAnswer);
+        // 2. التصحيح (من CC.js)
+        const evaluation = await evaluateMission(iframe);
         prizeValue = evaluation.points;
 
-        // إرسال البيانات لجوجل
+        // 3. إرسال البيانات لجوجل شيت
+        const payload = {
+            email: saved.email,
+            activity: actCode,
+            mission: mNum,
+            level: isElite ? currentLevel : 'A',
+            answer: evaluation.answerText,
+            points: evaluation.points,
+            isCorrect: evaluation.isCorrect
+        };
+
         fetch(SCRIPT_URL, {
             method: "POST",
             mode: 'no-cors',
-            body: JSON.stringify({
-                email: saved.email,
-                activity: actCode,
-                mission: mNum,
-                points: evaluation.points,
-                isCorrect: evaluation.correct
-            })
+            body: JSON.stringify(payload)
         });
 
-        if (evaluation.correct) {
-            document.getElementById('rewardContainer').style.display = 'block';
-            animate();
-        } else {
-            alert("تم تسجيل المهمة، حاول مجدداً لاحقاً!");
-            window.location.href = 'MC.html';
-        }
+        // 4. عرض الأنيميشن
+        document.getElementById('rewardContainer').style.display = 'block';
+        animate();
     }
 
-    // استكمال دوال loadAgentData و initMission كما هي...
-    function loadAgentData() {
-        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-        if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0].toUpperCase();
-        const allActs = [...activitiesData.season, ...activitiesData.xbox];
-        const found = allActs.find(a => a.code === actCode);
-        document.getElementById('currentTokens').innerText = (found ? found.tk : '0') + ' TK';
-        const imgElement = document.getElementById('studentImg');
-        imgElement.src = saved.image || 'assets/Student.png';
+    function changeLevel(level, btn) {
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        initMission(level);
     }
 
-    function initMission(level = 'A') {
-        currentLevel = level;
-        document.getElementById('mainIframe').src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
-    }
-
-    window.onload = () => { loadAgentData(); initMission(); };
     function toggleGuide(show) {
         if(show) document.getElementById('guideFrame').src = `assets/MIF/Guides/${actCode}.html`;
         document.getElementById('guideModal').style.display = show ? 'block' : 'none';
     }
+
+    window.onload = () => { initMission(); };
     </script>
 </body>
 </html>

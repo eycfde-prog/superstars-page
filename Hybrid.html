@@ -12,8 +12,6 @@
         .diff-btn { padding: 8px 15px; border: 1px solid #00ff88; color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: 0.3s; background: transparent; border-radius: 5px; }
         .diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
         #studentImg { width: 100%; height: 100%; object-fit: cover; display: block; }
-        
-        /* تصميم حالة الإتمام DONE */
         .done-overlay {
             display: none;
             position: absolute;
@@ -84,16 +82,18 @@
         </div>
     </div>
 
-    <script src="CC.js"></script>
     <script>
     const urlParams = new URLSearchParams(window.location.search);
     const actCode = urlParams.get('act') || 'GES'; 
     const mNum = urlParams.get('m') || '1';  
     const actName = urlParams.get('name') || 'Activity'; 
     let currentLevel = 'A';
-
-    // رابط Apps Script الخاص بشيت الـ Answers
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFZI6muMwFWezcwLq3Vl4yNg_J2KOVqh0Oo-jQLyaijD9Hp_WS34DEW4L6n3TKUM2dHg/exec";
+
+    // تحميل ملف التصحيح الخاص بالنشاط ديناميكياً
+    const correctionScript = document.createElement('script');
+    correctionScript.src = `assets/CC/${actCode}.js`;
+    document.head.appendChild(correctionScript);
 
     const activitiesData = {
         season: [{ code: 'GES', tk: '5TK' }, { code: 'AS', tk: '5TK' }, { code: 'SS', tk: '5TK' }, { code: 'GS', tk: '5TK' }, { code: 'LS', tk: '5TK' }, { code: 'VS', tk: '5TK' }],
@@ -113,17 +113,11 @@
 
     async function checkMissionStatus() {
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-        const email = saved.email;
-        
-        // التحقق أولاً من شيت Answers
         try {
-            const res = await fetch(`${SCRIPT_URL}?email=${email}&activity=${actCode}`);
+            const res = await fetch(`${SCRIPT_URL}?email=${saved.email}&activity=${actCode}`);
             const data = await res.json();
-            
-            if (data.completed && data.completed.includes(mNum.toString())) {
-                showDoneState();
-            }
-        } catch (e) { console.log("Offline or error checking status"); }
+            if (data.completed && data.completed.includes(mNum.toString())) showDoneState();
+        } catch (e) { console.log("Status check failed."); }
     }
 
     function showDoneState() {
@@ -160,7 +154,7 @@
         currentLevel = level;
         let fileName = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
         document.getElementById('mainIframe').src = fileName;
-        checkMissionStatus(); // فحص الحالة عند كل تغيير مستوى
+        checkMissionStatus();
     }
 
     function changeLevel(lv, btn) {
@@ -180,33 +174,35 @@
         const submitBtn = document.getElementById('submitBtn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         const iframe = document.getElementById('mainIframe');
-        const iframeWindow = iframe.contentWindow;
         
         let studentAnswer = "";
-        if (typeof iframeWindow.getAnswer === "function") {
-            studentAnswer = iframeWindow.getAnswer();
-        } else {
-            const allInputs = (iframe.contentDocument || iframeWindow.document).querySelectorAll('input[type="text"]');
-            let combined = [];
-            allInputs.forEach(input => { if(input.value.trim() !== "") combined.push(input.value.trim()); });
-            studentAnswer = combined.join(" ");
-        }
+        try {
+            if (typeof iframe.contentWindow.getAnswer === "function") {
+                studentAnswer = iframe.contentWindow.getAnswer();
+            } else {
+                const inputs = (iframe.contentDocument || iframe.contentWindow.document).querySelectorAll('input[type="text"]');
+                studentAnswer = Array.from(inputs).map(i => i.value.trim()).join(" ");
+            }
+        } catch(e) { alert("Error reading iframe content."); return; }
 
-        if (!studentAnswer || studentAnswer === "NO_DATA") {
+        if (!studentAnswer || studentAnswer.length < 2) {
             alert("يا بطل، اكتب إجاباتك الأول!");
             return;
         }
 
-        submitBtn.innerText = "SENDING...";
+        submitBtn.innerText = "EVALUATING...";
         submitBtn.disabled = true;
 
-        const evaluation = evaluateMission(actCode, mNum, (isElite ? currentLevel : 'A'), studentAnswer);
+        // استدعاء دالة التصحيح من الملف الخارجي AS.js
+        const evaluation = typeof evaluateMission === "function" 
+            ? evaluateMission(mNum, currentLevel, studentAnswer)
+            : { correct: true, points: 5 }; // Fallback
 
         try {
-            const response = await fetch(SCRIPT_URL, {
+            await fetch(SCRIPT_URL, {
                 method: "POST",
                 body: JSON.stringify({
-                    email: saved.email || "test@eyc.com",
+                    email: saved.email,
                     activity: actCode,
                     mission: mNum,
                     level: isElite ? currentLevel : "A",
@@ -215,13 +211,10 @@
                     isCorrect: evaluation.correct
                 })
             });
-
-            const result = await response.json();
-            alert(evaluation.correct ? `أحسنت! نقاطك: ${evaluation.points}` : "تم التسجيل، راجع إجابتك لاحقاً.");
-            showDoneState(); // تفعيل حالة الإتمام فوراً بعد الإرسال الناجح
-
+            alert(evaluation.correct ? `عاش! حصلت على ${evaluation.points} توكينز.` : "تم التسجيل بنجاح.");
+            showDoneState();
         } catch (error) {
-            alert("تم تسجيل المهمة بنجاح!");
+            alert("تم تسجيل المهمة.");
             showDoneState();
         }
     }

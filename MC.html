@@ -203,38 +203,64 @@
             });
         }
 
-        function openMissions(actName, actCode) {
-            const layer = document.getElementById('missions-layer');
-            const container = document.getElementById('missionContainer');
-            container.innerHTML = ''; 
-            layer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
+function openMissions(actName, actCode) {
+    const layer = document.getElementById('missions-layer');
+    const container = document.getElementById('missionContainer');
+    
+    // التأكد من تنظيف الحاوية قبل بناء الدوائر الجديدة
+    container.innerHTML = ''; 
+    layer.style.display = 'flex';
+    document.getElementById('backBtn').style.display = 'block';
 
-            const completedCount = (currentAgentData && currentAgentData.progress) ? (currentAgentData.progress[actCode] || 0) : 0;
+    // جلب عدد المهام المكتملة لهذا النشاط تحديداً من الـ LocalStorage
+    const savedData = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+    const completedCount = (savedData.progress && savedData.progress[actCode]) ? parseInt(savedData.progress[actCode]) : 0;
 
-            for (let i = 1; i <= 10; i++) {
-                const angle = (i * 36) * (Math.PI / 180);
-                const radius = window.innerWidth < 768 ? 120 : 150;
-                const x = Math.cos(angle) * radius; 
-                const y = Math.sin(angle) * radius;
-                
-                const bubble = document.createElement('div');
-                bubble.className = 'mission-bubble';
-                if (i <= completedCount) bubble.classList.add('completed');
-                
-                bubble.innerText = 'T' + i;
-                bubble.style.transform = `translate(${x}px, ${y}px)`;
-                
-                // --- الربط الصايع بصفحة Hybrid.html ---
-                bubble.onclick = (e) => {
-                    e.stopPropagation();
-                    // التوجه للصفحة الموحدة مع إرسال الكود ورقم المهمة واسم النشاط
-                    window.location.href = `Hybrid.html?act=${actCode}&m=${i}&name=${encodeURIComponent(actName)}`;
-                };
-                container.appendChild(bubble);
-            }
+    // بناء الـ 10 مهام لكل كارت
+    for (let i = 1; i <= 10; i++) {
+        const angle = (i * 36) * (Math.PI / 180);
+        const radius = window.innerWidth < 768 ? 120 : 150;
+        const x = Math.cos(angle) * radius; 
+        const y = Math.sin(angle) * radius;
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'mission-bubble';
+        
+        // لو الطالب خلص المهمة دي قبل كدة، لونها يتغير للأخضر
+        if (i <= completedCount) {
+            bubble.classList.add('completed');
         }
+        
+        bubble.innerText = 'T' + i;
+        bubble.style.transform = `translate(${x}px, ${y}px)`;
+        
+        // --- الربط الصارم والكامل للبيانات ---
+        // نستخدم طريقة setAttribute لضمان تخزين البيانات داخل الدائرة نفسها
+        bubble.setAttribute('data-act', actCode);
+        bubble.setAttribute('data-mission', i);
+        bubble.setAttribute('data-name', actName);
 
+        bubble.onclick = function(e) {
+            e.stopPropagation();
+            
+            // استخراج البيانات من الدائرة المرفوعة حالياً
+            const finalAct = this.getAttribute('data-act');
+            const finalMiss = this.getAttribute('data-mission');
+            const finalName = encodeURIComponent(this.getAttribute('data-name'));
+
+            // إرسال البيانات الثلاثة الأساسية لصفحة Hybrid
+            // act: الكود (مثل GESX)
+            // m: رقم المهمة (مثل 5)
+            // name: اسم النشاط (مثل Golden Ear X)
+            const destination = `Hybrid.html?act=${finalAct}&m=${finalMiss}&name=${finalName}`;
+            
+            console.log("Navigating to:", destination); // للتدقيق في الـ Console
+            window.location.href = destination;
+        };
+
+        container.appendChild(bubble);
+    }
+}
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         
         async function verifyCode() {

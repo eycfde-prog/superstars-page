@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alike X | EYC Academy Mission</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #fcc200;
+            --xbox-red: #ff3c3c;
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-dark); color: white; overflow-x: hidden; }
+
+        #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
+
+        /* Login Flash */
+        #login-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000;
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+        .login-card {
+            background: var(--glass); border: 1px solid var(--gold); padding: 40px;
+            border-radius: 20px; text-align: center; width: 90%; max-width: 400px;
+        }
+        .login-card input {
+            width: 100%; padding: 12px; margin: 20px 0; background: rgba(255,255,255,0.1);
+            border: 1px solid #444; color: white; border-radius: 10px; text-align: center;
+        }
+
+        /* Header & Status */
+        .rank-header { text-align: center; padding: 25px 0; border-bottom: 1px solid rgba(252,194,0,0.1); }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: 1.5rem; background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 4px; }
+        
+        .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(255,255,255,0.02); }
+        .token-display { font-family: 'Orbitron'; color: var(--gold); font-size: 14px; }
+        .tutorial-btn { background: linear-gradient(45deg, #ff0055, #ff5500); color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 0 15px rgba(255, 0, 85, 0.4); font-family: 'Cairo'; }
+
+        /* Main Mission */
+        .mission-container { max-width: 700px; margin: 20px auto; padding: 0 20px; }
+        
+        /* Level Tabs */
+        .level-tabs { display: flex; gap: 8px; margin-bottom: 25px; }
+        .tab { flex: 1; padding: 10px; text-align: center; background: var(--glass); border: 1px solid #333; border-radius: 12px; cursor: pointer; font-family: 'Orbitron'; font-size: 9px; transition: 0.3s; color: #888; }
+        .tab.active { border-color: var(--xbox-red); background: rgba(255, 60, 60, 0.1); color: white; box-shadow: 0 0 15px rgba(255, 60, 60, 0.2); }
+
+        /* Audio Player */
+        .audio-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.5));
+            border-radius: 25px; padding: 30px; border: 1px solid rgba(255,255,255,0.1);
+            text-align: center; margin-bottom: 30px;
+        }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px 0; }
+        .circle-btn { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--gold); background: transparent; color: var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .circle-btn:hover { background: var(--gold); color: black; }
+        .play-btn { width: 70px; height: 70px; background: var(--gold); color: black; font-size: 24px; border: none; }
+
+        /* Questions */
+        .question-card {
+            background: var(--glass); border-left: 4px solid var(--gold);
+            padding: 20px; border-radius: 15px; margin-bottom: 15px;
+            transition: 0.3s;
+        }
+        .options { display: flex; gap: 20px; margin-top: 15px; }
+        .option {
+            background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 10px;
+            border: 1px solid #444; cursor: pointer; transition: 0.3s; flex: 1; text-align: center;
+            font-weight: bold; color: var(--gold);
+        }
+        .option:hover { border-color: var(--gold); background: rgba(252,194,0,0.1); }
+
+        /* Video Popup */
+        #video-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .video-content { width: 90%; max-width: 700px; position: relative; }
+        .close-video { position: absolute; top: -40px; right: 0; color: white; font-size: 30px; cursor: pointer; }
+
+        .btn-submit { width: 100%; padding: 15px; background: var(--xbox-red); color: white; border: none; border-radius: 15px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <canvas id="rank-canvas"></canvas>
+
+    <div id="login-overlay">
+        <div class="login-card">
+            <i class="fas fa-lock" style="font-size: 40px; color: var(--gold);"></i>
+            <h2 style="font-family: 'Orbitron'; margin-top: 15px;">ALIKE X ACCESS</h2>
+            <input type="email" placeholder="Enter Academy Email">
+            <button onclick="document.getElementById('login-overlay').style.display='none'" style="background: var(--gold); border:none; padding:12px 30px; border-radius:10px; font-family:'Orbitron'; font-weight:900; cursor:pointer;">START MISSION</button>
+        </div>
+    </div>
+
+    <header class="rank-header">
+        <h1>EYC ACADEMY</h1>
+    </header>
+
+    <div class="status-bar">
+        <div class="token-display">
+            <i class="fas fa-bolt"></i> CHALLENGE: <span id="reward-amount">150</span> TK
+        </div>
+        <button class="tutorial-btn" onclick="document.getElementById('video-popup').style.display='flex'">
+            ازاي تعمل النشاط دا <i class="fas fa-play-circle"></i>
+        </button>
+    </div>
+
+    <main class="mission-container">
+        <div class="level-tabs">
+            <div class="tab" onclick="changeLevel('Beginner', 100, this)">BEGINNER</div>
+            <div class="tab active" onclick="changeLevel('Intermediate', 150, this)">INTERMEDIATE</div>
+            <div class="tab" onclick="changeLevel('Advanced', 200, this)">ADVANCED</div>
+        </div>
+
+        <div class="audio-card">
+            <p style="font-size: 11px; color: var(--gold); font-family: 'Orbitron'; margin-bottom: 10px;">Linguistic Audio Decoder</p>
+            <h2 style="font-family: 'Orbitron'; margin-bottom: 20px;">MISSION AUDIO: AX1-2</h2>
+            
+            <audio id="mainAudio">
+                <source src="AX1-2.wav" type="audio/wav">
+            </audio>
+
+            <div class="controls">
+                <button class="circle-btn" onclick="skip(-2)"><i class="fas fa-backward"></i></button>
+                <button class="circle-btn play-btn" onclick="togglePlay()" id="playBtn"><i class="fas fa-play"></i></button>
+                <button class="circle-btn" onclick="skip(2)"><i class="fas fa-forward"></i></button>
+            </div>
+            <div style="width: 100%; height: 4px; background: #222; border-radius: 2px;">
+                <div id="progress" style="width: 0%; height: 100%; background: var(--gold); box-shadow: 0 0 10px var(--gold);"></div>
+            </div>
+        </div>
+
+        <div id="questions-box" style="margin-bottom: 100px;">
+            <div class="question-card">
+                <p>1. "Please be __________ about the confidential information."</p>
+                <div class="options">
+                    <div class="option">A) Discreet</div>
+                    <div class="option">B) Discrete</div>
+                </div>
+            </div>
+            <div class="question-card">
+                <p>2. "The patient had an __________ reaction to the new medication."</p>
+                <div class="options">
+                    <div class="option">A) Averse</div>
+                    <div class="option">B) Adverse</div>
+                </div>
+            </div>
+            </div>
+
+        <button class="btn-submit">SUBMIT ANSWERS</button>
+    </main>
+
+    <div id="video-popup">
+        <div class="video-content">
+            <span class="close-video" onclick="document.getElementById('video-popup').style.display='none'">&times;</span>
+            <div style="padding:56.25% 0 0 0;position:relative; background: #000; border: 2px solid var(--gold);">
+                <iframe src="LINK_TO_DRIVE" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const audio = document.getElementById('mainAudio');
+        const playBtn = document.getElementById('playBtn');
+        const progress = document.getElementById('progress');
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                audio.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+
+        audio.ontimeupdate = () => {
+            const perc = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = perc + '%';
+        };
+
+        function skip(val) { audio.currentTime += val; }
+
+        function changeLevel(name, tokens, el) {
+            document.getElementById('reward-amount').innerText = tokens;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            // هنا ممكن تغير الأسئلة برضه بناء على الليفل
+        }
+
+        // Particle Background Logic
+        const canvas = document.getElementById('rank-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class Particle {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.char = "EYC"[Math.floor(Math.random()*3)];
+                this.speed = Math.random() * 0.3 + 0.1;
+                this.opacity = Math.random() * 0.2;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(252,194,0,${this.opacity})`;
+                ctx.font = `10px Orbitron`;
+                ctx.fillText(this.char, this.x, this.y);
+                this.y -= this.speed;
+                if(this.y < -20) this.y = canvas.height + 20;
+            }
+        }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            particles.forEach(p => p.draw());
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for(let i=0; i<30; i++) particles.push(new Particle());
+        animate();
+    </script>
+</body>
+</html>

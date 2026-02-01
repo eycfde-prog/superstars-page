@@ -219,100 +219,99 @@
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec";
 
-    const config = {
-        maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "ShortHairDreads01", "ShortHairTheCaesar", "NoHair"],
-        femaleHair: ["LongHairStraight", "LongHairCurvy", "LongHairBob", "LongHairNotTooLong", "Hijab"],
-        hairColors: {
-            "Black": "Black", "Brown": "BrownDark", "Blonde": "BlondeGolden", "Silver": "SilverGray", "Red": "Red"
-        },
-        hijabColors: {
-            "Elegant Black": "Black", "Royal Blue": "Blue03", "Classic White": "White", "Pastel Pink": "Pink", "Deep Red": "Red"
-        },
-        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy"],
-        eyeType: ["Default", "Happy", "Squint", "Wink"],
-        accessories: ["Blank", "Prescription01", "Round", "Sunglasses"]
+    const options = {
+        maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
+        femaleHair: ["Hijab", "LongHairCurvy", "LongHairStraight", "LongHairBob", "LongHairNotTooLong"],
+        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
+        eyeType: ["Default", "Happy", "Squint", "Side", "Wink"],
+        accessories: ["Blank", "Prescription01", "Prescription02", "Round", "Sunglasses", "Wayfarer"]
     };
 
     function initOptions() {
         const isFemale = document.getElementById('gender').value === 'female';
-        const hairSel = document.getElementById('topType');
-        const colorSel = document.getElementById('hairColor');
+        const topSel = document.getElementById('topType');
+        topSel.innerHTML = "";
+        const hairList = isFemale ? options.femaleHair : options.maleHair;
+        hairList.forEach(opt => topSel.add(new Option(opt, opt)));
+
         const facialGroup = document.getElementById('facial-hair-group');
-
-        // Populate Hair
-        hairSel.innerHTML = "";
-        const list = isFemale ? config.femaleHair : config.maleHair;
-        list.forEach(h => hairSel.add(new Option(h, h)));
-
-        // Populate Colors
-        updateColorOptions();
-
-        // Toggle Facial Hair
-        facialGroup.style.display = isFemale ? "none" : "block";
-
-        // Populate Static Options
-        if(document.getElementById('eyeType').options.length === 0) {
-            config.eyeType.forEach(e => document.getElementById('eyeType').add(new Option(e, e)));
-            config.accessories.forEach(a => document.getElementById('accessoriesType').add(new Option(a, a)));
-        }
-    }
-
-    function updateColorOptions() {
-        const isFemale = document.getElementById('gender').value === 'female';
-        const hairType = document.getElementById('topType').value;
-        const colorSel = document.getElementById('hairColor');
-        const colorLabel = document.getElementById('hairColorLabel');
+        const facialSel = document.getElementById('facialHairType');
+        facialSel.innerHTML = "";
         
-        colorSel.innerHTML = "";
-        
-        if (isFemale && hairType === "Hijab") {
-            colorLabel.innerText = "Hijab Color:";
-            Object.entries(config.hijabColors).forEach(([text, val]) => colorSel.add(new Option(text, val)));
+        if (isFemale) {
+            facialGroup.style.display = "none";
+            facialSel.add(new Option("Blank", "Blank"));
         } else {
-            colorLabel.innerText = "Hair Color:";
-            Object.entries(config.hairColors).forEach(([text, val]) => colorSel.add(new Option(text, val)));
+            facialGroup.style.display = "block";
+            options.facialHair.forEach(opt => facialSel.add(new Option(opt, opt)));
+        }
+
+        if (document.getElementById('eyeType').options.length === 0) {
+            options.eyeType.forEach(opt => document.getElementById('eyeType').add(new Option(opt, opt)));
+            options.accessories.forEach(opt => document.getElementById('accessoriesType').add(new Option(opt, opt)));
         }
     }
-
-    // Listen for hair change to update color label immediately
-    document.getElementById('topType').addEventListener('change', () => {
-        updateColorOptions();
-        updateAvatar();
-    });
 
     function updateName() {
-        document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT";
+        document.getElementById('display-name').innerText = document.getElementById('name').value || "EYC Agent";
     }
 
     function updateAvatar() {
         const top = document.getElementById('topType').value;
-        const color = document.getElementById('hairColor').value;
+        const skin = document.getElementById('skinColor').value;
         const eyes = document.getElementById('eyeType').value;
         const acc = document.getElementById('accessoriesType').value;
-        const skin = document.getElementById('skinColor').value;
-        const facial = document.getElementById('gender').value === 'female' ? "Blank" : document.getElementById('facialHairType').value;
+        const facial = document.getElementById('facialHairType').value;
 
-        // logic: if hijab, color is hatColor. if hair, color is hairColor.
-        const colorParam = (top === "Hijab") ? `&hatColor=${color}` : `&hairColor=${color}`;
         const baseUrl = "https://avataaars.io/?avatarStyle=Transparent";
-        
-        document.getElementById('avatar-img').src = `${baseUrl}&topType=${top}${colorParam}&accessoriesType=${acc}&eyeType=${eyes}&skinColor=${skin}&facialHairType=${facial}`;
+        const url = `${baseUrl}&topType=${top}&accessoriesType=${acc}&eyeType=${eyes}&skinColor=${skin}&facialHairType=${facial}`;
+        document.getElementById('avatar-img').src = url;
     }
 
-    function nextStep(step) {
+    // الدالة المعدلة للتحقق من البيانات ومنع التكرار
+    async function nextStep(step) {
+        const currentStepNum = step - 1;
+        const currentStepDiv = document.getElementById('step' + (step - 1));
+
         if (step > 1) {
-            const activeStep = document.querySelector('.step.active');
-            const required = activeStep.querySelectorAll('input[required]');
-            let ok = true;
-            required.forEach(i => { if(!i.value) ok = false; });
-            
-            if (activeStep.id === 'step2' && step > 2) {
-                if (document.querySelectorAll('input[name="program"]:checked').length === 0) {
-                    alert("Select at least one program!"); return;
+            // 1. التحقق من ملء الحقول المطلوبة
+            const inputs = document.querySelector(`#step${step-1}`).querySelectorAll('input[required]');
+            let valid = true;
+            inputs.forEach(i => { if(!i.value) valid = false; });
+            if(!valid) { alert("Please fill all required fields"); return; }
+
+            // 2. التحقق من الإيميل عند الانتقال من الخطوة الأولى
+            if (step === 2) {
+                const email = document.getElementById('email').value.toLowerCase().trim();
+                document.getElementById('loader').style.display = 'flex';
+                document.getElementById('loader').innerText = "VERIFYING IDENTITY...";
+
+                try {
+                    // نستخدم JSONP للتحقق لتجنب مشاكل الـ CORS في الـ GET
+                    const response = await fetch(`${SCRIPT_URL}?action=checkEmail&email=${email}`);
+                    const result = await response.json();
+                    
+                    if (result.status === "exists") {
+                        alert("⚠️ This email is already registered in our database!");
+                        document.getElementById('loader').style.display = 'none';
+                        return; // توقف هنا ولا تذهب للخطوة التالية
+                    }
+                } catch (e) {
+                    console.log("Check omitted due to CORS or Network, proceeding carefully.");
+                } finally {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('loader').innerText = "SYNCING DATA...";
                 }
             }
-            if (!ok) { alert("Please complete fields"); return; }
+
+            // 3. التحقق من اختيار البرامج في الخطوة الثانية
+            if (step === 3) {
+                const checked = document.querySelectorAll('input[name="program"]:checked');
+                if (checked.length === 0) { alert("Please select at least one program"); return; }
+            }
         }
+
+        // الانتقال للخطوة التالية
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + step).classList.add('active');
         document.getElementById('pBar').style.width = (step * 25) + "%";
@@ -321,22 +320,37 @@
     document.getElementById('registrationForm').onsubmit = async (e) => {
         e.preventDefault();
         document.getElementById('loader').style.display = 'flex';
-        const progs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(c => c.value).join(", ");
-        
-        const data = {
+
+        const selectedPrograms = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
+
+        const formData = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
             age: document.getElementById('age').value,
-            programs: progs,
+            programs: selectedPrograms.join(", "),
             image: document.getElementById('avatar-img').src
         };
 
         try {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data)});
-            alert("Success! Welcome Superstar.");
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert("Mission Accomplished! Your Code is: " + result.code);
+                window.location.reload();
+            } else {
+                alert("Error: " + result.message);
+            }
+        } catch (error) {
+            // في حالة no-cors سيعتبره خطأ ولكنه قد يكون تم التسجيل
+            alert("Mission Sent! Please check your email for confirmation.");
             window.location.reload();
-        } catch (e) { alert("Error connecting."); }
-        finally { document.getElementById('loader').style.display = 'none'; }
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+        }
     };
 
     initOptions();

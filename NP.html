@@ -8,140 +8,128 @@
     <style>
         :root {
             --gold: #d4af37;
-            --glass: rgba(255, 255, 255, 0.1);
-            --gold-glass: rgba(212, 175, 55, 0.15);
+            --gold-hover: #f1c40f;
+            --glass: rgba(255, 255, 255, 0.08);
+            --gold-glass: rgba(212, 175, 55, 0.1);
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: 'Poppins', sans-serif;
             background: radial-gradient(circle at center, #1a1a1a, #000);
             color: white;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden;
         }
 
-        /* Glass Container */
+        /* Progress Bar */
+        .progress-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: rgba(255,255,255,0.1);
+        }
+        #progress-bar {
+            height: 100%; width: 25%; background: var(--gold);
+            transition: width 0.4s ease;
+        }
+
         .container {
-            width: 90%;
-            max-width: 900px;
-            height: 600px;
+            width: 95%; max-width: 950px; height: 650px;
             background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--gold);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: row;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 24px;
+            display: flex; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 20px rgba(212, 175, 55, 0.1);
             position: relative;
         }
 
-        /* Left Side: Avatar Preview */
+        /* Avatar Section */
         .avatar-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-right: 1px solid rgba(212, 175, 55, 0.3);
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             background: var(--gold-glass);
-            padding: 20px;
+            border-right: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 30px; text-align: center;
         }
 
-        #avatar-svg {
-            width: 250px;
-            height: 250px;
-            transition: transform 0.3s ease;
+        #avatar-img {
+            width: 280px; height: 280px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #avatar-img:hover { transform: scale(1.05) rotate(2deg); }
+
+        /* Form Section */
+        .form-section { flex: 1.4; padding: 50px; display: flex; flex-direction: column; justify-content: center; }
+
+        .step { display: none; animation: slideIn 0.4s ease-out forwards; }
+        .step.active { display: block; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Right Side: Form Steps */
-        .form-section {
-            flex: 1.5;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-        }
+        h2 { color: var(--gold); margin-bottom: 5px; font-weight: 600; font-size: 1.8rem; }
+        p.subtitle { color: #888; margin-bottom: 25px; font-size: 0.9rem; }
 
-        .step {
-            display: none;
-            animation: fadeIn 0.5s ease forwards;
-        }
+        .input-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #bbb; }
 
-        .step.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h2 { color: var(--gold); margin-bottom: 20px; font-weight: 600; }
-        
-        .input-group { margin-bottom: 20px; }
-        
         input, select {
-            width: 100%;
-            padding: 12px;
+            width: 100%; padding: 14px;
             background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(212, 175, 55, 0.5);
-            border-radius: 8px;
-            color: white;
-            outline: none;
-            box-sizing: border-box;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px; color: white; outline: none;
+            transition: 0.3s; box-sizing: border-box;
         }
+        input:focus, select:focus { border-color: var(--gold); background: rgba(255,255,255,0.1); }
 
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         button {
-            background: var(--gold);
-            color: black;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
+            flex: 1; padding: 14px; border-radius: 12px; border: none;
+            font-weight: 600; cursor: pointer; transition: 0.3s;
         }
+        .btn-next { background: var(--gold); color: #000; }
+        .btn-next:hover { background: var(--gold-hover); transform: translateY(-2px); }
+        .btn-back { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-back:hover { background: rgba(255,255,255,0.2); }
 
-        button:hover { background: #fff; transform: scale(1.05); }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .container { flex-direction: column; height: auto; margin-top: 20px; margin-bottom: 20px;}
-            .avatar-section { border-right: none; border-bottom: 1px solid var(--gold); }
-            #avatar-svg { width: 150px; height: 150px; }
-            .form-section { padding: 20px; }
+        /* Mobile Adjustments */
+        @media (max-width: 850px) {
+            .container { flex-direction: column; height: auto; margin: 20px; }
+            .avatar-section { border-right: none; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+            #avatar-img { width: 180px; height: 180px; }
+            .form-section { padding: 30px; }
         }
 
         .loading-overlay {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.8); display:none; justify-content:center;
-            align-items:center; z-index:10; border-radius:20px;
+            position: absolute; inset: 0; background: rgba(0,0,0,0.85);
+            display: none; flex-direction: column; justify-content: center;
+            align-items: center; z-index: 100; backdrop-filter: blur(10px);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="loading-overlay" id="loader">Processing Identity...</div>
+    <div class="progress-container"><div id="progress-bar"></div></div>
+    
+    <div class="loading-overlay" id="loader">
+        <div style="border: 4px solid var(--gold); border-top: 4px solid transparent; width: 40px; height: 40px; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;"></div>
+        <p>Processing Identity...</p>
+    </div>
     
     <div class="avatar-section">
-        <div id="avatar-container">
-            <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
-        </div>
-        <h3 id="display-name" style="margin-top:15px; color: var(--gold);">EYC Agent</h3>
+        <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
+        <h3 id="display-name" style="margin-top:20px; color: var(--gold); letter-spacing: 1px;">EYC AGENT</h3>
     </div>
 
     <div class="form-section">
         <form id="registrationForm">
             <div class="step active" id="step1">
-                <h2>Step 1: Personal Info</h2>
+                <h2>Personal Info</h2>
+                <p class="subtitle">Enter your credentials to start the mission.</p>
                 <div class="input-group">
                     <input type="text" id="name" placeholder="Full Name" required oninput="updateName()">
                 </div>
@@ -151,35 +139,29 @@
                 <div class="input-group">
                     <input type="number" id="age" placeholder="Age" required>
                 </div>
-                <button type="button" onclick="nextStep(2)">Next: Choose Program</button>
+                <button type="button" class="btn-next" onclick="nextStep(2)">Next: Choose Program</button>
             </div>
 
             <div class="step" id="step2">
-                <h2>Step 2: Your Program</h2>
+                <h2>Your Program</h2>
+                <p class="subtitle">Select your specialization area.</p>
                 <div class="input-group">
                     <select id="program">
                         <option value="Season">Season Program</option>
                         <option value="X-Box">X-Box Program</option>
                     </select>
                 </div>
-                <button type="button" onclick="nextStep(3)">Next: Design Avatar</button>
+                <div class="btn-group">
+                    <button type="button" class="btn-back" onclick="nextStep(1)">Back</button>
+                    <button type="button" class="btn-next" onclick="nextStep(3)">Next: Design Avatar</button>
+                </div>
             </div>
 
             <div class="step" id="step3">
-                <h2>Step 3: Identity Design</h2>
+                <h2>Identity Design</h2>
+                <p class="subtitle">Customize your visual representation.</p>
                 <div class="input-group">
-                    <label>Gender Base:</label>
-                    <select id="gender" onchange="updateAvatar()">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Top/Hair:</label>
-                    <select id="topType" onchange="updateAvatar()"></select>
-                </div>
-                <div class="input-group">
-                    <label>Skin Color:</label>
+                    <label>Skin Color</label>
                     <select id="skinColor" onchange="updateAvatar()">
                         <option value="Tanned">Tanned</option>
                         <option value="Yellow">Yellow</option>
@@ -188,68 +170,84 @@
                         <option value="Brown">Brown</option>
                     </select>
                 </div>
-                <button type="button" onclick="nextStep(4)">Next: Accessories</button>
+                <div class="input-group">
+                    <label>Hair Style</label>
+                    <select id="topType" onchange="updateAvatar()"></select>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn-back" onclick="nextStep(2)">Back</button>
+                    <button type="button" class="btn-next" onclick="nextStep(4)">Next: Accessories</button>
+                </div>
             </div>
 
             <div class="step" id="step4">
                 <h2>Final Touches</h2>
+                <p class="subtitle">Finalize your agent equipment.</p>
                 <div class="input-group">
-                    <label>Eyes Style:</label>
+                    <label>Eyes Style</label>
                     <select id="eyeType" onchange="updateAvatar()"></select>
                 </div>
                 <div class="input-group">
-                    <label>Accessories:</label>
+                    <label>Accessories</label>
                     <select id="accessoriesType" onchange="updateAvatar()"></select>
                 </div>
-                <button type="submit">Complete Mission</button>
+                <div class="btn-group">
+                    <button type="button" class="btn-back" onclick="nextStep(3)">Back</button>
+                    <button type="submit" class="btn-next">Complete Mission</button>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
+<style> @keyframes spin { 100% { transform: rotate(360deg); } } </style>
+
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec";
 
-    // Avatar Options Data
     const options = {
         topType: ["ShortHairShortFlat", "ShortHairShortWaved", "LongHairCurvy", "LongHairStraight", "NoHair", "Eyepatch"],
         eyeType: ["Default", "Happy", "Squint", "Side", "Wink"],
         accessories: ["Blank", "Kurt", "Prescription01", "Prescription02", "Round", "Sunglasses", "Wayfarer"]
     };
 
-    // Initialize Selects
     function initOptions() {
         const topSel = document.getElementById('topType');
         options.topType.forEach(opt => topSel.add(new Option(opt, opt)));
-        
         const eyeSel = document.getElementById('eyeType');
         options.eyeType.forEach(opt => eyeSel.add(new Option(opt, opt)));
-
         const accSel = document.getElementById('accessoriesType');
         options.accessories.forEach(opt => accSel.add(new Option(opt, opt)));
     }
 
     function updateName() {
-        document.getElementById('display-name').innerText = document.getElementById('name').value || "EYC Agent";
+        document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT";
     }
 
     function updateAvatar() {
-        const gender = document.getElementById('gender').value;
         const top = document.getElementById('topType').value;
         const skin = document.getElementById('skinColor').value;
         const eyes = document.getElementById('eyeType').value;
         const acc = document.getElementById('accessoriesType').value;
-
-        // Construct Avataaars URL
-        const baseUrl = "https://avataaars.io/?avatarStyle=Transparent";
-        const url = `${baseUrl}&topType=${top}&accessoriesType=${acc}&eyeType=${eyes}&skinColor=${skin}`;
-        
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}&accessoriesType=${acc}&eyeType=${eyes}&skinColor=${skin}`;
         document.getElementById('avatar-img').src = url;
     }
 
     function nextStep(step) {
+        // Simple Validation for Step 1
+        if (step > 1 && document.getElementById('step1').classList.contains('active')) {
+            if (!document.getElementById('name').value || !document.getElementById('email').value) {
+                alert("Please fill in your name and email.");
+                return;
+            }
+        }
+        
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + step).classList.add('active');
+        
+        // Update Progress Bar
+        const progress = (step / 4) * 100;
+        document.getElementById('progress-bar').style.width = progress + '%';
     }
 
     document.getElementById('registrationForm').onsubmit = async (e) => {
@@ -265,17 +263,15 @@
         };
 
         try {
-            const response = await fetch(SCRIPT_URL, {
+            await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Essential for Apps Script
+                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
-
             alert("Mission Accomplished! Welcome to Superstars.");
-            window.location.reload(); // Refresh after success
+            window.location.reload();
         } catch (error) {
-            console.error(error);
             alert("Connection Error. Try again!");
         } finally {
             document.getElementById('loader').style.display = 'none';

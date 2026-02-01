@@ -259,36 +259,47 @@ async function verifyCode() {
             location.reload();
         }
 
-        // --- MISSIONS LOGIC ---
+// --- MISSIONS LOGIC ---
         function openMissions(actName) {
             const layer = document.getElementById('missions-layer');
             layer.innerHTML = ''; 
             layer.style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
 
-            // جلب عدد المهمات المكتملة لهذا النشاط من البيانات القادمة من جوجل شيت
             const completedCount = (currentAgentData && currentAgentData.progress) ? (currentAgentData.progress[actName] || 0) : 0;
 
+            // تحديد نصف القطر بناءً على حجم الشاشة (أصغر بعد في الشاشة / 3)
+            const radius = Math.min(window.innerWidth, window.innerHeight) / 3.5;
+            // تحديد حجم الفقاعة بناءً على حجم الشاشة
+            const bubbleSize = Math.min(window.innerWidth, window.innerHeight) / 12;
+
             for (let i = 1; i <= 10; i++) {
-                const angle = (i * 36) * (Math.PI / 180);
-                const x = Math.cos(angle) * 125; 
-                const y = Math.sin(angle) * 125;
+                // توزيع الدوائر بزاوية تبدأ من الأعلى (-90 درجة)
+                const angle = (i * 36 - 90) * (Math.PI / 180);
+                const x = Math.cos(angle) * radius; 
+                const y = Math.sin(angle) * radius;
                 
                 const bubble = document.createElement('div');
                 bubble.className = 'mission-bubble';
-                // تلوين المهمات المكتملة
+                
+                // تطبيق الحجم المتجاوب
+                bubble.style.width = `${bubbleSize}px`;
+                bubble.style.height = `${bubbleSize}px`;
+                bubble.style.fontSize = `${bubbleSize / 4}px`; // حجم الخط متناسب مع الفقاعة
+
                 if (i <= completedCount) bubble.classList.add('completed');
                 
                 bubble.innerText = 'T' + i;
-                bubble.style.left = `calc(50% + ${x}px - 27px)`;
-                bubble.style.top = `calc(50% + ${y}px - 27px)`;
+                
+                // التموضع في المنتصف بدقة
+                bubble.style.left = `calc(50% + ${x}px - ${bubbleSize / 2}px)`;
+                bubble.style.top = `calc(50% + ${y}px - ${bubbleSize / 2}px)`;
                 
                 bubble.onclick = () => {
                     if (bubble.classList.contains('completed')) {
                         alert(`Task ${i} already secured!`);
                     } else {
                         alert(`Starting ${actName} - Mission ${i}`);
-                        // هنا يمكنك توجيه المستخدم لصفحة المهمة
                     }
                 };
                 layer.appendChild(bubble);

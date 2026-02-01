@@ -8,59 +8,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="missionnormalstyle.css">
     <style>
-        .difficulty-bar {
-            display: none; 
-            justify-content: center;
-            gap: 10px;
-            padding: 10px;
-            background: rgba(0,0,0,0.3);
-        }
-        .diff-btn {
-            padding: 8px 15px;
-            border: 1px solid #00ff88;
-            color: #fff;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
-            transition: 0.3s;
-            background: transparent;
-            border-radius: 5px;
-        }
-        .diff-btn.active {
-            background: #00ff88;
-            color: #000;
-            box-shadow: 0 0 10px #00ff88;
-        }
-        #studentImg {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+        .difficulty-bar { display: none; justify-content: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.3); }
+        .diff-btn { padding: 8px 15px; border: 1px solid #00ff88; color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: 0.3s; background: transparent; border-radius: 5px; }
+        .diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
+        #studentImg { width: 100%; height: 100%; object-fit: cover; display: block; }
     </style>
 </head>
 <body>
     <div class="mission-outer-frame">
         <header class="mission-header">
             <div class="agent-side">
-                <div class="circle-frame">
-                    <img src="" id="studentImg" alt="Agent">
-                </div>
+                <div class="circle-frame"><img src="" id="studentImg" alt="Agent"></div>
                 <div class="info-box">
                     <span>AGENT</span>
                     <b id="agentName">INITIALIZING...</b>
                     <div class="token-tag" id="currentTokens">0 TK</div>
                 </div>
             </div>
-
-            <div class="center-logo-area">
-                <img src="assets/logo.png" alt="EYC LOGO">
-            </div>
-
+            <div class="center-logo-area"><img src="assets/logo.png" alt="EYC LOGO"></div>
             <div class="activity-side">
-                <div class="circle-frame">
-                    <img src="" id="activityLogo">
-                </div>
+                <div class="circle-frame"><img src="" id="activityLogo"></div>
                 <div class="info-box">
                     <span id="actCodeDisplay">CODE</span>
                     <b id="actNameDisplay">LOADING...</b>
@@ -80,13 +47,9 @@
         </div>
 
         <div class="action-container">
-            <button class="nav-btn" onclick="toggleGuide(true)">
-                <i class="fas fa-robot"></i> GUIDE
-            </button>
+            <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
             <button class="submit-btn" onclick="submitMission()">SUBMIT</button>
-            <a href="MC.html" class="nav-btn">
-                BACK <i class="fas fa-arrow-right"></i>
-            </a>
+            <a href="MC.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
 
@@ -101,6 +64,8 @@
         </div>
     </div>
 
+    <script src="CC.js"></script>
+    
     <script>
     const urlParams = new URLSearchParams(window.location.search);
     const actCode = urlParams.get('act') || 'GES'; 
@@ -108,9 +73,8 @@
     const actName = urlParams.get('name') || 'Activity'; 
     let currentLevel = 'A';
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrLaeQ02k4g_9E27dQ1Otq1M4bGbMEHGRzDIoZx7LoYKkRl5z54VLM7TJQUgUx1PB-yQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3op9pG04lJRus25B0437TdK2hjq_9XVnPLg1CtVoEqwcQXla6MIxBJ5WtosyLb6xZZw/exec";
 
-    // بيانات الأنشطة لاستخراج التوكينز
     const activitiesData = {
         season: [
             { code: 'GES', tk: '5TK' }, { code: 'AS', tk: '5TK' },
@@ -127,7 +91,6 @@
     };
 
     const isElite = actCode.endsWith('X');
-
     document.getElementById('actNameDisplay').innerText = actName;
     document.getElementById('actCodeDisplay').innerText = actCode;
     document.getElementById('missionNum').innerText = 'M ' + mNum;
@@ -138,7 +101,6 @@
         document.getElementById('guideText').innerHTML = "هاي يا بطل! أنا <strong>Glassy</strong>. اختار مستوى واحد وجاوب عليه.";
     }
 
-    // دالة لاستخراج قيمة الـ TK بناءً على الكود
     function getActivityTokens(code) {
         const allActs = [...activitiesData.season, ...activitiesData.xbox];
         const found = allActs.find(a => a.code === code);
@@ -148,10 +110,7 @@
     function loadAgentData() {
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         if(saved.name) document.getElementById('agentName').innerText = saved.name.split(' ')[0].toUpperCase();
-        
-        // تحديث عرض التوكينز بناءً على النشاط الحالي المفتوح
         document.getElementById('currentTokens').innerText = getActivityTokens(actCode);
-        
         const imgElement = document.getElementById('studentImg');
         if(saved.image) {
             let imgUrl = saved.image;
@@ -160,16 +119,12 @@
                 imgUrl = `https://drive.google.com/thumbnail?sz=w300&id=${fileId}`;
             }
             imgElement.src = imgUrl;
-        } else {
-            imgElement.src = 'assets/Student.png';
-        }
+        } else { imgElement.src = 'assets/Student.png'; }
     }
 
     function initMission(level = 'A') {
         currentLevel = level;
-        let fileName = isElite 
-            ? `assets/MIF/${actCode}${mNum}${level}.html`
-            : `assets/MIF/${actCode}${mNum}.html`;
+        let fileName = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
         document.getElementById('mainIframe').src = fileName;
     }
 
@@ -179,15 +134,10 @@
         initMission(lv);
     }
 
-    window.onload = () => {
-        loadAgentData();
-        initMission(); 
-    };
+    window.onload = () => { loadAgentData(); initMission(); };
 
     function toggleGuide(show) {
-        if(show) {
-            document.getElementById('guideFrame').src = `assets/MIF/Guides/${actCode}.html`;
-        }
+        if(show) { document.getElementById('guideFrame').src = `assets/MIF/Guides/${actCode}.html`; }
         document.getElementById('guideModal').style.display = show ? 'block' : 'none';
     }
 
@@ -196,54 +146,53 @@
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         const iframe = document.getElementById('mainIframe');
         const iframeWindow = iframe.contentWindow;
-        const iframeDoc = iframe.contentDocument || iframeWindow.document;
         
-        let finalAnswer = "";
-
-        // محاولة جلب الإجابة من الدالة داخل الـ iframe أو المدخلات
+        let studentAnswer = "";
         if (typeof iframeWindow.getAnswer === "function") {
-            finalAnswer = iframeWindow.getAnswer();
+            studentAnswer = iframeWindow.getAnswer();
         } else {
-            const allInputs = iframeDoc.querySelectorAll('input[type="text"]');
+            const allInputs = (iframe.contentDocument || iframeWindow.document).querySelectorAll('input[type="text"]');
             let combined = [];
-            allInputs.forEach(input => {
-                if(input.value.trim() !== "") combined.push(input.value.trim());
-            });
-            finalAnswer = combined.join(" ");
+            allInputs.forEach(input => { if(input.value.trim() !== "") combined.push(input.value.trim()); });
+            studentAnswer = combined.join(" ");
         }
 
-        if (!finalAnswer || finalAnswer === "NO_DATA") {
+        if (!studentAnswer || studentAnswer === "NO_DATA") {
             alert("يا بطل، اكتب إجاباتك الأول!");
             return;
         }
 
-        submitBtn.innerText = "EVALUATING..."; 
+        submitBtn.innerText = "SENDING...";
         submitBtn.disabled = true;
 
+        // --- عملية التصحيح من ملف CC.js ---
+        const evaluation = evaluateMission(actCode, mNum, (isElite ? currentLevel : 'A'), studentAnswer);
+
         try {
-            const response = await fetch(SCRIPT_URL, {
+            // إرسال البيانات لجوجل سكريبت (للتخزين فقط)
+            await fetch(SCRIPT_URL, {
                 method: "POST",
+                mode: 'no-cors',
                 body: JSON.stringify({
                     email: saved.email || "test@eyc.com",
                     activity: actCode,
                     mission: mNum,
                     level: isElite ? currentLevel : "A",
-                    answer: finalAnswer
+                    answer: studentAnswer,
+                    points: evaluation.points,
+                    isCorrect: evaluation.correct
                 })
             });
 
-            const result = await response.json(); 
-
-            if (result.correct) {
-                alert(`عاش يا بطل! إجابة صحيحة. حصلت على ${result.points} نقاط.`);
+            if(evaluation.correct) {
+                alert(`عاش يا بطل! إجابة صحيحة. حصلت على ${evaluation.points} نقطة.`);
             } else {
-                alert(`تم تسجيل مهمتك، جاري مراجعة الإجابة.`);
+                alert(`تم تسجيل إجابتك. حاول تركز أكتر المرة الجاية!`);
             }
-            
             window.location.href = 'MC.html';
 
         } catch (error) {
-            alert("عاش يا بطل! تم إرسال المهمة بنجاح.");
+            alert("تم تسجيل المهمة بنجاح!");
             window.location.href = 'MC.html';
         }
     }

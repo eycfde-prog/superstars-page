@@ -162,31 +162,33 @@ async function submitMission() {
     submitBtn.innerText = "SENDING...";
     submitBtn.disabled = true;
 
-    // استخدام URLSearchParams لإرسال البيانات كـ GET لسهولة الحصول على رد (Response)
-    // أو الاستمرار بـ POST مع تعديل بسيط
     try {
         const response = await fetch(SCRIPT_URL, {
             method: "POST",
+            // تم تعديل الـ Body ليتوافق تماماً مع توقعات الـ Apps Script الخاص بك
             body: JSON.stringify({
                 email: studentEmail,
-                activity: actCode,
+                activity: actCode,      // مثال: GES
+                mission: mNum,         // مثال: 1
+                level: "A",            // القيمة الافتراضية كما يتوقعها الشيت (1-A)
                 answer: finalString
             })
         });
 
-        const tokenResult = await response.text(); // استقبال الدرجة الراجعة من فيتو (السكريبت)
+        const resultText = await response.text(); 
 
-        // إظهار الرسالة بالدرجة
-        alert(`عاش يا بطل! تم تسجيل المهمة بنجاح.\nدرجتك في هذه المهمة هي: ${tokenResult} Tokens`);
-        
-        submitBtn.innerText = "DONE";
-        
-        // تحديث الرقم المعروض في الصفحة (اختياري)
-        document.getElementById('currentTokens').innerText = tokenResult + " TK";
+        if (resultText.includes("Success")) {
+            alert(`عاش يا بطل! تم تسجيل المهمة ${mNum} بنجاح.`);
+            submitBtn.innerText = "DONE";
+        } else {
+            alert("تم الإرسال، جاري مراجعة الدرجة من قبل الإدارة.");
+            submitBtn.innerText = "SUBMIT";
+            submitBtn.disabled = false;
+        }
 
     } catch (error) {
         console.error("Error:", error);
-        alert("تم الإرسال! (تأكد من مراجعة الشيت للدرجة)");
+        alert("حدث خطأ في الاتصال، حاول مرة أخرى.");
         submitBtn.innerText = "SUBMIT";
         submitBtn.disabled = false;
     }

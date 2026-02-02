@@ -13,7 +13,6 @@
         .orbitron { font-family: 'Orbitron', sans-serif; }
         .gold-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(245, 158, 11, 0.1); border-radius: 25px; }
         
-        /* Audio Player Styling */
         .audio-wave-btn {
             width: 60px; height: 60px; background: var(--gold); color: #000; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; font-size: 24px;
@@ -29,6 +28,19 @@
             background: rgba(255,255,255,0.02); border-left: 3px solid var(--gold);
             transition: 0.3s; padding: 15px; border-radius: 12px;
         }
+
+        /* ستايل خيارات الإجابة */
+        .option-btn {
+            width: 100%; text-align: left; padding: 10px 15px; margin-top: 8px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; font-size: 13px; transition: 0.3s; color: #ccc;
+        }
+        .option-btn:hover { background: rgba(245, 158, 11, 0.1); border-color: var(--gold); }
+        .option-btn.selected { 
+            background: var(--gold); color: black; font-weight: bold;
+            border-color: var(--gold); box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+        }
+
         .gold-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         ::-webkit-scrollbar { width: 4px; }
@@ -67,9 +79,7 @@
 
         <div class="space-y-3 mb-8" dir="ltr">
             <h3 class="text-lg font-black gold-text mb-4 italic text-left orbitron">ANALYSIS QUERIES:</h3>
-            
-            <div id="questionsContainer" class="space-y-3">
-                </div>
+            <div id="questionsContainer" class="space-y-4"></div>
         </div>
 
         <div class="pb-20"></div>
@@ -84,18 +94,21 @@
     const params = new URLSearchParams(window.location.search);
     const mNum = params.get('m') || '1';
 
+    // بيانات الأسئلة مع الاختيارات
     const geData = {
         "1": {
             audio: "assets/audio/GE1.wav",
             questions: [
-                "What is the foundation of scientific inquiry?",
-                "What is the core definition of critical thinking?",
-                "What is one thing critical thinking helps individuals avoid?",
-                "What two qualities are required to develop critical thinking?",
-                "Where is critical thinking considered a vital skill?"
+                { q: "What is the foundation of scientific inquiry?", options: ["Blind Faith", "Systematic Observation", "Public Opinion"] },
+                { q: "What is the core definition of critical thinking?", options: ["Objective Analysis", "Fast Memorization", "Agreeing with Others"] },
+                { q: "What is one thing critical thinking helps individuals avoid?", options: ["New Information", "Logical Fallacies", "Social Interaction"] },
+                { q: "What two qualities are required to develop critical thinking?", options: ["Curiosity and Skepticism", "Silence and Obedience", "Speed and Force"] },
+                { q: "Where is critical thinking considered a vital skill?", options: ["Only in Schools", "Every Professional Field", "Nowhere Specific"] }
             ]
         }
     };
+
+    let studentAnswers = {};
 
     window.onload = () => {
         const data = geData[mNum] || geData["1"];
@@ -103,13 +116,30 @@
         audio.load();
 
         const container = document.getElementById('questionsContainer');
-        container.innerHTML = data.questions.map((q, i) => `
-            <div class="question-card text-left">
+        container.innerHTML = data.questions.map((item, i) => `
+            <div class="question-card text-left" id="qBlock_${i}">
                 <span class="text-yellow-500 font-black orbitron text-[9px] block mb-1">QUERY 0${i+1}</span>
-                <p class="text-sm text-gray-200">${q}</p>
+                <p class="text-sm text-gray-200 mb-3">${item.q}</p>
+                <div class="options-list space-y-2">
+                    ${item.options.map(opt => `
+                        <button class="option-btn" onclick="selectOption(${i}, '${opt}', this)">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
             </div>
         `).join('');
     };
+
+    function selectOption(qIndex, val, btn) {
+        // حذف التحديد من باقي أزرار نفس السؤال
+        const parent = document.getElementById(`qBlock_${qIndex}`);
+        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        
+        // تحديد الزر المختار
+        btn.classList.add('selected');
+        studentAnswers[qIndex] = val;
+    }
 
     async function togglePlay() {
         if (audio.paused) {
@@ -148,13 +178,31 @@
         audio.currentTime = percent * audio.duration;
     }
 
-    // هذه الدالة هي التي يتواصل بها شيت الـ CC مع الـ Terminal
-    // يمكنك تعديلها لترسل النص الذي كتبه الطالب لاحقاً
-    window.checkAnswers = function() {
+    // الدالة المسؤولة عن التواصل مع الـ Terminal والتحقق من الحل
+    window.evaluateMission = function() {
+        const data = geData[mNum] || geData["1"];
+        const totalQuestions = data.questions.length;
+        const answeredCount = Object.keys(studentAnswers).length;
+
+        // التحقق من أن الطالب أجاب على كل الأسئلة
+        if (answeredCount < totalQuestions) {
+            return { 
+                answerText: "", // نص فارغ سيمنع الإرسال في الكود المحدث
+                points: 0 
+            };
+        }
+
+        // تجميع الإجابات في نص واحد لإرساله للشيت
+        let finalReport = "";
+        for (let i = 0; i < totalQuestions; i++) {
+            finalReport += `Q${i+1}: ${studentAnswers[i]} | `;
+        }
+
         return { 
             status: "COMPLETED", 
-            points: 10, 
-            answerText: "Student listened to the audio and analyzed queries." 
+            points: 10, // يمكنك تعديل نظام النقاط هنا
+            answerText: finalReport,
+            isCorrect: true 
         };
     };
 </script>

@@ -15,70 +15,84 @@
             background: var(--bg-deep); 
             color: white; 
             margin: 0; 
-            padding: 15px; /* مساحة مريحة داخل الفرايم */
+            padding: 10px; 
             overflow-x: hidden;
-            /* تجعل التمرير ناعم جداً داخل الفرايم */
             scrollbar-width: thin;
             scrollbar-color: var(--gold) transparent;
         }
 
-        /* منع التمرير المزدوج: نجعل الـ body يتمدد حسب المحتوى */
-        html, body { height: auto; min-height: 100%; }
-
         .orbitron { font-family: 'Orbitron', sans-serif; }
         
         .gold-card { 
-            background: rgba(0, 0, 0, 0.6); /* تغميق الخلفية قليلاً للوضوح */
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(212, 175, 55, 0.3); 
+            background: rgba(0, 0, 0, 0.4); 
+            backdrop-filter: blur(5px); 
+            border: 1px solid rgba(212, 175, 55, 0.2); 
             border-radius: 20px; 
-            position: sticky; /* يثبت المشغل في الأعلى أثناء حل الأسئلة */
-            top: 0;
-            z-index: 100;
-            margin-bottom: 20px;
         }
         
-        /* تحسين أزرار الخيارات لتناسب اللمس والشاشات الصغيرة */
-        .option-btn {
-            width: 100%; text-align: left; padding: 14px 18px; margin-top: 10px;
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 12px; font-size: 14px; transition: all 0.2s; color: #eee;
-            display: block; line-height: 1.4;
+        .audio-wave-btn {
+            width: 55px; height: 55px; background: var(--gold); color: #000; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 22px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); transition: 0.3s;
+        }
+        .audio-wave-btn:hover { transform: scale(1.05); }
+
+        .skip-btn {
+            width: 35px; height: 35px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--gold); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; color: var(--gold); font-size: 12px;
         }
         
-        .option-btn:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold); }
-        .option-btn.selected { 
-            background: var(--gold); color: black; font-weight: bold;
-            border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        .question-card {
+            background: rgba(255,255,255,0.05); 
+            border-left: 4px solid var(--gold);
+            transition: 0.3s; padding: 12px; border-radius: 10px;
         }
 
-        .question-card {
-            background: rgba(20, 20, 20, 0.4); 
-            border-right: 4px solid var(--gold); /* تغيير الجانب ليناسب RTL/LTR */
-            margin-bottom: 15px; padding: 15px; border-radius: 12px;
+        .option-btn {
+            width: 100%; text-align: left; padding: 12px 15px; margin-top: 8px;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; font-size: 14px; transition: 0.2s; color: #eee;
+            font-family: 'Poppins', sans-serif;
         }
+        .option-btn:hover { background: rgba(212, 175, 55, 0.15); border-color: var(--gold); }
+        .option-btn.selected { 
+            background: var(--gold); color: black; font-weight: bold;
+            border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .gold-text { 
+            background: linear-gradient(to bottom, #fff, var(--gold)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="w-full max-w-2xl mx-auto">
-        <div class="gold-card p-4">
-            <div id="audioStatus" class="text-yellow-500 text-[10px] orbitron mb-2 animate-pulse italic text-center">SYSTEM READY</div>
+    <div class="w-full max-w-full mx-auto pb-10">
+        <div class="gold-card p-5 mb-6 text-center">
+            <div id="audioStatus" class="text-yellow-500 text-[10px] orbitron mb-3 animate-pulse italic">INITIATING AUDIO SYSTEM...</div>
             
-            <audio id="mainAudio"><source id="audioSource" src="" type="audio/wav"></audio>
+            <audio id="mainAudio">
+                <source id="audioSource" src="" type="audio/wav">
+            </audio>
 
             <div class="flex justify-center items-center gap-6" dir="ltr">
-                <button onclick="skip(-5)" class="skip-btn text-gold"><i class="fas fa-backward"></i></button>
+                <button onclick="skip(-5)" class="skip-btn"><i class="fas fa-backward"></i></button>
                 <button onclick="togglePlay()" id="playBtn" class="audio-wave-btn">
                     <i id="playIcon" class="fas fa-play"></i>
                     <i id="pauseIcon" class="fas fa-pause hidden"></i>
                 </button>
-                <button onclick="skip(5)" class="skip-btn text-gold"><i class="fas fa-forward"></i></button>
+                <button onclick="skip(5)" class="skip-btn"><i class="fas fa-forward"></i></button>
             </div>
 
-            <div class="mt-4" dir="ltr">
+            <div class="mt-6 px-1" dir="ltr">
                 <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden cursor-pointer" onclick="seek(event)">
-                    <div id="progressBar" class="bg-gradient-to-r from-yellow-600 to-yellow-400 h-full rounded-full w-0"></div>
+                    <div id="progressBar" class="bg-gradient-to-r from-yellow-700 to-yellow-400 h-full rounded-full" style="width: 0%"></div>
                 </div>
                 <div class="flex justify-between mt-2 text-[10px] text-gray-400 orbitron">
                     <span id="currentTime">00:00</span>
@@ -88,18 +102,21 @@
         </div>
 
         <div class="space-y-4" dir="ltr">
-            <h3 class="text-sm font-bold text-gray-400 mb-4 orbitron tracking-tighter border-b border-white/10 pb-2">DATA ANALYSIS IN PROGRESS...</h3>
-            <div id="questionsContainer"></div>
+            <h3 class="text-md font-black gold-text mb-3 italic text-left orbitron tracking-widest">ANALYSIS QUERIES:</h3>
+            <div id="questionsContainer" class="space-y-4"></div>
         </div>
     </div>
 
 <script>
-    // نفس كود الـ JavaScript السابق مع إضافة ميزة الـ Auto-resize للـ Iframe
     const audio = document.getElementById('mainAudio');
     const progressBar = document.getElementById('progressBar');
     const playIcon = document.getElementById('playIcon');
     const pauseIcon = document.getElementById('pauseIcon');
     
+    const params = new URLSearchParams(window.location.search);
+    const mNum = params.get('m') || '1';
+
+    // دالة لتبديل مصفوفة عشوائياً (Fisher-Yates Shuffle)
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -108,22 +125,61 @@
         return array;
     }
 
+    // البيانات المحدثة مع المسار الجديد
     const geData = {
         "1": {
             audio: "assets/gesaudio/GE1.wav",
             questions: [
-                { q: "What is the core definition of critical thinking?", options: ["The ability to analyze information objectively and make a reasoned judgment.", "The ability to memorize large amounts of data quickly.", "The process of accepting information without question.", "The act of forming conclusions based solely on emotion."] },
-                { q: "What is one thing critical thinking helps individuals avoid?", options: ["Logical fallacies.", "Basic conversation.", "Routine physical exercise.", "Reading books."] },
-                { q: "What two qualities are required to develop critical thinking?", options: ["Curiosity and a willingness to question assumptions.", "Ignoring all external opinions.", "Speed reading and perfect recall.", "Strict adherence to tradition."] },
-                { q: "Where is critical thinking considered a vital skill?", options: ["In everyday decision-making and academic settings.", "Only in highly specialized scientific fields.", "Only when dealing with political issues.", "Exclusively in historical research."] },
-                { q: "What is the foundation of scientific inquiry?", options: ["Critical thinking.", "Simple belief.", "Emotional response.", "Random guesswork."] }
+                { 
+                    q: "What is the core definition of critical thinking?", 
+                    options: [
+                        "The ability to analyze information objectively and make a reasoned judgment.", 
+                        "The ability to memorize large amounts of data quickly.", 
+                        "The process of accepting information without question.", 
+                        "The act of forming conclusions based solely on emotion."
+                    ] 
+                },
+                { 
+                    q: "What is one thing critical thinking helps individuals avoid?", 
+                    options: [
+                        "Logical fallacies.", 
+                        "Basic conversation.", 
+                        "Routine physical exercise.", 
+                        "Reading books."
+                    ] 
+                },
+                { 
+                    q: "What two qualities are required to develop critical thinking?", 
+                    options: [
+                        "Curiosity and a willingness to question assumptions.", 
+                        "Ignoring all external opinions.", 
+                        "Speed reading and perfect recall.", 
+                        "Strict adherence to tradition."
+                    ] 
+                },
+                { 
+                    q: "Where is critical thinking considered a vital skill?", 
+                    options: [
+                        "In everyday decision-making and academic settings.", 
+                        "Only in highly specialized scientific fields.", 
+                        "Only when dealing with political issues.", 
+                        "Exclusively in historical research."
+                    ] 
+                },
+                { 
+                    q: "What is the foundation of scientific inquiry?", 
+                    options: [
+                        "Critical thinking.", 
+                        "Simple belief.", 
+                        "Emotional response.", 
+                        "Random guesswork."
+                    ] 
+                }
             ]
         }
     };
 
     let studentAnswers = {};
-    const params = new URLSearchParams(window.location.search);
-    const mNum = params.get('m') || '1';
 
     window.onload = () => {
         const data = geData[mNum] || geData["1"];
@@ -132,14 +188,18 @@
 
         const container = document.getElementById('questionsContainer');
         container.innerHTML = data.questions.map((item, i) => {
+            // عمل نسخة من الخيارات وتبديل أماكنها عشوائياً لكل سؤال
             const shuffledOptions = shuffle([...item.options]);
+            
             return `
                 <div class="question-card text-left" id="qBlock_${i}">
-                    <span class="text-yellow-600 font-bold orbitron text-[9px] block mb-1">TASK_ID: 00${i+1}</span>
-                    <p class="text-[15px] text-white font-medium mb-3">${item.q}</p>
-                    <div class="options-list">
+                    <span class="text-yellow-600 font-black orbitron text-[10px] block mb-1">DATA_LOG_0${i+1}</span>
+                    <p class="text-sm text-gray-100 font-semibold mb-3 leading-relaxed">${item.q}</p>
+                    <div class="options-list space-y-1">
                         ${shuffledOptions.map(opt => `
-                            <button class="option-btn" onclick="selectOption(${i}, '${opt}', this)">${opt}</button>
+                            <button class="option-btn" onclick="selectOption(${i}, '${opt}', this)">
+                                ${opt}
+                            </button>
                         `).join('')}
                     </div>
                 </div>
@@ -147,44 +207,74 @@
         }).join('');
     };
 
-    // وظائف التحكم في الصوت
+    function selectOption(qIndex, val, btn) {
+        const parent = document.getElementById(`qBlock_${qIndex}`);
+        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        studentAnswers[qIndex] = val;
+    }
+
     async function togglePlay() {
         if (audio.paused) {
-            await audio.play();
-            playIcon.classList.add('hidden'); pauseIcon.classList.remove('hidden');
+            try {
+                await audio.play();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } catch (err) {
+                console.error("Audio play failed:", err);
+            }
         } else {
             audio.pause();
-            playIcon.classList.remove('hidden'); pauseIcon.classList.add('hidden');
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
         }
     }
-    function skip(t) { audio.currentTime += t; }
+
+    function skip(time) { audio.currentTime += time; }
+
     function formatTime(s) {
-        let m = Math.floor(s / 60), sec = Math.floor(s % 60);
-        return (m < 10 ? '0'+m : m) + ':' + (sec < 10 ? '0'+sec : sec);
+        let m = Math.floor(s / 60);
+        s = Math.floor(s % 60);
+        return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
     }
+
     audio.ontimeupdate = () => {
         if (audio.duration) {
             progressBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
             document.getElementById('currentTime').innerText = formatTime(audio.currentTime);
         }
     };
-    audio.onloadedmetadata = () => { document.getElementById('duration').innerText = formatTime(audio.duration); };
-    function seek(e) { audio.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * audio.duration; }
 
-    function selectOption(idx, val, btn) {
-        const block = document.getElementById(`qBlock_${idx}`);
-        block.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        studentAnswers[idx] = val;
+    audio.onloadedmetadata = () => {
+        document.getElementById('duration').innerText = formatTime(audio.duration);
+        document.getElementById('audioStatus').innerText = "SYSTEM READY - LOGGED TO ASSETS";
+    };
+
+    function seek(e) {
+        const percent = e.offsetX / e.currentTarget.offsetWidth;
+        audio.currentTime = percent * audio.duration;
     }
 
-    // الربط مع الـ Terminal
     window.evaluateMission = function() {
         const data = geData[mNum] || geData["1"];
-        if (Object.keys(studentAnswers).length < data.questions.length) return { answerText: "", points: 0 };
+        const totalQuestions = data.questions.length;
+        const answeredCount = Object.keys(studentAnswers).length;
 
-        let report = Object.keys(studentAnswers).map(k => `Q${parseInt(k)+1}: ${studentAnswers[k]}`).join(' | ');
-        return { status: "COMPLETED", points: 10, answerText: report, isCorrect: true };
+        if (answeredCount < totalQuestions) {
+            return { answerText: "", points: 0 };
+        }
+
+        let finalReport = "";
+        for (let i = 0; i < totalQuestions; i++) {
+            finalReport += `Q${i+1}: ${studentAnswers[i]} | `;
+        }
+
+        return { 
+            status: "COMPLETED", 
+            points: 10, 
+            answerText: finalReport,
+            isCorrect: true 
+        };
     };
 </script>
 </body>

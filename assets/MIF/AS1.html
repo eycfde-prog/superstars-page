@@ -39,28 +39,37 @@
         {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}, 
     ];
 
-    window.onload = () => { renderActivity(); };
+    window.checkAnswers = function() {
+    let correctWords = 0;
+    let studentResponses = [];
+    const inputs = document.querySelectorAll('.task-input');
+    
+    inputs.forEach(input => {
+        const val = input.value.trim().toLowerCase();
+        const correctVal = input.getAttribute('data-answer').toLowerCase();
+        studentResponses.push(val || "EMPTY");
 
-    // 2. دالة بناء واجهة النشاط
-    function renderActivity() {
-        const wrapper = document.getElementById('activityWrapper');
-        wrapper.innerHTML = currentTask.map((pair, index) => `
-            <div class="glass-card p-4 flex flex-col gap-3">
-                <span class="text-[9px] orbitron text-yellow-500 opacity-50"># CASE ${index + 1}</span>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[12px] text-gray-300 text-center label-ar">${pair.m1}</label>
-                        <input type="text" data-answer="${pair.a1}" class="input-alike task-input" placeholder="..." autocomplete="off">
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[12px] text-gray-300 text-center label-ar">${pair.m2}</label>
-                        <input type="text" data-answer="${pair.a2}" class="input-alike task-input" placeholder="..." autocomplete="off">
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
+        if (val === correctVal) {
+            correctWords++;
+            input.style.borderColor = "#00ffa3";
+        } else {
+            input.style.borderColor = "#ff3131";
+        }
+    });
 
+    // الحساب: كل كلمة صحيحة بـ 0.5 توكن (المجموع 10 كلمات = 5 توكنز)
+    let score = correctWords * 0.5;
+    
+    // الحد الأدنى 1 توكن، والتقريب لأقرب رقم صحيح
+    let finalPoints = (score < 1) ? 1 : Math.round(score);
+
+    return { 
+        points: finalPoints, 
+        total: 10,
+        answerText: studentResponses.join(", "),
+        isCorrect: correctWords > 0 
+    };
+};
     // 3. دالة التصحيح الموحدة (المستدعاة من الصفحة الأم)
     window.checkAnswers = function() {
         let score = 0;
@@ -93,3 +102,4 @@
 </script>
 </body>
 </html>
+

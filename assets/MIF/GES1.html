@@ -8,40 +8,65 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #f59e0b; --bg-deep: transparent; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg-deep); color: white; margin: 0; padding: 15px; overflow-x: hidden; }
+        :root { --gold: #D4AF37; --bg-deep: transparent; }
+        
+        /* تحسينات للعرض داخل الـ Iframe */
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--bg-deep); 
+            color: white; 
+            margin: 0; 
+            padding: 10px; 
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) transparent;
+        }
+
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .gold-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(245, 158, 11, 0.1); border-radius: 25px; }
+        
+        .gold-card { 
+            background: rgba(0, 0, 0, 0.4); 
+            backdrop-filter: blur(5px); 
+            border: 1px solid rgba(212, 175, 55, 0.2); 
+            border-radius: 20px; 
+        }
         
         .audio-wave-btn {
-            width: 60px; height: 60px; background: var(--gold); color: #000; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 24px;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); transition: 0.3s;
+            width: 55px; height: 55px; background: var(--gold); color: #000; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 22px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); transition: 0.3s;
         }
+        .audio-wave-btn:hover { transform: scale(1.05); }
+
         .skip-btn {
-            width: 40px; height: 40px; background: rgba(255,255,255,0.05);
+            width: 35px; height: 35px; background: rgba(255,255,255,0.05);
             border: 1px solid var(--gold); border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; color: var(--gold); font-size: 14px;
+            align-items: center; justify-content: center; color: var(--gold); font-size: 12px;
         }
         
         .question-card {
-            background: rgba(255,255,255,0.02); border-left: 3px solid var(--gold);
-            transition: 0.3s; padding: 15px; border-radius: 12px;
+            background: rgba(255,255,255,0.05); 
+            border-left: 4px solid var(--gold);
+            transition: 0.3s; padding: 12px; border-radius: 10px;
         }
 
-        /* ستايل خيارات الإجابة */
         .option-btn {
-            width: 100%; text-align: left; padding: 10px 15px; margin-top: 8px;
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px; font-size: 13px; transition: 0.3s; color: #ccc;
+            width: 100%; text-align: left; padding: 12px 15px; margin-top: 8px;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; font-size: 14px; transition: 0.2s; color: #eee;
+            font-family: 'Poppins', sans-serif;
         }
-        .option-btn:hover { background: rgba(245, 158, 11, 0.1); border-color: var(--gold); }
+        .option-btn:hover { background: rgba(212, 175, 55, 0.15); border-color: var(--gold); }
         .option-btn.selected { 
             background: var(--gold); color: black; font-weight: bold;
-            border-color: var(--gold); box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+            border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
         }
 
-        .gold-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gold-text { 
+            background: linear-gradient(to bottom, #fff, var(--gold)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
         
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
@@ -49,9 +74,9 @@
 </head>
 <body>
 
-    <div class="w-full max-w-2xl mx-auto">
-        <div class="gold-card p-6 mb-8 text-center relative overflow-hidden">
-            <div id="audioStatus" class="text-yellow-500 text-[10px] orbitron mb-4 animate-pulse italic">INITIALIZING AUDIO SYSTEM...</div>
+    <div class="w-full max-w-full mx-auto pb-10">
+        <div class="gold-card p-5 mb-6 text-center">
+            <div id="audioStatus" class="text-yellow-500 text-[10px] orbitron mb-3 animate-pulse italic">READY SYSTEM...</div>
             
             <audio id="mainAudio">
                 <source id="audioSource" src="" type="audio/wav">
@@ -66,23 +91,21 @@
                 <button onclick="skip(5)" class="skip-btn"><i class="fas fa-forward"></i></button>
             </div>
 
-            <div class="mt-8 px-2" dir="ltr">
-                <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden cursor-pointer" onclick="seek(event)">
-                    <div id="progressBar" class="bg-gradient-to-r from-yellow-600 to-yellow-400 h-full rounded-full transition-all duration-75" style="width: 0%"></div>
+            <div class="mt-6 px-1" dir="ltr">
+                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden cursor-pointer" onclick="seek(event)">
+                    <div id="progressBar" class="bg-gradient-to-r from-yellow-700 to-yellow-400 h-full rounded-full" style="width: 0%"></div>
                 </div>
-                <div class="flex justify-between mt-2 text-[9px] text-gray-500 orbitron">
+                <div class="flex justify-between mt-2 text-[10px] text-gray-400 orbitron">
                     <span id="currentTime">00:00</span>
                     <span id="duration">00:00</span>
                 </div>
             </div>
         </div>
 
-        <div class="space-y-3 mb-8" dir="ltr">
-            <h3 class="text-lg font-black gold-text mb-4 italic text-left orbitron">ANALYSIS QUERIES:</h3>
+        <div class="space-y-4" dir="ltr">
+            <h3 class="text-md font-black gold-text mb-3 italic text-left orbitron tracking-widest">ANALYSIS QUERIES:</h3>
             <div id="questionsContainer" class="space-y-4"></div>
         </div>
-
-        <div class="pb-20"></div>
     </div>
 
 <script>
@@ -94,7 +117,7 @@
     const params = new URLSearchParams(window.location.search);
     const mNum = params.get('m') || '1';
 
-    // بيانات الأسئلة مع الاختيارات
+    // بيانات الأسئلة - مستر عز يمكنك إضافة المهمات هنا بسهولة
     const geData = {
         "1": {
             audio: "assets/audio/GE1.wav",
@@ -118,9 +141,9 @@
         const container = document.getElementById('questionsContainer');
         container.innerHTML = data.questions.map((item, i) => `
             <div class="question-card text-left" id="qBlock_${i}">
-                <span class="text-yellow-500 font-black orbitron text-[9px] block mb-1">QUERY 0${i+1}</span>
-                <p class="text-sm text-gray-200 mb-3">${item.q}</p>
-                <div class="options-list space-y-2">
+                <span class="text-yellow-600 font-black orbitron text-[10px] block mb-1">DATA_LOG_0${i+1}</span>
+                <p class="text-sm text-gray-100 font-semibold mb-3 leading-relaxed">${item.q}</p>
+                <div class="options-list space-y-1">
                     ${item.options.map(opt => `
                         <button class="option-btn" onclick="selectOption(${i}, '${opt}', this)">
                             ${opt}
@@ -132,11 +155,8 @@
     };
 
     function selectOption(qIndex, val, btn) {
-        // حذف التحديد من باقي أزرار نفس السؤال
         const parent = document.getElementById(`qBlock_${qIndex}`);
         parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-        
-        // تحديد الزر المختار
         btn.classList.add('selected');
         studentAnswers[qIndex] = val;
     }
@@ -178,29 +198,30 @@
         audio.currentTime = percent * audio.duration;
     }
 
-    // الدالة المسؤولة عن التواصل مع الـ Terminal والتحقق من الحل
+    // الربط مع الـ Terminal (EYC Terminal)
     window.evaluateMission = function() {
         const data = geData[mNum] || geData["1"];
         const totalQuestions = data.questions.length;
         const answeredCount = Object.keys(studentAnswers).length;
 
-        // التحقق من أن الطالب أجاب على كل الأسئلة
+        // 1. التحقق من أن الطالب أجاب على كل الأسئلة
         if (answeredCount < totalQuestions) {
             return { 
-                answerText: "", // نص فارغ سيمنع الإرسال في الكود المحدث
+                answerText: "", // فارغ يمنع الإرسال
                 points: 0 
             };
         }
 
-        // تجميع الإجابات في نص واحد لإرساله للشيت
+        // 2. تجميع الإجابات في نص
         let finalReport = "";
         for (let i = 0; i < totalQuestions; i++) {
             finalReport += `Q${i+1}: ${studentAnswers[i]} | `;
         }
 
+        // 3. حساب النقاط (مثلاً 10 نقاط)
         return { 
             status: "COMPLETED", 
-            points: 10, // يمكنك تعديل نظام النقاط هنا
+            points: 10, 
             answerText: finalReport,
             isCorrect: true 
         };

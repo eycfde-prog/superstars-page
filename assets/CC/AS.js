@@ -1,34 +1,49 @@
 /**
- * Alike Activity Correction Logic (AS)
- * Path: assets/CC/AS.js
+ * Alike Activity Correction Logic (AS) - المحدث
+ * نظام التصحيح: 5 أزواج لكل مهمة
  */
 
 const ALIKE_ANSWERS_KEY = {
-    "1": ["to", "too", "son", "sun", "here", "hear", "sea", "see", "no", "know", "two", "too"],
-    "2": "two", "too", "for", "four", "i", "eye", "be", "bee", "by", "buy"],
-    "3": ["flour", "flower", "peace", "piece", "knight", "night", "aloud", "allowed", "rock", "role", "court", "place", "sun", "son", "bored", "board", "tail", "tale", "deer", "dear"],
-    "4": ["threw", "through", "main", "mane", "steel", "steal", "root", "route", "outcast", "aloud", "sailor", "sail", "whole", "hole", "son", "sun", "weather", "whether", "berry", "bury"],
-    "5": ["hoarse", "horse", "wont", "want", "lake", "one", "stair", "stare", "bare", "bear", "hare", "hair", "heal", "heel", "council", "counsel", "won", "one", "soul", "sole"],
-    "6": ["passed", "past", "plaice", "place", "reign", "rain", "quay", "key", "patience", "patients", "prophecy", "prophesy", "muscle", "mussel", "metal", "mettle", "morning", "mourning", "knot", "not"],
-    "7": ["allowed", "aloud", "altar", "alter", "ascent", "assent", "check", "cheque", "choir", "quire", "compliment", "complement", "phrase", "frays", "mail", "male", "porter", "port", "master", "muster"],
-    "8": ["conscience", "conscious", "desert", "dessert", "drawer", "draw", "dual", "duel", "elicit", "illicit", "ensure", "insure", "flea", "flee", "forte", "forty", "gate", "gait", "guild", "guilt"],
-    "9": ["allusive", "elusive", "discreet", "discrete", "eminent", "imminent", "hero", "heroin", "hymn", "him", "idle", "idol", "lead", "led", "hare", "hair", "weak", "week", "loot", "lute"],
-    "10": ["brake", "break", "scent", "sent", "banned", "band", "medal", "meddle", "current", "currant", "exercise", "exorcise", "stationary", "stationery", "sight", "site", "principle", "principal", "profit", "prophet"]
+    // المهمة 1: (to/too, son/sun, here/hear, sea/see, no/know)
+    "1": ["to", "too", "son", "sun", "here", "hear", "sea", "see", "no", "know"],
+    
+    // المهمة 2: (two/too, son/sun, i/eye, be/bee, by/buy)
+    "2": ["two", "too", "son", "sun", "i", "eye", "be", "bee", "by", "buy"],
+    
+    // المهمة 3: (flour/flower, peace/piece, knight/night, sun/son, tail/tale)
+    "3": ["flour", "flower", "peace", "piece", "knight", "night", "sun", "son", "tail", "tale"],
+    
+    // المهمة 4: (main/mane, steel/steal, root/route, whole/hole, son/sun)
+    "4": ["main", "mane", "steel", "steal", "root", "route", "whole", "hole", "son", "sun"],
+    
+    // المهمة 5: (horse/hoarse, one/won, stair/stare, bare/bear, hair/hare)
+    "5": ["horse", "hoarse", "one", "won", "stair", "stare", "bare", "bear", "hair", "hare"],
+    
+    // المهمة 6: (past/passed, place/plaice, rain/reign, key/quay, not/knot)
+    "6": ["past", "passed", "place", "plaice", "rain", "reign", "key", "quay", "not", "knot"],
+    
+    // المهمة 7: (allowed/aloud, check/cheque, mail/male, sea/see, wait/weight)
+    "7": ["allowed", "aloud", "check", "cheque", "mail", "male", "sea", "see", "wait", "weight"],
+    
+    // المهمة 8: (desert/dessert, dual/duel, flea/flee, gate/gait, week/weak)
+    "8": ["desert", "dessert", "dual", "duel", "flea", "flee", "gate", "gait", "week", "weak"],
+    
+    // المهمة 9: (hero/heroin, hymn/him, idle/idol, lead/led, hair/hare)
+    "9": ["hero", "heroin", "hymn", "him", "idle", "idol", "lead", "led", "hair", "hare"],
+    
+    // المهمة 10: (brake/break, scent/sent, band/banned, sight/site, meat/meet)
+    "10": ["brake", "break", "scent", "sent", "band", "banned", "sight", "site", "meat", "meet"]
 };
 
-// خوارزمية قياس التشابه (تسمح بحرف واحد خطأ)
+// خوارزمية قياس التشابه (تسمح بحرف واحد خطأ) - لم نغيرها لضمان سهولة التنفيذ
 function checkSimilarity(s1, s2) {
     s1 = s1.toLowerCase().trim();
     s2 = s2.toLowerCase().trim();
     if (s1 === s2) return true;
     if (Math.abs(s1.length - s2.length) > 1) return false;
 
-    let editDistance = 0;
-    let i = 0, j = 0;
-    
-    // تبسيط للمنطق: التحقق من عدد الحروف المختلفة
-    const longer = s1.length >= s2.length ? s1 : s2;
-    const shorter = s1.length < s2.length ? s1 : s2;
+    let longer = s1.length >= s2.length ? s1 : s2;
+    let shorter = s1.length < s2.length ? s1 : s2;
 
     let diffs = 0;
     let sIdx = 0;
@@ -43,13 +58,17 @@ function checkSimilarity(s1, s2) {
     return diffs <= 1;
 }
 
-// الدالة التي ستستدعيها الصفحة الرئيسية
-function evaluateMission(mNum, level, studentAnswer) {
+/**
+ * تقييم المهمة
+ * @param {string} mNum - رقم المهمة (1-10)
+ * @param {string} studentAnswer - النص القادم من الـ Iframe
+ */
+function evaluateMission(mNum, studentAnswer) {
     const answers = ALIKE_ANSWERS_KEY[mNum];
-    if (!answers) return { correct: false, points: 0 };
+    if (!answers) return { correct: false, points: 0, found: 0 };
 
-    // تحويل إجابة الطالب لمصفوفة كلمات
-    const studentWords = studentAnswer.toLowerCase().split(/[\s,]+/).filter(w => w.length > 0);
+    // تنظيف إجابة الطالب وتقسيمها لكلمات
+    const studentWords = studentAnswer.toLowerCase().split(/[\s,.-]+/).filter(w => w.length > 0);
     
     let correctCount = 0;
     let tempAnswers = [...answers];
@@ -58,18 +77,18 @@ function evaluateMission(mNum, level, studentAnswer) {
         const index = tempAnswers.findIndex(target => checkSimilarity(word, target));
         if (index !== -1) {
             correctCount++;
-            tempAnswers.splice(index, 1); // منع تكرار احتساب نفس الكلمة
+            tempAnswers.splice(index, 1); // منع تكرار الكلمة
         }
     });
 
-    // الحساب: كل كلمة = 0.5 توكين
-    let rawScore = correctCount * 0.5;
-    let finalPoints = Math.round(rawScore); // التقريب لأقرب عدد صحيح (مثلاً 3.5 تصبح 4)
+    // نظام النقاط: كل كلمة بـ 1 توكين (بإجمالي 10 توكينز للمهمة الكاملة)
+    // أو يمكنك تعديله ليكون 0.5 كما كان سابقاً
+    let finalPoints = correctCount; 
 
     return {
-        correct: finalPoints > 0,
+        isCorrect: correctCount >= 1, // تعتبر صحيحة إذا أجاب كلمة واحدة على الأقل
         points: finalPoints,
-        found: correctCount
+        found: correctCount,
+        answerText: studentAnswer
     };
 }
-

@@ -24,6 +24,7 @@
             overflow-x: hidden;
         }
 
+        /* Canvas Background */
         #starCanvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; pointer-events: none;
@@ -38,9 +39,9 @@
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
             overflow: hidden; padding: 20px; gap: 20px;
             backdrop-filter: blur(10px);
-            z-index: 5;
         }
 
+        /* Spinner */
         .loader-spinner {
             position: absolute; width: 50px; height: 50px;
             border: 4px solid rgba(212, 175, 55, 0.1);
@@ -116,16 +117,17 @@
             z-index: 100; color: var(--gold); font-weight: bold; border-radius: 40px;
         }
 
+        /* --- Floating Preview Mobile --- */
         @media (max-width: 768px) {
-            .container { flex-direction: column; border-radius: 20px; margin-top: 100px; margin-bottom: 20px; }
+            .container { flex-direction: column; border-radius: 20px; margin-top: 80px; }
             .avatar-section {
                 position: fixed; top: 0; left: 0; right: 0; 
-                height: 80px; flex-direction: row; padding: 5px 20px;
+                height: 70px; flex-direction: row; padding: 10px 20px;
                 border-radius: 0; border: none; border-bottom: 1px solid var(--gold);
                 background: rgba(20, 20, 20, 0.95); z-index: 1000; backdrop-filter: blur(10px);
             }
-            #avatar-container { width: 60px; height: 60px; }
-            #avatar-img { width: 55px; height: 55px; }
+            #avatar-container { width: 50px; height: 50px; }
+            #avatar-img { width: 45px; height: 45px; }
             #display-name { margin-top: 0 !important; margin-left: 15px; font-size: 0.9rem; }
         }
     </style>
@@ -160,14 +162,8 @@
 
             <div class="step" id="step2">
                 <h2>02. Contact & Age</h2>
-                <div class="input-group">
-                    <label>Email Address</label>
-                    <input type="email" id="email" placeholder="Email Address" required>
-                </div>
-                <div class="input-group">
-                    <label>Age</label>
-                    <input type="number" id="age" placeholder="Age" required>
-                </div>
+                <div class="input-group"><input type="email" id="email" placeholder="Email Address" required></div>
+                <div class="input-group"><input type="number" id="age" placeholder="Age" required></div>
                 <div class="btn-group">
                     <button type="button" class="prev-btn" onclick="nextStep(1)">Back</button>
                     <button type="button" onclick="nextStep(3)">Next</button>
@@ -257,12 +253,8 @@
                 <div class="input-group">
                     <label>Choose Programs</label>
                     <div style="display: flex; gap: 20px;">
-                        <label style="color:white; display:flex; align-items:center; gap:5px;">
-                            <input type="checkbox" name="program" value="Season" style="width:auto;"> Season
-                        </label>
-                        <label style="color:white; display:flex; align-items:center; gap:5px;">
-                            <input type="checkbox" name="program" value="X-Box" style="width:auto;"> X-Box
-                        </label>
+                        <label><input type="checkbox" name="program" value="Season"> Season</label>
+                        <label><input type="checkbox" name="program" value="X-Box"> X-Box</label>
                     </div>
                 </div>
                 <div class="btn-group">
@@ -287,6 +279,8 @@
 </div>
 
 <script>
+    const SCRIPT_URL = "YOUR_SCRIPT_URL_HERE";
+
     const options = {
         maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar"],
         femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob"],
@@ -296,31 +290,45 @@
         facialHair: ["Blank", "BeardMedium", "BeardLight", "MoustacheFancy"]
     };
 
+    // 1. Canvas Stars System
     function initStars() {
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let width, height, stars = [];
+
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
         }
+
         window.addEventListener('resize', resize);
         resize();
+
         for(let i=0; i<100; i++) {
-            stars.push({ x: Math.random() * width, y: Math.random() * height, size: Math.random() * 2, speed: Math.random() * 0.5 + 0.1 });
+            stars.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                size: Math.random() * 2,
+                speed: Math.random() * 0.5 + 0.1
+            });
         }
+
         function animate() {
             ctx.clearRect(0,0, width, height);
             ctx.fillStyle = "#d4af37";
             stars.forEach(s => {
-                ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill();
-                s.y -= s.speed; if(s.y < 0) s.y = height;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+                ctx.fill();
+                s.y -= s.speed;
+                if(s.y < 0) s.y = height;
             });
             requestAnimationFrame(animate);
         }
         animate();
     }
 
+    // 2. Sound & Steps
     function playClick() {
         const audio = document.getElementById('clickSound');
         audio.currentTime = 0;
@@ -329,37 +337,33 @@
 
     function nextStep(step) {
         playClick();
-        const currentStepNum = step > 1 ? step - 1 : 1;
-        const currentStepEl = document.getElementById(`step${currentStepNum}`);
-
-        // Logic Check: Only validate if moving FORWARD
-        if (step > currentStepNum) {
+        if (step > 1) {
+            const currentStepEl = document.getElementById(`step${step-1}`);
             const inputs = currentStepEl.querySelectorAll('input[required]');
-            let valid = true;
             
-            inputs.forEach(i => {
-                if(!i.value) { i.style.borderColor = "red"; valid = false; }
-                else { i.style.borderColor = "rgba(255,255,255,0.05)"; }
-            });
-
-            if(!valid) { alert("Please fill all required fields, Agent."); return; }
-
+            // Email Validation
             const emailField = currentStepEl.querySelector('input[type="email"]');
             if(emailField && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField.value)) {
                 alert("Agent, invalid Email detected!"); return;
             }
+
+            let valid = true;
+            inputs.forEach(i => { if(!i.value) valid = false; });
+            if(!valid) { alert("Complete fields, Agent."); return; }
+
+            // LocalStorage Save
             saveToStorage();
         }
-
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        const targetStep = document.getElementById('step' + step);
-        if(targetStep) targetStep.classList.add('active');
+        document.getElementById('step' + step).classList.add('active');
         document.getElementById('pBar').style.width = (step * 14.2) + "%";
     }
 
     function saveToStorage() {
         const data = {};
-        document.querySelectorAll('input, select').forEach(el => { if(el.id) data[el.id] = el.value; });
+        document.querySelectorAll('input, select').forEach(el => {
+            if(el.id) data[el.id] = el.value;
+        });
         localStorage.setItem('eyc_agent_data', JSON.stringify(data));
     }
 
@@ -375,16 +379,15 @@
         }
     }
 
+    // 3. Avatar System with Loader
     function updateAvatar() {
         const loader = document.getElementById('imgLoader');
         const img = document.getElementById('avatar-img');
-        if(!img) return;
-
         loader.style.display = 'block';
         img.style.opacity = '0.3';
 
-        const top = document.getElementById('topType').value || "ShortHairShortFlat";
-        const color = document.getElementById('hairColor').value || "Black";
+        const top = document.getElementById('topType').value;
+        const color = document.getElementById('hairColor').value;
         const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
         
         const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${document.getElementById('accessoriesType').value}&facialHairType=${document.getElementById('facialHairType').value}&clotheType=${document.getElementById('clotheType').value}&skinColor=${document.getElementById('skinColor').value}`;
@@ -401,11 +404,10 @@
     function initOptions() {
         const isFemale = document.getElementById('gender').value === 'female';
         const topSel = document.getElementById('topType');
-        const facialSel = document.getElementById('facialHairType');
-        
         topSel.innerHTML = "";
         (isFemale ? options.femaleHair : options.maleHair).forEach(opt => topSel.add(new Option(opt, opt)));
 
+        const facialSel = document.getElementById('facialHairType');
         facialSel.innerHTML = "";
         if (isFemale) {
             document.getElementById('facial-hair-group').style.display = "none";
@@ -430,10 +432,11 @@
         document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT";
     }
 
+    // Initialize
     window.onload = () => {
         initStars();
-        initOptions(); // Initialize options before loading values
         loadFromStorage();
+        initOptions();
         updateAvatar();
     };
 

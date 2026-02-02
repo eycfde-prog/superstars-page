@@ -3,559 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Superstars Registration</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>EYC | Universal Mission Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="missionnormalstyle.css">
     <style>
-        :root {
-            --gold: #d4af37;
-            --gold-hover: #f1c40f;
-            --glass: rgba(255, 255, 255, 0.05);
-            --card-bg: rgba(20, 20, 20, 0.9);
-            --input-bg: rgba(40, 40, 40, 0.8);
+        /* تحسينات التصميم لضمان الثبات */
+        .difficulty-bar { 
+            display: flex; /* اجعلها مرئية دائماً مع التحكم في الظهور للحفاظ على المساحة */
+            visibility: hidden; 
+            justify-content: center; 
+            gap: 10px; 
+            padding: 10px; 
+            background: rgba(0,0,0,0.3); 
+            min-height: 50px;
         }
-
-        body {
-            margin: 0; padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a, #000);
-            color: white;
-            min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            overflow-x: hidden;
-        }
-
-        /* Canvas Background */
-        #starCanvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0;
-        }
-
-        .container {
-            width: 95%; max-width: 1100px;
-            background: var(--card-bg);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 40px;
-            display: flex; position: relative;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.1);
-            overflow: hidden; padding: 20px;
-            gap: 20px; z-index: 1;
-        }
-
-        /* Loading Spinner for Image */
-        .img-loader {
-            position: absolute; width: 50px; height: 50px;
-            border: 5px solid rgba(212, 175, 55, 0.1);
-            border-top: 5px solid var(--gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            display: none; z-index: 10;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .progress-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: rgba(255,255,255,0.05); z-index: 10;
-        }
-        .progress-bar {
-            height: 100%; width: 14%; background: var(--gold);
-            transition: width 0.4s ease; box-shadow: 0 0 15px var(--gold);
-        }
-
-        .avatar-section {
-            flex: 1; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 30px;
-            border: 1px dashed rgba(212, 175, 55, 0.2);
-            padding: 40px; position: relative;
-            transition: all 0.3s ease;
-        }
-
-        /* تكبير صورة الأفاتار */
-        #avatar-container {
-            width: 320px; height: 320px; /* تم التكبير من 260 */
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            display: flex; justify-content: center; align-items: center;
-            position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-
-        #avatar-img { width: 290px; height: 290px; z-index: 5; transition: 0.3s; }
-
-        .form-section { flex: 1.2; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+        .diff-btn { padding: 8px 15px; border: 1px solid #00ff88; color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: 0.3s; background: transparent; border-radius: 5px; }
+        .diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
         
-        .step { display: none; animation: fadeIn 0.5s ease; }
-        .step.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
-
-        h2 { color: white; margin-bottom: 25px; font-weight: 600; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
-        h2::before { content: ''; width: 4px; height: 20px; background: var(--gold); border-radius: 2px; }
-
-        .input-group { margin-bottom: 15px; position: relative; }
-        label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #aaa; }
-
-        input, select {
-            width: 100%; padding: 14px 20px;
-            background: var(--input-bg);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 15px; color: white; outline: none;
-            font-size: 0.9rem; box-sizing: border-box; transition: 0.3s;
+        #studentImg { width: 100%; height: 100%; object-fit: cover; display: block; background: #222; }
+        
+        #rewardContainer {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #2b1055, #000); z-index: 9999; cursor: pointer;
         }
 
-        input:focus, select:focus { border-color: var(--gold); background: rgba(50,50,50,1); }
-
-        .btn-group { display: flex; gap: 10px; margin-top: 25px; }
-        button {
-            flex: 1; background: var(--gold); color: #000;
-            border: none; padding: 15px; border-radius: 12px;
-            font-weight: 700; cursor: pointer; transition: 0.3s;
+        .done-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85); z-index: 10;
+            flex-direction: column; justify-content: center; align-items: center; border-radius: 10px;
+            backdrop-filter: blur(5px);
         }
-        button.prev-btn { background: #333; color: white; }
-        button:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
-
-        .loading-overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.9);
-            display: none; justify-content: center; align-items: center;
-            z-index: 100; color: var(--gold); font-weight: bold; border-radius: 40px;
-        }
-
-        /* Floating Preview for Mobile */
-      @media (max-width: 768px) {
-            /* جعل الحاوية ترتب العناصر عمودياً */
-            .container { 
-                flex-direction: column; 
-                padding: 15px; 
-                gap: 10px;
-                align-items: center;
-            }
-
-            /* تعديل قسم الأفاتار ليكون شريطاً علوياً أو دائرة مركزية */
-            .avatar-section {
-                width: 100%;
-                padding: 15px;
-                flex: none; /* إلغاء التمدد التلقائي */
-                border-radius: 20px;
-                background: rgba(212, 175, 55, 0.05);
-            }
-
-            /* ضبط حجم الفريم (الدائرة) في الموبايل */
-            #avatar-container { 
-                width: 180px;  /* حجم مناسب للموبايل ليظل الفريم دائرياً */
-                height: 180px; 
-                margin: 0 auto;
-            }
-            
-            /* ضبط حجم الصورة داخل الفريم */
-            #avatar-img { 
-                width: 160px; 
-                height: 160px; 
-            }
-
-            /* ضبط مكان وحجم النص */
-            #display-name {
-                font-size: 1.1rem;
-                margin-top: 10px;
-                text-align: center;
-            }
-
-            /* التأكد من أن قسم الفورم يأخذ المساحة المتبقية */
-            .form-section {
-                width: 100%;
-                padding: 0;
-            }
-        }
+        .done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
+        .done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #1a1a1a; font-weight: 900; }
+        
+        .activity-content-frame { position: relative; min-height: 400px; background: #111; }
+        
+        /* منع تفاعل المستخدم مع العناصر أثناء التقييم */
+        .loading-state { pointer-events: none; opacity: 0.7; }
     </style>
 </head>
 <body>
+    <div id="rewardContainer">
+        <div class="instruction" style="position: absolute; bottom: 50px; color: white; width: 100%; text-align: center; font-family: 'Poppins';">اضغط على الصندوق لفتحه!</div>
+        <canvas id="rewardCanvas"></canvas>
+    </div>
 
-<canvas id="starCanvas"></canvas>
-<audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    <div class="mission-outer-frame" id="mainUI">
+        <header class="mission-header">
+            <div class="agent-side">
+                <div class="circle-frame"><img src="" id="studentImg" alt="Agent" onerror="this.src='assets/Student.png'"></div>
+                <div class="info-box">
+                    <span>AGENT</span>
+                    <b id="agentName">INITIALIZING...</b>
+                    <div class="token-tag" id="currentTokens">0 TK</div>
+                </div>
+            </div>
+            <div class="center-logo-area"><img src="assets/logo.png" alt="EYC LOGO" onerror="this.style.display='none'"></div>
+            <div class="activity-side">
+                <div class="circle-frame"><img src="" id="activityLogo" onerror="this.src='assets/default-act.png'"></div>
+                <div class="info-box">
+                    <span id="actCodeDisplay">CODE</span>
+                    <b id="actNameDisplay">LOADING...</b>
+                    <div class="token-tag mission-tag" id="missionNum">M 0</div>
+                </div>
+            </div>
+        </header>
 
-<div class="container">
-    <div class="progress-container"><div class="progress-bar" id="pBar"></div></div>
-    <div class="loading-overlay" id="loader">DEPLOYING AGENT...</div>
+        <div class="difficulty-bar" id="difficultyBar">
+            <div class="diff-btn active" onclick="changeLevel('A', this)">LEVEL A</div>
+            <div class="diff-btn" onclick="changeLevel('B', this)">LEVEL B</div>
+            <div class="diff-btn" onclick="changeLevel('C', this)">LEVEL C</div>
+        </div>
+
+        <div class="activity-content-frame">
+            <div id="doneOverlay" class="done-overlay">
+                <i class="fas fa-check-circle"></i>
+                <span>MISSION COMPLETED</span>
+            </div>
+            <iframe id="mainIframe" src="about:blank" class="activity-iframe" style="width:100%; border:none;"></iframe>
+        </div>
+
+        <div class="action-container">
+            <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
+            <button class="submit-btn" id="submitBtn" onclick="submitMission()">SUBMIT</button>
+            <a href="MC.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="guideModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000;" onclick="toggleGuide(false)">
+        <div class="glassy-container" style="max-width:500px; margin:50px auto; background:#fff; padding:20px; border-radius:15px;" onclick="event.stopPropagation()">
+            <div class="speech-bubble">
+                <p id="guideText" style="color:#333; font-weight:bold;">تعليمات المهمة:</p>
+                <iframe id="guideFrame" src="" style="width:100%; height:300px; border:none;"></iframe>
+                <button class="nav-btn close-guide-btn" onclick="toggleGuide(false)" style="width:100%; margin-top:10px;">فهمت!</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="CC.js"></script>
+    <script>
+    const canvas = document.getElementById('rewardCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, prizeValue = "1";
+    const tokenImg = new Image(); tokenImg.src = 'assets/Token.png'; 
+    let gameState = 'closed', tokens = [], prize = null, animationId = null;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const actCode = urlParams.get('act') || 'GES'; 
+    const mNum = urlParams.get('m') || '1';  
+    const actName = urlParams.get('name') || 'Activity'; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNrfn_k9WIt2uQo4hxUw_0JU6pKnwP1lvyYXQnHhHPv_zpfAL5602QSxC_VGu4V7mflA/exec";
     
-    <div class="avatar-section" id="avatar-sidebar">
-        <div id="avatar-container">
-            <div class="img-loader" id="imgLoader"></div>
-            <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
-        </div>
-        <h3 id="display-name" style="margin-top:20px; color: var(--gold); letter-spacing: 2px;">EYC AGENT</h3>
-    </div>
+    let currentLevel = 'A';
+    const isElite = actCode.endsWith('X');
 
-    <div class="form-section">
-        <form id="registrationForm">
-            <div class="step active" id="step1">
-                <h2>01. Identity</h2>
-                <div class="input-group">
-                    <label>Full Name</label>
-                    <input type="text" id="name" placeholder="Enter Agent Name" required oninput="updateName()">
-                </div>
-                <button type="button" onclick="nextStep(2)">Proceed</button>
-            </div>
+    // الإعداد الأولي للواجهة
+    document.getElementById('actNameDisplay').innerText = actName;
+    document.getElementById('actCodeDisplay').innerText = actCode;
+    document.getElementById('missionNum').innerText = 'M ' + mNum;
+    document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
+    if(isElite) document.getElementById('difficultyBar').style.visibility = 'visible';
 
-            <div class="step" id="step2">
-                <h2>02. Contact & Age</h2>
-                <div class="input-group"><input type="email" id="email" placeholder="Email Address" required></div>
-                <div class="input-group"><input type="number" id="age" placeholder="Age" required></div>
-                <div class="btn-group">
-                    <button type="button" class="prev-btn" onclick="nextStep(1)">Back</button>
-                    <button type="button" onclick="nextStep(3)">Next</button>
-                </div>
-            </div>
+    function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
+    window.addEventListener('resize', resize); resize();
 
-            <div class="step" id="step3">
-                <h2>03. Base Design</h2>
-                <div class="input-group">
-                    <label>Gender Base</label>
-                    <select id="gender" onchange="initOptions(); updateAvatar();">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="prev-btn" onclick="nextStep(2)">Back</button>
-                    <button type="button" onclick="nextStep(4)">Customize</button>
-                </div>
-            </div>
-
-            <div class="step" id="step4">
-                <h2>04. Features</h2>
-                <div class="input-group">
-                    <label id="hairLabel">Hair Style</label>
-                    <select id="topType" onchange="checkHijab(); updateAvatar();"></select>
-                </div>
-                <div class="input-group">
-                    <label id="hairColorLabel">Color</label>
-                    <select id="hairColor" onchange="updateAvatar()"></select>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="prev-btn" onclick="nextStep(3)">Back</button>
-                    <button type="button" onclick="nextStep(5)">Next</button>
-                </div>
-            </div>
-
-            <div class="step" id="step5">
-                <h2>05. Face & Details</h2>
-                <div id="facial-hair-group" class="input-group">
-                    <label>Beard Style</label>
-                    <select id="facialHairType" onchange="updateAvatar()"></select>
-                </div>
-                <div class="input-group">
-                    <label>Accessories (Glasses)</label>
-                    <select id="accessoriesType" onchange="updateAvatar()">
-                        <option value="Blank">None</option>
-                        <option value="Kurt">Kurt</option>
-                        <option value="Prescription01">Classic</option>
-                        <option value="Prescription02">Modern</option>
-                        <option value="Round">Round</option>
-                        <option value="Sunglasses">Sunglasses</option>
-                        <option value="Wayfarers">Wayfarers</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>Eye Expression</label>
-                    <select id="eyeType" onchange="updateAvatar()">
-                        <option value="Default">Normal</option>
-                        <option value="Happy">Happy</option>
-                        <option value="Wink">Wink 😉</option>
-                        <option value="Hearts">Love 😍</option>
-                        <option value="Surprised">Surprised 😮</option>
-                        <option value="Squint">Squint</option>
-                        <option value="Side">Looking Side</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Mouth Expression</label>
-                    <select id="mouthType" onchange="updateAvatar()">
-                        <option value="Default">Normal</option>
-                        <option value="Smile">Smile 🙂</option>
-                        <option value="Twinkle">Twinkle ✨</option>
-                        <option value="Tongue">Tongue 😛</option>
-                        <option value="Serious">Serious</option>
-                        <option value="Eating">Eating</option>
-                        <option value="Grimace">Grimace</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>Skin Complexion</label>
-                    <select id="skinColor" onchange="updateAvatar()">
-                        <option value="Tanned">Tanned</option>
-                        <option value="Yellow">Yellow</option>
-                        <option value="Pale">Pale</option>
-                        <option value="Light">Light</option>
-                        <option value="Brown">Brown</option>
-                    </select>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="prev-btn" onclick="nextStep(4)">Back</button>
-                    <button type="button" onclick="nextStep(6)">Outfits</button>
-                </div>
-            </div>
-
-            <div class="step" id="step6">
-                <h2>06. Wardrobe</h2>
-                <div class="input-group">
-                    <label>Outfit Style</label>
-                    <select id="clotheType" onchange="updateAvatar()">
-                        <option value="BlazerShirt">Blazer & Shirt</option>
-                        <option value="BlazerSweater">Blazer & Sweater</option>
-                        <option value="CollarSweater">Collar Sweater</option>
-                        <option value="GraphicShirt">Graphic T-Shirt</option>
-                        <option value="Hoodie">Hoodie</option>
-                        <option value="Overall">Overall</option>
-                    </select>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="prev-btn" onclick="nextStep(5)">Back</button>
-                    <button type="button" onclick="nextStep(7)">Next</button>
-                </div>
-            </div>
-
-            <div class="step" id="step7">
-                <h2>07. Mission</h2>
-                <div class="input-group">
-                    <label style="margin-bottom: 15px;">Choose Programs</label>
-                    <div style="display: flex; gap: 20px;">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" name="program" value="Season" style="width: 20px;"> Season
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" name="program" value="X-Box" style="width: 20px;"> X-Box
-                        </label>
-                    </div>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="prev-btn" onclick="nextStep(6)">Back</button>
-                    <button type="submit">Complete Mission</button>
-                </div>
-            </div>
-        </form>
-
-        <div id="success-card" style="display: none; text-align: center;">
-            <h2 style="justify-content: center;">MISSION ACCOMPLISHED</h2>
-            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid var(--gold);">
-                <img id="card-avatar" src="" width="180">
-                <h3 id="card-name" style="color: var(--gold); margin: 10px 0;"></h3>
-                <div style="background: #000; padding: 10px; border-radius: 10px; font-size: 1.5rem; font-weight: bold; color: var(--gold);">
-                    <span id="agent-code">----</span>
-                </div>
-            </div>
-            <button onclick="window.location.href='MC.html'" style="margin-top: 20px; width: 100%;">Enter Command Center</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOqqbFJ1yTf1PQrGFk2KSIQuEJNCJCqQpxx26P-JeVdLNpLbWLWje-kmL22olJOQr_yw/exec";
-
-    const options = {
-        maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
-        femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
-        maleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "BlondeGolden", "Platinum"],
-        femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
-        hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
-        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
-        eyes: ["Default", "Happy", "Surprised", "Wink", "Hearts", "Side", "Squint", "Close"],
-        mouths: ["Default", "Smile", "Serious", "Twinkle", "Tongue", "Eating", "Grimace"]
-    };
-
-    // --- 1. Canvas Stars Performance Improvement ---
-    function initStars() {
-        const canvas = document.getElementById('starCanvas');
-        const ctx = canvas.getContext('2d');
-        let w, h, stars = [];
-
-        function setSize() {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
+    // الكلاسات الخاصة بالأنيميشن (تم الإبقاء عليها مع تحسين الأداء)
+    class Box {
+        constructor() { this.x = width / 2; this.y = height / 2 + 50; this.w = 120; this.h = 120; this.lidY = this.y - 60; this.shakeOffset = 0; this.lidVelocity = 0; this.lidRotation = 0; }
+        update() {
+            if (gameState === 'closed') { this.shakeOffset = Math.random() > 0.9 ? (Math.random() - 0.5) * 5 : this.shakeOffset * 0.9; }
+            else if (gameState === 'opening') { this.lidVelocity -= 1.5; this.lidY += this.lidVelocity; this.lidRotation -= 0.05; if (this.lidY < -200) gameState = 'opened'; }
         }
-
-        window.onresize = setSize;
-        setSize();
-
-        for(let i=0; i<80; i++) {
-            stars.push({
-                x: Math.random() * w,
-                y: Math.random() * h,
-                size: Math.random() * 2,
-                speed: Math.random() * 0.5 + 0.1
-            });
+        draw() {
+            ctx.save(); ctx.translate(this.x + this.shakeOffset, this.y);
+            ctx.fillStyle = '#ff4757'; ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
+            ctx.fillStyle = '#ffd32a'; ctx.fillRect(-10, -this.h/2, 20, this.h);
+            ctx.restore();
+            ctx.save(); ctx.translate(this.x + this.shakeOffset, this.lidY);
+            ctx.rotate(this.lidRotation); ctx.fillStyle = '#ff6b81';
+            ctx.fillRect(-this.w/2 - 5, -15, this.w + 10, 30);
+            ctx.restore();
         }
-
-        function draw() {
-            ctx.clearRect(0,0,w,h);
-            ctx.fillStyle = "#d4af37";
-            stars.forEach(s => {
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-                ctx.fill();
-                s.y -= s.speed;
-                if(s.y < 0) s.y = h;
-            });
-            requestAnimationFrame(draw);
-        }
-        draw();
     }
 
-    // --- 2. LocalStorage & UX Improvements ---
-    function playClick() {
-        const snd = document.getElementById('clickSound');
-        snd.currentTime = 0;
-        snd.play().catch(() => {});
+    class Token {
+        constructor(x, y) { this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * 10; this.vy = (Math.random() - 1) * 12; this.gravity = 0.4; }
+        update() { this.vy += this.gravity; this.x += this.vx; this.y += this.vy; }
+        draw() { ctx.drawImage(tokenImg, this.x, this.y, 30, 30); }
     }
 
-    function saveProgress() {
-        const inputs = document.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            if(input.id) localStorage.setItem('eyc_data_' + input.id, input.value);
-        });
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        box.update(); box.draw();
+        if (prize) { prize.update(); prize.draw(); }
+        tokens.forEach((t, i) => { t.update(); t.draw(); if (t.y > height) tokens.splice(i, 1); });
+        animationId = requestAnimationFrame(animate);
     }
 
-    function loadProgress() {
-        const inputs = document.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            const saved = localStorage.getItem('eyc_data_' + input.id);
-            if(saved) {
-                input.value = saved;
-                if(input.id === 'name') updateName();
+    const box = new Box();
+
+    async function initMission(level = 'A') {
+        currentLevel = level;
+        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+        const iframe = document.getElementById('mainIframe');
+        const overlay = document.getElementById('doneOverlay');
+
+        document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
+        if(saved.image) document.getElementById('studentImg').src = saved.image;
+
+        // التحقق من حالة المهمة
+        try {
+            const isDone = await checkMissionStatus(saved.email, actCode, mNum, SCRIPT_URL);
+            if (isDone) {
+                overlay.style.display = 'flex';
+                iframe.style.opacity = '0.1';
+                document.getElementById('submitBtn').disabled = true;
+                iframe.src = "about:blank";
+            } else {
+                overlay.style.display = 'none';
+                iframe.style.opacity = '1';
+                document.getElementById('submitBtn').disabled = false;
+                iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
             }
-        });
-    }
-
-    function initOptions() {
-        const isFemale = document.getElementById('gender').value === 'female';
-        const topSel = document.getElementById('topType');
-        topSel.innerHTML = "";
-        const hairList = isFemale ? options.femaleHair : options.maleHair;
-        hairList.forEach(opt => topSel.add(new Option(opt, opt)));
-
-        const facialGroup = document.getElementById('facial-hair-group');
-        const facialSel = document.getElementById('facialHairType');
-        facialSel.innerHTML = "";
-        if (isFemale) {
-            facialGroup.style.display = "none";
-            facialSel.add(new Option("Blank", "Blank"));
-        } else {
-            facialGroup.style.display = "block";
-            options.facialHair.forEach(opt => facialSel.add(new Option(opt, opt)));
+        } catch(e) {
+            console.error("Status check failed, defaulting to open.");
+            iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
         }
-        checkHijab();
     }
 
-    function checkHijab() {
-        const isFemale = document.getElementById('gender').value === 'female';
-        const isHijab = document.getElementById('topType').value === 'Hijab';
-        const colorSel = document.getElementById('hairColor');
-        const colorLabel = document.getElementById('hairColorLabel');
-        const savedColor = colorSel.value;
-        colorSel.innerHTML = "";
-        let colorList = isFemale && isHijab ? options.hijabColors : (isFemale ? options.femaleHairColors : options.maleHairColors);
-        colorLabel.innerText = isFemale && isHijab ? "Hijab Color" : "Hair Color";
-        colorList.forEach(opt => colorSel.add(new Option(opt, opt)));
-    }
-
-    function updateName() {
-        document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT";
-    }
-
-    // --- 3. Image Loader Logic ---
-    function updateAvatar() {
-        const loader = document.getElementById('imgLoader');
-        const img = document.getElementById('avatar-img');
-        loader.style.display = 'block';
-
-        const top = document.getElementById('topType').value;
-        const skin = document.getElementById('skinColor').value;
-        const facial = document.getElementById('facialHairType').value;
-        const color = document.getElementById('hairColor').value;
-        const clothe = document.getElementById('clotheType').value;
-        const accessories = document.getElementById('accessoriesType').value;
-        const eye = document.getElementById('eyeType').value;
-        const mouth = document.getElementById('mouthType').value;
+    async function submitMission() {
+        const btn = document.getElementById('submitBtn');
+        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         
-        const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
-        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&mouthType=${mouth}&skinColor=${skin}`;
-        
-        const tempImg = new Image();
-        tempImg.src = url;
-        tempImg.onload = () => {
-            img.src = url;
-            loader.style.display = 'none';
-        };
-        saveProgress();
-    }
-
-    function nextStep(step) {
-        playClick();
-        if (step > 1) {
-            const currentStepEl = document.getElementById(`step${step-1}`);
-            const inputs = currentStepEl.querySelectorAll('input[required]');
-            let valid = true;
-            
-            inputs.forEach(i => { 
-                if(!i.value) valid = false; 
-                if(i.type === 'email' && !i.value.includes('@')) valid = false; // Simple Regex-like check
-            });
-
-            if(!valid) { alert("Complete the data correctly, Agent."); return; }
-        }
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step' + step).classList.add('active');
-        document.getElementById('pBar').style.width = (step * 14.2) + "%";
-    }
-
-    document.getElementById('registrationForm').onsubmit = async (e) => {
-        e.preventDefault();
-        playClick();
-        const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
-        if (programs.length === 0) { alert("Select a mission program"); return; }
-
-        document.getElementById('loader').style.display = 'flex';
-        const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            age: document.getElementById('age').value,
-            programs: programs.join(", "),
-            image: document.getElementById('avatar-img').src
-        };
+        btn.innerText = "CHECKING...";
+        btn.disabled = true;
+        document.getElementById('mainUI').classList.add('loading-state');
 
         try {
-            const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(formData) });
-            const result = await response.json();
-            if (result.status === "success") {
-                localStorage.clear(); // مسح البيانات بعد النجاح
-                showFinalCard(result.code);
-            }
-            else alert("Error: " + result.message);
-        } catch (error) {
-            showFinalCard("EYC-" + Math.floor(1000 + Math.random() * 9000));
-        } finally {
-            document.getElementById('loader').style.display = 'none';
-        }
-    };
+            const evaluation = await evaluateMission(document.getElementById('mainIframe'));
+            prizeValue = evaluation.points;
 
-    function showFinalCard(code) {
-        document.getElementById('registrationForm').style.display = 'none';
-        document.getElementById('avatar-sidebar').style.display = 'none';
-        document.getElementById('success-card').style.display = 'block';
-        document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
-        document.getElementById('card-name').innerText = document.getElementById('name').value;
-        document.getElementById('agent-code').innerText = code;
-        document.getElementById('pBar').style.width = "100%";
+            // إرسال البيانات (Fire and Forget لتسريع التجربة للمستخدم)
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: 'no-cors',
+                body: JSON.stringify({
+                    email: saved.email,
+                    activity: actCode,
+                    mission: mNum,
+                    level: isElite ? currentLevel : 'A',
+                    answer: evaluation.answerText,
+                    points: evaluation.points,
+                    isCorrect: evaluation.isCorrect
+                })
+            });
+
+            // إظهار شاشة المكافأة فوراً
+            document.getElementById('rewardContainer').style.display = 'block';
+            animate();
+
+        } catch (error) {
+            console.error(error);
+            alert("حدث خطأ في التقييم، حاول مرة أخرى.");
+            btn.innerText = "SUBMIT";
+            btn.disabled = false;
+            document.getElementById('mainUI').classList.remove('loading-state');
+        }
     }
 
-    // Initialization
-    window.onload = () => {
-        initStars();
-        initOptions();
-        loadProgress();
-        updateAvatar();
-    };
-</script>
+    canvas.addEventListener('mousedown', () => {
+        if (gameState === 'opened') {
+            cancelAnimationFrame(animationId);
+            window.location.href = 'MC.html';
+        } else if (gameState === 'closed') {
+            gameState = 'opening';
+            for (let i = 0; i < 10; i++) tokens.push(new Token(width / 2, height / 2));
+            document.querySelector('.instruction').innerText = "تم التسجيل! اضغط للعودة للمجرة";
+        }
+    });
 
+    function changeLevel(level, btn) {
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        initMission(level);
+    }
+
+    function toggleGuide(show) {
+        const modal = document.getElementById('guideModal');
+        if(show) {
+            document.getElementById('guideFrame').src = `assets/MIF/Guides/${actCode}.html`;
+            modal.style.display = 'block';
+        } else {
+            modal.style.display = 'none';
+            document.getElementById('guideFrame').src = '';
+        }
+    }
+
+    window.onload = initMission;
+    </script>
 </body>
 </html>

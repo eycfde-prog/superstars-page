@@ -49,9 +49,27 @@
             background: linear-gradient(135deg, var(--gold-glass), transparent);
             border-right: 1px solid rgba(212, 175, 55, 0.2);
             padding: 40px; text-align: center;
+            position: relative; /* مهم لتموضع النجوم */
+            overflow: hidden;
         }
 
-        /* تعديل: إضافة الفرايم حول الافاتار */
+        /* --- تأثير النجوم الذهبية --- */
+        .star {
+            position: absolute;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            animation: moveStar linear infinite;
+        }
+
+        @keyframes moveStar {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+        }
+        /* ----------------------- */
+
         #avatar-container {
             position: relative;
             width: 240px; height: 240px;
@@ -59,6 +77,7 @@
             border-radius: 50%;
             background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
             border: 2px dashed rgba(212, 175, 55, 0.3);
+            z-index: 2; /* ليبقى فوق النجوم */
         }
 
         #avatar-img {
@@ -71,6 +90,7 @@
         .form-section {
             flex: 1.5; padding: 50px;
             display: flex; flex-direction: column; justify-content: center;
+            z-index: 2;
         }
 
         .step { display: none; animation: slideIn 0.4s ease forwards; }
@@ -86,14 +106,13 @@
         
         .input-group { margin-bottom: 20px; }
         
-        /* تعديل: جعل الحقول أذكى في العرض وأصغر قليلاً للموبايل */
         input[type="text"], input[type="email"], input[type="number"], select {
             width: 100%; padding: 12px 15px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 12px; color: white; outline: none;
             box-sizing: border-box; font-size: 0.95rem;
-            appearance: none; /* لإزالة السهم الافتراضي في بعض المتصفحات لتحكم أفضل */
+            appearance: none;
         }
 
         .checkbox-container {
@@ -140,7 +159,7 @@
 
         @media (max-width: 768px) {
             .container { flex-direction: column; margin: 20px 0; min-height: auto; width: 90%; }
-            .avatar-section { border-right: none; border-bottom: 1px solid var(--gold-glass); padding: 20px; }
+            .avatar-section { border-right: none; border-bottom: 1px solid var(--gold-glass); padding: 40px 20px; }
             #avatar-container { width: 180px; height: 180px; }
             #avatar-img { width: 150px; height: 150px; }
             .form-section { padding: 30px 20px; }
@@ -159,7 +178,7 @@
         <div id="avatar-container">
             <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
         </div>
-        <h3 id="display-name" style="margin-top:20px; color: var(--gold); font-size: 1.2rem;">EYC AGENT</h3>
+        <h3 id="display-name" style="margin-top:20px; color: var(--gold); font-size: 1.2rem; z-index: 2;">EYC AGENT</h3>
     </div>
 
     <div class="form-section">
@@ -295,13 +314,31 @@
 
     const options = {
         maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
-        femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"], // تعديل: الشعر الطويل أولاً
+        femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
         maleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "BlondeGolden", "Platinum"],
         femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
         hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
         facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
         eyeType: ["Default", "Happy", "Squint", "Side", "Wink"]
     };
+
+    // --- وظيفة إنشاء النجوم الذهبية ---
+    function createStars() {
+        const section = document.getElementById('avatar-sidebar');
+        const count = 30; // عدد النجوم
+        for (let i = 0; i < count; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 4 + 2; // حجم عشوائي
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            section.appendChild(star);
+        }
+    }
 
     function initOptions() {
         const isFemale = document.getElementById('gender').value === 'female';
@@ -343,7 +380,7 @@
         const skin = document.getElementById('skinColor').value;
         const facial = document.getElementById('facialHairType').value;
         const color = document.getElementById('hairColor').value;
-        const clothe = document.getElementById('clotheType').value; // جديد
+        const clothe = document.getElementById('clotheType').value;
         const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
         
         const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=Blank&eyeType=Default&skinColor=${skin}&facialHairType=${facial}&clotheType=${clothe}`;
@@ -404,6 +441,8 @@
         alert("Code copied!");
     }
 
+    // التشغيل عند التحميل
+    createStars();
     initOptions();
     updateAvatar();
 </script>

@@ -4,102 +4,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alike Activity | Mission</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #ffcc00; }
-        body { font-family: 'Cairo', sans-serif; background: transparent; color: white; overflow-x: hidden; padding: 10px; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
-        .input-alike { 
-            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; 
-            padding: 10px; text-align: center; width: 100%; color: var(--gold); 
-            font-family: 'Orbitron'; outline: none; font-size: 14px; direction: ltr;
+        /* المتغيرات الأساسية */
+        :root { --gold: #ffcc00; --green: #00ffa3; --red: #ff3131; }
+        
+        /* تحسين الأداء: إعدادات الجسم */
+        body { 
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
+            background: transparent; 
+            color: white; 
+            margin: 0; 
+            padding: 10px; 
+            overflow-x: hidden;
         }
+
+        /* استبدال Tailwind بـ CSS نقي وخفيف */
+        .wrapper { display: flex; flex-direction: column; gap: 15px; width: 100%; }
+        
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(5px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 12px; 
+            padding: 15px;
+        }
+
+        .case-title { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 10px; 
+            color: var(--gold); 
+            opacity: 0.6; 
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .grid-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .input-group { display: flex; flex-direction: column; gap: 5px; text-align: center; }
+
+        label { font-size: 13px; font-weight: bold; color: #d1d5db; }
+
+        .input-alike { 
+            background: rgba(0,0,0,0.4); 
+            border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 6px; 
+            padding: 10px; 
+            text-align: center; 
+            color: var(--gold); 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 14px; 
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
         .input-alike:focus { border-color: var(--gold); }
-        .label-ar { direction: rtl; display: block; width: 100%; font-weight: bold; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        footer { margin-top: 20px; text-align: center; font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Orbitron'; }
+
+        footer { 
+            margin-top: 20px; 
+            text-align: center; 
+            font-size: 10px; 
+            color: rgba(255,255,255,0.3); 
+            font-family: 'Orbitron', sans-serif; 
+        }
+
+        /* إخفاء السكرول بار لجعل الشكل أنيقاً */
+        ::-webkit-scrollbar { width: 0px; }
     </style>
 </head>
 <body>
 
-    <div id="activityWrapper" class="grid grid-cols-1 gap-4 w-full"></div>
+    <div id="activityWrapper" class="wrapper"></div>
     
-    <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v9.6</footer>
+    <footer>EYC VENS ENGINE v10.0</footer>
 
 <script>
-    // 1. بيانات المهمة
+    // 1. البيانات (هذا الجزء فقط ما ستغيره في كل صفحة)
     const currentTask = [
         {m1:"إلى", m2:"أيضاً", a1:"to", a2:"too"}, 
         {m1:"ابن", m2:"شمس", a1:"son", a2:"sun"}, 
         {m1:"هنا", m2:"يسمع", a1:"here", a2:"hear"}, 
         {m1:"بحر", m2:"يرى", a1:"sea", a2:"see"}, 
-        {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}, 
+        {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}
     ];
 
-    window.checkAnswers = function() {
-    let correctWords = 0;
-    let studentResponses = [];
-    const inputs = document.querySelectorAll('.task-input');
-    
-    inputs.forEach(input => {
-        const val = input.value.trim().toLowerCase();
-        const correctVal = input.getAttribute('data-answer').toLowerCase();
-        studentResponses.push(val || "EMPTY");
-
-        if (val === correctVal) {
-            correctWords++;
-            input.style.borderColor = "#00ffa3";
-        } else {
-            input.style.borderColor = "#ff3131";
+    // 2. دالة بناء الواجهة - تم تبسيط الـ HTML لسرعة الرندر
+    function renderActivity() {
+        const wrapper = document.getElementById('activityWrapper');
+        let html = '';
+        for (let i = 0; i < currentTask.length; i++) {
+            const pair = currentTask[i];
+            html += `
+                <div class="glass-card">
+                    <span class="case-title"># CASE ${i + 1}</span>
+                    <div class="grid-pair">
+                        <div class="input-group">
+                            <label>${pair.m1}</label>
+                            <input type="text" data-answer="${pair.a1}" class="input-alike task-input" spellcheck="false" autocomplete="off">
+                        </div>
+                        <div class="input-group">
+                            <label>${pair.m2}</label>
+                            <input type="text" data-answer="${pair.a2}" class="input-alike task-input" spellcheck="false" autocomplete="off">
+                        </div>
+                    </div>
+                </div>`;
         }
-    });
+        wrapper.innerHTML = html;
+    }
 
-    // الحساب: كل كلمة صحيحة بـ 0.5 توكن (المجموع 10 كلمات = 5 توكنز)
-    let score = correctWords * 0.5;
-    
-    // الحد الأدنى 1 توكن، والتقريب لأقرب رقم صحيح
-    let finalPoints = (score < 1) ? 1 : Math.round(score);
+    window.onload = renderActivity;
 
-    return { 
-        points: finalPoints, 
-        total: 10,
-        answerText: studentResponses.join(", "),
-        isCorrect: correctWords > 0 
-    };
-};
-    // 3. دالة التصحيح الموحدة (المستدعاة من الصفحة الأم)
+    // 3. دالة التصحيح - ثابتة لا تتغير
     window.checkAnswers = function() {
-        let score = 0;
-        let studentResponses = [];
+        let correctWords = 0;
+        let responses = [];
         const inputs = document.querySelectorAll('.task-input');
         
         inputs.forEach(input => {
-            const val = input.value.trim();
-            const correctVal = input.getAttribute('data-answer');
-            studentResponses.push(val || "EMPTY"); // جمع الإجابات للنص المرسل
+            const val = input.value.trim().toLowerCase();
+            const correct = input.getAttribute('data-answer').toLowerCase();
+            responses.push(val || "EMPTY");
 
-            if (val.toLowerCase() === correctVal.toLowerCase()) {
-                score++;
-                input.style.borderColor = "#00ffa3";
+            if (val === correct) {
+                correctWords++;
+                input.style.borderColor = "var(--green)";
             } else {
-                input.style.borderColor = "#ff3131";
+                input.style.borderColor = "var(--red)";
             }
         });
 
-        // "جائزة الترضية": الطالب لا يأخذ 0 أبداً، أقل درجة هي 1 توكن
-        let finalPoints = (score === 0) ? 1 : score;
+        let score = correctWords * 0.5;
+        let finalPoints = (score < 1) ? 1 : Math.round(score);
 
         return { 
             points: finalPoints, 
-            total: inputs.length,
-            answerText: studentResponses.join(", "),
-            isCorrect: score > 0 
+            answerText: responses.join(", "),
+            isCorrect: correctWords > 0 
         };
     };
 </script>
 </body>
 </html>
-

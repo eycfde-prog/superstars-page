@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EYC | Universal Mission Terminal</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -31,7 +31,12 @@
         }
         .done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
         .done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #333; font-weight: 900; }
-        .activity-content-frame { position: relative; }
+        
+        /* تعديل 2: تنعيم حركة الـ Iframe وتحسين شكل الزر المعطل */
+        .activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
+        .activity-iframe { transition: opacity 0.5s ease; border: none; }
+        .submit-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        .speech-bubble { max-height: 85vh; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -95,103 +100,97 @@
 
     <script src="CC.js"></script>
     <script>
-    // --- متغيرات الأنيميشن ---
     const canvas = document.getElementById('rewardCanvas');
     const ctx = canvas.getContext('2d');
     let width, height, prizeValue = "1";
     const tokenImg = new Image(); tokenImg.src = 'assets/Token.png'; 
     let gameState = 'closed', tokens = [], prize = null;
+    let animationId; // تعديل 3: للتحكم في إيقاف الأنيميشن
 
-    // --- الإعدادات الأساسية ---
     const urlParams = new URLSearchParams(window.location.search);
     const actCode = urlParams.get('act') || 'GES'; 
     const mNum = urlParams.get('m') || '1';  
     const actName = urlParams.get('name') || 'Activity'; 
     let currentLevel = 'A';
     
-    // !!! استبدل الرابط التالي برابط الـ Web App الخاص بك !!!
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNrfn_k9WIt2uQo4hxUw_0JU6pKnwP1lvyYXQnHhHPv_zpfAL5602QSxC_VGu4V7mflA/exec";
 
     const isElite = actCode.endsWith('X');
     document.getElementById('actNameDisplay').innerText = actName;
     document.getElementById('actCodeDisplay').innerText = actCode;
     document.getElementById('missionNum').innerText = 'M ' + mNum;
-    document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
+
+    // تعديل 4: معالجة الصور المفقودة تلقائياً
+    const activityLogo = document.getElementById('activityLogo');
+    activityLogo.src = `assets/AL/${actCode}.png`;
+    activityLogo.onerror = () => activityLogo.src = 'assets/AL/default.png';
+
     if(isElite) document.getElementById('difficultyBar').style.display = 'flex';
 
-    // --- منطق الصندوق (Box Logic) ---
     function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
     window.addEventListener('resize', resize); resize();
 
-class Box {
-        constructor() { 
-            this.x = width / 2; 
-            this.y = height / 2 + 50; 
-            this.w = 150; 
-            this.h = 150; 
-            this.lidY = this.y - 75 - 20; 
-            this.shakeOffset = 0; 
-            this.lidVelocity = 0; 
-            this.lidRotation = 0; 
-        }
+    class Box {
+        constructor() { this.x = width / 2; this.y = height / 2 + 50; this.w = 150; this.h = 150; this.lidY = this.y - 75 - 20; this.shakeOffset = 0; this.lidVelocity = 0; this.lidRotation = 0; }
         update() {
-            if (gameState === 'closed') { 
-                if (Math.random() > 0.95) this.shakeOffset = (Math.random() - 0.5) * 10; 
-                else this.shakeOffset *= 0.9; 
-            }
-            else if (gameState === 'opening') { 
-                this.shakeOffset = 0; 
-                this.lidVelocity -= 1.5; 
-                this.lidY += this.lidVelocity; 
-                this.lidRotation -= 0.05; 
-                if (this.lidY < -200) gameState = 'opened'; 
-            }
+            if (gameState === 'closed') { if (Math.random() > 0.95) this.shakeOffset = (Math.random() - 0.5) * 10; else this.shakeOffset *= 0.9; }
+            else if (gameState === 'opening') { this.shakeOffset = 0; this.lidVelocity -= 1.5; this.lidY += this.lidVelocity; this.lidRotation -= 0.05; if (this.lidY < -200) gameState = 'opened'; }
         }
         draw() {
-            // رسم جسم الصندوق (أسود)
-            ctx.save(); 
-            ctx.translate(this.x + this.shakeOffset, this.y);
-            ctx.fillStyle = '#000000'; // لون الصندوق أسود
-            ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
-            
-            // رسم الشريطة الذهبية العرضية
-            ctx.fillStyle = '#D4AF37'; // لون ذهبي (Gold)
-            ctx.fillRect(-15, -this.h/2, 30, this.h);
-            
-            // كتابة EYC على الصندوق
-            ctx.fillStyle = '#D4AF37';
-            ctx.font = 'bold 24px Orbitron';
-            ctx.textAlign = 'center';
-            ctx.fillText('EYC', 0, 20);
+            ctx.save(); ctx.translate(this.x + this.shakeOffset, this.y);
+            ctx.fillStyle = '#ff4757'; ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
+            ctx.fillStyle = '#ffd32a'; ctx.fillRect(-15, -this.h/2, 30, this.h);
             ctx.restore();
-
-            // رسم غطاء الصندوق
-            ctx.save(); 
-            ctx.translate(this.x + this.shakeOffset, this.lidY);
-            ctx.rotate(this.lidRotation); 
-            ctx.fillStyle = '#1a1a1a'; // لون الغطاء (أسود فاتح قليلاً للتميز)
+            ctx.save(); ctx.translate(this.x + this.shakeOffset, this.lidY);
+            ctx.rotate(this.lidRotation); ctx.fillStyle = '#ff6b81';
             ctx.fillRect(-this.w/2 - 10, -20, this.w + 20, 40);
-            
-            // شريطة الغطاء الذهبية
-            ctx.fillStyle = '#D4AF37'; 
-            ctx.fillRect(-15, -20, 30, 40);
-            
-            this.drawBow(ctx); 
-            ctx.restore();
+            ctx.fillStyle = '#ffd32a'; ctx.fillRect(-15, -20, 30, 40);
+            this.drawBow(ctx); ctx.restore();
         }
-        drawBow(ctx) { 
-            ctx.fillStyle = '#D4AF37'; // الفيونكة ذهبية
-            ctx.beginPath(); 
-            ctx.ellipse(-20, -20, 25, 10, -0.5, 0, Math.PI*2); 
-            ctx.ellipse(20, -20, 25, 10, 0.5, 0, Math.PI*2); 
-            ctx.fill(); 
-            ctx.beginPath(); 
-            ctx.arc(0, -20, 10, 0, Math.PI*2); 
-            ctx.fill(); 
+        drawBow(ctx) { ctx.fillStyle = '#ffd32a'; ctx.beginPath(); ctx.ellipse(-20, -20, 25, 10, -0.5, 0, Math.PI*2); ctx.ellipse(20, -20, 25, 10, 0.5, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(0, -20, 10, 0, Math.PI*2); ctx.fill(); }
+    }
+
+    class Coupon {
+        constructor(x, y) { this.x = x; this.y = y; this.targetY = y - 180; this.scale = 0; }
+        update() { this.y += (this.targetY - this.y) * 0.05; if (this.scale < 1) this.scale += 0.05; }
+        draw() {
+            ctx.save(); ctx.translate(this.x, this.y); ctx.scale(this.scale, this.scale);
+            ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 20; ctx.shadowColor = '#ffd32a'; ctx.fillRect(-100, -60, 200, 120);
+            ctx.fillStyle = '#ff4757'; ctx.font = 'bold 45px Orbitron'; ctx.textAlign = 'center'; ctx.fillText('+' + prizeValue + ' TK', 0, 10);
+            ctx.fillStyle = '#333'; ctx.font = 'bold 20px Arial'; ctx.fillText('EXCELLENT!', 0, 40);
+            ctx.restore();
         }
     }
 
-    // --- الوظائف الأساسية المعدلة ---
+    class Token {
+        constructor(x, y) { this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * 15; this.vy = (Math.random() - 1) * 15 - 10; this.gravity = 0.4; this.rotation = Math.random() * Math.PI*2; }
+        update() { this.vy += this.gravity; this.x += this.vx; this.y += this.vy; this.rotation += 0.1; }
+        draw() { ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation); ctx.drawImage(tokenImg, -20, -20, 40, 40); ctx.restore(); }
+    }
+
+    const box = new Box();
+    function animate() {
+        if (document.getElementById('rewardContainer').style.display === 'block') {
+            ctx.clearRect(0, 0, width, height);
+            box.update(); box.draw();
+            if (prize) { prize.update(); prize.draw(); }
+            tokens.forEach((t, i) => { t.update(); t.draw(); if (t.y > height + 50) tokens.splice(i, 1); });
+            animationId = requestAnimationFrame(animate);
+        }
+    }
+
+    canvas.addEventListener('mousedown', () => {
+        if (gameState === 'opened') {
+            cancelAnimationFrame(animationId); // إيقاف لتوفير الموارد
+            window.location.href = 'MC.html';
+        }
+        else if (gameState === 'closed') {
+            gameState = 'opening';
+            prize = new Coupon(width / 2, height / 2 + 50);
+            for (let i = 0; i < 8; i++) tokens.push(new Token(width / 2, height / 2));
+            document.querySelector('.instruction').innerText = "رائع! اضغط مرة أخرى للعودة";
+        }
+    });
 
     async function initMission(level = 'A') {
         currentLevel = level;
@@ -199,68 +198,67 @@ class Box {
         const iframe = document.getElementById('mainIframe');
         const overlay = document.getElementById('doneOverlay');
 
-        // تحميل صورة الطالب وبياناته
         document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
         document.getElementById('studentImg').src = saved.image || 'assets/Student.png';
 
-        // 1. التحقق: هل المهمة منجزة؟ (من CC.js)
-        const isDone = await checkMissionStatus(saved.email, actCode, mNum, SCRIPT_URL);
-        
-        if (isDone) {
-            overlay.style.display = 'flex';
-            iframe.style.opacity = '0.3';
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').style.opacity = '0.5';
-        } else {
-            overlay.style.display = 'none';
-            iframe.style.opacity = '1';
-            document.getElementById('submitBtn').disabled = false;
-            document.getElementById('submitBtn').style.opacity = '1';
+        try {
+            const isDone = await checkMissionStatus(saved.email, actCode, mNum, SCRIPT_URL);
+            if (isDone) {
+                overlay.style.display = 'flex';
+                iframe.style.opacity = '0.3';
+                document.getElementById('submitBtn').disabled = true;
+            } else {
+                overlay.style.display = 'none';
+                iframe.style.opacity = '1';
+                document.getElementById('submitBtn').disabled = false;
+                iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
+            }
+        } catch(e) {
+            // في حالة فشل التحقق، نسمح للطالب بالدخول لضمان عدم توقف العملية التعليمية
             iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
         }
     }
 
-async function submitMission() {
+    // تعديل 5: دالة الإرسال مع الحماية من الأخطاء
+    async function submitMission() {
         const submitBtn = document.getElementById('submitBtn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         const iframe = document.getElementById('mainIframe');
 
-        // 1. استخراج الإجابة أولاً للتحقق منها
-        const evaluation = await evaluateMission(iframe);
+        if (submitBtn.disabled) return;
 
-        // 2. التحقق: هل كتب الطالب محتوى؟ 
-        // (يفترض أن evaluateMission تعيد answerText)
-        if (!evaluation.answerText || evaluation.answerText.trim().length < 2) {
-            alert("⚠️ Please complete the mission content before submitting!");
-            return; // توقف هنا ولا ترسل البيانات
+        try {
+            submitBtn.innerText = "EVALUATING...";
+            submitBtn.disabled = true;
+
+            const evaluation = await evaluateMission(iframe);
+            prizeValue = evaluation.points;
+
+            const payload = {
+                email: saved.email,
+                activity: actCode,
+                mission: mNum,
+                level: isElite ? currentLevel : 'A',
+                answer: evaluation.answerText,
+                points: evaluation.points,
+                isCorrect: evaluation.isCorrect
+            };
+
+            await fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+
+            document.getElementById('rewardContainer').style.display = 'block';
+            animate();
+        } catch (error) {
+            alert("حدث خطأ في الاتصال، حاول مرة أخرى يا بطل!");
+            submitBtn.innerText = "SUBMIT";
+            submitBtn.disabled = false;
         }
-
-        submitBtn.innerText = "EVALUATING...";
-        submitBtn.disabled = true;
-
-        prizeValue = evaluation.points;
-
-        // 3. إرسال البيانات لجوجل شيت
-        const payload = {
-            email: saved.email,
-            activity: actCode,
-            mission: mNum,
-            level: isElite ? currentLevel : 'A',
-            answer: evaluation.answerText,
-            points: evaluation.points,
-            isCorrect: evaluation.isCorrect
-        };
-
-        fetch(SCRIPT_URL, {
-            method: "POST",
-            mode: 'no-cors',
-            body: JSON.stringify(payload)
-        });
-
-        // 4. عرض الأنيميشن
-        document.getElementById('rewardContainer').style.display = 'block';
-        animate();
     }
+
     function changeLevel(level, btn) {
         document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -268,7 +266,10 @@ async function submitMission() {
     }
 
     function toggleGuide(show) {
-        if(show) document.getElementById('guideFrame').src = `assets/MIF/Guides/${actCode}.html`;
+        if(show) {
+            const guideFrame = document.getElementById('guideFrame');
+            guideFrame.src = `assets/MIF/Guides/${actCode}.html`;
+        }
         document.getElementById('guideModal').style.display = show ? 'block' : 'none';
     }
 

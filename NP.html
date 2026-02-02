@@ -28,7 +28,7 @@
             background: rgba(255,255,255,0.1); z-index: 5;
         }
         .progress-bar {
-            height: 100%; width: 16.6%; background: var(--gold);
+            height: 100%; width: 14%; background: var(--gold);
             transition: width 0.4s ease; box-shadow: 0 0 10px var(--gold);
         }
 
@@ -49,17 +49,48 @@
             background: linear-gradient(135deg, var(--gold-glass), transparent);
             border-right: 1px solid rgba(212, 175, 55, 0.2);
             padding: 40px; text-align: center;
+            position: relative; /* مهم لتموضع النجوم */
+            overflow: hidden;
+        }
+
+        /* --- تأثير النجوم الذهبية --- */
+        .star {
+            position: absolute;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            animation: moveStar linear infinite;
+        }
+
+        @keyframes moveStar {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+        }
+        /* ----------------------- */
+
+        #avatar-container {
+            position: relative;
+            width: 240px; height: 240px;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+            border: 2px dashed rgba(212, 175, 55, 0.3);
+            z-index: 2; /* ليبقى فوق النجوم */
         }
 
         #avatar-img {
             width: 220px; height: 220px;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
             transition: transform 0.3s ease;
+            z-index: 2;
         }
 
         .form-section {
             flex: 1.5; padding: 50px;
             display: flex; flex-direction: column; justify-content: center;
+            z-index: 2;
         }
 
         .step { display: none; animation: slideIn 0.4s ease forwards; }
@@ -76,11 +107,12 @@
         .input-group { margin-bottom: 20px; }
         
         input[type="text"], input[type="email"], input[type="number"], select {
-            width: 100%; padding: 15px;
+            width: 100%; padding: 12px 15px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 12px; color: white; outline: none;
-            box-sizing: border-box; font-size: 1rem;
+            box-sizing: border-box; font-size: 0.95rem;
+            appearance: none;
         }
 
         .checkbox-container {
@@ -126,10 +158,13 @@
         }
 
         @media (max-width: 768px) {
-            .container { flex-direction: column; margin: 20px 0; min-height: auto; }
-            .avatar-section { border-right: none; border-bottom: 1px solid var(--gold-glass); padding: 20px; }
+            .container { flex-direction: column; margin: 20px 0; min-height: auto; width: 90%; }
+            .avatar-section { border-right: none; border-bottom: 1px solid var(--gold-glass); padding: 40px 20px; }
+            #avatar-container { width: 180px; height: 180px; }
             #avatar-img { width: 150px; height: 150px; }
             .form-section { padding: 30px 20px; }
+            h2 { font-size: 1.4rem; }
+            input[type="text"], select { padding: 10px; font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -143,7 +178,7 @@
         <div id="avatar-container">
             <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
         </div>
-        <h3 id="display-name" style="margin-top:20px; color: var(--gold); font-size: 1.2rem;">EYC AGENT</h3>
+        <h3 id="display-name" style="margin-top:20px; color: var(--gold); font-size: 1.2rem; z-index: 2;">EYC AGENT</h3>
     </div>
 
     <div class="form-section">
@@ -182,7 +217,7 @@
                 </div>
                 <div class="btn-group">
                     <button type="button" class="prev-btn" onclick="nextStep(2)">Back</button>
-                    <button type="button" onclick="nextStep(4)">Customize</button>
+                    <button type="button" onclick="nextStep(4)">Customize Hair</button>
                 </div>
             </div>
 
@@ -203,7 +238,7 @@
             </div>
 
             <div class="step" id="step5">
-                <h2>05. Face Details</h2>
+                <h2>05. Face & Body</h2>
                 <div id="facial-hair-group" class="input-group">
                     <label>Beard/Moustache:</label>
                     <select id="facialHairType" onchange="updateAvatar()"></select>
@@ -220,19 +255,38 @@
                 </div>
                 <div class="btn-group">
                     <button type="button" class="prev-btn" onclick="nextStep(4)">Back</button>
-                    <button type="button" onclick="nextStep(6)">Finalize</button>
+                    <button type="button" onclick="nextStep(6)">Outfits</button>
                 </div>
             </div>
 
             <div class="step" id="step6">
-                <h2>06. Mission</h2>
+                <h2>06. Wardrobe</h2>
+                <div class="input-group">
+                    <label>Choose Outfit Style:</label>
+                    <select id="clotheType" onchange="updateAvatar()">
+                        <option value="BlazerShirt">Blazer & Shirt</option>
+                        <option value="BlazerSweater">Blazer & Sweater</option>
+                        <option value="CollarSweater">Collar Sweater</option>
+                        <option value="GraphicShirt">Graphic T-Shirt</option>
+                        <option value="Hoodie">Hoodie</option>
+                        <option value="Overall">Overall</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="prev-btn" onclick="nextStep(5)">Back</button>
+                    <button type="button" onclick="nextStep(7)">Next</button>
+                </div>
+            </div>
+
+            <div class="step" id="step7">
+                <h2>07. Mission</h2>
                 <label>Choose your programs:</label>
                 <div class="checkbox-container">
                     <label class="check-item"><input type="checkbox" name="program" value="Season"> Season</label>
                     <label class="check-item"><input type="checkbox" name="program" value="X-Box"> X-Box</label>
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="prev-btn" onclick="nextStep(5)">Back</button>
+                    <button type="button" class="prev-btn" onclick="nextStep(6)">Back</button>
                     <button type="submit">Complete Mission</button>
                 </div>
             </div>
@@ -250,7 +304,7 @@
                     <button class="copy-btn" onclick="copyCode()">Copy</button>
                 </div>
             </div>
-            <button onclick="window.location.reload()" style="margin-top: 20px;">Register New Agent</button>
+            <button onclick="window.location.href='MC.html'" style="margin-top: 20px;">Start your journey</button>
         </div>
     </div>
 </div>
@@ -260,14 +314,31 @@
 
     const options = {
         maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
-        femaleHair: ["Hijab", "LongHairCurvy", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
+        femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
         maleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "BlondeGolden", "Platinum"],
         femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
         hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
         facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
-        eyeType: ["Default", "Happy", "Squint", "Side", "Wink"],
-        accessories: ["Blank", "Prescription01", "Prescription02", "Round", "Sunglasses", "Wayfarer"]
+        eyeType: ["Default", "Happy", "Squint", "Side", "Wink"]
     };
+
+    // --- وظيفة إنشاء النجوم الذهبية ---
+    function createStars() {
+        const section = document.getElementById('avatar-sidebar');
+        const count = 30; // عدد النجوم
+        for (let i = 0; i < count; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 4 + 2; // حجم عشوائي
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            section.appendChild(star);
+        }
+    }
 
     function initOptions() {
         const isFemale = document.getElementById('gender').value === 'female';
@@ -309,22 +380,24 @@
         const skin = document.getElementById('skinColor').value;
         const facial = document.getElementById('facialHairType').value;
         const color = document.getElementById('hairColor').value;
+        const clothe = document.getElementById('clotheType').value;
         const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
-        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=Blank&eyeType=Default&skinColor=${skin}&facialHairType=${facial}`;
+        
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=Blank&eyeType=Default&skinColor=${skin}&facialHairType=${facial}&clotheType=${clothe}`;
         document.getElementById('avatar-img').src = url;
     }
 
     function nextStep(step) {
-        if (step > 1) {
+        if (step > 1 && step <= 7) {
             const currentStepEl = document.getElementById(`step${step-1}`);
             const inputs = currentStepEl.querySelectorAll('input[required]');
             let valid = true;
             inputs.forEach(i => { if(!i.value) valid = false; });
-            if(!valid) { alert("Field required"); return; }
+            if(!valid) { alert("Please fill the required fields"); return; }
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + step).classList.add('active');
-        document.getElementById('pBar').style.width = (step * 16.6) + "%";
+        document.getElementById('pBar').style.width = (step * 14.2) + "%";
     }
 
     document.getElementById('registrationForm').onsubmit = async (e) => {
@@ -347,7 +420,7 @@
             if (result.status === "success") showFinalCard(result.code);
             else alert("Error: " + result.message);
         } catch (error) {
-            showFinalCard("AGENT-EYC");
+            showFinalCard("AGENT-EYC-" + Math.floor(Math.random()*9000 + 1000));
         } finally {
             document.getElementById('loader').style.display = 'none';
         }
@@ -360,6 +433,7 @@
         document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
         document.getElementById('card-name').innerText = document.getElementById('name').value;
         document.getElementById('agent-code').innerText = code;
+        document.getElementById('pBar').style.width = "100%";
     }
 
     function copyCode() {
@@ -367,6 +441,8 @@
         alert("Code copied!");
     }
 
+    // التشغيل عند التحميل
+    createStars();
     initOptions();
     updateAvatar();
 </script>

@@ -75,7 +75,7 @@
 
     <div class="w-full max-w-full mx-auto pb-10">
         <div class="gold-card p-5 mb-6 text-center">
-            <div id="audioStatus" class="text-yellow-500 text-[10px] orbitron mb-3 animate-pulse italic">READY SYSTEM...</div>
+            <div id="audioStatus" class="text-yellow-500 text-[10px] orbitron mb-3 animate-pulse italic">INITIATING AUDIO SYSTEM...</div>
             
             <audio id="mainAudio">
                 <source id="audioSource" src="" type="audio/wav">
@@ -116,8 +116,8 @@
     const params = new URLSearchParams(window.location.search);
     const mNum = params.get('m') || '1';
 
-    // وظيفة لخلط مصفوفة عشوائياً
-    function shuffleArray(array) {
+    // دالة لتبديل مصفوفة عشوائياً (Fisher-Yates Shuffle)
+    function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
@@ -125,7 +125,7 @@
         return array;
     }
 
-    // بيانات الأسئلة المحدثة
+    // البيانات المحدثة مع المسار الجديد
     const geData = {
         "1": {
             audio: "assets/gesaudio/GE1.wav",
@@ -188,8 +188,8 @@
 
         const container = document.getElementById('questionsContainer');
         container.innerHTML = data.questions.map((item, i) => {
-            // خلط الخيارات قبل عرضها
-            const shuffledOptions = shuffleArray([...item.options]);
+            // عمل نسخة من الخيارات وتبديل أماكنها عشوائياً لكل سؤال
+            const shuffledOptions = shuffle([...item.options]);
             
             return `
                 <div class="question-card text-left" id="qBlock_${i}">
@@ -197,7 +197,7 @@
                     <p class="text-sm text-gray-100 font-semibold mb-3 leading-relaxed">${item.q}</p>
                     <div class="options-list space-y-1">
                         ${shuffledOptions.map(opt => `
-                            <button class="option-btn" onclick="selectOption(${i}, '${opt.replace(/'/g, "\\'")}', this)">
+                            <button class="option-btn" onclick="selectOption(${i}, '${opt}', this)">
                                 ${opt}
                             </button>
                         `).join('')}
@@ -216,9 +216,13 @@
 
     async function togglePlay() {
         if (audio.paused) {
-            await audio.play();
-            playIcon.classList.add('hidden');
-            pauseIcon.classList.remove('hidden');
+            try {
+                await audio.play();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } catch (err) {
+                console.error("Audio play failed:", err);
+            }
         } else {
             audio.pause();
             playIcon.classList.remove('hidden');
@@ -243,11 +247,11 @@
 
     audio.onloadedmetadata = () => {
         document.getElementById('duration').innerText = formatTime(audio.duration);
-        document.getElementById('audioStatus').innerText = "SYSTEM READY - LISTEN CAREFULLY";
+        document.getElementById('audioStatus').innerText = "SYSTEM READY - LOGGED TO ASSETS";
     };
 
     function seek(e) {
-        const percent = e.offsetX / e.target.offsetWidth;
+        const percent = e.offsetX / e.currentTarget.offsetWidth;
         audio.currentTime = percent * audio.duration;
     }
 

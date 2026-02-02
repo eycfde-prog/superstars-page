@@ -2,92 +2,75 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alike Activity | Mission</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Alike Activity | Fast Load</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* المتغيرات الأساسية */
-        :root { --gold: #ffcc00; --green: #00ffa3; --red: #ff3131; }
+        :root { --gold: #ffcc00; --bg-glass: rgba(255, 255, 255, 0.03); --border-glass: rgba(255, 255, 255, 0.1); }
         
-        /* تحسين الأداء: إعدادات الجسم */
         body { 
-            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
-            background: transparent; 
-            color: white; 
-            margin: 0; 
-            padding: 10px; 
-            overflow-x: hidden;
+            font-family: 'Cairo', sans-serif; background: transparent; color: white; 
+            margin: 0; padding: 10px; overflow-x: hidden; -webkit-tap-highlight-color: transparent;
         }
 
-        /* استبدال Tailwind بـ CSS نقي وخفيف */
-        .wrapper { display: flex; flex-direction: column; gap: 15px; width: 100%; }
-        
+        /* نظام الشبكة لتحسين الأداء والموبايل */
+        #activityWrapper {
+            display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%;
+        }
+
         .glass-card { 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(5px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 12px; 
-            padding: 15px;
+            background: var(--bg-glass); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px;
         }
 
-        .case-title { 
-            font-family: 'Orbitron', sans-serif; 
-            font-size: 10px; 
-            color: var(--gold); 
-            opacity: 0.6; 
-            margin-bottom: 10px;
-            display: block;
+        .case-num { 
+            font-family: 'Orbitron', sans-serif; font-size: 10px; color: var(--gold); 
+            opacity: 0.6; display: block; margin-bottom: 8px;
         }
 
-        .grid-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-        .input-group { display: flex; flex-direction: column; gap: 5px; text-align: center; }
+        .field-group { display: flex; flex-direction: column; gap: 5px; }
 
-        label { font-size: 13px; font-weight: bold; color: #d1d5db; }
+        label { font-size: 13px; text-align: center; font-weight: bold; color: #d1d5db; }
 
         .input-alike { 
-            background: rgba(0,0,0,0.4); 
-            border: 1px solid rgba(255,255,255,0.2); 
-            border-radius: 6px; 
-            padding: 10px; 
-            text-align: center; 
-            color: var(--gold); 
-            font-family: 'Orbitron', sans-serif; 
-            font-size: 14px; 
-            outline: none;
-            transition: border-color 0.2s;
+            background: rgba(0,0,0,0.4); border: 1.5px solid rgba(255,255,255,0.15); 
+            border-radius: 8px; padding: 10px; text-align: center; color: var(--gold); 
+            font-family: 'Orbitron', sans-serif; font-size: 15px; outline: none;
+            transition: border-color 0.2s; width: 100%; box-sizing: border-box;
         }
 
-        .input-alike:focus { border-color: var(--gold); }
+        .input-alike:focus { border-color: var(--gold); background: rgba(0,0,0,0.6); }
 
         footer { 
-            margin-top: 20px; 
-            text-align: center; 
-            font-size: 10px; 
-            color: rgba(255,255,255,0.3); 
-            font-family: 'Orbitron', sans-serif; 
+            margin-top: 25px; text-align: center; font-size: 9px; 
+            color: rgba(255,255,255,0.2); font-family: 'Orbitron'; letter-spacing: 1px;
         }
 
-        /* إخفاء السكرول بار لجعل الشكل أنيقاً */
-        ::-webkit-scrollbar { width: 0px; }
+        /* تحسينات الموبايل الصغير جداً */
+        @media (max-width: 350px) {
+            label { font-size: 11px; }
+            .input-alike { font-size: 13px; padding: 8px; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="activityWrapper" class="wrapper"></div>
+    <div id="activityWrapper"></div>
     
-    <footer>EYC VENS ENGINE v10.0</footer>
+    <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v10.0</footer>
 
 <script>
-    // 1. البيانات (هذا الجزء فقط ما ستغيره في كل صفحة)
+    // 1. مصفوفة البيانات (يتم تغييرها لكل صفحة)
     const currentTask = [
         {m1:"إلى", m2:"أيضاً", a1:"to", a2:"too"}, 
         {m1:"ابن", m2:"شمس", a1:"son", a2:"sun"}, 
         {m1:"هنا", m2:"يسمع", a1:"here", a2:"hear"}, 
         {m1:"بحر", m2:"يرى", a1:"sea", a2:"see"}, 
-        {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}
+        {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}, 
     ];
 
-    // 2. دالة بناء الواجهة - تم تبسيط الـ HTML لسرعة الرندر
     function renderActivity() {
         const wrapper = document.getElementById('activityWrapper');
         let html = '';
@@ -95,15 +78,15 @@
             const pair = currentTask[i];
             html += `
                 <div class="glass-card">
-                    <span class="case-title"># CASE ${i + 1}</span>
-                    <div class="grid-pair">
-                        <div class="input-group">
+                    <span class="case-num"># CASE ${i + 1}</span>
+                    <div class="input-grid">
+                        <div class="field-group">
                             <label>${pair.m1}</label>
-                            <input type="text" data-answer="${pair.a1}" class="input-alike task-input" spellcheck="false" autocomplete="off">
+                            <input type="text" data-answer="${pair.a1}" class="input-alike task-input" placeholder="..." spellcheck="false" autocomplete="off">
                         </div>
-                        <div class="input-group">
+                        <div class="field-group">
                             <label>${pair.m2}</label>
-                            <input type="text" data-answer="${pair.a2}" class="input-alike task-input" spellcheck="false" autocomplete="off">
+                            <input type="text" data-answer="${pair.a2}" class="input-alike task-input" placeholder="..." spellcheck="false" autocomplete="off">
                         </div>
                     </div>
                 </div>`;
@@ -113,22 +96,23 @@
 
     window.onload = renderActivity;
 
-    // 3. دالة التصحيح - ثابتة لا تتغير
+    // 3. دالة التصحيح (سرعة الاستجابة)
     window.checkAnswers = function() {
         let correctWords = 0;
-        let responses = [];
+        let studentResponses = [];
         const inputs = document.querySelectorAll('.task-input');
         
         inputs.forEach(input => {
             const val = input.value.trim().toLowerCase();
-            const correct = input.getAttribute('data-answer').toLowerCase();
-            responses.push(val || "EMPTY");
+            const correctVal = input.getAttribute('data-answer').toLowerCase();
+            studentResponses.push(val || "EMPTY");
 
-            if (val === correct) {
+            if (val === correctVal) {
                 correctWords++;
-                input.style.borderColor = "var(--green)";
+                input.style.borderColor = "#00ffa3";
+                input.style.boxShadow = "0 0 8px rgba(0, 255, 163, 0.2)";
             } else {
-                input.style.borderColor = "var(--red)";
+                input.style.borderColor = "#ff3131";
             }
         });
 
@@ -137,7 +121,8 @@
 
         return { 
             points: finalPoints, 
-            answerText: responses.join(", "),
+            total: 10,
+            answerText: studentResponses.join(", "),
             isCorrect: correctWords > 0 
         };
     };

@@ -32,9 +32,11 @@
         .done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
         .done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #333; font-weight: 900; }
         
-        /* تعديل 2: تنعيم حركة الـ Iframe وتحسين شكل الزر المعطل */
-        .activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
-        .activity-iframe { transition: opacity 0.5s ease; border: none; }
+        /* Loading Spinner */
+        .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ff88; font-family: 'Orbitron'; text-align: center; }
+
+        .activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; min-height: 400px; }
+        .activity-iframe { transition: opacity 0.5s ease; border: none; width: 100%; height: 100%; }
         .submit-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; transform: none !important; }
         .speech-bubble { max-height: 85vh; overflow-y: auto; }
     </style>
@@ -73,11 +75,12 @@
         </div>
 
         <div class="activity-content-frame">
+            <div id="loadingElement" class="loader"><i class="fas fa-sync fa-spin"></i> LOADING MISSION...</div>
             <div id="doneOverlay" class="done-overlay">
                 <i class="fas fa-check-circle"></i>
                 <span>DONE</span>
             </div>
-            <iframe id="mainIframe" src="" class="activity-iframe"></iframe>
+            <iframe id="mainIframe" src="" class="activity-iframe" onload="document.getElementById('loadingElement').style.display='none'"></iframe>
         </div>
 
         <div class="action-container">
@@ -105,7 +108,7 @@
     let width, height, prizeValue = "1";
     const tokenImg = new Image(); tokenImg.src = 'assets/Token.png'; 
     let gameState = 'closed', tokens = [], prize = null;
-    let animationId; // تعديل 3: للتحكم في إيقاف الأنيميشن
+    let animationId; 
 
     const urlParams = new URLSearchParams(window.location.search);
     const actCode = urlParams.get('act') || 'GES'; 
@@ -120,7 +123,6 @@
     document.getElementById('actCodeDisplay').innerText = actCode;
     document.getElementById('missionNum').innerText = 'M ' + mNum;
 
-    // تعديل 4: معالجة الصور المفقودة تلقائياً
     const activityLogo = document.getElementById('activityLogo');
     activityLogo.src = `assets/AL/${actCode}.png`;
     activityLogo.onerror = () => activityLogo.src = 'assets/AL/default.png';
@@ -181,7 +183,7 @@
 
     canvas.addEventListener('mousedown', () => {
         if (gameState === 'opened') {
-            cancelAnimationFrame(animationId); // إيقاف لتوفير الموارد
+            cancelAnimationFrame(animationId); 
             window.location.href = 'MC.html';
         }
         else if (gameState === 'closed') {
@@ -197,9 +199,12 @@
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         const iframe = document.getElementById('mainIframe');
         const overlay = document.getElementById('doneOverlay');
+        const loader = document.getElementById('loadingElement');
 
         document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
         document.getElementById('studentImg').src = saved.image || 'assets/Student.png';
+        
+        loader.style.display = 'block';
 
         try {
             const isDone = await checkMissionStatus(saved.email, actCode, mNum, SCRIPT_URL);
@@ -207,6 +212,7 @@
                 overlay.style.display = 'flex';
                 iframe.style.opacity = '0.3';
                 document.getElementById('submitBtn').disabled = true;
+                loader.style.display = 'none';
             } else {
                 overlay.style.display = 'none';
                 iframe.style.opacity = '1';
@@ -214,12 +220,10 @@
                 iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
             }
         } catch(e) {
-            // في حالة فشل التحقق، نسمح للطالب بالدخول لضمان عدم توقف العملية التعليمية
             iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
         }
     }
 
-    // تعديل 5: دالة الإرسال مع الحماية من الأخطاء
     async function submitMission() {
         const submitBtn = document.getElementById('submitBtn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
@@ -247,11 +251,16 @@
             await fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: 'no-cors',
+                cache: 'no-cache',
                 body: JSON.stringify(payload)
             });
 
-            document.getElementById('rewardContainer').style.display = 'block';
-            animate();
+            // تأخير بسيط لضمان شعور الطالب بعملية التقييم
+            setTimeout(() => {
+                document.getElementById('rewardContainer').style.display = 'block';
+                animate();
+            }, 1000);
+
         } catch (error) {
             alert("حدث خطأ في الاتصال، حاول مرة أخرى يا بطل!");
             submitBtn.innerText = "SUBMIT";

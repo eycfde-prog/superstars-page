@@ -35,7 +35,8 @@
         /* Loading Spinner */
         .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ff88; font-family: 'Orbitron'; text-align: center; }
 
-        .activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; min-height: 400px; }
+        /* تم تعديل الارتفاع ليتناسب مع محتوى الصوت والأسئلة */
+        .activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; height: 75vh; min-height: 500px; }
         .activity-iframe { transition: opacity 0.5s ease; border: none; width: 100%; height: 100%; }
         .submit-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; transform: none !important; }
         .speech-bubble { max-height: 85vh; overflow-y: auto; }
@@ -140,21 +141,18 @@
         }
         draw() {
             ctx.save(); ctx.translate(this.x + this.shakeOffset, this.y);
-            // الجسم أسود لامع والشريط ذهبي
             ctx.fillStyle = '#0a0a0a'; ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
             ctx.fillStyle = '#D4AF37'; ctx.fillRect(-15, -this.h/2, 30, this.h);
             ctx.restore();
             
             ctx.save(); ctx.translate(this.x + this.shakeOffset, this.lidY);
             ctx.rotate(this.lidRotation); 
-            // الغطاء أسود والشريط ذهبي
             ctx.fillStyle = '#1a1a1a';
             ctx.fillRect(-this.w/2 - 10, -20, this.w + 20, 40);
             ctx.fillStyle = '#D4AF37'; ctx.fillRect(-15, -20, 30, 40);
             this.drawBow(ctx); ctx.restore();
         }
         drawBow(ctx) { 
-            // الفيونكة ذهبية
             ctx.fillStyle = '#D4AF37'; 
             ctx.beginPath(); ctx.ellipse(-20, -20, 25, 10, -0.5, 0, Math.PI*2); 
             ctx.ellipse(20, -20, 25, 10, 0.5, 0, Math.PI*2); ctx.fill(); 
@@ -245,7 +243,22 @@
             submitBtn.innerText = "EVALUATING...";
             submitBtn.disabled = true;
 
-            const evaluation = await evaluateMission(iframe);
+            // تم التعديل هنا لضمان قراءة الدالة من داخل محتوى الـ Iframe
+            let evaluation;
+            if (iframe.contentWindow && typeof iframe.contentWindow.evaluateMission === 'function') {
+                evaluation = iframe.contentWindow.evaluateMission();
+            } else {
+                // Fallback في حالة عدم استجابة الفرايم
+                throw new Error("Evaluation method not found");
+            }
+
+            if (!evaluation || !evaluation.answerText) {
+                alert("برجاء الإجابة على جميع الأسئلة أولاً!");
+                submitBtn.innerText = "SUBMIT";
+                submitBtn.disabled = false;
+                return;
+            }
+
             prizeValue = evaluation.points;
 
             const payload = {
@@ -271,6 +284,7 @@
             }, 1000);
 
         } catch (error) {
+            console.error("Submission Error:", error);
             alert("حدث خطأ في الاتصال، حاول مرة أخرى يا بطل!");
             submitBtn.innerText = "SUBMIT";
             submitBtn.disabled = false;

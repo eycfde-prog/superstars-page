@@ -5,9 +5,172 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EYC Superstars Registration</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="npstyle.css">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --gold-hover: #f1c40f;
+            --glass: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(20, 20, 20, 0.9);
+            --input-bg: rgba(40, 40, 40, 0.8);
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at center, #1a1a1a, #000);
+            color: white;
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Canvas Background */
+        #starCanvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+        }
+
+        .container {
+            width: 95%; max-width: 1100px;
+            background: var(--card-bg);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 40px;
+            display: flex; position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.1);
+            overflow: hidden; padding: 20px;
+            gap: 20px; z-index: 1;
+        }
+
+        /* Loading Spinner for Image */
+        .img-loader {
+            position: absolute; width: 50px; height: 50px;
+            border: 5px solid rgba(212, 175, 55, 0.1);
+            border-top: 5px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none; z-index: 10;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .progress-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: rgba(255,255,255,0.05); z-index: 10;
+        }
+        .progress-bar {
+            height: 100%; width: 14%; background: var(--gold);
+            transition: width 0.4s ease; box-shadow: 0 0 15px var(--gold);
+        }
+
+        .avatar-section {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 30px;
+            border: 1px dashed rgba(212, 175, 55, 0.2);
+            padding: 40px; position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* تكبير صورة الأفاتار */
+        #avatar-container {
+            width: 320px; height: 320px; /* تم التكبير من 260 */
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            display: flex; justify-content: center; align-items: center;
+            position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        #avatar-img { width: 290px; height: 290px; z-index: 5; transition: 0.3s; }
+
+        .form-section { flex: 1.2; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+        
+        .step { display: none; animation: fadeIn 0.5s ease; }
+        .step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        h2 { color: white; margin-bottom: 25px; font-weight: 600; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        h2::before { content: ''; width: 4px; height: 20px; background: var(--gold); border-radius: 2px; }
+
+        .input-group { margin-bottom: 15px; position: relative; }
+        label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #aaa; }
+
+        input, select {
+            width: 100%; padding: 14px 20px;
+            background: var(--input-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 15px; color: white; outline: none;
+            font-size: 0.9rem; box-sizing: border-box; transition: 0.3s;
+        }
+
+        input:focus, select:focus { border-color: var(--gold); background: rgba(50,50,50,1); }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 25px; }
+        button {
+            flex: 1; background: var(--gold); color: #000;
+            border: none; padding: 15px; border-radius: 12px;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+        button.prev-btn { background: #333; color: white; }
+        button:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
+
+        .loading-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; justify-content: center; align-items: center;
+            z-index: 100; color: var(--gold); font-weight: bold; border-radius: 40px;
+        }
+
+        /* Floating Preview for Mobile */
+      @media (max-width: 768px) {
+            /* جعل الحاوية ترتب العناصر عمودياً */
+            .container { 
+                flex-direction: column; 
+                padding: 15px; 
+                gap: 10px;
+                align-items: center;
+            }
+
+            /* تعديل قسم الأفاتار ليكون شريطاً علوياً أو دائرة مركزية */
+            .avatar-section {
+                width: 100%;
+                padding: 15px;
+                flex: none; /* إلغاء التمدد التلقائي */
+                border-radius: 20px;
+                background: rgba(212, 175, 55, 0.05);
+            }
+
+            /* ضبط حجم الفريم (الدائرة) في الموبايل */
+            #avatar-container { 
+                width: 180px;  /* حجم مناسب للموبايل ليظل الفريم دائرياً */
+                height: 180px; 
+                margin: 0 auto;
+            }
+            
+            /* ضبط حجم الصورة داخل الفريم */
+            #avatar-img { 
+                width: 160px; 
+                height: 160px; 
+            }
+
+            /* ضبط مكان وحجم النص */
+            #display-name {
+                font-size: 1.1rem;
+                margin-top: 10px;
+                text-align: center;
+            }
+
+            /* التأكد من أن قسم الفورم يأخذ المساحة المتبقية */
+            .form-section {
+                width: 100%;
+                padding: 0;
+            }
+        }
+    </style>
 </head>
 <body>
+
+<canvas id="starCanvas"></canvas>
+<audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
 
 <div class="container">
     <div class="progress-container"><div class="progress-bar" id="pBar"></div></div>
@@ -15,6 +178,7 @@
     
     <div class="avatar-section" id="avatar-sidebar">
         <div id="avatar-container">
+            <div class="img-loader" id="imgLoader"></div>
             <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
         </div>
         <h3 id="display-name" style="margin-top:20px; color: var(--gold); letter-spacing: 2px;">EYC AGENT</h3>
@@ -90,6 +254,7 @@
                         <option value="Wayfarers">Wayfarers</option>
                     </select>
                 </div>
+
                 <div class="input-group">
                     <label>Eye Expression</label>
                     <select id="eyeType" onchange="updateAvatar()">
@@ -114,6 +279,7 @@
                         <option value="Grimace">Grimace</option>
                     </select>
                 </div>
+
                 <div class="input-group">
                     <label>Skin Complexion</label>
                     <select id="skinColor" onchange="updateAvatar()">
@@ -172,7 +338,7 @@
         <div id="success-card" style="display: none; text-align: center;">
             <h2 style="justify-content: center;">MISSION ACCOMPLISHED</h2>
             <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid var(--gold);">
-                <img id="card-avatar" src="" width="140">
+                <img id="card-avatar" src="" width="180">
                 <h3 id="card-name" style="color: var(--gold); margin: 10px 0;"></h3>
                 <div style="background: #000; padding: 10px; border-radius: 10px; font-size: 1.5rem; font-weight: bold; color: var(--gold);">
                     <span id="agent-code">----</span>
@@ -184,7 +350,7 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOqqbFJ1yTf1PQrGFk2KSIQuEJNCJCqQpxx26P-JeVdLNpLbWLWje-kmL22olJOQr_yw/exec";
 
     const options = {
         maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
@@ -197,19 +363,67 @@
         mouths: ["Default", "Smile", "Serious", "Twinkle", "Tongue", "Eating", "Grimace"]
     };
 
-    function createStars() {
-        const section = document.getElementById('avatar-sidebar');
-        for (let i = 0; i < 30; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 3 + 1;
-            star.style.width = size + 'px'; star.style.height = size + 'px';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            star.style.animationDelay = Math.random() * 5 + 's';
-            section.appendChild(star);
+    // --- 1. Canvas Stars Performance Improvement ---
+    function initStars() {
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, stars = [];
+
+        function setSize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
         }
+
+        window.onresize = setSize;
+        setSize();
+
+        for(let i=0; i<80; i++) {
+            stars.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                size: Math.random() * 2,
+                speed: Math.random() * 0.5 + 0.1
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0,0,w,h);
+            ctx.fillStyle = "#d4af37";
+            stars.forEach(s => {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+                ctx.fill();
+                s.y -= s.speed;
+                if(s.y < 0) s.y = h;
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    // --- 2. LocalStorage & UX Improvements ---
+    function playClick() {
+        const snd = document.getElementById('clickSound');
+        snd.currentTime = 0;
+        snd.play().catch(() => {});
+    }
+
+    function saveProgress() {
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if(input.id) localStorage.setItem('eyc_data_' + input.id, input.value);
+        });
+    }
+
+    function loadProgress() {
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            const saved = localStorage.getItem('eyc_data_' + input.id);
+            if(saved) {
+                input.value = saved;
+                if(input.id === 'name') updateName();
+            }
+        });
     }
 
     function initOptions() {
@@ -237,6 +451,7 @@
         const isHijab = document.getElementById('topType').value === 'Hijab';
         const colorSel = document.getElementById('hairColor');
         const colorLabel = document.getElementById('hairColorLabel');
+        const savedColor = colorSel.value;
         colorSel.innerHTML = "";
         let colorList = isFemale && isHijab ? options.hijabColors : (isFemale ? options.femaleHairColors : options.maleHairColors);
         colorLabel.innerText = isFemale && isHijab ? "Hijab Color" : "Hair Color";
@@ -247,7 +462,12 @@
         document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT";
     }
 
+    // --- 3. Image Loader Logic ---
     function updateAvatar() {
+        const loader = document.getElementById('imgLoader');
+        const img = document.getElementById('avatar-img');
+        loader.style.display = 'block';
+
         const top = document.getElementById('topType').value;
         const skin = document.getElementById('skinColor').value;
         const facial = document.getElementById('facialHairType').value;
@@ -260,16 +480,28 @@
         const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
         const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&mouthType=${mouth}&skinColor=${skin}`;
         
-        document.getElementById('avatar-img').src = url;
+        const tempImg = new Image();
+        tempImg.src = url;
+        tempImg.onload = () => {
+            img.src = url;
+            loader.style.display = 'none';
+        };
+        saveProgress();
     }
 
     function nextStep(step) {
+        playClick();
         if (step > 1) {
             const currentStepEl = document.getElementById(`step${step-1}`);
             const inputs = currentStepEl.querySelectorAll('input[required]');
             let valid = true;
-            inputs.forEach(i => { if(!i.value) valid = false; });
-            if(!valid) { alert("Identify yourself first, Agent."); return; }
+            
+            inputs.forEach(i => { 
+                if(!i.value) valid = false; 
+                if(i.type === 'email' && !i.value.includes('@')) valid = false; // Simple Regex-like check
+            });
+
+            if(!valid) { alert("Complete the data correctly, Agent."); return; }
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + step).classList.add('active');
@@ -278,6 +510,7 @@
 
     document.getElementById('registrationForm').onsubmit = async (e) => {
         e.preventDefault();
+        playClick();
         const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
         if (programs.length === 0) { alert("Select a mission program"); return; }
 
@@ -293,7 +526,10 @@
         try {
             const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(formData) });
             const result = await response.json();
-            if (result.status === "success") showFinalCard(result.code);
+            if (result.status === "success") {
+                localStorage.clear(); // مسح البيانات بعد النجاح
+                showFinalCard(result.code);
+            }
             else alert("Error: " + result.message);
         } catch (error) {
             showFinalCard("EYC-" + Math.floor(1000 + Math.random() * 9000));
@@ -312,9 +548,13 @@
         document.getElementById('pBar').style.width = "100%";
     }
 
-    createStars();
-    initOptions();
-    updateAvatar();
+    // Initialization
+    window.onload = () => {
+        initStars();
+        initOptions();
+        loadProgress();
+        updateAvatar();
+    };
 </script>
 
 </body>

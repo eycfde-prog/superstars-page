@@ -1,266 +1,281 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC | Universal Mission Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Activity Content | Golden Ear</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="missionnormalstyle.css">
     <style>
-        /* تحسينات التصميم لضمان الثبات */
-        .difficulty-bar { 
-            display: flex; /* اجعلها مرئية دائماً مع التحكم في الظهور للحفاظ على المساحة */
-            visibility: hidden; 
-            justify-content: center; 
-            gap: 10px; 
+        :root { --gold: #D4AF37; --bg-deep: transparent; }
+        
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--bg-deep); 
+            color: white; 
+            margin: 0; 
             padding: 10px; 
-            background: rgba(0,0,0,0.3); 
-            min-height: 50px;
-        }
-        .diff-btn { padding: 8px 15px; border: 1px solid #00ff88; color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: 0.3s; background: transparent; border-radius: 5px; }
-        .diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
-        
-        #studentImg { width: 100%; height: 100%; object-fit: cover; display: block; background: #222; }
-        
-        #rewardContainer {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #2b1055, #000); z-index: 9999; cursor: pointer;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) transparent;
         }
 
-        .done-overlay {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.85); z-index: 10;
-            flex-direction: column; justify-content: center; align-items: center; border-radius: 10px;
-            backdrop-filter: blur(5px);
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        .gold-card { 
+            background: rgba(0, 0, 0, 0.4); 
+            backdrop-filter: blur(5px); 
+            border: 1px solid rgba(212, 175, 55, 0.2); 
+            border-radius: 20px; 
         }
-        .done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
-        .done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #1a1a1a; font-weight: 900; }
         
-        .activity-content-frame { position: relative; min-height: 400px; background: #111; }
+        .audio-wave-btn {
+            width: 55px; height: 55px; background: var(--gold); color: #000; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 22px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); transition: 0.3s;
+        }
+        .audio-wave-btn:hover { transform: scale(1.05); }
+
+        .skip-btn {
+            width: 35px; height: 35px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--gold); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; color: var(--gold); font-size: 12px;
+        }
         
-        /* منع تفاعل المستخدم مع العناصر أثناء التقييم */
-        .loading-state { pointer-events: none; opacity: 0.7; }
+        .question-card {
+            background: rgba(255,255,255,0.05); 
+            border-left: 4px solid var(--gold);
+            transition: 0.3s; padding: 12px; border-radius: 10px;
+        }
+
+        .option-btn {
+            width: 100%; text-align: left; padding: 12px 15px; margin-top: 8px;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; font-size: 14px; transition: 0.2s; color: #eee;
+            font-family: 'Poppins', sans-serif;
+        }
+        .option-btn:hover { background: rgba(212, 175, 55, 0.15); border-color: var(--gold); }
+        .option-btn.selected { 
+            background: var(--gold); color: black; font-weight: bold;
+            border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .gold-text { 
+            background: linear-gradient(to bottom, #fff, var(--gold)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
     </style>
 </head>
 <body>
-    <div id="rewardContainer">
-        <div class="instruction" style="position: absolute; bottom: 50px; color: white; width: 100%; text-align: center; font-family: 'Poppins';">اضغط على الصندوق لفتحه!</div>
-        <canvas id="rewardCanvas"></canvas>
-    </div>
 
-    <div class="mission-outer-frame" id="mainUI">
-        <header class="mission-header">
-            <div class="agent-side">
-                <div class="circle-frame"><img src="" id="studentImg" alt="Agent" onerror="this.src='assets/Student.png'"></div>
-                <div class="info-box">
-                    <span>AGENT</span>
-                    <b id="agentName">INITIALIZING...</b>
-                    <div class="token-tag" id="currentTokens">0 TK</div>
+    <div class="w-full max-w-full mx-auto pb-10">
+        <div class="gold-card p-5 mb-6 text-center">
+            <div id="audioStatus" class="text-yellow-500 text-[10px] orbitron mb-3 animate-pulse italic">INITIATING AUDIO SYSTEM...</div>
+            
+            <audio id="mainAudio">
+                <source id="audioSource" src="" type="audio/wav">
+            </audio>
+
+            <div class="flex justify-center items-center gap-6" dir="ltr">
+                <button onclick="skip(-5)" class="skip-btn"><i class="fas fa-backward"></i></button>
+                <button onclick="togglePlay()" id="playBtn" class="audio-wave-btn">
+                    <i id="playIcon" class="fas fa-play"></i>
+                    <i id="pauseIcon" class="fas fa-pause hidden"></i>
+                </button>
+                <button onclick="skip(5)" class="skip-btn"><i class="fas fa-forward"></i></button>
+            </div>
+
+            <div class="mt-6 px-1" dir="ltr">
+                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden cursor-pointer" onclick="seek(event)">
+                    <div id="progressBar" class="bg-gradient-to-r from-yellow-700 to-yellow-400 h-full rounded-full" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between mt-2 text-[10px] text-gray-400 orbitron">
+                    <span id="currentTime">00:00</span>
+                    <span id="duration">00:00</span>
                 </div>
             </div>
-            <div class="center-logo-area"><img src="assets/logo.png" alt="EYC LOGO" onerror="this.style.display='none'"></div>
-            <div class="activity-side">
-                <div class="circle-frame"><img src="" id="activityLogo" onerror="this.src='assets/default-act.png'"></div>
-                <div class="info-box">
-                    <span id="actCodeDisplay">CODE</span>
-                    <b id="actNameDisplay">LOADING...</b>
-                    <div class="token-tag mission-tag" id="missionNum">M 0</div>
-                </div>
-            </div>
-        </header>
-
-        <div class="difficulty-bar" id="difficultyBar">
-            <div class="diff-btn active" onclick="changeLevel('A', this)">LEVEL A</div>
-            <div class="diff-btn" onclick="changeLevel('B', this)">LEVEL B</div>
-            <div class="diff-btn" onclick="changeLevel('C', this)">LEVEL C</div>
         </div>
 
-        <div class="activity-content-frame">
-            <div id="doneOverlay" class="done-overlay">
-                <i class="fas fa-check-circle"></i>
-                <span>MISSION COMPLETED</span>
-            </div>
-            <iframe id="mainIframe" src="about:blank" class="activity-iframe" style="width:100%; border:none;"></iframe>
-        </div>
-
-        <div class="action-container">
-            <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
-            <button class="submit-btn" id="submitBtn" onclick="submitMission()">SUBMIT</button>
-            <a href="MC.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
+        <div class="space-y-4" dir="ltr">
+            <h3 class="text-md font-black gold-text mb-3 italic text-left orbitron tracking-widest">ANALYSIS QUERIES:</h3>
+            <div id="questionsContainer" class="space-y-4"></div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="guideModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000;" onclick="toggleGuide(false)">
-        <div class="glassy-container" style="max-width:500px; margin:50px auto; background:#fff; padding:20px; border-radius:15px;" onclick="event.stopPropagation()">
-            <div class="speech-bubble">
-                <p id="guideText" style="color:#333; font-weight:bold;">تعليمات المهمة:</p>
-                <iframe id="guideFrame" src="" style="width:100%; height:300px; border:none;"></iframe>
-                <button class="nav-btn close-guide-btn" onclick="toggleGuide(false)" style="width:100%; margin-top:10px;">فهمت!</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="CC.js"></script>
-    <script>
-    const canvas = document.getElementById('rewardCanvas');
-    const ctx = canvas.getContext('2d');
-    let width, height, prizeValue = "1";
-    const tokenImg = new Image(); tokenImg.src = 'assets/Token.png'; 
-    let gameState = 'closed', tokens = [], prize = null, animationId = null;
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const actCode = urlParams.get('act') || 'GES'; 
-    const mNum = urlParams.get('m') || '1';  
-    const actName = urlParams.get('name') || 'Activity'; 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNrfn_k9WIt2uQo4hxUw_0JU6pKnwP1lvyYXQnHhHPv_zpfAL5602QSxC_VGu4V7mflA/exec";
+<script>
+    const audio = document.getElementById('mainAudio');
+    const progressBar = document.getElementById('progressBar');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
     
-    let currentLevel = 'A';
-    const isElite = actCode.endsWith('X');
+    const params = new URLSearchParams(window.location.search);
+    const mNum = params.get('m') || '1';
 
-    // الإعداد الأولي للواجهة
-    document.getElementById('actNameDisplay').innerText = actName;
-    document.getElementById('actCodeDisplay').innerText = actCode;
-    document.getElementById('missionNum').innerText = 'M ' + mNum;
-    document.getElementById('activityLogo').src = `assets/AL/${actCode}.png`;
-    if(isElite) document.getElementById('difficultyBar').style.visibility = 'visible';
-
-    function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
-    window.addEventListener('resize', resize); resize();
-
-    // الكلاسات الخاصة بالأنيميشن (تم الإبقاء عليها مع تحسين الأداء)
-    class Box {
-        constructor() { this.x = width / 2; this.y = height / 2 + 50; this.w = 120; this.h = 120; this.lidY = this.y - 60; this.shakeOffset = 0; this.lidVelocity = 0; this.lidRotation = 0; }
-        update() {
-            if (gameState === 'closed') { this.shakeOffset = Math.random() > 0.9 ? (Math.random() - 0.5) * 5 : this.shakeOffset * 0.9; }
-            else if (gameState === 'opening') { this.lidVelocity -= 1.5; this.lidY += this.lidVelocity; this.lidRotation -= 0.05; if (this.lidY < -200) gameState = 'opened'; }
+    // دالة لتبديل مصفوفة عشوائياً (Fisher-Yates Shuffle)
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
-        draw() {
-            ctx.save(); ctx.translate(this.x + this.shakeOffset, this.y);
-            ctx.fillStyle = '#ff4757'; ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
-            ctx.fillStyle = '#ffd32a'; ctx.fillRect(-10, -this.h/2, 20, this.h);
-            ctx.restore();
-            ctx.save(); ctx.translate(this.x + this.shakeOffset, this.lidY);
-            ctx.rotate(this.lidRotation); ctx.fillStyle = '#ff6b81';
-            ctx.fillRect(-this.w/2 - 5, -15, this.w + 10, 30);
-            ctx.restore();
+        return array;
+    }
+
+    // البيانات المحدثة مع المسار الجديد
+    const geData = {
+        "1": {
+            audio: "assets/gesaudio/GE1.wav",
+            questions: [
+                { 
+                    q: "What is the core definition of critical thinking?", 
+                    options: [
+                        "The ability to analyze information objectively and make a reasoned judgment.", 
+                        "The ability to memorize large amounts of data quickly.", 
+                        "The process of accepting information without question.", 
+                        "The act of forming conclusions based solely on emotion."
+                    ] 
+                },
+                { 
+                    q: "What is one thing critical thinking helps individuals avoid?", 
+                    options: [
+                        "Logical fallacies.", 
+                        "Basic conversation.", 
+                        "Routine physical exercise.", 
+                        "Reading books."
+                    ] 
+                },
+                { 
+                    q: "What two qualities are required to develop critical thinking?", 
+                    options: [
+                        "Curiosity and a willingness to question assumptions.", 
+                        "Ignoring all external opinions.", 
+                        "Speed reading and perfect recall.", 
+                        "Strict adherence to tradition."
+                    ] 
+                },
+                { 
+                    q: "Where is critical thinking considered a vital skill?", 
+                    options: [
+                        "In everyday decision-making and academic settings.", 
+                        "Only in highly specialized scientific fields.", 
+                        "Only when dealing with political issues.", 
+                        "Exclusively in historical research."
+                    ] 
+                },
+                { 
+                    q: "What is the foundation of scientific inquiry?", 
+                    options: [
+                        "Critical thinking.", 
+                        "Simple belief.", 
+                        "Emotional response.", 
+                        "Random guesswork."
+                    ] 
+                }
+            ]
         }
+    };
+
+    let studentAnswers = {};
+
+    window.onload = () => {
+        const data = geData[mNum] || geData["1"];
+        document.getElementById('audioSource').src = data.audio;
+        audio.load();
+
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = data.questions.map((item, i) => {
+            // عمل نسخة من الخيارات وتبديل أماكنها عشوائياً لكل سؤال
+            const shuffledOptions = shuffle([...item.options]);
+            
+            return `
+                <div class="question-card text-left" id="qBlock_${i}">
+                    <span class="text-yellow-600 font-black orbitron text-[10px] block mb-1">DATA_LOG_0${i+1}</span>
+                    <p class="text-sm text-gray-100 font-semibold mb-3 leading-relaxed">${item.q}</p>
+                    <div class="options-list space-y-1">
+                        ${shuffledOptions.map(opt => `
+                            <button class="option-btn" onclick="selectOption(${i}, '${opt}', this)">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    };
+
+    function selectOption(qIndex, val, btn) {
+        const parent = document.getElementById(`qBlock_${qIndex}`);
+        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        studentAnswers[qIndex] = val;
     }
 
-    class Token {
-        constructor(x, y) { this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * 10; this.vy = (Math.random() - 1) * 12; this.gravity = 0.4; }
-        update() { this.vy += this.gravity; this.x += this.vx; this.y += this.vy; }
-        draw() { ctx.drawImage(tokenImg, this.x, this.y, 30, 30); }
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, width, height);
-        box.update(); box.draw();
-        if (prize) { prize.update(); prize.draw(); }
-        tokens.forEach((t, i) => { t.update(); t.draw(); if (t.y > height) tokens.splice(i, 1); });
-        animationId = requestAnimationFrame(animate);
-    }
-
-    const box = new Box();
-
-    async function initMission(level = 'A') {
-        currentLevel = level;
-        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-        const iframe = document.getElementById('mainIframe');
-        const overlay = document.getElementById('doneOverlay');
-
-        document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
-        if(saved.image) document.getElementById('studentImg').src = saved.image;
-
-        // التحقق من حالة المهمة
-        try {
-            const isDone = await checkMissionStatus(saved.email, actCode, mNum, SCRIPT_URL);
-            if (isDone) {
-                overlay.style.display = 'flex';
-                iframe.style.opacity = '0.1';
-                document.getElementById('submitBtn').disabled = true;
-                iframe.src = "about:blank";
-            } else {
-                overlay.style.display = 'none';
-                iframe.style.opacity = '1';
-                document.getElementById('submitBtn').disabled = false;
-                iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
+    async function togglePlay() {
+        if (audio.paused) {
+            try {
+                await audio.play();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } catch (err) {
+                console.error("Audio play failed:", err);
             }
-        } catch(e) {
-            console.error("Status check failed, defaulting to open.");
-            iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
-        }
-    }
-
-    async function submitMission() {
-        const btn = document.getElementById('submitBtn');
-        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-        
-        btn.innerText = "CHECKING...";
-        btn.disabled = true;
-        document.getElementById('mainUI').classList.add('loading-state');
-
-        try {
-            const evaluation = await evaluateMission(document.getElementById('mainIframe'));
-            prizeValue = evaluation.points;
-
-            // إرسال البيانات (Fire and Forget لتسريع التجربة للمستخدم)
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: 'no-cors',
-                body: JSON.stringify({
-                    email: saved.email,
-                    activity: actCode,
-                    mission: mNum,
-                    level: isElite ? currentLevel : 'A',
-                    answer: evaluation.answerText,
-                    points: evaluation.points,
-                    isCorrect: evaluation.isCorrect
-                })
-            });
-
-            // إظهار شاشة المكافأة فوراً
-            document.getElementById('rewardContainer').style.display = 'block';
-            animate();
-
-        } catch (error) {
-            console.error(error);
-            alert("حدث خطأ في التقييم، حاول مرة أخرى.");
-            btn.innerText = "SUBMIT";
-            btn.disabled = false;
-            document.getElementById('mainUI').classList.remove('loading-state');
-        }
-    }
-
-    canvas.addEventListener('mousedown', () => {
-        if (gameState === 'opened') {
-            cancelAnimationFrame(animationId);
-            window.location.href = 'MC.html';
-        } else if (gameState === 'closed') {
-            gameState = 'opening';
-            for (let i = 0; i < 10; i++) tokens.push(new Token(width / 2, height / 2));
-            document.querySelector('.instruction').innerText = "تم التسجيل! اضغط للعودة للمجرة";
-        }
-    });
-
-    function changeLevel(level, btn) {
-        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        initMission(level);
-    }
-
-    function toggleGuide(show) {
-        const modal = document.getElementById('guideModal');
-        if(show) {
-            document.getElementById('guideFrame').src = `assets/MIF/Guides/${actCode}.html`;
-            modal.style.display = 'block';
         } else {
-            modal.style.display = 'none';
-            document.getElementById('guideFrame').src = '';
+            audio.pause();
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
         }
     }
 
-    window.onload = initMission;
-    </script>
+    function skip(time) { audio.currentTime += time; }
+
+    function formatTime(s) {
+        let m = Math.floor(s / 60);
+        s = Math.floor(s % 60);
+        return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+    }
+
+    audio.ontimeupdate = () => {
+        if (audio.duration) {
+            progressBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
+            document.getElementById('currentTime').innerText = formatTime(audio.currentTime);
+        }
+    };
+
+    audio.onloadedmetadata = () => {
+        document.getElementById('duration').innerText = formatTime(audio.duration);
+        document.getElementById('audioStatus').innerText = "SYSTEM READY - LOGGED TO ASSETS";
+    };
+
+    function seek(e) {
+        const percent = e.offsetX / e.currentTarget.offsetWidth;
+        audio.currentTime = percent * audio.duration;
+    }
+
+    window.evaluateMission = function() {
+        const data = geData[mNum] || geData["1"];
+        const totalQuestions = data.questions.length;
+        const answeredCount = Object.keys(studentAnswers).length;
+
+        if (answeredCount < totalQuestions) {
+            return { answerText: "", points: 0 };
+        }
+
+        let finalReport = "";
+        for (let i = 0; i < totalQuestions; i++) {
+            finalReport += `Q${i+1}: ${studentAnswers[i]} | `;
+        }
+
+        return { 
+            status: "COMPLETED", 
+            points: 10, 
+            answerText: finalReport,
+            isCorrect: true 
+        };
+    };
+</script>
 </body>
 </html>

@@ -49,11 +49,11 @@
             background: linear-gradient(135deg, var(--gold-glass), transparent);
             border-right: 1px solid rgba(212, 175, 55, 0.2);
             padding: 40px; text-align: center;
-            position: relative; /* مهم لتموضع النجوم */
+            position: relative;
             overflow: hidden;
         }
 
-        /* --- تأثير النجوم الذهبية --- */
+        /* --- تأثير النجوم الذهبية المحسن --- */
         .star {
             position: absolute;
             background: var(--gold);
@@ -61,12 +61,13 @@
             opacity: 0;
             pointer-events: none;
             animation: moveStar linear infinite;
+            box-shadow: 0 0 5px var(--gold), 0 0 10px var(--gold); /* توهج إضافي */
         }
 
         @keyframes moveStar {
             0% { transform: translateY(0) scale(0); opacity: 0; }
-            20% { opacity: 0.8; }
-            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
         }
         /* ----------------------- */
 
@@ -77,13 +78,13 @@
             border-radius: 50%;
             background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
             border: 2px dashed rgba(212, 175, 55, 0.3);
-            z-index: 2; /* ليبقى فوق النجوم */
+            z-index: 2;
         }
 
         #avatar-img {
             width: 220px; height: 220px;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 2;
         }
 
@@ -210,7 +211,7 @@
                 <h2>03. Base Design</h2>
                 <div class="input-group">
                     <label>Select Gender Base:</label>
-                    <select id="gender" onchange="initOptions(); updateAvatar();">
+                    <select id="gender" onchange="initOptions(); triggerActionUpdate();">
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
@@ -225,11 +226,11 @@
                 <h2>04. Features</h2>
                 <div class="input-group">
                     <label id="hairLabel">Style:</label>
-                    <select id="topType" onchange="updateAvatar(); checkHijab();"></select>
+                    <select id="topType" onchange="checkHijab(); triggerActionUpdate();"></select>
                 </div>
                 <div class="input-group">
                     <label id="hairColorLabel">Color:</label>
-                    <select id="hairColor" onchange="updateAvatar()"></select>
+                    <select id="hairColor" onchange="triggerActionUpdate()"></select>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="prev-btn" onclick="nextStep(3)">Back</button>
@@ -241,11 +242,11 @@
                 <h2>05. Face & Body</h2>
                 <div id="facial-hair-group" class="input-group">
                     <label>Beard/Moustache:</label>
-                    <select id="facialHairType" onchange="updateAvatar()"></select>
+                    <select id="facialHairType" onchange="triggerActionUpdate()"></select>
                 </div>
                 <div class="input-group">
                     <label>Skin Complexion:</label>
-                    <select id="skinColor" onchange="updateAvatar()">
+                    <select id="skinColor" onchange="triggerActionUpdate()">
                         <option value="Tanned">Tanned</option>
                         <option value="Yellow">Yellow</option>
                         <option value="Pale">Pale</option>
@@ -263,7 +264,7 @@
                 <h2>06. Wardrobe</h2>
                 <div class="input-group">
                     <label>Choose Outfit Style:</label>
-                    <select id="clotheType" onchange="updateAvatar()">
+                    <select id="clotheType" onchange="triggerActionUpdate()">
                         <option value="BlazerShirt">Blazer & Shirt</option>
                         <option value="BlazerSweater">Blazer & Sweater</option>
                         <option value="CollarSweater">Collar Sweater</option>
@@ -318,23 +319,25 @@
         maleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "BlondeGolden", "Platinum"],
         femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
         hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
-        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
-        eyeType: ["Default", "Happy", "Squint", "Side", "Wink"]
+        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"]
     };
 
-    // --- وظيفة إنشاء النجوم الذهبية ---
+    // متغيرات الحالة للأنيميشن
+    let currentMouth = "Default";
+    let currentEyes = "Default";
+
     function createStars() {
         const section = document.getElementById('avatar-sidebar');
-        const count = 30; // عدد النجوم
+        const count = 45; // زيادة عدد النجوم لوضوح أكبر
         for (let i = 0; i < count; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            const size = Math.random() * 4 + 2; // حجم عشوائي
+            const size = Math.random() * 4 + 1.5; 
             star.style.width = `${size}px`;
             star.style.height = `${size}px`;
             star.style.left = `${Math.random() * 100}%`;
             star.style.top = `${Math.random() * 100}%`;
-            star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            star.style.animationDuration = `${Math.random() * 4 + 3}s`;
             star.style.animationDelay = `${Math.random() * 5}s`;
             section.appendChild(star);
         }
@@ -375,6 +378,21 @@
         document.getElementById('display-name').innerText = document.getElementById('name').value || "EYC AGENT";
     }
 
+    // وظيفة لتحديث الأفاتار مع تأثير حركي عند التغيير
+    function triggerActionUpdate() {
+        // تغيير العين والفم مؤقتاً عند أي تفاعل
+        currentEyes = "Wink";
+        currentMouth = "Smile";
+        updateAvatar();
+
+        // العودة للوضع الطبيعي بعد 600 مللي ثانية
+        setTimeout(() => {
+            currentEyes = "Default";
+            currentMouth = "Default";
+            updateAvatar();
+        }, 600);
+    }
+
     function updateAvatar() {
         const top = document.getElementById('topType').value;
         const skin = document.getElementById('skinColor').value;
@@ -383,7 +401,9 @@
         const clothe = document.getElementById('clotheType').value;
         const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
         
-        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=Blank&eyeType=Default&skinColor=${skin}&facialHairType=${facial}&clotheType=${clothe}`;
+        // استخدام متغيرات العين والفم الديناميكية
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=Blank&hairColor=${color}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${currentEyes}&mouthType=${currentMouth}&skinColor=${skin}`;
+        
         document.getElementById('avatar-img').src = url;
     }
 

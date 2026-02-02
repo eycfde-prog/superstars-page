@@ -14,7 +14,7 @@
         .input-alike { 
             background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; 
             padding: 10px; text-align: center; width: 100%; color: var(--gold); 
-            font-family: 'Orbitron'; outline: none; font-size: 14px; direction: ltr; /* English input */
+            font-family: 'Orbitron'; outline: none; font-size: 14px; direction: ltr;
         }
         .input-alike:focus { border-color: var(--gold); }
         .label-ar { direction: rtl; display: block; width: 100%; font-weight: bold; }
@@ -30,10 +30,18 @@
     <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v9.6</footer>
 
 <script>
-    // بيانات المهمة - (يتم تغيير هذه المصفوفة في كل ملف من الـ 10)
-    const currentTask = [{m1:"أسبوع", m2:"ضعيف", a1:"week", a2:"weak"}, {m1:"ساعة", m2:"لنا", a1:"hour", a2:"our"}, {m1:"ثمانية", m2:"أكل", a1:"eight", a2:"ate"}, {m1:"جديد", m2:"عرف", a1:"new", a2:"knew"}, {m1:"طريق", m2:"ركب", a1:"road", a2:"rode"}, {m1:"يكتب", m2:"يمين", a1:"write", a2:"right"}, {m1:"أزرق", m2:"نفخ", a1:"blue", a2:"blew"}, {m1:"لحم", m2:"يقابل", a1:"meat", a2:"meet"}, {m1:"واحد", m2:"فاز", a1:"one", a2:"won"}, {m1:"شعر", m2:"أرنب بري", a1:"hair", a2:"hare"}]
+    // 1. بيانات المهمة
+    const currentTask = [
+        {m1:"اثنان", m2:"أيضا", a1:"two", a2:"went"}, 
+        {m1:"ابن", m2:"شمس", a1:"son", a2:"sun"}, 
+         {m1:"أنا", m2:"عين", a1:"i", a2:"eye"}, 
+         {m1:"كن (فعل أمر)", m2:"نحلة", a1:"be", a2:"bee"}, 
+         {m1:"بواسطة", m2:"يشتري", a1:"by", a2:"buy"} 
+    ];
+
     window.onload = () => { renderActivity(); };
 
+    // 2. دالة بناء واجهة النشاط
     function renderActivity() {
         const wrapper = document.getElementById('activityWrapper');
         wrapper.innerHTML = currentTask.map((pair, index) => `
@@ -53,20 +61,35 @@
         `).join('');
     }
 
+    // 3. دالة التصحيح الموحدة (المستدعاة من الصفحة الأم)
     window.checkAnswers = function() {
         let score = 0;
+        let studentResponses = [];
         const inputs = document.querySelectorAll('.task-input');
+        
         inputs.forEach(input => {
-            if (input.value.trim().toLowerCase() === input.getAttribute('data-answer').toLowerCase()) {
+            const val = input.value.trim();
+            const correctVal = input.getAttribute('data-answer');
+            studentResponses.push(val || "EMPTY"); // جمع الإجابات للنص المرسل
+
+            if (val.toLowerCase() === correctVal.toLowerCase()) {
                 score++;
                 input.style.borderColor = "#00ffa3";
             } else {
                 input.style.borderColor = "#ff3131";
             }
         });
-        return { points: score, total: inputs.length };
+
+        // "جائزة الترضية": الطالب لا يأخذ 0 أبداً، أقل درجة هي 1 توكن
+        let finalPoints = (score === 0) ? 1 : score;
+
+        return { 
+            points: finalPoints, 
+            total: inputs.length,
+            answerText: studentResponses.join(", "),
+            isCorrect: score > 0 
+        };
     };
 </script>
 </body>
 </html>
-

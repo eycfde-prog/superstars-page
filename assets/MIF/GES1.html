@@ -10,7 +10,6 @@
     <style>
         :root { --gold: #D4AF37; --bg-deep: transparent; }
         
-        /* تحسينات للعرض داخل الـ Iframe */
         body { 
             font-family: 'Cairo', sans-serif; 
             background: var(--bg-deep); 
@@ -117,16 +116,65 @@
     const params = new URLSearchParams(window.location.search);
     const mNum = params.get('m') || '1';
 
-    // بيانات الأسئلة - مستر عز يمكنك إضافة المهمات هنا بسهولة
+    // وظيفة لخلط مصفوفة عشوائياً
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // بيانات الأسئلة المحدثة
     const geData = {
         "1": {
-            audio: "assets/audio/GE1.wav",
+            audio: "assets/gesaudio/GE1.wav",
             questions: [
-                { q: "What is the foundation of scientific inquiry?", options: ["Blind Faith", "Systematic Observation", "Public Opinion"] },
-                { q: "What is the core definition of critical thinking?", options: ["Objective Analysis", "Fast Memorization", "Agreeing with Others"] },
-                { q: "What is one thing critical thinking helps individuals avoid?", options: ["New Information", "Logical Fallacies", "Social Interaction"] },
-                { q: "What two qualities are required to develop critical thinking?", options: ["Curiosity and Skepticism", "Silence and Obedience", "Speed and Force"] },
-                { q: "Where is critical thinking considered a vital skill?", options: ["Only in Schools", "Every Professional Field", "Nowhere Specific"] }
+                { 
+                    q: "What is the core definition of critical thinking?", 
+                    options: [
+                        "The ability to analyze information objectively and make a reasoned judgment.", 
+                        "The ability to memorize large amounts of data quickly.", 
+                        "The process of accepting information without question.", 
+                        "The act of forming conclusions based solely on emotion."
+                    ] 
+                },
+                { 
+                    q: "What is one thing critical thinking helps individuals avoid?", 
+                    options: [
+                        "Logical fallacies.", 
+                        "Basic conversation.", 
+                        "Routine physical exercise.", 
+                        "Reading books."
+                    ] 
+                },
+                { 
+                    q: "What two qualities are required to develop critical thinking?", 
+                    options: [
+                        "Curiosity and a willingness to question assumptions.", 
+                        "Ignoring all external opinions.", 
+                        "Speed reading and perfect recall.", 
+                        "Strict adherence to tradition."
+                    ] 
+                },
+                { 
+                    q: "Where is critical thinking considered a vital skill?", 
+                    options: [
+                        "In everyday decision-making and academic settings.", 
+                        "Only in highly specialized scientific fields.", 
+                        "Only when dealing with political issues.", 
+                        "Exclusively in historical research."
+                    ] 
+                },
+                { 
+                    q: "What is the foundation of scientific inquiry?", 
+                    options: [
+                        "Critical thinking.", 
+                        "Simple belief.", 
+                        "Emotional response.", 
+                        "Random guesswork."
+                    ] 
+                }
             ]
         }
     };
@@ -139,19 +187,24 @@
         audio.load();
 
         const container = document.getElementById('questionsContainer');
-        container.innerHTML = data.questions.map((item, i) => `
-            <div class="question-card text-left" id="qBlock_${i}">
-                <span class="text-yellow-600 font-black orbitron text-[10px] block mb-1">DATA_LOG_0${i+1}</span>
-                <p class="text-sm text-gray-100 font-semibold mb-3 leading-relaxed">${item.q}</p>
-                <div class="options-list space-y-1">
-                    ${item.options.map(opt => `
-                        <button class="option-btn" onclick="selectOption(${i}, '${opt}', this)">
-                            ${opt}
-                        </button>
-                    `).join('')}
+        container.innerHTML = data.questions.map((item, i) => {
+            // خلط الخيارات قبل عرضها
+            const shuffledOptions = shuffleArray([...item.options]);
+            
+            return `
+                <div class="question-card text-left" id="qBlock_${i}">
+                    <span class="text-yellow-600 font-black orbitron text-[10px] block mb-1">DATA_LOG_0${i+1}</span>
+                    <p class="text-sm text-gray-100 font-semibold mb-3 leading-relaxed">${item.q}</p>
+                    <div class="options-list space-y-1">
+                        ${shuffledOptions.map(opt => `
+                            <button class="option-btn" onclick="selectOption(${i}, '${opt.replace(/'/g, "\\'")}', this)">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     };
 
     function selectOption(qIndex, val, btn) {
@@ -198,27 +251,20 @@
         audio.currentTime = percent * audio.duration;
     }
 
-    // الربط مع الـ Terminal (EYC Terminal)
     window.evaluateMission = function() {
         const data = geData[mNum] || geData["1"];
         const totalQuestions = data.questions.length;
         const answeredCount = Object.keys(studentAnswers).length;
 
-        // 1. التحقق من أن الطالب أجاب على كل الأسئلة
         if (answeredCount < totalQuestions) {
-            return { 
-                answerText: "", // فارغ يمنع الإرسال
-                points: 0 
-            };
+            return { answerText: "", points: 0 };
         }
 
-        // 2. تجميع الإجابات في نص
         let finalReport = "";
         for (let i = 0; i < totalQuestions; i++) {
             finalReport += `Q${i+1}: ${studentAnswers[i]} | `;
         }
 
-        // 3. حساب النقاط (مثلاً 10 نقاط)
         return { 
             status: "COMPLETED", 
             points: 10, 

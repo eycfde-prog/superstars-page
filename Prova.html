@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Superstars Registration - Pro Edition</title>
+    <title>EYC Superstars Registration</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,7 +17,7 @@
         body {
             margin: 0; padding: 0;
             font-family: 'Poppins', sans-serif;
-            background: #000;
+            background: radial-gradient(circle at center, #1a1a1a, #000);
             color: white;
             min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
@@ -27,30 +27,30 @@
         /* Canvas Background */
         #starCanvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
+            pointer-events: none; z-index: 0;
         }
 
         .container {
-            width: 95%; max-width: 1000px;
+            width: 95%; max-width: 1100px;
             background: var(--card-bg);
             border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 40px;
             display: flex; position: relative;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-            overflow: hidden; padding: 20px; gap: 20px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.1);
+            overflow: hidden; padding: 20px;
+            gap: 20px; z-index: 1;
         }
 
-        /* Spinner */
-        .loader-spinner {
+        /* Loading Spinner for Image */
+        .img-loader {
             position: absolute; width: 50px; height: 50px;
-            border: 4px solid rgba(212, 175, 55, 0.1);
-            border-left-color: var(--gold);
+            border: 5px solid rgba(212, 175, 55, 0.1);
+            border-top: 5px solid var(--gold);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             display: none; z-index: 10;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .progress-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 4px;
@@ -65,20 +65,23 @@
             flex: 1; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 30px; border: 1px dashed rgba(212, 175, 55, 0.2);
-            padding: 40px; position: relative; transition: all 0.3s ease;
+            border-radius: 30px;
+            border: 1px dashed rgba(212, 175, 55, 0.2);
+            padding: 40px; position: relative;
+            transition: all 0.3s ease;
         }
 
+        /* تكبير صورة الأفاتار */
         #avatar-container {
-            width: 260px; height: 260px;
+            width: 320px; height: 320px; /* تم التكبير من 260 */
             border-radius: 50%;
             background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
             border: 2px solid rgba(212, 175, 55, 0.3);
             display: flex; justify-content: center; align-items: center;
-            position: relative;
+            position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
 
-        #avatar-img { width: 230px; height: 230px; z-index: 5; transition: opacity 0.3s; }
+        #avatar-img { width: 290px; height: 290px; z-index: 5; transition: 0.3s; }
 
         .form-section { flex: 1.2; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
         
@@ -89,7 +92,7 @@
         h2 { color: white; margin-bottom: 25px; font-weight: 600; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
         h2::before { content: ''; width: 4px; height: 20px; background: var(--gold); border-radius: 2px; }
 
-        .input-group { margin-bottom: 15px; }
+        .input-group { margin-bottom: 15px; position: relative; }
         label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #aaa; }
 
         input, select {
@@ -117,18 +120,19 @@
             z-index: 100; color: var(--gold); font-weight: bold; border-radius: 40px;
         }
 
-        /* --- Floating Preview Mobile --- */
+        /* Floating Preview for Mobile */
         @media (max-width: 768px) {
-            .container { flex-direction: column; border-radius: 20px; margin-top: 80px; }
-            .avatar-section {
-                position: fixed; top: 0; left: 0; right: 0; 
-                height: 70px; flex-direction: row; padding: 10px 20px;
-                border-radius: 0; border: none; border-bottom: 1px solid var(--gold);
-                background: rgba(20, 20, 20, 0.95); z-index: 1000; backdrop-filter: blur(10px);
+            .container { flex-direction: column; border-radius: 20px; padding: 10px; margin-top: 80px;}
+            .avatar-section { 
+                position: fixed; top: 0; left: 0; width: 100%; height: 80px; 
+                flex-direction: row; padding: 10px; z-index: 1000; 
+                border-radius: 0; background: rgba(20,20,20,0.95);
+                border: none; border-bottom: 1px solid var(--gold);
             }
-            #avatar-container { width: 50px; height: 50px; }
-            #avatar-img { width: 45px; height: 45px; }
+            #avatar-container { width: 60px; height: 60px; }
+            #avatar-img { width: 50px; height: 50px; }
             #display-name { margin-top: 0 !important; margin-left: 15px; font-size: 0.9rem; }
+            .img-loader { width: 30px; height: 30px; border-width: 3px; }
         }
     </style>
 </head>
@@ -143,7 +147,7 @@
     
     <div class="avatar-section" id="avatar-sidebar">
         <div id="avatar-container">
-            <div class="loader-spinner" id="imgLoader"></div>
+            <div class="img-loader" id="imgLoader"></div>
             <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
         </div>
         <h3 id="display-name" style="margin-top:20px; color: var(--gold); letter-spacing: 2px;">EYC AGENT</h3>
@@ -208,19 +212,48 @@
                     <select id="facialHairType" onchange="updateAvatar()"></select>
                 </div>
                 <div class="input-group">
-                    <label>Accessories</label>
+                    <label>Accessories (Glasses)</label>
                     <select id="accessoriesType" onchange="updateAvatar()">
                         <option value="Blank">None</option>
                         <option value="Kurt">Kurt</option>
                         <option value="Prescription01">Classic</option>
+                        <option value="Prescription02">Modern</option>
                         <option value="Round">Round</option>
                         <option value="Sunglasses">Sunglasses</option>
+                        <option value="Wayfarers">Wayfarers</option>
                     </select>
                 </div>
+
+                <div class="input-group">
+                    <label>Eye Expression</label>
+                    <select id="eyeType" onchange="updateAvatar()">
+                        <option value="Default">Normal</option>
+                        <option value="Happy">Happy</option>
+                        <option value="Wink">Wink 😉</option>
+                        <option value="Hearts">Love 😍</option>
+                        <option value="Surprised">Surprised 😮</option>
+                        <option value="Squint">Squint</option>
+                        <option value="Side">Looking Side</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Mouth Expression</label>
+                    <select id="mouthType" onchange="updateAvatar()">
+                        <option value="Default">Normal</option>
+                        <option value="Smile">Smile 🙂</option>
+                        <option value="Twinkle">Twinkle ✨</option>
+                        <option value="Tongue">Tongue 😛</option>
+                        <option value="Serious">Serious</option>
+                        <option value="Eating">Eating</option>
+                        <option value="Grimace">Grimace</option>
+                    </select>
+                </div>
+
                 <div class="input-group">
                     <label>Skin Complexion</label>
                     <select id="skinColor" onchange="updateAvatar()">
                         <option value="Tanned">Tanned</option>
+                        <option value="Yellow">Yellow</option>
                         <option value="Pale">Pale</option>
                         <option value="Light">Light</option>
                         <option value="Brown">Brown</option>
@@ -238,8 +271,11 @@
                     <label>Outfit Style</label>
                     <select id="clotheType" onchange="updateAvatar()">
                         <option value="BlazerShirt">Blazer & Shirt</option>
-                        <option value="Hoodie">Hoodie</option>
+                        <option value="BlazerSweater">Blazer & Sweater</option>
+                        <option value="CollarSweater">Collar Sweater</option>
                         <option value="GraphicShirt">Graphic T-Shirt</option>
+                        <option value="Hoodie">Hoodie</option>
+                        <option value="Overall">Overall</option>
                     </select>
                 </div>
                 <div class="btn-group">
@@ -251,10 +287,14 @@
             <div class="step" id="step7">
                 <h2>07. Mission</h2>
                 <div class="input-group">
-                    <label>Choose Programs</label>
+                    <label style="margin-bottom: 15px;">Choose Programs</label>
                     <div style="display: flex; gap: 20px;">
-                        <label><input type="checkbox" name="program" value="Season"> Season</label>
-                        <label><input type="checkbox" name="program" value="X-Box"> X-Box</label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="program" value="Season" style="width: 20px;"> Season
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="program" value="X-Box" style="width: 20px;"> X-Box
+                        </label>
                     </div>
                 </div>
                 <div class="btn-group">
@@ -267,153 +307,109 @@
         <div id="success-card" style="display: none; text-align: center;">
             <h2 style="justify-content: center;">MISSION ACCOMPLISHED</h2>
             <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid var(--gold);">
-                <img id="card-avatar" src="" width="140">
+                <img id="card-avatar" src="" width="180">
                 <h3 id="card-name" style="color: var(--gold); margin: 10px 0;"></h3>
                 <div style="background: #000; padding: 10px; border-radius: 10px; font-size: 1.5rem; font-weight: bold; color: var(--gold);">
                     <span id="agent-code">----</span>
                 </div>
             </div>
-            <button onclick="window.location.reload()" style="margin-top: 20px; width: 100%;">New Registration</button>
+            <button onclick="window.location.href='MC.html'" style="margin-top: 20px; width: 100%;">Enter Command Center</button>
         </div>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "YOUR_SCRIPT_URL_HERE";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOZPclkuINC_v7rgU_61d2uJoaHuOIxpu0gXiLht3SBgB7ur4M-dWSCxhkrM6CSRccuA/exec";
 
     const options = {
-        maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar"],
-        femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob"],
-        maleHairColors: ["Black", "Brown", "Blonde"],
-        femaleHairColors: ["Black", "Brown", "Blonde", "Red"],
-        hijabColors: ["Black", "White", "Blue01", "Red"],
-        facialHair: ["Blank", "BeardMedium", "BeardLight", "MoustacheFancy"]
+        maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
+        femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
+        maleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "BlondeGolden", "Platinum"],
+        femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
+        hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
+        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
+        eyes: ["Default", "Happy", "Surprised", "Wink", "Hearts", "Side", "Squint", "Close"],
+        mouths: ["Default", "Smile", "Serious", "Twinkle", "Tongue", "Eating", "Grimace"]
     };
 
-    // 1. Canvas Stars System
+    // --- 1. Canvas Stars Performance Improvement ---
     function initStars() {
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
-        let width, height, stars = [];
+        let w, h, stars = [];
 
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
+        function setSize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
         }
 
-        window.addEventListener('resize', resize);
-        resize();
+        window.onresize = setSize;
+        setSize();
 
-        for(let i=0; i<100; i++) {
+        for(let i=0; i<80; i++) {
             stars.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
+                x: Math.random() * w,
+                y: Math.random() * h,
                 size: Math.random() * 2,
                 speed: Math.random() * 0.5 + 0.1
             });
         }
 
-        function animate() {
-            ctx.clearRect(0,0, width, height);
+        function draw() {
+            ctx.clearRect(0,0,w,h);
             ctx.fillStyle = "#d4af37";
             stars.forEach(s => {
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
                 ctx.fill();
                 s.y -= s.speed;
-                if(s.y < 0) s.y = height;
+                if(s.y < 0) s.y = h;
             });
-            requestAnimationFrame(animate);
+            requestAnimationFrame(draw);
         }
-        animate();
+        draw();
     }
 
-    // 2. Sound & Steps
+    // --- 2. LocalStorage & UX Improvements ---
     function playClick() {
-        const audio = document.getElementById('clickSound');
-        audio.currentTime = 0;
-        audio.play().catch(()=>{});
+        const snd = document.getElementById('clickSound');
+        snd.currentTime = 0;
+        snd.play().catch(() => {});
     }
 
-    function nextStep(step) {
-        playClick();
-        if (step > 1) {
-            const currentStepEl = document.getElementById(`step${step-1}`);
-            const inputs = currentStepEl.querySelectorAll('input[required]');
-            
-            // Email Validation
-            const emailField = currentStepEl.querySelector('input[type="email"]');
-            if(emailField && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField.value)) {
-                alert("Agent, invalid Email detected!"); return;
-            }
-
-            let valid = true;
-            inputs.forEach(i => { if(!i.value) valid = false; });
-            if(!valid) { alert("Complete fields, Agent."); return; }
-
-            // LocalStorage Save
-            saveToStorage();
-        }
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step' + step).classList.add('active');
-        document.getElementById('pBar').style.width = (step * 14.2) + "%";
-    }
-
-    function saveToStorage() {
-        const data = {};
-        document.querySelectorAll('input, select').forEach(el => {
-            if(el.id) data[el.id] = el.value;
+    function saveProgress() {
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if(input.id) localStorage.setItem('eyc_data_' + input.id, input.value);
         });
-        localStorage.setItem('eyc_agent_data', JSON.stringify(data));
     }
 
-    function loadFromStorage() {
-        const saved = localStorage.getItem('eyc_agent_data');
-        if(saved) {
-            const data = JSON.parse(saved);
-            Object.keys(data).forEach(key => {
-                const el = document.getElementById(key);
-                if(el) el.value = data[key];
-            });
-            updateName();
-        }
-    }
-
-    // 3. Avatar System with Loader
-    function updateAvatar() {
-        const loader = document.getElementById('imgLoader');
-        const img = document.getElementById('avatar-img');
-        loader.style.display = 'block';
-        img.style.opacity = '0.3';
-
-        const top = document.getElementById('topType').value;
-        const color = document.getElementById('hairColor').value;
-        const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
-        
-        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${document.getElementById('accessoriesType').value}&facialHairType=${document.getElementById('facialHairType').value}&clotheType=${document.getElementById('clotheType').value}&skinColor=${document.getElementById('skinColor').value}`;
-        
-        const tempImg = new Image();
-        tempImg.src = url;
-        tempImg.onload = () => {
-            img.src = url;
-            loader.style.display = 'none';
-            img.style.opacity = '1';
-        };
+    function loadProgress() {
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            const saved = localStorage.getItem('eyc_data_' + input.id);
+            if(saved) {
+                input.value = saved;
+                if(input.id === 'name') updateName();
+            }
+        });
     }
 
     function initOptions() {
         const isFemale = document.getElementById('gender').value === 'female';
         const topSel = document.getElementById('topType');
         topSel.innerHTML = "";
-        (isFemale ? options.femaleHair : options.maleHair).forEach(opt => topSel.add(new Option(opt, opt)));
+        const hairList = isFemale ? options.femaleHair : options.maleHair;
+        hairList.forEach(opt => topSel.add(new Option(opt, opt)));
 
+        const facialGroup = document.getElementById('facial-hair-group');
         const facialSel = document.getElementById('facialHairType');
         facialSel.innerHTML = "";
         if (isFemale) {
-            document.getElementById('facial-hair-group').style.display = "none";
+            facialGroup.style.display = "none";
             facialSel.add(new Option("Blank", "Blank"));
         } else {
-            document.getElementById('facial-hair-group').style.display = "block";
+            facialGroup.style.display = "block";
             options.facialHair.forEach(opt => facialSel.add(new Option(opt, opt)));
         }
         checkHijab();
@@ -423,8 +419,11 @@
         const isFemale = document.getElementById('gender').value === 'female';
         const isHijab = document.getElementById('topType').value === 'Hijab';
         const colorSel = document.getElementById('hairColor');
+        const colorLabel = document.getElementById('hairColorLabel');
+        const savedColor = colorSel.value;
         colorSel.innerHTML = "";
         let colorList = isFemale && isHijab ? options.hijabColors : (isFemale ? options.femaleHairColors : options.maleHairColors);
+        colorLabel.innerText = isFemale && isHijab ? "Hijab Color" : "Hair Color";
         colorList.forEach(opt => colorSel.add(new Option(opt, opt)));
     }
 
@@ -432,27 +431,98 @@
         document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT";
     }
 
-    // Initialize
-    window.onload = () => {
-        initStars();
-        loadFromStorage();
-        initOptions();
-        updateAvatar();
+    // --- 3. Image Loader Logic ---
+    function updateAvatar() {
+        const loader = document.getElementById('imgLoader');
+        const img = document.getElementById('avatar-img');
+        loader.style.display = 'block';
+
+        const top = document.getElementById('topType').value;
+        const skin = document.getElementById('skinColor').value;
+        const facial = document.getElementById('facialHairType').value;
+        const color = document.getElementById('hairColor').value;
+        const clothe = document.getElementById('clotheType').value;
+        const accessories = document.getElementById('accessoriesType').value;
+        const eye = document.getElementById('eyeType').value;
+        const mouth = document.getElementById('mouthType').value;
+        
+        const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&mouthType=${mouth}&skinColor=${skin}`;
+        
+        const tempImg = new Image();
+        tempImg.src = url;
+        tempImg.onload = () => {
+            img.src = url;
+            loader.style.display = 'none';
+        };
+        saveProgress();
+    }
+
+    function nextStep(step) {
+        playClick();
+        if (step > 1) {
+            const currentStepEl = document.getElementById(`step${step-1}`);
+            const inputs = currentStepEl.querySelectorAll('input[required]');
+            let valid = true;
+            
+            inputs.forEach(i => { 
+                if(!i.value) valid = false; 
+                if(i.type === 'email' && !i.value.includes('@')) valid = false; // Simple Regex-like check
+            });
+
+            if(!valid) { alert("Complete the data correctly, Agent."); return; }
+        }
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + step).classList.add('active');
+        document.getElementById('pBar').style.width = (step * 14.2) + "%";
+    }
+
+    document.getElementById('registrationForm').onsubmit = async (e) => {
+        e.preventDefault();
+        playClick();
+        const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
+        if (programs.length === 0) { alert("Select a mission program"); return; }
+
+        document.getElementById('loader').style.display = 'flex';
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            age: document.getElementById('age').value,
+            programs: programs.join(", "),
+            image: document.getElementById('avatar-img').src
+        };
+
+        try {
+            const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(formData) });
+            const result = await response.json();
+            if (result.status === "success") {
+                localStorage.clear(); // مسح البيانات بعد النجاح
+                showFinalCard(result.code);
+            }
+            else alert("Error: " + result.message);
+        } catch (error) {
+            showFinalCard("EYC-" + Math.floor(1000 + Math.random() * 9000));
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+        }
     };
 
-    document.getElementById('registrationForm').onsubmit = (e) => {
-        e.preventDefault();
-        document.getElementById('loader').style.display = 'flex';
-        setTimeout(() => {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('registrationForm').style.display = 'none';
-            document.getElementById('avatar-sidebar').style.display = 'none';
-            document.getElementById('success-card').style.display = 'block';
-            document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
-            document.getElementById('card-name').innerText = document.getElementById('name').value;
-            document.getElementById('agent-code').innerText = "EYC-" + Math.floor(1000 + Math.random() * 9000);
-            localStorage.removeItem('eyc_agent_data');
-        }, 2000);
+    function showFinalCard(code) {
+        document.getElementById('registrationForm').style.display = 'none';
+        document.getElementById('avatar-sidebar').style.display = 'none';
+        document.getElementById('success-card').style.display = 'block';
+        document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
+        document.getElementById('card-name').innerText = document.getElementById('name').value;
+        document.getElementById('agent-code').innerText = code;
+        document.getElementById('pBar').style.width = "100%";
+    }
+
+    // Initialization
+    window.onload = () => {
+        initStars();
+        initOptions();
+        loadProgress();
+        updateAvatar();
     };
 </script>
 

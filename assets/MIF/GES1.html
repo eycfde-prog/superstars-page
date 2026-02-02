@@ -26,7 +26,7 @@
         }
         
         .question-card {
-            background: rgba(255,255,255,0.02); border-right: 3px solid var(--gold);
+            background: rgba(255,255,255,0.02); border-left: 3px solid var(--gold);
             transition: 0.3s; padding: 15px; border-radius: 12px;
         }
         .gold-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -45,7 +45,7 @@
                 <source id="audioSource" src="" type="audio/wav">
             </audio>
 
-            <div class="flex justify-center items-center gap-6">
+            <div class="flex justify-center items-center gap-6" dir="ltr">
                 <button onclick="skip(-5)" class="skip-btn"><i class="fas fa-backward"></i></button>
                 <button onclick="togglePlay()" id="playBtn" class="audio-wave-btn">
                     <i id="playIcon" class="fas fa-play"></i>
@@ -54,7 +54,7 @@
                 <button onclick="skip(5)" class="skip-btn"><i class="fas fa-forward"></i></button>
             </div>
 
-            <div class="mt-8 px-2">
+            <div class="mt-8 px-2" dir="ltr">
                 <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden cursor-pointer" onclick="seek(event)">
                     <div id="progressBar" class="bg-gradient-to-r from-yellow-600 to-yellow-400 h-full rounded-full transition-all duration-75" style="width: 0%"></div>
                 </div>
@@ -65,20 +65,14 @@
             </div>
         </div>
 
-        <div class="space-y-3 mb-8">
+        <div class="space-y-3 mb-8" dir="ltr">
             <h3 class="text-lg font-black gold-text mb-4 italic text-left orbitron">ANALYSIS QUERIES:</h3>
             
             <div id="questionsContainer" class="space-y-3">
                 </div>
         </div>
 
-        <div class="text-center pb-10">
-            <a id="submitLink" href="#" target="_blank" 
-               class="inline-flex items-center gap-3 bg-yellow-500 text-black px-8 py-3 rounded-full font-black text-lg hover:scale-105 transition-transform shadow-lg">
-                <span>SUBMIT ANSWERS</span>
-                <i class="fas fa-paper-plane"></i>
-            </a>
-        </div>
+        <div class="pb-20"></div>
     </div>
 
 <script>
@@ -87,15 +81,12 @@
     const playIcon = document.getElementById('playIcon');
     const pauseIcon = document.getElementById('pauseIcon');
     
-    // جلب رقم المهمة من الرابط
     const params = new URLSearchParams(window.location.search);
     const mNum = params.get('m') || '1';
 
-    // بيانات المهام (يمكنك تعديل الأسئلة هنا لكل مهمة)
     const geData = {
         "1": {
             audio: "assets/audio/GE1.wav",
-            form: "https://docs.google.com/forms/d/e/1FAIpQLSdUSOjkoVHtb9sPQXeJX8KQG2oJ71EgkrsSt0q33e8zDaf_Fw/viewform",
             questions: [
                 "What is the foundation of scientific inquiry?",
                 "What is the core definition of critical thinking?",
@@ -109,12 +100,11 @@
     window.onload = () => {
         const data = geData[mNum] || geData["1"];
         document.getElementById('audioSource').src = data.audio;
-        document.getElementById('submitLink').href = data.form;
         audio.load();
 
         const container = document.getElementById('questionsContainer');
         container.innerHTML = data.questions.map((q, i) => `
-            <div class="question-card text-left" dir="ltr">
+            <div class="question-card text-left">
                 <span class="text-yellow-500 font-black orbitron text-[9px] block mb-1">QUERY 0${i+1}</span>
                 <p class="text-sm text-gray-200">${q}</p>
             </div>
@@ -142,8 +132,10 @@
     }
 
     audio.ontimeupdate = () => {
-        progressBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
-        document.getElementById('currentTime').innerText = formatTime(audio.currentTime);
+        if (audio.duration) {
+            progressBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
+            document.getElementById('currentTime').innerText = formatTime(audio.currentTime);
+        }
     };
 
     audio.onloadedmetadata = () => {
@@ -156,9 +148,14 @@
         audio.currentTime = percent * audio.duration;
     }
 
-    // بروتوكول التوافق مع Terminal
+    // هذه الدالة هي التي يتواصل بها شيت الـ CC مع الـ Terminal
+    // يمكنك تعديلها لترسل النص الذي كتبه الطالب لاحقاً
     window.checkAnswers = function() {
-        return { status: "COMPLETED", points: 1 };
+        return { 
+            status: "COMPLETED", 
+            points: 10, 
+            answerText: "Student listened to the audio and analyzed queries." 
+        };
     };
 </script>
 </body>

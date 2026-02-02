@@ -32,6 +32,7 @@
         .done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
         .done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #333; font-weight: 900; }
         
+        /* تعديل 2: تنعيم حركة الـ Iframe وتحسين شكل الزر المعطل */
         .activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
         .activity-iframe { transition: opacity 0.5s ease; border: none; }
         .submit-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; transform: none !important; }
@@ -104,7 +105,7 @@
     let width, height, prizeValue = "1";
     const tokenImg = new Image(); tokenImg.src = 'assets/Token.png'; 
     let gameState = 'closed', tokens = [], prize = null;
-    let animationId; 
+    let animationId; // تعديل 3: للتحكم في إيقاف الأنيميشن
 
     const urlParams = new URLSearchParams(window.location.search);
     const actCode = urlParams.get('act') || 'GES'; 
@@ -119,6 +120,7 @@
     document.getElementById('actCodeDisplay').innerText = actCode;
     document.getElementById('missionNum').innerText = 'M ' + mNum;
 
+    // تعديل 4: معالجة الصور المفقودة تلقائياً
     const activityLogo = document.getElementById('activityLogo');
     activityLogo.src = `assets/AL/${actCode}.png`;
     activityLogo.onerror = () => activityLogo.src = 'assets/AL/default.png';
@@ -129,68 +131,23 @@
     window.addEventListener('resize', resize); resize();
 
     class Box {
-        constructor() { 
-            this.x = width / 2; 
-            this.y = height / 2 + 50; 
-            this.w = 150; 
-            this.h = 150; 
-            this.lidY = this.y - 75 - 20; 
-            this.shakeOffset = 0; 
-            this.lidVelocity = 0; 
-            this.lidRotation = 0; 
-        }
+        constructor() { this.x = width / 2; this.y = height / 2 + 50; this.w = 150; this.h = 150; this.lidY = this.y - 75 - 20; this.shakeOffset = 0; this.lidVelocity = 0; this.lidRotation = 0; }
         update() {
-            if (gameState === 'closed') { 
-                if (Math.random() > 0.95) this.shakeOffset = (Math.random() - 0.5) * 10; 
-                else this.shakeOffset *= 0.9; 
-            }
-            else if (gameState === 'opening') { 
-                this.shakeOffset = 0; 
-                this.lidVelocity -= 1.5; 
-                this.lidY += this.lidVelocity; 
-                this.lidRotation -= 0.05; 
-                if (this.lidY < -200) gameState = 'opened'; 
-            }
+            if (gameState === 'closed') { if (Math.random() > 0.95) this.shakeOffset = (Math.random() - 0.5) * 10; else this.shakeOffset *= 0.9; }
+            else if (gameState === 'opening') { this.shakeOffset = 0; this.lidVelocity -= 1.5; this.lidY += this.lidVelocity; this.lidRotation -= 0.05; if (this.lidY < -200) gameState = 'opened'; }
         }
         draw() {
-            // جسم الصندوق (أسود)
-            ctx.save(); 
-            ctx.translate(this.x + this.shakeOffset, this.y);
-            ctx.fillStyle = '#000000'; 
-            ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
-            
-            // الشريطة الذهبية العرضية
-            ctx.fillStyle = '#D4AF37'; 
-            ctx.fillRect(-15, -this.h/2, 30, this.h);
-            
-            // نص EYC بالذهبي
-            ctx.fillStyle = '#D4AF37';
-            ctx.font = 'bold 26px Orbitron';
-            ctx.textAlign = 'center';
-            ctx.fillText('EYC', 0, 25);
+            ctx.save(); ctx.translate(this.x + this.shakeOffset, this.y);
+            ctx.fillStyle = '#ff4757'; ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
+            ctx.fillStyle = '#ffd32a'; ctx.fillRect(-15, -this.h/2, 30, this.h);
             ctx.restore();
-
-            // الغطاء (أسود مع شريطة وفويونكة ذهبية)
-            ctx.save(); 
-            ctx.translate(this.x + this.shakeOffset, this.lidY);
-            ctx.rotate(this.lidRotation); 
-            ctx.fillStyle = '#1a1a1a';
+            ctx.save(); ctx.translate(this.x + this.shakeOffset, this.lidY);
+            ctx.rotate(this.lidRotation); ctx.fillStyle = '#ff6b81';
             ctx.fillRect(-this.w/2 - 10, -20, this.w + 20, 40);
-            ctx.fillStyle = '#D4AF37'; 
-            ctx.fillRect(-15, -20, 30, 40);
-            this.drawBow(ctx); 
-            ctx.restore();
+            ctx.fillStyle = '#ffd32a'; ctx.fillRect(-15, -20, 30, 40);
+            this.drawBow(ctx); ctx.restore();
         }
-        drawBow(ctx) { 
-            ctx.fillStyle = '#D4AF37'; 
-            ctx.beginPath(); 
-            ctx.ellipse(-20, -20, 25, 10, -0.5, 0, Math.PI*2); 
-            ctx.ellipse(20, -20, 25, 10, 0.5, 0, Math.PI*2); 
-            ctx.fill(); 
-            ctx.beginPath(); 
-            ctx.arc(0, -20, 10, 0, Math.PI*2); 
-            ctx.fill(); 
-        }
+        drawBow(ctx) { ctx.fillStyle = '#ffd32a'; ctx.beginPath(); ctx.ellipse(-20, -20, 25, 10, -0.5, 0, Math.PI*2); ctx.ellipse(20, -20, 25, 10, 0.5, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(0, -20, 10, 0, Math.PI*2); ctx.fill(); }
     }
 
     class Coupon {
@@ -224,7 +181,7 @@
 
     canvas.addEventListener('mousedown', () => {
         if (gameState === 'opened') {
-            cancelAnimationFrame(animationId); 
+            cancelAnimationFrame(animationId); // إيقاف لتوفير الموارد
             window.location.href = 'MC.html';
         }
         else if (gameState === 'closed') {
@@ -257,10 +214,12 @@
                 iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
             }
         } catch(e) {
+            // في حالة فشل التحقق، نسمح للطالب بالدخول لضمان عدم توقف العملية التعليمية
             iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
         }
     }
 
+    // تعديل 5: دالة الإرسال مع الحماية من الأخطاء
     async function submitMission() {
         const submitBtn = document.getElementById('submitBtn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
@@ -269,18 +228,10 @@
         if (submitBtn.disabled) return;
 
         try {
-            // 1. طلب التقييم من الـ Iframe أولاً
-            const evaluation = await evaluateMission(iframe);
-
-            // 2. التحقق من اكتمال الإجابات (منع الإرسال إذا كان النص فارغاً)
-            if (!evaluation.answerText || evaluation.answerText.trim() === "") {
-                alert("⚠️ Agent! You must answer ALL queries before submitting.");
-                return; 
-            }
-
             submitBtn.innerText = "EVALUATING...";
             submitBtn.disabled = true;
 
+            const evaluation = await evaluateMission(iframe);
             prizeValue = evaluation.points;
 
             const payload = {
@@ -302,7 +253,7 @@
             document.getElementById('rewardContainer').style.display = 'block';
             animate();
         } catch (error) {
-            alert("Connection error! Try again, Agent.");
+            alert("حدث خطأ في الاتصال، حاول مرة أخرى يا بطل!");
             submitBtn.innerText = "SUBMIT";
             submitBtn.disabled = false;
         }

@@ -9,8 +9,9 @@
         :root {
             --gold: #d4af37;
             --gold-hover: #f1c40f;
-            --glass: rgba(255, 255, 255, 0.08);
-            --gold-glass: rgba(212, 175, 55, 0.15);
+            --glass: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(20, 20, 20, 0.9);
+            --input-bg: rgba(40, 40, 40, 0.8);
         }
 
         body {
@@ -20,151 +21,101 @@
             color: white;
             min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            overflow-x: hidden;
-        }
-
-        .progress-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 5px;
-            background: rgba(255,255,255,0.1); z-index: 5;
-        }
-        .progress-bar {
-            height: 100%; width: 14%; background: var(--gold);
-            transition: width 0.4s ease; box-shadow: 0 0 10px var(--gold);
         }
 
         .container {
-            width: 95%; max-width: 950px; min-height: 600px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 175, 55, 0.4);
-            border-radius: 24px;
+            width: 95%; max-width: 1000px;
+            background: var(--card-bg);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 40px;
             display: flex; position: relative;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.1);
+            overflow: hidden; padding: 20px;
+            gap: 20px;
         }
 
+        /* --- Progress Bar --- */
+        .progress-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: rgba(255,255,255,0.05); z-index: 10;
+        }
+        .progress-bar {
+            height: 100%; width: 14%; background: var(--gold);
+            transition: width 0.4s ease; box-shadow: 0 0 15px var(--gold);
+        }
+
+        /* --- Sidebar & Avatar --- */
         .avatar-section {
             flex: 1; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            background: linear-gradient(135deg, var(--gold-glass), transparent);
-            border-right: 1px solid rgba(212, 175, 55, 0.2);
-            padding: 40px; text-align: center;
-            position: relative; /* مهم لتموضع النجوم */
-            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 30px;
+            border: 1px dashed rgba(212, 175, 55, 0.2);
+            padding: 40px; position: relative;
         }
-
-        /* --- تأثير النجوم الذهبية --- */
-        .star {
-            position: absolute;
-            background: var(--gold);
-            border-radius: 50%;
-            opacity: 0;
-            pointer-events: none;
-            animation: moveStar linear infinite;
-        }
-
-        @keyframes moveStar {
-            0% { transform: translateY(0) scale(0); opacity: 0; }
-            20% { opacity: 0.8; }
-            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
-        }
-        /* ----------------------- */
 
         #avatar-container {
-            position: relative;
-            width: 240px; height: 240px;
-            display: flex; justify-content: center; align-items: center;
+            width: 260px; height: 260px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-            border: 2px dashed rgba(212, 175, 55, 0.3);
-            z-index: 2; /* ليبقى فوق النجوم */
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            display: flex; justify-content: center; align-items: center;
+            position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
 
-        #avatar-img {
-            width: 220px; height: 220px;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
-            transition: transform 0.3s ease;
-            z-index: 2;
-        }
+        #avatar-img { width: 230px; height: 230px; z-index: 5; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        .form-section {
-            flex: 1.5; padding: 50px;
-            display: flex; flex-direction: column; justify-content: center;
-            z-index: 2;
-        }
-
-        .step { display: none; animation: slideIn 0.4s ease forwards; }
+        /* --- Form Style --- */
+        .form-section { flex: 1.2; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+        
+        .step { display: none; animation: fadeIn 0.5s ease; }
         .step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        h2 { color: white; margin-bottom: 25px; font-weight: 600; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        h2::before { content: ''; width: 4px; height: 20px; background: var(--gold); border-radius: 2px; }
+
+        .input-group { margin-bottom: 15px; position: relative; }
+        label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #aaa; }
+
+        input, select {
+            width: 100%; padding: 14px 20px;
+            background: var(--input-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 15px; color: white; outline: none;
+            font-size: 0.9rem; box-sizing: border-box; transition: 0.3s;
         }
 
-        h2 { color: var(--gold); margin-bottom: 25px; font-weight: 600; font-size: 1.8rem; }
-        label { display: block; margin-bottom: 12px; font-size: 0.9rem; color: #ccc; }
-        
-        .input-group { margin-bottom: 20px; }
-        
-        input[type="text"], input[type="email"], input[type="number"], select {
-            width: 100%; padding: 12px 15px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 12px; color: white; outline: none;
-            box-sizing: border-box; font-size: 0.95rem;
-            appearance: none;
-        }
+        input:focus, select:focus { border-color: var(--gold); background: rgba(50,50,50,1); }
 
-        .checkbox-container {
-            display: flex; gap: 20px; background: rgba(255,255,255,0.05);
-            padding: 20px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-        .check-item { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 1rem; }
-        .check-item input { width: 20px; height: 20px; cursor: pointer; accent-color: var(--gold); }
-
-        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
-
+        .btn-group { display: flex; gap: 10px; margin-top: 25px; }
         button {
             flex: 1; background: var(--gold); color: #000;
-            border: none; padding: 16px; border-radius: 12px;
-            font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem;
+            border: none; padding: 15px; border-radius: 12px;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
         }
+        button.prev-btn { background: #333; color: white; }
+        button:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
 
-        button.prev-btn { background: rgba(255,255,255,0.1); color: white; }
-        button:hover { background: var(--gold-hover); transform: translateY(-2px); }
-
-        #success-card { display: none; text-align: center; padding: 20px; }
-        .id-card {
-            background: rgba(255,255,255,0.1);
-            border: 2px solid var(--gold);
-            border-radius: 15px; padding: 20px;
-            margin-top: 20px; position: relative;
-        }
-        .code-box {
-            font-size: 2rem; font-weight: bold; color: var(--gold);
-            margin: 15px 0; background: rgba(0,0,0,0.3);
-            padding: 10px; border-radius: 8px; display: flex;
-            align-items: center; justify-content: center; gap: 10px;
-        }
-        .copy-btn {
-            background: none; border: 1px solid var(--gold); color: var(--gold);
-            padding: 5px 10px; font-size: 0.8rem; cursor: pointer; width: auto; flex: none;
+        /* --- Stars Effect --- */
+        .star { position: absolute; background: var(--gold); border-radius: 50%; opacity: 0; animation: moveStar linear infinite; }
+        @keyframes moveStar { 
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
         }
 
         .loading-overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.85);
+            position: absolute; inset: 0; background: rgba(0,0,0,0.9);
             display: none; justify-content: center; align-items: center;
-            z-index: 100; color: var(--gold); font-weight: bold; letter-spacing: 2px;
+            z-index: 100; color: var(--gold); font-weight: bold; border-radius: 40px;
         }
 
         @media (max-width: 768px) {
-            .container { flex-direction: column; margin: 20px 0; min-height: auto; width: 90%; }
-            .avatar-section { border-right: none; border-bottom: 1px solid var(--gold-glass); padding: 40px 20px; }
+            .container { flex-direction: column; border-radius: 20px; }
+            .avatar-section { padding: 20px; }
             #avatar-container { width: 180px; height: 180px; }
             #avatar-img { width: 150px; height: 150px; }
-            .form-section { padding: 30px 20px; }
-            h2 { font-size: 1.4rem; }
-            input[type="text"], select { padding: 10px; font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -178,7 +129,7 @@
         <div id="avatar-container">
             <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
         </div>
-        <h3 id="display-name" style="margin-top:20px; color: var(--gold); font-size: 1.2rem; z-index: 2;">EYC AGENT</h3>
+        <h3 id="display-name" style="margin-top:20px; color: var(--gold); letter-spacing: 2px;">EYC AGENT</h3>
     </div>
 
     <div class="form-section">
@@ -186,20 +137,16 @@
             <div class="step active" id="step1">
                 <h2>01. Identity</h2>
                 <div class="input-group">
-                    <label>What is your full name?</label>
-                    <input type="text" id="name" placeholder="Agent Name" required oninput="updateName()">
+                    <label>Full Name</label>
+                    <input type="text" id="name" placeholder="Enter Agent Name" required oninput="updateName()">
                 </div>
                 <button type="button" onclick="nextStep(2)">Proceed</button>
             </div>
 
             <div class="step" id="step2">
                 <h2>02. Contact & Age</h2>
-                <div class="input-group">
-                    <input type="email" id="email" placeholder="Email Address" required>
-                </div>
-                <div class="input-group">
-                    <input type="number" id="age" placeholder="Age" required>
-                </div>
+                <div class="input-group"><input type="email" id="email" placeholder="Email Address" required></div>
+                <div class="input-group"><input type="number" id="age" placeholder="Age" required></div>
                 <div class="btn-group">
                     <button type="button" class="prev-btn" onclick="nextStep(1)">Back</button>
                     <button type="button" onclick="nextStep(3)">Next</button>
@@ -209,27 +156,27 @@
             <div class="step" id="step3">
                 <h2>03. Base Design</h2>
                 <div class="input-group">
-                    <label>Select Gender Base:</label>
-                    <select id="gender" onchange="initOptions(); updateAvatar();">
+                    <label>Gender Base</label>
+                    <select id="gender" onchange="initOptions(); triggerActionUpdate();">
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="prev-btn" onclick="nextStep(2)">Back</button>
-                    <button type="button" onclick="nextStep(4)">Customize Hair</button>
+                    <button type="button" onclick="nextStep(4)">Customize</button>
                 </div>
             </div>
 
             <div class="step" id="step4">
                 <h2>04. Features</h2>
                 <div class="input-group">
-                    <label id="hairLabel">Style:</label>
-                    <select id="topType" onchange="updateAvatar(); checkHijab();"></select>
+                    <label id="hairLabel">Hair Style</label>
+                    <select id="topType" onchange="checkHijab(); triggerActionUpdate();"></select>
                 </div>
                 <div class="input-group">
-                    <label id="hairColorLabel">Color:</label>
-                    <select id="hairColor" onchange="updateAvatar()"></select>
+                    <label id="hairColorLabel">Color</label>
+                    <select id="hairColor" onchange="triggerActionUpdate()"></select>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="prev-btn" onclick="nextStep(3)">Back</button>
@@ -238,14 +185,26 @@
             </div>
 
             <div class="step" id="step5">
-                <h2>05. Face & Body</h2>
+                <h2>05. Face & Details</h2>
                 <div id="facial-hair-group" class="input-group">
-                    <label>Beard/Moustache:</label>
-                    <select id="facialHairType" onchange="updateAvatar()"></select>
+                    <label>Beard Style</label>
+                    <select id="facialHairType" onchange="triggerActionUpdate()"></select>
                 </div>
                 <div class="input-group">
-                    <label>Skin Complexion:</label>
-                    <select id="skinColor" onchange="updateAvatar()">
+                    <label>Accessories (Glasses)</label>
+                    <select id="accessoriesType" onchange="triggerActionUpdate()">
+                        <option value="Blank">None</option>
+                        <option value="Kurt">Kurt</option>
+                        <option value="Prescription01">Classic</option>
+                        <option value="Prescription02">Modern</option>
+                        <option value="Round">Round</option>
+                        <option value="Sunglasses">Sunglasses</option>
+                        <option value="Wayfarers">Wayfarers</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Skin Complexion</label>
+                    <select id="skinColor" onchange="triggerActionUpdate()">
                         <option value="Tanned">Tanned</option>
                         <option value="Yellow">Yellow</option>
                         <option value="Pale">Pale</option>
@@ -262,8 +221,8 @@
             <div class="step" id="step6">
                 <h2>06. Wardrobe</h2>
                 <div class="input-group">
-                    <label>Choose Outfit Style:</label>
-                    <select id="clotheType" onchange="updateAvatar()">
+                    <label>Outfit Style</label>
+                    <select id="clotheType" onchange="triggerActionUpdate()">
                         <option value="BlazerShirt">Blazer & Shirt</option>
                         <option value="BlazerSweater">Blazer & Sweater</option>
                         <option value="CollarSweater">Collar Sweater</option>
@@ -280,10 +239,16 @@
 
             <div class="step" id="step7">
                 <h2>07. Mission</h2>
-                <label>Choose your programs:</label>
-                <div class="checkbox-container">
-                    <label class="check-item"><input type="checkbox" name="program" value="Season"> Season</label>
-                    <label class="check-item"><input type="checkbox" name="program" value="X-Box"> X-Box</label>
+                <div class="input-group">
+                    <label style="margin-bottom: 15px;">Choose Programs</label>
+                    <div style="display: flex; gap: 20px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="program" value="Season" style="width: 20px;"> Season
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" name="program" value="X-Box" style="width: 20px;"> X-Box
+                        </label>
+                    </div>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="prev-btn" onclick="nextStep(6)">Back</button>
@@ -292,19 +257,16 @@
             </div>
         </form>
 
-        <div id="success-card">
-            <h2 style="margin-bottom: 5px;">MISSION ACCOMPLISHED</h2>
-            <p style="color: #ccc; font-size: 0.9rem;">Your agent profile has been deployed.</p>
-            <div class="id-card">
-                <img id="card-avatar" src="" width="120">
-                <h4 id="card-name" style="margin: 10px 0 5px 0; color: var(--gold);"></h4>
-                <p style="font-size: 0.8rem; margin: 0;">AGENT CODE</p>
-                <div class="code-box">
+        <div id="success-card" style="display: none; text-align: center;">
+            <h2 style="justify-content: center;">MISSION ACCOMPLISHED</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid var(--gold);">
+                <img id="card-avatar" src="" width="140">
+                <h3 id="card-name" style="color: var(--gold); margin: 10px 0;"></h3>
+                <div style="background: #000; padding: 10px; border-radius: 10px; font-size: 1.5rem; font-weight: bold; color: var(--gold);">
                     <span id="agent-code">----</span>
-                    <button class="copy-btn" onclick="copyCode()">Copy</button>
                 </div>
             </div>
-            <button onclick="window.location.href='MC.html'" style="margin-top: 20px;">Start your journey</button>
+            <button onclick="window.location.href='MC.html'" style="margin-top: 20px; width: 100%;">Enter Command Center</button>
         </div>
     </div>
 </div>
@@ -318,24 +280,23 @@
         maleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "BlondeGolden", "Platinum"],
         femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
         hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
-        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
-        eyeType: ["Default", "Happy", "Squint", "Side", "Wink"]
+        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"]
     };
 
-    // --- وظيفة إنشاء النجوم الذهبية ---
+    let currentMouth = "Default";
+    let currentEyes = "Default";
+
     function createStars() {
         const section = document.getElementById('avatar-sidebar');
-        const count = 30; // عدد النجوم
-        for (let i = 0; i < count; i++) {
+        for (let i = 0; i < 30; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            const size = Math.random() * 4 + 2; // حجم عشوائي
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            star.style.left = `${Math.random() * 100}%`;
-            star.style.top = `${Math.random() * 100}%`;
-            star.style.animationDuration = `${Math.random() * 3 + 2}s`;
-            star.style.animationDelay = `${Math.random() * 5}s`;
+            const size = Math.random() * 3 + 1;
+            star.style.width = size + 'px'; star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.animationDelay = Math.random() * 5 + 's';
             section.appendChild(star);
         }
     }
@@ -367,12 +328,23 @@
         const colorLabel = document.getElementById('hairColorLabel');
         colorSel.innerHTML = "";
         let colorList = isFemale && isHijab ? options.hijabColors : (isFemale ? options.femaleHairColors : options.maleHairColors);
-        colorLabel.innerText = isFemale && isHijab ? "Hijab Color:" : "Hair Color:";
+        colorLabel.innerText = isFemale && isHijab ? "Hijab Color" : "Hair Color";
         colorList.forEach(opt => colorSel.add(new Option(opt, opt)));
     }
 
     function updateName() {
-        document.getElementById('display-name').innerText = document.getElementById('name').value || "EYC AGENT";
+        document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT";
+    }
+
+    function triggerActionUpdate() {
+        currentEyes = "Wink";
+        currentMouth = "Smile";
+        updateAvatar();
+        setTimeout(() => {
+            currentEyes = "Default";
+            currentMouth = "Default";
+            updateAvatar();
+        }, 700);
     }
 
     function updateAvatar() {
@@ -381,19 +353,21 @@
         const facial = document.getElementById('facialHairType').value;
         const color = document.getElementById('hairColor').value;
         const clothe = document.getElementById('clotheType').value;
-        const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
+        const accessories = document.getElementById('accessoriesType').value;
         
-        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=Blank&eyeType=Default&skinColor=${skin}&facialHairType=${facial}&clotheType=${clothe}`;
+        const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${currentEyes}&mouthType=${currentMouth}&skinColor=${skin}`;
+        
         document.getElementById('avatar-img').src = url;
     }
 
     function nextStep(step) {
-        if (step > 1 && step <= 7) {
+        if (step > 1) {
             const currentStepEl = document.getElementById(`step${step-1}`);
             const inputs = currentStepEl.querySelectorAll('input[required]');
             let valid = true;
             inputs.forEach(i => { if(!i.value) valid = false; });
-            if(!valid) { alert("Please fill the required fields"); return; }
+            if(!valid) { alert("Identify yourself first, Agent."); return; }
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + step).classList.add('active');
@@ -403,7 +377,7 @@
     document.getElementById('registrationForm').onsubmit = async (e) => {
         e.preventDefault();
         const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
-        if (programs.length === 0) { alert("Select a program"); return; }
+        if (programs.length === 0) { alert("Select a mission program"); return; }
 
         document.getElementById('loader').style.display = 'flex';
         const formData = {
@@ -420,7 +394,7 @@
             if (result.status === "success") showFinalCard(result.code);
             else alert("Error: " + result.message);
         } catch (error) {
-            showFinalCard("AGENT-EYC-" + Math.floor(Math.random()*9000 + 1000));
+            showFinalCard("EYC-" + Math.floor(1000 + Math.random() * 9000));
         } finally {
             document.getElementById('loader').style.display = 'none';
         }
@@ -436,12 +410,6 @@
         document.getElementById('pBar').style.width = "100%";
     }
 
-    function copyCode() {
-        navigator.clipboard.writeText(document.getElementById('agent-code').innerText);
-        alert("Code copied!");
-    }
-
-    // التشغيل عند التحميل
     createStars();
     initOptions();
     updateAvatar();

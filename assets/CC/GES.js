@@ -1,5 +1,6 @@
 /**
  * Golden Ear Activity Correction Logic (GES.js)
+ * المطور: تم دمج منطق الربط الديناميكي مع نماذج الإجابات
  */
 
 const GOLDEN_EAR_ANSWERS = {
@@ -75,7 +76,7 @@ const GOLDEN_EAR_ANSWERS = {
     ]
 };
 
-// دالة التحقق من حالة المهمة (نفس الكود القديم لضمان الربط)
+// دالة التحقق من حالة المهمة (للتوافق مع نظام السيرفر)
 async function checkMissionStatus(email, act, m, scriptUrl) {
     try {
         const response = await fetch(`${scriptUrl}?email=${email}&activity=${act}&mission=${m}`);
@@ -84,32 +85,38 @@ async function checkMissionStatus(email, act, m, scriptUrl) {
     } catch (e) { return false; }
 }
 
-// دالة لمقارنة النصوص بدقة (مع تجاهل المسافات وحالة الأحرف)
+// دالة مقارنة النصوص (تتجاهل الفراغات وحالة الأحرف)
 function isExactMatch(studentInput, correctSystemAnswer) {
     if (!studentInput || !correctSystemAnswer) return false;
     return studentInput.trim().toLowerCase() === correctSystemAnswer.trim().toLowerCase();
 }
 
 /**
- * تقييم النشاط
+ * دالة التقييم الرئيسية التي تستدعيها الصفحة الأم
  */
 async function evaluateMission(iframe) {
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     
-    // جلب كل المدخلات (توقع 5 إجابات)
+    // 1. جلب كل مدخلات الطالب من الـ iframe
     const allInputs = Array.from(doc.querySelectorAll('input, textarea, select'));
     
-    // استخراج رقم المهمة من الرابط (مثلاً GES5)
-    const currentMKey = new URLSearchParams(window.location.search).get('m') || 'GES1';
+    // 2. منطق الربط الديناميكي: دمج كود النشاط مع رقم المهمة (مثل GES + 1 = GES1)
+    const urlParams = new URLSearchParams(window.location.search);
+    const act = urlParams.get('act') || 'GES'; 
+    const m = urlParams.get('m') || '1';      
+    const currentMKey = act + m;              
+    
     const modelAnswers = GOLDEN_EAR_ANSWERS[currentMKey];
     
+    // حالة طارئة إذا لم يتم العثور على نموذج الإجابة
     if (!modelAnswers) {
-        return { isCorrect: false, points: 1, answerText: "No Model Answers Found" };
+        console.error("Model answers not found for key:", currentMKey);
+        return { isCorrect: false, points: 1, answerText: "Error: Key " + currentMKey };
     }
 
     let correctCount = 0;
 
-    // التصحيح بناءً على مطابقة كل Input مع ترتيبه في نموذج الإجابة
+    // 3. مقارنة إجابات الطالب بنموذج الإجابة (ترتيب الأسئلة مهم)
     allInputs.forEach((input, index) => {
         if (index < modelAnswers.length) {
             if (isExactMatch(input.value, modelAnswers[index])) {
@@ -118,21 +125,15 @@ async function evaluateMission(iframe) {
         }
     });
 
-    // --- منطق حساب الدرجات ---
-    
-    // 1. كل سؤال صحيح بدرجة (الإجمالي 5)
+    // 4. حساب الدرجات (الدرجة النهائية 5، والحد الأدنى 1)
     let rawPoints = correctCount; 
-
-    // 2. تطبيق قاعدة "الحد الأدنى 1" حتى لو الطالب مجاوبش صح
     let finalPoints = Math.max(1, rawPoints);
 
-    console.log(`نشاط Golden Ear - المهمة: ${currentMKey}`);
-    console.log("الإجابات الصحيحة:", correctCount);
-    console.log("الدرجة النهائية المرسلة:", finalPoints);
+    console.log(`[GES Correction] Mission: ${currentMKey} | Score: ${correctCount}/5 | Final Points: ${finalPoints}`);
 
     return {
         isCorrect: correctCount > 0, 
         points: finalPoints, 
-        answerText: allInputs.map(i => i.value).join(" | ") // تجميع إجابات الطالب للتدقيق
+        answerText: allInputs.map(i => i.value).join(" | ")
     };
 }

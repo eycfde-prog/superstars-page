@@ -284,30 +284,45 @@
         }
     }
 
-    async function submitMission() {
-        const submitBtn = document.getElementById('submitBtn');
-        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-        const iframe = document.getElementById('mainIframe');
-        if (submitBtn.disabled) return;
+async function submitMission() {
+    const submitBtn = document.getElementById('submitBtn');
+    const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+    const iframe = document.getElementById('mainIframe');
+    if (submitBtn.disabled) return;
 
-        try {
-            submitBtn.innerText = "EVALUATING...";
-            submitBtn.disabled = true;
-            const evaluation = await evaluateMission(iframe);
-            prizeValue = evaluation.points;
-            const payload = { email: saved.email, activity: actCode, mission: mNum, level: isElite ? currentLevel : 'A', answer: evaluation.answerText, points: evaluation.points, isCorrect: evaluation.isCorrect };
-            await fetch(SCRIPT_URL, { method: "POST", mode: 'no-cors', cache: 'no-cache', body: JSON.stringify(payload) });
-            setTimeout(() => {
-                document.getElementById('rewardContainer').style.display = 'block';
-                animate();
-            }, 1000);
-        } catch (error) {
-            alert("حدث خطأ في الاتصال، حاول مرة أخرى يا بطل!");
-            submitBtn.innerText = "SUBMIT";
-            submitBtn.disabled = false;
-        }
+    try {
+        submitBtn.innerText = "EVALUATING...";
+        submitBtn.disabled = true;
+        
+        const evaluation = await evaluateMission(iframe);
+        
+        // تحديث قيمة الجائزة فوراً قبل أي شيء
+        prizeValue = evaluation.points; 
+        console.log("الدرجة المستلمة من ملف التصحيح:", prizeValue);
+
+        const payload = { 
+            email: saved.email, 
+            activity: actCode, 
+            mission: mNum, 
+            level: isElite ? currentLevel : 'A', 
+            answer: evaluation.answerText, 
+            points: prizeValue, 
+            isCorrect: evaluation.isCorrect 
+        };
+
+        await fetch(SCRIPT_URL, { method: "POST", mode: 'no-cors', cache: 'no-cache', body: JSON.stringify(payload) });
+        
+        // إظهار الصندوق
+        document.getElementById('rewardContainer').style.display = 'block';
+        animate(); 
+
+    } catch (error) {
+        console.error("خطأ في التصحيح:", error);
+        alert("حدث خطأ، تأكد من كتابة إجابة أو وجود ملف التصحيح!");
+        submitBtn.innerText = "SUBMIT";
+        submitBtn.disabled = false;
     }
-
+}
     function changeLevel(level, btn) {
         document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');

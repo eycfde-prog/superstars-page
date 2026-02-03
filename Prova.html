@@ -4,293 +4,255 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EYC Super Stars | Premium Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #D4AF37;
-            --gold-gradient: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
+            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
             --bg-deep: #050508;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(212, 175, 55, 0.3);
-            --sidebar-w: 280px;
+            --card-bg: rgba(20, 20, 25, 0.6);
+            --sidebar-w: 260px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-deep); color: white; height: 100vh; overflow: hidden; display: flex; }
-
-        #star-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.6; }
-
-        /* Sidebar الاستثنائي */
-        aside {
-            width: var(--sidebar-w);
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(25px);
-            border-right: 1px solid var(--glass-border);
+        
+        body { 
+            background: var(--bg-deep); 
+            color: white; 
+            height: 100vh; 
+            overflow: hidden; 
             display: flex;
-            flex-direction: column;
-            padding: 40px 25px;
-            z-index: 100;
-            transition: 0.5s;
         }
 
-        .profile-section { text-align: center; margin-bottom: 50px; }
+        /* خلفية ناعمة جداً بديلة للنجوم الكتيرة */
+        .bg-glow {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        /* Sidebar - التصميم النحيف */
+        aside {
+            width: var(--sidebar-w);
+            background: rgba(8, 8, 12, 0.95);
+            border-right: 1px solid rgba(212, 175, 55, 0.15);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            z-index: 100;
+        }
+
+        .profile-section { text-align: center; margin-bottom: 40px; }
         .avatar-wrapper {
             position: relative;
-            width: 110px; height: 110px;
-            margin: 0 auto 20px;
+            width: 90px; height: 90px;
+            margin: 0 auto 15px;
         }
         .avatar-circle {
             width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 3px solid var(--gold);
+            border-radius: 20px; /* شكل مربع دائري أحدث */
+            border: 2px solid var(--gold);
             background: url('https://i.pravatar.cc/150?u=student') center/cover;
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+            transform: rotate(-5deg); /* لمسة فنية */
+            transition: 0.3s;
         }
-        .avatar-wrapper::after {
-            content: 'PRO';
-            position: absolute; bottom: 0; right: 0;
-            background: var(--gold-gradient);
-            color: black; font-size: 10px; font-weight: 900;
-            padding: 4px 8px; border-radius: 10px;
-        }
+        .avatar-wrapper:hover .avatar-circle { transform: rotate(0deg) scale(1.05); }
 
-        .profile-section h2 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.3rem; }
-        .rank-info { font-size: 0.75rem; color: #888; letter-spacing: 2px; text-transform: uppercase; }
+        .profile-section h2 { font-family: 'Cinzel', serif; color: #fff; font-size: 1.1rem; margin-top: 10px; }
+        .rank-badge { 
+            background: var(--gold-gradient); 
+            color: #000; font-size: 0.65rem; font-weight: 800;
+            padding: 2px 10px; border-radius: 20px; display: inline-block;
+        }
         
-        .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
         .nav-btn {
-            background: var(--glass);
-            border: 1px solid transparent;
-            color: #ddd;
-            padding: 14px 20px;
+            background: transparent;
+            border: none;
+            color: #888;
+            padding: 12px 15px;
             border-radius: 12px;
             cursor: pointer;
-            transition: 0.4s;
+            transition: 0.3s;
             text-align: left;
+            display: flex; align-items: center; gap: 12px;
             font-size: 0.9rem;
-            display: flex; align-items: center; gap: 10px;
         }
-        .nav-btn:hover {
+        .nav-btn:hover, .nav-btn.active {
             background: rgba(212, 175, 55, 0.1);
-            border-color: var(--gold);
             color: var(--gold);
-            transform: translateX(5px);
         }
-        .logout-btn { margin-top: auto; border-color: rgba(255, 68, 68, 0.2); color: #ff6666; }
 
         /* Main Content */
-        main { flex: 1; padding: 40px; position: relative; overflow-y: auto; }
+        main { flex: 1; padding: 30px; overflow-y: auto; scroll-behavior: smooth; }
 
-        .section-header {
-            margin-bottom: 40px;
-            border-left: 4px solid var(--gold);
-            padding-left: 20px;
+        .header-content {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 30px;
         }
-        .section-header h1 { font-family: 'Cinzel', serif; font-size: 2.2rem; color: #fff; }
-        .section-header p { color: var(--gold); font-size: 0.9rem; opacity: 0.8; }
+        .section-header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; letter-spacing: 1px; }
+        .section-header p { color: var(--gold); font-size: 0.8rem; letter-spacing: 2px; }
 
-        .slider-container { width: 100%; position: relative; }
-        .slide {
+        .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 25px;
-            opacity: 0; transform: translateY(20px);
-            transition: 0.8s ease;
-            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding-bottom: 40px;
         }
-        .slide.active { display: grid; opacity: 1; transform: translateY(0); }
 
-        /* Activity Card */
+        /* الكروت الجديدة - أخف وأجمل */
         .activity-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 30px 20px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 25px 20px;
             text-align: center;
-            cursor: pointer;
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
-            overflow: hidden;
-        }
-        .activity-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
-            background: var(--gold-gradient); opacity: 0; transition: 0.5s;
         }
         .activity-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            background: rgba(255,255,255,0.08);
+            transform: translateY(-8px);
+            background: rgba(30, 30, 40, 0.8);
             border-color: var(--gold);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 15px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .activity-card:hover::before { opacity: 1; }
         
         .card-icon {
-            width: 60px; height: 60px;
-            background: rgba(212, 175, 55, 0.1);
-            border-radius: 15px;
-            margin: 0 auto 20px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--gold); font-size: 1.5rem;
+            font-size: 2rem; margin-bottom: 15px; display: block;
         }
-        .activity-card h3 { font-size: 1.1rem; margin-bottom: 8px; font-family: 'Cinzel'; }
-        .activity-card p { font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .activity-card h3 { font-size: 1rem; color: #fff; margin-bottom: 5px; }
+        .activity-card span { font-size: 0.7rem; color: var(--gold); font-weight: 600; opacity: 0.8; }
 
-        /* Controls */
-        .controls { display: flex; justify-content: center; gap: 15px; margin-top: 50px; }
-        .dot { 
-            width: 40px; height: 6px; border-radius: 10px; background: var(--glass); 
-            cursor: pointer; transition: 0.4s;
+        /* Mobile Navigation Bar */
+        .mobile-nav {
+            display: none;
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(10, 10, 15, 0.98);
+            border-top: 1px solid var(--glass-border);
+            padding: 10px 0;
+            justify-content: space-around;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
-        .dot.active { background: var(--gold); width: 60px; box-shadow: 0 0 15px var(--gold); }
+
+        @media (max-width: 900px) {
+            aside { display: none; }
+            main { padding: 20px 20px 80px 20px; }
+            .mobile-nav { display: flex; }
+            .header-content { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .grid-container { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .activity-card { padding: 15px; }
+        }
 
         /* Modal Tasks */
         .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
-            backdrop-filter: blur(10px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
         }
         .modal-content {
-            background: #0d0d12; border: 1px solid var(--gold); border-radius: 25px;
-            padding: 40px; width: 90%; max-width: 550px;
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.15);
+            background: #111; border-radius: 30px; padding: 30px; width: 90%; max-width: 450px;
+            border: 1px solid var(--gold);
         }
-        .tasks-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 30px; }
+        .tasks-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 20px; }
         .task-node {
-            aspect-ratio: 1; border: 1px solid var(--glass-border);
+            aspect-ratio: 1; background: rgba(255,255,255,0.03); border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; cursor: pointer; transition: 0.3s;
-            font-weight: 600; color: #888;
+            cursor: pointer; font-weight: bold; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
         }
-        .task-node:hover {
-            background: var(--gold-gradient); color: black; border-color: transparent;
-            transform: scale(1.1);
-        }
-
-        /* Mobile Adjustments */
-        @media (max-width: 900px) {
-            body { flex-direction: column; overflow-y: auto; }
-            aside { width: 100%; padding: 20px; border-right: none; border-bottom: 1px solid var(--glass-border); }
-            .profile-section { margin-bottom: 20px; display: flex; align-items: center; gap: 20px; text-align: left; }
-            .avatar-wrapper { margin: 0; width: 60px; height: 60px; }
-            .nav-menu { display: none; } /* Hide side menu on mobile for space */
-            main { padding: 20px; }
-            .section-header h1 { font-size: 1.5rem; }
-        }
+        .task-node:hover { background: var(--gold-gradient); color: #000; transform: scale(1.1); }
     </style>
 </head>
 <body>
 
-    <canvas id="star-canvas"></canvas>
+    <div class="bg-glow"></div>
 
     <aside>
         <div class="profile-section">
             <div class="avatar-wrapper">
                 <div class="avatar-circle"></div>
             </div>
-            <div>
-                <p class="rank-info">Global Rank: #04</p>
-                <h2>Mr. Ezz Student</h2>
-            </div>
+            <span class="rank-badge">RANK #04</span>
+            <h2>Mr. Ezz Student</h2>
         </div>
 
         <div class="nav-menu">
-            <button class="nav-btn"><span>🏠</span> Home Screen</button>
-            <button class="nav-btn"><span>🏆</span> Leaderboard</button>
-            <button class="nav-btn"><span>💎</span> Rewards</button>
-            <button class="nav-btn logout-btn"><span>🚪</span> Log Out</button>
+            <button class="nav-btn active">🏠 Home Screen</button>
+            <button class="nav-btn">🏆 Leaderboard</button>
+            <button class="nav-btn">💎 Rewards</button>
+            <button class="nav-btn" style="margin-top: auto; color: #ff5555;">🚪 Log Out</button>
         </div>
     </aside>
 
     <main>
-        <div class="section-header">
-            <h1 id="slide-title">Season Activities</h1>
-            <p>EYC PREMIUM ENGLISH LEARNING</p>
+        <div class="header-content">
+            <div class="section-header">
+                <p>EYC PREMIUM</p>
+                <h1>Season Activities</h1>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <div onclick="filterCards('season')" style="cursor:pointer; width: 12px; height: 12px; border-radius: 50%; background: var(--gold);"></div>
+                <div onclick="filterCards('royal')" style="cursor:pointer; width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.1);"></div>
+            </div>
         </div>
 
-        <div class="slider-container">
-            <div class="slide active" id="slide-1"></div>
-            <div class="slide" id="slide-2"></div>
-        </div>
-
-        <div class="controls">
-            <div class="dot active" onclick="goToSlide(0)"></div>
-            <div class="dot" onclick="goToSlide(1)"></div>
-        </div>
+        <div class="grid-container" id="cardsGrid">
+            </div>
     </main>
+
+    <nav class="mobile-nav">
+        <div style="color: var(--gold); font-size: 1.2rem;">🏠</div>
+        <div style="color: #666; font-size: 1.2rem;">🏆</div>
+        <div style="color: #666; font-size: 1.2rem;">💎</div>
+        <div style="color: #666; font-size: 1.2rem;">👤</div>
+    </nav>
 
     <div class="modal" id="taskModal">
         <div class="modal-content">
-            <h3 id="mTitle" style="text-align:center; color:var(--gold); font-family:'Cinzel'; font-size: 1.5rem;">Tasks</h3>
+            <h3 id="mTitle" style="text-align:center; color:var(--gold); font-family:'Cinzel';">Activity Challenges</h3>
             <div class="tasks-grid" id="tGrid"></div>
-            <button onclick="closeModal()" style="margin-top:30px; width:100%; padding:12px; background:transparent; border:1px solid #333; color:#888; border-radius:10px; cursor:pointer;">Back to Dashboard</button>
+            <button onclick="closeModal()" style="margin-top:25px; width:100%; padding:12px; background:rgba(255,255,255,0.05); border:none; color:#888; border-radius:15px; cursor:pointer;">Back</button>
         </div>
     </div>
 
     <script>
-        // Starfield
-        const canvas = document.getElementById('star-canvas');
-        const ctx = canvas.getContext('2d');
-        let stars = [];
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        class Star {
-            constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 1.5; this.speed = Math.random() * 0.3; }
-            update() { this.y += this.speed; if (this.y > canvas.height) this.y = 0; }
-            draw() { ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill(); }
-        }
-        function initStars() { stars = []; for(let i=0; i<150; i++) stars.push(new Star()); }
-        function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); stars.forEach(s => { s.update(); s.draw(); }); requestAnimationFrame(animate); }
-        window.addEventListener('resize', () => { resize(); initStars(); });
-        resize(); initStars(); animate();
-
-        // Cards Logic
-        const slides = [document.getElementById('slide-1'), document.getElementById('slide-2')];
-        const titles = ["Season Activities", "Royal Activities"];
-
-        function createContent() {
-            for (let i = 1; i <= 16; i++) {
+        const grid = document.getElementById('cardsGrid');
+        
+        // توليد المحتوى بشكل أسرع وأخف
+        function generateCards() {
+            grid.innerHTML = '';
+            for (let i = 1; i <= 12; i++) {
                 const card = document.createElement('div');
                 card.className = 'activity-card';
                 card.innerHTML = `
-                    <div class="card-icon">${i <= 6 ? '⭐' : '👑'}</div>
+                    <span class="card-icon">${i <= 6 ? '⭐' : '👑'}</span>
                     <h3>Activity ${i}</h3>
-                    <p>10 Tasks Available</p>
+                    <span>10 CHALLENGES</span>
                 `;
                 card.onclick = () => openTasks(i);
-                
-                if (i <= 8) slides[0].appendChild(card);
-                else slides[1].appendChild(card);
+                grid.appendChild(card);
             }
         }
 
-        let currentSlide = 0;
-        function goToSlide(idx) {
-            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-            
-            currentSlide = idx;
-            slides[idx].classList.add('active');
-            document.querySelectorAll('.dot')[idx].classList.add('active');
-            document.getElementById('slide-title').innerText = titles[idx];
-        }
-
         function openTasks(num) {
-            document.getElementById('mTitle').innerText = `Activity ${num} Challenges`;
-            const grid = document.getElementById('tGrid');
-            grid.innerHTML = '';
+            document.getElementById('mTitle').innerText = `Activity ${num}`;
+            const tGrid = document.getElementById('tGrid');
+            tGrid.innerHTML = '';
             for(let i=1; i<=10; i++) {
-                grid.innerHTML += `<div class="task-node" onclick="handleTask(${num}, ${i})">${i}</div>`;
+                tGrid.innerHTML += `<div class="task-node" onclick="handleTask(${num},${i})">${i}</div>`;
             }
             document.getElementById('taskModal').style.display = 'flex';
         }
 
+        function closeModal() { document.getElementById('taskModal').style.display = 'none'; }
+        
         function handleTask(act, task) {
-            alert(`Launching Activity ${act} - Task ${task}... Good luck Superstar!`);
+            alert(`Ready to shine in Activity ${act}?`);
             closeModal();
         }
 
-        function closeModal() { document.getElementById('taskModal').style.display = 'none'; }
-
-        createContent();
+        generateCards();
     </script>
 </body>
 </html>

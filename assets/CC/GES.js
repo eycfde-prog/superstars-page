@@ -97,39 +97,50 @@ function isExactMatch(studentInput, correctSystemAnswer) {
 async function evaluateMission(iframe) {
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     
-    // 1. جلب كل مدخلات الطالب من الـ iframe
+    // 1. جلب المدخلات
     const allInputs = Array.from(doc.querySelectorAll('input, textarea, select'));
     
-    // 2. منطق الربط الديناميكي: دمج كود النشاط مع رقم المهمة (مثل GES + 1 = GES1)
+    // 2. تصحيح استخراج المفتاح لضمان التطابق مع GOLDEN_EAR_ANSWERS
     const urlParams = new URLSearchParams(window.location.search);
-    const act = urlParams.get('act') || 'GES'; 
-    const m = urlParams.get('m') || '1';      
-    const currentMKey = act + m;              
     
+    // جلب القيم من الرابط وتحويلها لنصوص نظيفة
+    let act = (urlParams.get('act') || 'GES').trim().toUpperCase(); 
+    let m = (urlParams.get('m') || '1').trim();
+    
+    // بناء المفتاح النهائي (مثلاً GES1)
+    const currentMKey = act + m; 
+    
+    console.log("Attempting to find answers for key:", currentMKey);
+
     const modelAnswers = GOLDEN_EAR_ANSWERS[currentMKey];
     
-    // حالة طارئة إذا لم يتم العثور على نموذج الإجابة
-    if (!modelAnswers) {
-        console.error("Model answers not found for key:", currentMKey);
-        return { isCorrect: false, points: 1, answerText: "Error: Key " + currentMKey };
+    // 3. إذا لم يجد المفتاح، سنقوم بمحاولة أخيرة (لو كان الكود GE بدلاً من GES)
+    let finalAnswers = modelAnswers;
+    if (!finalAnswers) {
+        // محاولة البحث بـ GES لو كان اللي مبعوث GE
+        const backupKey = currentMKey.startsWith('GE') && !currentMKey.startsWith('GES') 
+                          ? currentMKey.replace('GE', 'GES') 
+                          : currentMKey;
+        finalAnswers = GOLDEN_EAR_ANSWERS[backupKey];
+    }
+
+    if (!finalAnswers) {
+        return { isCorrect: false, points: 1, answerText: "No Model Answers Found for: " + currentMKey };
     }
 
     let correctCount = 0;
 
-    // 3. مقارنة إجابات الطالب بنموذج الإجابة (ترتيب الأسئلة مهم)
+    // 4. التصحيح
     allInputs.forEach((input, index) => {
-        if (index < modelAnswers.length) {
-            if (isExactMatch(input.value, modelAnswers[index])) {
+        if (index < finalAnswers.length) {
+            if (isExactMatch(input.value, finalAnswers[index])) {
                 correctCount++;
             }
         }
     });
 
-    // 4. حساب الدرجات (الدرجة النهائية 5، والحد الأدنى 1)
-    let rawPoints = correctCount; 
-    let finalPoints = Math.max(1, rawPoints);
-
-    console.log(`[GES Correction] Mission: ${currentMKey} | Score: ${correctCount}/5 | Final Points: ${finalPoints}`);
+    // 5. حساب النقاط (تأكد أن correctCount يتم ضربه في 1)
+    let finalPoints = Math.max(1, correctCount);
 
     return {
         isCorrect: correctCount > 0, 
@@ -137,3 +148,4 @@ async function evaluateMission(iframe) {
         answerText: allInputs.map(i => i.value).join(" | ")
     };
 }
+

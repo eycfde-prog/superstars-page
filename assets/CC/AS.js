@@ -1,5 +1,5 @@
 /**
- * Alike Activity Correction Logic (Debugged Version)
+ * Alike Activity Correction Logic (Updated with Rounding and Minimum Grade)
  */
 
 const ALIKE_ANSWERS_KEY = {
@@ -43,7 +43,6 @@ function checkSimilarity(s1, s2) {
 async function evaluateMission(iframe) {
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     
-    // تعديل هائل: سحب جميع النصوص من كل الـ inputs أو textareas الموجودة
     const allInputs = Array.from(doc.querySelectorAll('input, textarea'));
     const studentAnswer = allInputs.map(i => i.value).join(" "); 
     
@@ -52,9 +51,8 @@ async function evaluateMission(iframe) {
     
     if (!answers) return { isCorrect: false, points: 0, answerText: studentAnswer };
 
-    // تنظيف الكلمات بشكل أدق
     const studentWords = studentAnswer.toLowerCase()
-                        .replace(/[^a-z\s]/g, ' ') // إزالة أي رموز غير الحروف
+                        .replace(/[^a-z\s]/g, ' ') 
                         .split(/\s+/) 
                         .filter(w => w.length > 0);
     
@@ -69,11 +67,21 @@ async function evaluateMission(iframe) {
         }
     });
 
-    // الحساب: 0.5 لكل كلمة
-    let finalPoints = correctCount * 0.5;
+    // --- التعديل المطلوب هنا ---
+    
+    // 1. حساب النقاط الأصلية (0.5 لكل كلمة)
+    let rawPoints = correctCount * 0.5;
+
+    // 2. تقريب النتيجة لأقرب عدد صحيح للأعلى (مثلاً 3.5 تصبح 4)
+    let roundedPoints = Math.ceil(rawPoints);
+
+    // 3. التأكد أن الدرجة لا تقل عن 1 (حتى لو كانت صفر أو كسر بسيط)
+    let finalPoints = Math.max(1, roundedPoints);
+
+    // -------------------------
 
     console.log("عدد الكلمات الصحيحة:", correctCount);
-    console.log("النقاط النهائية:", finalPoints);
+    console.log("النقاط النهائية بعد التقريب والتعديل:", finalPoints);
 
     return {
         isCorrect: correctCount > 0, 

@@ -1,7 +1,6 @@
 /**
- * Alike Activity Correction Logic (Updated)
- * منطق التصحيح: الكلمة الواحدة بـ 1 درجة كاملة.
- * الحساب: مجموع الكلمات الصحيحة، مع تقريب الكسور (إن وجدت) وحد أدنى 1 توكين.
+ * Alike Activity Correction Logic (AS)
+ * منطق التصحيح المعدل: الكلمة بـ 0.5، الدرجة النهائية من 5.
  */
 
 const ALIKE_ANSWERS_KEY = {
@@ -40,7 +39,7 @@ async function evaluateMission(iframe) {
     const currentMNum = new URLSearchParams(window.location.search).get('m') || '1';
     
     const answers = ALIKE_ANSWERS_KEY[currentMNum];
-    if (!answers) return { isCorrect: false, points: 1, answerText: studentAnswer };
+    if (!answers) return { isCorrect: false, points: 0, answerText: studentAnswer };
 
     const studentWords = studentAnswer.toLowerCase().split(/[\s,.-]+/).filter(w => w.length > 0);
     
@@ -55,21 +54,15 @@ async function evaluateMission(iframe) {
         }
     });
 
-    // --- منطق الحساب المعدل ---
+    // --- منطق الحساب الجديد ---
     
-    // 1. الكلمة بدرجة كاملة (إذا أجاب الزوج "كلمتين" صح يحصل على 2 درجة)
-    let calculatedPoints = correctCount * 1; 
-
-    // 2. تقريب الدرجة لأقرب عدد صحيح (في حال تم تغيير المعامل مستقبلاً)
-    let finalPoints = Math.ceil(calculatedPoints);
-
-    // 3. تطبيق الحد الأدنى (إذا كانت النتيجة 0 أو أقل من 1، يحصل على 1)
-    if (finalPoints < 1) {
-        finalPoints = 1;
-    }
+    // 1. الكلمة بنص درجة مباشرة
+    // إذا أجاب 10 كلمات صحيحة يحصل على 5 درجات.
+    // إذا أخطأ في كلمة ينقص 0.5 تلقائياً لأن الـ correctCount سينقص.
+    let finalPoints = correctCount * 0.5;
 
     return {
-        isCorrect: true, 
+        isCorrect: correctCount > 0, 
         points: Number(finalPoints), 
         answerText: studentAnswer
     };

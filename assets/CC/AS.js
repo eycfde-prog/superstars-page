@@ -1,6 +1,10 @@
 /**
- * Alike Activity Correction Logic (AS)
- * هذا الملف يتم استدعاؤه ديناميكياً بناءً على كود النشاط
+ * Alike Activity Correction Logic (AS) - المطور
+ * نظام الدرجات: 
+ * 1. الكلمة الواحدة = 0.5 درجة.
+ * 2. الدرجة النهائية = 5 (عند حل 10 كلمات).
+ * 3. تقريب الكسور لأقرب عدد صحيح (2.5 تصبح 3).
+ * 4. الحد الأدنى للدرجات هو 1 توكين.
  */
 
 const ALIKE_ANSWERS_KEY = {
@@ -16,18 +20,14 @@ const ALIKE_ANSWERS_KEY = {
     "10": ["brake", "break", "scent", "sent", "band", "banned", "sight", "site", "meat", "meet"]
 };
 
-// دالة فحص حالة المهمة (هل أنجزها الطالب سابقاً؟)
 async function checkMissionStatus(email, act, m, scriptUrl) {
     try {
         const response = await fetch(`${scriptUrl}?email=${email}&activity=${act}&mission=${m}`);
         const data = await response.json();
         return data.isDone; 
-    } catch (e) {
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
-// دالة قياس التشابه (تسمح بحرف واحد خطأ)
 function checkSimilarity(s1, s2) {
     s1 = s1.toLowerCase().trim();
     s2 = s2.toLowerCase().trim();
@@ -45,21 +45,13 @@ function checkSimilarity(s1, s2) {
     return diffs <= 1;
 }
 
-/**
- * الدالة الأساسية التي تستدعيها الصفحة الرئيسية
- * @param {HTMLIFrameElement} iframe - عنصر الآيفريم المحمل به النشاط
- */
 async function evaluateMission(iframe) {
-    // 1. استخراج النص من داخل الآيفريم (بناءً على بنية ملفات MIF لديك)
-    // نفترض أن الإجابة موجودة في عنصر id="studentAnswer" أوtextarea
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     const studentAnswer = doc.querySelector('textarea')?.value || doc.querySelector('input')?.value || "";
-    
-    // 2. الحصول على رقم المهمة من الرابط الحالي
     const currentMNum = new URLSearchParams(window.location.search).get('m') || '1';
     
     const answers = ALIKE_ANSWERS_KEY[currentMNum];
-    if (!answers) return { isCorrect: false, points: 0, answerText: studentAnswer };
+    if (!answers) return { isCorrect: false, points: 1, answerText: studentAnswer };
 
     const studentWords = studentAnswer.toLowerCase().split(/[\s,.-]+/).filter(w => w.length > 0);
     
@@ -74,10 +66,22 @@ async function evaluateMission(iframe) {
         }
     });
 
-    // حساب النقاط (كلمة صحيحة = 1 توكين)
+    // --- منطق الحساب الجديد ---
+    
+    // 1. حساب الدرجة الخام (نصف درجة لكل كلمة)
+    let rawPoints = correctCount * 0.5;
+
+    // 2. تقريب الدرجة لأقرب عدد صحيح (مثلاً 2.5 تصبح 3)
+    let finalPoints = Math.round(rawPoints);
+
+    // 3. تطبيق الحد الأدنى (إذا كانت الدرجة أقل من 1، يحصل على 1)
+    if (finalPoints < 1) {
+        finalPoints = 1;
+    }
+
     return {
-        isCorrect: correctCount >= 2, // صحيحة لو جاب كلمتين (زوج واحد) على الأقل
-        points: correctCount,
+        isCorrect: true, // دائماً true طالما ضغط submit ليحصل على الحد الأدنى على الأقل
+        points: finalPoints,
         answerText: studentAnswer
     };
 }

@@ -25,7 +25,12 @@
             z-index: -1;
         }
 
-        /* Hero Banner */
+        .home-btn {
+            position: absolute; top: 20px; left: 20px; color: var(--gold);
+            font-size: 1.5rem; cursor: pointer; z-index: 100; transition: 0.3s;
+        }
+        .home-btn:hover { transform: scale(1.2); }
+
         .hero-banner {
             width: 100%; padding: 40px 20px;
             background: linear-gradient(to bottom, rgba(20, 20, 25, 0.8), transparent);
@@ -35,7 +40,7 @@
         .profile-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .avatar-main {
             width: 100px; height: 100px; border-radius: 25px; border: 2px solid var(--gold);
-            background: url('https://i.pravatar.cc/150?u=student') center/cover;
+            background-size: cover; background-position: center;
             box-shadow: 0 0 20px var(--gold-glow); margin-bottom: 5px;
         }
 
@@ -50,7 +55,6 @@
 
         .student-name { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 1px; }
 
-        /* Navigation Swticher */
         .nav-container { display: flex; justify-content: center; margin: 30px 0; }
         .tab-switcher {
             background: rgba(255,255,255,0.05); padding: 5px; border-radius: 50px;
@@ -62,26 +66,23 @@
         }
         .tab-btn.active { background: var(--gold-gradient); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
 
-        /* Content Grid */
         main { max-width: 1100px; margin: 0 auto; padding: 0 20px 100px; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
         
         .activity-card {
             background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px; padding: 30px 15px; text-align: center; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 24px; padding: 30px 15px; text-align: center; cursor: pointer; transition: 0.4s;
             backdrop-filter: blur(10px);
         }
-        .activity-card:hover { transform: translateY(-10px); border-color: var(--gold); background: rgba(212, 175, 55, 0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .activity-card:hover { transform: translateY(-10px); border-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
         
         .card-icon { 
             font-size: 2.2rem; margin-bottom: 15px; display: block; 
             background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 5px var(--gold-glow));
         }
-        .activity-card h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700; margin-bottom: 5px; }
-        .activity-card p { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; }
+        .activity-card h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; margin-bottom: 5px; }
+        .activity-card p { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
 
-        /* Modals */
         .modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(15px);
@@ -99,13 +100,16 @@
         }
         .task-node.locked { opacity: 0.4; cursor: not-allowed; }
         .lock-icon { position: absolute; font-size: 0.65rem; color: #ff5555; top: 5px; right: 5px; }
-        .task-node:not(.locked):hover { background: var(--gold-gradient); color: #000; transform: scale(1.1); box-shadow: 0 0 15px var(--gold); }
+        .task-node:not(.locked):hover { background: var(--gold-gradient); color: #000; transform: scale(1.1); }
 
         .close-modal {
             background: transparent; border: 1px solid #444; color: #888;
-            padding: 10px 30px; border-radius: 50px; cursor: pointer; margin-top: 15px; transition: 0.3s;
+            padding: 10px 30px; border-radius: 50px; cursor: pointer; margin-top: 15px;
         }
-        .close-modal:hover { color: #fff; border-color: var(--gold); }
+
+        /* Loading Spinner */
+        #loader { display: none; margin: 10px auto; border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         @media (max-width: 600px) {
             .grid-container { grid-template-columns: repeat(2, 1fr); }
@@ -116,6 +120,7 @@
 <body>
 
     <div class="bg-glow"></div>
+    <i class="fas fa-house home-btn" onclick="window.location.href='EYCSSP'"></i>
 
     <header class="hero-banner" id="heroBanner"></header>
 
@@ -142,36 +147,40 @@
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:20px;">MEMBER ACCESS</h2>
-            <input type="email" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Email Address">
-            <input type="password" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Access Code">
-            <button class="btn-premium solid" style="width:100%; margin-top:15px;">LOGIN</button>
+            <input type="email" id="loginEmail" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Email Address">
+            <input type="password" id="loginCode" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Access Code">
+            <div id="loader"></div>
+            <button class="btn-premium solid" style="width:100%; margin-top:15px;" onclick="handleLogin()">LOGIN</button>
             <button class="close-modal" onclick="closeModal('loginModal')">CLOSE</button>
         </div>
     </div>
 
     <script>
-        let isLoggedIn = false; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQp_Y_Y7eY2yW8K9R_gT4f8qV9p1l3m2n1k0j9i8h7g6f5e4d3c2b1a0/exec"; // استبدل بـ URL الخاص بـ Web App بعد النشر
+        
+        let currentUser = null;
+        let isLoggedIn = false;
 
         const activities = {
             season: [
-                { name: "Golden Ear", icon: "fa-ear-listen" },
-                { name: "Alike", icon: "fa-clone" },
-                { name: "Seeds", icon: "fa-seedling" },
-                { name: "Grammar", icon: "fa-spell-check" },
-                { name: "Label", icon: "fa-tag" },
-                { name: "Vivid", icon: "fa-eye" }
+                { name: "Golden Ear", icon: "fa-ear-listen", code: "GES" },
+                { name: "Alike", icon: "fa-clone", code: "AS" },
+                { name: "Seeds", icon: "fa-seedling", code: "SS" },
+                { name: "Grammar", icon: "fa-spell-check", code: "GS" },
+                { name: "Label", icon: "fa-tag", code: "LS" },
+                { name: "Vivid", icon: "fa-eye", code: "VS" }
             ],
             royal: [
-                { name: "Golden EarX", icon: "fa-ear-deaf" },
-                { name: "AlikeX", icon: "fa-object-group" },
-                { name: "SeedsX", icon: "fa-tree" },
-                { name: "GrammarX", icon: "fa-pen-fancy" },
-                { name: "LabelX", icon: "fa-tags" },
-                { name: "VividX", icon: "fa-wand-magic-sparkles" },
-                { name: "FigurativeX", icon: "fa-mask" },
-                { name: "DictationX", icon: "fa-microphone-lines" },
-                { name: "Sing Sang SungX", icon: "fa-music" },
-                { name: "ElmagazineX", icon: "fa-book-open" }
+                { name: "Golden EarX", icon: "fa-ear-deaf", code: "GEX" },
+                { name: "AlikeX", icon: "fa-object-group", code: "AX" },
+                { name: "SeedsX", icon: "fa-tree", code: "SX" },
+                { name: "GrammarX", icon: "fa-pen-fancy", code: "GX" },
+                { name: "LabelX", icon: "fa-tags", code: "LX" },
+                { name: "VividX", icon: "fa-wand-magic-sparkles", code: "VX" },
+                { name: "FigurativeX", icon: "fa-mask", code: "FX" },
+                { name: "DictationX", icon: "fa-microphone-lines", code: "DX" },
+                { name: "Sing Sang SungX", icon: "fa-music", code: "SSSX" },
+                { name: "ElmagazineX", icon: "fa-book-open", code: "ELX" }
             ]
         };
 
@@ -179,19 +188,47 @@
             const header = document.getElementById('heroBanner');
             header.innerHTML = isLoggedIn ? 
                 `<div class="profile-container">
-                    <div class="avatar-main"></div>
-                    <h1 class="student-name">Mr. Ezz Student</h1>
+                    <div class="avatar-main" style="background-image: url('${currentUser.image}')"></div>
+                    <h1 class="student-name">${currentUser.name}</h1>
                     <div style="display:flex; gap:15px; margin-top:5px; font-size:0.85rem; color:var(--gold);">
-                        <span>🪙 1,250 TK</span> • <span>🏆 Rank #04</span>
+                        <span>🪙 ${currentUser.totalScore} TK</span> • <span>🏆 Rank #${currentUser.rank}</span>
                     </div>
+                    <p style="font-size:0.7rem; color:#888; margin-top:5px;">${currentUser.title}</p>
                 </div>` : 
                 `<div class="profile-container">
                     <h1 class="student-name" style="margin-bottom:10px">EYC PREMIUM</h1>
                     <div class="auth-btns">
                         <button class="btn-premium" onclick="openLogin()">Log In</button>
-                        <button class="btn-premium solid" onclick="window.location.href='#'">Join</button>
+                        <button class="btn-premium solid" onclick="window.location.href='NP.html'">Join</button>
                     </div>
                 </div>`;
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const code = document.getElementById('loginCode').value;
+            const loader = document.getElementById('loader');
+
+            if(!email || !code) return alert("Please fill all fields");
+
+            loader.style.display = "block";
+            try {
+                const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    currentUser = data;
+                    isLoggedIn = true;
+                    closeModal('loginModal');
+                    renderHeader();
+                    generateCards();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (error) {
+                alert("Connection failed. Please check URL.");
+            }
+            loader.style.display = "none";
         }
 
         function generateCards() {
@@ -200,20 +237,16 @@
             const type = document.querySelector('.tab-btn.active').innerText.toLowerCase();
             const list = activities[type];
 
-            list.forEach((act, index) => {
+            list.forEach(act => {
                 const card = document.createElement('div');
                 card.className = 'activity-card';
-                card.innerHTML = `
-                    <i class="fa-solid ${act.icon} card-icon"></i>
-                    <h3>${act.name}</h3>
-                    <p>10 Challenges</p>
-                `;
-                card.onclick = () => openTasks(act.name);
+                card.innerHTML = `<i class="fa-solid ${act.icon} card-icon"></i><h3>${act.name}</h3><p>10 Challenges</p>`;
+                card.onclick = () => openTasks(act.name, act.code);
                 grid.appendChild(card);
             });
         }
 
-        function openTasks(name) {
+        function openTasks(name, activityCode) {
             document.getElementById('mTitle').innerText = name;
             document.getElementById('mSubTitle').innerText = "CHOOSE CHALLENGE";
             const tGrid = document.getElementById('tGrid');
@@ -224,7 +257,12 @@
                 const node = document.createElement('div');
                 node.className = `task-node ${isLocked ? 'locked' : ''}`;
                 node.innerHTML = i + (isLocked ? '<i class="fas fa-lock lock-icon"></i>' : '');
-                if (!isLocked) node.onclick = () => alert(`Launching ${name} - Task ${i}`);
+                
+                if (!isLocked) {
+                    node.onclick = () => {
+                        window.location.href = `assets/MIF/${activityCode}${i}.html`;
+                    };
+                }
                 tGrid.appendChild(node);
             }
             document.getElementById('taskModal').style.display = 'flex';

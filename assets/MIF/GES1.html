@@ -168,13 +168,20 @@
         studentAnswers[qIndex] = val;
     }
 
-    window.evaluateMission = function() {
-        const data = geData[mNum] || geData["1"];
-        if (Object.keys(studentAnswers).length < data.questions.length) return { answerText: "", points: 0 };
-        let correct = 0;
-        data.questions.forEach((q, i) => { if(studentAnswers[i] === q.correct) correct++; });
-        return { status: "OK", points: correct * 5, answerText: "GE Score: " + correct, isCorrect: correct > 0 };
+window.evaluateMission = function() {
+    const params = new URLSearchParams(window.location.search);
+    const mNum = params.get('m') || '1'; // يحصل على رقم المهمة من الرابط
+    
+    // استدعاء دالة التصحيح من ملف GES.js
+    const result = evaluateGESMission(mNum, studentAnswers);
+    
+    return { 
+        status: "COMPLETED", 
+        points: result.points, 
+        answerText: result.answerText,
+        isCorrect: result.isCorrect 
     };
+};
 </script>
 </body>
 </html>

@@ -77,9 +77,9 @@ async function evaluateMission(iframe) {
         finalPoints = 1;
     }
 
-    return {
-        isCorrect: true, // أي محاولة تأخذ درجة الحد الأدنى تعتبر ناجحة
-        points: finalPoints,
+return {
+        isCorrect: true, 
+        points: Number(finalPoints), // التأكد أنه رقم
         answerText: studentAnswer
     };
 }

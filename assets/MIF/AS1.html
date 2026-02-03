@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alike Activity | Fast Load</title>
+    <title>Alike Activity | EYC Vens</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #ffcc00; --bg-glass: rgba(255, 255, 255, 0.03); --border-glass: rgba(255, 255, 255, 0.1); }
@@ -28,16 +28,14 @@
         }
 
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
         .field-group { display: flex; flex-direction: column; gap: 5px; }
-
         label { font-size: 13px; text-align: center; font-weight: bold; color: #d1d5db; }
 
         .input-alike { 
             background: rgba(0,0,0,0.4); border: 1.5px solid rgba(255,255,255,0.15); 
             border-radius: 8px; padding: 10px; text-align: center; color: var(--gold); 
             font-family: 'Orbitron', sans-serif; font-size: 15px; outline: none;
-            transition: border-color 0.2s; width: 100%; box-sizing: border-box;
+            transition: 0.2s; width: 100%; box-sizing: border-box;
         }
 
         .input-alike:focus { border-color: var(--gold); background: rgba(0,0,0,0.6); }
@@ -69,6 +67,7 @@
         {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}, 
     ];
 
+    // 2. بناء واجهة النشاط
     function renderActivity() {
         const wrapper = document.getElementById('activityWrapper');
         let html = '';
@@ -93,42 +92,43 @@
 
     window.onload = renderActivity;
 
-    // 2. دالة التقييم المطلوبة من الصفحة الرئيسية
+    // 3. دالة التقييم الرئيسية (مطلوبة من الصفحة الأم)
     window.evaluateMission = function() {
         let correctWords = 0;
         let studentResponses = [];
         const inputs = document.querySelectorAll('.task-input');
-        
         let allFilled = true;
-        inputs.forEach(input => {
-            if (input.value.trim() === "") allFilled = false;
-        });
 
-        // إذا كانت هناك حقول فارغة، نرجع null لتنبيه المستخدم
-        if (!allFilled) return null;
-
+        // التحقق من الإجابات وجمعها
         inputs.forEach(input => {
             const val = input.value.trim().toLowerCase();
             const correctVal = input.getAttribute('data-answer').toLowerCase();
+            
+            if (val === "") allFilled = false;
+            
             studentResponses.push(val || "EMPTY");
 
             if (val === correctVal) {
                 correctWords++;
                 input.style.borderColor = "#00ffa3";
-                input.style.boxShadow = "0 0 8px rgba(0, 255, 163, 0.2)";
             } else {
                 input.style.borderColor = "#ff3131";
             }
         });
 
-        // حساب النقاط (كل كلمة بنصف نقطة، الإجمالي 10 كلمات = 5 نقاط)
+        // منع الإرسال إذا كانت هناك حقول فارغة
+        if (!allFilled) {
+            return null; 
+        }
+
+        // حساب النقاط (نصف نقطة لكل كلمة صحيحة، بحد أدنى 1)
         let score = correctWords * 0.5;
         let finalPoints = (score < 1 && correctWords > 0) ? 1 : Math.round(score);
 
         return { 
             points: finalPoints, 
             answerText: studentResponses.join(", "),
-            isCorrect: correctWords === inputs.length // تكون true فقط لو الدرجة نهائية
+            isCorrect: correctWords > 0 
         };
     };
 </script>

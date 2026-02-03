@@ -1,10 +1,6 @@
 /**
- * Alike Activity Correction Logic (AS) - المطور
- * نظام الدرجات: 
- * 1. الكلمة الواحدة = 0.5 درجة.
- * 2. الدرجة النهائية = 5 (عند حل 10 كلمات).
- * 3. تقريب الكسور لأقرب عدد صحيح (2.5 تصبح 3).
- * 4. الحد الأدنى للدرجات هو 1 توكين.
+ * Alike Activity Correction Logic (AS)
+ * منطق التصحيح: الكلمة بـ 0.5، تقريب الكسور، وحد أدنى 1 توكين.
  */
 
 const ALIKE_ANSWERS_KEY = {
@@ -25,7 +21,9 @@ async function checkMissionStatus(email, act, m, scriptUrl) {
         const response = await fetch(`${scriptUrl}?email=${email}&activity=${act}&mission=${m}`);
         const data = await response.json();
         return data.isDone; 
-    } catch (e) { return false; }
+    } catch (e) {
+        return false;
+    }
 }
 
 function checkSimilarity(s1, s2) {
@@ -68,19 +66,19 @@ async function evaluateMission(iframe) {
 
     // --- منطق الحساب الجديد ---
     
-    // 1. حساب الدرجة الخام (نصف درجة لكل كلمة)
-    let rawPoints = correctCount * 0.5;
+    // 1. الكلمة بنص درجة (مثلاً 5 كلمات صح = 2.5 درجة)
+    let calculatedPoints = correctCount * 0.5;
 
     // 2. تقريب الدرجة لأقرب عدد صحيح (مثلاً 2.5 تصبح 3)
-    let finalPoints = Math.round(rawPoints);
+    let finalPoints = Math.ceil(calculatedPoints);
 
-    // 3. تطبيق الحد الأدنى (إذا كانت الدرجة أقل من 1، يحصل على 1)
+    // 3. تطبيق الحد الأدنى (إذا كانت النتيجة 0 أو أقل من 1، يحصل على 1)
     if (finalPoints < 1) {
         finalPoints = 1;
     }
 
     return {
-        isCorrect: true, // دائماً true طالما ضغط submit ليحصل على الحد الأدنى على الأقل
+        isCorrect: true, // أي محاولة تأخذ درجة الحد الأدنى تعتبر ناجحة
         points: finalPoints,
         answerText: studentAnswer
     };

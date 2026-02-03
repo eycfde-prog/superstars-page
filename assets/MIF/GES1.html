@@ -170,16 +170,26 @@
 
 window.evaluateMission = function() {
     const params = new URLSearchParams(window.location.search);
-    const mNum = params.get('m') || '1'; // يحصل على رقم المهمة من الرابط
+    const mNum = params.get('m') || '1';
     
-    // استدعاء دالة التصحيح من ملف GES.js
-    const result = evaluateGESMission(mNum, studentAnswers);
-    
+    // تحويل الأجوبة من object إلى array مرتبة من 0 لـ 4
+    const answersArray = [];
+    for(let i=0; i<5; i++) {
+        answersArray.push(studentAnswers[i] || "");
+    }
+
+    // استدعاء التصحيح من GES.js (تأكد أن الدالة هناك تستقبل الأجوبة مباشرة)
+    // أو الأفضل تصحيحها هنا وإرسال النتيجة النهائية للسيرفر
+    const correctAnswers = GOLDEN_EAR_ANSWERS["GES" + mNum];
+    let score = 0;
+    answersArray.forEach((ans, index) => {
+        if(ans === correctAnswers[index]) score++;
+    });
+
     return { 
         status: "COMPLETED", 
-        points: result.points, 
-        answerText: result.answerText,
-        isCorrect: result.isCorrect 
+        points: score, 
+        isCorrect: score > 0 
     };
 };
 </script>

@@ -1,73 +1,72 @@
 /**
- * GES.js - نظام تصحيح أنشطة Golden Ear
- * يقوم بمعالجة 10 مهمات، كل مهمة تحتوي على 5 أسئلة.
+ * Golden Ear Activity Correction Logic (GES.js)
  */
 
-const GES_ANSWER_KEYS = {
-    "GE1": [
+const GOLDEN_EAR_ANSWERS = {
+    "GES1": [
         "The ability to analyze information objectively and make a reasoned judgment.",
         "Logical fallacies.",
         "Curiosity and a willingness to question assumptions.",
         "In everyday decision-making and academic settings.",
         "Critical thinking."
     ],
-    "GE2": [
+    "GES2": [
         "It hosts vast amounts of misinformation.",
         "Responsible, respectful, and safe online.",
         "Learning to evaluate online sources for credibility.",
         "Personal data.",
         "Harnessing its power while minimizing its potential for harm."
     ],
-    "GE3": [
+    "GES3": [
         "Repair and consolidation for the body and brain.",
         "Concentration, mood, and judgment.",
         "Turns short-term memories into long-term ones.",
         "Treating sleep as a non-negotiable part of our health routine.",
         "Muscle tissue."
     ],
-    "GE4": [
+    "GES4": [
         "Innovation focuses on improving or effectively utilizing existing ideas.",
         "Innovation.",
         "A culture that accepts risk and views failure as a learning opportunity.",
         "They are quickly surpassed by competitors.",
         "Potential."
     ],
-    "GE5": [
+    "GES5": [
         "Influence.",
         "Practice, preparation, and shifting focus to the message.",
         "A good speaker connects emotionally with the audience.",
         "The ability to articulate ideas clearly and persuasively.",
         "Mastering the skill of public speaking."
     ],
-    "GE6": [
+    "GES6": [
         "The emotions of others.",
         "High Emotional Intelligence (EQ).",
         "Strong emotional skills.",
         "Seeing situations from another person's perspective.",
         "Your triggers and tendencies."
     ],
-    "GE7": [
+    "GES7": [
         "To divert waste from landfills and conserve natural resources.",
         "Raw material extraction.",
         "Proper sorting of used materials.",
         "Significant pollution and high energy consumption.",
         "A sustainable economy."
     ],
-    "GE8": [
+    "GES8": [
         "Specific, Measurable, Achievable, Relevant, and Time-bound.",
         "It prevents feelings of overwhelm and provides continuous psychological wins.",
         "Direction, increased motivation, and focused effort.",
         "Clear action plans.",
         "Personal and professional priorities."
     ],
-    "GE9": [
+    "GES9": [
         "Working smarter, not harder.",
         "Using the Eisenhower Matrix.",
         "Non-essential commitments.",
         "Allocating specific time blocks for deep work and avoiding distractions.",
         "Less stress, better work-life balance, and consistent achievement."
     ],
-    "GE10": [
+    "GES10": [
         "Protecting life on our planet by absorbing harmful UV radiation.",
         "Ozone-depleting substances.",
         "Harmful ultraviolet (UV) radiation.",
@@ -76,40 +75,64 @@ const GES_ANSWER_KEYS = {
     ]
 };
 
+// دالة التحقق من حالة المهمة (نفس الكود القديم لضمان الربط)
+async function checkMissionStatus(email, act, m, scriptUrl) {
+    try {
+        const response = await fetch(`${scriptUrl}?email=${email}&activity=${act}&mission=${m}`);
+        const data = await response.json();
+        return data.isDone; 
+    } catch (e) { return false; }
+}
+
+// دالة لمقارنة النصوص بدقة (مع تجاهل المسافات وحالة الأحرف)
+function isExactMatch(studentInput, correctSystemAnswer) {
+    if (!studentInput || !correctSystemAnswer) return false;
+    return studentInput.trim().toLowerCase() === correctSystemAnswer.trim().toLowerCase();
+}
+
 /**
- * دالة التقييم الرئيسية التي يتم استدعاؤها من Terminal
- * @param {string} missionCode - كود المهمة (مثال: GE1)
- * @param {Object} studentAnswers - كائن يحتوي على إجابات الطالب {0: "answer1", 1: "answer2", ...}
+ * تقييم النشاط
  */
-window.evaluateGESMission = function(missionCode, studentAnswers) {
-    const correctAnswers = GES_ANSWER_KEYS[missionCode];
+async function evaluateMission(iframe) {
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
     
-    if (!correctAnswers) {
-        console.error("Mission code not found in GES.js");
-        return { points: 1, isCorrect: false, answerText: "Error: Mission code not found" };
+    // جلب كل المدخلات (توقع 5 إجابات)
+    const allInputs = Array.from(doc.querySelectorAll('input, textarea, select'));
+    
+    // استخراج رقم المهمة من الرابط (مثلاً GES5)
+    const currentMKey = new URLSearchParams(window.location.search).get('m') || 'GES1';
+    const modelAnswers = GOLDEN_EAR_ANSWERS[currentMKey];
+    
+    if (!modelAnswers) {
+        return { isCorrect: false, points: 1, answerText: "No Model Answers Found" };
     }
 
-    let score = 0;
-    let reportText = "";
+    let correctCount = 0;
 
-    // مقارنة الإجابات
-    for (let i = 0; i < 5; i++) {
-        const studentAns = studentAnswers[i] || "No Answer";
-        const isCorrect = studentAns.trim() === correctAnswers[i].trim();
-        
-        if (isCorrect) {
-            score++;
+    // التصحيح بناءً على مطابقة كل Input مع ترتيبه في نموذج الإجابة
+    allInputs.forEach((input, index) => {
+        if (index < modelAnswers.length) {
+            if (isExactMatch(input.value, modelAnswers[index])) {
+                correctCount++;
+            }
         }
-        reportText += `Q${i+1}: ${isCorrect ? '✓' : '✗'} | `;
-    }
+    });
 
-    // تطبيق قاعدة: أقل درجة هي 1
-    const finalPoints = Math.max(1, score);
+    // --- منطق حساب الدرجات ---
+    
+    // 1. كل سؤال صحيح بدرجة (الإجمالي 5)
+    let rawPoints = correctCount; 
+
+    // 2. تطبيق قاعدة "الحد الأدنى 1" حتى لو الطالب مجاوبش صح
+    let finalPoints = Math.max(1, rawPoints);
+
+    console.log(`نشاط Golden Ear - المهمة: ${currentMKey}`);
+    console.log("الإجابات الصحيحة:", correctCount);
+    console.log("الدرجة النهائية المرسلة:", finalPoints);
 
     return {
-        status: "COMPLETED",
-        points: finalPoints,
-        isCorrect: score === 5,
-        answerText: reportText + ` Final Score: ${score}/5`
+        isCorrect: correctCount > 0, 
+        points: finalPoints, 
+        answerText: allInputs.map(i => i.value).join(" | ") // تجميع إجابات الطالب للتدقيق
     };
-};
+}

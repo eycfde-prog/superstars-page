@@ -9,66 +9,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --gold: #D4AF37; --bg-deep: transparent; }
-        
-        body { 
-            font-family: 'Cairo', sans-serif; 
-            background: var(--bg-deep); 
-            color: white; 
-            margin: 0; 
-            padding: 10px; 
-            overflow-x: hidden;
-            scrollbar-width: thin;
-            scrollbar-color: var(--gold) transparent;
-        }
-
+        body { font-family: 'Cairo', sans-serif; background: var(--bg-deep); color: white; margin: 0; padding: 10px; overflow-x: hidden; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        
-        .gold-card { 
-            background: rgba(0, 0, 0, 0.4); 
-            backdrop-filter: blur(5px); 
-            border: 1px solid rgba(212, 175, 55, 0.2); 
-            border-radius: 20px; 
-        }
-        
-        .audio-wave-btn {
-            width: 55px; height: 55px; background: var(--gold); color: #000; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 22px;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); transition: 0.3s;
-        }
-        .audio-wave-btn:hover { transform: scale(1.05); }
-
-        .skip-btn {
-            width: 35px; height: 35px; background: rgba(255,255,255,0.05);
-            border: 1px solid var(--gold); border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; color: var(--gold); font-size: 12px;
-        }
-        
-        .question-card {
-            background: rgba(255,255,255,0.05); 
-            border-left: 4px solid var(--gold);
-            transition: 0.3s; padding: 12px; border-radius: 10px;
-        }
-
-        .option-btn {
-            width: 100%; text-align: left; padding: 12px 15px; margin-top: 8px;
-            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px; font-size: 14px; transition: 0.2s; color: #eee;
-            font-family: 'Poppins', sans-serif;
-        }
-        .option-btn:hover { background: rgba(212, 175, 55, 0.15); border-color: var(--gold); }
-        .option-btn.selected { 
-            background: var(--gold); color: black; font-weight: bold;
-            border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
-        }
-
-        .gold-text { 
-            background: linear-gradient(to bottom, #fff, var(--gold)); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-        }
-        
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        .gold-card { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 20px; }
+        .audio-wave-btn { width: 55px; height: 55px; background: var(--gold); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); transition: 0.3s; }
+        .skip-btn { width: 35px; height: 35px; background: rgba(255,255,255,0.05); border: 1px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 12px; }
+        .question-card { background: rgba(255,255,255,0.05); border-left: 4px solid var(--gold); transition: 0.3s; padding: 12px; border-radius: 10px; }
+        .option-btn { width: 100%; text-align: left; padding: 12px 15px; margin-top: 8px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; font-size: 14px; transition: 0.2s; color: #eee; }
+        .option-btn.selected { background: var(--gold); color: black; font-weight: bold; border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+        .gold-text { background: linear-gradient(to bottom, #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
@@ -77,8 +26,8 @@
         <div class="gold-card p-5 mb-6 text-center">
             <div id="audioStatus" class="text-yellow-500 text-[10px] orbitron mb-3 animate-pulse italic">INITIATING AUDIO SYSTEM...</div>
             
-            <audio id="mainAudio">
-                <source id="audioSource" src="" type="audio/wav">
+            <audio id="mainAudio" preload="auto">
+                <source src="" type="audio/wav">
             </audio>
 
             <div class="flex justify-center items-center gap-6" dir="ltr">
@@ -109,12 +58,20 @@
 
 <script>
     const audio = document.getElementById('mainAudio');
-    const progressBar = document.getElementById('progressBar');
-    const playIcon = document.getElementById('playIcon');
-    const pauseIcon = document.getElementById('pauseIcon');
-    
     const params = new URLSearchParams(window.location.search);
     const mNum = params.get('m') || '1';
+    let studentAnswers = {};
+
+    const geData = {
+        "1": {
+            // تأكد أن المسار يبدأ بـ ../../ للوصول لمجلد assets إذا كان الملف داخل مجلد فرعي
+            audio: "../../assets/gesaudio/GE1.wav",
+            questions: [
+                { q: "What is the core definition of critical thinking?", options: ["The ability to analyze information objectively and make a reasoned judgment.", "The ability to memorize large amounts of data quickly.", "The process of accepting information without question.", "The act of forming conclusions based solely on emotion."], correct: "The ability to analyze information objectively and make a reasoned judgment." },
+                { q: "What is one thing critical thinking helps individuals avoid?", options: ["Logical fallacies.", "Basic conversation.", "Routine physical exercise.", "Reading books."], correct: "Logical fallacies." }
+            ]
+        }
+    };
 
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -124,75 +81,13 @@
         return array;
     }
 
-    const geData = {
-        "1": {
-            audio: "assets/gesaudio/GE1.wav",
-            questions: [
-                { 
-                    q: "What is the core definition of critical thinking?", 
-                    options: [
-                        "The ability to analyze information objectively and make a reasoned judgment.", 
-                        "The ability to memorize large amounts of data quickly.", 
-                        "The process of accepting information without question.", 
-                        "The act of forming conclusions based solely on emotion."
-                    ],
-                    correct: "The ability to analyze information objectively and make a reasoned judgment."
-                },
-                { 
-                    q: "What is one thing critical thinking helps individuals avoid?", 
-                    options: [
-                        "Logical fallacies.", 
-                        "Basic conversation.", 
-                        "Routine physical exercise.", 
-                        "Reading books."
-                    ],
-                    correct: "Logical fallacies."
-                },
-                { 
-                    q: "What two qualities are required to develop critical thinking?", 
-                    options: [
-                        "Curiosity and a willingness to question assumptions.", 
-                        "Ignoring all external opinions.", 
-                        "Speed reading and perfect recall.", 
-                        "Strict adherence to tradition."
-                    ],
-                    correct: "Curiosity and a willingness to question assumptions."
-                },
-                { 
-                    q: "Where is critical thinking considered a vital skill?", 
-                    options: [
-                        "In everyday decision-making and academic settings.", 
-                        "Only in highly specialized scientific fields.", 
-                        "Only when dealing with political issues.", 
-                        "Exclusively in historical research."
-                    ],
-                    correct: "In everyday decision-making and academic settings."
-                },
-                { 
-                    q: "What is the foundation of scientific inquiry?", 
-                    options: [
-                        "Critical thinking.", 
-                        "Simple belief.", 
-                        "Emotional response.", 
-                        "Random guesswork."
-                    ],
-                    correct: "Critical thinking."
-                }
-            ]
-        }
-    };
-
-    let studentAnswers = {};
-
-window.onload = () => {
+    window.onload = () => {
         const data = geData[mNum] || geData["1"];
-        const audioSrc = data.audio;
-        document.getElementById('audioSource').src = audioSrc;
         
-        // إعادة تحميل ملف الصوت
+        // حل مشكلة المسار: نقوم بتحديث الـ src مباشرة للعنصر audio وليس الـ source
+        audio.src = data.audio;
         audio.load();
 
-        // كود بناء الأسئلة (كما هو بدون تغيير)
         const container = document.getElementById('questionsContainer');
         container.innerHTML = data.questions.map((item, i) => {
             const shuffledOptions = shuffle([...item.options]);
@@ -202,39 +97,28 @@ window.onload = () => {
                     <p class="text-sm text-gray-100 font-semibold mb-3 leading-relaxed">${item.q}</p>
                     <div class="options-list space-y-1">
                         ${shuffledOptions.map(opt => `
-                            <button class="option-btn" onclick="selectOption(${i}, '${opt.replace(/'/g, "\\'")}', this)">
-                                ${opt}
-                            </button>
+                            <button class="option-btn" onclick="selectOption(${i}, '${opt.replace(/'/g, "\\'")}', this)">${opt}</button>
                         `).join('')}
                     </div>
-                </div>
-            `;
+                </div>`;
         }).join('');
     };
 
-    function selectOption(qIndex, val, btn) {
-        const parent = document.getElementById(`qBlock_${qIndex}`);
-        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        studentAnswers[qIndex] = val;
-    }
-
     async function togglePlay() {
         if (audio.paused) {
-            try {
-                await audio.play();
-                playIcon.classList.add('hidden');
-                pauseIcon.classList.remove('hidden');
-            } catch (err) { console.error(err); }
+            // المتصفحات تمنع الصوت التلقائي، لذا يجب أن يبدأ بضغطة زر
+            audio.play().then(() => {
+                document.getElementById('playIcon').classList.add('hidden');
+                document.getElementById('pauseIcon').classList.remove('hidden');
+            }).catch(e => console.error("Playback error:", e));
         } else {
             audio.pause();
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
+            document.getElementById('playIcon').classList.remove('hidden');
+            document.getElementById('pauseIcon').classList.add('hidden');
         }
     }
 
     function skip(time) { audio.currentTime += time; }
-
     function formatTime(s) {
         let m = Math.floor(s / 60);
         s = Math.floor(s % 60);
@@ -243,7 +127,7 @@ window.onload = () => {
 
     audio.ontimeupdate = () => {
         if (audio.duration) {
-            progressBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
+            document.getElementById('progressBar').style.width = (audio.currentTime / audio.duration) * 100 + '%';
             document.getElementById('currentTime').innerText = formatTime(audio.currentTime);
         }
     };
@@ -253,39 +137,19 @@ window.onload = () => {
         document.getElementById('audioStatus').innerText = "SYSTEM READY - LOGGED TO ASSETS";
     };
 
-    function seek(e) {
-        const percent = e.offsetX / e.currentTarget.offsetWidth;
-        audio.currentTime = percent * audio.duration;
+    function selectOption(qIndex, val, btn) {
+        const parent = document.getElementById(`qBlock_${qIndex}`);
+        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        studentAnswers[qIndex] = val;
     }
 
-    // دالة التقييم المطلوبة من قبل Terminal
     window.evaluateMission = function() {
         const data = geData[mNum] || geData["1"];
-        const totalQuestions = data.questions.length;
-        const answeredCount = Object.keys(studentAnswers).length;
-
-        if (answeredCount < totalQuestions) {
-            return { answerText: "", points: 0 };
-        }
-
-        let correctCount = 0;
-        let finalReport = "";
-
-        data.questions.forEach((item, i) => {
-            const isCorrect = studentAnswers[i] === item.correct;
-            if (isCorrect) correctCount++;
-            finalReport += `Q${i+1}: ${isCorrect ? '✓' : '✗'} | `;
-        });
-
-        // حساب النقاط (مثلاً: 2 توكن لكل إجابة صحيحة)
-        const earnedPoints = correctCount * 2;
-
-        return { 
-            status: "COMPLETED", 
-            points: earnedPoints, 
-            answerText: finalReport + ` Total Correct: ${correctCount}/${totalQuestions}`,
-            isCorrect: correctCount === totalQuestions 
-        };
+        if (Object.keys(studentAnswers).length < data.questions.length) return { answerText: "", points: 0 };
+        let correct = 0;
+        data.questions.forEach((q, i) => { if(studentAnswers[i] === q.correct) correct++; });
+        return { status: "OK", points: correct * 5, answerText: "GE Score: " + correct, isCorrect: correct > 0 };
     };
 </script>
 </body>

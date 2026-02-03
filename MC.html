@@ -13,6 +13,7 @@
             --bg-deep: #050508;
             --card-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(212, 175, 55, 0.2);
+            --gold-glow: rgba(212, 175, 55, 0.3);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -32,9 +33,12 @@
         }
 
         .profile-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .student-name { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 1px; }
+        .avatar-main {
+            width: 100px; height: 100px; border-radius: 25px; border: 2px solid var(--gold);
+            background: url('https://i.pravatar.cc/150?u=student') center/cover;
+            box-shadow: 0 0 20px var(--gold-glow); margin-bottom: 5px;
+        }
 
-        /* Auth Buttons */
         .auth-btns { display: flex; gap: 15px; margin-top: 10px; }
         .btn-premium {
             padding: 10px 25px; border-radius: 12px; border: 1px solid var(--gold);
@@ -42,8 +46,11 @@
             cursor: pointer; font-family: 'Cinzel'; font-weight: bold; transition: 0.3s;
         }
         .btn-premium.solid { background: var(--gold-gradient); color: #000; }
+        .btn-premium:hover { transform: translateY(-3px); box-shadow: 0 5px 15px var(--gold-glow); }
 
-        /* Navigation Switcher */
+        .student-name { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 1px; }
+
+        /* Navigation Swticher */
         .nav-container { display: flex; justify-content: center; margin: 30px 0; }
         .tab-switcher {
             background: rgba(255,255,255,0.05); padding: 5px; border-radius: 50px;
@@ -53,55 +60,52 @@
             flex: 1; padding: 10px 20px; border: none; background: transparent;
             color: #888; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s;
         }
-        .tab-btn.active { background: var(--gold-gradient); color: #000; }
+        .tab-btn.active { background: var(--gold-gradient); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
 
         /* Content Grid */
         main { max-width: 1100px; margin: 0 auto; padding: 0 20px 100px; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
         
         .activity-card {
             background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px; padding: 30px 15px; text-align: center; cursor: pointer; transition: 0.4s;
-            backdrop-filter: blur(10px); position: relative; overflow: hidden;
+            border-radius: 24px; padding: 30px 15px; text-align: center; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
         }
-        .activity-card::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.1), transparent);
-            transition: 0.5s;
+        .activity-card:hover { transform: translateY(-10px); border-color: var(--gold); background: rgba(212, 175, 55, 0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .card-icon { 
+            font-size: 2.2rem; margin-bottom: 15px; display: block; 
+            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px var(--gold-glow));
         }
-        .activity-card:hover::before { left: 100%; }
-        .activity-card:hover { transform: translateY(-8px); border-color: var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .activity-card h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700; margin-bottom: 5px; }
+        .activity-card p { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; }
 
-        .card-icon-box {
-            font-size: 2.2rem; margin-bottom: 15px; color: var(--gold);
-            filter: drop-shadow(0 0 10px var(--gold-glow));
-        }
-        .activity-card h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; margin-bottom: 5px; color: #fff; }
-        .activity-card span { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; font-weight: 700; opacity: 0.7; }
-
-        /* Modal Styles */
+        /* Modals */
         .modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(15px);
         }
         .modal-content {
-            background: #0a0a0c; border-radius: 35px; padding: 30px; 
+            background: #0a0a0c; border-radius: 35px; padding: 35px; 
             width: 90%; max-width: 450px; border: 1px solid var(--gold); text-align: center;
         }
+
         .tasks-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 25px 0; }
         .task-node {
             aspect-ratio: 1; background: rgba(212, 175, 55, 0.05); border: 1px solid var(--glass-border);
             border-radius: 15px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-weight: 700; position: relative; color: var(--gold); transition: 0.3s;
+            cursor: pointer; font-weight: 700; position: relative; color: var(--gold); font-size: 1.1rem;
         }
         .task-node.locked { opacity: 0.4; cursor: not-allowed; }
-        .lock-icon { position: absolute; font-size: 0.7rem; color: #ff5555; top: 5px; right: 5px; }
-        .task-node:not(.locked):hover { background: var(--gold-gradient); color: #000; transform: scale(1.1); }
+        .lock-icon { position: absolute; font-size: 0.65rem; color: #ff5555; top: 5px; right: 5px; }
+        .task-node:not(.locked):hover { background: var(--gold-gradient); color: #000; transform: scale(1.1); box-shadow: 0 0 15px var(--gold); }
 
         .close-modal {
             background: transparent; border: 1px solid #444; color: #888;
-            padding: 8px 25px; border-radius: 50px; cursor: pointer; margin-top: 15px;
+            padding: 10px 30px; border-radius: 50px; cursor: pointer; margin-top: 15px; transition: 0.3s;
         }
+        .close-modal:hover { color: #fff; border-color: var(--gold); }
 
         @media (max-width: 600px) {
             .grid-container { grid-template-columns: repeat(2, 1fr); }
@@ -113,16 +117,7 @@
 
     <div class="bg-glow"></div>
 
-    <header class="hero-banner">
-        <div class="profile-container">
-            <h1 class="student-name">EYC SUPERSTARS</h1>
-            <p style="font-size:0.8rem; color:#888;">Select your learning path</p>
-            <div class="auth-btns">
-                <button class="btn-premium">Log In</button>
-                <button class="btn-premium solid">Join Now</button>
-            </div>
-        </div>
-    </header>
+    <header class="hero-banner" id="heroBanner"></header>
 
     <div class="nav-container">
         <div class="tab-switcher">
@@ -138,36 +133,66 @@
     <div class="modal" id="taskModal">
         <div class="modal-content">
             <h2 id="mTitle" style="font-family:'Cinzel'; color:var(--gold);">ACTIVITY</h2>
+            <p id="mSubTitle" style="font-size:0.7rem; color:#888; letter-spacing:2px;"></p>
             <div class="tasks-grid" id="tGrid"></div>
-            <button class="close-modal" onclick="closeModal()">Close</button>
+            <button class="close-modal" onclick="closeModal('taskModal')">BACK</button>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:20px;">MEMBER ACCESS</h2>
+            <input type="email" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Email Address">
+            <input type="password" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Access Code">
+            <button class="btn-premium solid" style="width:100%; margin-top:15px;">LOGIN</button>
+            <button class="close-modal" onclick="closeModal('loginModal')">CLOSE</button>
         </div>
     </div>
 
     <script>
+        let isLoggedIn = false; 
+
         const activities = {
             season: [
-                { name: "Golden Ear", code: "GES", icon: "fa-ear-listen" },
-                { name: "Alike", code: "AS", icon: "fa-equals" },
-                { name: "Seeds", code: "SS", icon: "fa-seedling" },
-                { name: "Grammar", code: "GS", icon: "fa-book" },
-                { name: "Label", code: "LS", icon: "fa-tag" },
-                { name: "Vivid", code: "VS", icon: "fa-wand-magic-sparkles" }
+                { name: "Golden Ear", icon: "fa-ear-listen" },
+                { name: "Alike", icon: "fa-clone" },
+                { name: "Seeds", icon: "fa-seedling" },
+                { name: "Grammar", icon: "fa-spell-check" },
+                { name: "Label", icon: "fa-tag" },
+                { name: "Vivid", icon: "fa-eye" }
             ],
             royal: [
-                { name: "Golden EarX", code: "GEX", icon: "fa-crown" },
-                { name: "AlikeX", code: "AX", icon: "fa-clone" },
-                { name: "SeedsX", code: "SX", icon: "fa-leaf" },
-                { name: "GrammarX", code: "GX", icon: "fa-pen-nib" },
-                { name: "LabelX", code: "LX", icon: "fa-tags" },
-                { name: "VividX", code: "VX", icon: "fa-palette" },
-                { name: "FigurativeX", code: "FX", icon: "fa-masks-theater" },
-                { name: "DictationX", code: "DX", icon: "fa-keyboard" },
-                { name: "Sing Sang SungX", code: "SSS", icon: "fa-music" },
-                { name: "ElmagazineX", code: "EMX", icon: "fa-newspaper" }
+                { name: "Golden EarX", icon: "fa-ear-deaf" },
+                { name: "AlikeX", icon: "fa-object-group" },
+                { name: "SeedsX", icon: "fa-tree" },
+                { name: "GrammarX", icon: "fa-pen-fancy" },
+                { name: "LabelX", icon: "fa-tags" },
+                { name: "VividX", icon: "fa-wand-magic-sparkles" },
+                { name: "FigurativeX", icon: "fa-mask" },
+                { name: "DictationX", icon: "fa-microphone-lines" },
+                { name: "Sing Sang SungX", icon: "fa-music" },
+                { name: "ElmagazineX", icon: "fa-book-open" }
             ]
         };
 
-        let isLoggedIn = false; 
+        function renderHeader() {
+            const header = document.getElementById('heroBanner');
+            header.innerHTML = isLoggedIn ? 
+                `<div class="profile-container">
+                    <div class="avatar-main"></div>
+                    <h1 class="student-name">Mr. Ezz Student</h1>
+                    <div style="display:flex; gap:15px; margin-top:5px; font-size:0.85rem; color:var(--gold);">
+                        <span>🪙 1,250 TK</span> • <span>🏆 Rank #04</span>
+                    </div>
+                </div>` : 
+                `<div class="profile-container">
+                    <h1 class="student-name" style="margin-bottom:10px">EYC PREMIUM</h1>
+                    <div class="auth-btns">
+                        <button class="btn-premium" onclick="openLogin()">Log In</button>
+                        <button class="btn-premium solid" onclick="window.location.href='#'">Join</button>
+                    </div>
+                </div>`;
+        }
 
         function generateCards() {
             const grid = document.getElementById('cardsGrid');
@@ -175,13 +200,13 @@
             const type = document.querySelector('.tab-btn.active').innerText.toLowerCase();
             const list = activities[type];
 
-            list.forEach(act => {
+            list.forEach((act, index) => {
                 const card = document.createElement('div');
                 card.className = 'activity-card';
                 card.innerHTML = `
-                    <div class="card-icon-box"><i class="fas ${act.icon}"></i></div>
+                    <i class="fa-solid ${act.icon} card-icon"></i>
                     <h3>${act.name}</h3>
-                    <span>CODE: ${act.code}</span>
+                    <p>10 Challenges</p>
                 `;
                 card.onclick = () => openTasks(act.name);
                 grid.appendChild(card);
@@ -190,32 +215,30 @@
 
         function openTasks(name) {
             document.getElementById('mTitle').innerText = name;
+            document.getElementById('mSubTitle').innerText = "CHOOSE CHALLENGE";
             const tGrid = document.getElementById('tGrid');
             tGrid.innerHTML = '';
 
             for (let i = 1; i <= 10; i++) {
-                let isLocked = !isLoggedIn && i > 1; // لو مش مسجل أول وحدة بس تفتح
+                let isLocked = isLoggedIn ? (i > 2) : (i > 1);
                 const node = document.createElement('div');
                 node.className = `task-node ${isLocked ? 'locked' : ''}`;
                 node.innerHTML = i + (isLocked ? '<i class="fas fa-lock lock-icon"></i>' : '');
-                
-                if (!isLocked) {
-                    node.onclick = () => console.log(`Task ${i} started`);
-                }
+                if (!isLocked) node.onclick = () => alert(`Launching ${name} - Task ${i}`);
                 tGrid.appendChild(node);
             }
             document.getElementById('taskModal').style.display = 'flex';
         }
 
-        function closeModal() { document.getElementById('taskModal').style.display = 'none'; }
-
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function switchType(type, btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             generateCards();
         }
 
-        // Run
+        renderHeader();
         generateCards();
     </script>
 </body>

@@ -1,6 +1,7 @@
 /**
- * Alike Activity Correction Logic (AS)
- * منطق التصحيح: الكلمة بـ 0.5، تقريب الكسور، وحد أدنى 1 توكين.
+ * Alike Activity Correction Logic (Updated)
+ * منطق التصحيح: الكلمة الواحدة بـ 1 درجة كاملة.
+ * الحساب: مجموع الكلمات الصحيحة، مع تقريب الكسور (إن وجدت) وحد أدنى 1 توكين.
  */
 
 const ALIKE_ANSWERS_KEY = {
@@ -15,16 +16,6 @@ const ALIKE_ANSWERS_KEY = {
     "9": ["hero", "heroin", "hymn", "him", "idle", "idol", "lead", "led", "hair", "hare"],
     "10": ["brake", "break", "scent", "sent", "band", "banned", "sight", "site", "meat", "meet"]
 };
-
-async function checkMissionStatus(email, act, m, scriptUrl) {
-    try {
-        const response = await fetch(`${scriptUrl}?email=${email}&activity=${act}&mission=${m}`);
-        const data = await response.json();
-        return data.isDone; 
-    } catch (e) {
-        return false;
-    }
-}
 
 function checkSimilarity(s1, s2) {
     s1 = s1.toLowerCase().trim();
@@ -64,12 +55,12 @@ async function evaluateMission(iframe) {
         }
     });
 
-    // --- منطق الحساب الجديد ---
+    // --- منطق الحساب المعدل ---
     
-    // 1. الكلمة بنص درجة (مثلاً 5 كلمات صح = 2.5 درجة)
-    let calculatedPoints = correctCount * 0.5;
+    // 1. الكلمة بدرجة كاملة (إذا أجاب الزوج "كلمتين" صح يحصل على 2 درجة)
+    let calculatedPoints = correctCount * 1; 
 
-    // 2. تقريب الدرجة لأقرب عدد صحيح (مثلاً 2.5 تصبح 3)
+    // 2. تقريب الدرجة لأقرب عدد صحيح (في حال تم تغيير المعامل مستقبلاً)
     let finalPoints = Math.ceil(calculatedPoints);
 
     // 3. تطبيق الحد الأدنى (إذا كانت النتيجة 0 أو أقل من 1، يحصل على 1)
@@ -77,9 +68,9 @@ async function evaluateMission(iframe) {
         finalPoints = 1;
     }
 
-return {
+    return {
         isCorrect: true, 
-        points: Number(finalPoints), // التأكد أنه رقم
+        points: Number(finalPoints), 
         answerText: studentAnswer
     };
 }

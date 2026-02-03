@@ -1,7 +1,5 @@
 /**
- * Alike Activity Correction Logic (Universal Version)
- * الحفاظ على الهيكل لعدم قطع الاتصال مع الصفحة الأم
- * منطق الحساب: 0.5 لكل كلمة، المجموع من 5.
+ * Alike Activity Correction Logic (Debugged Version)
  */
 
 const ALIKE_ANSWERS_KEY = {
@@ -17,18 +15,12 @@ const ALIKE_ANSWERS_KEY = {
     "10": ["brake", "break", "scent", "sent", "band", "banned", "sight", "site", "meat", "meet"]
 };
 
-// --- الدالة المطلوبة للحفاظ على التواصل مع الصفحة الأم وسيرفر البيانات ---
 async function checkMissionStatus(email, act, m, scriptUrl) {
     try {
-        // نتركها تقوم بعملها الأصلي لإبلاغ الصفحة الأم إذا كانت المهمة مكتملة سابقاً
         const response = await fetch(`${scriptUrl}?email=${email}&activity=${act}&mission=${m}`);
         const data = await response.json();
         return data.isDone; 
-    } catch (e) {
-        // في حال حدوث خطأ في الشبكة، نرجع false للسماح للطالب بالحل
-        console.log("Connection check skipped or failed.");
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
 function checkSimilarity(s1, s2) {
@@ -50,13 +42,21 @@ function checkSimilarity(s1, s2) {
 
 async function evaluateMission(iframe) {
     const doc = iframe.contentDocument || iframe.contentWindow.document;
-    const studentAnswer = doc.querySelector('textarea')?.value || doc.querySelector('input')?.value || "";
-    const currentMNum = new URLSearchParams(window.location.search).get('m') || '1';
     
+    // تعديل هائل: سحب جميع النصوص من كل الـ inputs أو textareas الموجودة
+    const allInputs = Array.from(doc.querySelectorAll('input, textarea'));
+    const studentAnswer = allInputs.map(i => i.value).join(" "); 
+    
+    const currentMNum = new URLSearchParams(window.location.search).get('m') || '1';
     const answers = ALIKE_ANSWERS_KEY[currentMNum];
+    
     if (!answers) return { isCorrect: false, points: 0, answerText: studentAnswer };
 
-    const studentWords = studentAnswer.toLowerCase().split(/[\s,.-]+/).filter(w => w.length > 0);
+    // تنظيف الكلمات بشكل أدق
+    const studentWords = studentAnswer.toLowerCase()
+                        .replace(/[^a-z\s]/g, ' ') // إزالة أي رموز غير الحروف
+                        .split(/\s+/) 
+                        .filter(w => w.length > 0);
     
     let correctCount = 0;
     let tempAnswers = [...answers];
@@ -69,8 +69,11 @@ async function evaluateMission(iframe) {
         }
     });
 
-    // الحساب الجديد (0.5 لكل كلمة) المجموع النهائي من 5
+    // الحساب: 0.5 لكل كلمة
     let finalPoints = correctCount * 0.5;
+
+    console.log("عدد الكلمات الصحيحة:", correctCount);
+    console.log("النقاط النهائية:", finalPoints);
 
     return {
         isCorrect: correctCount > 0, 

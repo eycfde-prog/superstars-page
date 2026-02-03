@@ -13,7 +13,6 @@
             margin: 0; padding: 10px; overflow-x: hidden; -webkit-tap-highlight-color: transparent;
         }
 
-        /* نظام الشبكة لتحسين الأداء والموبايل */
         #activityWrapper {
             display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%;
         }
@@ -48,7 +47,6 @@
             color: rgba(255,255,255,0.2); font-family: 'Orbitron'; letter-spacing: 1px;
         }
 
-        /* تحسينات الموبايل الصغير جداً */
         @media (max-width: 350px) {
             label { font-size: 11px; }
             .input-alike { font-size: 13px; padding: 8px; }
@@ -62,7 +60,7 @@
     <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v10.0</footer>
 
 <script>
-    // 1. مصفوفة البيانات (يتم تغييرها لكل صفحة)
+    // 1. مصفوفة البيانات
     const currentTask = [
         {m1:"إلى", m2:"أيضاً", a1:"to", a2:"too"}, 
         {m1:"ابن", m2:"شمس", a1:"son", a2:"sun"}, 
@@ -74,8 +72,7 @@
     function renderActivity() {
         const wrapper = document.getElementById('activityWrapper');
         let html = '';
-        for (let i = 0; i < currentTask.length; i++) {
-            const pair = currentTask[i];
+        currentTask.forEach((pair, i) => {
             html += `
                 <div class="glass-card">
                     <span class="case-num"># CASE ${i + 1}</span>
@@ -90,18 +87,26 @@
                         </div>
                     </div>
                 </div>`;
-        }
+        });
         wrapper.innerHTML = html;
     }
 
     window.onload = renderActivity;
 
-    // 3. دالة التصحيح (سرعة الاستجابة)
-    window.checkAnswers = function() {
+    // 2. دالة التقييم المطلوبة من الصفحة الرئيسية
+    window.evaluateMission = function() {
         let correctWords = 0;
         let studentResponses = [];
         const inputs = document.querySelectorAll('.task-input');
         
+        let allFilled = true;
+        inputs.forEach(input => {
+            if (input.value.trim() === "") allFilled = false;
+        });
+
+        // إذا كانت هناك حقول فارغة، نرجع null لتنبيه المستخدم
+        if (!allFilled) return null;
+
         inputs.forEach(input => {
             const val = input.value.trim().toLowerCase();
             const correctVal = input.getAttribute('data-answer').toLowerCase();
@@ -116,14 +121,14 @@
             }
         });
 
+        // حساب النقاط (كل كلمة بنصف نقطة، الإجمالي 10 كلمات = 5 نقاط)
         let score = correctWords * 0.5;
-        let finalPoints = (score < 1) ? 1 : Math.round(score);
+        let finalPoints = (score < 1 && correctWords > 0) ? 1 : Math.round(score);
 
         return { 
             points: finalPoints, 
-            total: 10,
             answerText: studentResponses.join(", "),
-            isCorrect: correctWords > 0 
+            isCorrect: correctWords === inputs.length // تكون true فقط لو الدرجة نهائية
         };
     };
 </script>

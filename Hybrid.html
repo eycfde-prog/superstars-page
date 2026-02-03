@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="missionnormalstyle.css">
     <style>
+        /* التنسيقات الأصلية كما هي */
         .difficulty-bar { display: none; justify-content: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.3); }
         .diff-btn { padding: 8px 15px; border: 1px solid #00ff88; color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: 0.3s; background: transparent; border-radius: 5px; }
         .diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
@@ -32,10 +33,7 @@
         .done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
         .done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #333; font-weight: 900; }
         
-        /* Loading Spinner */
         .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ff88; font-family: 'Orbitron'; text-align: center; }
-
-        /* تم تعديل الارتفاع ليتناسب مع محتوى الصوت والأسئلة */
         .activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; height: 75vh; min-height: 500px; }
         .activity-iframe { transition: opacity 0.5s ease; border: none; width: 100%; height: 100%; }
         .submit-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; transform: none !important; }
@@ -81,11 +79,12 @@
                 <i class="fas fa-check-circle"></i>
                 <span>DONE</span>
             </div>
-<iframe id="mainIframe" src="" class="activity-iframe" allow="autoplay" onload="document.getElementById('loadingElement').style.display='none'"></iframe>        </div>
+            <iframe id="mainIframe" src="" class="activity-iframe" allow="autoplay" onload="document.getElementById('loadingElement').style.display='none'"></iframe>
+        </div>
 
         <div class="action-container">
             <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
-            <button class="submit-btn" id="submitBtn" onclick="submitMission()">SUBMIT</button>
+            <button class="submit-btn" id="submitBtn" onclick="processSubmission()">SUBMIT</button>
             <a href="MC.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
@@ -101,37 +100,54 @@
         </div>
     </div>
 
-    <script src="CC.js"></script>
+    <div id="checkerScriptContainer"></div>
+
     <script>
+    // --- متغيرات الـ Canvas والجوائز (نفس منطقك الأصلي) ---
     const canvas = document.getElementById('rewardCanvas');
     const ctx = canvas.getContext('2d');
-    let width, height, prizeValue = "1";
+    let width, height, prizeValue = "0";
     const tokenImg = new Image(); tokenImg.src = 'assets/Token.png'; 
-    let gameState = 'closed', tokens = [], prize = null;
-    let animationId; 
+    let gameState = 'closed', tokens = [], prize = null, animationId;
 
+    // --- استلام البيانات من الـ URL ---
     const urlParams = new URLSearchParams(window.location.search);
-    const actCode = urlParams.get('act') || 'GES'; 
+    const fullCode = urlParams.get('act') || 'AS1'; // مثال: AS1
     const mNum = urlParams.get('m') || '1';  
     const actName = urlParams.get('name') || 'Activity'; 
+    
+    // استخراج اسم النشاط فقط (أول حرفين) للتصحيح
+    // AS1 -> AS , GES1 -> GES
+    const actType = fullCode.replace(/[0-9]/g, '').replace('X', ''); 
     let currentLevel = 'A';
     
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNrfn_k9WIt2uQo4hxUw_0JU6pKnwP1lvyYXQnHhHPv_zpfAL5602QSxC_VGu4V7mflA/exec";
 
-    const isElite = actCode.endsWith('X');
+    const isElite = fullCode.endsWith('X');
     document.getElementById('actNameDisplay').innerText = actName;
-    document.getElementById('actCodeDisplay').innerText = actCode;
+    document.getElementById('actCodeDisplay').innerText = fullCode;
     document.getElementById('missionNum').innerText = 'M ' + mNum;
 
+    // تحميل شعار النشاط
     const activityLogo = document.getElementById('activityLogo');
-    activityLogo.src = `assets/AL/${actCode}.png`;
+    activityLogo.src = `assets/AL/${actType}.png`; 
     activityLogo.onerror = () => activityLogo.src = 'assets/AL/default.png';
 
     if(isElite) document.getElementById('difficultyBar').style.display = 'flex';
 
+    // استدعاء ملف التصحيح الخاص بالنشاط ديناميكياً (مثلاً AS.js)
+    function loadCheckerScript() {
+        const script = document.createElement('script');
+        script.src = `assets/CC/${actType}.js`;
+        script.id = "dynamicChecker";
+        document.getElementById('checkerScriptContainer').appendChild(script);
+    }
+    loadCheckerScript();
+
+    // --- دوال الأنيميشن (Box, Coupon, Token) تظل كما هي في كودك ---
     function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
     window.addEventListener('resize', resize); resize();
-
+    
     class Box {
         constructor() { this.x = width / 2; this.y = height / 2 + 50; this.w = 150; this.h = 150; this.lidY = this.y - 75 - 20; this.shakeOffset = 0; this.lidVelocity = 0; this.lidRotation = 0; }
         update() {
@@ -143,22 +159,18 @@
             ctx.fillStyle = '#0a0a0a'; ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
             ctx.fillStyle = '#D4AF37'; ctx.fillRect(-15, -this.h/2, 30, this.h);
             ctx.restore();
-            
             ctx.save(); ctx.translate(this.x + this.shakeOffset, this.lidY);
-            ctx.rotate(this.lidRotation); 
-            ctx.fillStyle = '#1a1a1a';
+            ctx.rotate(this.lidRotation); ctx.fillStyle = '#1a1a1a';
             ctx.fillRect(-this.w/2 - 10, -20, this.w + 20, 40);
             ctx.fillStyle = '#D4AF37'; ctx.fillRect(-15, -20, 30, 40);
             this.drawBow(ctx); ctx.restore();
         }
         drawBow(ctx) { 
-            ctx.fillStyle = '#D4AF37'; 
-            ctx.beginPath(); ctx.ellipse(-20, -20, 25, 10, -0.5, 0, Math.PI*2); 
+            ctx.fillStyle = '#D4AF37'; ctx.beginPath(); ctx.ellipse(-20, -20, 25, 10, -0.5, 0, Math.PI*2); 
             ctx.ellipse(20, -20, 25, 10, 0.5, 0, Math.PI*2); ctx.fill(); 
             ctx.beginPath(); ctx.arc(0, -20, 10, 0, Math.PI*2); ctx.fill(); 
         }
     }
-
     class Coupon {
         constructor(x, y) { this.x = x; this.y = y; this.targetY = y - 180; this.scale = 0; }
         update() { this.y += (this.targetY - this.y) * 0.05; if (this.scale < 1) this.scale += 0.05; }
@@ -170,7 +182,6 @@
             ctx.restore();
         }
     }
-
     class Token {
         constructor(x, y) { this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * 15; this.vy = (Math.random() - 1) * 15 - 10; this.gravity = 0.4; this.rotation = Math.random() * Math.PI*2; }
         update() { this.vy += this.gravity; this.x += this.vx; this.y += this.vy; this.rotation += 0.1; }
@@ -189,10 +200,7 @@
     }
 
     canvas.addEventListener('mousedown', () => {
-        if (gameState === 'opened') {
-            cancelAnimationFrame(animationId); 
-            window.location.href = 'MC.html';
-        }
+        if (gameState === 'opened') { cancelAnimationFrame(animationId); window.location.href = 'MC.html'; }
         else if (gameState === 'closed') {
             gameState = 'opening';
             prize = new Coupon(width / 2, height / 2 + 50);
@@ -201,6 +209,7 @@
         }
     });
 
+    // --- منطق تهيئة المهمة ---
     async function initMission(level = 'A') {
         currentLevel = level;
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
@@ -213,25 +222,13 @@
         
         loader.style.display = 'block';
 
-        try {
-            const isDone = await checkMissionStatus(saved.email, actCode, mNum, SCRIPT_URL);
-            if (isDone) {
-                overlay.style.display = 'flex';
-                iframe.style.opacity = '0.3';
-                document.getElementById('submitBtn').disabled = true;
-                loader.style.display = 'none';
-            } else {
-                overlay.style.display = 'none';
-                iframe.style.opacity = '1';
-                document.getElementById('submitBtn').disabled = false;
-                iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
-            }
-        } catch(e) {
-            iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
-        }
+        // استدعاء ملف الـ HTML بناءً على الكود (مثال: AS1.html)
+        const missionFileName = isElite ? `${fullCode}${level}.html` : `${fullCode}.html`;
+        iframe.src = `assets/MIF/${missionFileName}`;
     }
 
-    async function submitMission() {
+    // --- منطق التصحيح والإرسال المعدل ---
+    async function processSubmission() {
         const submitBtn = document.getElementById('submitBtn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         const iframe = document.getElementById('mainIframe');
@@ -242,49 +239,57 @@
             submitBtn.innerText = "EVALUATING...";
             submitBtn.disabled = true;
 
-            // تم التعديل هنا لضمان قراءة الدالة من داخل محتوى الـ Iframe
-            let evaluation;
-            if (iframe.contentWindow && typeof iframe.contentWindow.evaluateMission === 'function') {
-                evaluation = iframe.contentWindow.evaluateMission();
+            // 1. استخراج الإجابات من الملف داخل الـ Iframe
+            let studentData;
+            if (iframe.contentWindow && typeof iframe.contentWindow.getStudentAnswers === 'function') {
+                studentData = iframe.contentWindow.getStudentAnswers();
             } else {
-                // Fallback في حالة عدم استجابة الفرايم
-                throw new Error("Evaluation method not found");
+                throw new Error("لم يتم العثور على دالة getStudentAnswers داخل ملف النشاط!");
             }
 
-            if (!evaluation || !evaluation.answerText) {
+            // 2. إرسال الإجابات لملف التصحيح (الموجود في CC/AS.js مثلاً)
+            // ملاحظة: يجب أن يحتوي ملف الـ JS (مثل AS.js) على دالة اسمها checkActivity
+            if (typeof checkActivity !== 'function') {
+                throw new Error(`ملف التصحيح ${actType}.js لم يتم تحميله أو لا يحتوي على دالة checkActivity`);
+            }
+
+            const evaluation = checkActivity(studentData, fullCode); // نرسل البيانات وكود المهمة
+
+            if (!evaluation.isComplete) {
                 alert("برجاء الإجابة على جميع الأسئلة أولاً!");
                 submitBtn.innerText = "SUBMIT";
                 submitBtn.disabled = false;
                 return;
             }
 
-            prizeValue = evaluation.points;
+            prizeValue = evaluation.score;
 
+            // 3. إرسال التقرير النهائي لـ Google Sheet
             const payload = {
                 email: saved.email,
-                activity: actCode,
+                activity: fullCode,
                 mission: mNum,
                 level: isElite ? currentLevel : 'A',
-                answer: evaluation.answerText,
-                points: evaluation.points,
-                isCorrect: evaluation.isCorrect
+                answer: JSON.stringify(studentData), // حفظ الإجابات الخام
+                points: evaluation.score,
+                isCorrect: evaluation.score > 0
             };
 
             await fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: 'no-cors',
-                cache: 'no-cache',
                 body: JSON.stringify(payload)
             });
 
+            // 4. عرض النتيجة والأنيميشن
             setTimeout(() => {
                 document.getElementById('rewardContainer').style.display = 'block';
                 animate();
-            }, 1000);
+            }, 800);
 
         } catch (error) {
             console.error("Submission Error:", error);
-            alert("حدث خطأ في الاتصال، حاول مرة أخرى يا بطل!");
+            alert("خطأ: تأكد من إكمال النشاط أو تواصل مع الدعم.");
             submitBtn.innerText = "SUBMIT";
             submitBtn.disabled = false;
         }
@@ -299,7 +304,7 @@
     function toggleGuide(show) {
         if(show) {
             const guideFrame = document.getElementById('guideFrame');
-            guideFrame.src = `assets/MIF/Guides/${actCode}.html`;
+            guideFrame.src = `assets/MIF/Guides/${actType}.html`;
         }
         document.getElementById('guideModal').style.display = show ? 'block' : 'none';
     }

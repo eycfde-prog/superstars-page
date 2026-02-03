@@ -7,8 +7,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="missionnormalstyle.css">
+    <style>
+        /* إضافة تنسيقات سريعة لضمان ظهور العناصر الأساسية */
+        body { background-color: #0a0a0a; color: white; font-family: 'Poppins', sans-serif; margin: 0; overflow-x: hidden; }
+        .terminal-container { padding: 20px; text-align: center; }
+        #mainIframe { width: 100%; height: 80vh; border: 2px solid #00f2ff; border-radius: 10px; background: #1a1a1a; }
+        .controls { margin-top: 20px; }
+        #submitBtn { 
+            background: #00f2ff; color: black; border: none; padding: 10px 30px; 
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        #submitBtn:disabled { background: #555; }
+        #rewardContainer { display: none; margin-top: 20px; color: #00ff88; }
+    </style>
 </head>
 <body>
+    <div class="terminal-container">
+        <header>
+            <h2 id="actNameDisplay">LOADING MISSION...</h2>
+            <p>AGENT: <span id="agentName">---</span></p>
+        </header>
+
+        <iframe id="mainIframe" frameborder="0"></iframe>
+
+        <div class="controls">
+            <button id="submitBtn" onclick="processSubmission()">SUBMIT MISSION</button>
+        </div>
+
+        <div id="rewardContainer">
+            <h3>MISSION ACCOMPLISHED!</h3>
+        </div>
+    </div>
+
     <div id="checkerScriptContainer"></div>
     
     <script>
@@ -21,13 +51,13 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNrfn_k9WIt2uQo4hxUw_0JU6pKnwP1lvyYXQnHhHPv_zpfAL5602QSxC_VGu4V7mflA/exec";
         const isElite = fullCode.includes('X');
 
-        // 1. تحميل ملف التصحيح مع ضمان التزامن
+        // 1. تحميل ملف التصحيح
         function loadCheckerScript() {
             return new Promise((resolve, reject) => {
                 const script = document.createElement('script');
                 script.src = `assets/CC/${actType}.js`;
                 script.onload = resolve;
-                script.onerror = () => reject("Failed to load correction script");
+                script.onerror = () => reject("Failed to load correction script: " + script.src);
                 document.getElementById('checkerScriptContainer').appendChild(script);
             });
         }
@@ -37,7 +67,6 @@
             const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
             const iframe = document.getElementById('mainIframe');
             
-            // تحديث الواجهة (تأكد من وجود العناصر في الـ HTML الخاص بك)
             if(document.getElementById('agentName')) document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
             if(document.getElementById('actNameDisplay')) document.getElementById('actNameDisplay').innerText = actName;
 
@@ -54,32 +83,30 @@
                 submitBtn.innerText = "EVALUATING...";
                 submitBtn.disabled = true;
 
-                if (!iframe.contentWindow.getStudentAnswers) throw new Error("Activity not loaded");
+                if (!iframe.contentWindow.getStudentAnswers) throw new Error("Activity not loaded correctly");
                 const answers = iframe.contentWindow.getStudentAnswers();
 
                 if (!answers) {
-                    submitBtn.innerText = "SUBMIT";
+                    submitBtn.innerText = "SUBMIT MISSION";
                     submitBtn.disabled = false;
                     return; 
                 }
 
-                // 2. التصحيح (الدالة مستدعاة من الملف الخارجي)
+                // التقييم
                 const result = evaluateMission(mNum, answers);
 
-                // 3. إرسال التقرير
                 const payload = {
-                    email: saved.email,
+                    email: saved.email || "guest@eyc.com",
                     activity: fullCode,
                     mission: mNum,
                     level: isElite ? currentLevel : 'A',
-                    answer: answers.join(", "),
+                    answer: Array.isArray(answers) ? answers.join(", ") : answers,
                     points: result.points,
                     isCorrect: result.isCorrect
                 };
 
                 fetch(SCRIPT_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
 
-                // 4. تلوين الإجابات داخل النشاط بناءً على مصفوفة الصحة
                 if(iframe.contentWindow.highlightResults) {
                     iframe.contentWindow.highlightResults(result.detailedResults); 
                 }
@@ -87,7 +114,6 @@
                 setTimeout(() => {
                     if(document.getElementById('rewardContainer')) {
                         document.getElementById('rewardContainer').style.display = 'block';
-                        if(typeof animate === 'function') animate();
                     }
                 }, 800);
 
@@ -103,7 +129,11 @@
             try {
                 await loadCheckerScript();
                 initMission();
-            } catch(e) { console.error(e); }
+            } catch(e) { 
+                console.error(e);
+                // حتى لو فشل تحميل السكريبت، نحاول تشغيل المهمة
+                initMission();
+            }
         };
     </script>
 </body>

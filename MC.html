@@ -13,6 +13,7 @@
             --bg-deep: #050508;
             --card-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(212, 175, 55, 0.2);
+            --gold-glow: rgba(212, 175, 55, 0.3);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -34,7 +35,7 @@
         .profile-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .avatar-main {
             width: 100px; height: 100px; border-radius: 25px; border: 2px solid var(--gold);
-            background: url('https://i.pravatar.cc/150?u=student') center/cover;
+            background-position: center; background-size: cover;
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); margin-bottom: 5px;
         }
 
@@ -47,6 +48,7 @@
         }
         .btn-premium.solid { background: var(--gold-gradient); color: #000; }
         .btn-premium:hover { transform: translateY(-3px); box-shadow: 0 5px 15px var(--gold-glow); }
+        .btn-premium:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .student-name { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 1px; }
         .stats-row { display: flex; gap: 15px; margin-top: 5px; }
@@ -115,8 +117,7 @@
 
     <div class="bg-glow"></div>
 
-    <header class="hero-banner" id="heroBanner">
-        </header>
+    <header class="hero-banner" id="heroBanner"></header>
 
     <div class="nav-container">
         <div class="tab-switcher">
@@ -131,7 +132,7 @@
 
     <div class="modal" id="taskModal">
         <div class="modal-content">
-            <h2 id="mTitle" style="font-family:'Cinzel'; color:var(--gold);">ACTIVITY 01</h2>
+            <h2 id="mTitle" style="font-family:'Cinzel'; color:var(--gold);">ACTIVITY</h2>
             <div class="tasks-grid" id="tGrid"></div>
             <button class="close-modal" onclick="closeModal('taskModal')">Close</button>
         </div>
@@ -140,11 +141,12 @@
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <h2 style="font-family:'Cinzel'; color:var(--gold);">Member Login</h2>
-            <input type="email" class="login-input" placeholder="Email Address">
-            <input type="password" class="login-input" placeholder="Access Code">
-            <button class="btn-premium solid" style="width:100%; margin-top:10px;">Login Now</button>
+            <input type="email" id="loginEmail" class="login-input" placeholder="Email Address">
+            <input type="text" id="loginCode" class="login-input" placeholder="Access Code (EYC-xxxx)">
+            <button id="loginBtn" class="btn-premium solid" style="width:100%; margin-top:10px;" onclick="handleLogin()">Login Now</button>
+            <div id="loginMsg" style="margin-top: 10px; font-size: 0.8rem; color: #ff5555;"></div>
             <div style="display:flex; justify-content: space-between; margin-top:15px; font-size:0.8rem;">
-                <span style="color:var(--gold); cursor:pointer;">Forgot Code?</span>
+                <span style="color:var(--gold); cursor:pointer;" onclick="handleForgot()">Forgot Code?</span>
                 <span style="color:#fff; cursor:pointer;" onclick="openJoin()">Join EYC</span>
             </div>
             <button class="close-modal" onclick="closeModal('loginModal')">Back</button>
@@ -152,25 +154,48 @@
     </div>
 
     <script>
-        // حالة الطالب (غيريها لـ true عشان تشوفي شكل المسجل)
-        let isLoggedIn = false; 
+        // 1. الأساسيات والروابط
+        const SCRIPT_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL"; // استبدل هذا برابط الـ Web App الخاص بك
+        const GITHUB_BASE_URL = "https://yourusername.github.io/yourrepo/assets/MIF/"; 
+        
+        let currentUser = null;
 
-        // جدول المواعيد (حطي التواريخ هنا لاحقاً)
-        const unlockSchedule = [
-            "2026-02-05", "2026-02-10", "2026-02-15", "2026-02-20", 
-            "2026-02-25", "2026-03-01", "2026-03-05", "2026-03-10"
-        ];
+        // خريطة الأكواد والأنشطة
+        const activitiesData = {
+            season: [
+                { name: "Golden Ear", code: "GES" },
+                { name: "Alike", code: "AS" },
+                { name: "Seeds", code: "SS" },
+                { name: "Grammar", code: "GS" },
+                { name: "Label", code: "LS" },
+                { name: "Vivid", code: "VS" }
+            ],
+            royal: [
+                { name: "Golden EarX", code: "GEX" },
+                { name: "AlikeX", code: "AX" },
+                { name: "SeedsX", code: "SX" },
+                { name: "GrammarX", code: "GX" },
+                { name: "LabelX", code: "LX" },
+                { name: "VividX", code: "VX" },
+                { name: "FigurativeX", code: "FX" },
+                { name: "DictationX", code: "DX" },
+                { name: "Sing Sang SungX", code: "SSSX" },
+                { name: "ElmagazineX", code: "ELX" }
+            ]
+        };
 
+        // 2. إدارة الواجهة
         function renderHeader() {
             const header = document.getElementById('heroBanner');
-            if (isLoggedIn) {
+            if (currentUser) {
                 header.innerHTML = `
                     <div class="profile-container">
-                        <div class="avatar-main"></div>
-                        <h1 class="student-name">Mr. Ezz Student</h1>
+                        <div class="avatar-main" style="background-image: url('${currentUser.image}')"></div>
+                        <h1 class="student-name">${currentUser.name}</h1>
+                        <p style="color: var(--gold); font-size: 0.8rem;">${currentUser.title}</p>
                         <div class="stats-row">
-                            <div class="stat-item">🪙 Tokens: <span>1,250</span></div>
-                            <div class="stat-item">🏆 Rank: <span>#04</span></div>
+                            <div class="stat-item">🪙 Tokens: <span>${currentUser.totalScore || 0}</span></div>
+                            <div class="stat-item">🏆 Rank: <span>#${currentUser.rank || '--'}</span></div>
                         </div>
                     </div>`;
             } else {
@@ -190,53 +215,91 @@
             const grid = document.getElementById('cardsGrid');
             grid.innerHTML = '';
             const type = document.querySelector('.tab-btn.active').innerText.toLowerCase();
-            const count = (type === 'season') ? 6 : 10;
+            const data = activitiesData[type];
             const icon = (type === 'season') ? '⭐' : '👑';
 
-            for (let i = 1; i <= count; i++) {
+            data.forEach((act) => {
                 const card = document.createElement('div');
                 card.className = 'activity-card';
                 card.innerHTML = `<span style="font-size:2rem; display:block; margin-bottom:10px">${icon}</span>
-                                 <h3>${type.toUpperCase()} ${i}</h3><p>10 Challenges</p>`;
-                card.onclick = () => openTasks(type, i);
+                                 <h3>${act.name}</h3><p>10 Challenges</p>`;
+                card.onclick = () => openTasks(act.name, act.code);
                 grid.appendChild(card);
-            }
+            });
         }
 
-        function openTasks(type, num) {
-            document.getElementById('mTitle').innerText = `${type.toUpperCase()} ${num}`;
+        function openTasks(actName, actCode) {
+            document.getElementById('mTitle').innerText = actName;
             const tGrid = document.getElementById('tGrid');
             tGrid.innerHTML = '';
 
             for (let i = 1; i <= 10; i++) {
+                // منطق الأقفال (أول مهمة للجميع، أول مهمتين للمسجلين)
                 let isLocked = false;
-                
-                if (!isLoggedIn) {
-                    // لو مش مسجل: أول مهمة بس فاتحة (9 مقفولين)
-                    if (i > 1) isLocked = true;
-                } else {
-                    // لو مسجل: أول مهمتين فاتحين (8 مقفولين بجدول مواعيد)
-                    if (i > 2) isLocked = true;
-                }
+                if (!currentUser && i > 1) isLocked = true;
+                if (currentUser && i > 2) isLocked = true;
 
                 const node = document.createElement('div');
                 node.className = `task-node ${isLocked ? 'locked' : ''}`;
                 node.innerHTML = i + (isLocked ? '<i class="fas fa-lock lock-icon"></i>' : '');
                 
                 if (!isLocked) {
-                    node.onclick = () => alert(`Starting Task ${i}...`);
+                    node.onclick = () => {
+                        const fileUrl = `${GITHUB_BASE_URL}${actCode}${i}.html`;
+                        window.location.href = fileUrl;
+                    };
                 } else {
-                    node.onclick = () => alert(isLoggedIn ? "This task is scheduled for a future date!" : "Please login to unlock this task.");
+                    node.onclick = () => alert(currentUser ? "Scheduled for a future date!" : "Please login to unlock more tasks.");
                 }
-                
                 tGrid.appendChild(node);
             }
             document.getElementById('taskModal').style.display = 'flex';
         }
 
+        // 3. الاتصال بـ Google Sheets
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const code = document.getElementById('loginCode').value;
+            const btn = document.getElementById('loginBtn');
+            const msg = document.getElementById('loginMsg');
+
+            if(!email || !code) { alert("Please fill all fields"); return; }
+
+            btn.disabled = true;
+            btn.innerText = "Verifying Identity...";
+
+            try {
+                const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    currentUser = data;
+                    closeModal('loginModal');
+                    renderHeader();
+                    generateCards();
+                } else {
+                    msg.innerText = "Error: " + data.message;
+                }
+            } catch (err) {
+                msg.innerText = "Connection failed. Try again.";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Login Now";
+            }
+        }
+
+        async function handleForgot() {
+            const email = document.getElementById('loginEmail').value;
+            if(!email) { alert("Please enter your email first"); return; }
+            alert("Recovery request sent. Check your email if registered.");
+            fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&forgot=true`);
+        }
+
+        // 4. وظائف المساعدة
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        function openJoin() { alert("Redirecting to Registration Page..."); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openJoin() { window.open('YOUR_REGISTRATION_FORM_URL', '_blank'); }
+        
         function switchType(type, btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');

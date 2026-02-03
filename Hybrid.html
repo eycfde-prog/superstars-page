@@ -1,106 +1,206 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC | Universal Mission Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="missionnormalstyle.css">
-    <style>
-        /* التنسيقات الأصلية كما هي */
-        .difficulty-bar { display: none; justify-content: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.3); }
-        .diff-btn { padding: 8px 15px; border: 1px solid #00ff88; color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: 0.3s; background: transparent; border-radius: 5px; }
-        .diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
-        #studentImg { width: 100%; height: 100%; object-fit: cover; display: block; }
-        
-        #rewardContainer {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #2b1055, #000); z-index: 9999; cursor: pointer;
-        }
-        .instruction {
-            position: absolute; bottom: 50px; color: white; font-size: 18px;
-            width: 100%; text-align: center; animation: pulse 1.5s infinite;
-            pointer-events: none; font-family: 'Poppins', sans-serif;
-        }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-        
-        .done-overlay {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(192, 192, 192, 0.9); z-index: 10;
-            flex-direction: column; justify-content: center; align-items: center; border-radius: 10px;
-        }
-        .done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
-        .done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #333; font-weight: 900; }
-        
-        .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ff88; font-family: 'Orbitron'; text-align: center; }
-        .activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; height: 75vh; min-height: 500px; }
-        .activity-iframe { transition: opacity 0.5s ease; border: none; width: 100%; height: 100%; }
-        .submit-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; transform: none !important; }
-        .speech-bubble { max-height: 85vh; overflow-y: auto; }
-    </style>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EYC | Universal Mission Terminal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<link rel="stylesheet" href="missionnormalstyle.css">
+
+<style>
+
+/* التنسيقات الأصلية كما هي */
+
+.difficulty-bar { display: none; justify-content: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.3); }
+
+.diff-btn { padding: 8px 15px; border: 1px solid #00ff88; color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: 0.3s; background: transparent; border-radius: 5px; }
+
+.diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
+
+#studentImg { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+
+#rewardContainer {
+
+display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+
+background: radial-gradient(circle, #2b1055, #000); z-index: 9999; cursor: pointer;
+
+}
+
+.instruction {
+
+position: absolute; bottom: 50px; color: white; font-size: 18px;
+
+width: 100%; text-align: center; animation: pulse 1.5s infinite;
+
+pointer-events: none; font-family: 'Poppins', sans-serif;
+
+}
+
+@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+
+.done-overlay {
+
+display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+
+background: rgba(192, 192, 192, 0.9); z-index: 10;
+
+flex-direction: column; justify-content: center; align-items: center; border-radius: 10px;
+
+}
+
+.done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
+
+.done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #333; font-weight: 900; }
+
+
+.loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ff88; font-family: 'Orbitron'; text-align: center; }
+
+.activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; height: 75vh; min-height: 500px; }
+
+.activity-iframe { transition: opacity 0.5s ease; border: none; width: 100%; height: 100%; }
+
+.submit-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
+.speech-bubble { max-height: 85vh; overflow-y: auto; }
+
+</style>
+
 </head>
+
 <body>
-    <div id="rewardContainer">
-        <div class="instruction">اضغط على الصندوق لفتحه!</div>
-        <canvas id="rewardCanvas"></canvas>
-    </div>
 
-    <div class="mission-outer-frame" id="mainUI">
-        <header class="mission-header">
-            <div class="agent-side">
-                <div class="circle-frame"><img src="" id="studentImg" alt="Agent"></div>
-                <div class="info-box">
-                    <span>AGENT</span>
-                    <b id="agentName">INITIALIZING...</b>
-                    <div class="token-tag" id="currentTokens">0 TK</div>
-                </div>
-            </div>
-            <div class="center-logo-area"><img src="assets/logo.png" alt="EYC LOGO"></div>
-            <div class="activity-side">
-                <div class="circle-frame"><img src="" id="activityLogo"></div>
-                <div class="info-box">
-                    <span id="actCodeDisplay">CODE</span>
-                    <b id="actNameDisplay">LOADING...</b>
-                    <div class="token-tag mission-tag" id="missionNum">M 0</div>
-                </div>
-            </div>
-        </header>
+<div id="rewardContainer">
 
-        <div class="difficulty-bar" id="difficultyBar">
-            <div class="diff-btn active" onclick="changeLevel('A', this)">LEVEL A</div>
-            <div class="diff-btn" onclick="changeLevel('B', this)">LEVEL B</div>
-            <div class="diff-btn" onclick="changeLevel('C', this)">LEVEL C</div>
-        </div>
+<div class="instruction">اضغط على الصندوق لفتحه!</div>
 
-        <div class="activity-content-frame">
-            <div id="loadingElement" class="loader"><i class="fas fa-sync fa-spin"></i> LOADING MISSION...</div>
-            <div id="doneOverlay" class="done-overlay">
-                <i class="fas fa-check-circle"></i>
-                <span>DONE</span>
-            </div>
-            <iframe id="mainIframe" src="" class="activity-iframe" allow="autoplay" onload="document.getElementById('loadingElement').style.display='none'"></iframe>
-        </div>
+<canvas id="rewardCanvas"></canvas>
 
-        <div class="action-container">
-            <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
-            <button class="submit-btn" id="submitBtn" onclick="processSubmission()">SUBMIT</button>
-            <a href="MC.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
-        </div>
-    </div>
+</div>
 
-    <div class="modal-overlay" id="guideModal" onclick="toggleGuide(false)">
-        <div class="glassy-container" onclick="event.stopPropagation()">
-            <div class="speech-bubble">
-                <p id="guideText">هاي يا بطل! ركز في التعليمات:</p>
-                <iframe id="guideFrame" src="" class="guide-iframe"></iframe>
-                <button class="nav-btn close-guide-btn" onclick="toggleGuide(false)">فهمت!</button>
-            </div>
-            <img src="assets/Glassy.png" class="glassy-img">
-        </div>
-    </div>
 
-    <div id="checkerScriptContainer"></div>
+
+<div class="mission-outer-frame" id="mainUI">
+
+<header class="mission-header">
+
+<div class="agent-side">
+
+<div class="circle-frame"><img src="" id="studentImg" alt="Agent"></div>
+
+<div class="info-box">
+
+<span>AGENT</span>
+
+<b id="agentName">INITIALIZING...</b>
+
+<div class="token-tag" id="currentTokens">0 TK</div>
+
+</div>
+
+</div>
+
+<div class="center-logo-area"><img src="assets/logo.png" alt="EYC LOGO"></div>
+
+<div class="activity-side">
+
+<div class="circle-frame"><img src="" id="activityLogo"></div>
+
+<div class="info-box">
+
+<span id="actCodeDisplay">CODE</span>
+
+<b id="actNameDisplay">LOADING...</b>
+
+<div class="token-tag mission-tag" id="missionNum">M 0</div>
+
+</div>
+
+</div>
+
+</header>
+
+
+
+<div class="difficulty-bar" id="difficultyBar">
+
+<div class="diff-btn active" onclick="changeLevel('A', this)">LEVEL A</div>
+
+<div class="diff-btn" onclick="changeLevel('B', this)">LEVEL B</div>
+
+<div class="diff-btn" onclick="changeLevel('C', this)">LEVEL C</div>
+
+</div>
+
+
+
+<div class="activity-content-frame">
+
+<div id="loadingElement" class="loader"><i class="fas fa-sync fa-spin"></i> LOADING MISSION...</div>
+
+<div id="doneOverlay" class="done-overlay">
+
+<i class="fas fa-check-circle"></i>
+
+<span>DONE</span>
+
+</div>
+
+<iframe id="mainIframe" src="" class="activity-iframe" allow="autoplay" onload="document.getElementById('loadingElement').style.display='none'"></iframe>
+
+</div>
+
+
+
+<div class="action-container">
+
+<button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
+
+<button class="submit-btn" id="submitBtn" onclick="processSubmission()">SUBMIT</button>
+
+<a href="MC.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
+
+</div>
+
+</div>
+
+
+
+<div class="modal-overlay" id="guideModal" onclick="toggleGuide(false)">
+
+<div class="glassy-container" onclick="event.stopPropagation()">
+
+<div class="speech-bubble">
+
+<p id="guideText">هاي يا بطل! ركز في التعليمات:</p>
+
+<iframe id="guideFrame" src="" class="guide-iframe"></iframe>
+
+<button class="nav-btn close-guide-btn" onclick="toggleGuide(false)">فهمت!</button>
+
+</div>
+
+<img src="assets/Glassy.png" class="glassy-img">
+
+</div>
+
+</div>
+
+
+
+<div id="checkerScriptContainer"></div>
+
 
 <script>
     // --- إعدادات المحرك الرئيسية ---
@@ -214,5 +314,5 @@
     }
     window.onload = () => { initMission(); };
 </script>
+
 </body>
-</html>

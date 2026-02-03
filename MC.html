@@ -18,18 +18,15 @@
             --glass: rgba(255, 255, 255, 0.05);
             --task-done: #00ffa3;
         }
-
+        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* تحسين انسيابية الصفحة */
         body { 
             background: var(--primary-bg); 
             color: #fff; 
             min-height: 100vh; 
             width: 100vw; 
-            overflow-x: hidden; 
-            display: flex;
-            flex-direction: column;
+            overflow-x: hidden; /* السماح بالتمرير العمودي فقط عند الحاجة */
         }
         
         .igi-lines {
@@ -40,12 +37,8 @@
 
         #rank-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
 
-        /* التنقل العلوي */
-        .top-nav { 
-            position: sticky; top: 0; padding: 15px 20px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            z-index: 1000; backdrop-filter: blur(5px);
-        }
+        /* Navigation */
+        .top-nav { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
         .logo-placeholder img { height: 35px; width: auto; filter: drop-shadow(0 0 10px rgba(255,204,0,0.3)); }
         
         .royal-login-btn {
@@ -56,84 +49,81 @@
         }
         .user-name-display { font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px var(--accent-gold); display: none; font-size: 12px; }
 
-        /* بروفايل العميل */
-        .profile-stack { 
-            position: fixed; bottom: 85px; left: 20px; z-index: 1000; 
-            display: none; flex-direction: column-reverse; gap: 8px; align-items: center; 
-        }
+        /* Profile Sidebar */
+        .profile-stack { position: fixed; bottom: 85px; left: 20px; z-index: 1000; display: none; flex-direction: column-reverse; gap: 10px; align-items: center; }
         .p-bubble { border-radius: 50%; border: 2px solid var(--accent-gold); backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; }
         .p-avatar { width: 60px; height: 60px; overflow: hidden; border-width: 3px; }
         .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .p-score { width: 45px; height: 45px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; color: var(--accent-gold); text-align: center; }
-        .p-rank { width: 30px; height: 30px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; background: var(--accent-gold); color: #000; }
+        .p-rank { width: 35px; height: 35px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; background: var(--accent-gold); color: #000; }
 
-        /* Modal تحسين تسجيل الدخول */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-        .royal-card { background: #0a0a0f; border: 1px solid rgba(255,204,0,0.3); padding: 30px; border-radius: 25px; width: 90%; max-width: 380px; text-align: center; }
-        .royal-card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #000; border: 1px solid #333; color: #fff; text-align: center; font-family: 'Orbitron'; font-size: 12px; outline: none; }
-        .royal-card input:focus { border-color: var(--accent-gold); }
-        .btn-group { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .submit-btn { background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-weight: 900; padding: 12px; border-radius: 10px; border: none; cursor: pointer; transition: 0.3s; }
+        /* Header Section */
+        .rank-header { text-align: center; padding-top: 100px; margin-bottom: 20px; }
+        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 8vw, 3.5rem); letter-spacing: 2px; color: #fff; text-transform: uppercase; }
+        .rank-header p { font-size: 10px; letter-spacing: 4px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
 
-        /* العناوين */
-        .rank-header { text-align: center; margin: 20px 0; padding: 0 10px; }
-        .rank-header h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 8vw, 2.5rem); letter-spacing: 2px; color: #fff; text-transform: uppercase; }
-        .rank-header p { font-size: 10px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 900; font-family: 'Orbitron'; }
-
-        /* أزرار التبديل */
-        .toggle-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid #444; color: #fff; padding: 10px 20px; border-radius: 20px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; transition: 0.3s; z-index: 20; }
-        .mode-btn.active { box-shadow: 0 0 15px currentColor; }
+        /* Controls */
+        .toggle-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; position: relative; z-index: 20; }
+        .mode-btn { background: rgba(255,255,255,0.05); border: 1px solid #444; color: #fff; padding: 12px 30px; border-radius: 30px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; transition: 0.4s; }
+        .mode-btn.active { box-shadow: 0 0 20px currentColor; transform: scale(1.05); }
         .mode-btn.season-mode.active { background: var(--season-color); color: #000; border-color: var(--season-color); }
         .mode-btn.xbox-mode.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
 
-        /* الـ Swiper */
-        .swiper { width: 100%; padding: 20px 0 60px 0; }
+        /* Swiper & Cards - Fix for Desktop */
+        .swiper { width: 100%; padding: 40px 0 80px; }
         .swiper-slide { 
-            width: 260px; height: 340px; border-radius: 25px; 
+            width: 260px; height: 360px; border-radius: 25px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); 
-            position: relative; transition: 0.4s; cursor: pointer; background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); 
+            background: rgba(255,255,255,0.02); transition: 0.4s ease-out;
         }
-        .token-badge { position: absolute; top: 15px; left: 15px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 6px; }
-        .activity-icon { font-size: 65px; margin-bottom: 20px; pointer-events: none; }
-        .activity-name { font-family: 'Orbitron'; font-size: 20px; font-weight: 900; text-align: center; padding: 0 15px; pointer-events: none; }
+        .swiper-slide:hover { border-color: var(--accent-gold); box-shadow: 0 0 30px rgba(255,204,0,0.15); transform: translateY(-10px); }
+        .token-badge { position: absolute; top: 20px; right: 20px; background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; padding: 4px 12px; border-radius: 20px; }
+        .activity-icon { font-size: 70px; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1)); transition: 0.3s; }
+        .swiper-slide:hover .activity-icon { transform: scale(1.1); }
+        .activity-name { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; text-align: center; letter-spacing: 1px; }
 
-        /* طبقة المهمات - تحسين العرض الدائري */
+        /* Missions Layer */
         #missions-layer { 
             position: fixed; inset: 0; display: none; align-items: center; justify-content: center; 
-            z-index: 1500; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); 
+            z-index: 1500; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); 
         }
-        .mission-container { position: relative; width: min(80vw, 400px); height: min(80vw, 400px); display: flex; align-items: center; justify-content: center; }
+        .mission-container { position: relative; width: min(90vw, 400px); height: min(90vw, 400px); }
         .mission-bubble { 
             position: absolute; width: 60px; height: 60px; 
-            background: rgba(0,0,0,0.8); border: 2px solid var(--accent-gold); 
+            background: #000; border: 2px solid var(--accent-gold); 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
             font-family: 'Orbitron'; font-weight: 900; color: var(--accent-gold); 
-            cursor: pointer; font-size: 14px; box-shadow: 0 0 15px rgba(255,204,0,0.2);
+            cursor: pointer; font-size: 14px; box-shadow: 0 0 15px rgba(255,204,0,0.1);
             transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            left: 50%; top: 50%; margin-left: -30px; margin-top: -30px;
         }
-        .mission-bubble.completed { border-color: var(--task-done); color: var(--task-done); box-shadow: 0 0 20px var(--task-done); }
+        .mission-bubble:hover { transform: scale(1.2) !important; background: var(--accent-gold); color: #000; z-index: 10; }
+        .mission-bubble.completed { border-color: var(--task-done); color: var(--task-done); box-shadow: 0 0 20px rgba(0,255,163,0.3); }
         
-        /* أزرار التحكم السفلية */
-        .bottom-nav { position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 20px; z-index: 1000; }
-        .nav-btn { width: 55px; height: 55px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.7); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; backdrop-filter: blur(5px); transition: 0.3s; }
-        .nav-btn:active { transform: scale(0.9); }
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 1000; width: fit-content; }
+        .nav-btn { width: 55px; height: 55px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.8); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; backdrop-filter: blur(10px); transition: 0.3s; }
+        .nav-btn:hover { border-color: #fff; transform: scale(1.1); }
         
         .back-btn { 
             position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); 
-            background: #fff; color: #000; padding: 12px 35px; border-radius: 30px; 
+            background: #fff; color: #000; padding: 12px 40px; border-radius: 30px; 
             font-family: 'Orbitron'; font-weight: 900; display: none; z-index: 1700; 
-            font-size: 12px; border: none; cursor: pointer; box-shadow: 0 5px 20px rgba(255,255,255,0.2);
+            font-size: 12px; border: none; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
 
-        /* تعديلات الشاشات الكبيرة */
+        /* Login Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(15px); }
+        .royal-card { background: #0a0a0f; border: 1px solid rgba(255,204,0,0.2); padding: 40px 30px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
+        .royal-card input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; background: #000; border: 1px solid #333; color: #fff; text-align: center; font-family: 'Orbitron'; font-size: 13px; }
+        .submit-btn { background: var(--accent-gold); color: #000; font-family: 'Orbitron'; font-weight: 900; padding: 15px; border-radius: 12px; border: none; cursor: pointer; width: 100%; margin-top: 10px; }
+
         @media (min-width: 1024px) {
-            .top-nav { padding: 25px 50px; }
-            .rank-header { margin-top: 40px; }
-            .swiper-slide:hover { border-color: var(--accent-gold); transform: translateY(-15px); background: rgba(255,204,0,0.05); }
-            .bottom-nav { justify-content: flex-end; right: 40px; padding: 0; }
+            .rank-header { padding-top: 60px; }
+            .top-nav { padding: 0 40px; }
             .profile-stack { left: 40px; bottom: 40px; }
+            .bottom-nav { left: auto; right: 40px; transform: none; }
         }
     </style>
 </head>
@@ -141,11 +131,11 @@
     <div class="igi-lines"></div>
     <canvas id="rank-canvas"></canvas>
     
-    <nav class="top-nav">
+    <div class="top-nav">
         <div class="logo-placeholder"><img src="assets/logo.png" alt="EYC"></div>
         <button class="royal-login-btn" id="loginTriggerBtn" onclick="openLogin()">AGENT LOGIN</button>
         <div class="user-name-display" id="userName"></div>
-    </nav>
+    </div>
 
     <div class="profile-stack" id="profileStack">
         <div class="p-bubble p-rank" id="userRank">#0</div>
@@ -155,14 +145,16 @@
 
     <div class="modal-overlay" id="loginModal">
         <div class="royal-card">
-            <h2 class="orbitron" style="color:var(--accent-gold); margin-bottom:15px; font-size:16px;">ACCESS TERMINAL</h2>
-            <input type="email" id="agentEmail" placeholder="AGENT EMAIL" spellcheck="false">
+            <h2 class="orbitron" style="color:var(--accent-gold); margin-bottom:20px; font-size:18px; letter-spacing:2px;">ACCESS TERMINAL</h2>
+            <input type="email" id="agentEmail" placeholder="AGENT EMAIL">
             <input type="password" id="agentCode" placeholder="ACCESS CODE">
             <div class="btn-group">
                 <button class="submit-btn" id="mainSubmitBtn" onclick="verifyCode()">INITIALIZE LOGIN</button>
-                <a href="NP.html" style="color:white; font-size:10px; text-decoration:none; margin-top:10px; opacity: 0.7;">NO PROFILE? CREATE ONE</a>
+                <div style="margin-top:20px;">
+                    <a href="NP.html" style="color:rgba(255,255,255,0.6); font-size:11px; text-decoration:none;">NO PROFILE? <span style="color:var(--accent-gold)">CREATE ONE</span></a>
+                </div>
             </div>
-            <p id="errorLog" style="color:#ff3131; font-size:10px; margin-top:10px; font-weight:bold;"></p>
+            <p id="errorLog" style="color:var(--xbox-color); font-size:11px; margin-top:15px; font-weight:bold; height:15px;"></p>
         </div>
     </div>
 
@@ -172,7 +164,7 @@
     </header>
 
     <div class="toggle-container" id="mainToggle">
-        <button class="mode-btn active season-mode" onclick="switchMode('season')">Season</button>
+        <button class="mode-btn active season-mode" onclick="switchMode('season')">SEASON</button>
         <button class="mode-btn xbox-mode" onclick="switchMode('xbox')">ROYAL</button>
     </div>
 
@@ -183,20 +175,20 @@
     <div id="missions-layer">
         <div class="mission-container" id="missionContainer"></div>
     </div>
+    
     <button class="back-btn" id="backBtn" onclick="resetView()">BACK TO HELM</button>
 
     <div class="bottom-nav">
         <div class="nav-btn" onclick="location.href='EYCSSP.html'"><i class="fas fa-home"></i></div>
-        <div class="nav-btn" id="logoutBtn" style="border-color: var(--xbox-color); color: var(--xbox-color);" onclick="logout()"><i class="fas fa-power-off"></i></div>
+        <div class="nav-btn" id="logoutBtn" style="border-color: var(--xbox-color); color: var(--xbox-color); display: none;" onclick="logout()"><i class="fas fa-power-off"></i></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <script>
-        // --- القسم البرمجي (خط أحمر - لم يتم تغييره) ---
+        // الروابط الأصلية (خط أحمر)
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0OZlb4nrZdx1RMaMVYNhM1GMF29WxMsSO0a1xugOpyUlbjR1RVopj-SyJ3UWqD0AHKA/exec"; 
-        let currentAgentData = null;
-
+        
         const activities = {
             season: [
                 { name: 'Golden Ear', code: 'GES', icon: 'fa-ear-listen', tk: '5TK' },
@@ -225,7 +217,7 @@
         function renderActivities(mode) {
             const wrapper = document.getElementById('activities-wrapper');
             wrapper.innerHTML = activities[mode].map((act) => `
-                <div class="swiper-slide ${mode === 'season' ? 'season-card' : 'xbox-card'}" onclick="openMissions('${act.name}', '${act.code}')">
+                <div class="swiper-slide" onclick="openMissions('${act.name}', '${act.code}')">
                     <div class="token-badge">${act.tk}</div>
                     <div class="activity-icon"><i class="fas ${act.icon}" style="color:${mode === 'season' ? 'var(--season-color)' : 'var(--accent-gold)'}"></i></div>
                     <div class="activity-name">${act.name}</div>
@@ -237,8 +229,12 @@
                 effect: 'coverflow',
                 centeredSlides: true,
                 slidesPerView: 'auto',
-                coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false },
-                initialSlide: 1
+                grabCursor: true,
+                loop: false,
+                coverflowEffect: { rotate: 5, stretch: 0, depth: 100, modifier: 2.5, slideShadows: false },
+                breakpoints: {
+                    1024: { slidesPerView: 3, spaceBetween: 30 }
+                }
             });
         }
 
@@ -253,8 +249,8 @@
             const completedCount = (savedData.progress && savedData.progress[actCode]) ? parseInt(savedData.progress[actCode]) : 0;
 
             for (let i = 1; i <= 10; i++) {
-                const angle = (i * 36) * (Math.PI / 180);
-                const radius = window.innerWidth < 768 ? 120 : 150;
+                const angle = (i * 36 - 90) * (Math.PI / 180);
+                const radius = window.innerWidth < 768 ? 130 : 170;
                 const x = Math.cos(angle) * radius; 
                 const y = Math.sin(angle) * radius;
                 
@@ -265,29 +261,21 @@
                 bubble.innerText = 'T' + i;
                 bubble.style.transform = `translate(${x}px, ${y}px)`;
                 
-                bubble.setAttribute('data-act', actCode);
-                bubble.setAttribute('data-mission', i);
-                bubble.setAttribute('data-name', actName);
-
-                bubble.onclick = function(e) {
+                bubble.onclick = (e) => {
                     e.stopPropagation();
-                    const finalAct = this.getAttribute('data-act');
-                    const finalMiss = this.getAttribute('data-mission');
-                    const finalName = encodeURIComponent(this.getAttribute('data-name'));
-                    window.location.href = `Hybrid.html?act=${finalAct}&m=${finalMiss}&name=${finalName}`;
+                    window.location.href = `Hybrid.html?act=${actCode}&m=${i}&name=${encodeURIComponent(actName)}`;
                 };
-
                 container.appendChild(bubble);
             }
         }
 
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        
         async function verifyCode() {
             const email = document.getElementById('agentEmail').value.trim();
             const code = document.getElementById('agentCode').value.trim();
             const btn = document.getElementById('mainSubmitBtn');
-            if(!email || !code) return alert("Please enter credentials");
+            const log = document.getElementById('errorLog');
+
+            if(!email || !code) { log.innerText = "FILL ALL TERMINALS"; return; }
             
             btn.innerText = "INITIALIZING..."; btn.disabled = true;
             try {
@@ -298,19 +286,19 @@
                     document.getElementById('loginModal').style.display = 'none';
                     localStorage.setItem('eyc_agent_data', JSON.stringify(data));
                 } else {
-                    document.getElementById('errorLog').innerText = "ACCESS DENIED";
+                    log.innerText = "ACCESS DENIED: INVALID CODE";
                     btn.innerText = "INITIALIZE LOGIN"; btn.disabled = false;
                 }
             } catch (e) { 
-                document.getElementById('errorLog').innerText = "CONNECTION ERROR"; 
-                btn.disabled = false; btn.innerText = "INITIALIZE LOGIN";
+                log.innerText = "CONNECTION TERMINATED"; 
+                btn.disabled = false; 
             }
         }
 
         function applyAgentData(data) {
-            currentAgentData = data;
             document.getElementById('loginTriggerBtn').style.display = 'none';
-            document.getElementById('userName').innerText = data.name.split(' ')[0];
+            document.getElementById('logoutBtn').style.display = 'flex';
+            document.getElementById('userName').innerText = data.name.split(' ')[0].toUpperCase();
             document.getElementById('userName').style.display = 'block';
             document.getElementById('profileStack').style.display = 'flex';
             document.getElementById('userScore').innerText = (data.totalScore || 0) + ' TK';
@@ -323,6 +311,7 @@
             }
         }
 
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         function logout() { localStorage.removeItem('eyc_agent_data'); location.reload(); }
         function resetView() { document.getElementById('missions-layer').style.display = 'none'; document.getElementById('backBtn').style.display = 'none'; }
         
@@ -332,7 +321,7 @@
             renderActivities(mode);
         }
 
-        // --- نظام النجوم (Background Stars) ---
+        // Star Background
         const canvas = document.getElementById('rank-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -341,21 +330,25 @@
             constructor() { 
                 this.x = Math.random() * canvas.width; 
                 this.y = Math.random() * canvas.height; 
-                this.size = Math.random() * 2; 
-                this.speed = Math.random() * 0.5; 
+                this.size = Math.random() * 1.5; 
+                this.speed = Math.random() * 0.3; 
             }
             draw() { 
                 this.y += this.speed; 
                 if(this.y > canvas.height) this.y = 0; 
-                ctx.fillStyle = "rgba(255, 255, 255, 0.4)"; 
+                ctx.fillStyle = "rgba(255, 255, 255, 0.3)"; 
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill(); 
             }
         }
-        function animate() { ctx.clearRect(0,0,canvas.width, canvas.height); stars.forEach(s => s.draw()); requestAnimationFrame(animate); }
+        function animate() { 
+            ctx.clearRect(0,0,canvas.width, canvas.height); 
+            stars.forEach(s => s.draw()); 
+            requestAnimationFrame(animate); 
+        }
         
-        window.addEventListener('resize', () => { initCanvas(); stars = []; for(let i=0; i<100; i++) stars.push(new Star()); });
+        window.addEventListener('resize', () => { initCanvas(); renderActivities(document.querySelector('.mode-btn.active').innerText.toLowerCase()); });
         initCanvas(); 
-        for(let i=0; i<100; i++) stars.push(new Star()); 
+        for(let i=0; i<80; i++) stars.push(new Star()); 
         animate();
         renderActivities('season');
 

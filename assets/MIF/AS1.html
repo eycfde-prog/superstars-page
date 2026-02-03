@@ -58,13 +58,13 @@
     <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v10.0</footer>
 
 <script>
-    // 1. مصفوفة البيانات
+    // 1. مصفوفة المحتوى (الكلمات العربية فقط)
     const currentTask = [
-        {m1:"إلى", m2:"أيضاً", a1:"to", a2:"too"}, 
-        {m1:"ابن", m2:"شمس", a1:"son", a2:"sun"}, 
-        {m1:"هنا", m2:"يسمع", a1:"here", a2:"hear"}, 
-        {m1:"بحر", m2:"يرى", a1:"sea", a2:"see"}, 
-        {m1:"لا", m2:"يعرف", a1:"no", a2:"know"}, 
+        {m1:"إلى", m2:"أيضاً"}, 
+        {m1:"ابن", m2:"شمس"}, 
+        {m1:"هنا", m2:"يسمع"}, 
+        {m1:"بحر", m2:"يرى"}, 
+        {m1:"لا", m2:"يعرف"}, 
     ];
 
     // 2. بناء واجهة النشاط
@@ -78,11 +78,11 @@
                     <div class="input-grid">
                         <div class="field-group">
                             <label>${pair.m1}</label>
-                            <input type="text" data-answer="${pair.a1}" class="input-alike task-input" placeholder="..." spellcheck="false" autocomplete="off">
+                            <input type="text" class="input-alike task-input" placeholder="..." spellcheck="false" autocomplete="off">
                         </div>
                         <div class="field-group">
                             <label>${pair.m2}</label>
-                            <input type="text" data-answer="${pair.a2}" class="input-alike task-input" placeholder="..." spellcheck="false" autocomplete="off">
+                            <input type="text" class="input-alike task-input" placeholder="..." spellcheck="false" autocomplete="off">
                         </div>
                     </div>
                 </div>`;
@@ -92,44 +92,38 @@
 
     window.onload = renderActivity;
 
-    // 3. دالة التقييم الرئيسية (مطلوبة من الصفحة الأم)
-    window.evaluateMission = function() {
-        let correctWords = 0;
-        let studentResponses = [];
+    // 3. دالة جلب الإجابات (المطلوبة من الصفحة الأم الجديدة)
+    window.getStudentAnswers = function() {
         const inputs = document.querySelectorAll('.task-input');
+        let answers = [];
         let allFilled = true;
 
-        // التحقق من الإجابات وجمعها
         inputs.forEach(input => {
             const val = input.value.trim().toLowerCase();
-            const correctVal = input.getAttribute('data-answer').toLowerCase();
-            
-            if (val === "") allFilled = false;
-            
-            studentResponses.push(val || "EMPTY");
-
-            if (val === correctVal) {
-                correctWords++;
-                input.style.borderColor = "#00ffa3";
+            if (val === "") {
+                allFilled = false;
+                input.style.borderColor = "#ff3131"; // تنبيه بصري سريع للفارغ
             } else {
-                input.style.borderColor = "#ff3131";
+                input.style.borderColor = "rgba(255,255,255,0.15)";
             }
+            answers.push(val);
         });
 
-        // منع الإرسال إذا كانت هناك حقول فارغة
-        if (!allFilled) {
-            return null; 
-        }
+        // لو فيه حقل فارغ نرجع null لإيقاف الـ Submit في الصفحة الأم
+        if (!allFilled) return null;
 
-        // حساب النقاط (نصف نقطة لكل كلمة صحيحة، بحد أدنى 1)
-        let score = correctWords * 0.5;
-        let finalPoints = (score < 1 && correctWords > 0) ? 1 : Math.round(score);
+        // نرجع مصفوفة الإجابات ليرسلها المحرك لملف الـ CC للتصحيح
+        return answers; 
+    };
 
-        return { 
-            points: finalPoints, 
-            answerText: studentResponses.join(", "),
-            isCorrect: correctWords > 0 
-        };
+    // 4. دالة تلوين النتائج (يتم استدعاؤها اختيارياً من الصفحة الأم بعد التصحيح)
+    window.highlightResults = function(resultsArray) {
+        const inputs = document.querySelectorAll('.task-input');
+        resultsArray.forEach((isCorrect, index) => {
+            if (inputs[index]) {
+                inputs[index].style.borderColor = isCorrect ? "#00ffa3" : "#ff3131";
+            }
+        });
     };
 </script>
 </body>

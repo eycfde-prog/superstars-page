@@ -3,298 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Stars - English Activities</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Super Stars - Premium English</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --gold-primary: #D4AF37;
-            --gold-gradient: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
-            --bg-dark: #05070a;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(212, 175, 55, 0.3);
+            --gold: #D4AF37;
+            --gold-bright: #FFDF00;
+            --bg-deep: #020205;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(212, 175, 55, 0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-deep); color: white; height: 100vh; overflow: hidden; display: flex; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: white;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+        /* Background Starfield */
+        #star-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
-        /* Animated Starry Background */
-        .stars-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
-            overflow: hidden;
-        }
-
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.5;
-            animation: twinkle var(--duration) infinite ease-in-out;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* Header & Profile Section */
-        header {
-            padding: 20px 5%;
+        /* Sidebar Navigation */
+        aside {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky; top: 0; z-index: 100;
+            padding: 40px 20px;
+            z-index: 100;
         }
 
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: var(--glass-bg);
-            padding: 8px 20px;
-            border-radius: 50px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .user-avatar {
-            width: 45px; height: 45px;
+        .profile-section { text-align: center; }
+        .avatar-circle {
+            width: 100px; height: 100px;
             border-radius: 50%;
-            border: 2px solid var(--gold-primary);
-            background: url('https://via.placeholder.com/150') center/cover;
+            margin: 0 auto 15px;
+            border: 2px solid var(--gold);
+            background: url('https://i.pravatar.cc/150?u=student') center/cover;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+        .profile-section h2 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.2rem; margin-bottom: 5px; }
+        .rank-info { font-size: 0.8rem; letter-spacing: 1px; color: #aaa; }
+        .score-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 5px 15px;
+            background: var(--gold);
+            color: black;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
         }
 
-        .stats-box { font-size: 0.85rem; }
-        .stats-box span { color: var(--gold-primary); font-weight: bold; margin-right: 10px; }
-
-        .nav-btns button {
+        .bottom-nav { display: flex; flex-direction: column; gap: 10px; }
+        .nav-btn {
             background: transparent;
-            border: 1px solid var(--gold-primary);
-            color: var(--gold-primary);
-            padding: 8px 15px;
-            border-radius: 5px;
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
             cursor: pointer;
             transition: 0.3s;
-            margin-left: 10px;
             text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 1px;
+            font-size: 0.8rem;
         }
+        .nav-btn:hover { background: var(--gold); color: black; border-color: var(--gold); }
+        .logout-btn { color: #ff4444; border-color: rgba(255, 68, 68, 0.2); }
 
-        .nav-btns button:hover {
-            background: var(--gold-gradient);
-            color: black;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-        }
-
-        /* Main Content */
-        main { padding: 40px 5%; }
-
-        .section-title {
-            text-align: center;
-            margin: 40px 0 20px;
-            font-size: 2rem;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 60px;
-        }
-
-        /* Activity Card */
-        .card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            transition: 0.4s;
-            cursor: pointer;
+        /* Main Content Slider */
+        main { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .slider-wrapper {
+            width: 90%;
+            max-width: 1100px;
+            height: 70vh;
             position: relative;
             overflow: hidden;
         }
 
-        .card:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--gold-primary);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: scale(0.9) translateX(100%);
+            pointer-events: none;
         }
 
-        .card h3 { color: var(--gold-primary); margin-bottom: 10px; font-size: 1.5rem; }
-        .card p { font-size: 0.9rem; opacity: 0.7; }
+        .slide.active { opacity: 1; transform: scale(1) translateX(0); pointer-events: all; }
 
-        /* Modal / Popup */
+        .slide-header {
+            position: absolute;
+            top: -50px; left: 0;
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 2rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Activity Card */
+        .activity-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.4s;
+            position: relative;
+        }
+        .activity-card:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .activity-card span { font-size: 1.1rem; color: #fff; }
+        .activity-card small { color: var(--gold); margin-top: 5px; font-size: 0.7rem; }
+
+        /* Controls */
+        .controls { display: flex; gap: 20px; margin-top: 40px; }
+        .dot { 
+            width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--gold); 
+            cursor: pointer; transition: 0.3s;
+        }
+        .dot.active { background: var(--gold); transform: scale(1.3); box-shadow: 0 0 10px var(--gold); }
+
+        /* Task Modal */
         .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
         }
-
         .modal-content {
-            background: #0f1218;
-            border: 2px solid var(--gold-primary);
-            width: 90%;
-            max-width: 600px;
-            border-radius: 20px;
-            padding: 40px;
-            position: relative;
-            animation: slideUp 0.4s ease;
+            background: #0a0a0c; border: 1px solid var(--gold); padding: 40px;
+            border-radius: 20px; width: 90%; max-width: 500px; position: relative;
         }
-
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .close-modal {
-            position: absolute; top: 20px; right: 20px;
-            color: var(--gold-primary);
-            font-size: 24px; cursor: pointer;
+        .tasks-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 20px; }
+        .task-node {
+            aspect-ratio: 1; border: 1px solid #333; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; border-radius: 8px; font-size: 0.9rem;
         }
+        .task-node:hover { border-color: var(--gold); color: var(--gold); }
 
-        .tasks-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .task-btn {
-            background: transparent;
-            border: 1px solid #444;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .task-btn:hover {
-            border-color: var(--gold-primary);
-            background: var(--glass-bg);
-            color: var(--gold-primary);
-        }
-
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
-            header { flex-direction: column; gap: 15px; }
-            .tasks-grid { grid-template-columns: repeat(2, 1fr); }
-            .section-title { font-size: 1.5rem; }
+            body { flex-direction: column; overflow-y: auto; }
+            aside { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--glass-border); }
+            .slider-wrapper { height: auto; padding: 20px 0; }
+            .slide { position: relative; opacity: 1; transform: none; display: flex; flex-wrap: wrap; justify-content: center; margin-bottom: 50px; }
+            .activity-card { width: 120px; height: 120px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="stars-container" id="stars"></div>
+    <canvas id="star-canvas"></canvas>
 
-    <header>
-        <div class="user-profile">
-            <div class="user-avatar"></div>
-            <div class="stats-box">
-                <p><strong>Student Name</strong></p>
-                <span>Score: 1250</span> <span>Rank: #4</span>
-            </div>
+    <aside>
+        <div class="profile-section">
+            <div class="avatar-circle"></div>
+            <h2>Student Name</h2>
+            <p class="rank-info">Global Rank: #04</p>
+            <div class="score-badge">1,250 Points</div>
         </div>
-        <div class="nav-btns">
-            <button onclick="location.reload()">Home</button>
-            <button>Logout</button>
+
+        <div class="bottom-nav">
+            <button class="nav-btn">Home Screen</button>
+            <button class="nav-btn logout-btn">Log Out</button>
         </div>
-    </header>
+    </aside>
 
     <main>
-        <h2 class="section-title">Royal Activities</h2>
-        <div class="grid-container" id="royal-container">
-            </div>
+        <div class="slider-wrapper">
+            <div class="slide active" id="slide-1">
+                <div class="slide-header">Season Activities</div>
+                </div>
 
-        <h2 class="section-title">Season Activities</h2>
-        <div class="grid-container" id="season-container">
-            </div>
+            <div class="slide" id="slide-2">
+                <div class="slide-header">Royal Activities</div>
+                </div>
+        </div>
+
+        <div class="controls">
+            <div class="dot active" onclick="goToSlide(0)"></div>
+            <div class="dot" onclick="goToSlide(1)"></div>
+        </div>
     </main>
 
     <div class="modal" id="taskModal">
         <div class="modal-content">
-            <span class="close-modal" id="closeModal">&times;</span>
-            <h2 id="modalTitle" style="color: var(--gold-primary); text-align: center;">Activity Tasks</h2>
-            <div class="tasks-grid" id="tasksGrid">
-                </div>
+            <h3 id="mTitle" style="text-align: center; color: var(--gold); font-family: 'Cinzel';">Activity Tasks</h3>
+            <div class="tasks-grid" id="tGrid"></div>
+            <button onclick="closeModal()" style="margin-top: 20px; width: 100%; background: transparent; border: none; color: #666; cursor: pointer;">Close</button>
         </div>
     </div>
 
     <script>
-        // Generate Stars Background
-        const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 150; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 3 + 'px';
-            star.style.width = size;
-            star.style.height = size;
-            star.style.top = Math.random() * 100 + '%';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
-            starsContainer.appendChild(star);
+        // Starfield Effect
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
 
-        // Data Generation
-        const royalContainer = document.getElementById('royal-container');
-        const seasonContainer = document.getElementById('season-container');
-        const modal = document.getElementById('taskModal');
-        const tasksGrid = document.getElementById('tasksGrid');
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speed = Math.random() * 0.5;
+            }
+            draw() {
+                ctx.fillStyle = "white";
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            update() {
+                this.y += this.speed;
+                if (this.y > canvas.height) this.y = 0;
+            }
+        }
 
-        function createActivityCards() {
+        function initStars() {
+            for(let i=0; i<200; i++) stars.push(new Star());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => { s.draw(); s.update(); });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize(); initStars(); animate();
+
+        // Activities Generation
+        const seasonSlide = document.getElementById('slide-1');
+        const royalSlide = document.getElementById('slide-2');
+
+        function createCards() {
             for (let i = 1; i <= 16; i++) {
                 const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <h3>Activity ${i}</h3>
-                    <p>English Mastery Level ${i}</p>
-                `;
-                card.onclick = () => showTasks(i);
-
-                if (i <= 10) {
-                    royalContainer.appendChild(card);
-                } else {
-                    seasonContainer.appendChild(card);
-                }
+                card.className = 'activity-card';
+                card.innerHTML = `<span>Activity ${i}</span><small>Tasks 1-10</small>`;
+                card.onclick = () => openTasks(i);
+                
+                if (i <= 6) seasonSlide.appendChild(card);
+                else royalSlide.appendChild(card);
             }
         }
 
-        function showTasks(activityId) {
-            document.getElementById('modalTitle').innerText = `Activity ${activityId} - Select Task`;
-            tasksGrid.innerHTML = '';
-            for (let t = 1; t <= 10; t++) {
-                const btn = document.createElement('button');
-                btn.className = 'task-btn';
-                btn.innerText = `Task ${t}`;
-                btn.onclick = () => alert(`Moving to Activity ${activityId} - Task ${t} page...`);
-                tasksGrid.appendChild(btn);
-            }
-            modal.style.display = 'flex';
+        // Slider Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function goToSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
         }
 
-        document.getElementById('closeModal').onclick = () => modal.style.display = 'none';
-        window.onclick = (event) => { if (event.target == modal) modal.style.display = 'none'; }
+        // Modal Logic
+        function openTasks(num) {
+            document.getElementById('mTitle').innerText = `Activity ${num} Tasks`;
+            const grid = document.getElementById('tGrid');
+            grid.innerHTML = '';
+            for(let i=1; i<=10; i++) {
+                grid.innerHTML += `<div class="task-node" onclick="alert('Open Task ${i}')">${i}</div>`;
+            }
+            document.getElementById('taskModal').style.display = 'flex';
+        }
 
-        createActivityCards();
+        function closeModal() { document.getElementById('taskModal').style.display = 'none'; }
+
+        createCards();
     </script>
 </body>
 </html>

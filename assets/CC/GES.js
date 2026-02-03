@@ -145,7 +145,7 @@ async function evaluateMission(iframe) {
     return {
         isCorrect: correctCount > 0, 
         points: finalPoints, 
-        answerText: allInputs.map(i => i.value).join(" | ")
+        answerText: studentAnswer
     };
 }
 

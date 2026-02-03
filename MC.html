@@ -235,22 +235,28 @@
                 bubble.setAttribute('data-mission', i);
                 bubble.setAttribute('data-name', actName);
 
-                bubble.onclick = function(e) {
+bubble.onclick = function(e) {
                     e.stopPropagation();
-                    const finalAct = this.getAttribute('data-act');
-                    const finalMiss = this.getAttribute('data-mission');
+                    const finalAct = this.getAttribute('data-act'); // كود النشاط (مثل GES)
+                    const finalMiss = this.getAttribute('data-mission'); // رقم الدائرة (1-10)
                     const finalName = encodeURIComponent(this.getAttribute('data-name'));
-                    
-                    // جلب اسم الطالب من الـ LocalStorage لإرساله في الرابط
+
+                    // جلب بيانات الطالب المخزنة لتمرير الاسم في الرابط
                     const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
                     const studentName = encodeURIComponent(saved.name || 'Agent');
 
-                    // --- التعديل المطلوب هنا ---
-                    if (finalAct === 'AS') {
-                        // التوجيه للمجلد الجديد مع إرسال الكود ورقم الدائرة واسم الطالب
+                    // --- التوجيه بناءً على نوع النشاط ---
+                    
+                    if (finalAct === 'GES') {
+                        // إذا كان النشاط Golden Ear يذهب إلى مجلد ACT
+                        window.location.href = `assets/ACT/ACTGES.html?act=${finalAct}&m=${finalMiss}&name=${finalName}&student=${studentName}`;
+                    } 
+                    else if (finalAct === 'AS') {
+                        // إذا كان النشاط Alike (حسب طلبك السابق)
                         window.location.href = `assets/ACT/ACTAS.html?act=${finalAct}&m=${finalMiss}&name=${finalName}&student=${studentName}`;
-                    } else {
-                        // باقي الأنشطة تذهب لصفحتها المعتادة
+                    } 
+                    else {
+                        // باقي الأنشطة تذهب للمسار الافتراضي
                         window.location.href = `Hybrid.html?act=${finalAct}&m=${finalMiss}&name=${finalName}&student=${studentName}`;
                     }
                 };

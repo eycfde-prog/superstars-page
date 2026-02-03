@@ -1,182 +1,112 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC | Universal Mission Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="missionnormalstyle.css">
-    <style>
-        .difficulty-bar { display: none; justify-content: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.3); }
-        .diff-btn { padding: 8px 15px; border: 1px solid #00ff88; color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; transition: 0.3s; background: transparent; border-radius: 5px; }
-        .diff-btn.active { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
-        #studentImg { width: 100%; height: 100%; object-fit: cover; display: block; }
-        #rewardContainer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #2b1055, #000); z-index: 9999; cursor: pointer; }
-        .instruction { position: absolute; bottom: 50px; color: white; font-size: 18px; width: 100%; text-align: center; animation: pulse 1.5s infinite; pointer-events: none; font-family: 'Poppins', sans-serif; }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-        .done-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(192, 192, 192, 0.9); z-index: 10; flex-direction: column; justify-content: center; align-items: center; border-radius: 10px; }
-        .done-overlay i { font-size: 5rem; color: #2ecc71; margin-bottom: 10px; }
-        .done-overlay span { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #333; font-weight: 900; }
-        .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ff88; font-family: 'Orbitron'; text-align: center; }
-        .activity-content-frame { position: relative; background: #1a1a1a; border-radius: 10px; overflow: hidden; height: 75vh; min-height: 500px; }
-        .activity-iframe { transition: opacity 0.5s ease; border: none; width: 100%; height: 100%; }
-        .submit-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; transform: none !important; }
-    </style>
-</head>
-<body>
-    <div id="rewardContainer">
-        <div class="instruction">اضغط على الصندوق لفتحه!</div>
-        <canvas id="rewardCanvas"></canvas>
-    </div>
-
-    <div class="mission-outer-frame" id="mainUI">
-        <header class="mission-header">
-            <div class="agent-side">
-                <div class="circle-frame"><img src="" id="studentImg" alt="Agent"></div>
-                <div class="info-box">
-                    <span>AGENT</span><b id="agentName">...</b>
-                    <div class="token-tag" id="currentTokens">0 TK</div>
-                </div>
-            </div>
-            <div class="center-logo-area"><img src="assets/logo.png"></div>
-            <div class="activity-side">
-                <div class="circle-frame"><img src="" id="activityLogo"></div>
-                <div class="info-box">
-                    <span id="actCodeDisplay">CODE</span><b id="actNameDisplay">LOADING...</b>
-                    <div class="token-tag mission-tag" id="missionNum">M 0</div>
-                </div>
-            </div>
-        </header>
-
-        <div class="difficulty-bar" id="difficultyBar">
-            <div class="diff-btn active" onclick="changeLevel('A', this)">LEVEL A</div>
-            <div class="diff-btn" onclick="changeLevel('B', this)">LEVEL B</div>
-            <div class="diff-btn" onclick="changeLevel('C', this)">LEVEL C</div>
-        </div>
-
-        <div class="activity-content-frame">
-            <div id="loadingElement" class="loader"><i class="fas fa-sync fa-spin"></i> LOADING MISSION...</div>
-            <div id="doneOverlay" class="done-overlay"><i class="fas fa-check-circle"></i><span>DONE</span></div>
-            <iframe id="mainIframe" src="" class="activity-iframe"></iframe>
-        </div>
-
-        <div class="action-container">
-            <button class="nav-btn" onclick="toggleGuide(true)"><i class="fas fa-robot"></i> GUIDE</button>
-            <button class="submit-btn" id="submitBtn" onclick="processSubmission()">SUBMIT</button>
-            <a href="MC.html" class="nav-btn">BACK <i class="fas fa-arrow-right"></i></a>
-        </div>
-    </div>
-
-    <div id="checkerScriptContainer"></div>
-
-    <script src="CC.js"></script>
-    <script>
-    // --- متغيرات المحرك الأساسية ---
+<script>
+    // --- إعدادات المحرك الرئيسية ---
     const urlParams = new URLSearchParams(window.location.search);
-    const fullCode = urlParams.get('act') || 'AS1'; 
-    const mNum = urlParams.get('m') || '1';  
+    const fullCode = (urlParams.get('act') || 'AS1').toUpperCase(); // الكود كامل مثل AS1 أو AX1A
+    const mNumParam = urlParams.get('m') || '1'; // رقم المهمة 1-10
     const actName = urlParams.get('name') || 'Activity'; 
-    
-    // استخراج نوع النشاط (مثلاً AS من AS1)
-    const actType = fullCode.replace(/[0-9]/g, '').replace(/[ABC]/g, '');
     let currentLevel = 'A';
-    const isElite = fullCode.includes('X');
+
+    // 1. استخراج نوع النشاط (AS, GES, AX...)
+    // نقوم بحذف الأرقام وحرف المستوى من الكود للحصول على اسم ملف الـ JS
+    // مثال: AX1A تصبح AX | AS1 تصبح AS
+    const actType = fullCode.replace(/[0-9]/g, '').replace(/[ABC]$/, ''); 
+
+    // 2. استخراج رقم المهمة من الكود (لإرساله لملف التصحيح)
+    // نأخذ الأرقام فقط من الكود (مثل AS10 -> 10)
+    const missionNumber = fullCode.match(/\d+/)[0];
 
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNrfn_k9WIt2uQo4hxUw_0JU6pKnwP1lvyYXQnHhHPv_zpfAL5602QSxC_VGu4V7mflA/exec";
+    const isElite = fullCode.includes('X');
 
-    // --- تهيئة الواجهة ---
+    // تحديث الواجهة
     document.getElementById('actNameDisplay').innerText = actName;
     document.getElementById('actCodeDisplay').innerText = fullCode;
-    document.getElementById('missionNum').innerText = 'M ' + mNum;
-    if(isElite) document.getElementById('difficultyBar').style.display = 'flex';
+    document.getElementById('missionNum').innerText = 'M ' + missionNumber;
 
-    // تحميل ملف التصحيح (مثلاً AS.js)
-    function loadChecker() {
-        const old = document.getElementById('dynamicChecker');
-        if(old) old.remove();
+    // تحميل ملف التصحيح ديناميكياً
+    function loadCheckerScript() {
         const script = document.createElement('script');
         script.src = `assets/CC/${actType}.js`;
-        script.id = "dynamicChecker";
+        script.onload = () => console.log(`Checker ${actType}.js Loaded`);
         document.getElementById('checkerScriptContainer').appendChild(script);
     }
+    loadCheckerScript();
 
+    // تهيئة المهمة (فتح ملف الـ HTML الصحيح)
     async function initMission(level = 'A') {
         currentLevel = level;
-        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
         const iframe = document.getElementById('mainIframe');
         const loader = document.getElementById('loadingElement');
-        
-        document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
-        document.getElementById('studentImg').src = saved.image || 'assets/Student.png';
-        
         loader.style.display = 'block';
-        
-        // تركيب اسم الملف: AS1.html أو AX1A.html
-        let fileName = isElite ? `${fullCode}${level}.html` : `${fullCode}.html`;
-        iframe.src = `assets/MIF/${fileName.toUpperCase()}`; // الحروف كبيرة كما طلبت
-        
-        iframe.onload = () => { loader.style.display = 'none'; };
+
+        // تحديد اسم الملف بناءً على القواعد التي وضعتها
+        // العادية: AS1.html | الـ Elite: AX1A.html
+        let fileName;
+        if (isElite) {
+            fileName = `${actType}${missionNumber}${level}.html`;
+        } else {
+            fileName = `${actType}${missionNumber}.html`;
+        }
+
+        iframe.src = `assets/MIF/${fileName}`;
     }
 
+    // معالجة الإرسال
     async function processSubmission() {
-        const iframe = document.getElementById('mainIframe');
-        const btn = document.getElementById('submitBtn');
+        const submitBtn = document.getElementById('submitBtn');
         const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+        const iframe = document.getElementById('mainIframe');
 
         try {
-            // 1. جلب الإجابات من الـ Iframe
-            if (!iframe.contentWindow.getStudentAnswers) throw new Error("Iframe not ready");
-            const answers = iframe.contentWindow.getStudentAnswers();
-            
-            if (!answers) {
-                alert("Please answer all questions!");
+            submitBtn.disabled = true;
+            submitBtn.innerText = "CHECKING...";
+
+            // جلب الإجابات من الـ Iframe
+            const studentAnswers = iframe.contentWindow.getStudentAnswers();
+            if (!studentAnswers) {
+                alert("Please fill all fields!");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "SUBMIT";
                 return;
             }
 
-            btn.disabled = true;
-            btn.innerText = "CHECKING...";
-
-            // 2. التصحيح عبر ملف الـ JS الخارجي (AS.js)
-            // نستخدم evaluateMission المكتوبة داخل ملف الـ JS الخاص بك
-            const result = evaluateMission(mNum, answers.join(", "));
+            // التصحيح باستخدام ملف الـ CC
+            // نستخدم مصفوفة الإجابات المحولة لنص (كما يتوقع ملف AS.js)
+            const answerString = studentAnswers.join(", ");
+            
+            // استدعاء دالة التقييم من ملف AS.js
+            const result = evaluateMission(missionNumber, answerString);
 
             prizeValue = result.points;
 
-            // 3. إرسال التقرير
-            await fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: 'no-cors',
-                body: JSON.stringify({
-                    email: saved.email,
-                    activity: fullCode,
-                    mission: mNum,
-                    level: isElite ? currentLevel : 'A',
-                    answer: result.answerText,
-                    points: result.points,
-                    isCorrect: result.isCorrect
-                })
-            });
+            // إرسال للشييت
+            const payload = {
+                email: saved.email,
+                activity: fullCode,
+                mission: missionNumber,
+                level: isElite ? currentLevel : 'A',
+                answer: answerString,
+                points: result.points,
+                isCorrect: result.isCorrect
+            };
 
-            // 4. تشغيل الأنيميشن (الموجود في CC.js الأصلي عندك)
+            await fetch(SCRIPT_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
+
+            // تلوين النتائج في صفحة النشاط
+            if (iframe.contentWindow.highlightResults) {
+                // نحتاج لتحويل نتيجة evaluateMission لمصفوفة true/false للنشاط
+                // ملاحظة: هذا يعتمد على منطق AS.js الخاص بك
+                // iframe.contentWindow.highlightResults(someResultArray);
+            }
+
             document.getElementById('rewardContainer').style.display = 'block';
-            if(typeof animate === 'function') animate();
+            animate();
 
         } catch (e) {
             console.error(e);
-            alert("Connection Error! Try again.");
-            btn.disabled = false;
-            btn.innerText = "SUBMIT";
+            alert("Connection Error!");
+            submitBtn.disabled = false;
         }
     }
-
-    function changeLevel(l, b) {
-        document.querySelectorAll('.diff-btn').forEach(btn => btn.classList.remove('active'));
-        b.classList.add('active');
-        initMission(l);
-    }
-
-    window.onload = () => { loadChecker(); initMission(); };
-    </script>
-</body>
-</html>
+    window.onload = () => { initMission(); };
+</script>

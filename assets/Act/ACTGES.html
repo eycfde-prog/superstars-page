@@ -169,41 +169,39 @@
             });
         }
 
-       function openMissions(actName, actCode) {
-            const layer = document.getElementById('missions-layer');
-            const container = document.getElementById('missionContainer');
-            container.innerHTML = ''; 
-            layer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
+function openMissions(actName, actCode) {
+            const layer = document.getElementById('missions-layer');
+            const container = document.getElementById('missionContainer');
+            container.innerHTML = ''; 
+            layer.style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
 
-            const savedData = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            const progress = savedData.progress || {};
+            const savedData = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+            const progress = savedData.progress || {};
 
-            for (let i = 1; i <= 10; i++) {
-                const angle = (i * 36) * (Math.PI / 180);
-                const radius = window.innerWidth < 768 ? 120 : 150;
-                const x = Math.cos(angle) * radius; 
-                const y = Math.sin(angle) * radius;
-                
-                const bubble = document.createElement('div');
-                bubble.className = 'mission-bubble';
-                
-                // التحقق من حالة الإنجاز (الكود GES + الرقم)
-                if (progress[actCode + i] === "done") bubble.classList.add('completed');
-                
-                bubble.innerText = 'T' + i;
-                bubble.style.transform = `translate(${x}px, ${y}px)`;
-                
-                bubble.onclick = function() {
-                    const studentName = encodeURIComponent(savedData.name || 'Agent');
-                    // التوجيه للملفات المطلوبة في مجلد MIF
-                    window.location.href = `assets/MIF/GES${i}.html?act=${actCode}&m=${i}&name=${encodeURIComponent(actName)}&student=${studentName}`;
-                };
+            for (let i = 1; i <= 10; i++) {
+                const angle = (i * 36) * (Math.PI / 180);
+                const radius = window.innerWidth < 768 ? 120 : 150;
+                const x = Math.cos(angle) * radius; 
+                const y = Math.sin(angle) * radius;
+                
+                const bubble = document.createElement('div');
+                bubble.className = 'mission-bubble';
+                
+                if (progress[actCode + i] === "done") bubble.classList.add('completed');
+                
+                bubble.innerText = 'T' + i;
+                bubble.style.transform = `translate(${x}px, ${y}px)`;
+                
+                bubble.onclick = function() {
+                    const studentName = encodeURIComponent(savedData.name || 'Agent');
+                    // تم تعديل المسار ليرسل البيانات إلى ملف GES.js داخل مجلد CC في الأسيتس
+                    window.location.href = `assets/CC/GES.js?act=${actCode}&m=${i}&name=${encodeURIComponent(actName)}&student=${studentName}`;
+                };
 
-                container.appendChild(bubble);
-            }
-        }
-
+                container.appendChild(bubble);
+            }
+        }
         // دالات الدخول والتحكم كما هي دون تغيير
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         async function verifyCode() {
@@ -263,4 +261,5 @@
         if(saved) applyAgentData(JSON.parse(saved));
     </script>
 </body>
+
 </html>

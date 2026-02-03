@@ -101,22 +101,19 @@
 
     <script src="CC.js"></script>
     <script>
-// استخراج البيانات من الرابط (URL)
+    const canvas = document.getElementById('rewardCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, prizeValue = "1";
+    const tokenImg = new Image(); tokenImg.src = 'assets/Token.png'; 
+    let gameState = 'closed', tokens = [], prize = null;
+    let animationId; 
+
     const urlParams = new URLSearchParams(window.location.search);
     const actCode = urlParams.get('act') || 'GES'; 
     const mNum = urlParams.get('m') || '1';  
     const actName = urlParams.get('name') || 'Activity'; 
     let currentLevel = 'A';
-
-    // --- الجزء الجديد: تحميل ملف التصحيح ديناميكياً بناءً على كود النشاط ---
-    const correctionScript = document.createElement('script');
-    correctionScript.src = `assets/CC/${actCode}.js`; 
-    // تنبيه بسيط في الكونسول للتأكد من المسار أثناء البرمجة
-    correctionScript.onload = () => console.log(`Correction script loaded: ${actCode}.js`);
-    correctionScript.onerror = () => console.error(`Failed to load: assets/CC/${actCode}.js`);
-    document.head.appendChild(correctionScript);
-    // ------------------------------------------------------------------
-
+    
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNrfn_k9WIt2uQo4hxUw_0JU6pKnwP1lvyYXQnHhHPv_zpfAL5602QSxC_VGu4V7mflA/exec";
 
     const isElite = actCode.endsWith('X');

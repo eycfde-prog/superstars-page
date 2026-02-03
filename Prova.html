@@ -3,108 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC | Universal Mission Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="missionnormalstyle.css">
+    <title>Super Stars - English Activities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --dark-gold: #996515;
+            --space-black: #050505;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated Star Background */
+        #stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: transparent;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Golden Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 50;
+            backdrop-filter: blur(8px);
+        }
+
+        .task-btn {
+            transition: all 0.3s ease;
+            border: 1px solid var(--gold);
+        }
+
+        .task-btn:hover {
+            background: var(--gold);
+            color: black;
+            box-shadow: 0 0 15px var(--gold);
+        }
+    </style>
 </head>
 <body>
-    <div id="checkerScriptContainer"></div>
-    
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const fullCode = urlParams.get('act') || 'AS1'; 
-        const mNum = urlParams.get('m') || '1';  
-        const actName = urlParams.get('name') || 'Activity'; 
-        const actType = fullCode.match(/[A-Z]+/)[0]; 
-        let currentLevel = 'A';
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNrfn_k9WIt2uQo4hxUw_0JU6pKnwP1lvyYXQnHhHPv_zpfAL5602QSxC_VGu4V7mflA/exec";
-        const isElite = fullCode.includes('X');
 
-        // 1. تحميل ملف التصحيح مع ضمان التزامن
-        function loadCheckerScript() {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = `assets/CC/${actType}.js`;
-                script.onload = resolve;
-                script.onerror = () => reject("Failed to load correction script");
-                document.getElementById('checkerScriptContainer').appendChild(script);
-            });
-        }
+    <div id="stars-container"></div>
 
-        async function initMission(level = 'A') {
-            currentLevel = level;
-            const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            const iframe = document.getElementById('mainIframe');
+    <nav class="flex justify-between items-center p-6 border-b border-yellow-900/30 bg-black/40 sticky top-0 z-40">
+        <div class="flex gap-4">
+            <button class="glass-card px-4 py-2 rounded-lg text-sm hover:text-yellow-500 transition">
+                <i class="fas fa-home"></i> Home
+            </button>
+            <button class="glass-card px-4 py-2 rounded-lg text-sm hover:text-red-500 transition">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+        
+        <h1 class="text-3xl font-bold gold-gradient-text tracking-widest">SUPER STARS</h1>
+
+        <div class="flex items-center gap-4 glass-card p-2 pr-6 rounded-full">
+            <div class="w-10 h-10 rounded-full border-2 border-yellow-500 overflow-hidden bg-gray-800">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Student">
+            </div>
+            <div class="text-xs">
+                <p class="font-bold gold-gradient-text">Alex Johnson</p>
+                <p class="text-gray-400">Score: <span class="text-yellow-500">2,450</span> | Rank: <span class="text-yellow-500">#4</span></p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12 px-6">
+        
+        <section class="mb-16">
+            <h2 class="text-2xl font-light mb-8 border-l-4 border-yellow-600 pl-4 uppercase tracking-widest">Royal Collection</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6" id="royal-activities">
+                </div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-light mb-8 border-l-4 border-yellow-600 pl-4 uppercase tracking-widest">Season Collection</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="season-activities">
+                </div>
+        </section>
+    </main>
+
+    <div id="taskModal" class="modal flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-2xl p-8 rounded-3xl relative animate-in fade-in zoom-in duration-300">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
             
-            // تحديث الواجهة (تأكد من وجود العناصر في الـ HTML الخاص بك)
-            if(document.getElementById('agentName')) document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
-            if(document.getElementById('actNameDisplay')) document.getElementById('actNameDisplay').innerText = actName;
+            <div class="text-center mb-8">
+                <h3 id="modalTitle" class="text-3xl font-bold gold-gradient-text mb-2">Activity 01</h3>
+                <p class="text-gray-400">Select a task to begin your mission</p>
+            </div>
 
-            let fileName = isElite ? `${fullCode}${level}.html` : `${fullCode}.html`;
-            iframe.src = `assets/MIF/${fileName}`;
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-4" id="tasksGrid">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Generate Stars
+        const container = document.getElementById('stars-container');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+            container.appendChild(star);
         }
 
-        async function processSubmission() {
-            const submitBtn = document.getElementById('submitBtn');
-            const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-            const iframe = document.getElementById('mainIframe');
+        // 2. Generate Activities
+        function createActivity(id, containerId) {
+            const container = document.getElementById(containerId);
+            const card = document.createElement('div');
+            card.className = 'glass-card p-8 rounded-2xl text-center cursor-pointer group';
+            card.onclick = () => openTasks(id);
+            card.innerHTML = `
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full border border-yellow-900 flex items-center justify-center group-hover:bg-yellow-500/10 transition">
+                    <span class="text-2xl font-bold text-yellow-500">${id}</span>
+                </div>
+                <h4 class="text-lg font-semibold tracking-wide">ACTIVITY</h4>
+                <div class="mt-4 text-[10px] text-gray-500 uppercase tracking-tighter">10 Tasks Available</div>
+            `;
+            container.appendChild(card);
+        }
 
-            try {
-                submitBtn.innerText = "EVALUATING...";
-                submitBtn.disabled = true;
+        // Fill Royal (1-10) and Season (11-16)
+        for (let i = 1; i <= 10; i++) createActivity(i, 'royal-activities');
+        for (let i = 11; i <= 16; i++) createActivity(i, 'season-activities');
 
-                if (!iframe.contentWindow.getStudentAnswers) throw new Error("Activity not loaded");
-                const answers = iframe.contentWindow.getStudentAnswers();
+        // 3. Modal Logic
+        function openTasks(activityId) {
+            const modal = document.getElementById('taskModal');
+            const grid = document.getElementById('tasksGrid');
+            const title = document.getElementById('modalTitle');
+            
+            title.innerText = `Activity ${activityId.toString().padStart(2, '0')}`;
+            grid.innerHTML = ''; // Clear old tasks
 
-                if (!answers) {
-                    submitBtn.innerText = "SUBMIT";
-                    submitBtn.disabled = false;
-                    return; 
-                }
-
-                // 2. التصحيح (الدالة مستدعاة من الملف الخارجي)
-                const result = evaluateMission(mNum, answers);
-
-                // 3. إرسال التقرير
-                const payload = {
-                    email: saved.email,
-                    activity: fullCode,
-                    mission: mNum,
-                    level: isElite ? currentLevel : 'A',
-                    answer: answers.join(", "),
-                    points: result.points,
-                    isCorrect: result.isCorrect
+            for (let t = 1; t <= 10; t++) {
+                const btn = document.createElement('button');
+                btn.className = 'task-btn p-4 rounded-xl text-center font-bold';
+                btn.innerHTML = `Task ${t}`;
+                btn.onclick = () => {
+                    alert(`Redirecting to Task ${t} of Activity ${activityId}...`);
+                    // Here you would use: window.location.href = `task_page.html?act=${activityId}&task=${t}`;
                 };
-
-                fetch(SCRIPT_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
-
-                // 4. تلوين الإجابات داخل النشاط بناءً على مصفوفة الصحة
-                if(iframe.contentWindow.highlightResults) {
-                    iframe.contentWindow.highlightResults(result.detailedResults); 
-                }
-
-                setTimeout(() => {
-                    if(document.getElementById('rewardContainer')) {
-                        document.getElementById('rewardContainer').style.display = 'block';
-                        if(typeof animate === 'function') animate();
-                    }
-                }, 800);
-
-            } catch (e) {
-                console.error(e);
-                alert("Critical Error: " + e.message);
-                submitBtn.disabled = false;
-                submitBtn.innerText = "RETRY";
+                grid.appendChild(btn);
             }
+
+            modal.style.display = 'flex';
         }
 
-        window.onload = async () => {
-            try {
-                await loadCheckerScript();
-                initMission();
-            } catch(e) { console.error(e); }
-        };
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+
+        // Close modal on outside click
+        window.onclick = (event) => {
+            if (event.target == document.getElementById('taskModal')) closeModal();
+        }
     </script>
 </body>
 </html>

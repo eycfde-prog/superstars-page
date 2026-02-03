@@ -255,22 +255,16 @@
         }
     });
 
-async function initMission(level = 'A') {
-    currentLevel = level;
-    const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
-    const iframe = document.getElementById('mainIframe');
-    const loader = document.getElementById('loadingElement');
+    async function initMission(level = 'A') {
+        currentLevel = level;
+        const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+        const iframe = document.getElementById('mainIframe');
+        const overlay = document.getElementById('doneOverlay');
+        const loader = document.getElementById('loadingElement');
 
-    document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
-    document.getElementById('studentImg').src = saved.image || 'assets/Student.png';
-    loader.style.display = 'block';
-
-    // تم إزالة التحقق من السيرفر ليعمل الكود فوراً
-    document.getElementById('doneOverlay').style.display = 'none';
-    iframe.style.opacity = '1';
-    document.getElementById('submitBtn').disabled = false;
-    iframe.src = isElite ? `assets/MIF/${actCode}${mNum}${level}.html` : `assets/MIF/${actCode}${mNum}.html`;
-}
+        document.getElementById('agentName').innerText = (saved.name || 'AGENT').split(' ')[0].toUpperCase();
+        document.getElementById('studentImg').src = saved.image || 'assets/Student.png';
+        loader.style.display = 'block';
 
         try {
             const isDone = await checkMissionStatus(saved.email, actCode, mNum, SCRIPT_URL);

@@ -1,6 +1,7 @@
 /**
- * Alike Activity Correction Logic (Updated)
- * منطق التصحيح: الكلمة بـ 0.5، المجموع النهائي من 5، بدون تقريب، بدون حد أدنى.
+ * Alike Activity Correction Logic (Universal Version)
+ * الحفاظ على الهيكل لعدم قطع الاتصال مع الصفحة الأم
+ * منطق الحساب: 0.5 لكل كلمة، المجموع من 5.
  */
 
 const ALIKE_ANSWERS_KEY = {
@@ -16,7 +17,20 @@ const ALIKE_ANSWERS_KEY = {
     "10": ["brake", "break", "scent", "sent", "band", "banned", "sight", "site", "meat", "meet"]
 };
 
-// وظيفة التحقق من تشابه الكلمات (تسمح بخطأ حرف واحد)
+// --- الدالة المطلوبة للحفاظ على التواصل مع الصفحة الأم وسيرفر البيانات ---
+async function checkMissionStatus(email, act, m, scriptUrl) {
+    try {
+        // نتركها تقوم بعملها الأصلي لإبلاغ الصفحة الأم إذا كانت المهمة مكتملة سابقاً
+        const response = await fetch(`${scriptUrl}?email=${email}&activity=${act}&mission=${m}`);
+        const data = await response.json();
+        return data.isDone; 
+    } catch (e) {
+        // في حال حدوث خطأ في الشبكة، نرجع false للسماح للطالب بالحل
+        console.log("Connection check skipped or failed.");
+        return false;
+    }
+}
+
 function checkSimilarity(s1, s2) {
     s1 = s1.toLowerCase().trim();
     s2 = s2.toLowerCase().trim();
@@ -42,7 +56,6 @@ async function evaluateMission(iframe) {
     const answers = ALIKE_ANSWERS_KEY[currentMNum];
     if (!answers) return { isCorrect: false, points: 0, answerText: studentAnswer };
 
-    // تنظيف نص الطالب وتحويله لمصفوفة كلمات
     const studentWords = studentAnswer.toLowerCase().split(/[\s,.-]+/).filter(w => w.length > 0);
     
     let correctCount = 0;
@@ -52,13 +65,11 @@ async function evaluateMission(iframe) {
         const index = tempAnswers.findIndex(target => checkSimilarity(word, target));
         if (index !== -1) {
             correctCount++;
-            tempAnswers.splice(index, 1); // حذف الإجابة لعدم تكرار احتسابها
+            tempAnswers.splice(index, 1);
         }
     });
 
-    // --- منطق الحساب المحدث ---
-    // 1. كل كلمة صحيحة بـ 0.5 درجة
-    // 2. المجموع النهائي هو عدد الكلمات الصحيحة مضروباً في 0.5 (الحد الأقصى 5 درجات لـ 10 كلمات)
+    // الحساب الجديد (0.5 لكل كلمة) المجموع النهائي من 5
     let finalPoints = correctCount * 0.5;
 
     return {

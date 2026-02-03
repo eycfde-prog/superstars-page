@@ -208,7 +208,7 @@
             });
         }
 
-        function openMissions(actName, actCode) {
+       function openMissions(actName, actCode) {
             const layer = document.getElementById('missions-layer');
             const container = document.getElementById('missionContainer');
             container.innerHTML = ''; 
@@ -240,9 +240,19 @@
                     const finalAct = this.getAttribute('data-act');
                     const finalMiss = this.getAttribute('data-mission');
                     const finalName = encodeURIComponent(this.getAttribute('data-name'));
+                    
+                    // جلب اسم الطالب من الـ LocalStorage لإرساله في الرابط
+                    const saved = JSON.parse(localStorage.getItem('eyc_agent_data') || '{}');
+                    const studentName = encodeURIComponent(saved.name || 'Agent');
 
-                    // سيتم التوجيه لـ Hybrid.html بكل البيانات
-                    window.location.href = `Hybrid.html?act=${finalAct}&m=${finalMiss}&name=${finalName}`;
+                    // --- التعديل المطلوب هنا ---
+                    if (finalAct === 'AS') {
+                        // التوجيه للمجلد الجديد مع إرسال الكود ورقم الدائرة واسم الطالب
+                        window.location.href = `assets/ACT/ACTAS.html?act=${finalAct}&m=${finalMiss}&name=${finalName}&student=${studentName}`;
+                    } else {
+                        // باقي الأنشطة تذهب لصفحتها المعتادة
+                        window.location.href = `Hybrid.html?act=${finalAct}&m=${finalMiss}&name=${finalName}&student=${studentName}`;
+                    }
                 };
 
                 container.appendChild(bubble);

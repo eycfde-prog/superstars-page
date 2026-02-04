@@ -236,7 +236,7 @@
         createStars();
 
         // --- Core Logic ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyP7ZGmExxEd1rouQdcDMKAdt1-ZQFTvMc0w2fNIhCJtCdn-P3TVxfr9dgpDgno_7hd5g/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0g_eygFVRe2jY8JcIesSlwiTp5MJj5t5H-dRLIDT6BSDa5tZurNf26mYrEmxzLJODhw/exec";
         
         let currentUser = null;
         let isLoggedIn = false;
@@ -291,34 +291,38 @@
             }
         }
 
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const code = document.getElementById('loginCode').value;
-            const loader = document.getElementById('loader');
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const code = document.getElementById('loginCode').value;
+    const loader = document.getElementById('loader');
 
-            if(!email || !code) return alert("Please fill all fields");
+    if(!email || !code) return alert("Please fill all fields");
 
-            loader.style.display = "block";
-            try {
-                const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login`);
-                const data = await response.json();
-
-                if (data.status === "success") {
-                    currentUser = data;
-                    isLoggedIn = true;
-                    localStorage.setItem('eyc_user', JSON.stringify(data));
-                    closeModal('loginModal');
-                    renderHeader();
-                    generateCards();
-                } else {
-                    alert("Error: " + data.message);
-                }
-            } catch (error) {
-                alert("Connection failed.");
-            }
-            loader.style.display = "none";
+    loader.style.display = "block";
+    
+    // استخدام طريقة الـ Script Tag لتفادي مشاكل الـ CORS
+    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+    window[callbackName] = function(data) {
+        delete window[callbackName];
+        document.body.removeChild(script);
+        
+        if (data.status === "success") {
+            currentUser = data;
+            isLoggedIn = true;
+            localStorage.setItem('eyc_user', JSON.stringify(data));
+            closeModal('loginModal');
+            renderHeader();
+            generateCards();
+        } else {
+            alert("Error: " + data.message);
         }
+        loader.style.display = "none";
+    };
 
+    const script = document.createElement('script');
+    script.src = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login&callback=${callbackName}`;
+    document.body.appendChild(script);
+}
         async function handleLogout() {
             if(currentUser) {
                 try {

@@ -47,7 +47,7 @@
         .info-box {
             flex: 1; background: var(--glass); border: 1px solid var(--glass-border);
             border-radius: 15px; padding: 8px; text-align: center;
-            backdrop-filter: blur(10px); transition: 0.3s;
+            backdrop-filter: blur(10px);
         }
 
         .student-photo, .activity-logo {
@@ -56,7 +56,7 @@
             object-fit: cover; box-shadow: 0 0 10px var(--gold-glow);
         }
 
-        .name { font-family: 'Cinzel', serif; font-size: 0.75rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .name { font-family: 'Cinzel', serif; font-size: 0.75rem; color: #fff; }
         .sub-text { font-size: 0.6rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
 
         .vs-container { padding: 0 15px; text-align: center; }
@@ -68,7 +68,7 @@
         .token-badge {
             background: rgba(212, 175, 55, 0.15); border: 1px solid var(--gold);
             border-radius: 50px; padding: 2px 10px; font-size: 0.7rem; color: #fff;
-            display: inline-block; margin-top: 5px; font-weight: 600;
+            display: inline-block; margin-top: 5px;
         }
 
         /* --- Middle: Arena --- */
@@ -90,38 +90,42 @@
 
         /* --- Footer: Controls --- */
         footer {
-            padding: 15px 20px 25px;
-            display: flex; justify-content: center; gap: 15px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            z-index: 10;
+            padding: 15px 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 15px; max-width: 900px; margin: 0 auto; width: 100%;
+            background: transparent; z-index: 10;
         }
 
         .btn {
-            flex: 1; max-width: 150px; padding: 12px; border-radius: 12px;
-            border: none; font-weight: 700; text-transform: uppercase;
-            cursor: pointer; transition: 0.3s; font-size: 0.75rem; font-family: 'Cinzel';
+            padding: 12px; border-radius: 12px; border: none; font-weight: 700;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s;
+            font-size: 0.75rem; font-family: 'Cinzel';
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
 
-        .btn-back { background: rgba(255,255,255,0.05); color: #888; border: 1px solid #444; }
-        .btn-guide { background: rgba(212, 175, 55, 0.1); color: var(--gold); border: 1px solid var(--gold); }
+        /* Submit Button (The Center Piece) */
         .btn-submit { 
+            flex: 2; /* Bigger than others */
             background: var(--gold-gradient); color: #000; 
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            font-size: 0.9rem;
         }
+
+        /* Side Buttons */
+        .btn-side { flex: 1; background: rgba(212, 175, 55, 0.1); color: var(--gold); border: 1px solid var(--gold); }
+        .btn-side.back { order: 3; } /* Moves it to the right side */
+        .btn-side.guide { order: 1; } /* Keeps it on the left side */
+        .btn-submit { order: 2; } /* Keeps it in the middle */
 
         .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
         .btn:active { transform: scale(0.95); }
 
         /* --- Mobile Responsive --- */
         @media (max-width: 600px) {
-            header { padding: 10px; }
             .vs-text { font-size: 1.4rem; }
-            .student-photo, .activity-logo { width: 40px; height: 40px; }
-            .name { font-size: 0.65rem; }
-            .arena-container { padding: 8px; }
-            footer { gap: 8px; padding-bottom: 20px; }
+            footer { gap: 10px; padding-bottom: 25px; }
             .btn { font-size: 0.65rem; padding: 10px; }
+            .btn-submit { font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -133,8 +137,8 @@
         <div class="battle-header">
             <div class="info-box">
                 <img src="https://via.placeholder.com/100" alt="Student" class="student-photo">
-                <div class="name">A. Mansour</div>
-                <div class="sub-text">Rank #04</div>
+                <div class="name">Student Name</div>
+                <div class="sub-text">Rank #--</div>
             </div>
 
             <div class="vs-container">
@@ -144,35 +148,37 @@
 
             <div class="info-box">
                 <img src="https://via.placeholder.com/100" alt="Activity" class="activity-logo">
-                <div class="name" id="activityName">Grammar Quiz</div>
-                <div class="sub-text" id="activityCode">GS-10</div>
+                <div class="name">Activity Name</div>
+                <div class="sub-text">CODE-00</div>
             </div>
         </div>
     </header>
 
     <main class="arena-container">
         <div class="glass-iframe-wrapper">
-            <iframe src="about:blank" id="arenaIframe" title="Activity Content"></iframe>
+            <iframe src="about:blank" id="arenaIframe"></iframe>
         </div>
     </main>
 
     <footer>
-        <button class="btn btn-back" onclick="window.history.back()">
-            <i class="fas fa-home"></i> HOME
+        <button class="btn btn-side guide" onclick="alert('Guide Loading...')">
+            <i class="fas fa-question-circle"></i> GUIDE
         </button>
-        <button class="btn btn-guide" onclick="showGuide()">
-            <i class="fas fa-book-open"></i> GUIDE
+
+        <button class="btn btn-submit" onclick="confirm('Submit Activity?')">
+            <i class="fas fa-check-circle"></i> SUBMIT
         </button>
-        <button class="btn btn-submit" onclick="submitActivity()">
-            <i class="fas fa-paper-plane"></i> SUBMIT
+
+        <button class="btn btn-side back" onclick="window.location.href='MC.html'">
+            <i class="fas fa-chevron-right"></i> BACK
         </button>
     </footer>
 
     <script>
-        // --- Star & Galaxy Effect ---
+        // Star & Shooting Star Background Logic
         function createStars() {
             const container = document.getElementById('star-container');
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 120; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 const size = Math.random() * 2.5;
@@ -184,7 +190,6 @@
                 container.appendChild(star);
             }
         }
-
         function createShootingStar() {
             const container = document.getElementById('star-container');
             const star = document.createElement('div');
@@ -194,27 +199,8 @@
             container.appendChild(star);
             setTimeout(() => star.remove(), 3000);
         }
-
-        // Initialize Background
         createStars();
-        setInterval(createShootingStar, 6000);
-
-        // --- Logic Placeholders ---
-        function showGuide() {
-            alert("Reading activity guidelines...");
-        }
-
-        function submitActivity() {
-            const confirmSub = confirm("Are you sure you want to submit your answers?");
-            if(confirmSub) {
-                alert("Activity submitted successfully! 🪙");
-            }
-        }
-
-        // Script to handle iframe content loading
-        window.onload = () => {
-            console.log("Arena Loaded - Ready for Content");
-        };
+        setInterval(createShootingStar, 5000);
     </script>
 </body>
 </html>

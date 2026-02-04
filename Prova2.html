@@ -1,108 +1,103 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ساحة التحدي التعليمي</title>
+    <title>Learning Arena - VS Mode</title>
     <style>
         :root {
-            --gold: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            --dark-bg: #0a0a0a;
-            --glass: rgba(255, 255, 255, 0.05);
-            --gold-border: rgba(191, 149, 63, 0.4);
+            --gold: #d4af37;
+            --gold-gradient: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --glass: rgba(255, 255, 255, 0.1);
+            --bg: #0a0a0a;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background-color: var(--dark-bg);
-            color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: white;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* الهيدر - نظام المربعات المتقابلة */
+        /* 1. Header Section - The Battle Info */
         header {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .battle-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
-            background: rgba(0, 0, 0, 0.5);
-            border-bottom: 1px solid var(--gold-border);
+            width: 100%;
+            gap: 10px;
         }
 
-        .header-box {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border: 2px solid transparent;
-            border-image: var(--gold) 1;
-            background: rgba(255, 255, 255, 0.02);
-            min-width: 250px;
+        /* Student & Activity Boxes (The 6 Boxes Logic) */
+        .info-box {
+            flex: 1;
+            background: var(--glass);
+            border: 1px solid var(--gold);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.8rem;
         }
 
-        .avatar, .activity-logo {
-            width: 60px;
-            height: 60px;
+        .student-photo, .activity-logo {
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            border: 2px solid #bf953f;
-            background: #222;
+            margin-bottom: 5px;
+            border: 2px solid var(--gold);
+            object-fit: cover;
         }
 
-        .info-text h3 { margin: 0; color: #fcf6ba; font-size: 1.1rem; }
-        .info-text p { margin: 5px 0 0; font-size: 0.85rem; opacity: 0.8; }
-
-        /* منطقة الـ VS والدرجات */
-        .vs-zone {
+        .vs-container {
             text-align: center;
         }
 
         .vs-text {
-            font-size: 2.5rem;
-            font-weight: 900;
-            background: var(--gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
             margin: 0;
-            font-style: italic;
         }
 
-        .tokens-badge {
-            background: var(--gold);
-            color: black;
-            padding: 2px 15px;
-            border-radius: 20px;
+        .token-count {
+            display: block;
+            color: #fff;
             font-weight: bold;
             font-size: 0.9rem;
             margin-top: 5px;
-            display: inline-block;
         }
 
-        /* منطقة الأرينا (الزجاجية) */
-        main {
+        /* 2. Middle Section - The Glass iFrame Arena */
+        .arena-container {
             flex: 1;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+            padding: 15px;
+            position: relative;
         }
 
-        .iframe-container {
-            width: 90%;
-            height: 90%;
+        .glass-iframe-wrapper {
+            width: 100%;
+            height: 100%;
             background: var(--glass);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--gold-border);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
             overflow: hidden;
-            position: relative;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
         iframe {
@@ -111,67 +106,78 @@
             border: none;
         }
 
-        /* الفوتر - الأزرار */
+        /* 3. Footer Section - Controls */
         footer {
+            padding: 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 15px 50px;
-            background: rgba(0,0,0,0.8);
-            border-top: 1px solid var(--gold-border);
+            gap: 10px;
+            background: rgba(0,0,0,0.5);
         }
 
         .btn {
-            padding: 10px 30px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            text-transform: uppercase;
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
             border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.75rem;
         }
 
-        .btn-back { background: transparent; color: white; border: 1px solid white; }
-        .btn-guide { background: rgba(255,255,255,0.1); color: #fcf6ba; border: 1px solid var(--gold-border); }
-        .btn-submit { background: var(--gold); color: black; box-shadow: 0 0 15px rgba(191,149,63,0.4); }
+        .btn-back { background: #333; color: white; }
+        .btn-guide { background: var(--glass); color: var(--gold); border: 1px solid var(--gold); }
+        .btn-submit { 
+            background: var(--gold-gradient); 
+            color: #000; 
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
 
-        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        /* Rank & Codes style */
+        .sub-text {
+            display: block;
+            font-size: 0.65rem;
+            color: #bbb;
+            margin-top: 2px;
+        }
 
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-box">
-            <div class="avatar"></div> <div class="info-text">
-                <h3>اسم الطالب</h3>
-                <p>الرتبة: المحارب الذهبي</p>
+        <div class="battle-header">
+            <div class="info-box">
+                <img src="https://via.placeholder.com/50" alt="Student" class="student-photo">
+                <div class="name">Ahmed Ali</div>
+                <div class="sub-text">The Warrior (Rank #5)</div>
+            </div>
+
+            <div class="vs-container">
+                <p class="vs-text">VS</p>
+                <span class="token-count">500 Tokens</span>
+            </div>
+
+            <div class="info-box">
+                <img src="https://via.placeholder.com/50" alt="Activity" class="activity-logo">
+                <div class="name">Grammar Quiz</div>
+                <div class="sub-text">Code: EN-G101</div>
             </div>
         </div>
-
-        <div class="vs-zone">
-            <h1 class="vs-text">VS</h1>
-            <div class="tokens-badge">500 TOKENS</div>
-        </div>
-
-        <div class="header-box">
-            <div class="info-text" style="text-align: left;">
-                <h3>اسم النشاط التعليمي</h3>
-                <p>كود: EN-204</p>
-            </div>
-            <div class="activity-logo"></div> </div>
     </header>
 
-    <main>
-        <div class="iframe-container">
-            <iframe src="about:blank" title="Activity Arena"></iframe>
+    <main class="arena-container">
+        <div class="glass-iframe-wrapper">
+            <iframe src="about:blank" title="Activity Content"></iframe>
         </div>
     </main>
 
     <footer>
-        <button class="btn btn-back">رجوع</button>
-        <button class="btn btn-guide">دليل المساعدة</button>
-        <button class="btn btn-submit">إرسال الإجابات</button>
+        <button class="btn btn-back">BACK</button>
+        <button class="btn btn-guide">GUIDE</button>
+        <button class="btn btn-submit">SUBMIT</button>
     </footer>
 
 </body>

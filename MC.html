@@ -10,7 +10,7 @@
         :root {
             --gold: #D4AF37;
             --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
-            --bg-deep: #020205; /* أغمق ليعطي إحساس الليل */
+            --bg-deep: #020205; 
             --card-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(212, 175, 55, 0.2);
             --gold-glow: rgba(212, 175, 55, 0.3);
@@ -24,15 +24,32 @@
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle var(--duration) infinite ease-in-out; }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
 
-        /* --- Shooting Stars --- */
+        /* --- Improved Shooting Stars --- */
         .shooting-star {
-            position: absolute; left: 50%; top: 50%; height: 2px;
-            background: linear-gradient(-45deg, var(--gold), rgba(0, 0, 255, 0));
-            filter: drop-shadow(0 0 6px var(--gold));
-            animation: tail 3s ease-in-out infinite, shooting 3s ease-in-out infinite;
+            position: absolute;
+            top: var(--top-pos);
+            left: var(--left-pos);
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 1);
+            animation: shoot var(--speed) linear infinite;
         }
-        @keyframes tail { 0% { width: 0; } 30% { width: 100px; } 100% { width: 0; } }
-        @keyframes shooting { 0% { transform: translateX(0) translateY(0) rotate(45deg); } 100% { transform: translateX(-1000px) translateY(1000px) rotate(45deg); } }
+        .shooting-star::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: var(--tail-length);
+            height: 1px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+        @keyframes shoot {
+            0% { transform: rotate(var(--angle)) translateX(0); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: rotate(var(--angle)) translateX(var(--distance)); opacity: 0; }
+        }
 
         .bg-glow {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -179,13 +196,13 @@
     </div>
 
     <script>
-        // --- Star Generation ---
+        // --- Improved Star & Shooting Star Generation ---
         function createStars() {
             const container = document.getElementById('star-container');
             for (let i = 0; i < 150; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                const size = Math.random() * 3;
+                const size = Math.random() * 2.5;
                 star.style.width = size + 'px';
                 star.style.height = size + 'px';
                 star.style.left = Math.random() * 100 + '%';
@@ -199,15 +216,26 @@
             const container = document.getElementById('star-container');
             const star = document.createElement('div');
             star.className = 'shooting-star';
-            star.style.top = Math.random() * 50 + '%';
-            star.style.left = (Math.random() * 50 + 50) + '%';
+            
+            const startX = Math.random() * 80 + 20; // يبدأ من اليمين أو المنتصف
+            const startY = Math.random() * 40;       // يبدأ من الأعلى
+            const angle = 135 + (Math.random() * 30); // زاوية مائلة للأسفل واليسار
+            const speed = (Math.random() * 1 + 0.8) + 's';
+            
+            star.style.setProperty('--top-pos', startY + '%');
+            star.style.setProperty('--left-pos', startX + '%');
+            star.style.setProperty('--angle', angle + 'deg');
+            star.style.setProperty('--speed', speed);
+            star.style.setProperty('--distance', (window.innerWidth + 500) + 'px');
+            star.style.setProperty('--tail-length', (Math.random() * 100 + 150) + 'px');
+
             container.appendChild(star);
-            setTimeout(() => star.remove(), 3000);
+            setTimeout(() => star.remove(), 2000);
         }
-        setInterval(createShootingStar, 5000);
+        setInterval(createShootingStar, 4000);
         createStars();
 
-        // --- Logic ---
+        // --- Core Logic ---
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbye7D61sMiZsHnN7HIyT19_yFBjmQywFIUWh9LSbv7ml4etmyShepQ4Y-f4XVyBJCmUng/exec";
         
         let currentUser = null;
@@ -272,7 +300,8 @@
 
             loader.style.display = "block";
             try {
-                const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
+                // طلب تسجيل الدخول + سيقوم السكربت تلقائياً بتحديث الحضور في الشيت
+                const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login`);
                 const data = await response.json();
 
                 if (data.status === "success") {
@@ -290,12 +319,25 @@
             loader.style.display = "none";
         }
 
-        function handleLogout() {
+        async function handleLogout() {
+            if(currentUser) {
+                // إبلاغ الشيت بمسح علامة الحضور
+                try {
+                    await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout`);
+                } catch(e) { console.log("Logout sync failed"); }
+            }
             isLoggedIn = false;
             currentUser = null;
             renderHeader();
             generateCards();
         }
+
+        // مسح الحضور عند إغلاق الصفحة أو المتصفح
+        window.addEventListener('beforeunload', () => {
+            if(isLoggedIn && currentUser) {
+                navigator.sendBeacon(`${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout`);
+            }
+        });
 
         function generateCards() {
             const grid = document.getElementById('cardsGrid');

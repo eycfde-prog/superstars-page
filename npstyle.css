@@ -13,20 +13,37 @@ body {
     color: white;
     min-height: 100vh;
     display: flex; justify-content: center; align-items: center;
+    overflow-x: hidden;
+}
+
+/* Canvas Background */
+#starCanvas {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
 }
 
 .container {
-    width: 95%; max-width: 1000px;
+    width: 95%; max-width: 1100px;
     background: var(--card-bg);
     border: 1px solid rgba(212, 175, 55, 0.3);
     border-radius: 40px;
     display: flex; position: relative;
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.1);
     overflow: hidden; padding: 20px;
-    gap: 20px;
+    gap: 20px; z-index: 1;
 }
 
-/* --- Progress Bar --- */
+/* Loading Spinner */
+.img-loader {
+    position: absolute; width: 50px; height: 50px;
+    border: 5px solid rgba(212, 175, 55, 0.1);
+    border-top: 5px solid var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: none; z-index: 10;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
 .progress-container {
     position: absolute; top: 0; left: 0; width: 100%; height: 4px;
     background: rgba(255,255,255,0.05); z-index: 10;
@@ -36,7 +53,6 @@ body {
     transition: width 0.4s ease; box-shadow: 0 0 15px var(--gold);
 }
 
-/* --- Sidebar & Avatar --- */
 .avatar-section {
     flex: 1; display: flex; flex-direction: column;
     justify-content: center; align-items: center;
@@ -44,10 +60,11 @@ body {
     border-radius: 30px;
     border: 1px dashed rgba(212, 175, 55, 0.2);
     padding: 40px; position: relative;
+    transition: all 0.3s ease;
 }
 
 #avatar-container {
-    width: 260px; height: 260px;
+    width: 320px; height: 320px;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
     border: 2px solid rgba(212, 175, 55, 0.3);
@@ -55,18 +72,13 @@ body {
     position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.5);
 }
 
-#avatar-img { width: 230px; height: 230px; z-index: 5; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+#avatar-img { width: 290px; height: 290px; z-index: 5; transition: 0.3s; }
 
-/* --- Form Style --- */
 .form-section { flex: 1.2; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
 
 .step { display: none; animation: fadeIn 0.5s ease; }
 .step.active { display: block; }
-
-@keyframes fadeIn { 
-    from { opacity: 0; transform: translateX(10px); } 
-    to { opacity: 1; transform: translateX(0); } 
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
 h2 { color: white; margin-bottom: 25px; font-weight: 600; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
 h2::before { content: ''; width: 4px; height: 20px; background: var(--gold); border-radius: 2px; }
@@ -93,23 +105,17 @@ button {
 button.prev-btn { background: #333; color: white; }
 button:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
 
-/* --- Stars Effect --- */
-.star { position: absolute; background: var(--gold); border-radius: 50%; opacity: 0; animation: moveStar linear infinite; }
-@keyframes moveStar { 
-    0% { transform: translateY(0) scale(0); opacity: 0; }
-    50% { opacity: 0.8; }
-    100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
-}
-
 .loading-overlay {
     position: absolute; inset: 0; background: rgba(0,0,0,0.9);
     display: none; justify-content: center; align-items: center;
     z-index: 100; color: var(--gold); font-weight: bold; border-radius: 40px;
 }
 
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
-    .container { flex-direction: column; border-radius: 20px; }
-    .avatar-section { padding: 20px; }
-    #avatar-container { width: 180px; height: 180px; }
-    #avatar-img { width: 150px; height: 150px; }
+    .container { flex-direction: column; padding: 15px; gap: 10px; align-items: center; }
+    .avatar-section { width: 100%; padding: 15px; flex: none; border-radius: 20px; background: rgba(212, 175, 55, 0.05); }
+    #avatar-container { width: 180px; height: 180px; margin: 0 auto; }
+    #avatar-img { width: 160px; height: 160px; }
+    .form-section { width: 100%; padding: 0; }
 }

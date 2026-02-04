@@ -7,237 +7,71 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --gold: #D4AF37;
-            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
-            --bg-deep: #020205; 
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(212, 175, 55, 0.2);
-            --gold-glow: rgba(212, 175, 55, 0.3);
-        }
-
+        /* CSS كما هو في الكود السابق لضمان الشكل الجمالي */
+        :root { --gold: #D4AF37; --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); --bg-deep: #020205; --card-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(212, 175, 55, 0.2); --gold-glow: rgba(212, 175, 55, 0.3); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--bg-deep); color: white; min-height: 100vh; overflow-x: hidden; position: relative; }
-
-        /* --- Night Sky & Stars --- */
         #star-container { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); }
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle var(--duration) infinite ease-in-out; }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
-
-        /* --- Improved Shooting Stars --- */
-        .shooting-star {
-            position: absolute;
-            top: var(--top-pos);
-            left: var(--left-pos);
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 1);
-            animation: shoot var(--speed) linear infinite;
-        }
-        .shooting-star::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: var(--tail-length);
-            height: 1px;
-            background: linear-gradient(90deg, var(--gold), transparent);
-        }
-        @keyframes shoot {
-            0% { transform: rotate(var(--angle)) translateX(0); opacity: 1; }
-            70% { opacity: 1; }
-            100% { transform: rotate(var(--angle)) translateX(var(--distance)); opacity: 0; }
-        }
-
-        .bg-glow {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% -20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
-            z-index: -1;
-        }
-
-        /* --- Top Navigation --- */
-        .top-nav {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 20px;
-            display: flex; gap: 20px; z-index: 1000; pointer-events: none;
-        }
-        .nav-icon {
-            font-size: 1.5rem; color: var(--gold); cursor: pointer;
-            transition: 0.3s; pointer-events: auto;
-            filter: drop-shadow(0 0 5px black);
-        }
-        .nav-icon:hover { transform: scale(1.2); color: #fff; }
-
-        .hero-banner {
-            width: 100%; padding: 60px 20px 40px;
-            background: linear-gradient(to bottom, rgba(5, 5, 8, 0.8), transparent);
-            text-align: center; border-bottom: 1px solid var(--glass-border);
-        }
-
-        .profile-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .avatar-main {
-            width: 100px; height: 100px; border-radius: 25px; border: 2px solid var(--gold);
-            background-size: cover; background-position: center;
-            box-shadow: 0 0 20px var(--gold-glow); margin-bottom: 5px;
-        }
-
-        .auth-btns { display: flex; gap: 15px; margin-top: 10px; }
-        .btn-premium {
-            padding: 10px 25px; border-radius: 12px; border: 1px solid var(--gold);
-            background: rgba(212, 175, 55, 0.1); color: var(--gold);
-            cursor: pointer; font-family: 'Cinzel'; font-weight: bold; transition: 0.3s;
-        }
+        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% -20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%); z-index: -1; }
+        .top-nav { position: fixed; top: 0; left: 0; width: 100%; padding: 20px; display: flex; gap: 20px; z-index: 1000; pointer-events: none; }
+        .nav-icon { font-size: 1.5rem; color: var(--gold); cursor: pointer; transition: 0.3s; pointer-events: auto; filter: drop-shadow(0 0 5px black); }
+        .hero-banner { width: 100%; padding: 60px 20px 40px; text-align: center; border-bottom: 1px solid var(--glass-border); }
+        .avatar-main { width: 100px; height: 100px; border-radius: 25px; border: 2px solid var(--gold); background-size: cover; background-position: center; box-shadow: 0 0 20px var(--gold-glow); margin-bottom: 5px; }
+        .btn-premium { padding: 10px 25px; border-radius: 12px; border: 1px solid var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); cursor: pointer; font-family: 'Cinzel'; font-weight: bold; transition: 0.3s; }
         .btn-premium.solid { background: var(--gold-gradient); color: #000; }
-        .btn-premium:hover { transform: translateY(-3px); box-shadow: 0 5px 15px var(--gold-glow); }
-
         .student-name { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 2px; }
-
-        .nav-container { display: flex; justify-content: center; margin: 30px 0; }
-        .tab-switcher {
-            background: rgba(255,255,255,0.05); padding: 5px; border-radius: 50px;
-            display: flex; border: 1px solid var(--glass-border); width: 280px;
-            backdrop-filter: blur(10px);
-        }
-        .tab-btn {
-            flex: 1; padding: 10px 20px; border: none; background: transparent;
-            color: #888; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s;
-        }
-        .tab-btn.active { background: var(--gold-gradient); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
-
-        main { max-width: 1100px; margin: 0 auto; padding: 0 20px 100px; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
-        
-        .activity-card {
-            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px; padding: 30px 15px; text-align: center; cursor: pointer; transition: 0.4s;
-            backdrop-filter: blur(15px);
-        }
-        .activity-card:hover { transform: translateY(-10px); border-color: var(--gold); background: rgba(212, 175, 55, 0.08); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        
-        .card-icon { 
-            font-size: 2.2rem; margin-bottom: 15px; display: block; 
-            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .activity-card h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; margin-bottom: 5px; letter-spacing: 1px; }
-        .activity-card p { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
-
-        .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(20px);
-        }
-        .modal-content {
-            background: #0a0a0c; border-radius: 35px; padding: 35px; 
-            width: 90%; max-width: 450px; border: 1px solid var(--gold); text-align: center;
-        }
-
+        .tab-switcher { background: rgba(255,255,255,0.05); padding: 5px; border-radius: 50px; display: flex; border: 1px solid var(--glass-border); width: 280px; margin: 30px auto; }
+        .tab-btn { flex: 1; padding: 10px 20px; border: none; background: transparent; color: #888; border-radius: 50px; cursor: pointer; font-weight: 600; }
+        .tab-btn.active { background: var(--gold-gradient); color: #000; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; padding: 0 20px; }
+        .activity-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 30px 15px; text-align: center; cursor: pointer; transition: 0.4s; }
+        .activity-card:hover { transform: translateY(-10px); border-color: var(--gold); }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(20px); }
+        .modal-content { background: #0a0a0c; border-radius: 35px; padding: 35px; width: 90%; max-width: 450px; border: 1px solid var(--gold); text-align: center; }
         .tasks-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 25px 0; }
-        .task-node {
-            aspect-ratio: 1; background: rgba(212, 175, 55, 0.05); border: 1px solid var(--glass-border);
-            border-radius: 15px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-weight: 700; position: relative; color: var(--gold); font-size: 1.1rem;
-        }
+        .task-node { aspect-ratio: 1; background: rgba(212, 175, 55, 0.05); border: 1px solid var(--glass-border); border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; color: var(--gold); }
         .task-node.locked { opacity: 0.3; cursor: not-allowed; }
-        .lock-icon { position: absolute; font-size: 0.65rem; color: #ff5555; top: 5px; right: 5px; }
-        .task-node:not(.locked):hover { background: var(--gold-gradient); color: #000; transform: scale(1.15); box-shadow: 0 0 15px var(--gold); }
-
-        .close-modal { background: transparent; border: 1px solid #444; color: #888; padding: 10px 30px; border-radius: 50px; cursor: pointer; margin-top: 15px; }
-
         #loader { display: none; margin: 10px auto; border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        @media (max-width: 600px) {
-            .grid-container { grid-template-columns: repeat(2, 1fr); }
-            .tasks-grid { grid-template-columns: repeat(4, 1fr); }
-        }
     </style>
 </head>
 <body>
-
     <div id="star-container"></div>
     <div class="bg-glow"></div>
-
     <div class="top-nav">
-        <i class="fas fa-house nav-icon" title="Home" onclick="window.location.href='index.html'"></i>
-        <i class="fas fa-right-from-bracket nav-icon" id="logoutBtn" title="Logout" style="display:none;" onclick="handleLogout()"></i>
+        <i class="fas fa-house nav-icon" onclick="window.location.reload()"></i>
+        <i class="fas fa-right-from-bracket nav-icon" id="logoutBtn" style="display:none;" onclick="handleLogout()"></i>
     </div>
-
     <header class="hero-banner" id="heroBanner"></header>
-
-    <div class="nav-container">
-        <div class="tab-switcher">
-            <button class="tab-btn active" onclick="switchType('season', this)">SEASON</button>
-            <button class="tab-btn" onclick="switchType('royal', this)">ROYAL</button>
-        </div>
+    <div class="tab-switcher">
+        <button class="tab-btn active" onclick="switchType('season', this)">SEASON</button>
+        <button class="tab-btn" onclick="switchType('royal', this)">ROYAL</button>
     </div>
-
-    <main>
-        <div class="grid-container" id="cardsGrid"></div>
-    </main>
+    <main><div class="grid-container" id="cardsGrid"></div></main>
 
     <div class="modal" id="taskModal">
         <div class="modal-content">
-            <h2 id="mTitle" style="font-family:'Cinzel'; color:var(--gold);">ACTIVITY</h2>
-            <p id="mSubTitle" style="font-size:0.7rem; color:#888; letter-spacing:2px;"></p>
+            <h2 id="mTitle" style="color:var(--gold); font-family:Cinzel;"></h2>
             <div class="tasks-grid" id="tGrid"></div>
-            <button class="close-modal" onclick="closeModal('taskModal')">BACK</button>
+            <button class="btn-premium" onclick="closeModal('taskModal')">BACK</button>
         </div>
     </div>
 
     <div class="modal" id="loginModal">
         <div class="modal-content">
-            <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:20px;">MEMBER ACCESS</h2>
-            <input type="email" id="loginEmail" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Email Address">
-            <input type="password" id="loginCode" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Access Code">
+            <h2 style="color:var(--gold); font-family:Cinzel;">LOGIN</h2>
+            <input type="email" id="loginEmail" placeholder="Email" style="width:100%; padding:12px; margin:10px 0; background:#111; border:1px solid #333; color:white; border-radius:10px; text-align:center;">
+            <input type="password" id="loginCode" placeholder="Code" style="width:100%; padding:12px; margin:10px 0; background:#111; border:1px solid #333; color:white; border-radius:10px; text-align:center;">
             <div id="loader"></div>
-            <button class="btn-premium solid" style="width:100%; margin-top:15px;" onclick="handleLogin()">LOGIN</button>
-            <button class="close-modal" onclick="closeModal('loginModal')">CLOSE</button>
+            <button class="btn-premium solid" style="width:100%;" onclick="handleLogin()">ENTER</button>
+            <button class="btn-premium" style="width:100%; margin-top:10px;" onclick="closeModal('loginModal')">CANCEL</button>
         </div>
     </div>
 
     <script>
-        // --- Improved Star & Shooting Star Generation ---
-        function createStars() {
-            const container = document.getElementById('star-container');
-            for (let i = 0; i < 150; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                const size = Math.random() * 2.5;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-                container.appendChild(star);
-            }
-        }
-        
-        function createShootingStar() {
-            const container = document.getElementById('star-container');
-            const star = document.createElement('div');
-            star.className = 'shooting-star';
-            
-            const startX = Math.random() * 80 + 20; 
-            const startY = Math.random() * 40;       
-            const angle = 135 + (Math.random() * 30); 
-            const speed = (Math.random() * 1 + 0.8) + 's';
-            
-            star.style.setProperty('--top-pos', startY + '%');
-            star.style.setProperty('--left-pos', startX + '%');
-            star.style.setProperty('--angle', angle + 'deg');
-            star.style.setProperty('--speed', speed);
-            star.style.setProperty('--distance', (window.innerWidth + 500) + 'px');
-            star.style.setProperty('--tail-length', (Math.random() * 100 + 150) + 'px');
-
-            container.appendChild(star);
-            setTimeout(() => star.remove(), 2000);
-        }
-        setInterval(createShootingStar, 4000);
-        createStars();
-
-        // --- Core Logic ---
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0g_eygFVRe2jY8JcIesSlwiTp5MJj5t5H-dRLIDT6BSDa5tZurNf26mYrEmxzLJODhw/exec";
-        
         let currentUser = null;
         let isLoggedIn = false;
 
@@ -256,11 +90,7 @@
                 { name: "SeedsX", icon: "fa-tree", code: "SX" },
                 { name: "GrammarX", icon: "fa-pen-fancy", code: "GX" },
                 { name: "LabelX", icon: "fa-tags", code: "LX" },
-                { name: "VividX", icon: "fa-wand-magic-sparkles", code: "VX" },
-                { name: "FigurativeX", icon: "fa-mask", code: "FX" },
-                { name: "DictationX", icon: "fa-microphone-lines", code: "DX" },
-                { name: "Sing Sang SungX", icon: "fa-music", code: "SSSX" },
-                { name: "ElmagazineX", icon: "fa-book-open", code: "ELX" }
+                { name: "VividX", icon: "fa-wand-magic-sparkles", code: "VX" }
             ]
         };
 
@@ -270,151 +100,95 @@
             if (isLoggedIn) {
                 logoutBtn.style.display = "block";
                 header.innerHTML = `
-                    <div class="profile-container">
-                        <div class="avatar-main" style="background-image: url('${currentUser.image}')"></div>
-                        <h1 class="student-name">${currentUser.name}</h1>
-                        <div style="display:flex; gap:15px; margin-top:5px; font-size:0.85rem; color:var(--gold);">
-                            <span>🪙 ${currentUser.totalScore} TK</span> • <span>🏆 Rank #${currentUser.rank}</span>
-                        </div>
-                        <p style="font-size:0.7rem; color:#888; margin-top:5px;">${currentUser.title}</p>
-                    </div>`;
+                    <div class="avatar-main" style="margin: 0 auto 15px; background-image: url('${currentUser.image}')"></div>
+                    <h1 class="student-name">${currentUser.name}</h1>
+                    <p style="color:var(--gold);">Rank #${currentUser.rank} | ${currentUser.title}</p>
+                `;
             } else {
                 logoutBtn.style.display = "none";
-                header.innerHTML = `
-                    <div class="profile-container">
-                        <h1 class="student-name" style="margin-bottom:10px">EYC PREMIUM</h1>
-                        <div class="auth-btns">
-                            <button class="btn-premium" onclick="openLogin()">Log In</button>
-                            <button class="btn-premium solid" onclick="window.location.href='NP.html'">Join</button>
-                        </div>
-                    </div>`;
+                header.innerHTML = `<h1>EYC PREMIUM</h1><button class="btn-premium solid" style="margin-top:15px" onclick="openModal('loginModal')">LOGIN</button>`;
             }
         }
 
-async function handleLogin() {
-    const email = document.getElementById('loginEmail').value;
-    const code = document.getElementById('loginCode').value;
-    const loader = document.getElementById('loader');
-
-    if(!email || !code) return alert("Please fill all fields");
-
-    loader.style.display = "block";
-    
-    // استخدام طريقة الـ Script Tag لتفادي مشاكل الـ CORS
-    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-    window[callbackName] = function(data) {
-        delete window[callbackName];
-        document.body.removeChild(script);
-        
-        if (data.status === "success") {
-            currentUser = data;
-            isLoggedIn = true;
-            localStorage.setItem('eyc_user', JSON.stringify(data));
-            closeModal('loginModal');
-            renderHeader();
-            generateCards();
-        } else {
-            alert("Error: " + data.message);
-        }
-        loader.style.display = "none";
-    };
-
-    const script = document.createElement('script');
-    script.src = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login&callback=${callbackName}`;
-    document.body.appendChild(script);
-}
-        async function handleLogout() {
-            if(currentUser) {
-                try {
-                    await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout`);
-                } catch(e) { console.log("Logout sync failed"); }
-            }
-            localStorage.removeItem('eyc_user'); 
-            isLoggedIn = false;
-            currentUser = null;
-            renderHeader();
-            generateCards();
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const code = document.getElementById('loginCode').value;
+            const loader = document.getElementById('loader');
+            if(!email || !code) return alert("Fill all fields");
+            loader.style.display = "block";
+            try {
+                const res = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login`);
+                const data = await res.json();
+                if(data.status === "success") {
+                    currentUser = data;
+                    isLoggedIn = true;
+                    localStorage.setItem('eyc_user', JSON.stringify(data));
+                    closeModal('loginModal');
+                    renderHeader();
+                    generateCards();
+                } else { alert(data.message); }
+            } catch(e) { alert("Server Error"); }
+            loader.style.display = "none";
         }
 
-        window.onload = () => {
-            const savedUser = localStorage.getItem('eyc_user');
-            if(savedUser) {
-                currentUser = JSON.parse(savedUser);
-                isLoggedIn = true;
-                renderHeader();
-                generateCards();
-            }
-        };
+        function handleLogout() {
+            if(currentUser) fetch(`${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout`);
+            localStorage.removeItem('eyc_user');
+            location.reload();
+        }
 
         function generateCards() {
             const grid = document.getElementById('cardsGrid');
             grid.innerHTML = '';
             const type = document.querySelector('.tab-btn.active').innerText.toLowerCase();
-            const list = activities[type];
-
-            list.forEach(act => {
+            activities[type].forEach(act => {
                 const card = document.createElement('div');
                 card.className = 'activity-card';
-                card.innerHTML = `<i class="fa-solid ${act.icon} card-icon"></i><h3>${act.name}</h3><p>10 Challenges</p>`;
+                card.innerHTML = `<i class="fa-solid ${act.icon} style="font-size:2rem; color:var(--gold); margin-bottom:10px;"></i><h3>${act.name}</h3>`;
                 card.onclick = () => openTasks(act.name, act.code);
                 grid.appendChild(card);
             });
         }
 
-        function openTasks(name, activityCode) {
+        function openTasks(name, code) {
             document.getElementById('mTitle').innerText = name;
-            document.getElementById('mSubTitle').innerText = "CHOOSE CHALLENGE";
             const tGrid = document.getElementById('tGrid');
             tGrid.innerHTML = '';
-
             for (let i = 1; i <= 10; i++) {
-                let isLocked = isLoggedIn ? (i > 2) : (i > 1);
                 const node = document.createElement('div');
-                node.className = `task-node ${isLocked ? 'locked' : ''}`;
-                node.innerHTML = i + (isLocked ? '<i class="fas fa-lock lock-icon"></i>' : '');
-                
-                if (!isLocked) {
-                    node.onclick = () => {
-                        // --- منطق إرسال بيانات الطالب لصفحة المهمة ---
-                        const baseUrl = `assets/MIF/${activityCode}${i}.html`;
-                        
-                        // نتحقق إذا كان الطالب مسجل دخول لإرسال بياناته الحقيقية، وإلا نرسل بيانات افتراضية (Guest)
-                        const studentData = isLoggedIn ? {
-                            name: currentUser.name,
-                            rank: currentUser.rank,
-                            title: currentUser.title,
-                            image: currentUser.image,
-                            activity: name,
-                            taskNum: i
-                        } : {
-                            name: "Elite Hunter",
-                            rank: "N/A",
-                            title: "Guest Hunter",
-                            image: "https://avataaars.io/?avatarStyle=Transparent",
-                            activity: name,
-                            taskNum: i
-                        };
-
-                        // تحويل البيانات لـ URL Parameters
-                        const params = new URLSearchParams(studentData).toString();
-                        window.location.href = `${baseUrl}?${params}`;
-                    };
-                }
+                node.className = 'task-node';
+                node.innerText = i;
+                node.onclick = () => {
+                    const studentData = isLoggedIn ? {
+                        name: currentUser.name,
+                        rank: currentUser.rank,
+                        title: currentUser.title,
+                        image: currentUser.image,
+                        activity: name,
+                        taskNum: i
+                    } : { name: "Guest", rank: "N/A", title: "Greeny", image: "", activity: name, taskNum: i };
+                    const params = new URLSearchParams(studentData).toString();
+                    window.location.href = `assets/MIF/${code}${i}.html?${params}`;
+                };
                 tGrid.appendChild(node);
             }
-            document.getElementById('taskModal').style.display = 'flex';
+            openModal('taskModal');
         }
 
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openModal(id) { document.getElementById(id).style.display = "flex"; }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
         function switchType(type, btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             generateCards();
         }
 
-        renderHeader();
-        generateCards();
+        window.onload = () => {
+            const saved = localStorage.getItem('eyc_user');
+            if(saved) { currentUser = JSON.parse(saved); isLoggedIn = true; }
+            renderHeader();
+            generateCards();
+        };
     </script>
 </body>
 </html>

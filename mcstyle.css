@@ -1,46 +1,54 @@
+/* --- Root & Basic Reset --- */
 :root {
     --gold: #D4AF37;
     --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
-    --bg-deep: #050508;
+    --bg-deep: #020205; 
     --card-bg: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(212, 175, 55, 0.2);
     --gold-glow: rgba(212, 175, 55, 0.3);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-body { background: var(--bg-deep); color: white; min-height: 100vh; overflow-x: hidden; }
+body { background: var(--bg-deep); color: white; min-height: 100vh; overflow-x: hidden; position: relative; }
+
+/* --- Night Sky & Stars (Fixed Background) --- */
+#star-container { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); }
+.star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle var(--duration) infinite ease-in-out; }
+@keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
 
 .bg-glow {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% -20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%);
+    background: radial-gradient(circle at 50% -20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
     z-index: -1;
 }
 
-.home-btn {
-    position: absolute; top: 20px; left: 20px; color: var(--gold);
-    font-size: 1.5rem; cursor: pointer; z-index: 100; transition: 0.3s;
+/* --- Top Navigation --- */
+.top-nav {
+    position: fixed; top: 0; left: 0; width: 100%; padding: 20px;
+    display: flex; gap: 20px; z-index: 1000; pointer-events: none;
 }
-.home-btn:hover { transform: scale(1.2); }
+.nav-icon {
+    font-size: 1.5rem; color: var(--gold); cursor: pointer;
+    transition: 0.3s; pointer-events: auto;
+    filter: drop-shadow(0 0 5px black);
+}
+.nav-icon:hover { transform: scale(1.2); color: #fff; }
 
-/* Hero Banner */
+/* --- Hero & Profile Section --- */
 .hero-banner {
-    width: 100%; padding: 40px 20px;
-    background: linear-gradient(to bottom, rgba(20, 20, 25, 0.8), transparent);
+    width: 100%; padding: 60px 20px 40px;
+    background: linear-gradient(to bottom, rgba(5, 5, 8, 0.8), transparent);
     text-align: center; border-bottom: 1px solid var(--glass-border);
 }
-
 .profile-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .avatar-main {
     width: 100px; height: 100px; border-radius: 25px; border: 2px solid var(--gold);
     background-size: cover; background-position: center;
     box-shadow: 0 0 20px var(--gold-glow); margin-bottom: 5px;
 }
+.student-name { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 2px; }
 
-.student-name { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 1px; }
-.stats-box { display: flex; gap: 15px; margin-top: 5px; font-size: 0.85rem; color: var(--gold); }
-.student-title { font-size: 0.7rem; color: #888; margin-top: 5px; }
-
-/* Buttons */
+/* --- Authentication & Buttons --- */
 .auth-btns { display: flex; gap: 15px; margin-top: 10px; }
 .btn-premium {
     padding: 10px 25px; border-radius: 12px; border: 1px solid var(--gold);
@@ -50,11 +58,12 @@ body { background: var(--bg-deep); color: white; min-height: 100vh; overflow-x: 
 .btn-premium.solid { background: var(--gold-gradient); color: #000; }
 .btn-premium:hover { transform: translateY(-3px); box-shadow: 0 5px 15px var(--gold-glow); }
 
-/* Navigation */
+/* --- Tab Switcher --- */
 .nav-container { display: flex; justify-content: center; margin: 30px 0; }
 .tab-switcher {
     background: rgba(255,255,255,0.05); padding: 5px; border-radius: 50px;
     display: flex; border: 1px solid var(--glass-border); width: 280px;
+    backdrop-filter: blur(10px);
 }
 .tab-btn {
     flex: 1; padding: 10px 20px; border: none; background: transparent;
@@ -62,58 +71,50 @@ body { background: var(--bg-deep); color: white; min-height: 100vh; overflow-x: 
 }
 .tab-btn.active { background: var(--gold-gradient); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
 
-/* Main Grid */
+/* --- Main Grid & Cards --- */
 main { max-width: 1100px; margin: 0 auto; padding: 0 20px 100px; }
 .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
 
 .activity-card {
     background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
     border-radius: 24px; padding: 30px 15px; text-align: center; cursor: pointer; transition: 0.4s;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
 }
-.activity-card:hover { transform: translateY(-10px); border-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
+.activity-card:hover { transform: translateY(-10px); border-color: var(--gold); background: rgba(212, 175, 55, 0.08); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
 .card-icon { 
     font-size: 2.2rem; margin-bottom: 15px; display: block; 
     background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
-.activity-card h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; margin-bottom: 5px; }
+.activity-card h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; margin-bottom: 5px; letter-spacing: 1px; }
 .activity-card p { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
 
-/* Modals & Inputs */
+/* --- Modals & Task Grid --- */
 .modal {
     position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-    display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(15px);
+    display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(20px);
 }
 .modal-content {
     background: #0a0a0c; border-radius: 35px; padding: 35px; 
     width: 90%; max-width: 450px; border: 1px solid var(--gold); text-align: center;
 }
-.login-input {
-    width: 100%; padding: 12px; margin: 10px 0; border-radius: 12px; 
-    background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; text-align: center;
-}
-
-/* Tasks Grid */
 .tasks-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 25px 0; }
 .task-node {
     aspect-ratio: 1; background: rgba(212, 175, 55, 0.05); border: 1px solid var(--glass-border);
     border-radius: 15px; display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-weight: 700; position: relative; color: var(--gold); font-size: 1.1rem;
 }
-.task-node.locked { opacity: 0.4; cursor: not-allowed; }
+.task-node.locked { opacity: 0.3; cursor: not-allowed; }
 .lock-icon { position: absolute; font-size: 0.65rem; color: #ff5555; top: 5px; right: 5px; }
-.task-node:not(.locked):hover { background: var(--gold-gradient); color: #000; transform: scale(1.1); }
+.task-node:not(.locked):hover { background: var(--gold-gradient); color: #000; transform: scale(1.15); box-shadow: 0 0 15px var(--gold); }
 
-.close-modal {
-    background: transparent; border: 1px solid #444; color: #888;
-    padding: 10px 30px; border-radius: 50px; cursor: pointer; margin-top: 15px;
-}
+.close-modal { background: transparent; border: 1px solid #444; color: #888; padding: 10px 30px; border-radius: 50px; cursor: pointer; margin-top: 15px; }
 
-/* Loader */
+/* --- Loader & Animations --- */
 #loader { display: none; margin: 10px auto; border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+/* --- Responsive Layout --- */
 @media (max-width: 600px) {
     .grid-container { grid-template-columns: repeat(2, 1fr); }
     .tasks-grid { grid-template-columns: repeat(4, 1fr); }

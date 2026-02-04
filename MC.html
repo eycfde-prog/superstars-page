@@ -173,15 +173,20 @@
             generateCards();
         }
 
-        window.onload = () => {
-            const savedUser = localStorage.getItem('eyc_user');
-            if(savedUser) {
-                currentUser = JSON.parse(savedUser);
-                isLoggedIn = true;
-                renderHeader();
-                generateCards();
-            }
-        };
+window.onload = () => {
+    const savedUser = localStorage.getItem('eyc_user');
+    if(savedUser) {
+        currentUser = JSON.parse(savedUser);
+        isLoggedIn = true;
+        renderHeader();
+    } else {
+        // إذا لم يكن هناك مستخدم، نحتاج أيضاً لرسم الهيدر الافتراضي
+        renderHeader();
+    }
+    
+    // هذه هي الإضافة السحرية: استدعاء الدالة لترسم الكروت للكل
+    generateCards(); 
+};
 
         function generateCards() {
             const grid = document.getElementById('cardsGrid');

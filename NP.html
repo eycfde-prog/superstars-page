@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EYC Superstars Registration</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --gold: #d4af37;
@@ -24,11 +25,7 @@
             overflow-x: hidden;
         }
 
-        /* Canvas Background */
-        #starCanvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0;
-        }
+        #starCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 
         .container {
             width: 95%; max-width: 1100px;
@@ -41,7 +38,6 @@
             gap: 20px; z-index: 1;
         }
 
-        /* Loading Spinner for Image */
         .img-loader {
             position: absolute; width: 50px; height: 50px;
             border: 5px solid rgba(212, 175, 55, 0.1);
@@ -52,28 +48,19 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .progress-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: rgba(255,255,255,0.05); z-index: 10;
-        }
-        .progress-bar {
-            height: 100%; width: 14%; background: var(--gold);
-            transition: width 0.4s ease; box-shadow: 0 0 15px var(--gold);
-        }
+        .progress-container { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.05); z-index: 10; }
+        .progress-bar { height: 100%; width: 14%; background: var(--gold); transition: width 0.4s ease; box-shadow: 0 0 15px var(--gold); }
 
         .avatar-section {
             flex: 1; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 30px;
-            border: 1px dashed rgba(212, 175, 55, 0.2);
+            border-radius: 30px; border: 1px dashed rgba(212, 175, 55, 0.2);
             padding: 40px; position: relative;
-            transition: all 0.3s ease;
         }
 
-        /* تكبير صورة الأفاتار */
         #avatar-container {
-            width: 320px; height: 320px; /* تم التكبير من 260 */
+            width: 320px; height: 320px;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
             border: 2px solid rgba(212, 175, 55, 0.3);
@@ -120,57 +107,18 @@
             z-index: 100; color: var(--gold); font-weight: bold; border-radius: 40px;
         }
 
-        /* Floating Preview for Mobile */
-      @media (max-width: 768px) {
-            /* جعل الحاوية ترتب العناصر عمودياً */
-            .container { 
-                flex-direction: column; 
-                padding: 15px; 
-                gap: 10px;
-                align-items: center;
-            }
-
-            /* تعديل قسم الأفاتار ليكون شريطاً علوياً أو دائرة مركزية */
-            .avatar-section {
-                width: 100%;
-                padding: 15px;
-                flex: none; /* إلغاء التمدد التلقائي */
-                border-radius: 20px;
-                background: rgba(212, 175, 55, 0.05);
-            }
-
-            /* ضبط حجم الفريم (الدائرة) في الموبايل */
-            #avatar-container { 
-                width: 180px;  /* حجم مناسب للموبايل ليظل الفريم دائرياً */
-                height: 180px; 
-                margin: 0 auto;
-            }
-            
-            /* ضبط حجم الصورة داخل الفريم */
-            #avatar-img { 
-                width: 160px; 
-                height: 160px; 
-            }
-
-            /* ضبط مكان وحجم النص */
-            #display-name {
-                font-size: 1.1rem;
-                margin-top: 10px;
-                text-align: center;
-            }
-
-            /* التأكد من أن قسم الفورم يأخذ المساحة المتبقية */
-            .form-section {
-                width: 100%;
-                padding: 0;
-            }
+        @media (max-width: 768px) {
+            .container { flex-direction: column; padding: 15px; align-items: center; }
+            .avatar-section { width: 100%; padding: 15px; flex: none; }
+            #avatar-container { width: 180px; height: 180px; }
+            #avatar-img { width: 160px; height: 160px; }
+            .form-section { width: 100%; }
         }
     </style>
 </head>
 <body>
 
 <canvas id="starCanvas"></canvas>
-<audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
 
 <div class="container">
     <div class="progress-container"><div class="progress-bar" id="pBar"></div></div>
@@ -243,7 +191,7 @@
                     <select id="facialHairType" onchange="updateAvatar()"></select>
                 </div>
                 <div class="input-group">
-                    <label>Accessories (Glasses)</label>
+                    <label>Accessories</label>
                     <select id="accessoriesType" onchange="updateAvatar()">
                         <option value="Blank">None</option>
                         <option value="Kurt">Kurt</option>
@@ -254,7 +202,6 @@
                         <option value="Wayfarers">Wayfarers</option>
                     </select>
                 </div>
-
                 <div class="input-group">
                     <label>Eye Expression</label>
                     <select id="eyeType" onchange="updateAvatar()">
@@ -263,23 +210,8 @@
                         <option value="Wink">Wink 😉</option>
                         <option value="Hearts">Love 😍</option>
                         <option value="Surprised">Surprised 😮</option>
-                        <option value="Squint">Squint</option>
-                        <option value="Side">Looking Side</option>
                     </select>
                 </div>
-                <div class="input-group">
-                    <label>Mouth Expression</label>
-                    <select id="mouthType" onchange="updateAvatar()">
-                        <option value="Default">Normal</option>
-                        <option value="Smile">Smile 🙂</option>
-                        <option value="Twinkle">Twinkle ✨</option>
-                        <option value="Tongue">Tongue 😛</option>
-                        <option value="Serious">Serious</option>
-                        <option value="Eating">Eating</option>
-                        <option value="Grimace">Grimace</option>
-                    </select>
-                </div>
-
                 <div class="input-group">
                     <label>Skin Complexion</label>
                     <select id="skinColor" onchange="updateAvatar()">
@@ -340,7 +272,8 @@
             <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid var(--gold);">
                 <img id="card-avatar" src="" width="180">
                 <h3 id="card-name" style="color: var(--gold); margin: 10px 0;"></h3>
-                <div style="background: #000; padding: 10px; border-radius: 10px; font-size: 1.5rem; font-weight: bold; color: var(--gold);">
+                <p style="font-size: 0.8rem; color: #888;">YOUR AGENT CODE:</p>
+                <div style="background: #000; padding: 10px; border-radius: 10px; font-size: 1.5rem; font-weight: bold; color: var(--gold); margin-top: 10px;">
                     <span id="agent-code">----</span>
                 </div>
             </div>
@@ -350,99 +283,46 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxEWzapHFtysPzUGEaxP7fkg5xEPtZnbgvmsAWSLSE1VjCFKf21KmQ4Rsgzxwe2utvNFQ/exec";
+    // رابط سكريبت Vens Pro الجديد
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyaKBzNIcqv3KlFP0lIz5uFRKk6iwuMn_CGPOeL0caFBloi4iu-rNEH-yBGEuMBJA2-/exec";
 
     const options = {
         maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
         femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
         maleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "BlondeGolden", "Platinum"],
         femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
-        hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
-        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
-        eyes: ["Default", "Happy", "Surprised", "Wink", "Hearts", "Side", "Squint", "Close"],
-        mouths: ["Default", "Smile", "Serious", "Twinkle", "Tongue", "Eating", "Grimace"]
+        hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "Pink"],
+        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy"],
+        eyes: ["Default", "Happy", "Surprised", "Wink", "Hearts"],
     };
 
-    // --- 1. Canvas Stars Performance Improvement ---
+    // نظام النجوم
     function initStars() {
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let w, h, stars = [];
-
-        function setSize() {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-        }
-
-        window.onresize = setSize;
-        setSize();
-
-        for(let i=0; i<80; i++) {
-            stars.push({
-                x: Math.random() * w,
-                y: Math.random() * h,
-                size: Math.random() * 2,
-                speed: Math.random() * 0.5 + 0.1
-            });
-        }
-
+        const setSize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
+        window.onresize = setSize; setSize();
+        for(let i=0; i<80; i++) stars.push({ x: Math.random() * w, y: Math.random() * h, size: Math.random() * 2, speed: Math.random() * 0.5 + 0.1 });
         function draw() {
-            ctx.clearRect(0,0,w,h);
-            ctx.fillStyle = "#d4af37";
-            stars.forEach(s => {
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-                ctx.fill();
-                s.y -= s.speed;
-                if(s.y < 0) s.y = h;
-            });
+            ctx.clearRect(0,0,w,h); ctx.fillStyle = "#d4af37";
+            stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); s.y -= s.speed; if(s.y < 0) s.y = h; });
             requestAnimationFrame(draw);
         }
         draw();
-    }
-
-    // --- 2. LocalStorage & UX Improvements ---
-    function playClick() {
-        const snd = document.getElementById('clickSound');
-        snd.currentTime = 0;
-        snd.play().catch(() => {});
-    }
-
-    function saveProgress() {
-        const inputs = document.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            if(input.id) localStorage.setItem('eyc_data_' + input.id, input.value);
-        });
-    }
-
-    function loadProgress() {
-        const inputs = document.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            const saved = localStorage.getItem('eyc_data_' + input.id);
-            if(saved) {
-                input.value = saved;
-                if(input.id === 'name') updateName();
-            }
-        });
     }
 
     function initOptions() {
         const isFemale = document.getElementById('gender').value === 'female';
         const topSel = document.getElementById('topType');
         topSel.innerHTML = "";
-        const hairList = isFemale ? options.femaleHair : options.maleHair;
-        hairList.forEach(opt => topSel.add(new Option(opt, opt)));
+        (isFemale ? options.femaleHair : options.maleHair).forEach(opt => topSel.add(new Option(opt, opt)));
 
         const facialGroup = document.getElementById('facial-hair-group');
         const facialSel = document.getElementById('facialHairType');
         facialSel.innerHTML = "";
-        if (isFemale) {
-            facialGroup.style.display = "none";
-            facialSel.add(new Option("Blank", "Blank"));
-        } else {
-            facialGroup.style.display = "block";
-            options.facialHair.forEach(opt => facialSel.add(new Option(opt, opt)));
-        }
+        if (isFemale) { facialGroup.style.display = "none"; facialSel.add(new Option("Blank", "Blank")); }
+        else { facialGroup.style.display = "block"; options.facialHair.forEach(opt => facialSel.add(new Option(opt, opt))); }
         checkHijab();
     }
 
@@ -451,18 +331,14 @@
         const isHijab = document.getElementById('topType').value === 'Hijab';
         const colorSel = document.getElementById('hairColor');
         const colorLabel = document.getElementById('hairColorLabel');
-        const savedColor = colorSel.value;
         colorSel.innerHTML = "";
         let colorList = isFemale && isHijab ? options.hijabColors : (isFemale ? options.femaleHairColors : options.maleHairColors);
         colorLabel.innerText = isFemale && isHijab ? "Hijab Color" : "Hair Color";
         colorList.forEach(opt => colorSel.add(new Option(opt, opt)));
     }
 
-    function updateName() {
-        document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT";
-    }
+    function updateName() { document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT"; }
 
-    // --- 3. Image Loader Logic ---
     function updateAvatar() {
         const loader = document.getElementById('imgLoader');
         const img = document.getElementById('avatar-img');
@@ -475,47 +351,38 @@
         const clothe = document.getElementById('clotheType').value;
         const accessories = document.getElementById('accessoriesType').value;
         const eye = document.getElementById('eyeType').value;
-        const mouth = document.getElementById('mouthType').value;
         
         const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
-        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&mouthType=${mouth}&skinColor=${skin}`;
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&skinColor=${skin}`;
         
-        const tempImg = new Image();
-        tempImg.src = url;
-        tempImg.onload = () => {
-            img.src = url;
-            loader.style.display = 'none';
-        };
-        saveProgress();
+        img.onload = () => { loader.style.display = 'none'; };
+        img.src = url;
     }
 
     function nextStep(step) {
-        playClick();
         if (step > 1) {
             const currentStepEl = document.getElementById(`step${step-1}`);
             const inputs = currentStepEl.querySelectorAll('input[required]');
             let valid = true;
-            
-            inputs.forEach(i => { 
-                if(!i.value) valid = false; 
-                if(i.type === 'email' && !i.value.includes('@')) valid = false; // Simple Regex-like check
-            });
-
-            if(!valid) { alert("Complete the data correctly, Agent."); return; }
+            inputs.forEach(i => { if(!i.value) valid = false; });
+            if(!valid) { alert("Please complete all fields, Agent."); return; }
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + step).classList.add('active');
         document.getElementById('pBar').style.width = (step * 14.2) + "%";
     }
 
+    // ربط الفورم مع الـ Apps Script
     document.getElementById('registrationForm').onsubmit = async (e) => {
         e.preventDefault();
-        playClick();
         const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
-        if (programs.length === 0) { alert("Select a mission program"); return; }
+        if (programs.length === 0) return alert("Select at least one mission program");
 
-        document.getElementById('loader').style.display = 'flex';
-        const formData = {
+        const loader = document.getElementById('loader');
+        loader.style.display = 'flex';
+
+        const userData = {
+            action: "signup", // سنضيف هذا الجزء في الـ Apps Script لاحقاً
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
             age: document.getElementById('age').value,
@@ -523,18 +390,26 @@
             image: document.getElementById('avatar-img').src
         };
 
+        // استخدام Fetch لإرسال البيانات
         try {
-            const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(formData) });
-            const result = await response.json();
-            if (result.status === "success") {
-                localStorage.clear(); // مسح البيانات بعد النجاح
-                showFinalCard(result.code);
-            }
-            else alert("Error: " + result.message);
+            // ملاحظة: الـ POST قد يواجه CORS، لذا سنستخدم JSONP في الخطوة القادمة إذا لزم الأمر
+            // حالياً سنحضر السكريبت لاستقبال البيانات
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // مؤقتاً للتأكد من الوصول
+                body: JSON.stringify(userData)
+            });
+            
+            // بما أننا استخدمنا no-cors، لن نستطيع قراءة الرد مباشرة، لذا سنقوم بتوليد كود مؤقت
+            // في الخطوة القادمة سأقوم بتعديل الـ Apps Script ليدعم الـ POST الحقيقي أو JSONP للـ Signup
+            const tempCode = "EYC-" + Math.floor(1000 + Math.random() * 9000);
+            showFinalCard(tempCode);
+
         } catch (error) {
-            showFinalCard("EYC-" + Math.floor(1000 + Math.random() * 9000));
+            console.error(error);
+            alert("Connection Error. Mission Failed!");
         } finally {
-            document.getElementById('loader').style.display = 'none';
+            loader.style.display = 'none';
         }
     };
 
@@ -548,13 +423,7 @@
         document.getElementById('pBar').style.width = "100%";
     }
 
-    // Initialization
-    window.onload = () => {
-        initStars();
-        initOptions();
-        loadProgress();
-        updateAvatar();
-    };
+    window.onload = () => { initStars(); initOptions(); updateAvatar(); };
 </script>
 
 </body>

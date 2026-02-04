@@ -1,34 +1,611 @@
-// أضف هذا الجزء داخل ملف الأب سكريبت الحالي
-function doPost(e) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
-  
-  try {
-    const data = JSON.parse(e.postData.contents);
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EYC Superstars Registration</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="npstyle.css">
+
+</head>
+
+<body>
+
+
+
+<canvas id="starCanvas"></canvas>
+
+<audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+
+
+
+<div class="container">
+
+    <div class="progress-container"><div class="progress-bar" id="pBar"></div></div>
+
+    <div class="loading-overlay" id="loader">DEPLOYING AGENT...</div>
+
     
-    if (data.action === "signup") {
-      // توليد كود فريد للعميل
-      const agentCode = "EYC-" + Math.floor(1000 + Math.random() * 9000);
-      
-      // إضافة الصف الجديد
-      // الترتيب: Timestamp, Name, Email, Age, Programs, Image, Code
-      sheet.appendRow([
-        new Date(), 
-        data.name, 
-        data.email.toLowerCase().trim(), 
-        data.age, 
-        data.programs, 
-        data.image, 
-        agentCode,
-        "✅" // Attendance initial
-      ]);
-      
-      return sendResponse({ 
-        status: "success", 
-        code: agentCode 
-      });
+
+    <div class="avatar-section" id="avatar-sidebar">
+
+        <div id="avatar-container">
+
+            <div class="img-loader" id="imgLoader"></div>
+
+            <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
+
+        </div>
+
+        <h3 id="display-name" style="margin-top:20px; color: var(--gold); letter-spacing: 2px;">EYC AGENT</h3>
+
+    </div>
+
+
+
+    <div class="form-section">
+
+        <form id="registrationForm">
+
+            <div class="step active" id="step1">
+
+                <h2>01. Identity</h2>
+
+                <div class="input-group">
+
+                    <label>Full Name</label>
+
+                    <input type="text" id="name" placeholder="Enter Agent Name" required oninput="updateName()">
+
+                </div>
+
+                <button type="button" onclick="nextStep(2)">Proceed</button>
+
+            </div>
+
+
+
+            <div class="step" id="step2">
+
+                <h2>02. Contact & Age</h2>
+
+                <div class="input-group"><input type="email" id="email" placeholder="Email Address" required></div>
+
+                <div class="input-group"><input type="number" id="age" placeholder="Age" required></div>
+
+                <div class="btn-group">
+
+                    <button type="button" class="prev-btn" onclick="nextStep(1)">Back</button>
+
+                    <button type="button" onclick="nextStep(3)">Next</button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="step" id="step3">
+
+                <h2>03. Base Design</h2>
+
+                <div class="input-group">
+
+                    <label>Gender Base</label>
+
+                    <select id="gender" onchange="initOptions(); updateAvatar();">
+
+                        <option value="male">Male</option>
+
+                        <option value="female">Female</option>
+
+                    </select>
+
+                </div>
+
+                <div class="btn-group">
+
+                    <button type="button" class="prev-btn" onclick="nextStep(2)">Back</button>
+
+                    <button type="button" onclick="nextStep(4)">Customize</button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="step" id="step4">
+
+                <h2>04. Features</h2>
+
+                <div class="input-group">
+
+                    <label id="hairLabel">Hair Style</label>
+
+                    <select id="topType" onchange="checkHijab(); updateAvatar();"></select>
+
+                </div>
+
+                <div class="input-group">
+
+                    <label id="hairColorLabel">Color</label>
+
+                    <select id="hairColor" onchange="updateAvatar()"></select>
+
+                </div>
+
+                <div class="btn-group">
+
+                    <button type="button" class="prev-btn" onclick="nextStep(3)">Back</button>
+
+                    <button type="button" onclick="nextStep(5)">Next</button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="step" id="step5">
+
+                <h2>05. Face & Details</h2>
+
+                <div id="facial-hair-group" class="input-group">
+
+                    <label>Beard Style</label>
+
+                    <select id="facialHairType" onchange="updateAvatar()"></select>
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>Accessories</label>
+
+                    <select id="accessoriesType" onchange="updateAvatar()">
+
+                        <option value="Blank">None</option>
+
+                        <option value="Kurt">Kurt</option>
+
+                        <option value="Prescription01">Classic</option>
+
+                        <option value="Prescription02">Modern</option>
+
+                        <option value="Round">Round</option>
+
+                        <option value="Sunglasses">Sunglasses</option>
+
+                        <option value="Wayfarers">Wayfarers</option>
+
+                    </select>
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>Eye Expression</label>
+
+                    <select id="eyeType" onchange="updateAvatar()">
+
+                        <option value="Default">Normal</option>
+
+                        <option value="Happy">Happy</option>
+
+                        <option value="Wink">Wink 😉</option>
+
+                        <option value="Hearts">Love 😍</option>
+
+                        <option value="Surprised">Surprised 😮</option>
+
+                        <option value="Squint">Squint</option>
+
+                    </select>
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>Skin Complexion</label>
+
+                    <select id="skinColor" onchange="updateAvatar()">
+
+                        <option value="Tanned">Tanned</option>
+
+                        <option value="Yellow">Yellow</option>
+
+                        <option value="Pale">Pale</option>
+
+                        <option value="Light">Light</option>
+
+                        <option value="Brown">Brown</option>
+
+                    </select>
+
+                </div>
+
+                <div class="btn-group">
+
+                    <button type="button" class="prev-btn" onclick="nextStep(4)">Back</button>
+
+                    <button type="button" onclick="nextStep(6)">Outfits</button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="step" id="step6">
+
+                <h2>06. Wardrobe</h2>
+
+                <div class="input-group">
+
+                    <label>Outfit Style</label>
+
+                    <select id="clotheType" onchange="updateAvatar()">
+
+                        <option value="BlazerShirt">Blazer & Shirt</option>
+
+                        <option value="BlazerSweater">Blazer & Sweater</option>
+
+                        <option value="CollarSweater">Collar Sweater</option>
+
+                        <option value="GraphicShirt">Graphic T-Shirt</option>
+
+                        <option value="Hoodie">Hoodie</option>
+
+                    </select>
+
+                </div>
+
+                <div class="btn-group">
+
+                    <button type="button" class="prev-btn" onclick="nextStep(5)">Back</button>
+
+                    <button type="button" onclick="nextStep(7)">Next</button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="step" id="step7">
+
+                <h2>07. Mission</h2>
+
+                <div class="input-group">
+
+                    <label style="margin-bottom: 15px;">Choose Programs</label>
+
+                    <div style="display: flex; gap: 20px;">
+
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+
+                            <input type="checkbox" name="program" value="Season" style="width: 20px;"> Season
+
+                        </label>
+
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+
+                            <input type="checkbox" name="program" value="X-Box" style="width: 20px;"> X-Box
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+                <div class="btn-group">
+
+                    <button type="button" class="prev-btn" onclick="nextStep(6)">Back</button>
+
+                    <button type="submit">Complete Mission</button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+
+
+        <div id="success-card" style="display: none; text-align: center;">
+
+            <h2 style="justify-content: center;">MISSION ACCOMPLISHED</h2>
+
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid var(--gold);">
+
+                <img id="card-avatar" src="" width="180">
+
+                <h3 id="card-name" style="color: var(--gold); margin: 10px 0;"></h3>
+
+                <div style="background: #000; padding: 10px; border-radius: 10px; font-size: 1.5rem; font-weight: bold; color: var(--gold);">
+
+                    <span id="agent-code">----</span>
+
+                </div>
+
+            </div>
+
+            <button onclick="window.location.href='MC.html'" style="margin-top: 20px; width: 100%;">Enter Command Center</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    // سيتم استبدال هذا بالرابط الحقيقي في الخطوة القادمة
+
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyaKBzNIcqv3KlFP0lIz5uFRKk6iwuMn_CGPOeL0caFBloi4iu-rNEH-yBGEuMBJA2-/exec";
+
+
+
+    const options = {
+
+        maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
+
+        femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
+
+        maleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "BlondeGolden", "Platinum"],
+
+        femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
+
+        hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
+
+        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
+
+        eyes: ["Default", "Happy", "Surprised", "Wink", "Hearts", "Side", "Squint", "Close"],
+
+        mouths: ["Default", "Smile", "Serious", "Twinkle", "Tongue", "Eating", "Grimace"]
+
+    };
+
+
+
+    function initStars() {
+
+        const canvas = document.getElementById('starCanvas');
+
+        const ctx = canvas.getContext('2d');
+
+        let w, h, stars = [];
+
+        function setSize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+
+        window.onresize = setSize; setSize();
+
+        for(let i=0; i<80; i++) { stars.push({ x: Math.random() * w, y: Math.random() * h, size: Math.random() * 2, speed: Math.random() * 0.5 + 0.1 }); }
+
+        function draw() {
+
+            ctx.clearRect(0,0,w,h); ctx.fillStyle = "#d4af37";
+
+            stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); s.y -= s.speed; if(s.y < 0) s.y = h; });
+
+            requestAnimationFrame(draw);
+
+        }
+
+        draw();
+
     }
-  } catch (err) {
-    return sendResponse({ status: "error", message: err.toString() });
-  }
-}
+
+
+
+    function playClick() { const snd = document.getElementById('clickSound'); snd.currentTime = 0; snd.play().catch(() => {}); }
+
+
+
+    function initOptions() {
+
+        const isFemale = document.getElementById('gender').value === 'female';
+
+        const topSel = document.getElementById('topType');
+
+        topSel.innerHTML = "";
+
+        const hairList = isFemale ? options.femaleHair : options.maleHair;
+
+        hairList.forEach(opt => topSel.add(new Option(opt, opt)));
+
+        const facialGroup = document.getElementById('facial-hair-group');
+
+        const facialSel = document.getElementById('facialHairType');
+
+        facialSel.innerHTML = "";
+
+        if (isFemale) { facialGroup.style.display = "none"; facialSel.add(new Option("Blank", "Blank")); }
+
+        else { facialGroup.style.display = "block"; options.facialHair.forEach(opt => facialSel.add(new Option(opt, opt))); }
+
+        checkHijab();
+
+    }
+
+
+
+    function checkHijab() {
+
+        const isFemale = document.getElementById('gender').value === 'female';
+
+        const isHijab = document.getElementById('topType').value === 'Hijab';
+
+        const colorSel = document.getElementById('hairColor');
+
+        const colorLabel = document.getElementById('hairColorLabel');
+
+        colorSel.innerHTML = "";
+
+        let colorList = isFemale && isHijab ? options.hijabColors : (isFemale ? options.femaleHairColors : options.maleHairColors);
+
+        colorLabel.innerText = isFemale && isHijab ? "Hijab Color" : "Hair Color";
+
+        colorList.forEach(opt => colorSel.add(new Option(opt, opt)));
+
+    }
+
+
+
+    function updateName() { document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT"; }
+
+
+
+    function updateAvatar() {
+
+        const loader = document.getElementById('imgLoader');
+
+        const img = document.getElementById('avatar-img');
+
+        loader.style.display = 'block';
+
+        const top = document.getElementById('topType').value;
+
+        const skin = document.getElementById('skinColor').value;
+
+        const facial = document.getElementById('facialHairType').value;
+
+        const color = document.getElementById('hairColor').value;
+
+        const clothe = document.getElementById('clotheType').value;
+
+        const accessories = document.getElementById('accessoriesType').value;
+
+        const eye = document.getElementById('eyeType').value;
+
+        const mouth = "Default"; // Simplified for logic
+
+        const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
+
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&mouthType=${mouth}&skinColor=${skin}`;
+
+        const tempImg = new Image();
+
+        tempImg.src = url;
+
+        tempImg.onload = () => { img.src = url; loader.style.display = 'none'; };
+
+    }
+
+
+
+    function nextStep(step) {
+
+        playClick();
+
+        if (step > 1) {
+
+            const prevStepEl = document.getElementById(`step${step-1}`);
+
+            const inputs = prevStepEl.querySelectorAll('input[required]');
+
+            let valid = true;
+
+            inputs.forEach(i => { if(!i.value) valid = false; });
+
+            if(!valid) { alert("Fill all fields, Agent!"); return; }
+
+        }
+
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+
+        document.getElementById('step' + step).classList.add('active');
+
+        document.getElementById('pBar').style.width = (step * 14.2) + "%";
+
+    }
+
+
+
+    document.getElementById('registrationForm').onsubmit = async (e) => {
+
+        e.preventDefault();
+
+        playClick();
+
+        const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
+
+        if (programs.length === 0) { alert("Select at least one program!"); return; }
+
+
+
+        document.getElementById('loader').style.display = 'flex';
+
+        const formData = {
+
+            action: "signup", // مهم جداً للأب سكريبت
+
+            name: document.getElementById('name').value,
+
+            email: document.getElementById('email').value,
+
+            age: document.getElementById('age').value,
+
+            programs: programs.join(", "),
+
+            image: document.getElementById('avatar-img').src
+
+        };
+
+
+
+        // ملاحظة: سنستخدم الـ fetch في الخطوة القادمة للربط الحقيقي
+
+        // هذا محاكاة للنجاح حالياً حتى نربط بالسكريبت
+
+        setTimeout(() => {
+
+            document.getElementById('loader').style.display = 'none';
+
+            showFinalCard("EYC-" + Math.floor(1000 + Math.random() * 9000));
+
+        }, 2000);
+
+    };
+
+
+
+    function showFinalCard(code) {
+
+        document.getElementById('registrationForm').style.display = 'none';
+
+        document.getElementById('avatar-sidebar').style.display = 'none';
+
+        document.getElementById('success-card').style.display = 'block';
+
+        document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
+
+        document.getElementById('card-name').innerText = document.getElementById('name').value;
+
+        document.getElementById('agent-code').innerText = code;
+
+        document.getElementById('pBar').style.width = "100%";
+
+    }
+
+
+
+    window.onload = () => { initStars(); initOptions(); updateAvatar(); };
+
+</script>
+
+</body>
+
+</html>

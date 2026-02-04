@@ -6,7 +6,8 @@
     <title>EYC Super Stars | Elite Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="mcstyle.css"> </head>
+    <link rel="stylesheet" href="mcstyle.css"> 
+</head>
 <body>
 
     <div id="star-container"></div>
@@ -51,10 +52,13 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFjBzk_EAIcp3buZ7PKLE9gQvvE8GnDcCuNlDFqX5-4OJHQMUe396yikOi_TZdBFMfzA/exec";
+        // رابط الـ Apps Script الجديد (Vens Pro)
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyaKBzNIcqv3KlFP0lIz5uFRKk6iwuMn_CGPOeL0caFBloi4iu-rNEH-yBGEuMBJA2-/exec";
+        
         let currentUser = null;
         let isLoggedIn = false;
 
+        // مصفوفة الأنشطة والأكواد
         const activities = {
             season: [
                 { name: "Golden Ear", icon: "fa-ear-listen", code: "GES" },
@@ -78,7 +82,7 @@
             ]
         };
 
-        // --- نظام النجوم الهادئة (بدون شهاب) ---
+        // توليد النجوم
         function createStars() {
             const container = document.getElementById('star-container');
             for (let i = 0; i < 150; i++) {
@@ -95,7 +99,6 @@
         }
         createStars();
 
-        // --- Core Functions ---
         function renderHeader() {
             const header = document.getElementById('heroBanner');
             const logoutBtn = document.getElementById('logoutBtn');
@@ -135,7 +138,7 @@
                 delete window[callbackName];
                 document.body.removeChild(script);
                 if (data.status === "success") {
-                    currentUser = data;
+                    currentUser = data; // يحتوي على الـ title المحدث من Apps Script
                     isLoggedIn = true;
                     localStorage.setItem('eyc_user', JSON.stringify(data));
                     closeModal('loginModal');
@@ -151,7 +154,18 @@
             document.body.appendChild(script);
         }
 
-        function handleLogout() {
+        async function handleLogout() {
+            if (currentUser) {
+                // إخطار السكريبت بالخروج لمسح علامة ✅
+                const callbackName = 'jsonp_logout_' + Math.round(100000 * Math.random());
+                window[callbackName] = function() {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                };
+                const script = document.createElement('script');
+                script.src = `${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout&callback=${callbackName}`;
+                document.body.appendChild(script);
+            }
             localStorage.removeItem('eyc_user'); 
             isLoggedIn = false;
             currentUser = null;
@@ -193,8 +207,21 @@
                 node.innerHTML = i + (isLocked ? '<i class="fas fa-lock lock-icon"></i>' : '');
                 if (!isLocked) {
                     node.onclick = () => {
-                        const baseUrl = `activity_page.html`; // نربطه بصفحة النشاط الجديدة
-                        const studentData = isLoggedIn ? { ...currentUser, activity: name, taskNum: i } : { name: "Guest", activity: name, taskNum: i };
+                        // التحويل لصفحة Hybird.html مع تمرير كافة البيانات
+                        const baseUrl = `Hybird.html`; 
+                        const studentData = isLoggedIn ? {
+                            ...currentUser,
+                            activity: name,
+                            taskCode: activityCode,
+                            taskNum: i
+                        } : {
+                            name: "Guest Hunter",
+                            image: "https://avataaars.io/?avatarStyle=Transparent",
+                            title: "Greeny",
+                            activity: name,
+                            taskCode: activityCode,
+                            taskNum: i
+                        };
                         const params = new URLSearchParams(studentData).toString();
                         window.location.href = `${baseUrl}?${params}`;
                     };

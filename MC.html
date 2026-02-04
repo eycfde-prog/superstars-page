@@ -236,7 +236,7 @@
         createStars();
 
         // --- Core Logic ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4E_zh3qKHgYd_iInss_dGHhuwxrdkFXYvMa-AxI_yelAdvOkoJAbycFAssltWiyghiQ/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNBueoXv4EO3KhZa932-0bvMWZqXaGdXomBK_f52JyO9P5FZlGiFD_DI8QOVwVTgcsEw/exec";
         
         let currentUser = null;
         let isLoggedIn = false;
@@ -291,6 +291,7 @@
             }
         }
 
+ // تعديل دالة تسجيل الدخول
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const code = document.getElementById('loginCode').value;
@@ -300,13 +301,15 @@
 
             loader.style.display = "block";
             try {
-                // طلب تسجيل الدخول + سيقوم السكربت تلقائياً بتحديث الحضور في الشيت
+                // نرسل action=login للسيرفر ليضع علامة الصح
                 const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login`);
                 const data = await response.json();
 
                 if (data.status === "success") {
                     currentUser = data;
                     isLoggedIn = true;
+                    // حفظ البيانات في LocalStorage ليبقى مسجل دخول حتى بعد الريفرش
+                    localStorage.setItem('eyc_user', JSON.stringify(data));
                     closeModal('loginModal');
                     renderHeader();
                     generateCards();
@@ -319,25 +322,33 @@
             loader.style.display = "none";
         }
 
+        // تعديل دالة تسجيل الخروج (هنا فقط يتم مسح الصح)
         async function handleLogout() {
             if(currentUser) {
-                // إبلاغ الشيت بمسح علامة الحضور
                 try {
+                    // نرسل action=logout للسيرفر ليمسح علامة الصح
                     await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout`);
                 } catch(e) { console.log("Logout sync failed"); }
             }
+            localStorage.removeItem('eyc_user'); // مسح البيانات من المتصفح
             isLoggedIn = false;
             currentUser = null;
             renderHeader();
             generateCards();
         }
 
-        // مسح الحضور عند إغلاق الصفحة أو المتصفح
-        window.addEventListener('beforeunload', () => {
-            if(isLoggedIn && currentUser) {
-                navigator.sendBeacon(`${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout`);
+        // كود بقاء تسجيل الدخول بعد الريفرش
+        window.onload = () => {
+            const savedUser = localStorage.getItem('eyc_user');
+            if(savedUser) {
+                currentUser = JSON.parse(savedUser);
+                isLoggedIn = true;
+                renderHeader();
+                generateCards();
             }
-        });
+        };
+
+        // --- تم حذف دالة beforeunload لضمان بقاء علامة الصح عند قفل المتصفح ---
 
         function generateCards() {
             const grid = document.getElementById('cardsGrid');

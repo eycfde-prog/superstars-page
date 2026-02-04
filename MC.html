@@ -217,9 +217,9 @@
             const star = document.createElement('div');
             star.className = 'shooting-star';
             
-            const startX = Math.random() * 80 + 20; // يبدأ من اليمين أو المنتصف
-            const startY = Math.random() * 40;       // يبدأ من الأعلى
-            const angle = 135 + (Math.random() * 30); // زاوية مائلة للأسفل واليسار
+            const startX = Math.random() * 80 + 20; 
+            const startY = Math.random() * 40;       
+            const angle = 135 + (Math.random() * 30); 
             const speed = (Math.random() * 1 + 0.8) + 's';
             
             star.style.setProperty('--top-pos', startY + '%');
@@ -291,7 +291,6 @@
             }
         }
 
- // تعديل دالة تسجيل الدخول
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const code = document.getElementById('loginCode').value;
@@ -301,14 +300,12 @@
 
             loader.style.display = "block";
             try {
-                // نرسل action=login للسيرفر ليضع علامة الصح
                 const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login`);
                 const data = await response.json();
 
                 if (data.status === "success") {
                     currentUser = data;
                     isLoggedIn = true;
-                    // حفظ البيانات في LocalStorage ليبقى مسجل دخول حتى بعد الريفرش
                     localStorage.setItem('eyc_user', JSON.stringify(data));
                     closeModal('loginModal');
                     renderHeader();
@@ -322,22 +319,19 @@
             loader.style.display = "none";
         }
 
-        // تعديل دالة تسجيل الخروج (هنا فقط يتم مسح الصح)
         async function handleLogout() {
             if(currentUser) {
                 try {
-                    // نرسل action=logout للسيرفر ليمسح علامة الصح
                     await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout`);
                 } catch(e) { console.log("Logout sync failed"); }
             }
-            localStorage.removeItem('eyc_user'); // مسح البيانات من المتصفح
+            localStorage.removeItem('eyc_user'); 
             isLoggedIn = false;
             currentUser = null;
             renderHeader();
             generateCards();
         }
 
-        // كود بقاء تسجيل الدخول بعد الريفرش
         window.onload = () => {
             const savedUser = localStorage.getItem('eyc_user');
             if(savedUser) {
@@ -347,8 +341,6 @@
                 generateCards();
             }
         };
-
-        // --- تم حذف دالة beforeunload لضمان بقاء علامة الصح عند قفل المتصفح ---
 
         function generateCards() {
             const grid = document.getElementById('cardsGrid');
@@ -379,7 +371,29 @@
                 
                 if (!isLocked) {
                     node.onclick = () => {
-                        window.location.href = `assets/MIF/${activityCode}${i}.html`;
+                        // --- منطق إرسال بيانات الطالب لصفحة المهمة ---
+                        const baseUrl = `assets/MIF/${activityCode}${i}.html`;
+                        
+                        // نتحقق إذا كان الطالب مسجل دخول لإرسال بياناته الحقيقية، وإلا نرسل بيانات افتراضية (Guest)
+                        const studentData = isLoggedIn ? {
+                            name: currentUser.name,
+                            rank: currentUser.rank,
+                            title: currentUser.title,
+                            image: currentUser.image,
+                            activity: name,
+                            taskNum: i
+                        } : {
+                            name: "Elite Hunter",
+                            rank: "N/A",
+                            title: "Guest Hunter",
+                            image: "https://avataaars.io/?avatarStyle=Transparent",
+                            activity: name,
+                            taskNum: i
+                        };
+
+                        // تحويل البيانات لـ URL Parameters
+                        const params = new URLSearchParams(studentData).toString();
+                        window.location.href = `${baseUrl}?${params}`;
                     };
                 }
                 tGrid.appendChild(node);

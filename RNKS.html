@@ -132,7 +132,7 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbx4E_zh3qKHgYd_iInss_dGHhuwxrdkFXYvMa-AxI_yelAdvOkoJAbycFAssltWiyghiQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwEsuKyZibGlGIFHftqgTN3X-8n0mCB-cdKiaUehPAZEYc7qySlWbEx7bTjfhwepX27/exec';
 
         async function fetchRanks() {
             simulateLoading();
@@ -161,52 +161,54 @@
             }, 100);
         }
 
-        function renderData(data) {
+function renderData(data) {
             const podiumContainer = document.getElementById('podium-container');
             const ranksContainer = document.getElementById('ranks-container');
 
-            // منصة التتويج (أول 3 مراكز)
+            // 1. معالجة بيانات منصة التتويج (أول 3 مراكز)
             const top3 = data.slice(0, 3);
-            const order = [1, 0, 2]; // 2nd, 1st, 3rd لترتيب المنصة
+            const order = [1, 0, 2]; // الترتيب البصري: الثاني على اليسار، الأول في المنتصف، الثالث على اليمين
             let podiumHTML = '';
             
-            order.forEach(idx => {
-                const s = top3[idx];
-                if (!s) return;
-                const isFirst = idx === 0;
+            order.forEach(displayIdx => {
+                const student = top3[displayIdx];
+                if (!student) return;
+
+                // تنبيه: idx هنا هو ترتيبه الحقيقي في الداتا
+                const isGold = displayIdx === 0; 
                 
                 podiumHTML += `
-                    <div class="podium-item rank-${idx+1}">
-                        ${isFirst ? '<i class="fas fa-crown crown-icon"></i>' : ''}
-                        <div class="tier-tag">${s.Title || 'SUPERSTAR'}</div>
+                    <div class="podium-item rank-${displayIdx + 1}">
+                        ${isGold ? '<i class="fas fa-crown crown-icon"></i>' : ''}
+                        <div class="tier-tag">${student.Title || 'Greeny'}</div>
                         <div class="avatar-frame">
-                            <img src="${s.Image || 'https://via.placeholder.com/150'}" class="avatar">
+                            <img src="${student.Image || 'https://via.placeholder.com/150'}" class="avatar">
                         </div>
-                        <h3 style="font-family: 'Cinzel'; font-size: 1.1rem;">${s.Name}</h3>
-                        <div class="tk-text" style="margin: 8px 0;">${s.Tokens || 0} <span style="font-size:0.6rem">TK</span></div>
-                        <div class="sub-stats">${s.Stars || 0} Stars • ${s.GT || 0} GT</div>
+                        <h3 style="font-family: 'Cinzel'; font-size: 1.1rem;">${student.Name}</h3>
+                        <div class="tk-text" style="margin: 8px 0;">${student.Tokens || 0} <span style="font-size:0.6rem">TK</span></div>
+                        <div class="sub-stats">Rank #${student.Rank} • ELITE AGENT</div>
                     </div>
                 `;
             });
             podiumContainer.innerHTML = podiumHTML;
             podiumContainer.style.display = 'flex';
 
-            // قائمة الباقي
+            // 2. معالجة قائمة بقية الأبطال
             let listHTML = '';
-            data.slice(3).forEach((s, i) => {
+            data.slice(3).forEach((student) => {
                 listHTML += `
                     <div class="rank-row">
-                        <div style="font-family: 'Orbitron'; color: var(--gold); font-weight: 900;">#${i + 4}</div>
+                        <div style="font-family: 'Orbitron'; color: var(--gold); font-weight: 900;">#${student.Rank}</div>
                         <div class="avatar-frame" style="width:50px; height:50px; margin:0; border-radius:12px;">
-                            <img src="${s.Image || 'https://via.placeholder.com/150'}" class="avatar" style="border-radius:10px;">
+                            <img src="${student.Image || 'https://via.placeholder.com/150'}" class="avatar" style="border-radius:10px;">
                         </div>
                         <div>
-                            <div style="font-family:'Cinzel'; font-size: 0.9rem; font-weight:700;">${s.Name}</div>
-                            <div style="font-size:0.6rem; color:var(--gold); text-transform:uppercase; letter-spacing:1px;">${s.Title || 'Warrior'}</div>
+                            <div style="font-family:'Cinzel'; font-size: 0.9rem; font-weight:700;">${student.Name}</div>
+                            <div style="font-size:0.6rem; color:var(--gold); text-transform:uppercase; letter-spacing:1px;">${student.Title || 'Warrior'}</div>
                         </div>
-                        <div class="tk-text">${s.Tokens || 0} <span style="font-size:0.6rem">TK</span></div>
+                        <div class="tk-text">${student.Tokens || 0} <span style="font-size:0.6rem">TK</span></div>
                         <div class="row-achievement" style="font-size:0.7rem; color:#666; text-align:right;">
-                             ${s.LastAction || 'Active in Season'}
+                             MISSION ACTIVE
                         </div>
                     </div>
                 `;

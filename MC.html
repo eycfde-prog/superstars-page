@@ -7,6 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EYC Activity Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         :root {
             --gold: #D4AF37;
@@ -113,6 +122,236 @@
             .activity-card { padding: 20px 10px; }
         }
     </style>
+</head>
+<body>
+
+    <div id="star-container"></div>
+    <div class="bg-glow"></div>
+
+    <div class="top-nav">
+        <i class="fas fa-house nav-icon" title="Home" onclick="window.location.href='index.html'"></i>
+        <i class="fas fa-power-off nav-icon" id="logoutBtn" title="Logout" style="display:none;" onclick="handleLogout()"></i>
+    </div>
+
+    <header class="hero-banner" id="heroBanner">
+        </header>
+
+    <div class="nav-container">
+        <div class="tab-switcher">
+            <button class="tab-btn active" onclick="switchType('season', this)">SEASON</button>
+            <button class="tab-btn" onclick="switchType('royal', this)">ROYAL</button>
+        </div>
+    </div>
+
+    <main>
+        <div class="grid-container" id="cardsGrid"></div>
+    </main>
+
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <h2 id="mTitle" style="font-family:'Cinzel'; color:var(--gold); font-size: 1.2rem;">ACTIVITY</h2>
+            <p id="mSubTitle" style="font-size:0.6rem; color:#888; letter-spacing:2px; margin-bottom: 10px;">CHOOSE YOUR CHALLENGE</p>
+            <div class="tasks-grid" id="tGrid"></div>
+            <button class="close-modal" onclick="closeModal('taskModal')">BACK TO ARENA</button>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:20px; font-size: 1.2rem;">MEMBER ACCESS</h2>
+            <input type="email" id="loginEmail" style="width:100%; padding:12px; margin:8px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Email Address">
+            <input type="password" id="loginCode" style="width:100%; padding:12px; margin:8px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Access Code">
+            <div id="loader" style="display:none; margin:10px auto; border:2px solid #f3f3f3; border-top:2px solid var(--gold); border-radius:50%; width:20px; height:20px; animation: spin 1s linear infinite;"></div>
+            <button class="btn-premium solid" style="width:100%; margin-top:15px;" onclick="handleLogin()">ENTER ARENA</button>
+            <button class="close-modal" onclick="closeModal('loginModal')">CANCEL</button>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyaKBzNIcqv3KlFP0lIz5uFRKk6iwuMn_CGPOeL0caFBloi4iu-rNEH-yBGEuMBJA2-/exec";
+        
+        let currentUser = null;
+        let isLoggedIn = false;
+
+        const activities = {
+            season: [
+                { name: "Golden Ear", icon: "fa-ear-listen", code: "GES" },
+                { name: "Alike", icon: "fa-clone", code: "AS" },
+                { name: "Seeds", icon: "fa-seedling", code: "SS" },
+                { name: "Grammar", icon: "fa-spell-check", code: "GS" },
+                { name: "Label", icon: "fa-tag", code: "LS" },
+                { name: "Vivid", icon: "fa-eye", code: "VS" }
+            ],
+            royal: [
+                { name: "Golden EarX", icon: "fa-ear-deaf", code: "GEX" },
+                { name: "AlikeX", icon: "fa-object-group", code: "AX" },
+                { name: "SeedsX", icon: "fa-tree", code: "SX" },
+                { name: "GrammarX", icon: "fa-pen-fancy", code: "GX" },
+                { name: "LabelX", icon: "fa-tags", code: "LX" },
+                { name: "VividX", icon: "fa-wand-magic-sparkles", code: "VX" },
+                { name: "FigurativeX", icon: "fa-mask", code: "FX" },
+                { name: "DictationX", icon: "fa-microphone-lines", code: "DX" },
+                { name: "Sing Sang SungX", icon: "fa-music", code: "SSSX" },
+                { name: "ElmagazineX", icon: "fa-book-open", code: "ELX" }
+            ]
+        };
+
+        function createStars() {
+            const container = document.getElementById('star-container');
+            for (let i = 0; i < 120; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                container.appendChild(star);
+            }
+        }
+        createStars();
+
+        function renderHeader() {
+            const header = document.getElementById('heroBanner');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            if (isLoggedIn && currentUser) {
+                logoutBtn.style.display = "block";
+                header.innerHTML = `
+                    <div class="profile-container">
+                        <div class="avatar-main" style="background-image: url('${currentUser.image}')"></div>
+                        <h1 class="student-name">${currentUser.name}</h1>
+                        <div class="stats-row">
+                            <div class="stat-item">🪙 ${currentUser.totalScore} TK</div>
+                            <div class="stat-item">🏆 Rank #${currentUser.rank}</div>
+                        </div>
+                        <p style="font-size:0.65rem; color:#888; margin-top:5px; letter-spacing:1px;">${currentUser.title}</p>
+                    </div>`;
+            } else {
+                logoutBtn.style.display = "none";
+                header.innerHTML = `
+                    <div class="profile-container">
+                        <h1 class="eyc-title">EYC ARENA</h1>
+                        <p style="font-size:0.7rem; color:var(--gold); letter-spacing:2px;">PREMIUM CHALLENGES</p>
+                        <div class="auth-btns">
+                            <button class="btn-premium" onclick="openLogin()">LOG IN</button>
+                            <button class="btn-premium solid" onclick="window.location.href='NP.html'">JOIN NOW</button>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const code = document.getElementById('loginCode').value;
+            const loader = document.getElementById('loader');
+            if(!email || !code) return alert("Please fill all fields");
+            loader.style.display = "block";
+            
+            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                if (data.status === "success") {
+                    currentUser = data;
+                    isLoggedIn = true;
+                    localStorage.setItem('eyc_user', JSON.stringify(data));
+                    closeModal('loginModal');
+                    renderHeader();
+                    generateCards();
+                } else {
+                    alert("Error: " + data.message);
+                }
+                loader.style.display = "none";
+            };
+            const script = document.createElement('script');
+            script.src = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login&callback=${callbackName}`;
+            document.body.appendChild(script);
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('eyc_user'); 
+            isLoggedIn = false;
+            currentUser = null;
+            renderHeader();
+            generateCards();
+        }
+
+        window.onload = () => {
+            const savedUser = localStorage.getItem('eyc_user');
+            if(savedUser) {
+                currentUser = JSON.parse(savedUser);
+                isLoggedIn = true;
+            }
+            renderHeader();
+            generateCards();
+        };
+
+        function generateCards() {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+            const activeTab = document.querySelector('.tab-btn.active');
+            const type = activeTab ? activeTab.innerText.toLowerCase() : 'season';
+            
+            activities[type].forEach(act => {
+                const card = document.createElement('div');
+                card.className = 'activity-card';
+                card.innerHTML = `<i class="fa-solid ${act.icon} card-icon"></i><h3>${act.name}</h3><p>10 Tasks</p>`;
+                card.onclick = () => openTasks(act.name, act.code);
+                grid.appendChild(card);
+            });
+        }
+
+        function openTasks(name, activityCode) {
+            document.getElementById('mTitle').innerText = name;
+            const tGrid = document.getElementById('tGrid');
+            tGrid.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                let isLocked = isLoggedIn ? (i > 2) : (i > 1);
+                const node = document.createElement('div');
+                node.className = `task-node ${isLocked ? 'locked' : ''}`;
+                node.innerHTML = i + (isLocked ? '<i class="fas fa-lock lock-icon"></i>' : '');
+                if (!isLocked) {
+                    node.onclick = () => {
+                        const baseUrl = `Hybird.html`; 
+                        const studentData = isLoggedIn ? {
+                            ...currentUser,
+                            activity: name,
+                            taskCode: activityCode,
+                            taskNum: i
+                        } : {
+                            name: "Guest Hunter",
+                            image: "https://avataaars.io/?avatarStyle=Transparent",
+                            totalScore: 0,
+                            rank: "??",
+                            title: "Greeny",
+                            activity: name,
+                            taskCode: activityCode,
+                            taskNum: i
+                        };
+                        const params = new URLSearchParams(studentData).toString();
+                        window.location.href = `${baseUrl}?${params}`;
+                    };
+                }
+                tGrid.appendChild(node);
+            }
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function switchType(type, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            generateCards();
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </script>
+</body>
+</html>
 </head>
 <body>
 

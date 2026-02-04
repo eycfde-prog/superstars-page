@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Learning Arena - VS Mode</title>
+    <title>EYC Arena | Activity Mode</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -12,21 +12,12 @@
             --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
             --bg-deep: #020205;
             --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(212, 175, 55, 0.3);
-            --gold-glow: rgba(212, 175, 55, 0.4);
+            --glass-border: rgba(212, 175, 55, 0.2);
+            --gold-glow: rgba(212, 175, 55, 0.3);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        
-        body {
-            background: var(--bg-deep);
-            color: white;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
+        body { background: var(--bg-deep); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
         /* --- Night Sky Background --- */
         #star-container { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); }
@@ -34,175 +25,103 @@
         @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
         
         .shooting-star {
-            position: absolute; height: 2px; background: linear-gradient(-45deg, var(--gold), rgba(0, 0, 0, 0));
-            filter: drop-shadow(0 0 6px var(--gold)); animation: shooting 3s ease-in-out infinite;
+            position: absolute; height: 2px; background: linear-gradient(-45deg, var(--gold), rgba(0, 0, 255, 0));
+            filter: drop-shadow(0 0 6px var(--gold)); animation: tail 3s ease-in-out infinite, shooting 3s ease-in-out infinite;
         }
-        @keyframes shooting { 0% { transform: translateX(0) translateY(0) rotate(45deg); width: 0; } 30% { width: 100px; } 100% { transform: translateX(-1000px) translateY(1000px) rotate(45deg); width: 0; } }
+        @keyframes tail { 0% { width: 0; } 30% { width: 100px; } 100% { width: 0; } }
+        @keyframes shooting { 0% { transform: translateX(0) translateY(0) rotate(45deg); } 100% { transform: translateX(-1000px) translateY(1000px) rotate(45deg); } }
 
         /* --- Header: Battle Info --- */
         header {
-            padding: 20px 15px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            padding: 15px 20px;
+            background: linear-gradient(to bottom, rgba(5, 5, 8, 0.9), transparent);
             border-bottom: 1px solid var(--glass-border);
             z-index: 10;
         }
 
         .battle-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 900px;
-            margin: 0 auto;
-            gap: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 900px; margin: 0 auto; width: 100%;
         }
 
         .info-box {
-            flex: 1;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
-            padding: 10px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            transition: 0.3s;
+            flex: 1; background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 15px; padding: 8px; text-align: center;
+            backdrop-filter: blur(10px); transition: 0.3s;
         }
 
         .student-photo, .activity-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            border: 2px solid var(--gold);
-            object-fit: cover;
-            box-shadow: 0 0 10px var(--gold-glow);
+            width: 50px; height: 50px; border-radius: 12px;
+            margin-bottom: 5px; border: 2px solid var(--gold);
+            object-fit: cover; box-shadow: 0 0 10px var(--gold-glow);
         }
 
-        .info-box .name {
-            font-family: 'Cinzel', serif;
-            font-size: 0.85rem;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .name { font-family: 'Cinzel', serif; font-size: 0.75rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sub-text { font-size: 0.6rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
 
-        .vs-container {
-            text-align: center;
-            min-width: 80px;
-        }
-
+        .vs-container { padding: 0 15px; text-align: center; }
         .vs-text {
-            font-family: 'Cinzel', serif;
-            font-size: 1.8rem;
-            font-weight: 900;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 8px var(--gold-glow));
+            font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 900;
+            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px var(--gold-glow)); margin: 0;
+        }
+        .token-badge {
+            background: rgba(212, 175, 55, 0.15); border: 1px solid var(--gold);
+            border-radius: 50px; padding: 2px 10px; font-size: 0.7rem; color: #fff;
+            display: inline-block; margin-top: 5px; font-weight: 600;
         }
 
-        .token-count {
-            display: block;
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 0.75rem;
-            margin-top: -5px;
-            letter-spacing: 1px;
-        }
-
-        /* --- Main: Arena --- */
+        /* --- Middle: Arena --- */
         .arena-container {
-            flex: 1;
-            padding: 15px;
-            position: relative;
-            z-index: 5;
+            flex: 1; padding: 10px; position: relative;
+            display: flex; justify-content: center; align-items: center;
         }
 
         .glass-iframe-wrapper {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%; max-width: 1000px;
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 175, 55, 0.15);
-            border-radius: 25px;
-            overflow: hidden;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px; overflow: hidden;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: transparent;
-        }
+        iframe { width: 100%; height: 100%; border: none; }
 
         /* --- Footer: Controls --- */
         footer {
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            background: rgba(0,0,0,0.8);
-            border-top: 1px solid var(--glass-border);
+            padding: 15px 20px 25px;
+            display: flex; justify-content: center; gap: 15px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
             z-index: 10;
         }
 
         .btn {
-            padding: 12px 25px;
-            border-radius: 50px;
-            border: none;
-            font-weight: 700;
-            font-family: 'Cinzel', serif;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
+            flex: 1; max-width: 150px; padding: 12px; border-radius: 12px;
+            border: none; font-weight: 700; text-transform: uppercase;
+            cursor: pointer; transition: 0.3s; font-size: 0.75rem; font-family: 'Cinzel';
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
 
-        .btn-back { 
-            background: transparent; 
-            color: #888; 
-            border: 1px solid #444;
-        }
-        .btn-back:hover { border-color: #ff5555; color: #ff5555; }
-
-        .btn-guide { 
-            background: rgba(212, 175, 55, 0.1); 
-            color: var(--gold); 
-            border: 1px solid var(--gold); 
-        }
-
+        .btn-back { background: rgba(255,255,255,0.05); color: #888; border: 1px solid #444; }
+        .btn-guide { background: rgba(212, 175, 55, 0.1); color: var(--gold); border: 1px solid var(--gold); }
         .btn-submit { 
-            background: var(--gold-gradient); 
-            color: #000; 
-            box-shadow: 0 0 20px var(--gold-glow);
-            min-width: 140px;
+            background: var(--gold-gradient); color: #000; 
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
         }
-        .btn-submit:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--gold); }
 
-        /* --- Responsive Adjustments --- */
+        .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
+        .btn:active { transform: scale(0.95); }
+
+        /* --- Mobile Responsive --- */
         @media (max-width: 600px) {
-            header { padding: 10px 5px; }
-            .battle-header { gap: 8px; }
-            .info-box { padding: 8px 5px; }
-            .student-photo, .activity-logo { width: 40px; height: 40px; margin-bottom: 5px; }
-            .info-box .name { font-size: 0.7rem; }
+            header { padding: 10px; }
             .vs-text { font-size: 1.4rem; }
-            .token-count { font-size: 0.65rem; }
-            
-            footer { padding: 15px 10px; gap: 8px; }
-            .btn { padding: 10px 15px; font-size: 0.7rem; }
-            .btn-submit { min-width: 100px; }
-        }
-
-        .sub-text {
-            display: block;
-            font-size: 0.6rem;
-            color: var(--gold);
-            opacity: 0.8;
-            margin-top: 2px;
-            text-transform: uppercase;
+            .student-photo, .activity-logo { width: 40px; height: 40px; }
+            .name { font-size: 0.65rem; }
+            .arena-container { padding: 8px; }
+            footer { gap: 8px; padding-bottom: 20px; }
+            .btn { font-size: 0.65rem; padding: 10px; }
         }
     </style>
 </head>
@@ -213,50 +132,50 @@
     <header>
         <div class="battle-header">
             <div class="info-box">
-                <img src="https://via.placeholder.com/150" alt="Student" class="student-photo">
-                <div class="name">Ahmed Ali</div>
-                <div class="sub-text">Rank #05</div>
+                <img src="https://via.placeholder.com/100" alt="Student" class="student-photo">
+                <div class="name">A. Mansour</div>
+                <div class="sub-text">Rank #04</div>
             </div>
 
             <div class="vs-container">
                 <p class="vs-text">VS</p>
-                <span class="token-count">500 TOKENS</span>
+                <div class="token-badge">🪙 500</div>
             </div>
 
             <div class="info-box">
-                <img src="https://via.placeholder.com/150" alt="Activity" class="activity-logo">
-                <div class="name">Grammar Quiz</div>
-                <div class="sub-text">Code: GS01</div>
+                <img src="https://via.placeholder.com/100" alt="Activity" class="activity-logo">
+                <div class="name" id="activityName">Grammar Quiz</div>
+                <div class="sub-text" id="activityCode">GS-10</div>
             </div>
         </div>
     </header>
 
     <main class="arena-container">
         <div class="glass-iframe-wrapper">
-            <iframe src="about:blank" title="Activity Content"></iframe>
+            <iframe src="about:blank" id="arenaIframe" title="Activity Content"></iframe>
         </div>
     </main>
 
     <footer>
-        <button class="btn btn-back" onclick="history.back()">
-            <i class="fas fa-arrow-left"></i> BACK
+        <button class="btn btn-back" onclick="window.history.back()">
+            <i class="fas fa-home"></i> HOME
         </button>
-        <button class="btn btn-guide">
-            <i class="fas fa-scroll"></i> GUIDE
+        <button class="btn btn-guide" onclick="showGuide()">
+            <i class="fas fa-book-open"></i> GUIDE
         </button>
-        <button class="btn btn-submit">
-            SUBMIT <i class="fas fa-fire"></i>
+        <button class="btn btn-submit" onclick="submitActivity()">
+            <i class="fas fa-paper-plane"></i> SUBMIT
         </button>
     </footer>
 
     <script>
-        // --- Star Generation Logic ---
+        // --- Star & Galaxy Effect ---
         function createStars() {
             const container = document.getElementById('star-container');
             for (let i = 0; i < 100; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                const size = Math.random() * 2;
+                const size = Math.random() * 2.5;
                 star.style.width = size + 'px';
                 star.style.height = size + 'px';
                 star.style.left = Math.random() * 100 + '%';
@@ -265,7 +184,7 @@
                 container.appendChild(star);
             }
         }
-        
+
         function createShootingStar() {
             const container = document.getElementById('star-container');
             const star = document.createElement('div');
@@ -276,9 +195,26 @@
             setTimeout(() => star.remove(), 3000);
         }
 
-        setInterval(createShootingStar, 6000);
+        // Initialize Background
         createStars();
-    </script>
+        setInterval(createShootingStar, 6000);
 
+        // --- Logic Placeholders ---
+        function showGuide() {
+            alert("Reading activity guidelines...");
+        }
+
+        function submitActivity() {
+            const confirmSub = confirm("Are you sure you want to submit your answers?");
+            if(confirmSub) {
+                alert("Activity submitted successfully! 🪙");
+            }
+        }
+
+        // Script to handle iframe content loading
+        window.onload = () => {
+            console.log("Arena Loaded - Ready for Content");
+        };
+    </script>
 </body>
 </html>

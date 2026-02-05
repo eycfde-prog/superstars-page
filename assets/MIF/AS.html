@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Alike Mission Module</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #ffcc00; --glass: rgba(255, 255, 255, 0.03); }
+        body { 
+            font-family: 'Cairo', sans-serif; background: transparent; color: white; 
+            margin: 0; padding: 15px; overflow-x: hidden;
+        }
+
+        /* حاوية المهام - العرض يعتمد على ما يطلبه الهايبيرد */
+        .mission-container { display: none; animation: fadeIn 0.5s ease; }
+        .mission-container.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .alike-grid {
+            display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%;
+        }
+
+        .pair-card {
+            background: var(--glass); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
+            padding: 15px; position: relative;
+        }
+
+        .case-tag {
+            position: absolute; top: -10px; right: 15px; background: var(--gold);
+            color: black; font-family: 'Orbitron'; font-size: 10px; 
+            padding: 2px 10px; border-radius: 10px; font-weight: bold;
+        }
+
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        
+        .word-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        
+        label { font-size: 14px; color: #ddd; font-weight: bold; }
+
+        input {
+            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px; padding: 10px; color: var(--gold); text-align: center;
+            font-family: 'Orbitron'; font-size: 16px; outline: none; transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+
+        .submit-trigger {
+            margin-top: 30px; text-align: center;
+        }
+
+        .internal-btn {
+            background: linear-gradient(135deg, #bf953f, #fcf6ba);
+            color: black; border: none; padding: 12px 40px; border-radius: 50px;
+            font-weight: bold; cursor: pointer; font-family: 'Cairo';
+        }
+    </style>
+</head>
+<body>
+
+    <div id="mission-wrapper">
+        </div>
+
+    <div class="submit-trigger">
+        <button class="internal-btn" onclick="collectAndSend()">تأكيد الإجابات للمهمة 🚀</button>
+    </div>
+
+<script>
+    // قاعدة بيانات الـ 10 مهام (كل مهمة 5 أزواج Homophones)
+    const missionsData = {
+        "1": [ {a:"شمس", b:"ابن"}, {a:"بحر", b:"يرى"}, {a:"إلى", b:"أيضاً"}, {a:"هنا", b:"يسمع"}, {a:"لا", b:"يعرف"} ], // Sun/Son, Sea/See, To/Too, Here/Hear, No/Know
+        "2": [ {a:"أسبوع", b:"ضعيف"}, {a:"طريق", b:"وزن"}, {a:"ساعة", b:"لنا"}, {a:"اشترى", b:"بواسطة"}, {a:"لحم", b:"يقابل"} ], // Week/Weak, Road/Rode, Hour/Our, Buy/By, Meat/Meet
+        "3": [ {a:"جديد", b:"عرف"}, {a:"حق", b:"يكتب"}, {a:"ثمانية", b:"أكل"}, {a:"كامل", b:"ثقب"}, {a:"صلاة", b:"فريسة"} ], // New/Knew, Right/Write, Eight/Ate, Whole/Hole, Pray/Prey
+        "4": [ {a:"قطعة", b:"سلام"}, {a:"ابن أخ", b:"ركبة"}, {a:"دقيق", b:"وردة"}, {a:"قصة", b:"طابق"}, {a:"شعر", b:"أرنب"} ], // Piece/Peace, Nephew(??)/Knee, Flour/Flower, Tale/Tail, Hair/Hare
+        // ... مستر عز تقدر تكمل الـ 10 مهام بنفس النمط ده
+    };
+
+    function renderActiveMission() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskNum = urlParams.get('task') || "1";
+        const pairs = missionsData[taskNum] || missionsData["1"];
+        
+        const wrapper = document.getElementById('mission-wrapper');
+        wrapper.innerHTML = `
+            <div class="mission-container active">
+                <div class="alike-grid">
+                    ${pairs.map((p, i) => `
+                        <div class="pair-card">
+                            <span class="case-tag">CASE 0${i+1}</span>
+                            <div class="input-row">
+                                <div class="word-box">
+                                    <label>${p.a}</label>
+                                    <input type="text" class="alike-input" data-pair="${i}" data-word="a" placeholder="English...">
+                                </div>
+                                <div class="word-box">
+                                    <label>${p.b}</label>
+                                    <input type="text" class="alike-input" data-pair="${i}" data-word="b" placeholder="English...">
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function collectAndSend() {
+        const inputs = document.querySelectorAll('.alike-input');
+        let answers = [];
+        let missing = false;
+
+        inputs.forEach(input => {
+            if(!input.value.trim()) {
+                missing = true;
+                input.style.borderColor = "red";
+            } else {
+                input.style.borderColor = "rgba(212, 175, 55, 0.3)";
+                answers.push(input.value.trim().toLowerCase());
+            }
+        });
+
+        if(missing) {
+            alert("يا بطل، كمل كل الكلمات الأول! 🧐");
+            return;
+        }
+
+        // إرسال البيانات لصفحة Hybird الأساسية
+        window.parent.postMessage({
+            type: 'SUBMIT_MISSION',
+            activityCode: 'AL',
+            taskNum: new URLSearchParams(window.location.search).get('task'),
+            data: answers
+        }, '*');
+    }
+
+    window.onload = renderActiveMission;
+</script>
+</body>
+</html>

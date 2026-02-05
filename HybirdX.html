@@ -1,84 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC - Hybrid-X Mission Area</title>
-    <?!= include('mcstyle'); ?> <style>
-        .x-container { border: 3px solid var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
-        #mission-frame-x { width: 100%; height: 85vh; border: none; background: #000; border-radius: 10px; }
-        .level-indicator { background: var(--gold); color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
+    <title>EYC - Hybrid-X Royal Intelligence Area</title>
+    <?!= include('mcstyle'); ?> 
+    <style>
+        :root { --gold: #ffcc00; --royal-blue: #001a33; }
+        body { background: #020205; color: white; margin: 0; overflow: hidden; }
+        
+        .x-container { 
+            display: flex; flex-direction: column; height: 100vh;
+            border: 2px solid var(--gold); box-shadow: inset 0 0 30px rgba(212, 175, 55, 0.2); 
+        }
+
+        .mission-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px 25px; background: rgba(0, 0, 0, 0.6);
+            border-bottom: 1px solid var(--gold);
+        }
+
+        /* كنترول مستويات الصعوبة (الريموت الذكي) */
+        .difficulty-control {
+            display: flex; gap: 10px; background: rgba(255,255,255,0.05);
+            padding: 5px 15px; border-radius: 50px; border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        .diff-btn {
+            background: transparent; border: none; color: #666; 
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer;
+            transition: 0.3s; padding: 5px 12px; border-radius: 50%;
+        }
+        .diff-btn.active { 
+            color: #000; background: var(--gold-gradient); 
+            box-shadow: 0 0 10px var(--gold); 
+        }
+
+        #mission-frame-x { 
+            flex-grow: 1; width: 100%; border: none; background: transparent; 
+        }
+
+        .prev-btn {
+            background: transparent; border: 1px solid var(--gold); color: var(--gold);
+            padding: 5px 15px; border-radius: 50px; cursor: pointer; font-size: 0.8rem;
+        }
+
+        #status-update-x {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            color: var(--gold); font-family: 'Courier New'; font-size: 0.8rem;
+            background: rgba(0,0,0,0.8); padding: 5px 15px; border-radius: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div class="main-container x-container">
     <div class="mission-header">
-        <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ Return to Base</button>
+        <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ RETURN TO BASE</button>
+        
         <div style="text-align: center;">
-            <h2 id="mission-title-x">LOADING ROYAL MISSION...</h2>
-            <span class="level-indicator" id="level-display">LEVEL: ANALYZING...</span>
+            <h2 id="mission-title-x" style="font-family: 'Cinzel'; font-size: 1rem; margin: 0;">ROYAL MISSION</h2>
+            <div class="difficulty-control" style="margin-top: 5px;">
+                <button class="diff-btn active" onclick="switchLevel('A', this)">A</button>
+                <button class="diff-btn" onclick="switchLevel('B', this)">B</button>
+                <button class="diff-btn" onclick="switchLevel('C', this)">C</button>
+            </div>
         </div>
-        <div id="agent-display-x" style="color: var(--gold);">AGENT: ...</div>
+
+        <div id="agent-display-x" style="color: var(--gold); font-family: 'Orbitron'; font-size: 0.8rem;">AGENT: ...</div>
     </div>
 
-    <iframe id="mission-frame-x" src="" frameborder="0" allow="camera; microphone"></iframe>
+    <iframe id="mission-frame-x" src="" allowtransparency="true"></iframe>
 
-    <div id="status-update-x" style="text-align: center; margin-top: 10px; color: #d4af37; display: none; font-family: 'Courier New', monospace;">
-        >> SECURE DATA TRANSMISSION IN PROGRESS...
+    <div id="status-update-x" style="display: none;">
+        >> SYNCING ROYAL DATA...
     </div>
 </div>
 
 <script>
+    const GITHUB_ASSETS_URL = "https://your-user-name.github.io/your-repo/assets/MIF/";
+    let currentActivity = "";
+    let currentTaskNum = "";
+
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
-        const missionURL = urlParams.get('missionURL');
+        currentActivity = urlParams.get('activity'); 
+        currentTaskNum = urlParams.get('taskNum') || "1";
         
         const agentName = localStorage.getItem('agentName') || "Royal Agent";
         document.getElementById('agent-display-x').innerText = "AGENT: " + agentName;
 
-        if (missionURL) {
-            document.getElementById('mission-frame-x').src = missionURL;
-            const missionCode = missionURL.split('/').pop().replace('.html', '');
-            document.getElementById('mission-title-x').innerText = "ROYAL MISSION: " + missionCode;
-            
-            // تحديد المستوى تلقائياً بناءً على كود المهمة في نظام X
-            determineLevel(missionCode);
+        if (currentActivity) {
+            document.getElementById('mission-title-x').innerText = `${currentActivity} - MISSION #${currentTaskNum}`;
+            // البداية دائماً بمستوى A
+            loadMissionFrame('A');
         } else {
-            alert("Mission URL Missing, Agent!");
+            alert("No Mission Data, Agent!");
             window.location.href = '?page=MC';
         }
     };
 
-    function determineLevel(code) {
-        // منطق تحديد المستويات للـ HybridX (مثلاً 1-3 سهل، 4-7 متوسط، 8-10 محترف)
-        const num = parseInt(code.replace(/\D/g, ''));
-        let level = "ADVANCED";
-        if (num <= 3) level = "BASIC";
-        else if (num <= 7) level = "INTERMEDIATE";
-        document.getElementById('level-display').innerText = "LEVEL: " + level;
+    // دالة تحميل المهمة حسب المستوى المختبر
+    function loadMissionFrame(level) {
+        // الرابط الذكي: ملف النشاط + رقم المهمة + مستوى الصعوبة
+        const finalUrl = `${GITHUB_ASSETS_URL}${currentActivity}.html?task=${currentTaskNum}&level=${level}`;
+        document.getElementById('mission-frame-x').src = finalUrl;
     }
 
-    // استقبال التقارير من ملفات الـ JS (مجلد CC) عبر الـ Iframe
+    // دالة التبديل بين المستويات A, B, C
+    function switchLevel(level, btn) {
+        // تغيير شكل الزراير
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // تحديث محتوى الإيفرايم فوراً
+        loadMissionFrame(level);
+    }
+
+    // استقبال التقارير النهائية من الإيفرايم
     window.addEventListener('message', function(event) {
-        const report = event.data;
-        if (report && report.type === 'SUBMIT_X') {
-            sendReportToBackend(report);
+        if (event.data && event.data.type === 'SUBMIT_X') {
+            sendReportToBackend(event.data);
         }
     });
 
     function sendReportToBackend(report) {
         document.getElementById('status-update-x').style.display = 'block';
-        
-        // إرسال البيانات للـ Apps Script ليقوم بفلترة الدرجة (1- 5) وحفظها
         google.script.run
             .withSuccessHandler(function() {
-                alert("Royal Data Synced Successfully!");
+                alert("Royal Mission Accomplished! 🏆");
                 window.location.href = '?page=MC';
-            })
-            .withFailureHandler(function(err) {
-                alert("Sync Error: " + err);
-                document.getElementById('status-update-x').style.display = 'none';
             })
             .submitMissionReport(report);
     }

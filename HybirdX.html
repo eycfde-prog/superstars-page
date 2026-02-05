@@ -7,107 +7,72 @@
     <?!= include('mcstyle'); ?> 
     <style>
         :root { --gold: #ffcc00; --royal-blue: #001a33; --gold-gradient: linear-gradient(45deg, #ffcc00, #ff9900); }
-        body { background: #020205; color: white; margin: 0; overflow: hidden; font-family: 'Poppins', sans-serif; }
-        
-        .x-container { 
-            display: flex; flex-direction: column; height: 100vh;
-            border: 2px solid var(--gold); box-shadow: inset 0 0 30px rgba(212, 175, 55, 0.2); 
-        }
-
-        .mission-header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px 25px; background: rgba(0, 0, 0, 0.8);
-            border-bottom: 1px solid var(--gold);
-        }
-
-        .difficulty-control {
-            display: flex; gap: 10px; background: rgba(255,255,255,0.05);
-            padding: 5px 15px; border-radius: 50px; border: 1px solid rgba(212, 175, 55, 0.3);
-        }
-        .diff-btn {
-            background: transparent; border: none; color: #666; 
-            font-weight: bold; cursor: pointer;
-            transition: 0.3s; padding: 5px 12px; border-radius: 50%;
-        }
-        .diff-btn.active { 
-            color: #000; background: var(--gold-gradient); 
-            box-shadow: 0 0 10px var(--gold); 
-        }
-
-        #mission-frame-x { 
-            flex-grow: 1; width: 100%; border: none; background: transparent; 
-        }
-
-        .prev-btn {
-            background: transparent; border: 1px solid var(--gold); color: var(--gold);
-            padding: 5px 15px; border-radius: 50px; cursor: pointer; font-size: 0.8rem;
-        }
-
-        #status-update-x {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            color: var(--gold); font-family: 'Courier New'; font-size: 0.8rem;
-            background: rgba(0,0,0,0.8); padding: 5px 15px; border-radius: 10px;
-        }
+        body { background: #020205; color: white; margin: 0; overflow: hidden; font-family: 'Cairo', sans-serif; }
+        .x-container { display: flex; flex-direction: column; height: 100vh; border: 2px solid var(--gold); }
+        .mission-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; background: rgba(0, 0, 0, 0.8); border-bottom: 1px solid var(--gold); }
+        .difficulty-control { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 50px; border: 1px solid rgba(212, 175, 55, 0.3); }
+        .diff-btn { background: transparent; border: none; color: #666; font-weight: bold; cursor: pointer; transition: 0.3s; padding: 5px 12px; border-radius: 50%; font-family: 'Orbitron'; }
+        .diff-btn.active { color: #000; background: var(--gold-gradient); box-shadow: 0 0 10px var(--gold); }
+        #mission-frame-x { flex-grow: 1; width: 100%; border: none; background: transparent; }
+        .prev-btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 5px 15px; border-radius: 50px; cursor: pointer; }
+        #status-update-x { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); color: var(--gold); font-family: 'Courier New'; font-size: 0.8rem; background: rgba(0,0,0,0.8); padding: 5px 15px; border-radius: 10px; z-index: 1000; }
     </style>
 </head>
 <body>
 
 <div class="main-container x-container">
     <div class="mission-header">
-        <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ RETURN TO BASE</button>
-        
+        <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ العودة للقاعدة</button>
         <div style="text-align: center;">
-            <h2 id="mission-title-x" style="font-size: 1rem; margin: 0; color: var(--gold);">ROYAL MISSION</h2>
+            <h2 id="mission-title-x" style="font-size: 1rem; margin: 0; color: var(--gold); font-family: 'Cinzel';">ROYAL MISSION</h2>
             <div class="difficulty-control" style="margin-top: 5px;">
                 <button id="btn-A" class="diff-btn active" onclick="switchLevel('A', this)">A</button>
                 <button id="btn-B" class="diff-btn" onclick="switchLevel('B', this)">B</button>
                 <button id="btn-C" class="diff-btn" onclick="switchLevel('C', this)">C</button>
             </div>
         </div>
-
-        <div id="agent-display-x" style="color: var(--gold); font-size: 0.8rem;">AGENT: ...</div>
+        <div id="agent-display-x" style="color: var(--gold); font-family: 'Orbitron'; font-size: 0.8rem;">AGENT: ...</div>
     </div>
 
     <iframe id="mission-frame-x" src="" allowtransparency="true"></iframe>
 
     <div id="status-update-x" style="display: none;">
-        >> SYNCING ROYAL DATA...
+        >> SECURE DATA SYNC IN PROGRESS...
     </div>
 </div>
 
 <script>
-    // تأكد من تحديث رابط الـ Assets الخاص بك هنا
-    const GITHUB_ASSETS_URL = "https://your-user-name.github.io/your-repo/assets/MIF/";
-    let currentActivity = "";
+    // روابط الجيت هب (تأكد من وضع مسارك الصحيح هنا يا مستر عز)
+    const GITHUB_MIF_URL = "https://your-user-name.github.io/your-repo/assets/MIF/";
+    const GITHUB_CC_URL = "https://your-user-name.github.io/your-repo/assets/CC/";
+
+    let currentActivityCode = ""; 
     let currentTaskNum = "";
     let selectedLevel = "A";
 
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
-        // نأخذ كود النشاط (مثل DX) ورقم المهمة (مثل 8) من الرابط
         const missionURL = urlParams.get('missionURL');
         
         if (missionURL) {
-            // استخراج الكود والرقم من الرابط المرسل من MC
-            const fileName = missionURL.split('/').pop().replace('.html', ''); // يعطينا DX8
-            currentActivity = fileName.replace(/[0-9]/g, ''); // يعطينا DX
-            currentTaskNum = fileName.replace(/\D/g, '');    // يعطينا 8
+            const fileName = missionURL.split('/').pop().replace('.html', ''); 
+            currentActivityCode = fileName.replace(/[0-9]/g, ''); 
+            currentTaskNum = fileName.replace(/\D/g, '');    
             
-            const agentName = localStorage.getItem('agentName') || "Royal Agent";
-            document.getElementById('agent-display-x').innerText = "AGENT: " + agentName;
-            document.getElementById('mission-title-x').innerText = `${currentActivity} - MISSION #${currentTaskNum}`;
+            document.getElementById('agent-display-x').innerText = "AGENT: " + (localStorage.getItem('agentName') || "Royal");
+            document.getElementById('mission-title-x').innerText = `${currentActivityCode} - MISSION #${currentTaskNum}`;
             
             loadMissionFrame('A');
         } else {
-            alert("Mission Data Error!");
+            alert("خطأ في بيانات المهمة!");
             window.location.href = '?page=MC';
         }
     };
 
     function loadMissionFrame(level) {
         selectedLevel = level;
-        // استدعاء ملف النشاط مع إرسال رقم المهمة والمستوى كـ Parameters داخل الـ iframe
-        const finalUrl = `${GITHUB_ASSETS_URL}${currentActivity}.html?task=${currentTaskNum}&level=${level}`;
+        // استدعاء ملف النشاط مع تمرير الرقم والمستوى
+        const finalUrl = `${GITHUB_MIF_URL}${currentActivityCode}.html?task=${currentTaskNum}&level=${level}`;
         document.getElementById('mission-frame-x').src = finalUrl;
     }
 
@@ -117,28 +82,42 @@
         loadMissionFrame(level);
     }
 
+    // استقبال "الإشارات" من ملف المهمة MIF
     window.addEventListener('message', function(event) {
-        // استقبال الإجابة من ملف النشاط (MIF)
         if (event.data && event.data.type === 'SUBMIT_X') {
-            const report = {
-                email: localStorage.getItem('agentEmail'),
-                activityCode: currentActivity,
-                missionNum: currentTaskNum,
-                level: selectedLevel,
-                score: event.data.score
-            };
-            sendReportToBackend(report);
+            processRoyalCorrection(event.data.answers);
         }
     });
 
-    function sendReportToBackend(report) {
+    function processRoyalCorrection(answers) {
         document.getElementById('status-update-x').style.display = 'block';
-        google.script.run
-            .withSuccessHandler(function() {
-                alert(`Mission ${report.missionNum} (${report.level}) Accomplished!`);
-                window.location.href = '?page=MC';
-            })
-            .submitMissionReport(report);
+
+        // 1. الربط مع ملف الـ CC الخاص بالنشاط (مثل DX.js أو GX.js)
+        const ccScriptURL = `${GITHUB_CC_URL}${currentActivityCode}.js`;
+        
+        const script = document.createElement('script');
+        script.src = ccScriptURL;
+        script.onload = function() {
+            // تنفيذ دالة التصحيح الموجودة داخل ملف الـ CC
+            const finalScore = gradeMission(answers, selectedLevel); 
+            
+            // 2. إرسال النتيجة النهائية للـ Apps Script
+            const report = {
+                email: localStorage.getItem('agentEmail'),
+                activityCode: currentActivityCode,
+                missionNum: currentTaskNum,
+                level: selectedLevel,
+                score: finalScore
+            };
+            
+            google.script.run
+                .withSuccessHandler(function() {
+                    alert(`أحسنت! تم إنجاز المهمة ${currentTaskNum} بنجاح.`);
+                    window.location.href = '?page=MC';
+                })
+                .submitMissionReport(report);
+        };
+        document.head.appendChild(script);
     }
 </script>
 </body>

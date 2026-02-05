@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYC - Hybrid Mission Area</title>
+    <?!= include('mcstyle'); ?> <style>
+        #mission-frame { width: 100%; height: 80vh; border: 2px solid var(--gold); border-radius: 15px; background: #000; }
+        .mission-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; color: var(--gold); }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="mission-header">
+        <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ Back to Command Center</button>
+        <h2 id="mission-title">LOADING MISSION...</h2>
+        <div id="agent-display" style="font-weight: bold;">AGENT: ...</div>
+    </div>
+
+    <iframe id="mission-frame" src="" frameborder="0"></iframe>
+
+    <div id="status-update" style="text-align: center; margin-top: 10px; color: #0f0; display: none;">
+        TRANSMITTING DATA TO EYC BACKEND...
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        // 1. استخراج رابط المهمة من الـ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const missionURL = urlParams.get('missionURL');
+        
+        // 2. استرجاع بيانات الطالب
+        const agentName = localStorage.getItem('agentName') || "Unknown Agent";
+        document.getElementById('agent-display').innerText = "AGENT: " + agentName;
+
+        if (missionURL) {
+            document.getElementById('mission-frame').src = missionURL;
+            // استخراج كود المهمة من الرابط لعرضه في العنوان (مثلاً GS1)
+            const missionCode = missionURL.split('/').pop().replace('.html', '');
+            document.getElementById('mission-title').innerText = "MISSION: " + missionCode;
+        } else {
+            alert("No mission data received, Agent!");
+            window.location.href = '?page=MC';
+        }
+    };
+
+    // وظيفة استقبال البيانات من الـ Iframe (ملفات الـ MIF) وتوجيهها للـ CC
+    window.addEventListener('message', function(event) {
+        // عندما يضغط الطالب Submit داخل ملف الـ HTML المرفوع على جيت هب
+        // يجب أن يرسل ملف الـ HTML رسالة (postMessage) تحتوي على الإجابات
+        const studentAnswers = event.data;
+        if (studentAnswers && studentAnswers.type === 'SUBMIT_MISSION') {
+            processCorrection(studentAnswers);
+        }
+    });
+
+    function processCorrection(answers) {
+        document.getElementById('status-update').style.display = 'block';
+        
+        // تحديد ملف الـ JS المناسب في مجلد CC بناءً على كود النشاط
+        const activityCode = answers.activityCode; // مثلاً GS
+        const scriptURL = `https://your-github-path/assets/CC/${activityCode}.js`;
+
+        // هنا نقوم بتحميل سكريبت التصحيح ديناميكياً أو إرسال البيانات للـ Back End مباشرة
+        // حسب خطتنا، الـ Apps Script هو من يستقبل التقرير النهائي
+        google.script.run
+            .withSuccessHandler(function(res) {
+                alert("Mission Accomplished! Score Updated.");
+                window.location.href = '?page=MC';
+            })
+            .submitMissionReport(answers); 
+    }
+</script>
+
+</body>
+</html>

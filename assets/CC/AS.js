@@ -1,91 +1,77 @@
 /**
- * Alike Activity Correction Logic (Updated with Rounding and Minimum Grade)
+ * AS.js - محرك تصحيح نشاط Alike
+ * تصميم: جي (Ge) لمستر عز
  */
 
-const ALIKE_ANSWERS_KEY = {
-    "1": ["to", "too", "son", "sun", "here", "hear", "sea", "see", "no", "know"],
-    "2": ["two", "too", "son", "sun", "i", "eye", "be", "bee", "by", "buy"],
-    "3": ["flour", "flower", "peace", "piece", "knight", "night", "sun", "son", "tail", "tale"],
-    "4": ["main", "mane", "steel", "steal", "root", "route", "whole", "hole", "son", "sun"],
-    "5": ["horse", "hoarse", "one", "won", "stair", "stare", "bare", "bear", "hair", "hare"],
-    "6": ["past", "passed", "place", "plaice", "rain", "reign", "key", "quay", "not", "knot"],
-    "7": ["allowed", "aloud", "check", "cheque", "mail", "male", "sea", "see", "wait", "weight"],
-    "8": ["desert", "dessert", "dual", "duel", "flea", "flee", "gate", "gait", "week", "weak"],
-    "9": ["hero", "heroin", "hymn", "him", "idle", "idol", "lead", "led", "hair", "hare"],
-    "10": ["brake", "break", "scent", "sent", "band", "banned", "sight", "site", "meat", "meet"]
+const AlikeCorrectionEngine = {
+    
+    // 1. خوارزمية المسافة (Fuzzy Matching) - للسماح بخطأ حرف واحد
+    isNearlyCorrect: function(studentWord, correctWord) {
+        if (!studentWord || !correctWord) return false;
+        
+        const s = studentWord.toLowerCase().trim();
+        const c = correctWord.toLowerCase().trim();
+        
+        // لو الكلمة متطابقة تماماً
+        if (s === c) return true;
+
+        // لو الفرق في الطول أكثر من حرف واحد، نعتبرها خطأ فوراً
+        if (Math.abs(s.length - c.length) > 1) return false;
+
+        let edits = 0;
+        let i = 0, j = 0;
+
+        while (i < s.length && j < c.length) {
+            if (s[i] !== c[j]) {
+                edits++;
+                if (edits > 1) return false; // أكثر من حرف خطأ
+                
+                if (s.length > c.length) i++; // الطالب زوّد حرف
+                else if (s.length < c.length) j++; // الطالب نقّص حرف
+                else { i++; j++; } // الطالب بدّل حرف مكان حرف
+            } else {
+                i++; j++;
+            }
+        }
+        // معالجة الحرف الأخير إذا كان الفرق في الطول في نهاية الكلمة
+        if (i < s.length || j < c.length) edits++;
+        
+        return edits <= 1;
+    },
+
+    // 2. الدالة الأساسية لحساب النتيجة النهائية
+    processScore: function(studentAnswers, modelAnswers) {
+        let correctCount = 0;
+        let detailedResults = []; // لتلوين الـ inputs لاحقاً (صح/غلط)
+
+        // مقارنة الـ 10 كلمات (5 أزواج)
+        modelAnswers.forEach((correct, index) => {
+            const isCorrect = this.isNearlyCorrect(studentAnswers[index], correct);
+            if (isCorrect) {
+                correctCount++;
+            }
+            detailedResults.push(isCorrect);
+        });
+
+        /**
+         * 3. معادلة مستر عز للدرجات (من 1 لـ 5)
+         * المعادلة: (عدد الصح * 0.4) + 1
+         * 10 صح -> (10 * 0.4) + 1 = 5
+         * 0 صح  -> (0 * 0.4) + 1 = 1
+         */
+        let finalScore = (correctCount * 0.4) + 1;
+        
+        // التأكد أن الدرجة لا تقل عن 1 ولا تزيد عن 5
+        finalScore = Math.min(5, Math.max(1, parseFloat(finalScore.toFixed(1))));
+
+        return {
+            score: finalScore,
+            correctCount: correctCount,
+            details: detailedResults, // مصفوفة فيها true/false لكل كلمة
+            status: finalScore >= 3.5 ? "Excellent" : "Needs Review"
+        };
+    }
 };
 
-async function checkMissionStatus(email, act, m, scriptUrl) {
-    try {
-        const response = await fetch(`${scriptUrl}?email=${email}&activity=${act}&mission=${m}`);
-        const data = await response.json();
-        return data.isDone; 
-    } catch (e) { return false; }
-}
-
-function checkSimilarity(s1, s2) {
-    s1 = s1.toLowerCase().trim();
-    s2 = s2.toLowerCase().trim();
-    if (s1 === s2) return true;
-    if (Math.abs(s1.length - s2.length) > 1) return false;
-    let longer = s1.length >= s2.length ? s1 : s2;
-    let shorter = s1.length < s2.length ? s1 : s2;
-    let diffs = 0, sIdx = 0;
-    for (let lIdx = 0; lIdx < longer.length; lIdx++) {
-        if (longer[lIdx] !== shorter[sIdx]) {
-            diffs++;
-            if (longer.length === shorter.length) sIdx++;
-        } else { sIdx++; }
-    }
-    return diffs <= 1;
-}
-
-async function evaluateMission(iframe) {
-    const doc = iframe.contentDocument || iframe.contentWindow.document;
-    
-    const allInputs = Array.from(doc.querySelectorAll('input, textarea'));
-    const studentAnswer = allInputs.map(i => i.value).join(" "); 
-    
-    const currentMNum = new URLSearchParams(window.location.search).get('m') || '1';
-    const answers = ALIKE_ANSWERS_KEY[currentMNum];
-    
-    if (!answers) return { isCorrect: false, points: 0, answerText: studentAnswer };
-
-    const studentWords = studentAnswer.toLowerCase()
-                        .replace(/[^a-z\s]/g, ' ') 
-                        .split(/\s+/) 
-                        .filter(w => w.length > 0);
-    
-    let correctCount = 0;
-    let tempAnswers = [...answers];
-
-    studentWords.forEach(word => {
-        const index = tempAnswers.findIndex(target => checkSimilarity(word, target));
-        if (index !== -1) {
-            correctCount++;
-            tempAnswers.splice(index, 1);
-        }
-    });
-
-    // --- التعديل المطلوب هنا ---
-    
-    // 1. حساب النقاط الأصلية (0.5 لكل كلمة)
-    let rawPoints = correctCount * 0.5;
-
-    // 2. تقريب النتيجة لأقرب عدد صحيح للأعلى (مثلاً 3.5 تصبح 4)
-    let roundedPoints = Math.ceil(rawPoints);
-
-    // 3. التأكد أن الدرجة لا تقل عن 1 (حتى لو كانت صفر أو كسر بسيط)
-    let finalPoints = Math.max(1, roundedPoints);
-
-    // -------------------------
-
-    console.log("عدد الكلمات الصحيحة:", correctCount);
-    console.log("النقاط النهائية بعد التقريب والتعديل:", finalPoints);
-
-    return {
-        isCorrect: correctCount > 0, 
-        points: finalPoints, 
-        answerText: studentAnswer
-    };
-}
+// جعل المحرك متاحاً عالمياً للاستدعاء
+window.AlikeCorrectionEngine = AlikeCorrectionEngine;

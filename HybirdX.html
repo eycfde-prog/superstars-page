@@ -3,74 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC - Hybrid Mission Area</title>
+    <title>EYC - Hybrid-X Mission Area</title>
     <?!= include('mcstyle'); ?> <style>
-        #mission-frame { width: 100%; height: 80vh; border: 2px solid var(--gold); border-radius: 15px; background: #000; }
-        .mission-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; color: var(--gold); }
+        .x-container { border: 3px solid var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+        #mission-frame-x { width: 100%; height: 85vh; border: none; background: #000; border-radius: 10px; }
+        .level-indicator { background: var(--gold); color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-<div class="main-container">
+<div class="main-container x-container">
     <div class="mission-header">
-        <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ Back to Command Center</button>
-        <h2 id="mission-title">LOADING MISSION...</h2>
-        <div id="agent-display" style="font-weight: bold;">AGENT: ...</div>
+        <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ Return to Base</button>
+        <div style="text-align: center;">
+            <h2 id="mission-title-x">LOADING ROYAL MISSION...</h2>
+            <span class="level-indicator" id="level-display">LEVEL: ANALYZING...</span>
+        </div>
+        <div id="agent-display-x" style="color: var(--gold);">AGENT: ...</div>
     </div>
 
-    <iframe id="mission-frame" src="" frameborder="0"></iframe>
+    <iframe id="mission-frame-x" src="" frameborder="0" allow="camera; microphone"></iframe>
 
-    <div id="status-update" style="text-align: center; margin-top: 10px; color: #0f0; display: none;">
-        TRANSMITTING DATA TO EYC BACKEND...
+    <div id="status-update-x" style="text-align: center; margin-top: 10px; color: #d4af37; display: none; font-family: 'Courier New', monospace;">
+        >> SECURE DATA TRANSMISSION IN PROGRESS...
     </div>
 </div>
 
 <script>
     window.onload = function() {
-        // 1. استخراج رابط المهمة من الـ URL
         const urlParams = new URLSearchParams(window.location.search);
         const missionURL = urlParams.get('missionURL');
         
-        // 2. استرجاع بيانات الطالب
-        const agentName = localStorage.getItem('agentName') || "Unknown Agent";
-        document.getElementById('agent-display').innerText = "AGENT: " + agentName;
+        const agentName = localStorage.getItem('agentName') || "Royal Agent";
+        document.getElementById('agent-display-x').innerText = "AGENT: " + agentName;
 
         if (missionURL) {
-            document.getElementById('mission-frame').src = missionURL;
-            // استخراج كود المهمة من الرابط لعرضه في العنوان (مثلاً GS1)
+            document.getElementById('mission-frame-x').src = missionURL;
             const missionCode = missionURL.split('/').pop().replace('.html', '');
-            document.getElementById('mission-title').innerText = "MISSION: " + missionCode;
+            document.getElementById('mission-title-x').innerText = "ROYAL MISSION: " + missionCode;
+            
+            // تحديد المستوى تلقائياً بناءً على كود المهمة في نظام X
+            determineLevel(missionCode);
         } else {
-            alert("No mission data received, Agent!");
+            alert("Mission URL Missing, Agent!");
             window.location.href = '?page=MC';
         }
     };
 
-    // وظيفة استقبال البيانات من الـ Iframe (ملفات الـ MIF) وتوجيهها للـ CC
+    function determineLevel(code) {
+        // منطق تحديد المستويات للـ HybridX (مثلاً 1-3 سهل، 4-7 متوسط، 8-10 محترف)
+        const num = parseInt(code.replace(/\D/g, ''));
+        let level = "ADVANCED";
+        if (num <= 3) level = "BASIC";
+        else if (num <= 7) level = "INTERMEDIATE";
+        document.getElementById('level-display').innerText = "LEVEL: " + level;
+    }
+
+    // استقبال التقارير من ملفات الـ JS (مجلد CC) عبر الـ Iframe
     window.addEventListener('message', function(event) {
-        // عندما يضغط الطالب Submit داخل ملف الـ HTML المرفوع على جيت هب
-        // يجب أن يرسل ملف الـ HTML رسالة (postMessage) تحتوي على الإجابات
-        const studentAnswers = event.data;
-        if (studentAnswers && studentAnswers.type === 'SUBMIT_MISSION') {
-            processCorrection(studentAnswers);
+        const report = event.data;
+        if (report && report.type === 'SUBMIT_X') {
+            sendReportToBackend(report);
         }
     });
 
-    function processCorrection(answers) {
-        document.getElementById('status-update').style.display = 'block';
+    function sendReportToBackend(report) {
+        document.getElementById('status-update-x').style.display = 'block';
         
-        // تحديد ملف الـ JS المناسب في مجلد CC بناءً على كود النشاط
-        const activityCode = answers.activityCode; // مثلاً GS
-        const scriptURL = `https://your-github-path/assets/CC/${activityCode}.js`;
-
-        // هنا نقوم بتحميل سكريبت التصحيح ديناميكياً أو إرسال البيانات للـ Back End مباشرة
-        // حسب خطتنا، الـ Apps Script هو من يستقبل التقرير النهائي
+        // إرسال البيانات للـ Apps Script ليقوم بفلترة الدرجة (1- 5) وحفظها
         google.script.run
-            .withSuccessHandler(function(res) {
-                alert("Mission Accomplished! Score Updated.");
+            .withSuccessHandler(function() {
+                alert("Royal Data Synced Successfully!");
                 window.location.href = '?page=MC';
             })
-            .submitMissionReport(answers); 
+            .withFailureHandler(function(err) {
+                alert("Sync Error: " + err);
+                document.getElementById('status-update-x').style.display = 'none';
+            })
+            .submitMissionReport(report);
     }
 </script>
 

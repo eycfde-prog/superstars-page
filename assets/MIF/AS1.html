@@ -1,82 +1,119 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alike Activity | EYC Vens</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>EYC Arena | Activity Mode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #ffcc00; --bg-glass: rgba(255, 255, 255, 0.03); --border-glass: rgba(255, 255, 255, 0.1); }
+        :root {
+            --gold: #D4AF37;
+            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
+            --bg-deep: #020205;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(212, 175, 55, 0.2);
+            --gold-glow: rgba(212, 175, 55, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
-        body { 
-            font-family: 'Cairo', sans-serif; background: transparent; color: white; 
-            margin: 0; padding: 10px; overflow-x: hidden; -webkit-tap-highlight-color: transparent;
+        body, html { 
+            background: var(--bg-deep); 
+            color: white; 
+            height: 100%; 
+            width: 100%;
+            overflow: hidden; 
+            position: fixed;
         }
 
-        #activityWrapper {
-            display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%;
-        }
+        body { display: flex; flex-direction: column; }
 
-        .glass-card { 
-            background: var(--bg-glass); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-            border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px;
-        }
+        #star-container { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle var(--duration) infinite ease-in-out; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+        
+        header { padding: 10px; background: rgba(5, 5, 8, 0.8); border-bottom: 1px solid var(--glass-border); z-index: 10; }
+        .battle-header { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; width: 100%; gap: 10px; }
+        .info-box { flex: 1; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 5px; text-align: center; backdrop-filter: blur(10px); min-width: 100px; }
+        .student-photo, .activity-logo { width: 40px; height: 40px; border-radius: 10px; margin-bottom: 2px; border: 1px solid var(--gold); object-fit: cover; }
+        .name { font-family: 'Cinzel', serif; font-size: 0.65rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sub-text { font-size: 0.55rem; color: var(--gold); text-transform: uppercase; }
+        .vs-container { text-align: center; min-width: 60px; }
+        .vs-text { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 900; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+        .token-badge { background: rgba(212, 175, 55, 0.15); border: 1px solid var(--gold); border-radius: 50px; padding: 1px 6px; font-size: 0.6rem; color: #fff; }
 
-        .case-num { 
-            font-family: 'Orbitron', sans-serif; font-size: 10px; color: var(--gold); 
-            opacity: 0.6; display: block; margin-bottom: 8px;
-        }
+        .selection-bar { display: flex; justify-content: center; gap: 15px; padding: 10px 0; z-index: 10; }
+        .select-btn { width: 60px; height: 40px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px; color: white; font-family: 'Cinzel', serif; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .select-btn.active { background: var(--gold-gradient); color: black; box-shadow: 0 0 15px var(--gold-glow); transform: scale(1.05); }
 
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .field-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: 13px; text-align: center; font-weight: bold; color: #d1d5db; }
+        .arena-container { flex: 1; padding: 0 10px 10px 10px; position: relative; display: flex; justify-content: center; align-items: center; }
+        .glass-iframe-wrapper { width: 100%; height: 100%; background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        .input-alike { 
-            background: rgba(0,0,0,0.4); border: 1.5px solid rgba(255,255,255,0.15); 
-            border-radius: 8px; padding: 10px; text-align: center; color: var(--gold); 
-            font-family: 'Orbitron', sans-serif; font-size: 15px; outline: none;
-            transition: 0.2s; width: 100%; box-sizing: border-box;
-        }
+        footer { padding: 10px 15px 20px; display: flex; justify-content: space-between; align-items: center; gap: 10px; max-width: 900px; margin: 0 auto; width: 100%; z-index: 10; }
+        .btn { padding: 12px 5px; border-radius: 10px; border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 0.65rem; font-family: 'Cinzel'; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-submit { flex: 1.5; background: var(--gold-gradient); color: #000; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
+        .btn-side { flex: 1; background: rgba(212, 175, 55, 0.1); color: var(--gold); border: 1px solid var(--gold); }
+  <style>
+    #activityWrapper { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; margin-top: 10px; }
+    .glass-card { 
+        background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
+        border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 15px; padding: 15px;
+        transition: 0.3s;
+    }
+    .case-num { font-family: 'Cinzel'; font-size: 10px; color: var(--gold); opacity: 0.7; margin-bottom: 8px; display: block; }
+    .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-group label { font-size: 14px; color: #fff; font-weight: 600; text-align: center; }
+    .input-alike { 
+        background: rgba(0,0,0,0.5); border: 1px solid rgba(212, 175, 55, 0.3); 
+        border-radius: 10px; padding: 10px; text-align: center; color: var(--gold); 
+        font-family: 'Poppins'; font-size: 16px; transition: 0.3s; width: 100%;
+    }
+    .input-alike:focus { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); outline: none; }
+</style>
 
-        .input-alike:focus { border-color: var(--gold); background: rgba(0,0,0,0.6); }
-
-        footer { 
-            margin-top: 25px; text-align: center; font-size: 9px; 
-            color: rgba(255,255,255,0.2); font-family: 'Orbitron'; letter-spacing: 1px;
-        }
-
-        @media (max-width: 350px) {
-            label { font-size: 11px; }
-            .input-alike { font-size: 13px; padding: 8px; }
-        }
-    </style>
-</head>
-<body>
-
-    <div id="activityWrapper"></div>
-    
-    <footer>DESIGNED BY VICTOR - EYC VENS ENGINE v10.0</footer>
+<div class="content-area">
+    <div id="activityWrapper">
+        </div>
+</div>
 
 <script>
+    // جي: بيانات النشاط اللي بعتها يا مستر عز
     const currentTask = [
         {m1:"إلى", m2:"أيضاً"}, {m1:"ابن", m2:"شمس"}, 
         {m1:"هنا", m2:"يسمع"}, {m1:"بحر", m2:"يرى"}, {m1:"لا", m2:"يعرف"}
     ];
 
+    // جي: دالة الرندر "الدلوعة" عشان تملى النشاط
     function renderActivity() {
         const wrapper = document.getElementById('activityWrapper');
+        if (!wrapper) return;
         wrapper.innerHTML = currentTask.map((pair, i) => `
             <div class="glass-card">
                 <span class="case-num"># CASE ${i + 1}</span>
                 <div class="input-grid">
-                    <div class="field-group"><label>${pair.m1}</label><input type="text" class="input-alike task-input" placeholder="..."></div>
-                    <div class="field-group"><label>${pair.m2}</label><input type="text" class="input-alike task-input" placeholder="..."></div>
+                    <div class="field-group">
+                        <label>${pair.m1}</label>
+                        <input type="text" class="input-alike task-input" placeholder="...">
+                    </div>
+                    <div class="field-group">
+                        <label>${pair.m2}</label>
+                        <input type="text" class="input-alike task-input" placeholder="...">
+                    </div>
                 </div>
             </div>`).join('');
     }
 
-    window.onload = renderActivity;
+    // جي: نعدل الـ window.onload عشان تشغل الرندر مع باقي بيانات الصفحة
+    const originalOnload = window.onload;
+    window.onload = () => {
+        if (originalOnload) originalOnload();
+        renderActivity();
+    };
 
+    // جي: دالة التحقق من الإجابات (تأكد إنها موجودة لربطها بـ Check Result)
     window.getStudentAnswers = function() {
         const inputs = document.querySelectorAll('.task-input');
         let answers = [];
@@ -87,27 +124,110 @@
                 allFilled = false; 
                 input.style.borderColor = "#ff4d4d"; 
             } else { 
-                input.style.borderColor = "rgba(255,255,255,0.15)"; 
+                input.style.borderColor = "rgba(212, 175, 55, 0.3)"; 
             }
             answers.push(val);
         });
         return allFilled ? answers : null;
     };
-
-    // الدالة الجديدة للتلوين الذكي
-    window.highlightResults = function(detailedResults) {
-        const inputs = document.querySelectorAll('.task-input');
-        inputs.forEach((input, index) => {
-            input.disabled = true;
-            if (detailedResults[index]) {
-                input.style.borderColor = "#2ecc71"; // أخضر للصح
-                input.style.boxShadow = "0 0 10px rgba(46, 204, 113, 0.3)";
-            } else {
-                input.style.borderColor = "#e74c3c"; // أحمر للخطأ
-                input.style.boxShadow = "0 0 10px rgba(231, 76, 60, 0.3)";
-            }
-        });
-    };
 </script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyaKBzNIcqv3KlFP0lIz5uFRKk6iwuMn_CGPOeL0caFBloi4iu-rNEH-yBGEuMBJA2-/exec";
+        
+        // ربط الأكواد بالأعمدة في الشيت (بناءً على ترتيب headers في Apps Script)
+        const COLUMN_MAP = {
+            "GS": 9,  "AS": 10, "SS": 11, "VS": 12, "LS": 13, "GES": 14,
+            "GX": 15, "AX": 16, "SX": 17, "VX": 18, "LX": 19, "GEX": 20,
+            "FX": 21, "DX": 22, "SSSX": 23, "ELX": 24
+        };
+
+        let activityParams = new URLSearchParams(window.location.search);
+        let studentData = {
+            email: activityParams.get('email'),
+            name: activityParams.get('name'),
+            image: activityParams.get('image'),
+            title: activityParams.get('title'),
+            tokens: activityParams.get('totalScore'),
+            activity: activityParams.get('activity'),
+            taskCode: activityParams.get('taskCode'),
+            taskNum: activityParams.get('taskNum')
+        };
+
+        window.onload = () => {
+            if (!studentData.email && !studentData.name) {
+                alert("Access Denied: Please enter through the Main Hub.");
+                window.location.href = "MC.html";
+                return;
+            }
+            
+            // تحديث الواجهة
+            document.getElementById('userName').innerText = studentData.name;
+            document.getElementById('userImg').src = studentData.image || "https://avataaars.io/?avatarStyle=Transparent";
+            document.getElementById('userTitle').innerText = studentData.title;
+            document.getElementById('userTokens').innerText = `🪙 ${studentData.tokens || 0}`;
+            document.getElementById('activityName').innerText = studentData.activity;
+            document.getElementById('activityCodeDisplay').innerText = `${studentData.taskCode}-${studentData.taskNum}`;
+            
+            loadContent('A', document.querySelector('.select-btn'));
+            createStars();
+        };
+
+        function loadContent(letter, btn) {
+            document.querySelectorAll('.select-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const iframe = document.getElementById('arenaIframe');
+            // المسار: assets/MIF/Code+Num+Letter.html (مثال: assets/MIF/GES1_A.html)
+            iframe.src = `assets/MIF/${studentData.taskCode}${studentData.taskNum}_${letter}.html`; 
+        }
+
+        async function submitResult() {
+            if (studentData.email === "Guest" || !studentData.email) {
+                return alert("Guest mode: Scores are not saved to the leaderboard!");
+            }
+
+            const btn = document.getElementById('submitBtn');
+            const targetColumn = COLUMN_MAP[studentData.taskCode] || 9;
+            const scoreToAdd = 10; // القيمة التي حددتها أنت في خطتك
+
+            if(!confirm(`Ready to submit? This will add ${scoreToAdd} Tokens to your rank.`)) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SYNCING...';
+
+            const callbackName = 'jsonp_submit_' + Math.round(100000 * Math.random());
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                if (data.status === "success") {
+                    alert("Victory! Your score has been updated.");
+                    window.location.href = "MC.html";
+                } else {
+                    alert("Error: " + data.message);
+                    btn.disabled = false;
+                    btn.innerText = "SUBMIT SCORE";
+                }
+            };
+
+            const script = document.createElement('script');
+            // نستخدم JSONP لتفادي مشاكل الـ CORS
+            script.src = `${SCRIPT_URL}?action=submitScore&email=${encodeURIComponent(studentData.email)}&score=${scoreToAdd}&col=${targetColumn}&callback=${callbackName}`;
+            document.body.appendChild(script);
+        }
+
+        function createStars() {
+            const container = document.getElementById('star-container');
+            const count = 100;
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2;
+                star.style.width = size + 'px'; star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                container.appendChild(star);
+            }
+        }
+    </script>
 </body>
 </html>

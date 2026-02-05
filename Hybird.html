@@ -1,76 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC - Hybrid Mission Area</title>
-    <?!= include('mcstyle'); ?> <style>
-        #mission-frame { width: 100%; height: 80vh; border: 2px solid var(--gold); border-radius: 15px; background: #000; }
-        .mission-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; color: var(--gold); }
+    <title>EYC - Hybrid Intelligence Area</title>
+    <?!= include('mcstyle'); ?> 
+    <style>
+        :root { --gold: #ffcc00; }
+        body { background: #020205; color: white; margin: 0; overflow: hidden; }
+        
+        .main-container { display: flex; flex-direction: column; height: 100vh; }
+        
+        .mission-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 25px; border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* الإطار الذكي - قلب المهمة */
+        #mission-frame { 
+            flex-grow: 1; width: 100%; border: none; 
+            background: transparent; transition: 0.5s;
+        }
+
+        .prev-btn {
+            background: transparent; border: 1px solid var(--gold); color: var(--gold);
+            padding: 8px 15px; border-radius: 50px; cursor: pointer; font-family: 'Cairo';
+            transition: 0.3s;
+        }
+        .prev-btn:hover { background: var(--gold); color: black; }
+
+        #status-update {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 255, 0, 0.2); padding: 10px 20px; border-radius: 20px;
+            border: 1px solid #0f0; z-index: 100;
+        }
     </style>
 </head>
 <body>
 
 <div class="main-container">
     <div class="mission-header">
-        <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ Back to Command Center</button>
-        <h2 id="mission-title">LOADING MISSION...</h2>
-        <div id="agent-display" style="font-weight: bold;">AGENT: ...</div>
+        <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ العودة لمركز القيادة</button>
+        <h2 id="mission-title" style="font-family: 'Cinzel'; font-size: 1.2rem;">LOADING MISSION...</h2>
+        <div id="agent-display" style="color: var(--gold); font-family: 'Orbitron'; font-size: 0.9rem;">AGENT: ...</div>
     </div>
 
-    <iframe id="mission-frame" src="" frameborder="0"></iframe>
+    <iframe id="mission-frame" src="" allowtransparency="true"></iframe>
 
-    <div id="status-update" style="text-align: center; margin-top: 10px; color: #0f0; display: none;">
-        TRANSMITTING DATA TO EYC BACKEND...
+    <div id="status-update" style="display: none;">
+        <i class="fas fa-sync fa-spin"></i> TRANSMITTING DATA TO EYC BACKEND...
     </div>
 </div>
 
 <script>
+    // رابط الجيت هب الأساسي (Assets Path)
+    const GITHUB_ASSETS_URL = "https://your-user-name.github.io/your-repo/assets/MIF/";
+
     window.onload = function() {
-        // 1. استخراج رابط المهمة من الـ URL
         const urlParams = new URLSearchParams(window.location.search);
-        const missionURL = urlParams.get('missionURL');
         
-        // 2. استرجاع بيانات الطالب
+        // استلام اسم النشاط ورقم المهمة من الرابط (مثلاً: activity=Alike&taskNum=4)
+        const activityName = urlParams.get('activity'); 
+        const taskNum = urlParams.get('taskNum') || "1";
+        
+        // استرجاع اسم العميل
         const agentName = localStorage.getItem('agentName') || "Unknown Agent";
         document.getElementById('agent-display').innerText = "AGENT: " + agentName;
 
-        if (missionURL) {
-            document.getElementById('mission-frame').src = missionURL;
-            // استخراج كود المهمة من الرابط لعرضه في العنوان (مثلاً GS1)
-            const missionCode = missionURL.split('/').pop().replace('.html', '');
-            document.getElementById('mission-title').innerText = "MISSION: " + missionCode;
+        if (activityName) {
+            // بناء رابط الملف: Assets/MIF/Alike.html
+            // مع إضافة رقم المهمة كـ Hash (#) أو Parameter ليفهمه ملف الـ HTML المستهدف
+            const finalMifURL = `${GITHUB_ASSETS_URL}${activityName}.html?task=${taskNum}`;
+            
+            const iframe = document.getElementById('mission-frame');
+            iframe.src = finalMifURL;
+
+            document.getElementById('mission-title').innerText = `${activityName} - TASK #${taskNum}`;
         } else {
-            alert("No mission data received, Agent!");
+            alert("فشل في تحديد المهمة يا مستر عز! ⚠️");
             window.location.href = '?page=MC';
         }
     };
 
-    // وظيفة استقبال البيانات من الـ Iframe (ملفات الـ MIF) وتوجيهها للـ CC
+    // الاستماع لنتائج التصحيح القادمة من داخل الإيفرايم
     window.addEventListener('message', function(event) {
-        // عندما يضغط الطالب Submit داخل ملف الـ HTML المرفوع على جيت هب
-        // يجب أن يرسل ملف الـ HTML رسالة (postMessage) تحتوي على الإجابات
-        const studentAnswers = event.data;
-        if (studentAnswers && studentAnswers.type === 'SUBMIT_MISSION') {
-            processCorrection(studentAnswers);
+        // التأكد أن الرسالة تحتوي على نتائج (Score, Answers, etc.)
+        if (event.data && event.data.type === 'SUBMIT_MISSION') {
+            sendToBackEnd(event.data);
         }
     });
 
-    function processCorrection(answers) {
+    function sendToBackEnd(report) {
         document.getElementById('status-update').style.display = 'block';
         
-        // تحديد ملف الـ JS المناسب في مجلد CC بناءً على كود النشاط
-        const activityCode = answers.activityCode; // مثلاً GS
-        const scriptURL = `https://your-github-path/assets/CC/${activityCode}.js`;
-
-        // هنا نقوم بتحميل سكريبت التصحيح ديناميكياً أو إرسال البيانات للـ Back End مباشرة
-        // حسب خطتنا، الـ Apps Script هو من يستقبل التقرير النهائي
+        // إرسال التقرير لـ Google Apps Script (Back End)
         google.script.run
             .withSuccessHandler(function(res) {
-                alert("Mission Accomplished! Score Updated.");
+                document.getElementById('status-update').style.display = 'none';
+                alert("تمت المهمة بنجاح! تحديث التوكنز جاري... ✨");
                 window.location.href = '?page=MC';
             })
-            .submitMissionReport(answers); 
+            .submitMissionReport(report); 
     }
 </script>
 

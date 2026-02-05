@@ -127,15 +127,23 @@
     }
 
     // وظيفة الربط الاحترافي مع MIF
-    function launchMIF(activityCode, missionNum) {
-        // بناء الرابط حسب الخطة: assets/MIF/Code+Number.html
-        // مستر عز: يرجى استبدال رابط الـ Repo هنا برابط الجت هب الخاص بك
+        function launchMIF(activityCode, missionNum) {
+        // 1. تحديد الرابط الأساسي لملفات الجيت هب (تأكد من وضع روابطك هنا)
         const githubBase = "https://raw.githack.com/YOUR_GITHUB_USER/YOUR_REPO/main/assets/MIF/";
         const missionFile = `${activityCode}${missionNum}.html`;
+        const fullMissionURL = `${githubBase}${missionFile}`;
+
+        // 2. منطق التوجيه الذكي:
+        // سنفحص إذا كان كود النشاط موجوداً ضمن قائمة الـ hybridXMissions
+        const isX = hybridXMissions.some(m => m.code === activityCode);
         
-        // التوجيه للمهمة
-        window.location.href = `?page=Hybird&missionURL=${githubBase}${missionFile}`;
+        // 3. اختيار الصفحة المناسبة بناءً على نوع النشاط
+        const targetPage = isX ? 'HybirdX' : 'Hybird';
+
+        // 4. التوجيه النهائي مع تمرير الرابط
+        window.location.href = `?page=${targetPage}&missionURL=${fullMissionURL}`;
     }
+
 </script>
 
 </body>

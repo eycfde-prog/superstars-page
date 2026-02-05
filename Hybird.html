@@ -8,32 +8,21 @@
     <style>
         :root { --gold: #ffcc00; }
         body { background: #020205; color: white; margin: 0; overflow: hidden; }
-        
         .main-container { display: flex; flex-direction: column; height: 100vh; }
-        
         .mission-header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 15px 25px; border-bottom: 1px solid rgba(212, 175, 55, 0.3);
             background: rgba(255, 255, 255, 0.02);
         }
-
-        /* الإطار الذكي - قلب المهمة */
-        #mission-frame { 
-            flex-grow: 1; width: 100%; border: none; 
-            background: transparent; transition: 0.5s;
-        }
-
+        #mission-frame { flex-grow: 1; width: 100%; border: none; background: transparent; }
         .prev-btn {
             background: transparent; border: 1px solid var(--gold); color: var(--gold);
             padding: 8px 15px; border-radius: 50px; cursor: pointer; font-family: 'Cairo';
-            transition: 0.3s;
         }
-        .prev-btn:hover { background: var(--gold); color: black; }
-
         #status-update {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             background: rgba(0, 255, 0, 0.2); padding: 10px 20px; border-radius: 20px;
-            border: 1px solid #0f0; z-index: 100;
+            border: 1px solid #0f0; z-index: 100; font-family: 'Courier New';
         }
     </style>
 </head>
@@ -42,68 +31,89 @@
 <div class="main-container">
     <div class="mission-header">
         <button onclick="window.location.href='?page=MC'" class="prev-btn">◀ العودة لمركز القيادة</button>
-        <h2 id="mission-title" style="font-family: 'Cinzel'; font-size: 1.2rem;">LOADING MISSION...</h2>
+        <h2 id="mission-title">LOADING MISSION...</h2>
         <div id="agent-display" style="color: var(--gold); font-family: 'Orbitron'; font-size: 0.9rem;">AGENT: ...</div>
     </div>
 
     <iframe id="mission-frame" src="" allowtransparency="true"></iframe>
 
     <div id="status-update" style="display: none;">
-        <i class="fas fa-sync fa-spin"></i> TRANSMITTING DATA TO EYC BACKEND...
+        <i class="fas fa-sync fa-spin"></i> SYNCING WITH CC ENGINE...
     </div>
 </div>
 
 <script>
-    // رابط الجيت هب الأساسي (Assets Path)
-    const GITHUB_ASSETS_URL = "https://your-user-name.github.io/your-repo/assets/MIF/";
+    // روابط الجيت هب الأساسية
+    const GITHUB_MIF_URL = "https://your-user-name.github.io/your-repo/assets/MIF/";
+    const GITHUB_CC_URL = "https://your-user-name.github.io/your-repo/assets/CC/";
+
+    let currentActivityCode = ""; // كود النشاط (مثل SS)
+    let currentTaskNum = "";
 
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
+        const missionURL = urlParams.get('missionURL');
         
-        // استلام اسم النشاط ورقم المهمة من الرابط (مثلاً: activity=Alike&taskNum=4)
-        const activityName = urlParams.get('activity'); 
-        const taskNum = urlParams.get('taskNum') || "1";
-        
-        // استرجاع اسم العميل
-        const agentName = localStorage.getItem('agentName') || "Unknown Agent";
-        document.getElementById('agent-display').innerText = "AGENT: " + agentName;
+        if (missionURL) {
+            // استخراج كود النشاط والرقم من الرابط (مثلاً SS4.html)
+            const fileName = missionURL.split('/').pop().replace('.html', '');
+            currentActivityCode = fileName.replace(/[0-9]/g, ''); // SS
+            currentTaskNum = fileName.replace(/\D/g, '');       // 4
 
-        if (activityName) {
-            // بناء رابط الملف: Assets/MIF/Alike.html
-            // مع إضافة رقم المهمة كـ Hash (#) أو Parameter ليفهمه ملف الـ HTML المستهدف
-            const finalMifURL = `${GITHUB_ASSETS_URL}${activityName}.html?task=${taskNum}`;
+            const agentName = localStorage.getItem('agentName') || "Agent";
+            document.getElementById('agent-display').innerText = "AGENT: " + agentName;
+            document.getElementById('mission-title').innerText = `${currentActivityCode} - TASK #${currentTaskNum}`;
             
-            const iframe = document.getElementById('mission-frame');
-            iframe.src = finalMifURL;
-
-            document.getElementById('mission-title').innerText = `${activityName} - TASK #${taskNum}`;
+            // تحميل ملف الـ MIF في الإيفرايم
+            document.getElementById('mission-frame').src = missionURL;
         } else {
-            alert("فشل في تحديد المهمة يا مستر عز! ⚠️");
+            alert("Mission Identity Error!");
             window.location.href = '?page=MC';
         }
     };
 
-    // الاستماع لنتائج التصحيح القادمة من داخل الإيفرايم
+    // الاستماع لملف الـ MIF (عندما يضغط الطالب Submit داخل الإيفرايم)
     window.addEventListener('message', function(event) {
-        // التأكد أن الرسالة تحتوي على نتائج (Score, Answers, etc.)
         if (event.data && event.data.type === 'SUBMIT_MISSION') {
-            sendToBackEnd(event.data);
+            processCorrection(event.data.answers);
         }
     });
 
-    function sendToBackEnd(report) {
+    function processCorrection(studentAnswers) {
         document.getElementById('status-update').style.display = 'block';
+
+        // 1. استدعاء ملف الـ CC الخاص بالنشاط (مثلاً SS.js)
+        const ccScriptURL = `${GITHUB_CC_URL}${currentActivityCode}.js`;
         
-        // إرسال التقرير لـ Google Apps Script (Back End)
+        // تحميل سكريبت التصحيح ديناميكياً
+        const script = document.createElement('script');
+        script.src = ccScriptURL;
+        script.onload = function() {
+            // نفترض أن كل ملف CC يحتوي على دالة اسمها gradeMission
+            // هذه الدالة موجودة في ملفات الـ JS في مجلد CC
+            const finalScore = gradeMission(studentAnswers); 
+            
+            // 2. إرسال التقرير النهائي للباك إند
+            const finalReport = {
+                email: localStorage.getItem('agentEmail'),
+                activityCode: currentActivityCode,
+                missionNum: currentTaskNum,
+                score: finalScore
+            };
+            
+            sendToBackEnd(finalReport);
+        };
+        document.head.appendChild(script);
+    }
+
+    function sendToBackEnd(report) {
         google.script.run
-            .withSuccessHandler(function(res) {
-                document.getElementById('status-update').style.display = 'none';
-                alert("تمت المهمة بنجاح! تحديث التوكنز جاري... ✨");
+            .withSuccessHandler(function() {
+                alert("Mission Accomplished! Score: " + report.score);
                 window.location.href = '?page=MC';
             })
             .submitMissionReport(report); 
     }
 </script>
-
 </body>
 </html>

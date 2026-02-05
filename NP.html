@@ -169,15 +169,12 @@
                     <span id="agent-code">----</span>
                 </div>
             </div>
-            <button onclick="window.location.href='MC.html'" style="margin-top: 20px; width: 100%;">Enter Command Center</button>
+            <button onclick="window.location.href='?page=MC'" style="margin-top: 20px; width: 100%;">Enter Command Center</button>
         </div>
     </div>
 </div>
 
 <script>
-    // سيتم استبدال هذا بالرابط الحقيقي في الخطوة القادمة
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqFk4Wgru2pldU1a70oaPZzNX3tQX5XGX2hzxnk3P4ilCd70FYIngZ2CTVVpG7_vjP/exec";
-
     const options = {
         maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
         femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
@@ -185,53 +182,23 @@
         femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
         hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
         facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
-        eyes: ["Default", "Happy", "Surprised", "Wink", "Hearts", "Side", "Squint", "Close"],
-        mouths: ["Default", "Smile", "Serious", "Twinkle", "Tongue", "Eating", "Grimace"]
+        eyes: ["Default", "Happy", "Surprised", "Wink", "Hearts", "Side", "Squint", "Close"]
     };
 
-document.getElementById('registrationForm').onsubmit = function(e) {
-    e.preventDefault();
-    playClick();
-    
-    const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
-    if (programs.length === 0) { 
-        alert("Please select at least one mission program, Agent!"); 
-        return; 
+    function initStars() {
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, stars = [];
+        function setSize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+        window.onresize = setSize; setSize();
+        for(let i=0; i<80; i++) { stars.push({ x: Math.random() * w, y: Math.random() * h, size: Math.random() * 2, speed: Math.random() * 0.5 + 0.1 }); }
+        function draw() {
+            ctx.clearRect(0,0,w,h); ctx.fillStyle = "#d4af37";
+            stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); s.y -= s.speed; if(s.y < 0) s.y = h; });
+            requestAnimationFrame(draw);
+        }
+        draw();
     }
-
-    const loader = document.getElementById('loader');
-    loader.style.display = 'flex';
-    loader.innerText = "UPLOADING DATA TO EYC MAINFRAME...";
-
-    // تجهيز الكائن ليتوافق مع وظيفة registerStudent في الـ Back End
-    const studentObj = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        age: document.getElementById('age').value,
-        programs: programs.join(", "),
-        avatar: document.getElementById('avatar-img').src // حفظ رابط الصورة أيضاً
-    };
-
-    // استدعاء الوظيفة مباشرة من الـ Back End
-    google.script.run
-        .withSuccessHandler(function(response) {
-            loader.style.display = 'none';
-            if (response === "Success") {
-                // توليد كود وهمي للعرض فقط لأن الكود الحقيقي تم إنشاؤه في السيرفر
-                const displayCode = "EYC-" + Math.floor(1000 + Math.random() * 9000);
-                showFinalCard(displayCode);
-            } else if (response === "Email Exists") {
-                alert("This Agent Email is already registered in our database!");
-            } else {
-                alert("Error: " + response);
-            }
-        })
-        .withFailureHandler(function(err) {
-            loader.style.display = 'none';
-            alert("Transmission Failed: " + err);
-        })
-        .registerStudent(studentObj); // تأكيد اسم الوظيفة في الـ Back End
-};
 
     function playClick() { const snd = document.getElementById('clickSound'); snd.currentTime = 0; snd.play().catch(() => {}); }
 
@@ -273,9 +240,8 @@ document.getElementById('registrationForm').onsubmit = function(e) {
         const clothe = document.getElementById('clotheType').value;
         const accessories = document.getElementById('accessoriesType').value;
         const eye = document.getElementById('eyeType').value;
-        const mouth = "Default"; // Simplified for logic
         const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
-        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&mouthType=${mouth}&skinColor=${skin}`;
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&mouthType=Default&skinColor=${skin}`;
         const tempImg = new Image();
         tempImg.src = url;
         tempImg.onload = () => { img.src = url; loader.style.display = 'none'; };
@@ -295,7 +261,8 @@ document.getElementById('registrationForm').onsubmit = function(e) {
         document.getElementById('pBar').style.width = (step * 14.2) + "%";
     }
 
-document.getElementById('registrationForm').onsubmit = async (e) => {
+    // الربط مع Google Apps Script Back-End المعدل
+    document.getElementById('registrationForm').onsubmit = function(e) {
         e.preventDefault();
         playClick();
         
@@ -309,48 +276,39 @@ document.getElementById('registrationForm').onsubmit = async (e) => {
         loader.style.display = 'flex';
         loader.innerText = "UPLOADING DATA TO EYC MAINFRAME...";
 
-        const formData = {
-            action: "signup",
+        const studentObj = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
             age: document.getElementById('age').value,
             programs: programs.join(", "),
-            image: document.getElementById('avatar-img').src
+            avatar: document.getElementById('avatar-img').src
         };
 
-        try {
-            // إرسال البيانات إلى Google Apps Script
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors', // لتجنب مشاكل الـ CORS في Apps Script
-                cache: 'no-cache',
-                body: JSON.stringify(formData)
-            });
-
-            // بما أننا نستخدم no-cors لن نستطيع قراءة الـ JSON مباشرة 
-            // لذا سنعتمد على نجاح الطلب وإظهار الكود محلياً أو إعادة المحاولة
-            // ملاحظة: الأفضل في Apps Script استخدام الكود التالي لضمان التزامن
-            
-            setTimeout(() => {
-                const finalCode = "EYC-" + Math.floor(1000 + Math.random() * 9000); // كود افتراضي في حالة الـ no-cors
+        // استدعاء الوظيفة من ملف الـ .gs
+        google.script.run
+            .withSuccessHandler(function(response) {
                 loader.style.display = 'none';
-                showFinalCard(finalCode);
-                localStorage.clear(); // تنظيف البيانات المحفوظة
-            }, 2500);
-
-        } catch (error) {
-            console.error("Transmission Error:", error);
-            alert("Connection Lost. Check your terminal connection.");
-            loader.style.display = 'none';
-        }
+                if (response === "Success") {
+                    // الكود الحقيقي يتم إنشاؤه في السيرفر، هنا نعرض نجاح المهمة
+                    showFinalCard();
+                } else if (response === "Email Exists") {
+                    alert("This Agent Email is already registered in our database!");
+                }
+            })
+            .withFailureHandler(function(err) {
+                loader.style.display = 'none';
+                alert("Transmission Failed: " + err);
+            })
+            .registerStudent(studentObj);
     };
-    function showFinalCard(code) {
+
+    function showFinalCard() {
         document.getElementById('registrationForm').style.display = 'none';
         document.getElementById('avatar-sidebar').style.display = 'none';
         document.getElementById('success-card').style.display = 'block';
         document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
         document.getElementById('card-name').innerText = document.getElementById('name').value;
-        document.getElementById('agent-code').innerText = code;
+        document.getElementById('agent-code').innerText = "AUTHORIZED"; 
         document.getElementById('pBar').style.width = "100%";
     }
 

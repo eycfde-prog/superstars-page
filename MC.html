@@ -35,7 +35,7 @@
 
     <section class="progress-section">
         <div class="progress-label">
-            <span>MISSION PROGRESS</span>
+            <span>MISSION PROGRESS (160 MISSIONS)</span>
             <span id="progress-percent">0%</span>
         </div>
         <div class="p-bar-bg">
@@ -44,8 +44,8 @@
     </section>
 
     <nav class="mission-tabs">
-        <button class="tab-btn active" onclick="showTab('hybrid')">HYBRID (6)</button>
-        <button class="tab-btn" onclick="showTab('hybridx')">HYBRID-X (10)</button>
+        <button class="tab-btn active" id="btn-hybrid" onclick="showTab('hybrid')">HYBRID (SEASON)</button>
+        <button class="tab-btn" id="btn-hybridx" onclick="showTab('hybridx')">HYBRID-X (ROYAL)</button>
     </nav>
 
     <div id="mission-container">
@@ -53,7 +53,7 @@
 </div>
 
 <script>
-    // بيانات الأنشطة حسب كود النشاط في الخطة
+    // 1. تعريف الأنشطة حسب الخطة المعتمدة
     const hybridMissions = [
         { name: "Grammar", code: "GS" },
         { name: "Alike", code: "AS" },
@@ -76,37 +76,48 @@
         { name: "ElmagazineX", code: "ELX" }
     ];
 
-    // استدعاء بيانات الطالب عند الفتح
+    // 2. تشغيل النظام عند التحميل
     window.onload = function() {
         const userEmail = localStorage.getItem('agentEmail') || "<?!= Session.getActiveUser().getEmail() ?>";
+        
+        // جلب البيانات من الـ Apps Script
         google.script.run
             .withSuccessHandler(updateUI)
             .getStudentData(userEmail);
         
-        showTab('hybrid'); // العرض الافتراضي
+        showTab('hybrid'); // العرض الافتراضي عند الفتح
     };
 
+    // 3. تحديث واجهة المستخدم بالبيانات الحقيقية من الشيت
     function updateUI(data) {
         if (!data) return;
         const info = data.info;
         
-        // توزيع البيانات حسب ترتيب أعمدة الشيت (0-27)
-        document.getElementById('agent-name').innerText = info[1]; // Full Name
-        document.getElementById('agent-id').innerText = info[6];   // Student Code
-        document.getElementById('agent-avatar').src = info[5];     // Image URL
-        document.getElementById('total-score').innerText = info[24]; // Total Score
-        document.getElementById('agent-title').innerText = info[26]; // Title
+        document.getElementById('agent-name').innerText = info[1];    // Full Name
+        document.getElementById('agent-id').innerText = info[6];      // Student Code
+        document.getElementById('agent-avatar').src = info[5];        // Image URL
+        document.getElementById('total-score').innerText = info[24];  // Total Score (Column Y)
+        document.getElementById('agent-title').innerText = info[26];  // Title (Column AA)
         document.getElementById('agent-rank').innerText = "#" + data.rank;
         
-        // تحديث شريط التقدم (160 مهمة)
-        const progress = info[27]; // Progress Bar %
+        // تحديث شريط التقدم (النسبة المئوية من 160 مهمة)
+        const progress = info[27] || 0; // Progress Bar (Column AB)
         document.getElementById('progress-percent').innerText = progress + "%";
         document.getElementById('progress-fill').style.width = progress + "%";
+
+        // حفظ الاسم محلياً لاستخدامه في صفحات المهام
+        localStorage.setItem('agentName', info[1]);
     }
 
+    // 4. تبديل القوائم بين الموسم والرويال
     function showTab(type) {
         const container = document.getElementById('mission-container');
         container.innerHTML = "";
+        
+        // تحديث شكل الأزرار
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(type === 'hybrid' ? 'btn-hybrid' : 'btn-hybridx').classList.add('active');
+
         const missions = (type === 'hybrid') ? hybridMissions : hybridXMissions;
 
         missions.forEach(m => {
@@ -119,31 +130,26 @@
             for(let i=1; i<=10; i++) {
                 let btn = document.createElement('button');
                 btn.innerText = i;
-                // تنفيذ منطق الربط مع MIF على GitHub
                 btn.onclick = () => launchMIF(m.code, i);
                 grid.appendChild(btn);
             }
         });
     }
 
-    // وظيفة الربط الاحترافي مع MIF
-        function launchMIF(activityCode, missionNum) {
-        // 1. تحديد الرابط الأساسي لملفات الجيت هب (تأكد من وضع روابطك هنا)
+    // 5. منطق التوجيه الذكي للمهمات (MIF System)
+    function launchMIF(activityCode, missionNum) {
+        // رابط الجت هب الموحد
         const githubBase = "https://raw.githack.com/YOUR_GITHUB_USER/YOUR_REPO/main/assets/MIF/";
         const missionFile = `${activityCode}${missionNum}.html`;
-        const fullMissionURL = `${githubBase}${missionFile}`;
+        const fullURL = `${githubBase}${missionFile}`;
 
-        // 2. منطق التوجيه الذكي:
-        // سنفحص إذا كان كود النشاط موجوداً ضمن قائمة الـ hybridXMissions
+        // فحص نوع النشاط لتحديد الصفحة المستهدفة
         const isX = hybridXMissions.some(m => m.code === activityCode);
-        
-        // 3. اختيار الصفحة المناسبة بناءً على نوع النشاط
         const targetPage = isX ? 'HybirdX' : 'Hybird';
 
-        // 4. التوجيه النهائي مع تمرير الرابط
-        window.location.href = `?page=${targetPage}&missionURL=${fullMissionURL}`;
+        // الانتقال للنموذج المناسب مع تمرير رابط ملف الـ HTML
+        window.location.href = `?page=${targetPage}&missionURL=${encodeURIComponent(fullURL)}`;
     }
-
 </script>
 
 </body>

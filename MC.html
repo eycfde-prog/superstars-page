@@ -1,495 +1,142 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <title>EYC Super Stars | Elite Dashboard</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYC Command Center</title>
+    <?!= include('mcstyle'); ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <link rel="stylesheet" href="mcstyle.css"> 
-
 </head>
-
 <body>
 
-
-
-    <div id="star-container"></div>
-
-    <div class="bg-glow"></div>
-
-
-
-    <div class="top-nav">
-
-        <i class="fas fa-house nav-icon" title="Home" onclick="window.location.href='index.html'"></i>
-
-        <i class="fas fa-right-from-bracket nav-icon" id="logoutBtn" title="Logout" style="display:none;" onclick="handleLogout()"></i>
-
-    </div>
-
-
-
-    <header class="hero-banner" id="heroBanner"></header>
-
-
-
-    <div class="nav-container">
-
-        <div class="tab-switcher">
-
-            <button class="tab-btn active" onclick="switchType('season', this)">SEASON</button>
-
-            <button class="tab-btn" onclick="switchType('royal', this)">ROYAL</button>
-
+<div class="main-container">
+    <header class="agent-header">
+        <div class="agent-info">
+            <img id="agent-avatar" src="" alt="Agent">
+            <div>
+                <h1 id="agent-name">LOADING...</h1>
+                <p id="agent-id">EYC-XXXX</p>
+                <div class="badge" id="agent-title">Greeny</div>
+            </div>
         </div>
-
-    </div>
-
-
-
-    <main>
-
-        <div class="grid-container" id="cardsGrid"></div>
-
-    </main>
-
-
-
-    <div class="modal" id="taskModal">
-
-        <div class="modal-content">
-
-            <h2 id="mTitle" style="font-family:'Cinzel'; color:var(--gold);">ACTIVITY</h2>
-
-            <p id="mSubTitle" style="font-size:0.7rem; color:#888; letter-spacing:2px;"></p>
-
-            <div class="tasks-grid" id="tGrid"></div>
-
-            <button class="close-modal" onclick="closeModal('taskModal')">BACK</button>
-
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-star gold-icon"></i>
+                <span id="total-score">0</span>
+                <p>TOTAL SCORE</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-trophy"></i>
+                <span id="agent-rank">#0</span>
+                <p>RANK</p>
+            </div>
         </div>
+    </header>
 
-    </div>
-
-
-
-    <div class="modal" id="loginModal">
-
-        <div class="modal-content">
-
-            <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:20px;">MEMBER ACCESS</h2>
-
-            <input type="email" id="loginEmail" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Email Address">
-
-            <input type="password" id="loginCode" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Access Code">
-
-            <div id="loader"></div>
-
-            <button class="btn-premium solid" style="width:100%; margin-top:15px;" onclick="handleLogin()">LOGIN</button>
-
-            <button class="close-modal" onclick="closeModal('loginModal')">CLOSE</button>
-
+    <section class="progress-section">
+        <div class="progress-label">
+            <span>MISSION PROGRESS</span>
+            <span id="progress-percent">0%</span>
         </div>
+        <div class="p-bar-bg">
+            <div class="p-bar-fill" id="progress-fill"></div>
+        </div>
+    </section>
 
-    </div>
+    <nav class="mission-tabs">
+        <button class="tab-btn active" onclick="showTab('hybrid')">HYBRID (6)</button>
+        <button class="tab-btn" onclick="showTab('hybridx')">HYBRID-X (10)</button>
+    </nav>
 
+    <div id="mission-container">
+        </div>
+</div>
 
+<script>
+    // بيانات الأنشطة حسب كود النشاط في الخطة
+    const hybridMissions = [
+        { name: "Grammar", code: "GS" },
+        { name: "Alike", code: "AS" },
+        { name: "Seeds", code: "SS" },
+        { name: "Vivid", code: "VS" },
+        { name: "Label", code: "LS" },
+        { name: "Golden Ear", code: "GES" }
+    ];
 
-    <script>
+    const hybridXMissions = [
+        { name: "GrammarX", code: "GX" },
+        { name: "AlikeX", code: "AX" },
+        { name: "SeedsX", code: "SX" },
+        { name: "VividX", code: "VX" },
+        { name: "LabelX", code: "LX" },
+        { name: "Golden EarX", code: "GEX" },
+        { name: "FigurativeX", code: "FX" },
+        { name: "DictationX", code: "DX" },
+        { name: "Sing Sang SungX", code: "SSSX" },
+        { name: "ElmagazineX", code: "ELX" }
+    ];
 
-        // رابط الـ Apps Script الجديد (Vens Pro)
-
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKXQQ22WfzkmKxHzxeilgaI9j3UegQmLBMz-ZyoWFi56mL1NXHbwDcOOdNSu5eJhfi/exec";
-
+    // استدعاء بيانات الطالب عند الفتح
+    window.onload = function() {
+        const userEmail = localStorage.getItem('agentEmail') || "<?!= Session.getActiveUser().getEmail() ?>";
+        google.script.run
+            .withSuccessHandler(updateUI)
+            .getStudentData(userEmail);
         
-
-        let currentUser = null;
-
-        let isLoggedIn = false;
-
-
-
-        // مصفوفة الأنشطة والأكواد
-
-        const activities = {
-
-            season: [
-
-                { name: "Golden Ear", icon: "fa-ear-listen", code: "GES" },
-
-                { name: "Alike", icon: "fa-clone", code: "AS" },
-
-                { name: "Seeds", icon: "fa-seedling", code: "SS" },
-
-                { name: "Grammar", icon: "fa-spell-check", code: "GS" },
-
-                { name: "Label", icon: "fa-tag", code: "LS" },
-
-                { name: "Vivid", icon: "fa-eye", code: "VS" }
-
-            ],
-
-            royal: [
-
-                { name: "Golden EarX", icon: "fa-ear-deaf", code: "GEX" },
-
-                { name: "AlikeX", icon: "fa-object-group", code: "AX" },
-
-                { name: "SeedsX", icon: "fa-tree", code: "SX" },
-
-                { name: "GrammarX", icon: "fa-pen-fancy", code: "GX" },
-
-                { name: "LabelX", icon: "fa-tags", code: "LX" },
-
-                { name: "VividX", icon: "fa-wand-magic-sparkles", code: "VX" },
-
-                { name: "FigurativeX", icon: "fa-mask", code: "FX" },
-
-                { name: "DictationX", icon: "fa-microphone-lines", code: "DX" },
-
-                { name: "Sing Sang SungX", icon: "fa-music", code: "SSSX" },
-
-                { name: "ElmagazineX", icon: "fa-book-open", code: "ELX" }
-
-            ]
-
-        };
-
-
-
-        // توليد النجوم
-
-        function createStars() {
-
-            const container = document.getElementById('star-container');
-
-            for (let i = 0; i < 150; i++) {
-
-                const star = document.createElement('div');
-
-                star.className = 'star';
-
-                const size = Math.random() * 2.5;
-
-                star.style.width = size + 'px';
-
-                star.style.height = size + 'px';
-
-                star.style.left = Math.random() * 100 + '%';
-
-                star.style.top = Math.random() * 100 + '%';
-
-                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-
-                container.appendChild(star);
-
-            }
-
-        }
-
-        createStars();
-
-
-
-        function renderHeader() {
-
-            const header = document.getElementById('heroBanner');
-
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            if (isLoggedIn) {
-
-                logoutBtn.style.display = "block";
-
-                header.innerHTML = `
-
-                    <div class="profile-container">
-
-                        <div class="avatar-main" style="background-image: url('${currentUser.image}')"></div>
-
-                        <h1 class="student-name">${currentUser.name}</h1>
-
-                        <div style="display:flex; gap:15px; margin-top:5px; font-size:0.85rem; color:var(--gold);">
-
-                            <span>🪙 ${currentUser.totalScore} TK</span> • <span>🏆 Rank #${currentUser.rank}</span>
-
-                        </div>
-
-                        <p style="font-size:0.7rem; color:#888; margin-top:5px;">${currentUser.title}</p>
-
-                    </div>`;
-
-            } else {
-
-                logoutBtn.style.display = "none";
-
-                header.innerHTML = `
-
-                    <div class="profile-container">
-
-                        <h1 class="student-name" style="margin-bottom:10px">EYC PREMIUM</h1>
-
-                        <div class="auth-btns">
-
-                            <button class="btn-premium" onclick="openLogin()">Log In</button>
-
-                            <button class="btn-premium solid" onclick="window.location.href='NP.html'">Join</button>
-
-                        </div>
-
-                    </div>`;
-
-            }
-
-        }
-
-
-
-        async function handleLogin() {
-
-            const email = document.getElementById('loginEmail').value;
-
-            const code = document.getElementById('loginCode').value;
-
-            const loader = document.getElementById('loader');
-
-            if(!email || !code) return alert("Please fill all fields");
-
-            loader.style.display = "block";
-
-            
-
-            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-
-            window[callbackName] = function(data) {
-
-                delete window[callbackName];
-
-                document.body.removeChild(script);
-
-                if (data.status === "success") {
-
-                    currentUser = data; // يحتوي على الـ title المحدث من Apps Script
-
-                    isLoggedIn = true;
-
-                    localStorage.setItem('eyc_user', JSON.stringify(data));
-
-                    closeModal('loginModal');
-
-                    renderHeader();
-
-                    generateCards();
-
-                } else {
-
-                    alert("Error: " + data.message);
-
-                }
-
-                loader.style.display = "none";
-
-            };
-
-            const script = document.createElement('script');
-
-            script.src = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login&callback=${callbackName}`;
-
-            document.body.appendChild(script);
-
-        }
-
-
-
-        async function handleLogout() {
-
-            if (currentUser) {
-
-                // إخطار السكريبت بالخروج لمسح علامة ✅
-
-                const callbackName = 'jsonp_logout_' + Math.round(100000 * Math.random());
-
-                window[callbackName] = function() {
-
-                    delete window[callbackName];
-
-                    document.body.removeChild(script);
-
-                };
-
-                const script = document.createElement('script');
-
-                script.src = `${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout&callback=${callbackName}`;
-
-                document.body.appendChild(script);
-
-            }
-
-            localStorage.removeItem('eyc_user'); 
-
-            isLoggedIn = false;
-
-            currentUser = null;
-
-            renderHeader();
-
-            generateCards();
-
-        }
-
-
-
-window.onload = () => {
-
-    const savedUser = localStorage.getItem('eyc_user');
-
-    if(savedUser) {
-
-        currentUser = JSON.parse(savedUser);
-
-        isLoggedIn = true;
-
-        renderHeader();
-
-    } else {
-
-        // إذا لم يكن هناك مستخدم، نحتاج أيضاً لرسم الهيدر الافتراضي
-
-        renderHeader();
-
+        showTab('hybrid'); // العرض الافتراضي
+    };
+
+    function updateUI(data) {
+        if (!data) return;
+        const info = data.info;
+        
+        // توزيع البيانات حسب ترتيب أعمدة الشيت (0-27)
+        document.getElementById('agent-name').innerText = info[1]; // Full Name
+        document.getElementById('agent-id').innerText = info[6];   // Student Code
+        document.getElementById('agent-avatar').src = info[5];     // Image URL
+        document.getElementById('total-score').innerText = info[24]; // Total Score
+        document.getElementById('agent-title').innerText = info[26]; // Title
+        document.getElementById('agent-rank').innerText = "#" + data.rank;
+        
+        // تحديث شريط التقدم (160 مهمة)
+        const progress = info[27]; // Progress Bar %
+        document.getElementById('progress-percent').innerText = progress + "%";
+        document.getElementById('progress-fill').style.width = progress + "%";
     }
 
-    
+    function showTab(type) {
+        const container = document.getElementById('mission-container');
+        container.innerHTML = "";
+        const missions = (type === 'hybrid') ? hybridMissions : hybridXMissions;
 
-    // هذه هي الإضافة السحرية: استدعاء الدالة لترسم الكروت للكل
+        missions.forEach(m => {
+            let card = document.createElement('div');
+            card.className = "mission-group-card";
+            card.innerHTML = `<h3>${m.name}</h3><div class="mission-numbers" id="grid-${m.code}"></div>`;
+            container.appendChild(card);
 
-    generateCards(); 
-
-};
-
-
-
-        function generateCards() {
-
-            const grid = document.getElementById('cardsGrid');
-
-            grid.innerHTML = '';
-
-            const type = document.querySelector('.tab-btn.active').innerText.toLowerCase();
-
-            activities[type].forEach(act => {
-
-                const card = document.createElement('div');
-
-                card.className = 'activity-card';
-
-                card.innerHTML = `<i class="fa-solid ${act.icon} card-icon"></i><h3>${act.name}</h3><p>10 Challenges</p>`;
-
-                card.onclick = () => openTasks(act.name, act.code);
-
-                grid.appendChild(card);
-
-            });
-
-        }
-
-
-
-        function openTasks(name, activityCode) {
-
-            document.getElementById('mTitle').innerText = name;
-
-            const tGrid = document.getElementById('tGrid');
-
-            tGrid.innerHTML = '';
-
-            for (let i = 1; i <= 10; i++) {
-
-                let isLocked = isLoggedIn ? (i > 2) : (i > 1);
-
-                const node = document.createElement('div');
-
-                node.className = `task-node ${isLocked ? 'locked' : ''}`;
-
-                node.innerHTML = i + (isLocked ? '<i class="fas fa-lock lock-icon"></i>' : '');
-
-                if (!isLocked) {
-
-                    node.onclick = () => {
-
-                        // التحويل لصفحة Hybird.html مع تمرير كافة البيانات
-
-                        const baseUrl = `Hybird.html`; 
-
-                        const studentData = isLoggedIn ? {
-
-                            ...currentUser,
-
-                            activity: name,
-
-                            taskCode: activityCode,
-
-                            taskNum: i
-
-                        } : {
-
-                            name: "Guest Hunter",
-
-                            image: "https://avataaars.io/?avatarStyle=Transparent",
-
-                            title: "Greeny",
-
-                            activity: name,
-
-                            taskCode: activityCode,
-
-                            taskNum: i
-
-                        };
-
-                        const params = new URLSearchParams(studentData).toString();
-
-                        window.location.href = `${baseUrl}?${params}`;
-
-                    };
-
-                }
-
-                tGrid.appendChild(node);
-
+            const grid = document.getElementById(`grid-${m.code}`);
+            for(let i=1; i<=10; i++) {
+                let btn = document.createElement('button');
+                btn.innerText = i;
+                // تنفيذ منطق الربط مع MIF على GitHub
+                btn.onclick = () => launchMIF(m.code, i);
+                grid.appendChild(btn);
             }
+        });
+    }
 
-            document.getElementById('taskModal').style.display = 'flex';
-
-        }
-
-
-
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        function switchType(type, btn) {
-
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-            btn.classList.add('active');
-
-            generateCards();
-
-        }
-
-    </script>
+    // وظيفة الربط الاحترافي مع MIF
+    function launchMIF(activityCode, missionNum) {
+        // بناء الرابط حسب الخطة: assets/MIF/Code+Number.html
+        // مستر عز: يرجى استبدال رابط الـ Repo هنا برابط الجت هب الخاص بك
+        const githubBase = "https://raw.githack.com/YOUR_GITHUB_USER/YOUR_REPO/main/assets/MIF/";
+        const missionFile = `${activityCode}${missionNum}.html`;
+        
+        // التوجيه للمهمة
+        window.location.href = `?page=Hybird&missionURL=${githubBase}${missionFile}`;
+    }
+</script>
 
 </body>
-
 </html>

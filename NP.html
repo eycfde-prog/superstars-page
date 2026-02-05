@@ -189,20 +189,49 @@
         mouths: ["Default", "Smile", "Serious", "Twinkle", "Tongue", "Eating", "Grimace"]
     };
 
-    function initStars() {
-        const canvas = document.getElementById('starCanvas');
-        const ctx = canvas.getContext('2d');
-        let w, h, stars = [];
-        function setSize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-        window.onresize = setSize; setSize();
-        for(let i=0; i<80; i++) { stars.push({ x: Math.random() * w, y: Math.random() * h, size: Math.random() * 2, speed: Math.random() * 0.5 + 0.1 }); }
-        function draw() {
-            ctx.clearRect(0,0,w,h); ctx.fillStyle = "#d4af37";
-            stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); s.y -= s.speed; if(s.y < 0) s.y = h; });
-            requestAnimationFrame(draw);
-        }
-        draw();
+document.getElementById('registrationForm').onsubmit = function(e) {
+    e.preventDefault();
+    playClick();
+    
+    const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
+    if (programs.length === 0) { 
+        alert("Please select at least one mission program, Agent!"); 
+        return; 
     }
+
+    const loader = document.getElementById('loader');
+    loader.style.display = 'flex';
+    loader.innerText = "UPLOADING DATA TO EYC MAINFRAME...";
+
+    // تجهيز الكائن ليتوافق مع وظيفة registerStudent في الـ Back End
+    const studentObj = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        age: document.getElementById('age').value,
+        programs: programs.join(", "),
+        avatar: document.getElementById('avatar-img').src // حفظ رابط الصورة أيضاً
+    };
+
+    // استدعاء الوظيفة مباشرة من الـ Back End
+    google.script.run
+        .withSuccessHandler(function(response) {
+            loader.style.display = 'none';
+            if (response === "Success") {
+                // توليد كود وهمي للعرض فقط لأن الكود الحقيقي تم إنشاؤه في السيرفر
+                const displayCode = "EYC-" + Math.floor(1000 + Math.random() * 9000);
+                showFinalCard(displayCode);
+            } else if (response === "Email Exists") {
+                alert("This Agent Email is already registered in our database!");
+            } else {
+                alert("Error: " + response);
+            }
+        })
+        .withFailureHandler(function(err) {
+            loader.style.display = 'none';
+            alert("Transmission Failed: " + err);
+        })
+        .registerStudent(studentObj); // تأكيد اسم الوظيفة في الـ Back End
+};
 
     function playClick() { const snd = document.getElementById('clickSound'); snd.currentTime = 0; snd.play().catch(() => {}); }
 

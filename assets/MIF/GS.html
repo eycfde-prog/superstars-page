@@ -2,204 +2,166 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Grammar Specialist Module | EYC</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Orbitron:wght@400;700&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>Grammar Interception | EYC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #ffcc00; --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); --glass: rgba(255, 255, 255, 0.03); }
+        :root { 
+            --danger: #ff003c; 
+            --detect: #00f2ff;
+            --bg-dark: #0a0a0c;
+            --panel: rgba(20, 20, 25, 0.95);
+        }
+        
         body { 
-            font-family: 'Poppins', sans-serif; background: transparent; color: white; 
-            margin: 0; padding: 10px; overflow-x: hidden; direction: ltr;
+            font-family: 'Rajdhani', sans-serif; 
+            background: transparent; 
+            color: #e0e0e0; 
+            margin: 0; padding: 15px; 
+            direction: ltr;
         }
 
-        .mission-container { animation: fadeIn 0.6s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-        .grammar-card {
-            background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
-            padding: 20px; margin-bottom: 20px; position: relative;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        /* حاوية المهمة - شكل عسكري/تقني */
+        .mission-card {
+            background: var(--panel);
+            border-left: 5px solid var(--danger);
+            border-right: 1px solid rgba(255, 0, 60, 0.2);
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 25px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .case-tag {
-            position: absolute; top: -12px; left: 20px; background: var(--gold-gradient);
-            color: black; font-family: 'Orbitron'; font-size: 10px; 
-            padding: 3px 12px; border-radius: 50px; font-weight: bold;
+        .mission-id {
+            position: absolute; top: -10px; right: 20px;
+            background: var(--danger); color: white;
+            font-family: 'Orbitron'; font-size: 11px;
+            padding: 2px 12px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
         }
 
-        /* تنسيق الجملة القابلة للضغط */
-        .sentence-display {
-            font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;
-            display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start;
+        /* الجملة كأنها شفرة */
+        .code-line {
+            font-size: 1.3rem; font-weight: 700;
+            letter-spacing: 1px; margin-bottom: 20px;
+            display: flex; flex-wrap: wrap; gap: 10px;
         }
 
-        .word-node {
-            padding: 2px 8px; border-radius: 6px; cursor: pointer;
-            transition: 0.2s; border: 1px solid transparent;
-        }
-        .word-node:hover { background: rgba(212, 175, 55, 0.2); border-color: var(--gold); }
-        .word-node.selected { 
-            background: #ff4d4d; color: white; border-color: #ff4d4d;
-            box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
-        }
-
-        /* خانة التصحيح */
-        .correction-box {
-            display: flex; align-items: center; gap: 10px;
-            background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 12px;
+        .word-unit {
+            padding: 4px 10px; cursor: pointer;
             border: 1px solid rgba(255,255,255,0.1);
-        }
-        .correction-box label { font-family: 'Orbitron'; font-size: 10px; color: var(--gold); }
-        .correction-input {
-            background: transparent; border: none; border-bottom: 1.5px solid var(--gold);
-            color: #fff; font-size: 1rem; outline: none; padding: 2px 5px; width: 100%;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
         }
 
-        .submit-area { text-align: center; margin: 40px 0; }
-        .gs-btn {
-            background: var(--gold-gradient); color: black; border: none;
-            padding: 15px 50px; border-radius: 50px; font-weight: bold;
-            font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        .word-unit:hover { background: rgba(0, 242, 255, 0.1); border-color: var(--detect); }
+
+        /* الكلمة لما تتكشف (تتشخص كغلط) */
+        .word-unit.flagged { 
+            background: var(--danger); color: white; 
+            border-color: var(--danger);
+            box-shadow: 0 0 15px var(--danger);
+            animation: blink 0.5s infinite alternate;
         }
-        .gs-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--gold); }
+
+        @keyframes blink { from { opacity: 1; } to { opacity: 0.7; } }
+
+        /* منطقة التصحيح - بشكل احترافي */
+        .intercept-zone {
+            display: flex; align-items: center; gap: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;
+        }
+
+        .intercept-label {
+            font-family: 'Orbitron'; font-size: 12px; color: var(--detect);
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        .intercept-input {
+            background: #000; border: 1px solid #333;
+            color: var(--detect); font-family: 'Orbitron';
+            padding: 8px 15px; width: 100%; outline: none;
+            border-radius: 0; transition: 0.3s;
+        }
+
+        .intercept-input:focus { border-color: var(--detect); box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
+
+        .btn-transmit {
+            width: 100%; background: transparent; color: var(--danger);
+            border: 2px solid var(--danger); padding: 15px;
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer;
+            transition: 0.3s; letter-spacing: 5px; margin-top: 20px;
+        }
+
+        .btn-transmit:hover { background: var(--danger); color: white; box-shadow: 0 0 30px var(--danger); }
     </style>
 </head>
 <body>
 
-    <div id="mission-wrapper"></div>
+    <div id="combat-zone"></div>
 
-    <div class="submit-area">
-        <button class="gs-btn" onclick="collectGrammarData()">TRANSMIT REPORT</button>
-    </div>
+    <button class="btn-transmit" onclick="finalizeMission()">TRANSMIT DATA</button>
 
 <script>
-    const grammarMissions = {
-        "1": [ // Present Simple & Pronouns
-            "He go to the park every day.", "She like eating apples for breakfast.", "They is playing football now.", 
-            "My father work in a big bank.", "I has a small cat.", "We does our homework together.", 
-            "The sun rise in the east.", "Birds flies in the sky.", "Ali and Ahmed is friends.", "It rain a lot in winter."
-        ],
-        "2": [ // Past Simple
-            "I seed a ghost last night.", "They was at the party yesterday.", "She didn't went to school.", 
-            "He buyed a new car yesterday.", "We was happy to see you.", "The dog eated the meat.", 
-            "I writed a letter to her.", "They drinked all the juice.", "Did you saw the match?", "She singed a beautiful song."
-        ],
-        "3": [ // Articles & Nouns
-            "I saw an university yesterday.", "He is a honest man.", "There are a apple on the table.", 
-            "She has many childs.", "Look at those mans over there.", "I need a information from you.", 
-            "The water are very cold.", "He bought an car.", "She lost her keyes.", "I have an big house."
-        ],
-        "4": [ // Present Continuous
-            "I am eat lunch now.", "She is dance in the room.", "They are run in the street.", 
-            "What is you doing?", "He are watching a movie.", "We is waiting for the bus.", 
-            "The baby are crying loudly.", "I is listening to music.", "It are getting dark.", "They is coming home."
-        ],
-        "5": [ // Adjectives & Adverbs
-            "He runs very quick.", "She sings beautiful.", "I am more taller than him.", 
-            "This is the better book ever.", "He spoke very good.", "She is more happy today.", 
-            "It was a badly day.", "He is a bravely soldier.", "They did the work easy.", "I am very tiredly."
-        ],
-        "6": [ // Prepositions
-            "I am good in English.", "He is afraid from spiders.", "Wait for I here.", 
-            "She arrived on Monday at night.", "He sits between the three girls.", "I'm interested on music.", 
-            "The cat is under of the table.", "I live at London.", "Congratulations for your success.", "He is married with her."
-        ],
-        "7": [ // Modals
-            "I can playing the guitar.", "She musts stay at home.", "He shoulds study harder.", 
-            "May I comes in?", "We will going to Cairo.", "You must to listen to me.", 
-            "She can speaks French.", "I might saw him later.", "They will not comes.", "Could you helps me?"
-        ],
-        "8": [ // Present Perfect
-            "I have saw that movie.", "She has went to Dubai.", "They has lived here for years.", 
-            "Have you ever eat sushi?", "He hasn't finish yet.", "We have know her since 2010.", 
-            "She have already left.", "Has they arrived yet?", "I have write three books.", "It has rained for two hour."
-        ],
-        "9": [ // Comparatives & Superlatives
-            "This car is most expensive than that.", "He is the taller boy in class.", "She is more good than me.", 
-            "It's the baddest movie I've seen.", "This task is more easier.", "He is more old than his brother.", 
-            "She is the more beautiful girl.", "This is the most cheapest phone.", "Health is more important as money.", "He is least intelligent than her."
-        ],
-        "10": [ // Conditionals & Passive (Level الوحش)
-            "If it rain, I will stay home.", "I wish I am rich.", "The house was build in 1990.", 
-            "He would help if he knows.", "If I was you, I'd go.", "English is speak all over the world.", 
-            "The car were stolen yesterday.", "Unless you studies, you'll fail.", "He asked me what was I doing.", "I've been wait for an hour."
-        ]
+    const grammarData = {
+        "1": ["He go to the park every day.", "She like eating apples for breakfast.", "They is playing football now.", "My father work in a big bank.", "I has a small cat.", "We does our homework together.", "The sun rise in the east.", "Birds flies in the sky.", "Ali and Ahmed is friends.", "It rain a lot in winter."]
+        // باقي المهمات هتتحط هنا بنفس الطريقة...
     };
 
-    function renderGrammarMissions() {
+    function loadMission() {
         const urlParams = new URLSearchParams(window.location.search);
-        const taskNum = urlParams.get('task') || "1";
-        const sentences = grammarMissions[taskNum] || grammarMissions["1"];
+        const task = urlParams.get('task') || "1";
+        const sentences = grammarData[task] || grammarData["1"];
         
-        const wrapper = document.getElementById('mission-wrapper');
-        wrapper.innerHTML = sentences.map((sentence, sIdx) => {
-            const words = sentence.split(' ');
-            return `
-                <div class="grammar-card" id="card-${sIdx}">
-                    <span class="case-tag">SENTENCE #${sIdx + 1}</span>
-                    <div class="sentence-display">
-                        ${words.map((word, wIdx) => `
-                            <span class="word-node" onclick="selectError(${sIdx}, ${wIdx}, this)">${word}</span>
-                        `).join('')}
-                    </div>
-                    <div class="correction-box">
-                        <label>CORRECTION:</label>
-                        <input type="text" class="correction-input" id="input-${sIdx}" placeholder="Type correction here...">
-                    </div>
+        const container = document.getElementById('combat-zone');
+        container.innerHTML = sentences.map((s, i) => `
+            <div class="mission-card" id="card-${i}">
+                <div class="mission-id">TARGET_${task}.0${i+1}</div>
+                <div class="code-line">
+                    ${s.split(' ').map((w, wi) => `<span class="word-unit" onclick="flag(this, ${i})">${w}</span>`).join('')}
                 </div>
-            `;
-        }).join('');
+                <div class="intercept-zone">
+                    <span class="intercept-label">Override:</span>
+                    <input type="text" class="intercept-input" id="fix-${i}" placeholder="RE-CODE HERE...">
+                </div>
+            </div>
+        `).join('');
     }
 
-    // لتخزين الكلمة المختارة لكل جملة
-    let selectedErrors = {};
+    let flaggedWords = {};
 
-    function selectError(sIdx, wIdx, element) {
-        // نشيل الاختيار القديم في نفس الجملة
-        const siblings = element.parentElement.querySelectorAll('.word-node');
-        siblings.forEach(node => node.classList.remove('selected'));
-        
-        // نختار الكلمة الجديدة
-        element.classList.add('selected');
-        selectedErrors[sIdx] = element.innerText;
+    function flag(el, sIdx) {
+        el.parentElement.querySelectorAll('.word-unit').forEach(n => n.classList.remove('flagged'));
+        el.classList.add('flagged');
+        flaggedWords[sIdx] = el.innerText;
     }
 
-    function collectGrammarData() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const taskNum = urlParams.get('task') || "1";
+    function finalizeMission() {
         const results = [];
-        let allReady = true;
+        let complete = true;
 
         for(let i=0; i<10; i++) {
-            const correction = document.getElementById(`input-${i}`).value.trim();
-            if(!selectedErrors[i] || !correction) {
-                allReady = false;
-                document.getElementById(`card-${i}`).style.borderColor = "#ff4d4d";
+            const val = document.getElementById(`fix-${i}`).value.trim();
+            if(!flaggedWords[i] || !val) {
+                complete = false;
+                document.getElementById(`card-${i}`).style.borderColor = "yellow";
             } else {
-                document.getElementById(`card-${i}`).style.borderColor = "rgba(255,255,255,0.08)";
-                results.push({
-                    wrong: selectedErrors[i],
-                    right: correction
-                });
+                results.push({ wrong: flaggedWords[i], right: val });
             }
         }
 
-        if(!allReady) {
-            alert("Agent! Please identify the error and type correction for all sentences! ⚠️");
+        if(!complete) {
+            alert("SYSTEM ERROR: UNRESOLVED TARGETS DETECTED!");
             return;
         }
 
-        // إرسال البيانات لصفحة Hybird الأساسية
         window.parent.postMessage({
             type: 'SUBMIT_MISSION',
             activityCode: 'GS',
-            taskNum: taskNum,
-            data: results // هبعت لك الـ 10 كلمات الغلط والـ 10 تصحيحات بتوعهم
+            data: results
         }, '*');
     }
 
-    window.onload = renderGrammarMissions;
+    window.onload = loadMission;
 </script>
 </body>
 </html>

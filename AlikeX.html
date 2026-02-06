@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alike X | The Homophone Trap | EYC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon-purple: #bc13fe; --neon-blue: #00f2ff; --glass: rgba(10, 10, 15, 0.95); }
+        body { 
+            font-family: 'Rajdhani', sans-serif; background: transparent; color: white; 
+            margin: 0; padding: 20px; direction: ltr;
+        }
+
+        .header-alike {
+            text-align: center; margin-bottom: 30px;
+            border-bottom: 1px solid var(--neon-purple); padding-bottom: 15px;
+        }
+
+        .question-card {
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; padding: 25px; margin-bottom: 25px;
+            position: relative; overflow: hidden;
+        }
+
+        .audio-btn {
+            background: var(--neon-purple); border: none; color: white;
+            padding: 8px 20px; border-radius: 20px; font-family: 'Orbitron';
+            font-size: 10px; cursor: pointer; margin-bottom: 15px;
+            box-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        .sentence-display {
+            font-size: 1.2rem; line-height: 1.6; margin-bottom: 20px;
+            color: #eee;
+        }
+
+        .blank-space {
+            color: var(--neon-blue); font-weight: bold;
+            border-bottom: 2px dashed var(--neon-blue); padding: 0 10px;
+        }
+
+        .options-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+        }
+
+        .opt-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px; border-radius: 8px; color: white; cursor: pointer;
+            font-family: 'Orbitron'; font-size: 0.85rem; transition: 0.3s;
+            text-align: center;
+        }
+
+        .opt-btn:hover { background: rgba(0, 242, 255, 0.1); border-color: var(--neon-blue); }
+        .opt-btn.active { background: var(--neon-blue); color: black; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-alike">
+        <h1 id="x-title" style="font-family: 'Orbitron'; letter-spacing: 5px; margin:0;">ALIKE-X RADAR</h1>
+    </div>
+
+    <div id="questions-zone"></div>
+
+<script>
+    const alikeXData = {
+        "1": [
+            { s: "The new software serves as a perfect ________ to our existing system.", options: ["Compliment", "Complement", "Compliance"], ans: "Complement" },
+            { s: "She has strong moral ________ that guide her daily life.", options: ["Principals", "Principles", "Principally"], ans: "Principles" },
+            { s: "The plane remained ________ on the runway for over an hour.", options: ["Stationary", "Stationery", "Stationing"], ans: "Stationary" },
+            { s: "The legal ________ advised the CEO not to sign the contract.", options: ["Council", "Counsel", "Consul"], ans: "Counsel" },
+            { s: "We walked slowly down the long church ________ during the wedding.", options: ["Aisle", "Isle", "I'll"], ans: "Aisle" }
+        ],
+        "2": [
+            { s: "Please be ________ about the confidential information I shared with you.", options: ["Discrete", "Discreet", "Decreed"], ans: "Discreet" },
+            { s: "The patient had an ________ reaction to the new medication.", options: ["Adverse", "Averse", "Advice"], ans: "Adverse" },
+            { s: "The detective tried to ________ information from the reluctant witness.", options: ["Illicit", "Elicit", "Elite"], ans: "Elicit" },
+            { s: "She has a natural ________ for interior design and creative arts.", options: ["Flare", "Flair", "Floor"], ans: "Flair" },
+            { s: "The museum curator warned against the tendency to ________ valuable artifacts.", options: ["Horde", "Hoard", "Hard"], ans: "Hoard" }
+        ],
+        "3": [
+            { s: "The constant noise from the street can ________ your ability to focus.", options: ["Affect", "Effect", "Aspect"], ans: "Affect" },
+            { s: "The desert heat was so intense that we felt ________ after an hour.", options: ["Faint", "Feint", "Font"], ans: "Faint" },
+            { s: "They decided to ________ the rights to the property to the local council.", options: ["Seed", "Cede", "Said"], ans: "Cede" },
+            { s: "The knight fought bravely with a ________ made of solid steel.", options: ["Flail", "Flare", "Flaw"], ans: "Flail" },
+            { s: "His ________ of the situation was far more accurate than ours.", options: ["Sight", "Site", "Cite"], ans: "Sight" }
+        ],
+        "4": [
+            { s: "The chef used a heavy stone ________ to crush the fresh spices.", options: ["Pestle", "Pistol", "Pastel"], ans: "Pestle" },
+            { s: "The dark clouds and heavy rain seemed to ________ a terrible storm.", options: ["Bode", "Board", "Bowed"], ans: "Bode" },
+            { s: "The team needs to ________ every detail of the plan before execution.", options: ["Canvas", "Canvass", "Convex"], ans: "Canvass" },
+            { s: "After the workout, his muscles felt extremely ________ and tired.", options: ["Taught", "Taut", "Tort"], ans: "Taut" },
+            { s: "The author wrote a long ________ to the book, explaining his inspiration.", options: ["Forward", "Foreword", "Foreward"], ans: "Foreword" }
+        ],
+        "5": [
+            { s: "The manager decided to ________ the rules to allow for more flexibility.", options: ["Waive", "Wave", "Wove"], ans: "Waive" },
+            { s: "The ancient scrolls were written on high-quality ________.", options: ["Vellum", "Valuer", "Volume"], ans: "Vellum" },
+            { s: "He managed to ________ his opponents with a series of clever maneuvers.", options: ["Allude", "Elude", "Aloud"], ans: "Elude" },
+            { s: "The king’s ________ lasted for more than forty peaceful years.", options: ["Rain", "Reign", "Rein"], ans: "Reign" },
+            { s: "The artist chose a neutral ________ for the background of the portrait.", options: ["Palate", "Palette", "Pallet"], ans: "Palette" }
+        ],
+        "6": [
+            { s: "The tailor took a measurement of the ________ to ensure a perfect fit.", options: ["Waist", "Waste", "West"], ans: "Waist" },
+            { s: "The ship had to ________ its sails to catch the light breeze.", options: ["Furl", "Fall", "Fill"], ans: "Furl" },
+            { s: "The mountain ________ was covered in deep snow throughout the winter.", options: ["Peek", "Peak", "Pique"], ans: "Peak" },
+            { s: "He decided to ________ his pride and apologize.", options: ["Swallow", "Shallow", "Sallow"], ans: "Swallow" },
+            { s: "The council issued a new ________ to regulate street performances.", options: ["Ordnance", "Ordinance", "Audience"], ans: "Ordinance" }
+        ]
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskNum = urlParams.get('task') || "1";
+    let userAnswers = {};
+
+    function loadAlikeX() {
+        const questions = alikeXData[taskNum] || alikeXData["1"];
+        const zone = document.getElementById('questions-zone');
+        
+        zone.innerHTML = questions.map((q, i) => `
+            <div class="question-card">
+                <button class="audio-btn" onclick="playAudio(${i})">▶ PLAY AUDIO CLIP</button>
+                <div class="sentence-display">${q.s.replace('________', '<span class="blank-space" id="blank-'+i+'">________</span>')}</div>
+                <div class="options-grid" id="opt-group-${i}">
+                    ${q.options.map(opt => `
+                        <div class="opt-btn" onclick="selectOption(${i}, '${opt}', this)">${opt}</div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('x-title').innerText = `ALIKE-X: TASK ${taskNum.padStart(2, '0')}`;
+    }
+
+    function playAudio(idx) {
+        const audio = new Audio(`assets/alikexaudio/AX${taskNum}_${idx+1}.wav`);
+        audio.play();
+    }
+
+    function selectOption(qIdx, val, el) {
+        const group = document.getElementById(`opt-group-${qIdx}`);
+        group.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById(`blank-${qIdx}`).innerText = val;
+        userAnswers[qIdx] = val;
+    }
+
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'REQUEST_ALIKEX_DATA') {
+            const results = [];
+            for(let i=0; i<5; i++) results.push(userAnswers[i] || "");
+            
+            window.parent.postMessage({ 
+                type: 'SUBMIT_X', 
+                answers: results, 
+                missionNum: taskNum 
+            }, '*');
+        }
+    });
+
+    window.onload = loadAlikeX;
+</script>
+</body>
+</html>

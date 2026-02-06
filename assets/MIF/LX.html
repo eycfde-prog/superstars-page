@@ -137,18 +137,11 @@
     }
 
     // إرسال البيانات للصفحة الأم
-    window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_LABELX_DATA') {
-            const data = [];
-            for(let i=0; i<10; i++) {
-                data.push({
-                    case: labelXData[urlParams.get('task') || "1"][i],
-                    answer: document.getElementById(`case-${i}`).value.trim()
-                });
-            }
-            window.parent.postMessage({ type: 'SUBMIT_MISSION', activityCode: 'LX', data: data }, '*');
-        }
-    });
+   window.parent.postMessage({ 
+    type: 'SUBMIT_X', // لكي تفهم صفحة HybirdX أنه رويال
+    answers: data.map(d => d.answer), // نرسل الجمل فقط كمصفوفة
+    missionNum: urlParams.get('task') 
+}, '*');
 
     window.onload = loadRadar;
 </script>

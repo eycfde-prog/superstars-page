@@ -285,22 +285,19 @@
         };
 
         // استدعاء الوظيفة من ملف الـ .gs
-        google.script.run
-            .withSuccessHandler(function(response) {
-                loader.style.display = 'none';
-                if (response === "Success") {
-                    // الكود الحقيقي يتم إنشاؤه في السيرفر، هنا نعرض نجاح المهمة
-                    showFinalCard();
-                } else if (response === "Email Exists") {
-                    alert("This Agent Email is already registered in our database!");
-                }
-            })
-            .withFailureHandler(function(err) {
-                loader.style.display = 'none';
-                alert("Transmission Failed: " + err);
-            })
-            .registerStudent(studentObj);
-    };
+// استبدل الجزء ده داخل NP.html
+google.script.run
+    .withSuccessHandler(function(response) {
+        loader.style.display = 'none';
+        if (response.status === "Success") {
+            // إظهار الكود الحقيقي اللي جه من السيرفر
+            document.getElementById('agent-code').innerText = response.code; 
+            showFinalCard();
+        } else if (response === "Email Exists") {
+            alert("This Agent Email is already registered!");
+        }
+    })
+    .registerStudent(studentObj);
 
     function showFinalCard() {
         document.getElementById('registrationForm').style.display = 'none';

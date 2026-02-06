@@ -1,154 +1,153 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alike | EYC Academy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Seeds Creative Mission | EYC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #f1c40f;
-            --bg-deep: #020617;
+        /* التناغم مع الصفحة الأم */
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background: transparent; 
+            color: #fff; 
+            margin: 0; padding: 10px; 
+            direction: ltr; overflow-x: hidden;
         }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%);
-            color: white; min-height: 100vh;
+
+        .seeds-container {
+            display: flex; flex-direction: column; gap: 20px;
+            animation: slideIn 0.5s ease-out;
         }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* كارت الكلمات */
+        .words-grid {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
-        #howToModal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 5000; align-items: center; justify-content: center; padding: 20px;
+
+        .word-tag {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px dashed rgba(0, 242, 255, 0.3);
+            color: #00f2ff;
+            padding: 10px;
+            text-align: center;
+            font-family: 'Orbitron';
+            font-size: 0.9rem;
+            border-radius: 8px;
+            transition: 0.3s;
         }
-        .input-alike {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 12px; text-align: center; width: 100%;
-            color: var(--gold); font-family: 'Orbitron'; font-weight: bold;
+
+        .word-tag:hover {
+            background: rgba(0, 242, 255, 0.2);
+            transform: scale(1.05);
+            border-style: solid;
         }
-        .input-alike:focus { outline: none; border-color: var(--gold); }
-        .golden-text {
-            background: linear-gradient(to bottom, #fff, var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        /* منطقة الكتابة الإبداعية */
+        .story-area {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
         }
+
+        .story-label {
+            display: block;
+            font-family: 'Orbitron';
+            color: #ffcc00;
+            font-size: 12px;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        textarea {
+            width: 100%; height: 250px;
+            background: transparent; border: none;
+            color: #e0e0e0; font-family: 'Rajdhani';
+            font-size: 1.2rem; line-height: 1.6;
+            outline: none; resize: none;
+            box-sizing: border-box;
+        }
+
+        .word-counter {
+            text-align: right; font-size: 12px;
+            color: #888; margin-top: 10px;
+            font-family: 'Orbitron';
+        }
+
+        .status-glow { color: #ffcc00; text-shadow: 0 0 5px #ffcc00; }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center">
+<body>
 
-    <div id="howToModal">
-        <div class="glass-card p-10 max-w-md w-full border-2 border-yellow-500 text-center">
-            <i class="fas fa-clone text-5xl text-yellow-500 mb-6"></i>
-            <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">ALIKE MISSION</h2>
-            <p class="text-gray-300 mb-8 leading-relaxed text-right">
-                <i class="fas fa-star text-yellow-500 ml-2"></i> هتظهرلك كلمتين بالعربي ليهم نفس النطق بالإنجليزي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> اكتب الكلمة الإنجليزية الصحيحة تحت كل معنى عربي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> تأكد من الإملاء (Spelling) قبل الضغط على التحقق.
-            </p>
-            <button onclick="toggleHowTo()" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl">بدء المهمة</button>
+    <div id="seeds-mission-ui" class="seeds-container">
         </div>
-    </div>
 
-    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto">
-        <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-        <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
-        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="كود الطالب">
-        <button onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">
-            دخول المهمة
-        </button>
-    </div>
+<script>
+    const seedsData = {
+        "1": { words: ["Ocean", "Submarine", "Coral", "Diver", "Whale", "Toaster"], theme: "Deep Blue" },
+        "2": { words: ["Forest", "Wildlife", "Waterfall", "Camping", "Tent", "Smartphone"], theme: "Nature" },
+        "3": { words: ["Castle", "Knight", "Dragon", "Sword", "Kingdom", "Helicopter"], theme: "Medieval" },
+        "4": { words: ["Desert", "Pyramid", "Camel", "Oasis", "Sandstorm", "Refrigerator"], theme: "Ancient Egypt" },
+        "5": { words: ["Kitchen", "Recipe", "Chef", "Spices", "Oven", "Astronaut"], theme: "Cooking" },
+        "6": { words: ["Airport", "Passport", "Pilot", "Luggage", "Cloud", "Dinosaur"], theme: "Travel" },
+        "7": { words: ["Hospital", "Doctor", "Surgery", "Medicine", "Nurse", "Pizza"], theme: "Medical" },
+        "8": { words: ["Library", "Books", "Silence", "Author", "Reading", "Spaceship"], theme: "Education" },
+        "9": { words: ["Wedding", "Bride", "Flowers", "Music", "Cake", "Umbrella"], theme: "Celebration" },
+        "10": { words: ["Cyberpunk", "Robot", "Neon", "Hacker", "Future", "Broom"], theme: "Sci-Fi" }
+    };
 
-    <div id="mainContent" class="hidden w-full max-w-5xl">
-        <header class="text-center my-10">
-            <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <div class="flex justify-center gap-4 mt-6">
-                <button onclick="toggleHowTo()" class="text-gray-400 text-xs hover:text-white transition-colors flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
-                    <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
-                </button>
+    function loadSeeds() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskNum = urlParams.get('task') || "1";
+        const currentTask = seedsData[taskNum] || seedsData["1"];
+
+        const container = document.getElementById('seeds-mission-ui');
+        container.innerHTML = `
+            <div class="words-grid">
+                ${currentTask.words.map(w => `<div class="word-tag">${w}</div>`).join('')}
             </div>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20" id="alikeGrid">
+            <div class="story-area">
+                <span class="story-label">ENCRYPT YOUR STORY (MIN 120 WORDS):</span>
+                <textarea id="storyInput" placeholder="Start your deviation here..." oninput="countWords()"></textarea>
+                <div class="word-counter">PROGRESS: <span id="count" class="status-glow">0</span> / 120 WORDS</div>
             </div>
-    </div>
+        `;
+    }
 
-    <script>
-        const wordsData = [
-            { ar1: "إلى", ar2: "أيضاً" },
-            { ar1: "ابن", ar2: "شمس" },
-            { ar1: "هناك", ar2: "ملكهم" },
-            { ar1: "يرى", ar2: "بحر" }
-        ];
+    function countWords() {
+        const text = document.getElementById('storyInput').value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        document.getElementById('count').innerText = words;
+    }
 
-        function toggleHowTo() {
-            const modal = document.getElementById('howToModal');
-            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function handleLogin() {
-            const id = document.getElementById('emailInput').value;
-            if(id.length < 2) return alert("أدخل الكود يا بطل");
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            initActivity();
-        }
-
-        function initActivity() {
-            const grid = document.getElementById('alikeGrid');
-            grid.innerHTML = '';
-            wordsData.forEach((pair, index) => {
-                const pairId = `pair-${index}`;
-                const card = document.createElement('div');
-                card.className = "glass-card p-8 relative overflow-hidden group border-b-2 border-transparent hover:border-yellow-500/50 transition-all";
-                card.innerHTML = `
-                    <div class="flex justify-between items-center gap-6">
-                        <div class="flex-1 text-center">
-                            <h3 class="text-3xl font-black mb-4 text-white">${pair.ar1}</h3>
-                            <input type="text" placeholder="English Word" class="input-alike" id="${pairId}-1">
-                        </div>
-                        
-                        <div class="h-16 w-px bg-white/10 relative">
-                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-500/30 font-black orbitron italic">VS</div>
-                        </div>
-
-                        <div class="flex-1 text-center">
-                            <h3 class="text-3xl font-black mb-4 text-white">${pair.ar2}</h3>
-                            <input type="text" placeholder="English Word" class="input-alike" id="${pairId}-2">
-                        </div>
-                    </div>
-                    <button onclick="submitPair('${pairId}')" id="btn-${pairId}" class="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl orbitron text-[10px] font-black hover:bg-yellow-500 hover:text-black transition-all">
-                        SUBMIT DATA
-                    </button>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function submitPair(id) {
-            const btn = document.getElementById(`btn-${id}`);
-            const in1 = document.getElementById(`${id}-1`);
-            const in2 = document.getElementById(`${id}-2`);
+    // الدالة اللي الصفحة الأم بتنادي عليها عشان تاخد الداتا
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'REQUEST_SEEDS_DATA') {
+            const story = document.getElementById('storyInput').value;
+            const wordCount = document.getElementById('count').innerText;
             
-            if(!in1.value || !in2.value) return alert("أكمل الفراغات يا بطل!");
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> SAVING...';
-
-            setTimeout(() => {
-                btn.innerHTML = `<i class="fas fa-check"></i> DATA SAVED`;
-                btn.className = "w-full mt-8 py-3 bg-green-600 text-white rounded-xl orbitron text-[10px] font-black";
-                in1.disabled = true;
-                in2.disabled = true;
-            }, 800);
+            window.parent.postMessage({
+                type: 'SUBMIT_MISSION',
+                activityCode: 'SS',
+                data: {
+                    content: story,
+                    count: wordCount
+                }
+            }, '*');
         }
-    </script>
+    });
+
+    window.onload = loadSeeds;
+</script>
 </body>
 </html>

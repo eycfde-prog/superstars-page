@@ -1,154 +1,80 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alike | EYC Academy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --gold: #f1c40f;
-            --bg-deep: #020617;
+/**
+ * SS.js - محرك تصحيح نشاط Seeds
+ * منطق مستر عز: مكافأة المجهود الشخصي + الالتزام بالكلمات والعدد
+ */
+
+function gradeMission(data) {
+    const studentStory = data.answers[0] || ""; // نص القصة التي كتبها الطالب
+    const missionNum = data.missionNum; // رقم المهمة (1-10) لسنحب منها الكلمات النموذجية
+    
+    // قائمة الكلمات النموذجية لكل مهمة
+    const allModelWords = {
+        "1": ["Castle", "Knight", "Dragon", "Sword", "Princess", "Smartphone"],
+        "2": ["Ocean", "Dolphin", "Submarine", "Coral", "Anchor", "Pizza"],
+        "3": ["Forest", "Wildlife", "Camping", "Backpack", "Compass", "Elevator"],
+        "4": ["Hospital", "Doctor", "Surgeon", "Medicine", "Nurse", "Skateboard"],
+        "5": ["Desert", "Cactus", "Pyramid", "Camel", "Sandstorm", "Ice-Cream"],
+        "6": ["Space", "Astronaut", "Galaxy", "Rocket", "Meteor", "Rubber-Duck"],
+        "7": ["School", "Teacher", "Exam", "Library", "Notebook", "Spaceship"],
+        "8": ["Airport", "Pilot", "Suitcase", "Runway", "Passport", "Dinosaurs"],
+        "9": ["Kitchen", "Recipe", "Chef", "Oven", "Ingredients", "Parachute"],
+        "10": ["Underground", "Cave", "Bat", "Crystal", "Tunnel", "Sunglasses"]
+    };
+
+    const targetWords = allModelWords[missionNum] || [];
+    let finalScore = 0;
+
+    // --- 1. حساب درجة عدد الكلمات (2 درجة) ---
+    const wordCount = studentStory.trim().split(/\s+/).filter(word => word.length > 0).length;
+    if (wordCount >= 100 && wordCount <= 180) {
+        finalScore += 2;
+    }
+
+    // --- 2. حساب درجة المجهود الشخصي/الأخطاء (1 درجة) ---
+    // المنطق: إذا كان النص "مثالياً" بدون خطأ واحد، نشك في الذكاء الاصطناعي فلا يأخذ الدرجة.
+    // سنبحث عن أخطاء شائعة أو عدم تنسيق بنكيتويشن أو أخطاء إملائية بسيطة.
+    if (detectHumanErrors(studentStory)) {
+        finalScore += 1;
+    }
+
+    // --- 3. حساب درجة استخدام الكلمات الستة (2 درجة) ---
+    let usedWordsCount = 0;
+    targetWords.forEach(word => {
+        // البحث عن الكلمة داخل النص بمرونة (حتى لو أضيف لها حروف مثل s للجمع أو ing)
+        const regex = new RegExp(word.toLowerCase().replace('-', ''), "i"); 
+        const cleanStory = studentStory.toLowerCase().replace('-', '');
+        if (regex.test(cleanStory)) {
+            usedWordsCount++;
         }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #0f172a 0%, var(--bg-deep) 100%);
-            color: white; min-height: 100vh;
-        }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
-        }
-        #howToModal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 5000; align-items: center; justify-content: center; padding: 20px;
-        }
-        .input-alike {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 12px; text-align: center; width: 100%;
-            color: var(--gold); font-family: 'Orbitron'; font-weight: bold;
-        }
-        .input-alike:focus { outline: none; border-color: var(--gold); }
-        .golden-text {
-            background: linear-gradient(to bottom, #fff, var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-    </style>
-</head>
-<body class="p-4 flex flex-col items-center">
+    });
 
-    <div id="howToModal">
-        <div class="glass-card p-10 max-w-md w-full border-2 border-yellow-500 text-center">
-            <i class="fas fa-clone text-5xl text-yellow-500 mb-6"></i>
-            <h2 class="text-2xl font-black mb-4 orbitron text-yellow-500">ALIKE MISSION</h2>
-            <p class="text-gray-300 mb-8 leading-relaxed text-right">
-                <i class="fas fa-star text-yellow-500 ml-2"></i> هتظهرلك كلمتين بالعربي ليهم نفس النطق بالإنجليزي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> اكتب الكلمة الإنجليزية الصحيحة تحت كل معنى عربي.<br>
-                <i class="fas fa-star text-yellow-500 ml-2"></i> تأكد من الإملاء (Spelling) قبل الضغط على التحقق.
-            </p>
-            <button onclick="toggleHowTo()" class="w-full py-4 bg-yellow-500 text-black font-black rounded-2xl shadow-xl">بدء المهمة</button>
-        </div>
-    </div>
+    if (usedWordsCount === 6) {
+        finalScore += 2;
+    } else if (usedWordsCount >= 1 && usedWordsCount < 6) {
+        finalScore += 1;
+    }
 
-    <div id="loginSection" class="mt-20 glass-card p-10 text-center max-w-md mx-auto">
-        <h1 class="text-5xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-        <p class="text-yellow-500 text-xs mb-8 orbitron tracking-[5px]">WORD SYMMETRY</p>
-        <input type="text" id="emailInput" class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 px-6 mb-4 text-center text-white focus:border-yellow-500 outline-none" placeholder="كود الطالب">
-        <button onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-yellow-500 text-black shadow-xl active:scale-95 transition-all">
-            دخول المهمة
-        </button>
-    </div>
+    // ضمان الحد الأدنى 1 والحد الأقصى 5
+    return Math.max(1, Math.min(5, finalScore));
+}
 
-    <div id="mainContent" class="hidden w-full max-w-5xl">
-        <header class="text-center my-10">
-            <h1 class="text-6xl font-black orbitron mb-2 golden-text">ALIKE</h1>
-            <div class="flex justify-center gap-4 mt-6">
-                <button onclick="toggleHowTo()" class="text-gray-400 text-xs hover:text-white transition-colors flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
-                    <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
-                </button>
-            </div>
-        </header>
+/**
+ * دالة ذكية لاكتشاف هل النص مكتوب بشرياً أم منسوخ من AI
+ * تعتمد على وجود أي خطأ نحوي بسيط أو إملائي أو فقدان علامة ترقيم
+ */
+function detectHumanErrors(text) {
+    if (!text) return false;
+    
+    // 1. فحص علامات الترقيم (البنكيتويشن)
+    // إذا كان الطالب ينسى مسافة بعد النقطة أو يستخدم حروف صغيرة بعد النقطة
+    const punctuationIssue = /[.!?][a-z]/.test(text) || !/[.!?]/.test(text);
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20" id="alikeGrid">
-            </div>
-    </div>
+    // 2. فحص الأخطاء الإملائية الشائعة (بسيط جداً)
+    // AI غالباً لا يخطئ في الكلمات الشائعة، الطالب قد يخطئ
+    const commonTypos = /\b(teh|recieve|truely|untill|comming)\b/i.test(text);
 
-    <script>
-        const wordsData = [
-            { ar1: "إلى", ar2: "أيضاً" },
-            { ar1: "ابن", ar2: "شمس" },
-            { ar1: "هناك", ar2: "ملكهم" },
-            { ar1: "يرى", ar2: "بحر" }
-        ];
-
-        function toggleHowTo() {
-            const modal = document.getElementById('howToModal');
-            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function handleLogin() {
-            const id = document.getElementById('emailInput').value;
-            if(id.length < 2) return alert("أدخل الكود يا بطل");
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            initActivity();
-        }
-
-        function initActivity() {
-            const grid = document.getElementById('alikeGrid');
-            grid.innerHTML = '';
-            wordsData.forEach((pair, index) => {
-                const pairId = `pair-${index}`;
-                const card = document.createElement('div');
-                card.className = "glass-card p-8 relative overflow-hidden group border-b-2 border-transparent hover:border-yellow-500/50 transition-all";
-                card.innerHTML = `
-                    <div class="flex justify-between items-center gap-6">
-                        <div class="flex-1 text-center">
-                            <h3 class="text-3xl font-black mb-4 text-white">${pair.ar1}</h3>
-                            <input type="text" placeholder="English Word" class="input-alike" id="${pairId}-1">
-                        </div>
-                        
-                        <div class="h-16 w-px bg-white/10 relative">
-                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-500/30 font-black orbitron italic">VS</div>
-                        </div>
-
-                        <div class="flex-1 text-center">
-                            <h3 class="text-3xl font-black mb-4 text-white">${pair.ar2}</h3>
-                            <input type="text" placeholder="English Word" class="input-alike" id="${pairId}-2">
-                        </div>
-                    </div>
-                    <button onclick="submitPair('${pairId}')" id="btn-${pairId}" class="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl orbitron text-[10px] font-black hover:bg-yellow-500 hover:text-black transition-all">
-                        SUBMIT DATA
-                    </button>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function submitPair(id) {
-            const btn = document.getElementById(`btn-${id}`);
-            const in1 = document.getElementById(`${id}-1`);
-            const in2 = document.getElementById(`${id}-2`);
-            
-            if(!in1.value || !in2.value) return alert("أكمل الفراغات يا بطل!");
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> SAVING...';
-
-            setTimeout(() => {
-                btn.innerHTML = `<i class="fas fa-check"></i> DATA SAVED`;
-                btn.className = "w-full mt-8 py-3 bg-green-600 text-white rounded-xl orbitron text-[10px] font-black";
-                in1.disabled = true;
-                in2.disabled = true;
-            }, 800);
-        }
-    </script>
-</body>
-</html>
+    // 3. فحص "مثالية" النص
+    // إذا كان النص طويلاً جداً ولا يحتوي على أي خطأ في البنكيتويشن، نعتبره AI (لا يأخذ الدرجة)
+    // أما إذا وجدنا "نقص" في المثالية، فهذا دليل بشري ويأخذ الدرجة.
+    return punctuationIssue || commonTypos || text.includes("  "); // مسافات مزدوجة مثلاً
+}

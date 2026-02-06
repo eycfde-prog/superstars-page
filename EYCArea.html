@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EYC Arena | Activity Mode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
+            --bg-deep: #020205;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(212, 175, 55, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-deep); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+        #star-container { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle var(--duration) infinite ease-in-out; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+
+        header { padding: 10px 15px; background: rgba(5, 5, 8, 0.9); border-bottom: 1px solid var(--glass-border); z-index: 10; }
+        .battle-header { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; width: 100%; }
+        
+        .info-box { display: flex; align-items: center; gap: 10px; background: var(--glass); padding: 5px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
+        .student-photo, .activity-logo { width: 35px; height: 35px; border-radius: 8px; border: 1.5px solid var(--gold); object-fit: cover; }
+        .name { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--gold); }
+        
+        .vs-container { text-align: center; }
+        .vs-text { font-family: 'Cinzel', serif; font-size: 1.2rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; line-height: 1; }
+        .token-score { font-family: 'Orbitron', sans-serif; font-size: 10px; color: #fff; letter-spacing: 1px; }
+
+        .arena-container { flex: 1; padding: 10px; display: flex; justify-content: center; align-items: center; }
+        .glass-iframe-wrapper { width: 100%; height: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        footer { padding: 15px 15px 25px; display: flex; justify-content: space-between; align-items: center; gap: 10px; max-width: 900px; margin: 0 auto; width: 100%; }
+        .btn { padding: 12px; border-radius: 12px; border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 0.75rem; font-family: 'Cinzel'; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-submit { flex: 2; background: var(--gold-gradient); color: #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); font-size: 0.9rem; }
+        .btn-side { flex: 1; background: rgba(255,255,255,0.05); color: var(--gold); border: 1px solid var(--glass-border); }
+        .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
+        
+        #sync-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+    </style>
+</head>
+<body>
+
+    <div id="sync-overlay">
+        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--gold);"></i>
+        <p style="margin-top: 20px; font-family: 'Cinzel'; letter-spacing: 2px;">SYNCING DATA...</p>
+    </div>
+
+    <div id="star-container"></div>
+
+    <header>
+        <div class="battle-header">
+            <div class="info-box">
+                <img id="student-img" src="https://via.placeholder.com/50" class="student-photo">
+                <span class="name" id="student-name">STUDENT</span>
+            </div>
+            <div class="vs-container">
+                <div class="vs-text">VS</div>
+                <div id="max-score" class="token-score">5 TOKENS</div>
+            </div>
+            <div class="info-box">
+                <img id="activity-img" src="https://via.placeholder.com/50" class="activity-logo">
+                <span class="name" id="activity-title">ACTIVITY</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="arena-container">
+        <div class="glass-iframe-wrapper">
+            <iframe id="contentFrame" allowtransparency="true"></iframe>
+        </div>
+    </main>
+
+    <footer>
+        <button class="btn btn-side" onclick="openGuide()">GUIDE</button>
+        <button id="submitBtn" class="btn btn-submit" onclick="requestSubmit()">SUBMIT MISSION</button>
+        <button class="btn btn-side" onclick="window.location.href='MC.html'">
+            BACK <i class="fas fa-arrow-right" style="font-size: 0.6rem;"></i>
+        </button>
+    </footer>
+
+    <script>
+        // روابط الجيت هب الأساسية
+        const GITHUB_BASE = "https://ezz-intelligence.github.io/repo/assets/";
+        
+        let currentActivity = "";
+        let currentTask = "";
+
+        window.onload = function() {
+            // 1. توليد النجوم
+            generateStars();
+
+            // 2. تحليل الرابط القادم من صفحة الأنشطة
+            const urlParams = new URLSearchParams(window.location.search);
+            const missionURL = urlParams.get('missionURL'); // مثال: MIF/SS4.html
+            const totalTokens = urlParams.get('tokens') || "5";
+
+            if (missionURL) {
+                const fileName = missionURL.split('/').pop().replace('.html', '');
+                currentActivity = fileName.replace(/[0-9]/g, '').toUpperCase(); 
+                currentTask = fileName.replace(/\D/g, '');
+
+                // تحديث واجهة المستخدم
+                document.getElementById('activity-title').innerText = currentActivity;
+                document.getElementById('max-score').innerText = `${totalTokens} TOKENS`;
+                document.getElementById('student-name').innerText = localStorage.getItem('agentName') || "AGENT";
+                
+                // تحميل النشاط في الفرايم مع تمرير رقم المهمة
+                const finalMifUrl = `${GITHUB_BASE}MIF/${currentActivity}.html?task=${currentTask}`;
+                document.getElementById('contentFrame').src = finalMifUrl;
+            }
+        };
+
+        // طلب الـ Submit من النشاط داخل الفرايم
+        function requestSubmit() {
+            const frame = document.getElementById('contentFrame').contentWindow;
+            // إرسال رسالة للنشاط (كل نشاط كوده مختلف فبنبعت الكود المناسب)
+            const msgType = `REQUEST_${currentActivity}_DATA`; 
+            // ملحوظة: لو الأكواد مختلفة زي GEX و SSX، النشاط جوه بيفهم الإشارة بتاعته
+            frame.postMessage({ type: msgType }, '*');
+            
+            // في حالة الأنشطة اللي بتبعت SUBMIT_X مباشرة (الرويال):
+            frame.postMessage({ type: 'REQUEST_SSX_DATA' }, '*');
+            frame.postMessage({ type: 'REQUEST_ALIKEX_DATA' }, '*');
+            frame.postMessage({ type: 'REQUEST_GEX_DATA' }, '*');
+            frame.postMessage({ type: 'REQUEST_DICTATIONX_DATA' }, '*');
+            frame.postMessage({ type: 'REQUEST_FIGURATIVEX_DATA' }, '*');
+        }
+
+        // استقبال البيانات من النشاط
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'SUBMIT_X' || event.data.type === 'SUBMIT_MISSION') {
+                processCorrection(event.data.answers);
+            }
+        });
+
+        function processCorrection(answers) {
+            document.getElementById('sync-overlay').style.display = 'flex';
+
+            // تحميل ملف الـ CC الخاص بالنشاط ديناميكياً
+            const ccScriptURL = `${GITHUB_BASE}CC/${currentActivity}.js`;
+            
+            const script = document.createElement('script');
+            script.src = ccScriptURL;
+            script.onload = function() {
+                // تنفيذ دالة التصحيح gradeMission الموجودة في ملف الـ JS
+                const finalScore = gradeMission({
+                    answers: answers,
+                    missionNum: currentTask
+                });
+
+                // إرسال التقرير النهائي للباك إند
+                sendReport(finalScore);
+            };
+            document.head.appendChild(script);
+        }
+
+        function sendReport(score) {
+            const report = {
+                email: localStorage.getItem('agentEmail'),
+                activityCode: currentActivity,
+                missionNum: currentTask,
+                score: score
+            };
+
+            // التواصل مع Google Apps Script
+            google.script.run
+                .withSuccessHandler(() => {
+                    alert(`Mission Accomplished! Score: ${score}`);
+                    window.location.href = 'MC.html';
+                })
+                .submitMissionReport(report);
+        }
+
+        function generateStars() {
+            const container = document.getElementById('star-container');
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 2 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                container.appendChild(star);
+            }
+        }
+
+        function openGuide() {
+            alert(`Mission: ${currentActivity}\nTask: ${currentTask}\nObjective: Complete all requirements to earn tokens.`);
+        }
+    </script>
+</body>
+</html>

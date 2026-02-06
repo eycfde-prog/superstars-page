@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>EYC Super Stars | Elite Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="mcstyle.css"> 
+
+</head>
+
+<body>
+
+
+
+    <div id="star-container"></div>
+
+    <div class="bg-glow"></div>
+
+
+
+    <div class="top-nav">
+
+        <i class="fas fa-house nav-icon" title="Home" onclick="window.location.href='index.html'"></i>
+
+        <i class="fas fa-right-from-bracket nav-icon" id="logoutBtn" title="Logout" style="display:none;" onclick="handleLogout()"></i>
+
+    </div>
+
+
+
+    <header class="hero-banner" id="heroBanner"></header>
+
+
+
+    <div class="nav-container">
+
+        <div class="tab-switcher">
+
+            <button class="tab-btn active" onclick="switchType('season', this)">SEASON</button>
+
+            <button class="tab-btn" onclick="switchType('royal', this)">ROYAL</button>
+
+        </div>
+
+    </div>
+
+
+
+    <main>
+
+        <div class="grid-container" id="cardsGrid"></div>
+
+    </main>
+
+
+
+    <div class="modal" id="taskModal">
+
+        <div class="modal-content">
+
+            <h2 id="mTitle" style="font-family:'Cinzel'; color:var(--gold);">ACTIVITY</h2>
+
+            <p id="mSubTitle" style="font-size:0.7rem; color:#888; letter-spacing:2px;"></p>
+
+            <div class="tasks-grid" id="tGrid"></div>
+
+            <button class="close-modal" onclick="closeModal('taskModal')">BACK</button>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="modal" id="loginModal">
+
+        <div class="modal-content">
+
+            <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:20px;">MEMBER ACCESS</h2>
+
+            <input type="email" id="loginEmail" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Email Address">
+
+            <input type="password" id="loginCode" style="width:100%; padding:12px; margin:10px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Access Code">
+
+            <div id="loader"></div>
+
+            <button class="btn-premium solid" style="width:100%; margin-top:15px;" onclick="handleLogin()">LOGIN</button>
+
+            <button class="close-modal" onclick="closeModal('loginModal')">CLOSE</button>
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        // رابط الـ Apps Script الجديد (Vens Pro)
+
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKXQQ22WfzkmKxHzxeilgaI9j3UegQmLBMz-ZyoWFi56mL1NXHbwDcOOdNSu5eJhfi/exec";
+
+        
+
+        let currentUser = null;
+
+        let isLoggedIn = false;
+
+
+
+        // مصفوفة الأنشطة والأكواد
+
+        const activities = {
+
+            season: [
+
+                { name: "Golden Ear", icon: "fa-ear-listen", code: "GES" },
+
+                { name: "Alike", icon: "fa-clone", code: "AS" },
+
+                { name: "Seeds", icon: "fa-seedling", code: "SS" },
+
+                { name: "Grammar", icon: "fa-spell-check", code: "GS" },
+
+                { name: "Label", icon: "fa-tag", code: "LS" },
+
+                { name: "Vivid", icon: "fa-eye", code: "VS" }
+
+            ],
+
+            royal: [
+
+                { name: "Golden EarX", icon: "fa-ear-deaf", code: "GEX" },
+
+                { name: "AlikeX", icon: "fa-object-group", code: "AX" },
+
+                { name: "SeedsX", icon: "fa-tree", code: "SX" },
+
+                { name: "GrammarX", icon: "fa-pen-fancy", code: "GX" },
+
+                { name: "LabelX", icon: "fa-tags", code: "LX" },
+
+                { name: "VividX", icon: "fa-wand-magic-sparkles", code: "VX" },
+
+                { name: "FigurativeX", icon: "fa-mask", code: "FX" },
+
+                { name: "DictationX", icon: "fa-microphone-lines", code: "DX" },
+
+                { name: "Sing Sang SungX", icon: "fa-music", code: "SSSX" },
+
+                { name: "ElmagazineX", icon: "fa-book-open", code: "ELX" }
+
+            ]
+
+        };
+
+
+
+        // توليد النجوم
+
+        function createStars() {
+
+            const container = document.getElementById('star-container');
+
+            for (let i = 0; i < 150; i++) {
+
+                const star = document.createElement('div');
+
+                star.className = 'star';
+
+                const size = Math.random() * 2.5;
+
+                star.style.width = size + 'px';
+
+                star.style.height = size + 'px';
+
+                star.style.left = Math.random() * 100 + '%';
+
+                star.style.top = Math.random() * 100 + '%';
+
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+
+                container.appendChild(star);
+
+            }
+
+        }
+
+        createStars();
+
+
+
+        function renderHeader() {
+
+            const header = document.getElementById('heroBanner');
+
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (isLoggedIn) {
+
+                logoutBtn.style.display = "block";
+
+                header.innerHTML = `
+
+                    <div class="profile-container">
+
+                        <div class="avatar-main" style="background-image: url('${currentUser.image}')"></div>
+
+                        <h1 class="student-name">${currentUser.name}</h1>
+
+                        <div style="display:flex; gap:15px; margin-top:5px; font-size:0.85rem; color:var(--gold);">
+
+                            <span>🪙 ${currentUser.totalScore} TK</span> • <span>🏆 Rank #${currentUser.rank}</span>
+
+                        </div>
+
+                        <p style="font-size:0.7rem; color:#888; margin-top:5px;">${currentUser.title}</p>
+
+                    </div>`;
+
+            } else {
+
+                logoutBtn.style.display = "none";
+
+                header.innerHTML = `
+
+                    <div class="profile-container">
+
+                        <h1 class="student-name" style="margin-bottom:10px">EYC PREMIUM</h1>
+
+                        <div class="auth-btns">
+
+                            <button class="btn-premium" onclick="openLogin()">Log In</button>
+
+                            <button class="btn-premium solid" onclick="window.location.href='NP.html'">Join</button>
+
+                        </div>
+
+                    </div>`;
+
+            }
+
+        }
+
+
+
+        async function handleLogin() {
+
+            const email = document.getElementById('loginEmail').value;
+
+            const code = document.getElementById('loginCode').value;
+
+            const loader = document.getElementById('loader');
+
+            if(!email || !code) return alert("Please fill all fields");
+
+            loader.style.display = "block";
+
+            
+
+            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+
+            window[callbackName] = function(data) {
+
+                delete window[callbackName];
+
+                document.body.removeChild(script);
+
+                if (data.status === "success") {
+
+                    currentUser = data; // يحتوي على الـ title المحدث من Apps Script
+
+                    isLoggedIn = true;
+
+                    localStorage.setItem('eyc_user', JSON.stringify(data));
+
+                    closeModal('loginModal');
+
+                    renderHeader();
+
+                    generateCards();
+
+                } else {
+
+                    alert("Error: " + data.message);
+
+                }
+
+                loader.style.display = "none";
+
+            };
+
+            const script = document.createElement('script');
+
+            script.src = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&action=login&callback=${callbackName}`;
+
+            document.body.appendChild(script);
+
+        }
+
+
+
+        async function handleLogout() {
+
+            if (currentUser) {
+
+                // إخطار السكريبت بالخروج لمسح علامة ✅
+
+                const callbackName = 'jsonp_logout_' + Math.round(100000 * Math.random());
+
+                window[callbackName] = function() {
+
+                    delete window[callbackName];
+
+                    document.body.removeChild(script);
+
+                };
+
+                const script = document.createElement('script');
+
+                script.src = `${SCRIPT_URL}?email=${encodeURIComponent(currentUser.email)}&action=logout&callback=${callbackName}`;
+
+                document.body.appendChild(script);
+
+            }
+
+            localStorage.removeItem('eyc_user'); 
+
+            isLoggedIn = false;
+
+            currentUser = null;
+
+            renderHeader();
+
+            generateCards();
+
+        }
+
+
+
+window.onload = () => {
+
+    const savedUser = localStorage.getItem('eyc_user');
+
+    if(savedUser) {
+
+        currentUser = JSON.parse(savedUser);
+
+        isLoggedIn = true;
+
+        renderHeader();
+
+    } else {
+
+        // إذا لم يكن هناك مستخدم، نحتاج أيضاً لرسم الهيدر الافتراضي
+
+        renderHeader();
+
+    }
+
+    
+
+    // هذه هي الإضافة السحرية: استدعاء الدالة لترسم الكروت للكل
+
+    generateCards(); 
+
+};
+
+
+
+        function generateCards() {
+
+            const grid = document.getElementById('cardsGrid');
+
+            grid.innerHTML = '';
+
+            const type = document.querySelector('.tab-btn.active').innerText.toLowerCase();
+
+            activities[type].forEach(act => {
+
+                const card = document.createElement('div');
+
+                card.className = 'activity-card';
+
+                card.innerHTML = `<i class="fa-solid ${act.icon} card-icon"></i><h3>${act.name}</h3><p>10 Challenges</p>`;
+
+                card.onclick = () => openTasks(act.name, act.code);
+
+                grid.appendChild(card);
+
+            });
+
+        }
+
+
+
+        function openTasks(name, activityCode) {
+
+            document.getElementById('mTitle').innerText = name;
+
+            const tGrid = document.getElementById('tGrid');
+
+            tGrid.innerHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+
+                let isLocked = isLoggedIn ? (i > 2) : (i > 1);
+
+                const node = document.createElement('div');
+
+                node.className = `task-node ${isLocked ? 'locked' : ''}`;
+
+                node.innerHTML = i + (isLocked ? '<i class="fas fa-lock lock-icon"></i>' : '');
+
+                if (!isLocked) {
+
+                    node.onclick = () => {
+
+                        // التحويل لصفحة Hybird.html مع تمرير كافة البيانات
+
+                        const baseUrl = `Hybird.html`; 
+
+                        const studentData = isLoggedIn ? {
+
+                            ...currentUser,
+
+                            activity: name,
+
+                            taskCode: activityCode,
+
+                            taskNum: i
+
+                        } : {
+
+                            name: "Guest Hunter",
+
+                            image: "https://avataaars.io/?avatarStyle=Transparent",
+
+                            title: "Greeny",
+
+                            activity: name,
+
+                            taskCode: activityCode,
+
+                            taskNum: i
+
+                        };
+
+                        const params = new URLSearchParams(studentData).toString();
+
+                        window.location.href = `${baseUrl}?${params}`;
+
+                    };
+
+                }
+
+                tGrid.appendChild(node);
+
+            }
+
+            document.getElementById('taskModal').style.display = 'flex';
+
+        }
+
+
+
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function switchType(type, btn) {
+
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            btn.classList.add('active');
+
+            generateCards();
+
+        }
+
+    </script>
+
+</body>
+
+</html>

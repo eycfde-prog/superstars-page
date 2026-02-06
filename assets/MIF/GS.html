@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grammar Interception | EYC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --danger: #ff003c; 
+            --detect: #00f2ff;
+            --bg-dark: #0a0a0c;
+            --panel: rgba(20, 20, 25, 0.95);
+        }
+        
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background: transparent; 
+            color: #e0e0e0; 
+            margin: 0; padding: 15px; 
+            direction: ltr;
+        }
+
+        /* حاوية المهمة - شكل عسكري/تقني */
+        .mission-card {
+            background: var(--panel);
+            border-left: 5px solid var(--danger);
+            border-right: 1px solid rgba(255, 0, 60, 0.2);
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 25px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .mission-id {
+            position: absolute; top: -10px; right: 20px;
+            background: var(--danger); color: white;
+            font-family: 'Orbitron'; font-size: 11px;
+            padding: 2px 12px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        }
+
+        /* الجملة كأنها شفرة */
+        .code-line {
+            font-size: 1.3rem; font-weight: 700;
+            letter-spacing: 1px; margin-bottom: 20px;
+            display: flex; flex-wrap: wrap; gap: 10px;
+        }
+
+        .word-unit {
+            padding: 4px 10px; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+        }
+
+        .word-unit:hover { background: rgba(0, 242, 255, 0.1); border-color: var(--detect); }
+
+        /* الكلمة لما تتكشف (تتشخص كغلط) */
+        .word-unit.flagged { 
+            background: var(--danger); color: white; 
+            border-color: var(--danger);
+            box-shadow: 0 0 15px var(--danger);
+            animation: blink 0.5s infinite alternate;
+        }
+
+        @keyframes blink { from { opacity: 1; } to { opacity: 0.7; } }
+
+        /* منطقة التصحيح - بشكل احترافي */
+        .intercept-zone {
+            display: flex; align-items: center; gap: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;
+        }
+
+        .intercept-label {
+            font-family: 'Orbitron'; font-size: 12px; color: var(--detect);
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        .intercept-input {
+            background: #000; border: 1px solid #333;
+            color: var(--detect); font-family: 'Orbitron';
+            padding: 8px 15px; width: 100%; outline: none;
+            border-radius: 0; transition: 0.3s;
+        }
+
+        .intercept-input:focus { border-color: var(--detect); box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
+
+        .btn-transmit {
+            width: 100%; background: transparent; color: var(--danger);
+            border: 2px solid var(--danger); padding: 15px;
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer;
+            transition: 0.3s; letter-spacing: 5px; margin-top: 20px;
+        }
+
+        .btn-transmit:hover { background: var(--danger); color: white; box-shadow: 0 0 30px var(--danger); }
+    </style>
+</head>
+<body>
+
+    <div id="combat-zone"></div>
+
+    <button class="btn-transmit" onclick="finalizeMission()">TRANSMIT DATA</button>
+
+<script>
+    const grammarData = {
+        "1": ["He go to the park every day.", "She like eating apples for breakfast.", "They is playing football now.", "My father work in a big bank.", "I has a small cat.", "We does our homework together.", "The sun rise in the east.", "Birds flies in the sky.", "Ali and Ahmed is friends.", "It rain a lot in winter."]
+        // باقي المهمات هتتحط هنا بنفس الطريقة...
+    };
+
+    function loadMission() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const task = urlParams.get('task') || "1";
+        const sentences = grammarData[task] || grammarData["1"];
+        
+        const container = document.getElementById('combat-zone');
+        container.innerHTML = sentences.map((s, i) => `
+            <div class="mission-card" id="card-${i}">
+                <div class="mission-id">TARGET_${task}.0${i+1}</div>
+                <div class="code-line">
+                    ${s.split(' ').map((w, wi) => `<span class="word-unit" onclick="flag(this, ${i})">${w}</span>`).join('')}
+                </div>
+                <div class="intercept-zone">
+                    <span class="intercept-label">Override:</span>
+                    <input type="text" class="intercept-input" id="fix-${i}" placeholder="RE-CODE HERE...">
+                </div>
+            </div>
+        `).join('');
+    }
+
+    let flaggedWords = {};
+
+    function flag(el, sIdx) {
+        el.parentElement.querySelectorAll('.word-unit').forEach(n => n.classList.remove('flagged'));
+        el.classList.add('flagged');
+        flaggedWords[sIdx] = el.innerText;
+    }
+
+    function finalizeMission() {
+        const results = [];
+        let complete = true;
+
+        for(let i=0; i<10; i++) {
+            const val = document.getElementById(`fix-${i}`).value.trim();
+            if(!flaggedWords[i] || !val) {
+                complete = false;
+                document.getElementById(`card-${i}`).style.borderColor = "yellow";
+            } else {
+                results.push({ wrong: flaggedWords[i], right: val });
+            }
+        }
+
+        if(!complete) {
+            alert("SYSTEM ERROR: UNRESOLVED TARGETS DETECTED!");
+            return;
+        }
+
+        window.parent.postMessage({
+            type: 'SUBMIT_MISSION',
+            activityCode: 'GS',
+            data: results
+        }, '*');
+    }
+
+    window.onload = loadMission;
+</script>
+</body>
+</html>

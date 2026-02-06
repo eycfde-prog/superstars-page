@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Finachatineez Mooseeds | EYC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-purple: #bc13fe;
+            --bg-dark: #050505;
+            --card-bg: rgba(20, 20, 25, 0.9);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: transparent;
+            color: white;
+            margin: 0; padding: 15px;
+            direction: ltr;
+        }
+
+        .header-box {
+            text-align: center; margin-bottom: 20px;
+            border-bottom: 2px solid var(--neon-purple);
+            padding-bottom: 10px;
+        }
+
+        .header-box h1 { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--neon-purple); margin: 0; }
+
+        /* حاوية الكلمات */
+        .words-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin-bottom: 20px;
+        }
+
+        .word-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(188, 19, 254, 0.3);
+            padding: 12px; text-align: center;
+            font-family: 'Orbitron'; font-size: 0.9rem;
+            color: var(--neon-blue); border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+
+        .word-card.odd {
+            border-color: #ff003c; color: #ff003c;
+            text-shadow: 0 0 5px #ff003c;
+        }
+
+        /* منطقة الكتابة */
+        .story-zone {
+            background: var(--card-bg);
+            border-radius: 12px; padding: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        textarea {
+            width: 100%; height: 250px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #333; color: #fff;
+            padding: 15px; font-size: 1.1rem;
+            font-family: 'Rajdhani'; resize: none;
+            outline: none; box-sizing: border-box;
+            border-radius: 8px;
+        }
+
+        textarea:focus { border-color: var(--neon-blue); }
+
+        .status-bar {
+            display: flex; justify-content: space-between;
+            margin-top: 10px; font-family: 'Orbitron'; font-size: 12px;
+        }
+
+        .word-count { color: var(--neon-blue); }
+        .limit { color: var(--neon-purple); }
+
+        .btn-submit {
+            width: 100%; margin-top: 20px;
+            background: transparent; color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            padding: 15px; font-family: 'Orbitron';
+            cursor: pointer; transition: 0.3s; font-weight: bold;
+        }
+
+        .btn-submit:hover {
+            background: var(--neon-blue); color: #000;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-box">
+        <h1>STORY MISSION: SEEDS</h1>
+    </div>
+
+    <div class="words-grid" id="words-container">
+        </div>
+
+    <div class="story-zone">
+        <textarea id="story-input" oninput="updateCount()" placeholder="Compose your 120-word transmission here..."></textarea>
+        <div class="status-bar">
+            <span>PROGRESS: <span id="count" class="word-count">0</span> / 120 Words</span>
+            <span class="limit">REQUIRED: ALL 6 SEEDS</span>
+        </div>
+    </div>
+
+    <button class="btn-submit" onclick="submitStory()">TRANSMIT STORY</button>
+
+<script>
+    // الـ 10 مجموعات (5 مترابطين + 1 منحرفة)
+    const seedGroups = {
+        "1": ["Castle", "Knight", "Dragon", "Sword", "Princess", "Smartphone"],
+        "2": ["Ocean", "Dolphin", "Submarine", "Coral", "Anchor", "Pizza"],
+        "3": ["Forest", "Wildlife", "Camping", "Backpack", "Compass", "Elevator"],
+        "4": ["Hospital", "Doctor", "Surgeon", "Medicine", "Nurse", "Skateboard"],
+        "5": ["Desert", "Cactus", "Pyramid", "Camel", "Sandstorm", "Ice-Cream"],
+        "6": ["Space", "Astronaut", "Galaxy", "Rocket", "Meteor", "Rubber-Duck"],
+        "7": ["School", "Teacher", "Exam", "Library", "Notebook", "Spaceship"],
+        "8": ["Airport", "Pilot", "Suitcase", "Runway", "Passport", "Dinosaurs"],
+        "9": ["Kitchen", "Recipe", "Chef", "Oven", "Ingredients", "Parachute"],
+        "10": ["Underground", "Cave", "Bat", "Crystal", "Tunnel", "Sunglasses"]
+    };
+
+    function loadSeeds() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const task = urlParams.get('task') || "1";
+        const words = seedGroups[task] || seedGroups["1"];
+        
+        const container = document.getElementById('words-container');
+        container.innerHTML = words.map((w, i) => `
+            <div class="word-card ${i === 5 ? 'odd' : ''}">${w}</div>
+        `).join('');
+    }
+
+    function updateCount() {
+        const text = document.getElementById('story-input').value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        document.getElementById('count').innerText = words;
+        
+        if(words >= 120) document.getElementById('count').style.color = "#00ff00";
+        else document.getElementById('count').style.color = "var(--neon-blue)";
+    }
+
+    function submitStory() {
+        const text = document.getElementById('story-input').value.trim();
+        const wordCount = text ? text.split(/\s+/).length : 0;
+
+        if (wordCount < 120) {
+            alert("INSUFFICIENT DATA: You need at least 120 words to transmit!");
+            return;
+        }
+
+        // إرسال النص لسيستم التصحيح
+        window.parent.postMessage({
+            type: 'SUBMIT_MISSION',
+            activityCode: 'Seeds',
+            data: { story: text, count: wordCount }
+        }, '*');
+    }
+
+    window.onload = loadSeeds;
+</script>
+</body>
+</html>

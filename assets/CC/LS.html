@@ -1,184 +1,67 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Label X | Season 2026</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --gold: #f1c40f;
-            --dark-gold: #f39c12;
-            --bg-deep: #05070a;
-        }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at top, #111827 0%, var(--bg-deep) 100%);
-            color: #fff; min-height: 100vh;
-        }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .golden-text {
-            background: linear-gradient(to bottom, #fff 20%, var(--gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
-        }
-        .input-dark {
-            background: rgba(0, 0, 0, 0.4) !important;
-            border: 1px solid rgba(241, 196, 15, 0.1) !important;
-        }
-        .input-dark:focus { border-color: var(--gold) !important; box-shadow: 0 0 15px rgba(241, 196, 15, 0.1); }
-        
-        /* Difficulty Badge */
-        .diff-btn {
-            padding: 8px 16px; border-radius: 12px; font-size: 10px; font-weight: 900;
-            border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s;
-        }
-        .diff-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(241,196,15,0.1); }
+/**
+ * LS.js - محرك تصحيح نشاط Label (LS)
+ * تصميم: جي (Ge) لمستر عز
+ */
 
-        /* Instructions Modal */
-        #howToModal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            z-index: 5000; align-items: center; justify-content: center; padding: 20px;
-        }
-    </style>
-</head>
-<body class="p-4 flex flex-col items-center">
+/**
+ * 1. خوارزمية المسافة (Fuzzy Matching)
+ * للسماح بخطأ حرف واحد فقط في مسمى الصورة
+ */
+function isNearlyCorrect(studentWord, correctWord) {
+    if (!studentWord || !correctWord) return false;
+    
+    const s = studentWord.toLowerCase().trim().replace(/-/g, ' ');
+    const c = correctWord.toLowerCase().trim().replace(/-/g, ' ');
+    
+    if (s === c) return true;
+    if (Math.abs(s.length - c.length) > 1) return false;
 
-    <div id="howToModal">
-        <div class="glass-card p-8 max-w-md w-full border-2 border-yellow-500 text-center">
-            <i class="fas fa-lightbulb text-4xl text-yellow-500 mb-4"></i>
-            <h2 class="text-2xl font-bold mb-4">كيفية المشاركة؟</h2>
-            <ul class="text-right text-gray-300 space-y-3 mb-6">
-                <li><i class="fas fa-check-circle text-yellow-500 ml-2"></i> انظر جيداً لكل صورة معروضة.</li>
-                <li><i class="fas fa-check-circle text-yellow-500 ml-2"></i> اكتب اسم الشيء أو الوصف الصحيح بالإنجليزي.</li>
-                <li><i class="fas fa-check-circle text-yellow-500 ml-2"></i> اضغط "إرسال" لكل صورة بمفردها.</li>
-                <li><i class="fas fa-check-circle text-yellow-500 ml-2"></i> نقاط الـ Tokens بتعتمد على مستوى الصعوبة!</li>
-            </ul>
-            <button onclick="toggleHowTo()" class="w-full py-3 bg-yellow-500 text-black font-black rounded-xl">فهمت، لنبدأ!</button>
-        </div>
-    </div>
+    let edits = 0;
+    let i = 0, j = 0;
 
-    <div class="max-w-5xl w-full">
-        <header class="text-center my-12">
-            <div class="orbitron text-[10px] tracking-[5px] text-yellow-500 mb-2">EYC SYSTEMS PRESENT</div>
-            <h1 class="text-6xl golden-text font-black mb-2">LABEL X</h1>
-            <p class="text-gray-500 text-xs font-bold tracking-widest uppercase italic">Season 2026 | Mission One</p>
-        </header>
-
-        <div id="loginSection" class="glass-card p-10 text-center max-w-md mx-auto relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl"></div>
-            <h2 class="text-xl font-black mb-6">تجهيز المهمة...</h2>
-            <input type="text" id="emailInput" class="w-full input-dark rounded-2xl py-4 px-6 mb-4 text-center text-white" placeholder="كود الطالب أو الإيميل">
-            <button onclick="handleLogin()" class="w-full py-4 rounded-2xl text-xl font-black bg-gradient-to-r from-yellow-500 to-orange-600 text-black shadow-xl transition-all hover:scale-105 active:scale-95">
-                دخول النشاط
-            </button>
-            <p class="mt-4 text-[10px] text-gray-500 italic">بمجرد الدخول سيتم تسجيل الوقت المستغرق</p>
-        </div>
-
-        <div id="activitySection" class="hidden">
-            <div class="flex flex-col md:flex-row gap-4 mb-10 items-center justify-between">
-                <div class="glass-card p-4 flex gap-6 items-center border-l-4 border-yellow-500">
-                    <div class="text-center">
-                        <p class="text-[10px] text-gray-500 font-bold orbitron">STUDENT CODE</p>
-                        <p id="displayCode" class="text-yellow-500 font-black orbitron">---</p>
-                    </div>
-                    <div class="h-8 w-px bg-white/10"></div>
-                    <button onclick="toggleHowTo()" class="text-xs bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
-                        <i class="fas fa-question-circle text-yellow-500"></i> شرح النشاط
-                    </button>
-                </div>
-
-                <div class="glass-card p-2 flex gap-2">
-                    <button onclick="setDiff(100, this)" class="diff-btn orbitron active">NORMAL (100 TK)</button>
-                    <button onclick="setDiff(250, this)" class="diff-btn orbitron">HARD (250 TK)</button>
-                    <button onclick="setDiff(500, this)" class="diff-btn orbitron">LEGEND (500 TK)</button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="imagesGrid">
-                </div>
-        </div>
-
-        <footer class="mt-20 mb-10 text-center">
-            <div class="h-px w-20 bg-yellow-500/30 mx-auto mb-6"></div>
-            <p class="text-gray-600 text-[10px] orbitron tracking-[4px] uppercase">&copy; 2026 EYC ACADEMY | MISSION CONTROL</p>
-        </footer>
-    </div>
-
-<script>
-    const GITHUB_BASE = "https://raw.githubusercontent.com/رابط_حسابك/رابط_المستودع/main/ESSL/"; 
-    let studentInfo = { email: "", code: "" };
-    let currentTK = 100;
-
-    function toggleHowTo() {
-        const modal = document.getElementById('howToModal');
-        modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    function setDiff(tk, btn) {
-        currentTK = tk;
-        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-
-    async function handleLogin() {
-        const input = document.getElementById('emailInput').value.trim();
-        if (input.length < 2) { alert("أدخل بياناتك يا بطل"); return; }
-        
-        // Bypass Logic for Preview
-        studentInfo.code = input.toUpperCase();
-        document.getElementById('displayCode').innerText = studentInfo.code;
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('activitySection').classList.remove('hidden');
-        initActivity();
-    }
-
-    function initActivity() {
-        const grid = document.getElementById('imagesGrid');
-        grid.innerHTML = '';
-        for (let i = 1; i <= 6; i++) { // Let's start with 6 items for better look
-            const id = `SL${i}`;
-            const card = document.createElement('div');
-            card.className = "glass-card p-5 group hover:border-yellow-500/30 transition-all duration-500";
-            card.innerHTML = `
-                <div class="relative rounded-2xl overflow-hidden mb-4 aspect-video bg-black flex items-center justify-center">
-                    <img src="${GITHUB_BASE}${id}.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://via.placeholder.com/400x250/000/f1c40f?text=MISSION+IMG+${i}'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                    <span class="absolute bottom-3 left-3 orbitron text-[10px] text-yellow-500">M-0${i}</span>
-                </div>
-                <div class="space-y-3">
-                    <input type="text" id="input-${id}" class="w-full input-dark rounded-xl px-4 py-3 text-sm text-center focus:outline-none" placeholder="What is this?">
-                    <button onclick="submitLabel('${id}')" id="btn-${id}" class="w-full py-3 bg-white/5 hover:bg-yellow-500 hover:text-black transition-all rounded-xl font-black text-xs orbitron">
-                        SUBMIT DATA
-                    </button>
-                </div>
-            `;
-            grid.appendChild(card);
+    while (i < s.length && j < c.length) {
+        if (s[i] !== c[j]) {
+            edits++;
+            if (edits > 1) return false; 
+            if (s.length > c.length) i++; 
+            else if (s.length < c.length) j++; 
+            else { i++; j++; } 
+        } else {
+            i++; j++;
         }
     }
+    if (i < s.length || j < c.length) edits++;
+    return edits <= 1;
+}
 
-    function submitLabel(id) {
-        const btn = document.getElementById(`btn-${id}`);
-        const input = document.getElementById(`input-${id}`);
-        if(!input.value) return;
+/**
+ * 2. الدالة الأساسية التي تستدعيها صفحة Hybird
+ * @param {Object} data - تحتوي على answers (إجابات الطالب) و modelAnswers (الكلمات الـ 10 الصحيحة)
+ */
+function gradeMission(data) {
+    const studentAnswers = data.answers;
+    const modelAnswers = data.modelAnswers;
+    
+    let correctCount = 0;
 
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        
-        setTimeout(() => { // Simulated success
-            btn.innerHTML = `<i class="fas fa-check"></i> +${currentTK} TK`;
-            btn.className = "w-full py-3 bg-green-600 text-white rounded-xl font-black text-xs orbitron";
-            input.disabled = true;
-        }, 1000);
-    }
-</script>
-</body>
-</html>
+    // مقارنة الـ 10 تسميات
+    modelAnswers.forEach((correct, index) => {
+        if (isNearlyCorrect(studentAnswers[index], correct)) {
+            correctCount++;
+        }
+    });
+
+    /**
+     * 3. معادلة مستر عز للدرجات:
+     * - كل كلمة صح بـ 0.5 درجة (المجموع الكلي 5)
+     * - التقريب لأقرب عدد صحيح (Math.round)
+     * - الحد الأدنى 1
+     */
+    let rawScore = correctCount * 0.5;
+    let roundedScore = Math.round(rawScore);
+    
+    // ضمان ألا تقل الدرجة عن 1 وألا تزيد عن 5
+    let finalScore = Math.max(1, Math.min(5, roundedScore));
+
+    return finalScore;
+}

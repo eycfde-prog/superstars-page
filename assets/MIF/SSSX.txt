@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Content | ELMAGAZINE X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --gold: #fcc200; --glass: rgba(255, 255, 255, 0.05); }
+        
+        body { background: transparent; color: white; margin: 0; padding: 15px; font-family: 'Poppins', sans-serif; }
+
+        /* Script Card */
+        .script-card {
+            background: rgba(0, 0, 0, 0.4); border-radius: 20px; padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1); position: relative;
+        }
+
+        .script-box {
+            background: rgba(0, 0, 0, 0.5); border-left: 3px solid var(--gold);
+            padding: 20px; border-radius: 12px; line-height: 1.6; color: #eee;
+            font-size: 15px; margin: 15px 0; text-align: left;
+            max-height: 250px; overflow-y: auto;
+        }
+
+        .audio-player-wrapper {
+            background: rgba(252, 194, 0, 0.08); padding: 12px; border-radius: 15px;
+            margin-bottom: 20px; border: 1px solid rgba(252, 194, 0, 0.2);
+        }
+        audio { width: 100%; height: 35px; filter: invert(100%) hue-rotate(180deg) brightness(1.5); }
+
+        .btn-copy { 
+            background: transparent; color: var(--gold); border: 1px solid var(--gold); 
+            padding: 4px 12px; border-radius: 6px; font-size: 10px; cursor: pointer; 
+            font-family: 'Orbitron'; transition: 0.3s;
+        }
+        .btn-copy:hover { background: var(--gold); color: black; }
+
+        /* Submit Button as Link */
+        .btn-upload {
+            width: 100%; padding: 15px; border-radius: 15px; font-family: 'Orbitron'; font-weight: 900;
+            margin-top: 15px; border: none; cursor: pointer; transition: 0.4s;
+            background: var(--gold); color: black; text-decoration: none; 
+            display: block; text-align: center; font-size: 14px;
+            box-shadow: 0 5px 15px rgba(252, 194, 0, 0.2);
+        }
+        .btn-upload:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(252, 194, 0, 0.4); }
+
+        /* Step Indicators */
+        .steps { display: flex; gap: 10px; margin-top: 20px; }
+        .step { flex: 1; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; text-align: center; }
+        .step i { color: var(--gold); font-size: 16px; display: block; margin-bottom: 5px; }
+        .step span { font-size: 9px; text-transform: uppercase; color: #888; font-weight: bold; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="script-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="font-family: 'Orbitron'; font-size: 11px; color: var(--gold); letter-spacing: 1px;">MISSION SCRIPT</h2>
+            <button class="btn-copy" onclick="copyScript(this)">COPY 📋</button>
+        </div>
+
+        <div dir="ltr" id="mainScript" class="script-box">
+            <strong style="color: var(--gold); font-family: 'Orbitron';">The Power of Perseverance</strong><br><br>
+            Success is not measured by how fast you reach your goal, but by how many times you stand up after falling. Many people believe that talent is the only requirement for greatness, yet history proves that perseverance is much more important. When you face a difficult challenge, your brain develops new connections that make you stronger. Instead of avoiding obstacles, we should embrace them as opportunities to grow. Remember, every expert was once a beginner who refused to quit. Stay focused on your vision, and eventually, your hard work will transform your dreams into a solid reality.
+        </div>
+
+        <div class="audio-player-wrapper">
+            <p style="font-size: 9px; color: var(--gold); font-family: 'Orbitron'; margin-bottom: 8px;">REFERENCE AUDIO:</p>
+            <audio id="player" controls>
+                <source id="audioSource" src="" type="audio/wav">
+            </audio>
+        </div>
+
+        <div class="steps">
+            <div class="step"><i class="fas fa-headphones"></i><span>Listen</span></div>
+            <div class="step"><i class="fas fa-microphone"></i><span>Record</span></div>
+            <div class="step"><i class="fas fa-cloud-upload-alt"></i><span>Upload</span></div>
+        </div>
+
+        <a id="uploadBtn" href="#" target="_blank" class="btn-upload">
+            UPLOAD PERFORMANCE 🎙️
+        </a>
+    </div>
+
+<script>
+    // جلب البيانات من الـ URL
+    const params = new URLSearchParams(window.location.search);
+    const mNum = params.get('m') || '1';
+    
+    // تحديث المحتوى بناءً على رقم المهمة
+    window.onload = () => {
+        const audio = document.getElementById('player');
+        const source = document.getElementById('audioSource');
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        // مسار ملف الأوديو الديناميكي
+        source.src = `assets/audio/XEL${mNum}.wav`;
+        audio.load();
+
+        // رابط الفورم الديناميكي
+        uploadBtn.href = `https://docs.google.com/forms/d/YOUR_FORM_ID_FOR_XEL${mNum}`;
+    };
+
+    function copyScript(btn) {
+        const text = document.getElementById("mainScript").innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "COPIED!";
+            setTimeout(() => { btn.innerText = originalText; }, 2000);
+        });
+    }
+
+    // بروتوكول الإغلاق (هنا بنعتبره خلص بمجرد ما ضغط رفع أو فتح الفورم)
+    window.checkAnswers = function() {
+        return {
+            status: "COMPLETED",
+            points: 1 // النشاط ده بيعتمد على تقييم المستر لاحقاً
+        };
+    };
+</script>
+</body>
+</html>

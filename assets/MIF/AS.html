@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Alike Mission Module | EYC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #ffcc00; --glass: rgba(255, 255, 255, 0.03); }
+        body { 
+            font-family: 'Cairo', sans-serif; background: transparent; color: white; 
+            margin: 0; padding: 15px; overflow-x: hidden;
+        }
+
+        .mission-container { display: none; animation: fadeIn 0.5s ease; }
+        .mission-container.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .alike-grid {
+            display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%;
+        }
+
+        .pair-card {
+            background: var(--glass); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
+            padding: 15px; position: relative;
+        }
+
+        .case-tag {
+            position: absolute; top: -10px; right: 15px; background: var(--gold);
+            color: black; font-family: 'Orbitron'; font-size: 10px; 
+            padding: 2px 10px; border-radius: 10px; font-weight: bold;
+        }
+
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        
+        .word-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        
+        label { font-size: 14px; color: #ddd; font-weight: bold; }
+
+        input {
+            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px; padding: 10px; color: var(--gold); text-align: center;
+            font-family: 'Orbitron'; font-size: 16px; outline: none; transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+
+        .submit-trigger { margin-top: 30px; text-align: center; }
+
+        .internal-btn {
+            background: linear-gradient(135deg, #bf953f, #fcf6ba);
+            color: black; border: none; padding: 12px 40px; border-radius: 50px;
+            font-weight: bold; cursor: pointer; font-family: 'Cairo';
+        }
+    </style>
+</head>
+<body>
+
+    <div id="mission-wrapper"></div>
+
+    <div class="submit-trigger">
+        <button class="internal-btn" onclick="collectAndSend()">تأكيد الإجابات للمهمة 🚀</button>
+    </div>
+
+<script>
+    // قاعدة بيانات الـ 10 مهام (تم إكمال الـ 10 مهام بواسطة جي ✨)
+    const missionsData = {
+        "1": [ {a:"شمس", b:"ابن"}, {a:"بحر", b:"يرى"}, {a:"إلى", b:"أيضاً"}, {a:"هنا", b:"يسمع"}, {a:"لا", b:"يعرف"} ], 
+        "2": [ {a:"أسبوع", b:"ضعيف"}, {a:"طريق", b:"وزن"}, {a:"ساعة", b:"لنا"}, {a:"اشترى", b:"بواسطة"}, {a:"لحم", b:"يقابل"} ], 
+        "3": [ {a:"جديد", b:"عرف"}, {a:"حق", b:"يكتب"}, {a:"ثمانية", b:"أكل"}, {a:"كامل", b:"ثقب"}, {a:"صلاة", b:"فريسة"} ], 
+        "4": [ {a:"قطعة", b:"سلام"}, {a:"وردة", b:"دقيق"}, {a:"قصة", b:"ذيل"}, {a:"شعر", b:"أرنب"}, {a:"شمس", b:"ابن"} ], 
+        "5": [ {a:"أين", b:"يرتدي"}, {a:"واحد", b:"فاز"}, {a:"ابن", b:"شمس"}, {a:"أزرق", b:"نفخ"}, {a:"بريد", b:"ذكر"} ], // Wear/Where, Won/One, Son/Sun, Blew/Blue, Mail/Male
+        "6": [ {a:"ليل", b:"فارس"}, {a:"خشب", b:"سوف"}, {a:"سمح", b:"بصوت عال"}, {a:"أحمر", b:"قرأ"}, {a:"مشهد", b:"رأى"} ], // Knight/Night, Wood/Would, Aloud/Allowed, Read/Red, Seen/Scene
+        "7": [ {a:"الطقس", b:"سواء"}, {a:"فارغ", b:"درس"}, {a:"نظام", b:"جذر"}, {a:"عارية", b:"دب"}, {a:"تحديق", b:"درج"} ], // Weather/Whether, Course/Coarse, Root/Route, Bear/Bare, Stair/Stare
+        "8": [ {a:"رئيسي", b:"عرف الحصان"}, {a:"مملح", b:"حبوب"}, {a:"لوح", b:"ملل"}, {a:"مركب", b:"إناء"}, {a:"تأثير", b:"يؤثر"} ], // Main/Mane, Cereal/Serial, Board/Bored, Vessel/Vasal, Affect/Effect
+        "9": [ {a:"موقع", b:"بصر"}, {a:"قرض", b:"وحيد"}, {a:"مسموح", b:"بصوت عال"}, {a:"توجيه", b:"يكتب"}, {a:"رصيف", b:"مفتاح"} ], // Site/Sight, Loan/Lone, Allowed/Aloud, Right/Write, Quay/Key
+        "10": [ {a:"مجلس", b:"نصيحة"}, {a:"مجاني", b:"تكملة"}, {a:"ثابت", b:"ورق"}, {a:"بحر", b:"يرى"}, {a:"معدن", b:"شجاعة"} ] // Council/Counsel, Complement/Complimentary, Stationary/Stationery, Sea/See, Mettle/Metal
+    };
+
+    function renderActiveMission() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskNum = urlParams.get('task') || "1";
+        const pairs = missionsData[taskNum] || missionsData["1"];
+        
+        const wrapper = document.getElementById('mission-wrapper');
+        wrapper.innerHTML = `
+            <div class="mission-container active">
+                <div class="alike-grid">
+                    ${pairs.map((p, i) => `
+                        <div class="pair-card">
+                            <span class="case-tag">CASE 0${i+1}</span>
+                            <div class="input-row">
+                                <div class="word-box">
+                                    <label>${p.a}</label>
+                                    <input type="text" class="alike-input" placeholder="English...">
+                                </div>
+                                <div class="word-box">
+                                    <label>${p.b}</label>
+                                    <input type="text" class="alike-input" placeholder="English...">
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function collectAndSend() {
+        const inputs = document.querySelectorAll('.alike-input');
+        let answers = [];
+        let missing = false;
+
+        inputs.forEach(input => {
+            if(!input.value.trim()) {
+                missing = true;
+                input.style.borderColor = "red";
+            } else {
+                input.style.borderColor = "rgba(212, 175, 55, 0.3)";
+                answers.push(input.value.trim().toLowerCase());
+            }
+        });
+
+        if(missing) {
+            alert("يا بطل، كمل كل الكلمات الأول! 🧐");
+            return;
+        }
+
+        window.parent.postMessage({
+            type: 'SUBMIT_MISSION',
+            activityCode: 'AL',
+            taskNum: new URLSearchParams(window.location.search).get('task'),
+            data: answers
+        }, '*');
+    }
+
+    window.onload = renderActiveMission;
+</script>
+</body>
+</html>

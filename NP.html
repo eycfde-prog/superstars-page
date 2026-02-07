@@ -262,6 +262,7 @@
     }
 
     // الربط مع Google Apps Script Back-End المعدل
+// الربط مع Google Apps Script Back-End المعدل
     document.getElementById('registrationForm').onsubmit = function(e) {
         e.preventDefault();
         playClick();
@@ -288,11 +289,14 @@
         google.script.run
             .withSuccessHandler(function(response) {
                 loader.style.display = 'none';
-                if (response === "Success") {
-                    // الكود الحقيقي يتم إنشاؤه في السيرفر، هنا نعرض نجاح المهمة
-                    showFinalCard();
+                
+                // التعديل هنا: نتحقق من response.status
+                if (response.status === "Success") {
+                    showFinalCard(response.code); // نرسل الكود للدالة
                 } else if (response === "Email Exists") {
                     alert("This Agent Email is already registered in our database!");
+                } else {
+                    alert("System Response: " + response);
                 }
             })
             .withFailureHandler(function(err) {
@@ -302,17 +306,17 @@
             .registerStudent(studentObj);
     };
 
-    function showFinalCard() {
+    function showFinalCard(generatedCode) {
         document.getElementById('registrationForm').style.display = 'none';
         document.getElementById('avatar-sidebar').style.display = 'none';
         document.getElementById('success-card').style.display = 'block';
         document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
         document.getElementById('card-name').innerText = document.getElementById('name').value;
-        document.getElementById('agent-code').innerText = "AUTHORIZED"; 
+        
+        // عرض الكود الحقيقي اللي جه من السيرفر
+        document.getElementById('agent-code').innerText = generatedCode; 
         document.getElementById('pBar').style.width = "100%";
     }
-
-    window.onload = () => { initStars(); initOptions(); updateAvatar(); };
 </script>
 </body>
 </html>

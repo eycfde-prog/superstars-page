@@ -285,18 +285,24 @@
 
         fetch(SCRIPT_URL, {
             method: "POST",
-            mode: "no-cors", 
-            headers: { "Content-Type": "text/plain" },
             body: JSON.stringify(studentObj)
         })
-        .then(() => {
+        .then(response => response.text())
+        .then(result => {
             loader.style.display = 'none';
-            showFinalCard(generatedCode); 
-            localStorage.setItem('eyc_user_code', generatedCode);
+            if (result.includes("Error: Email already exists")) {
+                alert("ACCESS DENIED: This email is already registered in our database! 🚫");
+            } else if (result.includes("Success")) {
+                showFinalCard(generatedCode); 
+                localStorage.setItem('eyc_user_code', generatedCode);
+            } else {
+                alert("System Error: " + result);
+            }
         })
         .catch(err => {
             loader.style.display = 'none';
-            alert("Transmission Failed: " + err);
+            alert("Transmission Failed: Check your connection, Agent! 📡");
+            console.error(err);
         });
     };
 

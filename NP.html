@@ -304,15 +304,66 @@
         });
     }; // تم إغلاق الـ onsubmit هنا بشكل صحيح
 
-    function showFinalCard(generatedCode) {
-        document.getElementById('registrationForm').style.display = 'none';
-        document.getElementById('avatar-sidebar').style.display = 'none';
-        document.getElementById('success-card').style.display = 'block';
-        document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
-        document.getElementById('card-name').innerText = document.getElementById('name').value;
-        document.getElementById('agent-code').innerText = generatedCode; 
-        document.getElementById('pBar').style.width = "100%";
+    document.getElementById('registrationForm').onsubmit = function(e) {
+    e.preventDefault();
+    playClick();
+    
+    const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
+    if (programs.length === 0) { 
+        alert("Please select at least one mission program, Agent!"); 
+        return; 
     }
+
+    const loader = document.getElementById('loader');
+    loader.style.display = 'flex';
+    loader.innerText = "GENERATING AGENT ID & UPLOADING...";
+
+    // توليد الكود هنا في الصفحة ليعرض فوراً (EYC + 4 random digits)
+    const generatedCode = "EYC-" + Math.floor(1000 + Math.random() * 9000);
+
+    const studentObj = {
+        action: "register",
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        age: document.getElementById('age').value,
+        programs: programs.join(", "),
+        avatar: document.getElementById('avatar-img').src,
+        studentCode: generatedCode // إرسال الكود المولّد للسيرفر
+    };
+
+    const SCRIPT_URL = "رابط_السكربت_الخاص_بك"; 
+
+    fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", 
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify(studentObj)
+    })
+    .then(() => {
+        loader.style.display = 'none';
+        // الآن الكود سيظهر فوراً للطالب في Success Card
+        showFinalCard(generatedCode); 
+        
+        // حفظ الكود في المتصفح ليعرف السستم أنه مسجل دخول (بروتوكول العلامة ✅)
+        localStorage.setItem('eyc_user_code', generatedCode);
+    })
+    .catch(err => {
+        loader.style.display = 'none';
+        alert("Transmission Failed: " + err);
+    });
+};
+
+// تأكد أن هذه الدالة خارج نطاق الـ onsubmit (global scope)
+function showFinalCard(generatedCode) {
+    document.getElementById('registrationForm').style.display = 'none';
+    document.getElementById('avatar-sidebar').style.display = 'none';
+    document.getElementById('success-card').style.display = 'block';
+    document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
+    document.getElementById('card-name').innerText = document.getElementById('name').value;
+    document.getElementById('agent-code').innerText = generatedCode; 
+    document.getElementById('pBar').style.width = "100%";
+}
+
 </script>
 </body>
 </html>

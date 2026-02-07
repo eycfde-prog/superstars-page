@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="npstyle.css">
 </head>
-<body>
+<body onload="initStars(); initOptions(); updateAvatar();">
 
 <canvas id="starCanvas"></canvas>
 <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
@@ -169,7 +169,7 @@
                     <span id="agent-code">----</span>
                 </div>
             </div>
-            <button onclick="window.location.href='?page=MC'" style="margin-top: 20px; width: 100%;">Enter Command Center</button>
+            <button onclick="window.location.href='MC.html'" style="margin-top: 20px; width: 100%;">Enter Command Center</button>
         </div>
     </div>
 </div>
@@ -205,6 +205,7 @@
     function initOptions() {
         const isFemale = document.getElementById('gender').value === 'female';
         const topSel = document.getElementById('topType');
+        if(!topSel) return;
         topSel.innerHTML = "";
         const hairList = isFemale ? options.femaleHair : options.maleHair;
         hairList.forEach(opt => topSel.add(new Option(opt, opt)));
@@ -233,13 +234,13 @@
         const loader = document.getElementById('imgLoader');
         const img = document.getElementById('avatar-img');
         loader.style.display = 'block';
-        const top = document.getElementById('topType').value;
-        const skin = document.getElementById('skinColor').value;
-        const facial = document.getElementById('facialHairType').value;
-        const color = document.getElementById('hairColor').value;
-        const clothe = document.getElementById('clotheType').value;
-        const accessories = document.getElementById('accessoriesType').value;
-        const eye = document.getElementById('eyeType').value;
+        const top = document.getElementById('topType').value || "ShortHairShortFlat";
+        const skin = document.getElementById('skinColor').value || "Tanned";
+        const facial = document.getElementById('facialHairType').value || "Blank";
+        const color = document.getElementById('hairColor').value || "Black";
+        const clothe = document.getElementById('clotheType').value || "Hoodie";
+        const accessories = document.getElementById('accessoriesType').value || "Blank";
+        const eye = document.getElementById('eyeType').value || "Default";
         const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
         const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&mouthType=Default&skinColor=${skin}`;
         const tempImg = new Image();
@@ -261,62 +262,54 @@
         document.getElementById('pBar').style.width = (step * 14.2) + "%";
     }
 
-    // الربط مع Google Apps Script Back-End المعدل
-// الربط مع Google Apps Script Back-End المعدل
-// الربط مع Google Apps Script عبر GitHub
-document.getElementById('registrationForm').onsubmit = function(e) {
-    e.preventDefault();
-    playClick();
-    
-    const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
-    if (programs.length === 0) { 
-        alert("Please select at least one mission program, Agent!"); 
-        return; 
-    }
+    document.getElementById('registrationForm').onsubmit = function(e) {
+        e.preventDefault();
+        playClick();
+        
+        const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
+        if (programs.length === 0) { 
+            alert("Please select at least one mission program, Agent!"); 
+            return; 
+        }
 
-    const loader = document.getElementById('loader');
-    loader.style.display = 'flex';
-    loader.innerText = "UPLOADING DATA TO EYC MAINFRAME...";
+        const loader = document.getElementById('loader');
+        loader.style.display = 'flex';
+        loader.innerText = "UPLOADING DATA TO EYC MAINFRAME...";
 
-    // 1. تجهيز البيانات وإضافة الـ action المطلوب
-    const studentObj = {
-        action: "register", // دي اللي بتعرف الـ doPost يعمل إيه
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        age: document.getElementById('age').value,
-        programs: programs.join(", "),
-        avatar: document.getElementById('avatar-img').src
-    };
+        const studentObj = {
+            action: "register",
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            age: document.getElementById('age').value,
+            programs: programs.join(", "),
+            avatar: document.getElementById('avatar-img').src
+        };
 
-    // 2. ضع هنا رابط الـ Web App الخاص بك بعد الـ Deploy
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjsuLtctvzUnleb4lokk8c0nGdv7UXS4yLBpeEHHPhuoTutBIdRB15wzRuxyIXNg6_/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjsuLtctvzUnleb4lokk8c0nGdv7UXS4yLBpeEHHPhuoTutBIdRB15wzRuxyIXNg6_/exec"; 
 
-    // 3. إرسال البيانات باستخدام fetch بدلاً من google.script.run
-// استبدل جزء الـ fetch في كودك بهذا:
-    fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors", 
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify(studentObj)
-    })
-    .then(() => {
-        loader.style.display = 'none';
-        // بما أننا لا نستطيع قراءة الكود بسبب no-cors، سنخبر الطالب بالتحقق من إيميله
-        showFinalCard("SENT TO EMAIL"); 
-        alert("Success! Check your email for your unique Agent Code.");
-    })
-    .catch(err => {
-        loader.style.display = 'none';
-        alert("Transmission Failed: " + err);
-    });
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors", 
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify(studentObj)
+        })
+        .then(() => {
+            loader.style.display = 'none';
+            showFinalCard("SENT TO EMAIL"); 
+            alert("Success! Check your email for your unique Agent Code.");
+        })
+        .catch(err => {
+            loader.style.display = 'none';
+            alert("Transmission Failed: " + err);
+        });
+    }; // تم إغلاق الـ onsubmit هنا بشكل صحيح
+
     function showFinalCard(generatedCode) {
         document.getElementById('registrationForm').style.display = 'none';
         document.getElementById('avatar-sidebar').style.display = 'none';
         document.getElementById('success-card').style.display = 'block';
         document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
         document.getElementById('card-name').innerText = document.getElementById('name').value;
-        
-        // عرض الكود الحقيقي اللي جه من السيرفر
         document.getElementById('agent-code').innerText = generatedCode; 
         document.getElementById('pBar').style.width = "100%";
     }

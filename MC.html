@@ -31,9 +31,7 @@
             background: linear-gradient(to bottom, rgba(212, 175, 55, 0.05), transparent);
             text-align: center; border-bottom: 1px solid var(--glass-border);
         }
-        .profile-card {
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
-        }
+        .profile-card { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .avatar-wrapper {
             width: 110px; height: 110px; border-radius: 50%;
             padding: 5px; background: var(--gold-gradient);
@@ -55,7 +53,7 @@
             font-size: 0.75rem; color: var(--gold); margin-top: 5px;
         }
 
-        /* --- Gold Buttons --- */
+        /* --- Buttons & Grid --- */
         .btn-gold-outline {
             background: transparent; border: 1px solid var(--gold); color: var(--gold);
             padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: 600;
@@ -69,7 +67,6 @@
         }
         .btn-gold-solid:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--gold); }
 
-        /* --- Tasks Grid & Nodes --- */
         .tasks-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin: 25px 0; }
         .task-node {
             aspect-ratio: 1; background: rgba(255,255,255,0.03); 
@@ -78,20 +75,8 @@
             cursor: pointer; font-weight: 700; color: var(--gold);
             font-family: 'Orbitron'; transition: 0.4s; position: relative;
         }
-        .task-node:not(.locked):hover {
-            background: var(--gold-gradient); color: black;
-            box-shadow: 0 0 20px var(--gold); transform: translateY(-5px);
-        }
-        .task-node.locked { opacity: 0.4; cursor: not-allowed; border-color: #333; }
-        .lock-icon {
-            position: absolute; bottom: -5px; right: -5px;
-            background: #000; color: #ff4d4d; border-radius: 50%;
-            width: 20px; height: 20px; font-size: 0.6rem;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid #ff4d4d;
-        }
+        .task-node:hover { background: var(--gold-gradient); color: black; box-shadow: 0 0 20px var(--gold); transform: translateY(-5px); }
 
-        /* --- Remaining Styles (Grid, Modal, etc.) --- */
         .top-nav { position: fixed; top: 0; left: 0; width: 100%; padding: 20px; display: flex; gap: 20px; z-index: 1000; }
         .nav-icon { font-size: 1.5rem; color: var(--gold); cursor: pointer; }
         .nav-container { display: flex; justify-content: center; margin: 30px 0; }
@@ -115,7 +100,7 @@
     <div id="star-container"></div>
 
     <div class="top-nav">
-        <i class="fas fa-house nav-icon" title="Home" onclick="window.location.href='?page=EYCSSP'"></i>
+        <i class="fas fa-house nav-icon" title="Home" onclick="window.location.href='MC.html'"></i>
         <i class="fas fa-right-from-bracket nav-icon" id="logoutBtn" style="display:none;" onclick="handleLogout()"></i>
     </div>
 
@@ -156,6 +141,7 @@
     </div>
 
     <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtjhz20euzYVCrDeb5kQqus4_Pvhr1uOUg1HVSSA9p9VA2v9zul7855n0QAgtG17aA/exec";
         let currentUser = null;
         let isLoggedIn = false;
 
@@ -196,7 +182,6 @@
         }
         createStars();
 
-        // طلب 1: ربط بيانات الطالب بالهيدر
         function renderHeader() {
             const header = document.getElementById('heroBanner');
             const logoutBtn = document.getElementById('logoutBtn');
@@ -221,13 +206,12 @@
                         <h1 class="student-name" style="margin-bottom:20px">EYC PREMIUM ARENA</h1>
                         <div style="display:flex; gap:15px; justify-content:center;">
                             <button class="btn-gold-outline" onclick="openLogin()">Sign In</button>
-                            <button class="btn-gold-solid" onclick="window.location.href='?page=NP'">Join Elite</button>
+                            <button class="btn-gold-solid" onclick="window.location.href='NP.html'">Join Elite</button>
                         </div>
                     </div>`;
             }
         }
 
-        // طلب 2: تظبيط اللوج إن واللوج أوت
         function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const code = document.getElementById('loginCode').value;
@@ -235,9 +219,10 @@
             if(!email || !code) return alert("Please enter credentials, Agent!");
             
             loader.style.display = "block";
-            
-            google.script.run
-                .withSuccessHandler(function(response) {
+
+            fetch(SCRIPT_URL + "?action=login&email=" + encodeURIComponent(email) + "&code=" + encodeURIComponent(code))
+                .then(res => res.json())
+                .then(response => {
                     loader.style.display = "none";
                     if (response.status === "success") {
                         currentUser = response;
@@ -250,27 +235,36 @@
                         alert(response.message);
                     }
                 })
-                .withFailureHandler(function(err) {
+                .catch(err => {
                     loader.style.display = "none";
-                    alert("System error: " + err);
-                })
-                .loginAgent(email, code);
+                    alert("System error: Connection Failed");
+                });
         }
 
         function handleLogout() {
             localStorage.removeItem('eyc_user');
             isLoggedIn = false;
             currentUser = null;
+            alert("Secure Logout Successful.");
             renderHeader();
             generateCards();
         }
 
-        // طلب 3: إيميل احترافي (الواجهة الأمامية)
         function forgotCode() {
             const email = document.getElementById('loginEmail').value;
             if(!email) return alert("Please enter your email first to recover code!");
-            alert("A secure transmission with your access code is being sent to: " + email);
-            // يمكنك لاحقاً ربطها بدالة GmailApp في السيرفر
+
+            alert("Establishing secure connection to mail server...");
+            fetch(SCRIPT_URL + "?action=recover&email=" + encodeURIComponent(email))
+                .then(res => res.json())
+                .then(response => {
+                    if(response.status === "success") {
+                        alert("Your access code has been transmitted to your email, Agent.");
+                    } else {
+                        alert(response.message);
+                    }
+                })
+                .catch(err => alert("Error: Connection Failed"));
         }
 
         function generateCards() {
@@ -285,33 +279,24 @@
             });
         }
 
-        // طلب 6 و 7: فك الأقفال وربط الـ Arena
         function openTasks(name, activityCode) {
             document.getElementById('mTitle').innerText = name;
             const tGrid = document.getElementById('tGrid'); tGrid.innerHTML = '';
             
             for (let i = 1; i <= 10; i++) {
-                // شلنا الأقفال مؤقتاً بناءً على طلبك
-                const isLocked = false; 
-                
                 const node = document.createElement('div');
                 node.className = `task-node`;
                 node.innerHTML = i;
-                
                 node.onclick = () => {
                     if(!isLoggedIn) return alert("Login to submit scores!");
-                    
-                    // تحويل البيانات لصفحة Arena
-                    const arenaUrl = "?page=EYCARENA";
                     const params = new URLSearchParams({
                         email: currentUser.email,
                         name: currentUser.name,
                         activity: activityCode,
                         taskNum: i
                     });
-                    window.location.href = `${arenaUrl}&${params.toString()}`;
+                    window.location.href = `EYCArena.html?${params.toString()}`;
                 };
-                
                 tGrid.appendChild(node);
             }
             document.getElementById('taskModal').style.display = 'flex';

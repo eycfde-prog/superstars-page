@@ -9,6 +9,7 @@
     <style>
         :root {
             --gold: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.5);
             --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
             --bg-deep: #020205;
             --glass: rgba(255, 255, 255, 0.05);
@@ -87,19 +88,24 @@
     </footer>
 
     <script>
-        // روابط الجيت هب الأساسية
         const GITHUB_BASE = "https://ezz-intelligence.github.io/repo/assets/";
-        
         let currentActivity = "";
         let currentTask = "";
 
         window.onload = function() {
-            // 1. توليد النجوم
             generateStars();
 
-            // 2. تحليل الرابط القادم من صفحة الأنشطة
+            const user = JSON.parse(localStorage.getItem('eyc_user'));
+            if (!user) {
+                alert("Unauthorized Access! Redirecting...");
+                window.location.href = 'MC.html';
+                return;
+            }
+            document.getElementById('student-name').innerText = user.name;
+            document.getElementById('student-img').src = user.image;
+
             const urlParams = new URLSearchParams(window.location.search);
-            const missionURL = urlParams.get('missionURL'); // مثال: MIF/SS4.html
+            const missionURL = urlParams.get('missionURL');
             const totalTokens = urlParams.get('tokens') || "5";
 
             if (missionURL) {
@@ -107,26 +113,18 @@
                 currentActivity = fileName.replace(/[0-9]/g, '').toUpperCase(); 
                 currentTask = fileName.replace(/\D/g, '');
 
-                // تحديث واجهة المستخدم
                 document.getElementById('activity-title').innerText = currentActivity;
                 document.getElementById('max-score').innerText = `${totalTokens} TOKENS`;
-                document.getElementById('student-name').innerText = localStorage.getItem('agentName') || "AGENT";
                 
-                // تحميل النشاط في الفرايم مع تمرير رقم المهمة
                 const finalMifUrl = `${GITHUB_BASE}MIF/${currentActivity}.html?task=${currentTask}`;
                 document.getElementById('contentFrame').src = finalMifUrl;
             }
         };
 
-        // طلب الـ Submit من النشاط داخل الفرايم
         function requestSubmit() {
             const frame = document.getElementById('contentFrame').contentWindow;
-            // إرسال رسالة للنشاط (كل نشاط كوده مختلف فبنبعت الكود المناسب)
             const msgType = `REQUEST_${currentActivity}_DATA`; 
-            // ملحوظة: لو الأكواد مختلفة زي GEX و SSX، النشاط جوه بيفهم الإشارة بتاعته
             frame.postMessage({ type: msgType }, '*');
-            
-            // في حالة الأنشطة اللي بتبعت SUBMIT_X مباشرة (الرويال):
             frame.postMessage({ type: 'REQUEST_SSX_DATA' }, '*');
             frame.postMessage({ type: 'REQUEST_ALIKEX_DATA' }, '*');
             frame.postMessage({ type: 'REQUEST_GEX_DATA' }, '*');
@@ -134,7 +132,6 @@
             frame.postMessage({ type: 'REQUEST_FIGURATIVEX_DATA' }, '*');
         }
 
-        // استقبال البيانات من النشاط
         window.addEventListener('message', function(event) {
             if (event.data.type === 'SUBMIT_X' || event.data.type === 'SUBMIT_MISSION') {
                 processCorrection(event.data.answers);
@@ -143,38 +140,55 @@
 
         function processCorrection(answers) {
             document.getElementById('sync-overlay').style.display = 'flex';
-
-            // تحميل ملف الـ CC الخاص بالنشاط ديناميكياً
             const ccScriptURL = `${GITHUB_BASE}CC/${currentActivity}.js`;
-            
             const script = document.createElement('script');
             script.src = ccScriptURL;
             script.onload = function() {
-                // تنفيذ دالة التصحيح gradeMission الموجودة في ملف الـ JS
                 const finalScore = gradeMission({
                     answers: answers,
                     missionNum: currentTask
                 });
-
-                // إرسال التقرير النهائي للباك إند
                 sendReport(finalScore);
             };
             document.head.appendChild(script);
         }
 
         function sendReport(score) {
+            const user = JSON.parse(localStorage.getItem('eyc_user'));
             const report = {
-                email: localStorage.getItem('agentEmail'),
+                email: user.email,
                 activityCode: currentActivity,
                 missionNum: currentTask,
                 score: score
             };
 
-            // التواصل مع Google Apps Script
+            const winSound = document.getElementById('goldSound');
+            if(winSound) { winSound.volume = 0.5; winSound.play(); }
+
             google.script.run
                 .withSuccessHandler(() => {
-                    alert(`Mission Accomplished! Score: ${score}`);
-                    window.location.href = 'MC.html';
+                    const overlay = document.getElementById('sync-overlay');
+                    overlay.style.display = 'flex';
+                    overlay.innerHTML = `
+                        <div style="text-align:center; background:rgba(2, 2, 5, 0.95); padding:40px; border:2px solid var(--gold); border-radius:30px; box-shadow:0 0 50px var(--gold-glow); animation: crownBounce 0.8s ease-out;">
+                            <div style="font-size:5rem; margin-bottom:10px;">🏆</div>
+                            <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:3px;">MISSION ACCOMPLISHED</h2>
+                            <p style="font-size:1rem; color:#888; margin-top:10px;">AGENT: ${user.name}</p>
+                            <hr style="border:0; border-top:1px solid var(--glass-border); margin:20px 0;">
+                            <div style="font-size:0.9rem; color:var(--gold);">TOKENS RECOVERED</div>
+                            <div style="font-size:4rem; font-family:'Orbitron'; color:#fff; text-shadow: 0 0 20px var(--gold-glow);">${score}</div>
+                            <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px; cursor:pointer;" onclick="window.location.href='MC.html'">
+                                REDEPLOY TO COMMAND CENTER
+                            </button>
+                        </div>
+                        <style>
+                            @keyframes crownBounce {
+                                0% { transform: scale(0.5); opacity: 0; }
+                                60% { transform: scale(1.1); }
+                                100% { transform: scale(1); opacity: 1; }
+                            }
+                        </style>
+                    `;
                 })
                 .submitMissionReport(report);
         }

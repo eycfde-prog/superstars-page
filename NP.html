@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="npstyle.css">
 </head>
-<body onload="initStars(); initOptions(); updateAvatar();"> <canvas id="starCanvas"></canvas>
+<body onload="initStars(); initOptions(); updateAvatar();">
+
+<canvas id="starCanvas"></canvas>
 <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
 
 <div class="container">
@@ -20,7 +22,7 @@
             <div class="img-loader" id="imgLoader"></div>
             <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
         </div>
-        <h3 id="display-name" style="margin-top:20px; color: var(--gold); letter-spacing: 2px;">EYC AGENT</h3>
+        <h3 id="display-name">EYC AGENT</h3>
     </div>
 
     <div class="form-section">
@@ -143,11 +145,11 @@
                 <div class="input-group">
                     <label style="margin-bottom: 15px;">Choose Programs</label>
                     <div style="display: flex; gap: 20px;">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" name="program" value="Season" style="width: 20px;"> Season
+                        <label class="check-label">
+                            <input type="checkbox" name="program" value="Season"> Season
                         </label>
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" name="program" value="X-Box" style="width: 20px;"> X-Box
+                        <label class="check-label">
+                            <input type="checkbox" name="program" value="X-Box"> X-Box
                         </label>
                     </div>
                 </div>
@@ -158,22 +160,21 @@
             </div>
         </form>
 
-        <div id="success-card" style="display: none; text-align: center;">
-            <h2 style="justify-content: center;">MISSION ACCOMPLISHED</h2>
-            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid var(--gold);">
+        <div id="success-card">
+            <h2>MISSION ACCOMPLISHED</h2>
+            <div class="card-inner">
                 <img id="card-avatar" src="" width="180">
-                <h3 id="card-name" style="color: var(--gold); margin: 10px 0;"></h3>
-                <div style="background: #000; padding: 10px; border-radius: 10px; font-size: 1.5rem; font-weight: bold; color: var(--gold);">
+                <h3 id="card-name"></h3>
+                <div class="code-box">
                     <span id="agent-code">----</span>
                 </div>
             </div>
-            <button onclick="window.location.href='?page=MC'" style="margin-top: 20px; width: 100%;">Enter Command Center</button>
+            <button onclick="window.location.href='?page=MC'" class="final-btn">Enter Command Center</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Configuration & Logic as provided previously
     const options = {
         maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
         femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
@@ -263,17 +264,11 @@
     document.getElementById('registrationForm').onsubmit = function(e) {
         e.preventDefault();
         playClick();
-        
         const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
-        if (programs.length === 0) { 
-            alert("Please select at least one mission program, Agent!"); 
-            return; 
-        }
+        if (programs.length === 0) { alert("Please select at least one mission program, Agent!"); return; }
 
         const loader = document.getElementById('loader');
         loader.style.display = 'flex';
-        loader.innerText = "GENERATING AGENT ID & UPLOADING...";
-
         const generatedCode = "EYC-" + Math.floor(1000 + Math.random() * 9000);
 
         const studentObj = {
@@ -286,7 +281,7 @@
             studentCode: generatedCode
         };
 
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzs0KFEwtyseL9ahk0Rxl7jkqoXxdPLSOcZjbGZGP8HBHI00PfW_rYuM9wPKayAp5ET/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykPjO9m5iCztYdvu9kNpffkMZ6AGlQiN77q2iTx79iVB2aMoM0Bb3Yh1PloigA_DY/exec"; 
 
         fetch(SCRIPT_URL, {
             method: "POST",

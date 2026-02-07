@@ -174,6 +174,95 @@
     </div>
 </div>
 
+<script>
+    const options = {
+        maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
+        femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
+        maleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "BlondeGolden", "Platinum"],
+        femaleHairColors: ["Black", "Brown", "BrownDark", "Blonde", "Platinum", "Red"],
+        hijabColors: ["Black", "White", "Blue01", "Blue02", "Red", "Heather", "PastelBlue", "PastelGreen", "Pink"],
+        facialHair: ["Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"],
+        eyes: ["Default", "Happy", "Surprised", "Wink", "Hearts", "Side", "Squint", "Close"]
+    };
+
+    function initStars() {
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, stars = [];
+        function setSize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+        window.onresize = setSize; setSize();
+        for(let i=0; i<80; i++) { stars.push({ x: Math.random() * w, y: Math.random() * h, size: Math.random() * 2, speed: Math.random() * 0.5 + 0.1 }); }
+        function draw() {
+            ctx.clearRect(0,0,w,h); ctx.fillStyle = "#d4af37";
+            stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill(); s.y -= s.speed; if(s.y < 0) s.y = h; });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    function playClick() { const snd = document.getElementById('clickSound'); snd.currentTime = 0; snd.play().catch(() => {}); }
+
+    function initOptions() {
+        const isFemale = document.getElementById('gender').value === 'female';
+        const topSel = document.getElementById('topType');
+        topSel.innerHTML = "";
+        const hairList = isFemale ? options.femaleHair : options.maleHair;
+        hairList.forEach(opt => topSel.add(new Option(opt, opt)));
+        const facialGroup = document.getElementById('facial-hair-group');
+        const facialSel = document.getElementById('facialHairType');
+        facialSel.innerHTML = "";
+        if (isFemale) { facialGroup.style.display = "none"; facialSel.add(new Option("Blank", "Blank")); }
+        else { facialGroup.style.display = "block"; options.facialHair.forEach(opt => facialSel.add(new Option(opt, opt))); }
+        checkHijab();
+    }
+
+    function checkHijab() {
+        const isFemale = document.getElementById('gender').value === 'female';
+        const isHijab = document.getElementById('topType').value === 'Hijab';
+        const colorSel = document.getElementById('hairColor');
+        const colorLabel = document.getElementById('hairColorLabel');
+        colorSel.innerHTML = "";
+        let colorList = isFemale && isHijab ? options.hijabColors : (isFemale ? options.femaleHairColors : options.maleHairColors);
+        colorLabel.innerText = isFemale && isHijab ? "Hijab Color" : "Hair Color";
+        colorList.forEach(opt => colorSel.add(new Option(opt, opt)));
+    }
+
+    function updateName() { document.getElementById('display-name').innerText = document.getElementById('name').value.toUpperCase() || "EYC AGENT"; }
+
+    function updateAvatar() {
+        const loader = document.getElementById('imgLoader');
+        const img = document.getElementById('avatar-img');
+        loader.style.display = 'block';
+        const top = document.getElementById('topType').value;
+        const skin = document.getElementById('skinColor').value;
+        const facial = document.getElementById('facialHairType').value;
+        const color = document.getElementById('hairColor').value;
+        const clothe = document.getElementById('clotheType').value;
+        const accessories = document.getElementById('accessoriesType').value;
+        const eye = document.getElementById('eyeType').value;
+        const colorParam = top === 'Hijab' ? `&hatColor=${color}` : `&hairColor=${color}`;
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}${colorParam}&accessoriesType=${accessories}&facialHairType=${facial}&clotheType=${clothe}&eyeType=${eye}&mouthType=Default&skinColor=${skin}`;
+        const tempImg = new Image();
+        tempImg.src = url;
+        tempImg.onload = () => { img.src = url; loader.style.display = 'none'; };
+    }
+
+    function nextStep(step) {
+        playClick();
+        if (step > 1) {
+            const prevStepEl = document.getElementById(`step${step-1}`);
+            const inputs = prevStepEl.querySelectorAll('input[required]');
+            let valid = true;
+            inputs.forEach(i => { if(!i.value) valid = false; });
+            if(!valid) { alert("Fill all fields, Agent!"); return; }
+        }
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + step).classList.add('active');
+        document.getElementById('pBar').style.width = (step * 14.2) + "%";
+    }
+
+    // الربط مع Google Apps Script Back-End المعدل
+// الربط مع Google Apps Script Back-End المعدل
 // الربط مع Google Apps Script عبر GitHub
 document.getElementById('registrationForm').onsubmit = function(e) {
     e.preventDefault();
@@ -200,7 +289,7 @@ document.getElementById('registrationForm').onsubmit = function(e) {
     };
 
     // 2. ضع هنا رابط الـ Web App الخاص بك بعد الـ Deploy
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDuN9gOcyQ1T-1ceQ_QEf38aomgNrfy7qJYApsJ2Kb6EKJ9-lX-8n-JeddJU8vtrMY/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXMw3AlbxKrn7oYmneOpXysvvUVt6yMbI0AsWhcAOI2AIuXyjefbdh9YYiU5BcJT_-/exec"; 
 
     // 3. إرسال البيانات باستخدام fetch بدلاً من google.script.run
     fetch(SCRIPT_URL, {
@@ -225,5 +314,18 @@ document.getElementById('registrationForm').onsubmit = function(e) {
         console.error(err);
     });
 };
+
+    function showFinalCard(generatedCode) {
+        document.getElementById('registrationForm').style.display = 'none';
+        document.getElementById('avatar-sidebar').style.display = 'none';
+        document.getElementById('success-card').style.display = 'block';
+        document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
+        document.getElementById('card-name').innerText = document.getElementById('name').value;
+        
+        // عرض الكود الحقيقي اللي جه من السيرفر
+        document.getElementById('agent-code').innerText = generatedCode; 
+        document.getElementById('pBar').style.width = "100%";
+    }
+</script>
 </body>
 </html>

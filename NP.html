@@ -289,32 +289,26 @@ document.getElementById('registrationForm').onsubmit = function(e) {
     };
 
     // 2. ضع هنا رابط الـ Web App الخاص بك بعد الـ Deploy
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXMw3AlbxKrn7oYmneOpXysvvUVt6yMbI0AsWhcAOI2AIuXyjefbdh9YYiU5BcJT_-/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjsuLtctvzUnleb4lokk8c0nGdv7UXS4yLBpeEHHPhuoTutBIdRB15wzRuxyIXNg6_/exec"; 
 
     // 3. إرسال البيانات باستخدام fetch بدلاً من google.script.run
+// استبدل جزء الـ fetch في كودك بهذا:
     fetch(SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors", // مهم جداً لتفادي مشاكل الحماية بين السيرفرات
-        cache: "no-cache",
+        mode: "no-cors", 
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(studentObj)
     })
-    .then(response => {
-        // بما أننا نستخدم no-cors، لن نتمكن من قراءة الـ JSON العائد مباشرة
-        // سنفترض النجاح مؤقتاً أو نقوم بعمل حيلة صغيرة
+    .then(() => {
         loader.style.display = 'none';
-        
-        // تنبيه: مع no-cors لا يمكن قراءة الـ Response Code الحقيقي
-        // لذا سننتظر قليلاً ثم نظهر كارت النجاح بـ "AUTHORIZED" 
-        // أو يمكنك جعلها SUCCESS فقط.
-        showFinalCard("AUTHORIZED"); 
+        // بما أننا لا نستطيع قراءة الكود بسبب no-cors، سنخبر الطالب بالتحقق من إيميله
+        showFinalCard("SENT TO EMAIL"); 
+        alert("Success! Check your email for your unique Agent Code.");
     })
     .catch(err => {
         loader.style.display = 'none';
         alert("Transmission Failed: " + err);
-        console.error(err);
     });
-};
-
     function showFinalCard(generatedCode) {
         document.getElementById('registrationForm').style.display = 'none';
         document.getElementById('avatar-sidebar').style.display = 'none';

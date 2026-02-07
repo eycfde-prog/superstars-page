@@ -8,9 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="npstyle.css">
 </head>
-<body>
-
-<canvas id="starCanvas"></canvas>
+<body onload="initStars(); initOptions(); updateAvatar();"> <canvas id="starCanvas"></canvas>
 <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
 
 <div class="container">
@@ -175,6 +173,7 @@
 </div>
 
 <script>
+    // Configuration & Logic as provided previously
     const options = {
         maleHair: ["ShortHairShortFlat", "ShortHairShortWaved", "NoHair", "ShortHairTheCaesar", "ShortHairDreads01"],
         femaleHair: ["LongHairCurvy", "Hijab", "LongHairStraight", "LongHairBob", "LongHairNotTooLong", "LongHairCurly"],
@@ -261,68 +260,60 @@
         document.getElementById('pBar').style.width = (step * 14.2) + "%";
     }
 
-    // الربط مع Google Apps Script Back-End المعدل
-// الربط مع Google Apps Script Back-End المعدل
-// الربط مع Google Apps Script عبر GitHub
-document.getElementById('registrationForm').onsubmit = function(e) {
-    e.preventDefault();
-    playClick();
-    
-    const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
-    if (programs.length === 0) { 
-        alert("Please select at least one mission program, Agent!"); 
-        return; 
-    }
+    document.getElementById('registrationForm').onsubmit = function(e) {
+        e.preventDefault();
+        playClick();
+        
+        const programs = Array.from(document.querySelectorAll('input[name="program"]:checked')).map(cb => cb.value);
+        if (programs.length === 0) { 
+            alert("Please select at least one mission program, Agent!"); 
+            return; 
+        }
 
-    const loader = document.getElementById('loader');
-    loader.style.display = 'flex';
-    loader.innerText = "GENERATING AGENT ID & UPLOADING...";
+        const loader = document.getElementById('loader');
+        loader.style.display = 'flex';
+        loader.innerText = "GENERATING AGENT ID & UPLOADING...";
 
-    // توليد الكود هنا في الصفحة ليعرض فوراً (EYC + 4 random digits)
-    const generatedCode = "EYC-" + Math.floor(1000 + Math.random() * 9000);
+        const generatedCode = "EYC-" + Math.floor(1000 + Math.random() * 9000);
 
-    const studentObj = {
-        action: "register",
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        age: document.getElementById('age').value,
-        programs: programs.join(", "),
-        avatar: document.getElementById('avatar-img').src,
-        studentCode: generatedCode // إرسال الكود المولّد للسيرفر
+        const studentObj = {
+            action: "register",
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            age: document.getElementById('age').value,
+            programs: programs.join(", "),
+            avatar: document.getElementById('avatar-img').src,
+            studentCode: generatedCode
+        };
+
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzs0KFEwtyseL9ahk0Rxl7jkqoXxdPLSOcZjbGZGP8HBHI00PfW_rYuM9wPKayAp5ET/exec"; 
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors", 
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify(studentObj)
+        })
+        .then(() => {
+            loader.style.display = 'none';
+            showFinalCard(generatedCode); 
+            localStorage.setItem('eyc_user_code', generatedCode);
+        })
+        .catch(err => {
+            loader.style.display = 'none';
+            alert("Transmission Failed: " + err);
+        });
     };
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykPjO9m5iCztYdvu9kNpffkMZ6AGlQiN77q2iTx79iVB2aMoM0Bb3Yh1PloigA_DY/exec"; 
-
-    fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors", 
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify(studentObj)
-    })
-    .then(() => {
-        loader.style.display = 'none';
-        // الآن الكود سيظهر فوراً للطالب في Success Card
-        showFinalCard(generatedCode); 
-        
-        // حفظ الكود في المتصفح ليعرف السستم أنه مسجل دخول (بروتوكول العلامة ✅)
-        localStorage.setItem('eyc_user_code', generatedCode);
-    })
-    .catch(err => {
-        loader.style.display = 'none';
-        alert("Transmission Failed: " + err);
-    });
-};
-
-// تأكد أن هذه الدالة خارج نطاق الـ onsubmit (global scope)
-function showFinalCard(generatedCode) {
-    document.getElementById('registrationForm').style.display = 'none';
-    document.getElementById('avatar-sidebar').style.display = 'none';
-    document.getElementById('success-card').style.display = 'block';
-    document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
-    document.getElementById('card-name').innerText = document.getElementById('name').value;
-    document.getElementById('agent-code').innerText = generatedCode; 
-    document.getElementById('pBar').style.width = "100%";
-}
+    function showFinalCard(generatedCode) {
+        document.getElementById('registrationForm').style.display = 'none';
+        document.getElementById('avatar-sidebar').style.display = 'none';
+        document.getElementById('success-card').style.display = 'block';
+        document.getElementById('card-avatar').src = document.getElementById('avatar-img').src;
+        document.getElementById('card-name').innerText = document.getElementById('name').value;
+        document.getElementById('agent-code').innerText = generatedCode; 
+        document.getElementById('pBar').style.width = "100%";
+    }
 </script>
 </body>
 </html>

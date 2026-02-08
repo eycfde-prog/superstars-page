@@ -1,232 +1,248 @@
 <!DOCTYPE html>
-
-<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <title>EYC Arena | Activity Mode</title> <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <style> :root { --gold: #D4AF37; --gold-glow: rgba(212, 175, 55, 0.5); --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); --bg-deep: #020205; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(212, 175, 55, 0.2); }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-    body { background: var(--bg-deep); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-
-    #star-container { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); }
-    .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle var(--duration) infinite ease-in-out; }
-    @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
-
-    header { padding: 10px 15px; background: rgba(5, 5, 8, 0.9); border-bottom: 1px solid var(--glass-border); z-index: 10; }
-    .battle-header { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; width: 100%; }
-    
-    .info-box { display: flex; align-items: center; gap: 10px; background: var(--glass); padding: 5px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
-    .student-photo, .activity-logo { width: 38px; height: 38px; border-radius: 8px; border: 1.5px solid var(--gold); object-fit: cover; }
-    .name { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--gold); white-space: nowrap; }
-    
-    .vs-container { text-align: center; }
-    .vs-text { font-family: 'Cinzel', serif; font-size: 1.2rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; line-height: 1; }
-    .token-score { font-family: 'Orbitron', sans-serif; font-size: 9px; color: #fff; letter-spacing: 1px; margin-top: 4px; }
-
-    .arena-container { flex: 1; padding: 10px; display: flex; justify-content: center; align-items: center; }
-    .glass-iframe-wrapper { width: 100%; height: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; overflow: hidden; }
-    iframe { width: 100%; height: 100%; border: none; }
-
-    footer { padding: 15px 15px 25px; display: flex; justify-content: space-between; align-items: center; gap: 10px; max-width: 900px; margin: 0 auto; width: 100%; }
-    .btn { padding: 12px; border-radius: 12px; border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 0.75rem; font-family: 'Cinzel'; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-submit { flex: 2; background: var(--gold-gradient); color: #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); font-size: 0.9rem; }
-    .btn-side { flex: 1; background: rgba(255,255,255,0.05); color: var(--gold); border: 1px solid var(--glass-border); }
-    .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
-    
-    #sync-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-</style>
-</head> <body>
-
-<div id="sync-overlay">
-    <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--gold);"></i>
-    <p style="margin-top: 20px; font-family: 'Cinzel'; letter-spacing: 2px;">SYNCING DATA...</p>
-</div>
-
-<div id="star-container"></div>
-
-<header>
-    <div class="battle-header">
-        <div class="info-box">
-            <img id="student-img" src="" class="student-photo">
-            <div style="display: flex; flex-direction: column;">
-                <span class="name" id="student-name">LOADING...</span>
-                <span id="student-meta" style="font-size: 0.55rem; color: #888; font-family: 'Orbitron';">RANK #-- | TITLE</span>
-            </div>
-        </div>
-
-        <div class="vs-container">
-            <div class="vs-text">VS</div>
-            <div id="max-score" class="token-score">-- TOKENS</div>
-        </div>
-
-        <div class="info-box">
-            <div style="display: flex; flex-direction: column; text-align: right;">
-                <span class="name" id="activity-title">ACTIVITY</span>
-                <span id="mission-sub" style="font-size: 0.6rem; color: var(--gold); font-family: 'Orbitron';">MISSION 01</span>
-            </div>
-            <img id="activity-img" src="" class="activity-logo">
-        </div>
-    </div>
-</header>
-
-<main class="arena-container">
-    <div class="glass-iframe-wrapper">
-        <iframe id="contentFrame" allowtransparency="true"></iframe>
-    </div>
-</main>
-
-<footer>
-    <button class="btn btn-side" onclick="openGuide()">GUIDE</button>
-    <button id="submitBtn" class="btn btn-submit" onclick="requestSubmit()">SUBMIT MISSION</button>
-    <button class="btn btn-side" onclick="window.location.href='MC.html'">
-        BACK <i class="fas fa-arrow-right" style="font-size: 0.6rem;"></i>
-    </button>
-</footer>
-
-<script>
-    const GITHUB_BASE = "[https://eycfde-prog.github.io/superstars-page/assets/](https://eycfde-prog.github.io/superstars-page/assets/)";
-    let currentActivity = "";
-    let currentTask = "";
-
-    const logoMap = {
-        "Golden Ear": "GES.png",
-        "Alike": "AS.png",
-        "Seeds": "SS.png",
-        "Grammar": "GS.png",
-        "Label": "LS.png",
-        "Vivid": "VS.png",
-        "Golden EarX": "GEX.png",
-        "AlikeX": "AX.png",
-        "SeedsX": "SX.png",
-        "GrammarX": "GX.png",
-        "LabelX": "LX.png",
-        "VividX": "VX.png",
-        "FigurativeX": "FX.png",
-        "DictationX": "DX.png",
-        "Sing Sang SungX": "SSSX.png",
-        "ElmagazineX": "ELX.png",
-        "GOLDEN_EAR": "GES", "ALIKE": "AS", "SEEDS": "SS", "GRAMMAR": "GS", "LABEL": "LS", "VIVID": "VS",
-        "GOLDEN_EAR_X": "GEX", "ALIKE_X": "AX", "SEEDS_X": "SX", "GRAMMAR_X": "GX", "LABEL_X": "LX",
-        "VIVID_X": "VX", "FIGURATIVE_X": "FX", "DICTATION_X": "DX", "SSS_X": "SSSX", "ELMAGAZINE_X": "ELX"
-    };
-
-    window.onload = function() {
-        generateStars();
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        document.getElementById('student-name').innerText = urlParams.get('name') || "AGENT";
-        document.getElementById('student-img').src = urlParams.get('image') || "";
-        document.getElementById('student-meta').innerText = `RANK #${urlParams.get('rank') || "--"} | ${urlParams.get('title') || "ELITE"}`;
-
-        const actCode = urlParams.get('activity');
-        const taskN = urlParams.get('taskNum');
-        
-        if (!actCode || !taskN) {
-            alert("Mission Data Missing!");
-            window.location.href = 'MC.html';
-            return;
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EYC Arena | Activity Mode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.5);
+            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
+            --bg-deep: #020205;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(212, 175, 55, 0.2);
         }
 
-        currentActivity = actCode;
-        currentTask = taskN;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-deep); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-        document.getElementById('activity-title').innerText = urlParams.get('activityName') || actCode;
-        document.getElementById('mission-sub').innerText = `MISSION ${taskN.padStart(2, '0')}`;
-        document.getElementById('max-score').innerText = `${urlParams.get('tokens') || "5"} TOKENS`;
+        #star-container { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle var(--duration) infinite ease-in-out; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
 
-        const logoImg = document.getElementById('activity-img');
-        const fileName = logoMap[actCode] || "GES.png";
+        header { padding: 10px 15px; background: rgba(5, 5, 8, 0.9); border-bottom: 1px solid var(--glass-border); z-index: 10; }
+        .battle-header { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; width: 100%; }
         
-        const primarySrc = fileName.includes('.') ? `${GITHUB_BASE}AL/${fileName}` : `${GITHUB_BASE}AL/${fileName}.png`;
-        const fallbackSrc = fileName.includes('.') ? "" : `${GITHUB_BASE}AL/${fileName}.jpg`;
-
-        logoImg.setAttribute('data-fallback', fallbackSrc);
+        .info-box { display: flex; align-items: center; gap: 10px; background: var(--glass); padding: 5px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
+        .student-photo, .activity-logo { width: 38px; height: 38px; border-radius: 8px; border: 1.5px solid var(--gold); object-fit: cover; }
+        .name { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--gold); white-space: nowrap; }
         
-        logoImg.onerror = function() {
-            const fallback = this.getAttribute('data-fallback');
-            if (fallback && this.src !== fallback) {
-                console.log(`⚠️ Switching to fallback`);
-                this.src = fallback;
+        .vs-container { text-align: center; }
+        .vs-text { font-family: 'Cinzel', serif; font-size: 1.2rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; line-height: 1; }
+        .token-score { font-family: 'Orbitron', sans-serif; font-size: 9px; color: #fff; letter-spacing: 1px; margin-top: 4px; }
+
+        .arena-container { flex: 1; padding: 10px; display: flex; justify-content: center; align-items: center; }
+        .glass-iframe-wrapper { width: 100%; height: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        footer { padding: 15px 15px 25px; display: flex; justify-content: space-between; align-items: center; gap: 10px; max-width: 900px; margin: 0 auto; width: 100%; }
+        .btn { padding: 12px; border-radius: 12px; border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 0.75rem; font-family: 'Cinzel'; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-submit { flex: 2; background: var(--gold-gradient); color: #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); font-size: 0.9rem; }
+        .btn-side { flex: 1; background: rgba(255,255,255,0.05); color: var(--gold); border: 1px solid var(--glass-border); }
+        .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
+        
+        #sync-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+    </style>
+</head>
+<body>
+
+    <div id="sync-overlay">
+        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--gold);"></i>
+        <p style="margin-top: 20px; font-family: 'Cinzel'; letter-spacing: 2px;">SYNCING DATA...</p>
+    </div>
+
+    <div id="star-container"></div>
+
+    <header>
+        <div class="battle-header">
+            <div class="info-box">
+                <img id="student-img" src="" class="student-photo">
+                <div style="display: flex; flex-direction: column;">
+                    <span class="name" id="student-name">LOADING...</span>
+                    <span id="student-meta" style="font-size: 0.55rem; color: #888; font-family: 'Orbitron';">RANK #-- | TITLE</span>
+                </div>
+            </div>
+
+            <div class="vs-container">
+                <div class="vs-text">VS</div>
+                <div id="max-score" class="token-score">-- TOKENS</div>
+            </div>
+
+            <div class="info-box">
+                <div style="display: flex; flex-direction: column; text-align: right;">
+                    <span class="name" id="activity-title">ACTIVITY</span>
+                    <span id="mission-sub" style="font-size: 0.6rem; color: var(--gold); font-family: 'Orbitron';">MISSION 01</span>
+                </div>
+                <img id="activity-img" src="" class="activity-logo">
+            </div>
+        </div>
+    </header>
+
+    <main class="arena-container">
+        <div class="glass-iframe-wrapper">
+            <iframe id="contentFrame" allowtransparency="true"></iframe>
+        </div>
+    </main>
+
+    <footer>
+        <button class="btn btn-side" onclick="openGuide()">GUIDE</button>
+        <button id="submitBtn" class="btn btn-submit" onclick="requestSubmit()">SUBMIT MISSION</button>
+        <button class="btn btn-side" onclick="window.location.href='MC.html'">
+            BACK <i class="fas fa-arrow-right" style="font-size: 0.6rem;"></i>
+        </button>
+    </footer>
+
+    <script>
+        const GITHUB_BASE = "https://eycfde-prog.github.io/superstars-page/assets/";
+        let currentActivity = "";
+        let currentTask = "";
+
+        const logoMap = {
+            "Golden Ear": "GES.png",
+            "Alike": "AS.png",
+            "Seeds": "SS.png",
+            "Grammar": "GS.png",
+            "Label": "LS.png",
+            "Vivid": "VS.png",
+            "Golden EarX": "GEX.png",
+            "AlikeX": "AX.png",
+            "SeedsX": "SX.png",
+            "GrammarX": "GX.png",
+            "LabelX": "LX.png",
+            "VividX": "VX.png",
+            "FigurativeX": "FX.png",
+            "DictationX": "DX.png",
+            "Sing Sang SungX": "SSSX.png",
+            "ElmagazineX": "ELX.png",
+            "GOLDEN_EAR": "GES", "ALIKE": "AS", "SEEDS": "SS", "GRAMMAR": "GS", "LABEL": "LS", "VIVID": "VS",
+            "GOLDEN_EAR_X": "GEX", "ALIKE_X": "AX", "SEEDS_X": "SX", "GRAMMAR_X": "GX", "LABEL_X": "LX",
+            "VIVID_X": "VX", "FIGURATIVE_X": "FX", "DICTATION_X": "DX", "SSS_X": "SSSX", "ELMAGAZINE_X": "ELX"
+        };
+
+        window.onload = function() {
+            generateStars();
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            document.getElementById('student-name').innerText = urlParams.get('name') || "AGENT";
+            document.getElementById('student-img').src = urlParams.get('image') || "";
+            document.getElementById('student-meta').innerText = `RANK #${urlParams.get('rank') || "--"} | ${urlParams.get('title') || "ELITE"}`;
+
+            const actCode = urlParams.get('activity');
+            const taskN = urlParams.get('taskNum');
+            
+            if (!actCode || !taskN) {
+                alert("Mission Data Missing!");
+                window.location.href = 'MC.html';
+                return;
+            }
+
+            currentActivity = actCode;
+            currentTask = taskN;
+
+            document.getElementById('activity-title').innerText = urlParams.get('activityName') || actCode;
+            document.getElementById('mission-sub').innerText = `MISSION ${taskN.padStart(2, '0')}`;
+            document.getElementById('max-score').innerText = `${urlParams.get('tokens') || "5"} TOKENS`;
+
+            const logoImg = document.getElementById('activity-img');
+            const fileName = logoMap[actCode] || "GES.png";
+            
+            const primarySrc = fileName.includes('.') ? `${GITHUB_BASE}AL/${fileName}` : `${GITHUB_BASE}AL/${fileName}.png`;
+            const fallbackSrc = fileName.includes('.') ? "" : `${GITHUB_BASE}AL/${fileName}.jpg`;
+
+            logoImg.setAttribute('data-fallback', fallbackSrc);
+            
+            logoImg.onerror = function() {
+                const fallback = this.getAttribute('data-fallback');
+                if (fallback && this.src !== fallback) {
+                    console.log(`⚠️ Switching to fallback`);
+                    this.src = fallback;
+                } else {
+                    this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
+                    this.onerror = null; 
+                    console.error(`⚠️ Logo not found for activity: ${actCode}`);
+                }
+            };
+            logoImg.src = primarySrc;
+
+            document.getElementById('contentFrame').src = `${GITHUB_BASE}MIF/${actCode}${taskN}.html`;
+        };
+
+        function requestSubmit() {
+            const frame = document.getElementById('contentFrame').contentWindow;
+            frame.postMessage({ type: `REQUEST_${currentActivity}_DATA` }, '*');
+            frame.postMessage({ type: 'REQUEST_MISSION_DATA' }, '*');
+        }
+
+        window.addEventListener('message', function(event) {
+            if (event.data.answers) {
+                processCorrection(event.data.answers);
+            }
+        });
+
+        function processCorrection(answers) {
+            document.getElementById('sync-overlay').style.display = 'flex';
+            const script = document.createElement('script');
+            script.src = `${GITHUB_BASE}CC/${currentActivity}.js`;
+            script.onload = function() {
+                if (typeof gradeMission === 'function') {
+                    const score = gradeMission({ answers: answers, missionNum: currentTask });
+                    sendReport(score);
+                }
+            };
+            document.head.appendChild(script);
+        }
+
+        function sendReport(score) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const report = {
+                email: urlParams.get('email'),
+                activityCode: currentActivity,
+                missionNum: currentTask,
+                score: score
+            };
+
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(() => showSuccessUI(urlParams.get('name'), score)).submitMissionReport(report);
             } else {
-                this.src = "[https://via.placeholder.com/38/000000/D4AF37?text=EYC](https://via.placeholder.com/38/000000/D4AF37?text=EYC)";
-                this.onerror = null; 
-                console.error(`⚠️ Logo not found for activity: ${actCode}`);
+                setTimeout(() => showSuccessUI(urlParams.get('name'), score), 1500);
             }
-        };
-        logoImg.src = primarySrc;
-
-        document.getElementById('contentFrame').src = `${GITHUB_BASE}MIF/${actCode}${taskN}.html`;
-    };
-
-    function requestSubmit() {
-        const frame = document.getElementById('contentFrame').contentWindow;
-        frame.postMessage({ type: `REQUEST_${currentActivity}_DATA` }, '*');
-        frame.postMessage({ type: 'REQUEST_MISSION_DATA' }, '*');
-    }
-
-    window.addEventListener('message', function(event) {
-        if (event.data.answers) {
-            processCorrection(event.data.answers);
         }
-    });
 
-    function processCorrection(answers) {
-        document.getElementById('sync-overlay').style.display = 'flex';
-        const script = document.createElement('script');
-        script.src = `${GITHUB_BASE}CC/${currentActivity}.js`;
-        script.onload = function() {
-            if (typeof gradeMission === 'function') {
-                const score = gradeMission({ answers: answers, missionNum: currentTask });
-                sendReport(score);
+        function showSuccessUI(name, score) {
+            const overlay = document.getElementById('sync-overlay');
+            overlay.style.display = 'flex';
+            overlay.innerHTML = `
+                <div style="text-align:center; background:rgba(2, 2, 5, 0.95); padding:40px; border:2px solid var(--gold); border-radius:30px; box-shadow:0 0 50px var(--gold-glow); width: 90%; max-width: 400px;">
+                    <div style="font-size:5rem; margin-bottom:10px;">🏆</div>
+                    <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:3px;">MISSION ACCOMPLISHED</h2>
+                    <p style="font-size:1rem; color:#888; margin-top:10px;">AGENT: ${name}</p>
+                    <hr style="border:0; border-top:1px solid var(--glass-border); margin:20px 0;">
+                    <div style="font-size:0.9rem; color:var(--gold);">TOKENS RECOVERED</div>
+                    <div style="font-size:4rem; font-family:'Orbitron'; color:#fff;">${score}</div>
+                    <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px;" onclick="window.location.href='MC.html'">REDEPLOY</button>
+                </div>`;
+        }
+
+        function generateStars() {
+            const container = document.getElementById('star-container');
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 2 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                container.appendChild(star);
             }
-        };
-        document.head.appendChild(script);
-    }
-
-    function sendReport(score) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const report = {
-            email: urlParams.get('email'),
-            activityCode: currentActivity,
-            missionNum: currentTask,
-            score: score
-        };
-
-        if (typeof google !== 'undefined' && google.script) {
-            google.script.run.withSuccessHandler(() => showSuccessUI(urlParams.get('name'), score)).submitMissionReport(report);
-        } else {
-            setTimeout(() => showSuccessUI(urlParams.get('name'), score), 1500);
         }
-    }
 
-    function showSuccessUI(name, score) {
-        const overlay = document.getElementById('sync-overlay');
-        overlay.style.display = 'flex';
-        overlay.innerHTML = `
-            <div style="text-align:center; background:rgba(2, 2, 5, 0.95); padding:40px; border:2px solid var(--gold); border-radius:30px; box-shadow:0 0 50px var(--gold-glow); width: 90%; max-width: 400px;">
-                <div style="font-size:5rem; margin-bottom:10px;">🏆</div>
-                <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:3px;">MISSION ACCOMPLISHED</h2>
-                <p style="font-size:1rem; color:#888; margin-top:10px;">AGENT: ${name}</p>
-                <hr style="border:0; border-top:1px solid var(--glass-border); margin:20px 0;">
-                <div style="font-size:0.9rem; color:var(--gold);">TOKENS RECOVERED</div>
-                <div style="font-size:4rem; font-family:'Orbitron'; color:#fff;">${score}</div>
-                <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px;" onclick="window.location.href='MC.html'">REDEPLOY</button>
-            </div>`;
-    }
-
-    function generateStars() {
-        const container = document.getElementById('star-container');
-        for (let i = 0; i < 80; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.width = Math.random() * 2 + 'px';
-            star.style.height = star.style.width;
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-            container.appendChild(star);
+        function openGuide() {
+            alert(`Mission: ${currentActivity}\nTask: ${currentTask}\nObjective: Earn tokens.`);
         }
-    }
-
-    function openGuide() {
-        alert(`Mission: ${currentActivity}\nTask: ${currentTask}\nObjective: Earn tokens.`);
-    }
-</script>
-</body> </html>
+    </script>
+</body>
+</html>

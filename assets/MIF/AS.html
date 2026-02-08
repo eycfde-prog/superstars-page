@@ -64,35 +64,35 @@
     };
 
     function renderActiveMission() {
-        const urlParams = new URLSearchParams(window.location.search);
-        // الأرينا بتبعت taskNum في الرابط، هنستخدمه هنا
-        const taskNum = urlParams.get('taskNum') || "1";
-        const pairs = missionsData[taskNum] || missionsData["1"];
-        
-        const wrapper = document.getElementById('mission-wrapper');
-        wrapper.innerHTML = `
-            <div class="mission-container active">
-                <div class="alike-grid">
-                    ${pairs.map((p, i) => `
-                        <div class="pair-card">
-                            <span class="case-tag">CASE 0${i+1}</span>
-                            <div class="input-row">
-                                <div class="word-box">
-                                    <label>${p.a}</label>
-                                    <input type="text" class="alike-input" placeholder="English...">
-                                </div>
-                                <div class="word-box">
-                                    <label>${p.b}</label>
-                                    <input type="text" class="alike-input" placeholder="English...">
-                                </div>
+    const urlParams = new URLSearchParams(window.location.search);
+    // استقبال رقم المهمة الممرر من الأرينا
+    const taskNum = urlParams.get('taskNum') || "1"; 
+    
+    const pairs = missionsData[taskNum] || missionsData["1"];
+    
+    const wrapper = document.getElementById('mission-wrapper');
+    wrapper.innerHTML = `
+        <div class="mission-container active">
+            <div class="alike-grid">
+                ${pairs.map((p, i) => `
+                    <div class="pair-card">
+                        <span class="case-tag">CASE 0${i+1}</span>
+                        <div class="input-row">
+                            <div class="word-box">
+                                <label>${p.a}</label>
+                                <input type="text" class="alike-input" placeholder="English...">
+                            </div>
+                            <div class="word-box">
+                                <label>${p.b}</label>
+                                <input type="text" class="alike-input" placeholder="English...">
                             </div>
                         </div>
-                    `).join('')}
-                </div>
+                    </div>
+                `).join('')}
             </div>
-        `;
-    }
-
+        </div>
+    `;
+}
     // ⚡️ التعديل الجوهري: استقبال الطلب من الأرينا
     window.addEventListener('message', function(event) {
         if (event.data.type === 'REQUEST_MISSION_DATA' || event.data.type === 'REQUEST_AL_DATA') {

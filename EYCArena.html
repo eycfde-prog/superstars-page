@@ -133,7 +133,7 @@
             const actCode = urlParams.get('activity');
             const taskN = urlParams.get('taskNum');
             
-            if (!actCode || !taskN) {
+            if (!actCode) {
                 alert("Mission Data Missing!");
                 window.location.href = 'MC.html';
                 return;
@@ -143,31 +143,30 @@
             currentTask = taskN;
 
             document.getElementById('activity-title').innerText = urlParams.get('activityName') || actCode;
-            document.getElementById('mission-sub').innerText = `MISSION ${taskN.padStart(2, '0')}`;
+            document.getElementById('mission-sub').innerText = taskN ? `MISSION ${taskN.padStart(2, '0')}` : "PRACTICE";
             document.getElementById('max-score').innerText = `${urlParams.get('tokens') || "5"} TOKENS`;
 
+            const fileNameWithExt = logoMap[actCode] || "GES.png";
+            const shortCode = fileNameWithExt.split('.')[0]; 
+
+            document.getElementById('contentFrame').src = `${GITHUB_BASE}MIF/${shortCode}.html`;
+
             const logoImg = document.getElementById('activity-img');
-            const fileName = logoMap[actCode] || "GES.png";
-            
-            const primarySrc = fileName.includes('.') ? `${GITHUB_BASE}AL/${fileName}` : `${GITHUB_BASE}AL/${fileName}.png`;
-            const fallbackSrc = fileName.includes('.') ? "" : `${GITHUB_BASE}AL/${fileName}.jpg`;
+            const primarySrc = fileNameWithExt.includes('.') ? `${GITHUB_BASE}AL/${fileNameWithExt}` : `${GITHUB_BASE}AL/${fileNameWithExt}.png`;
+            const fallbackSrc = fileNameWithExt.includes('.') ? "" : `${GITHUB_BASE}AL/${fileNameWithExt}.jpg`;
 
             logoImg.setAttribute('data-fallback', fallbackSrc);
             
             logoImg.onerror = function() {
                 const fallback = this.getAttribute('data-fallback');
                 if (fallback && this.src !== fallback) {
-                    console.log(`⚠️ Switching to fallback`);
                     this.src = fallback;
                 } else {
                     this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
                     this.onerror = null; 
-                    console.error(`⚠️ Logo not found for activity: ${actCode}`);
                 }
             };
             logoImg.src = primarySrc;
-
-            document.getElementById('contentFrame').src = `${GITHUB_BASE}MIF/${actCode}${taskN}.html`;
         };
 
         function requestSubmit() {

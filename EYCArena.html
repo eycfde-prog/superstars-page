@@ -100,32 +100,11 @@
         let currentActivity = "";
         let currentTask = "";
 
-        const logoMap = {
-            "Golden Ear": "GES.png",
-            "Alike": "AS.png",
-            "Seeds": "SS.png",
-            "Grammar": "GS.png",
-            "Label": "LS.png",
-            "Vivid": "VS.png",
-            "Golden EarX": "GEX.png",
-            "AlikeX": "AX.png",
-            "SeedsX": "SX.png",
-            "GrammarX": "GX.png",
-            "LabelX": "LX.png",
-            "VividX": "VX.png",
-            "FigurativeX": "FX.png",
-            "DictationX": "DX.png",
-            "Sing Sang SungX": "SSSX.png",
-            "ElmagazineX": "ELX.png",
-            "GOLDEN_EAR": "GES", "ALIKE": "AS", "SEEDS": "SS", "GRAMMAR": "GS", "LABEL": "LS", "VIVID": "VS",
-            "GOLDEN_EAR_X": "GEX", "ALIKE_X": "AX", "SEEDS_X": "SX", "GRAMMAR_X": "GX", "LABEL_X": "LX",
-            "VIVID_X": "VX", "FIGURATIVE_X": "FX", "DICTATION_X": "DX", "SSS_X": "SSSX", "ELMAGAZINE_X": "ELX"
-        };
-
         window.onload = function() {
             generateStars();
             const urlParams = new URLSearchParams(window.location.search);
             
+            // 1. استقبال البيانات الأساسية
             const studentName = urlParams.get('name') || "AGENT";
             const actCode = urlParams.get('activity'); 
             const taskN = urlParams.get('taskNum');
@@ -140,6 +119,7 @@
             currentActivity = actCode;
             currentTask = taskN;
 
+            // 2. تحديث بيانات الواجهة (UI)
             document.getElementById('student-name').innerText = studentName;
             document.getElementById('student-img').src = urlParams.get('image') || "";
             document.getElementById('student-meta').innerText = `RANK #${urlParams.get('rank') || "--"} | ${urlParams.get('title') || "ELITE"}`;
@@ -147,14 +127,14 @@
             document.getElementById('mission-sub').innerText = taskN ? `MISSION ${taskN.padStart(2, '0')}` : "PRACTICE";
             document.getElementById('max-score').innerText = `${tokens} TOKENS`;
 
-            const fileNameWithExt = logoMap[actCode] || (actCode + ".png");
-            const shortCode = fileNameWithExt.includes('.') ? fileNameWithExt.split('.')[0] : actCode;
+            // 🔗 3. استدعاء النشاط في الـ Iframe من مجلد assets/MIF/
+            document.getElementById('contentFrame').src = `assets/MIF/${actCode}.html`;
 
-            document.getElementById('contentFrame').src = `${GITHUB_BASE}MIF/${shortCode}.html`;
-
+            // 🖼️ 4. استدعاء لوجو النشاط من مجلد assets/AL/
             const logoImg = document.getElementById('activity-img');
             logoImg.src = `assets/AL/${actCode}.png`; 
 
+            // معالجة الخطأ في حالة فقدان الصورة
             logoImg.onerror = function() {
                 this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
                 this.onerror = null; 
@@ -176,6 +156,7 @@
         function processCorrection(answers) {
             document.getElementById('sync-overlay').style.display = 'flex';
             const script = document.createElement('script');
+            // ملف التصحيح (CC) ما زال يتم جلبه من GitHub لسهولة التحديث
             script.src = `${GITHUB_BASE}CC/${currentActivity}.js`;
             script.onload = function() {
                 if (typeof gradeMission === 'function') {
@@ -183,6 +164,10 @@
                     sendReport(score);
                 }
             };
+            script.onerror = function() {
+                alert("Correction Module Failed!");
+                document.getElementById('sync-overlay').style.display = 'none';
+            }
             document.head.appendChild(script);
         }
 
@@ -212,7 +197,7 @@
                     <p style="font-size:1rem; color:#888; margin-top:10px;">AGENT: ${name}</p>
                     <hr style="border:0; border-top:1px solid var(--glass-border); margin:20px 0;">
                     <div style="font-size:0.9rem; color:var(--gold);">TOKENS RECOVERED</div>
-                    <div style="font-size:4rem; font-family:'Orbitron'; color:#fff;">${score}</div>
+                    <div style="font-size:4rem; font-family:'Orbitron'; color:#fff; text-shadow: 0 0 20px var(--gold-glow);">${score}</div>
                     <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px;" onclick="window.location.href='MC.html'">REDEPLOY</button>
                 </div>`;
         }

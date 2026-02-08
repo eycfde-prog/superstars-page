@@ -151,11 +151,12 @@
             frame.postMessage({ type: 'REQUEST_MISSION_DATA' }, '*'); 
         }
 
-        window.addEventListener('message', function(event) {
-            if (event.data.answers) {
-                processCorrection(event.data.answers);
-            }
-        });
+window.addEventListener('message', function(event) {
+    // تعديل: التحقق من وجود الإجابات بشكل أدق
+    if (event.data.type === 'MISSION_ANSWERS' && event.data.answers) {
+        processCorrection(event.data.answers);
+    }
+});
 
         function processCorrection(answers) {
             document.getElementById('sync-overlay').style.display = 'flex';

@@ -189,7 +189,61 @@
     </footer>
 
     <script>
-        // دالة النجوم الدوارة المحسنة
+        const activities = {
+            season: [
+                { name: "Golden Ear", icon: "fa-ear-listen", code: "GES" },
+                { name: "Alike", icon: "fa-clone", code: "AS" },
+                { name: "Seeds", icon: "fa-seedling", code: "SS" },
+                { name: "Grammar", icon: "fa-spell-check", code: "GS" },
+                { name: "Label", icon: "fa-tag", code: "LS" },
+                { name: "Vivid", icon: "fa-eye", code: "VS" }
+            ],
+            royal: [
+                { name: "Golden EarX", icon: "fa-ear-deaf", code: "GEX" },
+                { name: "AlikeX", icon: "fa-object-group", code: "AX" },
+                { name: "SeedsX", icon: "fa-tree", code: "SX" },
+                { name: "GrammarX", icon: "fa-pen-fancy", code: "GX" },
+                { name: "LabelX", icon: "fa-tags", code: "LX" },
+                { name: "VividX", icon: "fa-wand-magic-sparkles", code: "VX" },
+                { name: "FigurativeX", icon: "fa-mask", code: "FX" },
+                { name: "DictationX", icon: "fa-microphone-lines", code: "DX" },
+                { name: "Sing Sang SungX", icon: "fa-music", code: "SSSX" },
+                { name: "ElmagazineX", icon: "fa-book-open", code: "ELX" }
+            ]
+        };
+
+        function openTasks(name, activityCode) {
+            document.getElementById('mTitle').innerText = name;
+            const tGrid = document.getElementById('tGrid'); tGrid.innerHTML = '';
+            
+            const currentType = document.querySelector('.tab-btn.active').innerText;
+            const tokenValue = (currentType === 'ROYAL') ? 10 : 5;
+
+            for (let i = 1; i <= 10; i++) {
+                const node = document.createElement('div');
+                node.className = `task-node`;
+                node.innerHTML = i;
+                node.onclick = () => {
+                    if(!isLoggedIn) return alert("Login to submit scores!");
+                    
+                    const params = new URLSearchParams({
+                        email: currentUser.email,
+                        name: currentUser.name,
+                        rank: currentUser.rank,   
+                        title: currentUser.title, 
+                        image: currentUser.image, 
+                        activity: activityCode,
+                        activityName: name,
+                        taskNum: i,
+                        tokens: tokenValue
+                    });
+                    window.location.href = `EYCArena.html?${params.toString()}`;
+                };
+                tGrid.appendChild(node);
+            }
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
         function createStars() {
             const orbit = document.getElementById('starOrbit');
             const count = 15;
@@ -223,7 +277,6 @@
             setTimeout(() => { window.location.href = "MC.html"; }, 500);
         }
 
-        // انيميشن الحروف الخلفية (E, Y, C)
         const canvas = document.getElementById('letter-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

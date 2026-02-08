@@ -27,9 +27,12 @@
         .battle-header { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; width: 100%; }
         
         .info-box { display: flex; align-items: center; gap: 10px; background: var(--glass); padding: 5px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
-        .student-photo, .activity-logo { width: 38px; height: 38px; border-radius: 8px; border: 1.5px solid var(--gold); object-fit: cover; }
+        .student-photo { width: 38px; height: 38px; border-radius: 8px; border: 1.5px solid var(--gold); object-fit: cover; }
         .name { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--gold); white-space: nowrap; }
         
+        #activity-title { font-size: 1.1rem; letter-spacing: 1px; }
+        #mission-sub { font-size: 0.8rem !important; color: var(--gold); font-family: 'Orbitron'; margin-top: 2px; }
+
         .vs-container { text-align: center; }
         .vs-text { font-family: 'Cinzel', serif; font-size: 1.2rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; line-height: 1; }
         .token-score { font-family: 'Orbitron', sans-serif; font-size: 9px; color: #fff; letter-spacing: 1px; margin-top: 4px; }
@@ -72,11 +75,10 @@
             </div>
 
             <div class="info-box">
-                <div style="display: flex; flex-direction: column; text-align: right;">
+                <div style="display: flex; flex-direction: column; text-align: right; padding: 2px 5px;">
                     <span class="name" id="activity-title">ACTIVITY</span>
-                    <span id="mission-sub" style="font-size: 0.6rem; color: var(--gold); font-family: 'Orbitron';">MISSION 01</span>
+                    <span id="mission-sub">MISSION 01</span>
                 </div>
-                <img id="activity-img" src="" class="activity-logo">
             </div>
         </div>
     </header>
@@ -99,28 +101,6 @@
         const GITHUB_BASE = "https://ezz-intelligence.github.io/repo/assets/";
         let currentActivity = "";
         let currentTask = "";
-
-        const logoMap = {
-            "Golden Ear": "GES.png",
-            "Alike": "AS.png",
-            "Seeds": "SS.png",
-            "Grammar": "GS.png",
-            "Label": "LS.png",
-            "Vivid": "VS.png",
-            "Golden EarX": "GEX.png",
-            "AlikeX": "AX.png",
-            "SeedsX": "SX.png",
-            "GrammarX": "GX.png",
-            "LabelX": "LX.png",
-            "VividX": "VX.png",
-            "FigurativeX": "FX.png",
-            "DictationX": "DX.png",
-            "Sing Sang SungX": "SSSX.png",
-            "ElmagazineX": "ELX.png",
-            "GOLDEN_EAR": "GES", "ALIKE": "AS", "SEEDS": "SS", "GRAMMAR": "GS", "LABEL": "LS", "VIVID": "VS",
-            "GOLDEN_EAR_X": "GEX", "ALIKE_X": "AX", "SEEDS_X": "SX", "GRAMMAR_X": "GX", "LABEL_X": "LX",
-            "VIVID_X": "VX", "FIGURATIVE_X": "FX", "DICTATION_X": "DX", "SSS_X": "SSSX", "ELMAGAZINE_X": "ELX"
-        };
 
         window.onload = function() {
             generateStars();
@@ -145,28 +125,6 @@
             document.getElementById('activity-title').innerText = urlParams.get('activityName') || actCode;
             document.getElementById('mission-sub').innerText = `MISSION ${taskN.padStart(2, '0')}`;
             document.getElementById('max-score').innerText = `${urlParams.get('tokens') || "5"} TOKENS`;
-
-            const logoImg = document.getElementById('activity-img');
-            const fileName = logoMap[actCode] || "GES.png";
-            
-            // Logic integration for extension handling
-            const primarySrc = fileName.includes('.') ? `${GITHUB_BASE}AL/${fileName}` : `${GITHUB_BASE}AL/${fileName}.png`;
-            const fallbackSrc = fileName.includes('.') ? "" : `${GITHUB_BASE}AL/${fileName}.jpg`;
-
-            logoImg.setAttribute('data-fallback', fallbackSrc);
-            
-            logoImg.onerror = function() {
-                const fallback = this.getAttribute('data-fallback');
-                if (fallback && this.src !== fallback) {
-                    console.log(`⚠️ Switching to fallback`);
-                    this.src = fallback;
-                } else {
-                    this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
-                    this.onerror = null; 
-                    console.error(`⚠️ Logo not found for activity: ${actCode}`);
-                }
-            };
-            logoImg.src = primarySrc;
 
             document.getElementById('contentFrame').src = `${GITHUB_BASE}MIF/${actCode}${taskN}.html`;
         };

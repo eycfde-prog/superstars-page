@@ -279,22 +279,31 @@
             });
         }
 
+        /* --- Updated openTasks Function --- */
         function openTasks(name, activityCode) {
             document.getElementById('mTitle').innerText = name;
             const tGrid = document.getElementById('tGrid'); tGrid.innerHTML = '';
             
+            // تحديد قيمة التوكين بناءً على التبويب النشط
+            const currentType = document.querySelector('.tab-btn.active').innerText;
+            const tokenValue = (currentType === 'ROYAL') ? 10 : 5;
+
             for (let i = 1; i <= 10; i++) {
                 const node = document.createElement('div');
                 node.className = `task-node`;
                 node.innerHTML = i;
                 node.onclick = () => {
                     if(!isLoggedIn) return alert("Login to submit scores!");
+                    
+                    // 🔗 توحيد المعلمات المرسلة للأرينا
                     const params = new URLSearchParams({
                         email: currentUser.email,
                         name: currentUser.name,
                         activity: activityCode,
-                        taskNum: i
+                        taskNum: i,
+                        tokens: tokenValue
                     });
+                    
                     window.location.href = `EYCArena.html?${params.toString()}`;
                 };
                 tGrid.appendChild(node);
@@ -304,9 +313,11 @@
 
         function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
         function switchType(type, btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active'); generateCards();
+            btn.classList.add('active'); 
+            generateCards();
         }
 
         window.onload = () => {

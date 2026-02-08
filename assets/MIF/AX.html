@@ -67,17 +67,18 @@
         answers[qIdx] = val;
     }
 
-    function playAudio(idx) {
-        const audio = new Audio(`assets/alikeaudio/ALX${taskNum}_${idx+1}.wav`);
-        audio.play();
-    }
-
-    window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_MISSION_DATA') {
-            const dataArr = [];
-            for(let i=0; i<5; i++) dataArr.push(answers[i] || "");
-            window.parent.postMessage({ type: 'MISSION_ANSWERS', answers: dataArr, missionNum: taskNum }, '*');
-        }
+function playAudio(idx) {
+    // تحويل القيم إلى أرقام لضمان العملية الحسابية
+    const task = parseInt(taskNum);
+    const questionIndex = parseInt(idx);
+    
+    // الحسبة: (المهمة السابقة * 5) + رقم السؤال الحالي
+    // مثال المهمة 2 السؤال الأول: ((2-1)*5) + (0+1) = 6
+    const audioFileNum = ((task - 1) * 5) + (questionIndex + 1);
+    
+    const audio = new Audio(`assets/alikeaudio/AX${audioFileNum}.wav`);
+    audio.play().catch(e => console.error("Audio file not found:", audioFileNum));
+}
     });
 
     window.onload = loadAlikeX;

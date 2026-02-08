@@ -99,7 +99,7 @@
         const GITHUB_BASE = "https://eycfde-prog.github.io/superstars-page/";
         let currentActivity = "";
         let currentTask = "";
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJY3el_InRV7pfDKbymexpvzcRGrh63PuQcPWlccw5fOT_VoiGruv5OwbEyHCRbiIU/exec"; // Define your Google Script URL here if using fetch method
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJY3el_InRV7pfDKbymexpvzcRGrh63PuQcPWlccw5fOT_VoiGruv5OwbEyHCRbiIU/exec";
 
         window.onload = function() {
             generateStars();
@@ -109,6 +109,7 @@
             const actCode = urlParams.get('activity'); 
             const taskN = urlParams.get('taskNum');
             const tokens = urlParams.get('tokens') || "5";
+            const email = urlParams.get('email');
 
             if (!actCode) {
                 alert("Mission Data Missing!");
@@ -126,7 +127,15 @@
             document.getElementById('mission-sub').innerText = taskN ? `MISSION ${taskN.padStart(2, '0')}` : "PRACTICE";
             document.getElementById('max-score').innerText = `${tokens} TOKENS`;
 
-            document.getElementById('contentFrame').src = `assets/MIF/${actCode}.html`;
+            fetch(`${SCRIPT_URL}?action=checkMission&email=${email}&actCode=${currentActivity}&taskNum=${currentTask}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "completed") {
+                        showAlreadyDoneUI();
+                    } else {
+                        document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html`;
+                    }
+                });
 
             const logoImg = document.getElementById('activity-img');
             logoImg.src = `assets/AL/${actCode}.png`; 
@@ -208,6 +217,18 @@
                     <div style="font-size:0.9rem; color:var(--gold);">TOKENS RECOVERED</div>
                     <div style="font-size:4rem; font-family:'Orbitron'; color:#fff; text-shadow: 0 0 20px var(--gold-glow);">${score}</div>
                     <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px;" onclick="window.location.href='MC.html'">REDEPLOY</button>
+                </div>`;
+        }
+
+        function showAlreadyDoneUI() {
+            const overlay = document.getElementById('sync-overlay');
+            overlay.style.display = 'flex';
+            overlay.innerHTML = `
+                <div style="text-align:center; background:rgba(2, 15, 2, 0.95); padding:40px; border:2px solid #4CAF50; border-radius:30px; box-shadow:0 0 50px rgba(76, 175, 80, 0.5); width: 90%; max-width: 400px;">
+                    <div style="font-size:5rem; margin-bottom:10px;">✅</div>
+                    <h2 style="font-family:'Cinzel'; color:#4CAF50; letter-spacing:3px;">MISSION COMPLETED</h2>
+                    <p style="font-size:1rem; color:#888; margin-top:10px;">You have already finished this task.</p>
+                    <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px; background: #4CAF50; color: white;" onclick="window.location.href='MC.html'">RETURN TO BASE</button>
                 </div>`;
         }
 

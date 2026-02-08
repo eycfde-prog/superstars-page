@@ -99,7 +99,7 @@
         const GITHUB_BASE = "https://eycfde-prog.github.io/superstars-page/";
         let currentActivity = "";
         let currentTask = "";
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxh51QwyeKDuFU2qKOr9Ozq2tf3ufIwqs_2eJM9bVKDfcaQGM4dgFXhKJ4pfnV-PLjz/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzM1RG7qpW0UndeO4PW5I4pNhOsUOmrngsQXDBcgGUxpK8zZkBAIHO48EQQsfATZQpg/exec";
 
         window.onload = function() {
             generateStars();
@@ -148,8 +148,7 @@
 
         function requestSubmit() {
             const frame = document.getElementById('contentFrame').contentWindow;
-            frame.postMessage({ type: `REQUEST_${currentActivity}_DATA` }, '*');
-            frame.postMessage({ type: 'REQUEST_MISSION_DATA' }, '*');
+            frame.postMessage({ type: 'REQUEST_MISSION_DATA' }, '*'); 
         }
 
         window.addEventListener('message', function(event) {
@@ -160,19 +159,35 @@
 
         function processCorrection(answers) {
             document.getElementById('sync-overlay').style.display = 'flex';
+
+            const oldScript = document.getElementById('correction-engine');
+            if (oldScript) oldScript.remove();
+
             const script = document.createElement('script');
-            // التعديل هنا: إضافة assets قبل مجلد CC
-            script.src = `assets/CC/${currentActivity}.js`; 
+            script.id = 'correction-engine';
+            script.src = `assets/CC/${currentActivity}.js?v=${new Date().getTime()}`;
+
             script.onload = function() {
+                console.log(`System: Correction module [${currentActivity}] loaded.`);
+                
                 if (typeof gradeMission === 'function') {
-                    const score = gradeMission({ answers: answers, missionNum: currentTask });
+                    const score = gradeMission({ 
+                        answers: answers, 
+                        missionNum: currentTask 
+                    });
+                    
                     sendReport(score);
+                } else {
+                    alert("Error: Grade function not found in module!");
+                    document.getElementById('sync-overlay').style.display = 'none';
                 }
             };
+
             script.onerror = function() {
-                alert("Correction Module Failed!");
+                alert(`Critical Error: Could not find correction file [assets/CC/${currentActivity}.js]`);
                 document.getElementById('sync-overlay').style.display = 'none';
             }
+
             document.head.appendChild(script);
         }
 

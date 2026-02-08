@@ -279,12 +279,11 @@
             });
         }
 
-        /* --- Updated openTasks Function --- */
+        /* --- Updated openTasks Function (Rank & Title Added) --- */
         function openTasks(name, activityCode) {
             document.getElementById('mTitle').innerText = name;
             const tGrid = document.getElementById('tGrid'); tGrid.innerHTML = '';
             
-            // تحديد قيمة التوكين بناءً على التبويب النشط
             const currentType = document.querySelector('.tab-btn.active').innerText;
             const tokenValue = (currentType === 'ROYAL') ? 10 : 5;
 
@@ -295,15 +294,18 @@
                 node.onclick = () => {
                     if(!isLoggedIn) return alert("Login to submit scores!");
                     
-                    // 🔗 توحيد المعلمات المرسلة للأرينا
+                    // 🚀 إضافة الرانك واللقب للرابط لسرعة التحميل في الأرينا
                     const params = new URLSearchParams({
                         email: currentUser.email,
                         name: currentUser.name,
+                        rank: currentUser.rank,   
+                        title: currentUser.title, 
+                        image: currentUser.image, 
                         activity: activityCode,
+                        activityName: name,       
                         taskNum: i,
                         tokens: tokenValue
                     });
-                    
                     window.location.href = `EYCArena.html?${params.toString()}`;
                 };
                 tGrid.appendChild(node);

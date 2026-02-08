@@ -188,19 +188,19 @@
         selectedAnswers[qIdx] = val;
     }
 
-    window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_GE_DATA') {
-            const answersArray = [];
-            for(let i=0; i<5; i++) answersArray.push(selectedAnswers[i] || "");
-            
-            window.parent.postMessage({
-                type: 'SUBMIT_MISSION',
-                activityCode: 'GE',
-                taskNum: taskNum,
-                data: answersArray
-            }, '*');
-        }
-    });
+  window.addEventListener('message', function(event) {
+    if (event.data.type === 'REQUEST_MISSION_DATA') { // توحيد الطلب
+        const answersArray = [];
+        for(let i=0; i<5; i++) answersArray.push(selectedAnswers[i] || "");
+        
+        // إرسال الرد بالصيغة التي تتوقعها الأرينا
+        window.parent.postMessage({
+            type: 'MISSION_ANSWERS',
+            answers: answersArray, 
+            missionNum: taskNum
+        }, '*');
+    }
+});
 
     window.onload = initGE;
 </script>

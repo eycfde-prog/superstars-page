@@ -139,13 +139,23 @@
             studentAnswers.push(document.getElementById(`label-${i}`).value.trim());
         }
         
-        // إرسال البيانات لصفحة Hybird.html
+      // استلام طلب البيانات من الأرينا
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'REQUEST_MISSION_DATA') {
+        const studentAnswers = [];
+        for(let i=0; i<10; i++) {
+            const val = document.getElementById(`label-${i}`) ? document.getElementById(`label-${i}`).value.trim() : "";
+            studentAnswers.push(val);
+        }
+        
+        // إرسال الإجابات للأرينا مع الإجابات النموذجية للتصحيح
         window.parent.postMessage({
-            type: 'SUBMIT_MISSION',
+            type: 'MISSION_ANSWERS',
             answers: studentAnswers,
-            modelAnswers: currentTaskWords // إرسال الإجابات النموذجية للتصحيح في CC/LB.js
+            modelAnswers: currentTaskWords // سيستخدمها ملف CC/LS.js
         }, '*');
     }
+});
 
     window.onload = loadLabelMission;
 </script>

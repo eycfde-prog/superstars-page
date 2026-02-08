@@ -127,18 +127,15 @@
             document.getElementById('mission-sub').innerText = taskN ? `MISSION ${taskN.padStart(2, '0')}` : "PRACTICE";
             document.getElementById('max-score').innerText = `${tokens} TOKENS`;
 
-// البحث عن السطر المسؤول عن تحميل الـ iframe واستبداله بـ:
-fetch(`${SCRIPT_URL}?action=checkMission&email=${email}&actCode=${currentActivity}&taskNum=${currentTask}`)
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "completed") {
-            showAlreadyDoneUI();
-        } else {
-            // التعديل هنا: تمرير رقم المهمة في الرابط
-// داخل الأرينا
-document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?taskNum=${currentTask}`;
-        }
-    });
+            fetch(`${SCRIPT_URL}?action=checkMission&email=${email}&actCode=${currentActivity}&taskNum=${currentTask}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "completed") {
+                        showAlreadyDoneUI();
+                    } else {
+                        document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?taskNum=${currentTask}`;
+                    }
+                });
 
             const logoImg = document.getElementById('activity-img');
             logoImg.src = `assets/AL/${actCode}.png`; 
@@ -154,75 +151,42 @@ document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.htm
             frame.postMessage({ type: 'REQUEST_MISSION_DATA' }, '*'); 
         }
 
-window.addEventListener('message', function(event) {
-    // تعديل: التحقق من وجود الإجابات بشكل أدق
-    if (event.data.type === 'MISSION_ANSWERS' && event.data.answers) {
-        processCorrection(event.data.answers);
-    }
-});
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'MISSION_ANSWERS' && event.data.answers) {
+                processCorrection(event.data.answers);
+            }
+        });
 
         function processCorrection(answers) {
             document.getElementById('sync-overlay').style.display = 'flex';
-
-            const oldScript = document.getElementById('correction-engine');
-            if (oldScript) oldScript.remove();
-
-            const script = document.createElement('script');
-            script.id = 'correction-engine';
-            script.src = `assets/CC/${currentActivity}.js?v=${new Date().getTime()}`;
-
-            script.onload = function() {
-                console.log(`System: Correction module [${currentActivity}] loaded.`);
-                
-                if (typeof gradeMission === 'function') {
-                    const score = gradeMission({ 
-                        answers: answers, 
-                        missionNum: currentTask 
-                    });
-                    
-                    sendReport(score);
-                } else {
-                    alert("Error: Grade function not found in module!");
-                    document.getElementById('sync-overlay').style.display = 'none';
-                }
-            };
-
-            script.onerror = function() {
-                alert(`Critical Error: Could not find correction file [assets/CC/${currentActivity}.js]`);
-                document.getElementById('sync-overlay').style.display = 'none';
-            }
-
-            document.head.appendChild(script);
-        }
-
-        function sendReport(score) {
+            
             const urlParams = new URLSearchParams(window.location.search);
             const report = {
                 action: "submitReport",
                 email: urlParams.get('email'),
                 activityCode: currentActivity,
-                missionNum: currentTask,
-                score: score
+                taskNum: currentTask,
+                answer: JSON.stringify(answers)
             };
 
-            if (typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(() => showSuccessUI(urlParams.get('name'), score)).submitMissionReport(report);
-            } else {
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(report)
-                })
-                .then(() => {
-                    showSuccessUI(urlParams.get('name'), score);
-                })
-                .catch(err => {
-                    console.error("Submission Error:", err);
-                    showSuccessUI(urlParams.get('name'), score); 
-                });
-            }
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(report)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    showSuccessUI(urlParams.get('name'), data.grade);
+                } else {
+                    alert("Correction Error: " + data.message);
+                    document.getElementById('sync-overlay').style.display = 'none';
+                }
+            })
+            .catch(err => {
+                console.error("Critical System Failure", err);
+                alert("Failed to reach Core Server.");
+                document.getElementById('sync-overlay').style.display = 'none';
+            });
         }
 
         function showSuccessUI(name, score) {

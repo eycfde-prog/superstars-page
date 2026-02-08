@@ -110,12 +110,10 @@
             generateStars();
             const urlParams = new URLSearchParams(window.location.search);
             
-            // بيانات الطالب
             document.getElementById('student-name').innerText = urlParams.get('name') || "AGENT";
             document.getElementById('student-img').src = urlParams.get('image') || "";
             document.getElementById('student-meta').innerText = `RANK #${urlParams.get('rank') || "--"} | ${urlParams.get('title') || "ELITE"}`;
 
-            // بيانات النشاط
             const actCode = urlParams.get('activity');
             const taskN = urlParams.get('taskNum');
             
@@ -132,7 +130,7 @@
             document.getElementById('mission-sub').innerText = `MISSION ${taskN.padStart(2, '0')}`;
             document.getElementById('max-score').innerText = `${urlParams.get('tokens') || "5"} TOKENS`;
 
-            // --- منطق اللوجو المطور ---
+            // --- Developed Logo Logic ---
             const logoFileName = logoMap[actCode] || "GES";
             const logoImg = document.getElementById('activity-img');
             const primarySrc = `${GITHUB_BASE}AL/${logoFileName}.png`;
@@ -143,6 +141,7 @@
             logoImg.onerror = function() {
                 const fallback = this.getAttribute('data-fallback');
                 if (this.src !== fallback) {
+                    console.log(`⚠️ Switching to fallback for: ${logoFileName}`);
                     this.src = fallback;
                 } else {
                     this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
@@ -151,7 +150,6 @@
             };
             logoImg.src = primarySrc;
 
-            // تحميل المهمة
             document.getElementById('contentFrame').src = `${GITHUB_BASE}MIF/${actCode}${taskN}.html`;
         };
 

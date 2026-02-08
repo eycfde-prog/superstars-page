@@ -156,4 +156,6 @@ function gradeMission(data) {
 
 
 
+    // إضافة قوس الإغلاق المفقود للدالة
     return finalScore;
+}

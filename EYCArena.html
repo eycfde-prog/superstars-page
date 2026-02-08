@@ -101,6 +101,22 @@
         let currentTask = "";
 
         const logoMap = {
+            "Golden Ear": "GES.png",
+            "Alike": "AS.png",
+            "Seeds": "SS.png",
+            "Grammar": "GS.png",
+            "Label": "LS.png",
+            "Vivid": "VS.png",
+            "Golden EarX": "GEX.png",
+            "AlikeX": "AX.png",
+            "SeedsX": "SX.png",
+            "GrammarX": "GX.png",
+            "LabelX": "LX.png",
+            "VividX": "VX.png",
+            "FigurativeX": "FX.png",
+            "DictationX": "DX.png",
+            "Sing Sang SungX": "SSSX.png",
+            "ElmagazineX": "ELX.png",
             "GOLDEN_EAR": "GES", "ALIKE": "AS", "SEEDS": "SS", "GRAMMAR": "GS", "LABEL": "LS", "VIVID": "VS",
             "GOLDEN_EAR_X": "GEX", "ALIKE_X": "AX", "SEEDS_X": "SX", "GRAMMAR_X": "GX", "LABEL_X": "LX",
             "VIVID_X": "VX", "FIGURATIVE_X": "FX", "DICTATION_X": "DX", "SSS_X": "SSSX", "ELMAGAZINE_X": "ELX"
@@ -130,22 +146,24 @@
             document.getElementById('mission-sub').innerText = `MISSION ${taskN.padStart(2, '0')}`;
             document.getElementById('max-score').innerText = `${urlParams.get('tokens') || "5"} TOKENS`;
 
-            // --- Developed Logo Logic ---
-            const logoFileName = logoMap[actCode] || "GES";
             const logoImg = document.getElementById('activity-img');
-            const primarySrc = `${GITHUB_BASE}AL/${logoFileName}.png`;
-            const fallbackSrc = `${GITHUB_BASE}AL/${logoFileName}.jpg`;
+            const fileName = logoMap[actCode] || "GES.png";
+            
+            // Logic integration for extension handling
+            const primarySrc = fileName.includes('.') ? `${GITHUB_BASE}AL/${fileName}` : `${GITHUB_BASE}AL/${fileName}.png`;
+            const fallbackSrc = fileName.includes('.') ? "" : `${GITHUB_BASE}AL/${fileName}.jpg`;
 
             logoImg.setAttribute('data-fallback', fallbackSrc);
             
             logoImg.onerror = function() {
                 const fallback = this.getAttribute('data-fallback');
-                if (this.src !== fallback) {
-                    console.log(`⚠️ Switching to fallback for: ${logoFileName}`);
+                if (fallback && this.src !== fallback) {
+                    console.log(`⚠️ Switching to fallback`);
                     this.src = fallback;
                 } else {
                     this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
                     this.onerror = null; 
+                    console.error(`⚠️ Logo not found for activity: ${actCode}`);
                 }
             };
             logoImg.src = primarySrc;

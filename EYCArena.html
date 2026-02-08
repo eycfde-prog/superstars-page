@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EYC Arena | Activity Mode</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -27,12 +27,12 @@
         .battle-header { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; width: 100%; }
         
         .info-box { display: flex; align-items: center; gap: 10px; background: var(--glass); padding: 5px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
-        .student-photo, .activity-logo { width: 35px; height: 35px; border-radius: 8px; border: 1.5px solid var(--gold); object-fit: cover; }
-        .name { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--gold); }
+        .student-photo, .activity-logo { width: 38px; height: 38px; border-radius: 8px; border: 1.5px solid var(--gold); object-fit: cover; }
+        .name { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--gold); white-space: nowrap; }
         
         .vs-container { text-align: center; }
         .vs-text { font-family: 'Cinzel', serif; font-size: 1.2rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; line-height: 1; }
-        .token-score { font-family: 'Orbitron', sans-serif; font-size: 10px; color: #fff; letter-spacing: 1px; }
+        .token-score { font-family: 'Orbitron', sans-serif; font-size: 9px; color: #fff; letter-spacing: 1px; margin-top: 4px; }
 
         .arena-container { flex: 1; padding: 10px; display: flex; justify-content: center; align-items: center; }
         .glass-iframe-wrapper { width: 100%; height: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; overflow: hidden; }
@@ -59,16 +59,24 @@
     <header>
         <div class="battle-header">
             <div class="info-box">
-                <img id="student-img" src="https://via.placeholder.com/50" class="student-photo">
-                <span class="name" id="student-name">STUDENT</span>
+                <img id="student-img" src="" class="student-photo">
+                <div style="display: flex; flex-direction: column;">
+                    <span class="name" id="student-name">LOADING...</span>
+                    <span id="student-meta" style="font-size: 0.55rem; color: #888; font-family: 'Orbitron';">RANK #-- | TITLE</span>
+                </div>
             </div>
+
             <div class="vs-container">
                 <div class="vs-text">VS</div>
-                <div id="max-score" class="token-score">5 TOKENS</div>
+                <div id="max-score" class="token-score">-- TOKENS</div>
             </div>
+
             <div class="info-box">
-                <img id="activity-img" src="https://via.placeholder.com/50" class="activity-logo">
-                <span class="name" id="activity-title">ACTIVITY</span>
+                <div style="display: flex; flex-direction: column; text-align: right;">
+                    <span class="name" id="activity-title">ACTIVITY</span>
+                    <span id="mission-sub" style="font-size: 0.6rem; color: var(--gold); font-family: 'Orbitron';">MISSION 01</span>
+                </div>
+                <img id="activity-img" src="" class="activity-logo">
             </div>
         </div>
     </header>
@@ -94,46 +102,65 @@
 
         window.onload = function() {
             generateStars();
+            
+            // جلب البيانات من الـ URL لسرعة البرق
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 1. بيانات الطالب
+            const name = urlParams.get('name') || "AGENT";
+            const img = urlParams.get('image') || "";
+            const rank = urlParams.get('rank') || "--";
+            const title = urlParams.get('title') || "ELITE MEMBER";
 
-            const user = JSON.parse(localStorage.getItem('eyc_user'));
-            if (!user) {
-                alert("Unauthorized Access! Redirecting...");
+            document.getElementById('student-name').innerText = name;
+            document.getElementById('student-img').src = img;
+            document.getElementById('student-meta').innerText = `RANK #${rank} | ${title}`;
+
+            // 2. بيانات النشاط
+            const actCode = urlParams.get('activity');
+            const taskN = urlParams.get('taskNum');
+            const actFullName = urlParams.get('activityName');
+            const tokens = urlParams.get('tokens') || "5";
+
+            if (!actCode || !taskN) {
+                alert("Mission Data Missing!");
                 window.location.href = 'MC.html';
                 return;
             }
-            document.getElementById('student-name').innerText = user.name;
-            document.getElementById('student-img').src = user.image;
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const missionURL = urlParams.get('missionURL');
-            const totalTokens = urlParams.get('tokens') || "5";
+            // خريطة تحويل الأكواد إلى أسماء ملفات اللوجو (AL Folder)
+            const logoMap = {
+                "GOLDEN_EAR": "GES", "ALIKE": "AS", "SEEDS": "SS", "GRAMMAR": "GS", "LABEL": "LS", "VIVID": "VS",
+                "GOLDEN_EAR_X": "GEX", "ALIKE_X": "AX", "SEEDS_X": "SX", "GRAMMAR_X": "GX", "LABEL_X": "LX", 
+                "VIVID_X": "VX", "FIGURATIVE_X": "FX", "DICTATION_X": "DX", "SSS_X": "SSSX", "ELMAGAZINE_X": "ELX"
+            };
 
-            if (missionURL) {
-                const fileName = missionURL.split('/').pop().replace('.html', '');
-                currentActivity = fileName.replace(/[0-9]/g, '').toUpperCase(); 
-                currentTask = fileName.replace(/\D/g, '');
+            currentActivity = actCode;
+            currentTask = taskN;
 
-                document.getElementById('activity-title').innerText = currentActivity;
-                document.getElementById('max-score').innerText = `${totalTokens} TOKENS`;
-                
-                const finalMifUrl = `${GITHUB_BASE}MIF/${currentActivity}.html?task=${currentTask}`;
-                document.getElementById('contentFrame').src = finalMifUrl;
-            }
+            document.getElementById('activity-title').innerText = actFullName;
+            document.getElementById('mission-sub').innerText = `MISSION ${taskN.padStart(2, '0')}`;
+            document.getElementById('max-score').innerText = `${tokens} TOKENS`;
+            
+            // تحميل اللوجو من مجلد AL
+            const logoName = logoMap[actCode] || "GES";
+            document.getElementById('activity-img').src = `${GITHUB_BASE}AL/${logoName}.png`;
+
+            // تحميل الـ iframe الخاص بالمهمة
+            const finalMifUrl = `${GITHUB_BASE}MIF/${actCode}${taskN}.html`;
+            document.getElementById('contentFrame').src = finalMifUrl;
         };
 
         function requestSubmit() {
             const frame = document.getElementById('contentFrame').contentWindow;
+            // إرسال طلب البيانات لجميع الأكواد المحتملة لضمان التوافق
             const msgType = `REQUEST_${currentActivity}_DATA`; 
             frame.postMessage({ type: msgType }, '*');
-            frame.postMessage({ type: 'REQUEST_SSX_DATA' }, '*');
-            frame.postMessage({ type: 'REQUEST_ALIKEX_DATA' }, '*');
-            frame.postMessage({ type: 'REQUEST_GEX_DATA' }, '*');
-            frame.postMessage({ type: 'REQUEST_DICTATIONX_DATA' }, '*');
-            frame.postMessage({ type: 'REQUEST_FIGURATIVEX_DATA' }, '*');
+            frame.postMessage({ type: 'REQUEST_MISSION_DATA' }, '*'); // للأكواد الموحدة مستقبلاً
         }
 
         window.addEventListener('message', function(event) {
-            if (event.data.type === 'SUBMIT_X' || event.data.type === 'SUBMIT_MISSION') {
+            if (event.data.type === 'SUBMIT_X' || event.data.type === 'SUBMIT_MISSION' || event.data.type.includes('RESPONSE_')) {
                 processCorrection(event.data.answers);
             }
         });
@@ -141,56 +168,68 @@
         function processCorrection(answers) {
             document.getElementById('sync-overlay').style.display = 'flex';
             const ccScriptURL = `${GITHUB_BASE}CC/${currentActivity}.js`;
+            
             const script = document.createElement('script');
             script.src = ccScriptURL;
             script.onload = function() {
-                const finalScore = gradeMission({
-                    answers: answers,
-                    missionNum: currentTask
-                });
-                sendReport(finalScore);
+                if (typeof gradeMission === 'function') {
+                    const finalScore = gradeMission({
+                        answers: answers,
+                        missionNum: currentTask
+                    });
+                    sendReport(finalScore);
+                } else {
+                    alert("Correction Module Error!");
+                    document.getElementById('sync-overlay').style.display = 'none';
+                }
+            };
+            script.onerror = () => {
+                alert("Failed to load correction script.");
+                document.getElementById('sync-overlay').style.display = 'none';
             };
             document.head.appendChild(script);
         }
 
         function sendReport(score) {
-            const user = JSON.parse(localStorage.getItem('eyc_user'));
+            // نحتاج الإيميل من الـ URL أو الـ LocalStorage للإرسال
+            const urlParams = new URLSearchParams(window.location.search);
+            const userEmail = urlParams.get('email');
+            const userName = urlParams.get('name');
+
             const report = {
-                email: user.email,
+                email: userEmail,
                 activityCode: currentActivity,
                 missionNum: currentTask,
                 score: score
             };
 
-            const winSound = document.getElementById('goldSound');
-            if(winSound) { winSound.volume = 0.5; winSound.play(); }
+            // محاكاة إرسال البيانات لـ Google Apps Script
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run
+                    .withSuccessHandler(() => showSuccessUI(userName, score))
+                    .submitMissionReport(report);
+            } else {
+                // للعرض التجريبي إذا لم يكن داخل بيئة Google Script
+                setTimeout(() => showSuccessUI(userName, score), 1500);
+            }
+        }
 
-            google.script.run
-                .withSuccessHandler(() => {
-                    const overlay = document.getElementById('sync-overlay');
-                    overlay.style.display = 'flex';
-                    overlay.innerHTML = `
-                        <div style="text-align:center; background:rgba(2, 2, 5, 0.95); padding:40px; border:2px solid var(--gold); border-radius:30px; box-shadow:0 0 50px var(--gold-glow); animation: crownBounce 0.8s ease-out;">
-                            <div style="font-size:5rem; margin-bottom:10px;">🏆</div>
-                            <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:3px;">MISSION ACCOMPLISHED</h2>
-                            <p style="font-size:1rem; color:#888; margin-top:10px;">AGENT: ${user.name}</p>
-                            <hr style="border:0; border-top:1px solid var(--glass-border); margin:20px 0;">
-                            <div style="font-size:0.9rem; color:var(--gold);">TOKENS RECOVERED</div>
-                            <div style="font-size:4rem; font-family:'Orbitron'; color:#fff; text-shadow: 0 0 20px var(--gold-glow);">${score}</div>
-                            <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px; cursor:pointer;" onclick="window.location.href='MC.html'">
-                                REDEPLOY TO COMMAND CENTER
-                            </button>
-                        </div>
-                        <style>
-                            @keyframes crownBounce {
-                                0% { transform: scale(0.5); opacity: 0; }
-                                60% { transform: scale(1.1); }
-                                100% { transform: scale(1); opacity: 1; }
-                            }
-                        </style>
-                    `;
-                })
-                .submitMissionReport(report);
+        function showSuccessUI(name, score) {
+            const overlay = document.getElementById('sync-overlay');
+            overlay.style.display = 'flex';
+            overlay.innerHTML = `
+                <div style="text-align:center; background:rgba(2, 2, 5, 0.95); padding:40px; border:2px solid var(--gold); border-radius:30px; box-shadow:0 0 50px var(--gold-glow); width: 90%; max-width: 400px;">
+                    <div style="font-size:5rem; margin-bottom:10px;">🏆</div>
+                    <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:3px;">MISSION ACCOMPLISHED</h2>
+                    <p style="font-size:1rem; color:#888; margin-top:10px;">AGENT: ${name}</p>
+                    <hr style="border:0; border-top:1px solid var(--glass-border); margin:20px 0;">
+                    <div style="font-size:0.9rem; color:var(--gold);">TOKENS RECOVERED</div>
+                    <div style="font-size:4rem; font-family:'Orbitron'; color:#fff; text-shadow: 0 0 20px var(--gold-glow);">${score}</div>
+                    <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px;" onclick="window.location.href='MC.html'">
+                        REDEPLOY TO COMMAND CENTER
+                    </button>
+                </div>
+            `;
         }
 
         function generateStars() {

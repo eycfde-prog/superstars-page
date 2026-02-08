@@ -124,55 +124,29 @@
         ]
     };
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const taskNum = urlParams.get('task') || "1";
-    let answers = {};
+// استلام رقم المهمة من الرابط بشكل صحيح
+const urlParams = new URLSearchParams(window.location.search);
+const taskNum = urlParams.get('taskNum') || "1"; // تأكد أن المفتاح هنا taskNum ليطابق الأرينا
+let answers = {};
 
-    function loadAlikeX() {
-        const questions = alikeXData[taskNum] || alikeXData["1"];
-        const screen = document.getElementById('quiz-screen');
-        
-        screen.innerHTML = questions.map((q, i) => `
-            <div class="question-card">
-                <button class="audio-btn" onclick="playAudio(${i})">▶ PLAY AUDIO CLUE</button>
-                <div class="sentence-text">
-                    ${q.s.replace('_______', `<span class="missing-word" id="display-${i}">_______</span>`)}
-                </div>
-                <div class="options-grid">
-                    ${q.options.map(opt => `
-                        <button class="opt-btn" onclick="selectOpt(${i}, '${opt}', this)">${opt}</button>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('');
-        document.getElementById('x-title').innerText = `ALIKE-X: MISSION ${taskNum.padStart(2, '0')}`;
-    }
+// ... (دالة loadAlikeX ودالة selectOpt كما هي) ...
 
-    function playAudio(idx) {
-        const audio = new Audio(`assets/alikeaudio/ALX${taskNum}_${idx+1}.wav`);
-        audio.play();
-    }
-
-    function selectOpt(qIdx, val, btn) {
-        const container = btn.parentElement;
-        container.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(`display-${qIdx}`).innerText = val;
-        answers[qIdx] = val;
-    }
-
-    window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_ALIKEX_DATA') {
-            const dataArr = [];
-            for(let i=0; i<5; i++) dataArr.push(answers[i] || "");
-            
-            window.parent.postMessage({ 
-                type: 'SUBMIT_X', 
-                answers: dataArr, 
-                missionNum: taskNum 
-            }, '*');
+// استماع لرسائل الأرينا (تعديل مفاتيح التواصل)
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'REQUEST_MISSION_DATA') { // توحيد الاسم مع الأرينا
+        const dataArr = [];
+        for(let i=0; i<5; i++) {
+            dataArr.push(answers[i] || "");
         }
-    });
+        
+        // إرسال البيانات للأرينا بالصيغة التي تنتظرها
+        window.parent.postMessage({ 
+            type: 'MISSION_ANSWERS', 
+            answers: dataArr, 
+            missionNum: taskNum 
+        }, '*');
+    }
+});
 
     window.onload = loadAlikeX;
 </script>

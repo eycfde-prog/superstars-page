@@ -6,147 +6,79 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root { --neon-blue: #00f2ff; --neon-purple: #bc13fe; --glass: rgba(10, 10, 15, 0.95); }
-        body { 
-            font-family: 'Rajdhani', sans-serif; background: transparent; color: white; 
-            margin: 0; padding: 20px; direction: ltr;
-        }
-
-        .header-x {
-            text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--neon-purple); padding-bottom: 15px;
-        }
-
-        .question-card {
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; padding: 20px; margin-bottom: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .audio-btn {
-            background: var(--neon-purple); color: white; border: none;
-            padding: 8px 15px; border-radius: 5px; cursor: pointer;
-            font-family: 'Orbitron'; font-size: 10px; margin-bottom: 15px;
-        }
-
+        body { font-family: 'Rajdhani', sans-serif; background: transparent; color: white; margin: 0; padding: 20px; direction: ltr; }
+        .header-x { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--neon-purple); padding-bottom: 15px; }
+        .question-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .audio-btn { background: var(--neon-purple); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-family: 'Orbitron'; font-size: 10px; margin-bottom: 15px; }
         .sentence-text { font-size: 1.2rem; margin-bottom: 15px; color: #eee; }
         .missing-word { color: var(--neon-blue); font-weight: bold; border-bottom: 2px dashed var(--neon-blue); }
-
         .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-
-        .opt-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            color: white; padding: 10px; border-radius: 8px; cursor: pointer;
-            font-family: 'Rajdhani'; font-size: 1.1rem; transition: 0.3s;
-        }
-
+        .opt-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani'; font-size: 1.1rem; transition: 0.3s; }
         .opt-btn:hover { border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.1); }
         .opt-btn.active { background: var(--neon-blue); color: black; font-weight: bold; }
     </style>
 </head>
 <body>
-
     <div class="header-x">
         <h1 id="x-title" style="font-family: 'Orbitron'; letter-spacing: 5px;">ALIKE-X RADAR</h1>
     </div>
-
     <div id="quiz-screen"></div>
 
 <script>
     const alikeXData = {
-        "1": [
-            { s: "The new software serves as a perfect _______ to our existing system.", options: ["Compliment", "Complement", "Compliance"], correct: "Complement" },
-            { s: "She has strong moral _______ that guide her daily life.", options: ["Principals", "Principles", "Princes"], correct: "Principles" },
-            { s: "The plane remained _______ on the runway for over an hour.", options: ["Stationary", "Stationery", "Stationing"], correct: "Stationary" },
-            { s: "The legal _______ advised the CEO not to sign the contract.", options: ["Council", "Counsel", "Console"], correct: "Counsel" },
-            { s: "We walked slowly down the long church _______ during the wedding.", options: ["Aisle", "Isle", "I'll"], correct: "Aisle" }
-        ],
-        "2": [
-            { s: "Please be _______ about the confidential information I shared.", options: ["Discrete", "Discreet", "Decreet"], correct: "Discreet" },
-            { s: "The patient had an _______ reaction to the new medication.", options: ["Adverse", "Averse", "Advice"], correct: "Adverse" },
-            { s: "The detective tried to _______ information from the witness.", options: ["Elicit", "Illicit", "Elite"], correct: "Elicit" },
-            { s: "She has a natural _______ for interior design and creative arts.", options: ["Flare", "Flair", "Floor"], correct: "Flair" },
-            { s: "The curator warned against the tendency to _______ artifacts.", options: ["Horde", "Hoard", "Hard"], correct: "Hoard" }
-        ],
-        "3": [
-            { s: "The constant noise from the street can _______ your focus.", options: ["Affect", "Effect", "Aspect"], correct: "Affect" },
-            { s: "The desert heat was so intense that we felt _______.", options: ["Faint", "Feint", "Font"], correct: "Faint" },
-            { s: "They decided to _______ the rights to the property.", options: ["Seed", "Cede", "Said"], correct: "Cede" },
-            { s: "The knight fought bravely with a _______ made of steel.", options: ["Flail", "Flare", "Flaw"], correct: "Flail" },
-            { s: "His _______ of the situation was far more accurate.", options: ["Sight", "Site", "Cite"], correct: "Sight" }
-        ],
-        "4": [
-            { s: "The chef used a heavy stone _______ to crush the spices.", options: ["Pestle", "Pistol", "Pastel"], correct: "Pestle" },
-            { s: "The dark clouds seemed to _______ a terrible storm.", options: ["Bode", "Board", "Bowed"], correct: "Bode" },
-            { s: "The team needs to _______ every detail of the plan.", options: ["Canvas", "Canvass", "Convey"], correct: "Canvass" },
-            { s: "After the workout, his muscles felt extremely _______.", options: ["Taut", "Taught", "Tort"], correct: "Taut" },
-            { s: "The author wrote a long _______ to the book.", options: ["Forward", "Foreword", "Foreward"], correct: "Foreword" }
-        ],
-        "5": [
-            { s: "The manager decided to _______ the rules for flexibility.", options: ["Waive", "Wave", "Wove"], correct: "Waive" },
-            { s: "The ancient scrolls were written on high-quality _______.", options: ["Vellum", "Valuem", "Volume"], correct: "Vellum" },
-            { s: "He managed to _______ his opponents with clever maneuvers.", options: ["Allude", "Elude", "Elide"], correct: "Elude" },
-            { s: "The king’s _______ lasted for more than forty years.", options: ["Rain", "Reign", "Rein"], correct: "Reign" },
-            { s: "The artist chose a neutral _______ for the background.", options: ["Palate", "Palette", "Pellet"], correct: "Palette" }
-        ],
-        "6": [
-            { s: "The tailor took a measurement of the _______.", options: ["Waist", "Waste", "West"], correct: "Waist" },
-            { s: "The ship had to _______ its sails to catch the breeze.", options: ["Furl", "Fall", "Foal"], correct: "Furl" },
-            { s: "The mountain _______ was covered in deep snow.", options: ["Peek", "Peak", "Pique"], correct: "Peak" },
-            { s: "He decided to _______ his pride and apologize.", options: ["Swallow", "Shallow", "Swallow-tail"], correct: "Swallow" },
-            { s: "The council issued a new _______ to regulate street acts.", options: ["Ordnance", "Ordinance", "Audience"], correct: "Ordinance" }
-        ],
-        "7": [
-            { s: "The wind began to _______ through the narrow trees.", options: ["Blew", "Blue", "Blow"], correct: "Blew" },
-            { s: "She bought a new _______ of shoes for the party.", options: ["Pare", "Pair", "Pear"], correct: "Pair" },
-            { s: "The cat licked its _______ after eating the fish.", options: ["Pause", "Paws", "Pour"], correct: "Paws" },
-            { s: "The _______ of the flower was sweet and strong.", options: ["Scent", "Sent", "Cent"], correct: "Scent" },
-            { s: "He needs to _______ the bread dough for ten minutes.", options: ["Need", "Knead", "Nude"], correct: "Knead" }
-        ],
-        "8": [
-            { s: "The rough _______ of the jacket irritated his skin.", options: ["Course", "Coarse", "Cause"], correct: "Coarse" },
-            { s: "They had to _______ the old building to build a park.", options: ["Raze", "Raise", "Rise"], correct: "Raze" },
-            { s: "The thief tried to _______ the diamond from the vault.", options: ["Steel", "Steal", "Still"], correct: "Steal" },
-            { s: "It is a _______ of luck that we met here.", options: ["Stroke", "Struck", "Strake"], correct: "Stroke" },
-            { s: "The _______ was too heavy for the small horse.", options: ["Load", "Lode", "Loud"], correct: "Load" }
-        ],
-        "9": [
-            { s: "The sun's _______ were reflected off the water.", options: ["Raise", "Rays", "Raze"], correct: "Rays" },
-            { s: "He felt a sharp _______ in his left shoulder.", options: ["Pane", "Pain", "Pine"], correct: "Pain" },
-            { s: "The _______ of the company resigned yesterday.", options: ["Principal", "Principle", "Princes"], correct: "Principal" },
-            { s: "I hope the _______ stays sunny for our trip.", options: ["Whether", "Weather", "Wether"], correct: "Weather" },
-            { s: "She wrote a lovely _______ to her grandmother.", options: ["Note", "Knot", "Not"], correct: "Note" }
-        ],
-        "10": [
-            { s: "The boat was tied to the _______ in the harbor.", options: ["Quay", "Key", "Kee"], correct: "Quay" },
-            { s: "He had to _______ through the deep mud.", options: ["Wade", "Weighed", "Wide"], correct: "Wade" },
-            { s: "The horse has a beautiful long _______.", options: ["Main", "Mane", "Mean"], correct: "Mane" },
-            { s: "We need to _______ the target before we fire.", options: ["Sight", "Cite", "Site"], correct: "Sight" },
-            { s: "The _______ was full of delicious red apples.", options: ["Bin", "Been", "Ben"], correct: "Bin" }
-        ]
+        "1": [{ s: "The new software serves as a perfect _______ to our existing system.", options: ["Compliment", "Complement", "Compliance"], correct: "Complement" },{ s: "She has strong moral _______ that guide her daily life.", options: ["Principals", "Principles", "Princes"], correct: "Principles" },{ s: "The plane remained _______ on the runway for over an hour.", options: ["Stationary", "Stationery", "Stationing"], correct: "Stationary" },{ s: "The legal _______ advised the CEO not to sign the contract.", options: ["Council", "Counsel", "Console"], correct: "Counsel" },{ s: "We walked slowly down the long church _______ during the wedding.", options: ["Aisle", "Isle", "I'll"], correct: "Aisle" }],
+        "2": [{ s: "Please be _______ about the confidential information I shared.", options: ["Discrete", "Discreet", "Decreet"], correct: "Discreet" },{ s: "The patient had an _______ reaction to the new medication.", options: ["Adverse", "Averse", "Advice"], correct: "Adverse" },{ s: "The detective tried to _______ information from the witness.", options: ["Elicit", "Illicit", "Elite"], correct: "Elicit" },{ s: "She has a natural _______ for interior design and creative arts.", options: ["Flare", "Flair", "Floor"], correct: "Flair" },{ s: "The curator warned against the tendency to _______ artifacts.", options: ["Horde", "Hoard", "Hard"], correct: "Hoard" }],
+        "3": [{ s: "The constant noise from the street can _______ your focus.", options: ["Affect", "Effect", "Aspect"], correct: "Affect" },{ s: "The desert heat was so intense that we felt _______.", options: ["Faint", "Feint", "Font"], correct: "Faint" },{ s: "They decided to _______ the rights to the property.", options: ["Seed", "Cede", "Said"], correct: "Cede" },{ s: "The knight fought bravely with a _______ made of steel.", options: ["Flail", "Flare", "Flaw"], correct: "Flail" },{ s: "His _______ of the situation was far more accurate.", options: ["Sight", "Site", "Cite"], correct: "Sight" }],
+        "4": [{ s: "The chef used a heavy stone _______ to crush the spices.", options: ["Pestle", "Pistol", "Pastel"], correct: "Pestle" },{ s: "The dark clouds seemed to _______ a terrible storm.", options: ["Bode", "Board", "Bowed"], correct: "Bode" },{ s: "The team needs to _______ every detail of the plan.", options: ["Canvas", "Canvass", "Convey"], correct: "Canvass" },{ s: "After the workout, his muscles felt extremely _______.", options: ["Taut", "Taught", "Tort"], correct: "Taut" },{ s: "The author wrote a long _______ to the book.", options: ["Forward", "Foreword", "Foreward"], correct: "Foreword" }],
+        "5": [{ s: "The manager decided to _______ the rules for flexibility.", options: ["Waive", "Wave", "Wove"], correct: "Waive" },{ s: "The ancient scrolls were written on high-quality _______.", options: ["Vellum", "Valuem", "Volume"], correct: "Vellum" },{ s: "He managed to _______ his opponents with clever maneuvers.", options: ["Allude", "Elude", "Elide"], correct: "Elude" },{ s: "The king’s _______ lasted for more than forty years.", options: ["Rain", "Reign", "Rein"], correct: "Reign" },{ s: "The artist chose a neutral _______ for the background.", options: ["Palate", "Palette", "Pellet"], correct: "Palette" }],
+        "6": [{ s: "The tailor took a measurement of the _______.", options: ["Waist", "Waste", "West"], correct: "Waist" },{ s: "The ship had to _______ its sails to catch the breeze.", options: ["Furl", "Fall", "Foal"], correct: "Furl" },{ s: "The mountain _______ was covered in deep snow.", options: ["Peek", "Peak", "Pique"], correct: "Peak" },{ s: "He decided to _______ his pride and apologize.", options: ["Swallow", "Shallow", "Swallow-tail"], correct: "Swallow" },{ s: "The council issued a new _______ to regulate street acts.", options: ["Ordnance", "Ordinance", "Audience"], correct: "Ordinance" }],
+        "7": [{ s: "The wind began to _______ through the narrow trees.", options: ["Blew", "Blue", "Blow"], correct: "Blew" },{ s: "She bought a new _______ of shoes for the party.", options: ["Pare", "Pair", "Pear"], correct: "Pair" },{ s: "The cat licked its _______ after eating the fish.", options: ["Pause", "Paws", "Pour"], correct: "Paws" },{ s: "The _______ of the flower was sweet and strong.", options: ["Scent", "Sent", "Cent"], correct: "Scent" },{ s: "He needs to _______ the bread dough for ten minutes.", options: ["Need", "Knead", "Nude"], correct: "Knead" }],
+        "8": [{ s: "The rough _______ of the jacket irritated his skin.", options: ["Course", "Coarse", "Cause"], correct: "Coarse" },{ s: "They had to _______ the old building to build a park.", options: ["Raze", "Raise", "Rise"], correct: "Raze" },{ s: "The thief tried to _______ the diamond from the vault.", options: ["Steel", "Steal", "Still"], correct: "Steal" },{ s: "It is a _______ of luck that we met here.", options: ["Stroke", "Struck", "Strake"], correct: "Stroke" },{ s: "The _______ was too heavy for the small horse.", options: ["Load", "Lode", "Loud"], correct: "Load" }],
+        "9": [{ s: "The sun's _______ were reflected off the water.", options: ["Raise", "Rays", "Raze"], correct: "Rays" },{ s: "He felt a sharp _______ in his left shoulder.", options: ["Pane", "Pain", "Pine"], correct: "Pain" },{ s: "The _______ of the company resigned yesterday.", options: ["Principal", "Principle", "Princes"], correct: "Principal" },{ s: "I hope the _______ stays sunny for our trip.", options: ["Whether", "Weather", "Wether"], correct: "Weather" },{ s: "She wrote a lovely _______ to her grandmother.", options: ["Note", "Knot", "Not"], correct: "Note" }],
+        "10": [{ s: "The boat was tied to the _______ in the harbor.", options: ["Quay", "Key", "Kee"], correct: "Quay" },{ s: "He had to _______ through the deep mud.", options: ["Wade", "Weighed", "Wide"], correct: "Wade" },{ s: "The horse has a beautiful long _______.", options: ["Main", "Mane", "Mean"], correct: "Mane" },{ s: "We need to _______ the target before we fire.", options: ["Sight", "Cite", "Site"], correct: "Sight" },{ s: "The _______ was full of delicious red apples.", options: ["Bin", "Been", "Ben"], correct: "Bin" }]
     };
 
-// استلام رقم المهمة من الرابط بشكل صحيح
-const urlParams = new URLSearchParams(window.location.search);
-const taskNum = urlParams.get('taskNum') || "1"; // تأكد أن المفتاح هنا taskNum ليطابق الأرينا
-let answers = {};
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskNum = urlParams.get('taskNum') || "1"; 
+    let answers = {};
 
-// ... (دالة loadAlikeX ودالة selectOpt كما هي) ...
-
-// استماع لرسائل الأرينا (تعديل مفاتيح التواصل)
-window.addEventListener('message', function(event) {
-    if (event.data.type === 'REQUEST_MISSION_DATA') { // توحيد الاسم مع الأرينا
-        const dataArr = [];
-        for(let i=0; i<5; i++) {
-            dataArr.push(answers[i] || "");
-        }
-        
-        // إرسال البيانات للأرينا بالصيغة التي تنتظرها
-        window.parent.postMessage({ 
-            type: 'MISSION_ANSWERS', 
-            answers: dataArr, 
-            missionNum: taskNum 
-        }, '*');
+    function loadAlikeX() {
+        const questions = alikeXData[taskNum] || alikeXData["1"];
+        const screen = document.getElementById('quiz-screen');
+        screen.innerHTML = questions.map((q, i) => `
+            <div class="question-card">
+                <button class="audio-btn" onclick="playAudio(${i})">▶ PLAY AUDIO CLUE</button>
+                <div class="sentence-text">
+                    ${q.s.replace('_______', `<span class="missing-word" id="display-${i}">_______</span>`)}
+                </div>
+                <div class="options-grid">
+                    ${q.options.map(opt => `<button class="opt-btn" onclick="selectOpt(${i}, '${opt}', this)">${opt}</button>`).join('')}
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('x-title').innerText = `ALIKE-X: MISSION ${taskNum.padStart(2, '0')}`;
     }
-});
+
+    function selectOpt(qIdx, val, btn) {
+        const container = btn.parentElement;
+        container.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`display-${qIdx}`).innerText = val;
+        answers[qIdx] = val;
+    }
+
+    function playAudio(idx) {
+        const audio = new Audio(`assets/alikeaudio/ALX${taskNum}_${idx+1}.wav`);
+        audio.play();
+    }
+
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'REQUEST_MISSION_DATA') {
+            const dataArr = [];
+            for(let i=0; i<5; i++) dataArr.push(answers[i] || "");
+            window.parent.postMessage({ type: 'MISSION_ANSWERS', answers: dataArr, missionNum: taskNum }, '*');
+        }
+    });
 
     window.onload = loadAlikeX;
 </script>

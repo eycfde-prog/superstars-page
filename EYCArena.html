@@ -110,12 +110,10 @@
             generateStars();
             const urlParams = new URLSearchParams(window.location.search);
             
-            // بيانات الطالب
             document.getElementById('student-name').innerText = urlParams.get('name') || "AGENT";
             document.getElementById('student-img').src = urlParams.get('image') || "";
             document.getElementById('student-meta').innerText = `RANK #${urlParams.get('rank') || "--"} | ${urlParams.get('title') || "ELITE"}`;
 
-            // بيانات النشاط
             const actCode = urlParams.get('activity');
             const taskN = urlParams.get('taskNum');
             
@@ -132,11 +130,19 @@
             document.getElementById('mission-sub').innerText = `MISSION ${taskN.padStart(2, '0')}`;
             document.getElementById('max-score').innerText = `${urlParams.get('tokens') || "5"} TOKENS`;
 
-            // تحميل اللوجو
+            // --- منطق تحميل اللوجو المطور ---
             const logoFileName = logoMap[actCode] || "GES";
-            document.getElementById('activity-img').src = `${GITHUB_BASE}AL/${logoFileName}.png`;
-            document.getElementById('activity-img').onerror = function() {
-                this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
+            const logoImg = document.getElementById('activity-img');
+            
+            logoImg.src = GITHUB_BASE + "AL/" + logoFileName + ".png";
+            
+            logoImg.onerror = function() {
+                if (!this.triedAlternative) {
+                    this.triedAlternative = true;
+                    this.src = GITHUB_BASE + "AL/" + logoFileName + ".jpg"; 
+                } else {
+                    this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
+                }
             };
 
             // تحميل المهمة

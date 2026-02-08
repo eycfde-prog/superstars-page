@@ -126,13 +126,11 @@
             generateStars();
             const urlParams = new URLSearchParams(window.location.search);
             
-            document.getElementById('student-name').innerText = urlParams.get('name') || "AGENT";
-            document.getElementById('student-img').src = urlParams.get('image') || "";
-            document.getElementById('student-meta').innerText = `RANK #${urlParams.get('rank') || "--"} | ${urlParams.get('title') || "ELITE"}`;
-
-            const actCode = urlParams.get('activity');
+            const studentName = urlParams.get('name') || "AGENT";
+            const actCode = urlParams.get('activity'); 
             const taskN = urlParams.get('taskNum');
-            
+            const tokens = urlParams.get('tokens') || "5";
+
             if (!actCode) {
                 alert("Mission Data Missing!");
                 window.location.href = 'MC.html';
@@ -142,31 +140,25 @@
             currentActivity = actCode;
             currentTask = taskN;
 
+            document.getElementById('student-name').innerText = studentName;
+            document.getElementById('student-img').src = urlParams.get('image') || "";
+            document.getElementById('student-meta').innerText = `RANK #${urlParams.get('rank') || "--"} | ${urlParams.get('title') || "ELITE"}`;
             document.getElementById('activity-title').innerText = urlParams.get('activityName') || actCode;
             document.getElementById('mission-sub').innerText = taskN ? `MISSION ${taskN.padStart(2, '0')}` : "PRACTICE";
-            document.getElementById('max-score').innerText = `${urlParams.get('tokens') || "5"} TOKENS`;
+            document.getElementById('max-score').innerText = `${tokens} TOKENS`;
 
-            const fileNameWithExt = logoMap[actCode] || "GES.png";
-            const shortCode = fileNameWithExt.split('.')[0]; 
+            const fileNameWithExt = logoMap[actCode] || (actCode + ".png");
+            const shortCode = fileNameWithExt.includes('.') ? fileNameWithExt.split('.')[0] : actCode;
 
             document.getElementById('contentFrame').src = `${GITHUB_BASE}MIF/${shortCode}.html`;
 
             const logoImg = document.getElementById('activity-img');
-            const primarySrc = fileNameWithExt.includes('.') ? `${GITHUB_BASE}AL/${fileNameWithExt}` : `${GITHUB_BASE}AL/${fileNameWithExt}.png`;
-            const fallbackSrc = fileNameWithExt.includes('.') ? "" : `${GITHUB_BASE}AL/${fileNameWithExt}.jpg`;
+            logoImg.src = `assets/AL/${actCode}.png`; 
 
-            logoImg.setAttribute('data-fallback', fallbackSrc);
-            
             logoImg.onerror = function() {
-                const fallback = this.getAttribute('data-fallback');
-                if (fallback && this.src !== fallback) {
-                    this.src = fallback;
-                } else {
-                    this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
-                    this.onerror = null; 
-                }
+                this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
+                this.onerror = null; 
             };
-            logoImg.src = primarySrc;
         };
 
         function requestSubmit() {

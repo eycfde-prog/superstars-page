@@ -127,15 +127,17 @@
             document.getElementById('mission-sub').innerText = taskN ? `MISSION ${taskN.padStart(2, '0')}` : "PRACTICE";
             document.getElementById('max-score').innerText = `${tokens} TOKENS`;
 
-            fetch(`${SCRIPT_URL}?action=checkMission&email=${email}&actCode=${currentActivity}&taskNum=${currentTask}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "completed") {
-                        showAlreadyDoneUI();
-                    } else {
-                        document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html`;
-                    }
-                });
+// البحث عن السطر المسؤول عن تحميل الـ iframe واستبداله بـ:
+fetch(`${SCRIPT_URL}?action=checkMission&email=${email}&actCode=${currentActivity}&taskNum=${currentTask}`)
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "completed") {
+            showAlreadyDoneUI();
+        } else {
+            // التعديل هنا: تمرير رقم المهمة في الرابط
+            document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?taskNum=${currentTask}`;
+        }
+    });
 
             const logoImg = document.getElementById('activity-img');
             logoImg.src = `assets/AL/${actCode}.png`; 

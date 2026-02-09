@@ -45,6 +45,10 @@
         .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
         
         #sync-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+
+        /* AI Assistant Custom Styles */
+        #chat-content::-webkit-scrollbar { width: 5px; }
+        #chat-content::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -91,38 +95,48 @@
         <button class="btn btn-side" onclick="window.location.href='MC.html'">BACK</button>
     </footer>
 
+    <div id="ai-assistant-btn" onclick="toggleChat()" style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: var(--gold-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1001; box-shadow: 0 0 20px var(--gold-glow);">
+        <i class="fas fa-robot" style="color: black; font-size: 1.5rem;"></i>
+    </div>
+
+    <div id="chat-box" style="position: fixed; bottom: 90px; right: 20px; width: 300px; height: 400px; background: #0a0a0c; border: 1px solid var(--gold); border-radius: 20px; display: none; flex-direction: column; z-index: 1001; overflow: hidden; backdrop-filter: blur(10px);">
+        <div style="background: var(--gold-gradient); padding: 10px; color: black; font-weight: bold; text-align: center; font-family: 'Cinzel';">EYCVV GUIDE</div>
+        <div id="chat-content" style="flex: 1; padding: 15px; overflow-y: auto; font-size: 0.8rem; color: #ccc; display: flex; flex-direction: column; gap: 10px;">
+            <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; border-left: 2px solid var(--gold);">
+                أهلاً بك يا بطل! أنا EYCVV، اسألني عن أي شيء يخص المهمة.
+            </div>
+        </div>
+        <div style="display: flex; padding: 10px; border-top: 1px solid #333; background: rgba(255,255,255,0.02);">
+            <input type="text" id="chat-input" placeholder="اسأل فيفي..." style="flex: 1; background: transparent; border: none; color: white; outline: none; font-size: 0.8rem;" onkeypress="if(event.key === 'Enter') askFifi()">
+            <i class="fas fa-paper-plane" onclick="askFifi()" style="color: var(--gold); cursor: pointer; padding: 5px;"></i>
+        </div>
+    </div>
+
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZ1WPXthi_8NUKM_jb4QKQWog4IRIx8xnLWpMEOXR3ZlESoCwFjZCOTs8uI5tSQ08ioA/exec";
         let currentActivity, currentTask, userEmail, userName;
 
         window.onload = function() {
             generateStars();
-            
-            // 1. محاولة جلب البيانات من localStorage أولاً لسرعة الاستجابة
             const savedUser = JSON.parse(localStorage.getItem('eyc_user'));
             const urlParams = new URLSearchParams(window.location.search);
 
-            // 2. تحديد البيانات الأساسية (الأولوية للرابط ثم التخزين المحلي)
             userEmail = urlParams.get('email') || (savedUser ? savedUser.email : null);
             userName = urlParams.get('name') || (savedUser ? savedUser.name : "AGENT");
             currentActivity = urlParams.get('act'); 
             currentTask = urlParams.get('task');
 
-            // 3. عرض الهوية (الاسم واللقب)
             document.getElementById('student-name').innerText = userName;
             document.getElementById('student-meta').innerText = `TITLE: ${urlParams.get('title') || (savedUser ? savedUser.title : 'RECRUIT')}`;
 
-            // 4. معالجة الأفاتار "بذكاء" (رابط خارجي vs ملف محلي)
             const avatarUrl = urlParams.get('avatar') || (savedUser ? savedUser.avatar : null);
             const imgElement = document.getElementById('student-img');
-            
             if (avatarUrl && (avatarUrl.startsWith('http') || avatarUrl.startsWith('data:image'))) {
                 imgElement.src = avatarUrl;
             } else {
                 imgElement.src = `assets/avatars/${avatarUrl || 'default.png'}`;
             }
 
-            // 5. بيانات المهمة
             document.getElementById('activity-title').innerText = currentActivity;
             document.getElementById('mission-sub').innerText = `MISSION ${currentTask.padStart(2, '0')}`;
             
@@ -130,10 +144,40 @@
             document.getElementById('max-score').innerText = `${tokens} TOKENS`;
             document.getElementById('activity-img').src = `assets/AL/${currentActivity}.png`;
 
-            // 6. تحميل المحتوى
             document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?task=${currentTask}`;
         };
 
+        // --- AI Assistant Logic ---
+        function toggleChat() {
+            const box = document.getElementById('chat-box');
+            box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        function askFifi() {
+            const input = document.getElementById('chat-input');
+            const content = document.getElementById('chat-content');
+            const question = input.value.trim();
+            if (!question) return;
+
+            content.innerHTML += `<div style="align-self: flex-end; background: var(--gold); color: black; padding: 8px 12px; border-radius: 15px 15px 0 15px; max-width: 80%; font-weight: 500;">${question}</div>`;
+            input.value = '';
+            content.scrollTop = content.scrollHeight;
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "askQuestion", question: question })
+            })
+            .then(res => res.json())
+            .then(data => {
+                content.innerHTML += `<div style="align-self: flex-start; background: rgba(255,255,255,0.05); color: #ccc; padding: 8px 12px; border-radius: 15px 15px 15px 0; max-width: 80%; border-left: 2px solid var(--gold);">EYCVV: ${data.answer}</div>`;
+                content.scrollTop = content.scrollHeight;
+            })
+            .catch(() => {
+                content.innerHTML += `<div style="color: #ff4444; font-size: 0.7rem;">Connection lost to Core AI...</div>`;
+            });
+        }
+
+        // --- Core Arena Logic ---
         function getGroup(code) {
             if (["DX", "SSSX", "ELX", "FX"].includes(code)) return "Titanium";
             return "Normal";

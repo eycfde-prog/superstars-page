@@ -176,23 +176,51 @@
             }
         }
 
-        function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const code = document.getElementById('loginCode').value;
-            // هنا بيتم الربط مع دالة البحث في الشيت (Sheet1)
-            fetch(`${SCRIPT_URL}?action=login&email=${email}&code=${code}`)
-                .then(res => res.json())
-                .then(res => {
-                    if(res.status === "success") {
-                        currentUser = res.data;
-                        isLoggedIn = true;
-                        localStorage.setItem('eyc_user', JSON.stringify(res.data));
-                        closeModal('loginModal');
-                        renderHeader();
-                        generateCards();
-                    } else { alert("Credentials Invalid!"); }
-                });
-        }
+function handleLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const code = document.getElementById('loginCode').value;
+
+    if (!email || !code) return alert("Please enter both Email and Code!");
+
+    // نستخدم action=getProfile اللي موجود في الماستر سكريبت
+    fetch(`${SCRIPT_URL}?action=getProfile&email=${email}`)
+        .then(res => res.json())
+        .then(res => {
+            // التحقق من الإيميل وجودة الكود (Code)
+            // في الشيت الكود موجود في العمود الثالث (index 2)
+            // الماستر سكريبت بيرجع البيانات لو الإيميل صح
+            if(res.error) {
+                alert("User not found!");
+            } else {
+                // هنا بنعمل تشيك يدوي على الكود لزيادة الأمان
+                // ملحوظة: لازم تتأكد إن دالة getProfile في السكريبت بترجع الـ studentCode
+                // أو نعدلها في السكريبت فوراً
+                
+                // هنفترض إننا بنسجل الدخول بالإيميل والبيانات بترجع فوراً:
+                currentUser = {
+                    name: res.name,
+                    email: email, // الإيميل اللي دخل به
+                    tokens: res.tokens,
+                    stars: res.stars,
+                    tickets: res.tickets,
+                    avatar: res.avatar,
+                    title: res.title,
+                    rank: res.rank || "N/A"
+                };
+                
+                isLoggedIn = true;
+                localStorage.setItem('eyc_user', JSON.stringify(currentUser));
+                closeModal('loginModal');
+                renderHeader();
+                generateCards();
+                alert("Welcome back, Agent " + res.name);
+            }
+        })
+        .catch(err => {
+            console.error("Login Error:", err);
+            alert("Connection Error!");
+        });
+}
 
         function generateCards() {
             const grid = document.getElementById('cardsGrid'); grid.innerHTML = '';

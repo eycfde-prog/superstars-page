@@ -97,21 +97,32 @@
 
         window.onload = function() {
             generateStars();
-            const urlParams = new URLSearchParams(window.location.search);
             
-            userEmail = urlParams.get('email');
-            userName = urlParams.get('name') || "AGENT";
+            // 1. محاولة جلب البيانات من localStorage أولاً لسرعة الاستجابة
+            const savedUser = JSON.parse(localStorage.getItem('eyc_user'));
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // 2. تحديد البيانات الأساسية (الأولوية للرابط ثم التخزين المحلي)
+            userEmail = urlParams.get('email') || (savedUser ? savedUser.email : null);
+            userName = urlParams.get('name') || (savedUser ? savedUser.name : "AGENT");
             currentActivity = urlParams.get('act'); 
             currentTask = urlParams.get('task');
-            
-            document.getElementById('student-name').innerText = userName;
-            
-            const avatarUrl = urlParams.get('avatar');
-            document.getElementById('student-img').src = avatarUrl && avatarUrl.startsWith('http') 
-                ? avatarUrl 
-                : `assets/avatars/${avatarUrl || 'default.png'}`;
 
-            document.getElementById('student-meta').innerText = `TITLE: ${urlParams.get('title') || 'RECRUIT'}`;
+            // 3. عرض الهوية (الاسم واللقب)
+            document.getElementById('student-name').innerText = userName;
+            document.getElementById('student-meta').innerText = `TITLE: ${urlParams.get('title') || (savedUser ? savedUser.title : 'RECRUIT')}`;
+
+            // 4. معالجة الأفاتار "بذكاء" (رابط خارجي vs ملف محلي)
+            const avatarUrl = urlParams.get('avatar') || (savedUser ? savedUser.avatar : null);
+            const imgElement = document.getElementById('student-img');
+            
+            if (avatarUrl && (avatarUrl.startsWith('http') || avatarUrl.startsWith('data:image'))) {
+                imgElement.src = avatarUrl;
+            } else {
+                imgElement.src = `assets/avatars/${avatarUrl || 'default.png'}`;
+            }
+
+            // 5. بيانات المهمة
             document.getElementById('activity-title').innerText = currentActivity;
             document.getElementById('mission-sub').innerText = `MISSION ${currentTask.padStart(2, '0')}`;
             
@@ -119,6 +130,7 @@
             document.getElementById('max-score').innerText = `${tokens} TOKENS`;
             document.getElementById('activity-img').src = `assets/AL/${currentActivity}.png`;
 
+            // 6. تحميل المحتوى
             document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?task=${currentTask}`;
         };
 

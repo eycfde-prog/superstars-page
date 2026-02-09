@@ -247,7 +247,6 @@
             const tGrid = document.getElementById('tGrid'); tGrid.innerHTML = '';
             const type = document.querySelector('.tab-btn.active').innerText;
             
-            // تقسيم المهام: Titanium 5 مهام، والباقي 10
             const tasksCount = (type === 'TITANIUM') ? 5 : 10; 
 
             for (let i = 1; i <= tasksCount; i++) {
@@ -256,7 +255,18 @@
                 node.innerText = i;
                 node.onclick = () => {
                     if(!isLoggedIn) return openLogin();
-                    window.location.href = `EYCArena.html?act=${code}&task=${i}&email=${currentUser.email}&name=${encodeURIComponent(currentUser.name)}`;
+                    
+                    // التحديث هنا: استخدام URLSearchParams لإرسال كل البيانات لصفحة Arena
+                    const params = new URLSearchParams({
+                        act: code,
+                        task: i,
+                        email: currentUser.email,
+                        name: currentUser.name,
+                        avatar: currentUser.avatar, 
+                        title: currentUser.title    
+                    });
+                    
+                    window.location.href = `EYCArena.html?${params.toString()}`;
                 };
                 tGrid.appendChild(node);
             }

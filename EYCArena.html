@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* ... [ضع هنا كل الـ Styles اللي في كودك الأصلي] ... */
         :root {
             --gold: #D4AF37;
             --gold-glow: rgba(212, 175, 55, 0.5);
@@ -93,7 +92,7 @@
     </footer>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwagu-sgK9akS4fB93osC3Iq5IME-yKdObb7tSgCBtJIrAUh6o2KPeikuf-3rmwcvbuVw/exec"; // حط رابط الـ Web App بتاعك هنا
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwagu-sgK9akS4fB93osC3Iq5IME-yKdObb7tSgCBtJIrAUh6o2KPeikuf-3rmwcvbuVw/exec";
         let currentActivity, currentTask, userEmail, userName;
 
         window.onload = function() {
@@ -104,17 +103,22 @@
             userName = urlParams.get('name') || "AGENT";
             currentActivity = urlParams.get('act'); 
             currentTask = urlParams.get('task');
-            const tokens = (getGroup(currentActivity) === "Titanium") ? "10" : "5";
-
+            
             document.getElementById('student-name').innerText = userName;
-            document.getElementById('student-img').src = `assets/avatars/${urlParams.get('avatar') || 'default.png'}`;
+            
+            const avatarUrl = urlParams.get('avatar');
+            document.getElementById('student-img').src = avatarUrl && avatarUrl.startsWith('http') 
+                ? avatarUrl 
+                : `assets/avatars/${avatarUrl || 'default.png'}`;
+
             document.getElementById('student-meta').innerText = `TITLE: ${urlParams.get('title') || 'RECRUIT'}`;
             document.getElementById('activity-title').innerText = currentActivity;
             document.getElementById('mission-sub').innerText = `MISSION ${currentTask.padStart(2, '0')}`;
+            
+            const tokens = (getGroup(currentActivity) === "Titanium") ? "10" : "5";
             document.getElementById('max-score').innerText = `${tokens} TOKENS`;
             document.getElementById('activity-img').src = `assets/AL/${currentActivity}.png`;
 
-            // تحميل محتوى النشاط داخل الـ iframe
             document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?task=${currentTask}`;
         };
 
@@ -138,41 +142,26 @@
 
         function sendToCore(answers) {
             const payload = {
+                action: "submitReport",
                 email: userEmail,
-                name: userName,
                 actCode: currentActivity,
                 taskNum: currentTask,
-                answer: answers // ممكن يكون نص أو JSON حسب النشاط
+                answer: answers
             };
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 body: JSON.stringify(payload)
             })
-            .then(res => res.json())
-            .then(data => {
-                showFinalResult(data);
+            .then(() => {
+                document.getElementById('sync-text').innerText = "MISSION RECEIVED BY CORE!";
+                setTimeout(() => window.location.href = 'MC.html', 2000);
             })
             .catch(err => {
                 alert("CORE CONNECTION FAILED!");
                 document.getElementById('sync-overlay').style.display = 'none';
             });
-        }
-
-        function showFinalResult(data) {
-            const overlay = document.getElementById('sync-overlay');
-            overlay.innerHTML = `
-                <div style="text-align:center; background:rgba(2, 2, 5, 0.98); padding:40px; border:2px solid var(--gold); border-radius:30px; width: 90%; max-width: 420px; border: 1px solid var(--gold-glow);">
-                    <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:20px;">MISSION LOG</h2>
-                    <div style="font-size:0.8rem; color:#888;">GRADE OBTAINED</div>
-                    <div style="font-size:4rem; font-family:'Orbitron'; color:#fff; margin:10px 0;">${data.grade}</div>
-                    ${data.bonus > 0 ? `<div style="color:#4CAF50; font-weight:bold;">+${data.bonus} BONUS TOKENS!</div>` : ''}
-                    <div style="margin:20px 0; font-size:0.85rem; color:#ccc; line-height:1.6; border-top:1px solid #333; padding-top:15px;">
-                        <strong>EYCVV Note:</strong><br>"${data.reason}"
-                    </div>
-                    <div style="font-style:italic; font-size:0.75rem; color:var(--gold); margin-bottom:25px;">"${data.advice}"</div>
-                    <button class="btn btn-submit" style="width:100%;" onclick="window.location.href='MC.html'">REDEPLOY TO BASE</button>
-                </div>`;
         }
 
         function generateStars() {

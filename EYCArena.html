@@ -42,20 +42,17 @@
         .btn { padding: 12px; border-radius: 12px; border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 0.75rem; font-family: 'Cinzel'; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-submit { flex: 2; background: var(--gold-gradient); color: #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); font-size: 0.9rem; }
         .btn-side { flex: 1; background: rgba(255,255,255,0.05); color: var(--gold); border: 1px solid var(--glass-border); }
-        .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
         
-        #sync-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-
-        /* AI Assistant Custom Styles */
-        #chat-content::-webkit-scrollbar { width: 5px; }
-        #chat-content::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        #sync-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        
+        #chat-box { position: fixed; bottom: 90px; right: 20px; width: 300px; height: 400px; background: #0a0a0c; border: 1px solid var(--gold); border-radius: 20px; display: none; flex-direction: column; z-index: 1001; overflow: hidden; backdrop-filter: blur(15px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
     <div id="sync-overlay">
-        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--gold);"></i>
-        <p id="sync-text" style="margin-top: 20px; font-family: 'Cinzel'; letter-spacing: 2px;">SYNCING WITH CORE...</p>
+        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;"></i>
+        <div id="sync-text" style="font-family: 'Cinzel'; letter-spacing: 2px; color: white;">SYNCING WITH CORE...</div>
     </div>
 
     <div id="star-container"></div>
@@ -63,7 +60,7 @@
     <header>
         <div class="battle-header">
             <div class="info-box">
-                <img id="student-img" class="student-photo" alt="Student">
+                <img id="student-img" class="student-photo" src="" alt="Student">
                 <div style="display: flex; flex-direction: column;">
                     <span class="name" id="student-name">LOADING...</span>
                     <span id="student-meta" style="font-size: 0.55rem; color: #888; font-family: 'Orbitron';">RANK -- | TITLE</span>
@@ -78,7 +75,7 @@
                     <span class="name" id="activity-title">ACTIVITY</span>
                     <span id="mission-sub" style="font-size: 0.6rem; color: var(--gold); font-family: 'Orbitron';">MISSION 01</span>
                 </div>
-                <img id="activity-img" class="activity-logo" alt="Logo">
+                <img id="activity-img" class="activity-logo" src="" alt="Logo">
             </div>
         </div>
     </header>
@@ -90,7 +87,7 @@
     </main>
 
     <footer>
-        <button class="btn btn-side" onclick="openGuide()">GUIDE</button>
+        <button class="btn btn-side" onclick="openGuide()">RULES</button>
         <button id="submitBtn" class="btn btn-submit" onclick="requestSubmit()">SUBMIT MISSION</button>
         <button class="btn btn-side" onclick="window.location.href='MC.html'">BACK</button>
     </footer>
@@ -99,11 +96,11 @@
         <i class="fas fa-robot" style="color: black; font-size: 1.5rem;"></i>
     </div>
 
-    <div id="chat-box" style="position: fixed; bottom: 90px; right: 20px; width: 300px; height: 400px; background: #0a0a0c; border: 1px solid var(--gold); border-radius: 20px; display: none; flex-direction: column; z-index: 1001; overflow: hidden; backdrop-filter: blur(10px);">
-        <div style="background: var(--gold-gradient); padding: 10px; color: black; font-weight: bold; text-align: center; font-family: 'Cinzel';">EYCVV GUIDE</div>
+    <div id="chat-box">
+        <div style="background: var(--gold-gradient); padding: 12px; color: black; font-weight: bold; text-align: center; font-family: 'Cinzel'; font-size: 0.9rem;">EYCVV ASSISTANT</div>
         <div id="chat-content" style="flex: 1; padding: 15px; overflow-y: auto; font-size: 0.8rem; color: #ccc; display: flex; flex-direction: column; gap: 10px;">
-            <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; border-left: 2px solid var(--gold);">
-                أهلاً بك يا بطل! أنا EYCVV، اسألني عن أي شيء يخص المهمة.
+            <div style="align-self: flex-start; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; border-left: 2px solid var(--gold);">
+                أهلاً بك يا بطل! أنا EYCVV، اسألني عن أي شيء يخص المهام.
             </div>
         </div>
         <div style="display: flex; padding: 10px; border-top: 1px solid #333; background: rgba(255,255,255,0.02);">
@@ -113,47 +110,37 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZ1WPXthi_8NUKM_jb4QKQWog4IRIx8xnLWpMEOXR3ZlESoCwFjZCOTs8uI5tSQ08ioA/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTUHzo4s3nev8HMczdKv29CgzOpMJIXv3CpIkX_kiSn_2QiCNC3te9hihgbG-paSKriw/exec";
         let currentActivity, currentTask, userEmail, userName;
 
         window.onload = function() {
             generateStars();
-            const savedUser = JSON.parse(localStorage.getItem('eyc_user'));
             const urlParams = new URLSearchParams(window.location.search);
+            const savedUser = JSON.parse(localStorage.getItem('eyc_user')) || {};
 
-            userEmail = urlParams.get('email') || (savedUser ? savedUser.email : null);
-            userName = urlParams.get('name') || (savedUser ? savedUser.name : "AGENT");
-            currentActivity = urlParams.get('act'); 
-            currentTask = urlParams.get('task');
+            userEmail = urlParams.get('email') || savedUser.email;
+            userName = urlParams.get('name') || savedUser.name || "AGENT";
+            currentActivity = urlParams.get('act') || "DX";
+            currentTask = urlParams.get('task') || "1";
 
             document.getElementById('student-name').innerText = userName;
-            document.getElementById('student-meta').innerText = `TITLE: ${urlParams.get('title') || (savedUser ? savedUser.title : 'RECRUIT')}`;
-
-            const avatarUrl = urlParams.get('avatar') || (savedUser ? savedUser.avatar : null);
-            const imgElement = document.getElementById('student-img');
-            if (avatarUrl && (avatarUrl.startsWith('http') || avatarUrl.startsWith('data:image'))) {
-                imgElement.src = avatarUrl;
-            } else {
-                imgElement.src = `assets/avatars/${avatarUrl || 'default.png'}`;
-            }
-
+            document.getElementById('student-meta').innerText = `TITLE: ${urlParams.get('title') || savedUser.title || 'RECRUIT'}`;
             document.getElementById('activity-title').innerText = currentActivity;
             document.getElementById('mission-sub').innerText = `MISSION ${currentTask.padStart(2, '0')}`;
             
-            const tokens = (getGroup(currentActivity) === "Titanium") ? "10" : "5";
-            document.getElementById('max-score').innerText = `${tokens} TOKENS`;
+            // Set Avatars and Logos
+            const avatar = urlParams.get('avatar') || savedUser.avatar || 'default.png';
+            document.getElementById('student-img').src = avatar.startsWith('http') ? avatar : `assets/avatars/${avatar}`;
             document.getElementById('activity-img').src = `assets/AL/${currentActivity}.png`;
-
             document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?task=${currentTask}`;
         };
 
-        // --- AI Assistant Logic ---
         function toggleChat() {
             const box = document.getElementById('chat-box');
             box.style.display = box.style.display === 'none' ? 'flex' : 'none';
         }
 
-        function askFifi() {
+        async function askFifi() {
             const input = document.getElementById('chat-input');
             const content = document.getElementById('chat-content');
             const question = input.value.trim();
@@ -163,29 +150,23 @@
             input.value = '';
             content.scrollTop = content.scrollHeight;
 
-// استبدل الجزء ده في الـ HTML بتاعك (داخل وظيفة sendToCore)
-fetch(SCRIPT_URL, {
-    method: 'POST',
-    // شيلنا no-cors عشان نستلم النتيجة
-    body: JSON.stringify(payload)
-})
-.then(res => res.json()) // حول الرد لـ JSON
-.then(data => {
-    document.getElementById('sync-text').innerText = "GRADE: " + data.grade + "/10";
-    setTimeout(() => window.location.href = 'MC.html', 2500);
-})
-
-        // --- Core Arena Logic ---
-        function getGroup(code) {
-            if (["DX", "SSSX", "ELX", "FX"].includes(code)) return "Titanium";
-            return "Normal";
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "askQuestion", question: question })
+                });
+                const data = await response.json();
+                content.innerHTML += `<div style="align-self: flex-start; background: rgba(255,255,255,0.1); color: #fff; padding: 8px 12px; border-radius: 15px 15px 15px 0; max-width: 80%; border-left: 2px solid var(--gold);">EYCVV: ${data.answer}</div>`;
+                content.scrollTop = content.scrollHeight;
+            } catch (err) {
+                content.innerHTML += `<div style="color: #ff4444; font-size: 0.7rem;">Connection Lost!</div>`;
+            }
         }
 
         function requestSubmit() {
             const frame = document.getElementById('contentFrame').contentWindow;
             frame.postMessage({ type: 'REQUEST_MISSION_DATA' }, '*'); 
             document.getElementById('sync-overlay').style.display = 'flex';
-            document.getElementById('sync-text').innerText = "EYCVV IS EVALUATING...";
         }
 
         window.addEventListener('message', function(event) {
@@ -205,22 +186,27 @@ fetch(SCRIPT_URL, {
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 body: JSON.stringify(payload)
             })
-            .then(() => {
-                document.getElementById('sync-text').innerText = "MISSION RECEIVED BY CORE!";
-                setTimeout(() => window.location.href = 'MC.html', 2000);
+            .then(res => res.json())
+            .then(data => {
+                const syncText = document.getElementById('sync-text');
+                syncText.innerHTML = `
+                    <div style="color: var(--gold); font-size: 2rem; font-weight: bold;">GRADE: ${data.grade}/10</div>
+                    <div style="font-size: 0.9rem; margin-top: 15px; color: #ccc; max-width: 300px;">${data.reason}</div>
+                    <div style="font-size: 0.7rem; margin-top: 10px; color: var(--gold); font-style: italic;">Redirecting to Command Center...</div>
+                `;
+                setTimeout(() => window.location.href = 'MC.html', 4500);
             })
             .catch(err => {
-                alert("CORE CONNECTION FAILED!");
+                alert("SYNC ERROR!");
                 document.getElementById('sync-overlay').style.display = 'none';
             });
         }
 
         function generateStars() {
             const container = document.getElementById('star-container');
-            for (let i = 0; i < 80; i++) {
+            for (let i = 0; i < 50; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.width = '2px'; star.style.height = '2px';
@@ -232,7 +218,7 @@ fetch(SCRIPT_URL, {
         }
 
         function openGuide() {
-            alert("TITANIUM RULES:\n1. Anti-AI is active.\n2. Every word counts.\n3. Be Creative.");
+            alert("EYC TITANIUM RULES:\n1. No AI assistance.\n2. Manual creativity only.\n3. Tokens are awarded based on quality.");
         }
     </script>
 </body>

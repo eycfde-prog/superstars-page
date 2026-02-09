@@ -2,25 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alike X | Phonetic Radar | EYC</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-blue: #00f2ff; --neon-purple: #bc13fe; --glass: rgba(10, 10, 15, 0.95); }
-        body { font-family: 'Rajdhani', sans-serif; background: transparent; color: white; margin: 0; padding: 20px; direction: ltr; }
-        .header-x { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--neon-purple); padding-bottom: 15px; }
-        .question-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .audio-btn { background: var(--neon-purple); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-family: 'Orbitron'; font-size: 10px; margin-bottom: 15px; }
-        .sentence-text { font-size: 1.2rem; margin-bottom: 15px; color: #eee; }
-        .missing-word { color: var(--neon-blue); font-weight: bold; border-bottom: 2px dashed var(--neon-blue); }
-        .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .opt-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani'; font-size: 1.1rem; transition: 0.3s; }
-        .opt-btn:hover { border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.1); }
-        .opt-btn.active { background: var(--neon-blue); color: black; font-weight: bold; }
+        :root { 
+            --neon-blue: #00f2ff; 
+            --neon-purple: #bc13fe; 
+            --glass: rgba(10, 10, 15, 0.8); 
+        }
+
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background: transparent; 
+            color: white; 
+            margin: 0; 
+            padding: 15px; 
+            direction: ltr; 
+        }
+
+        /* تحسين التمرير */
+        body::-webkit-scrollbar { width: 4px; }
+        body::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
+
+        .header-x { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            border-bottom: 2px solid var(--neon-purple); 
+            padding-bottom: 10px; 
+            box-shadow: 0 10px 10px -10px var(--neon-purple);
+        }
+
+        .question-card { 
+            background: var(--glass); 
+            border: 1px solid rgba(188, 19, 254, 0.2); 
+            border-radius: 15px; 
+            padding: 20px; 
+            margin-bottom: 25px; 
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .question-card:hover { border-color: var(--neon-blue); }
+
+        .audio-btn { 
+            background: linear-gradient(45deg, var(--neon-purple), #7a07a5); 
+            color: white; 
+            border: none; 
+            padding: 10px 18px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-family: 'Orbitron'; 
+            font-size: 11px; 
+            margin-bottom: 15px; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .audio-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--neon-purple); }
+
+        .sentence-text { font-size: 1.3rem; margin-bottom: 20px; color: #fff; line-height: 1.5; }
+        
+        .missing-word { 
+            color: var(--neon-blue); 
+            font-weight: bold; 
+            border-bottom: 2px dashed var(--neon-blue);
+            padding: 0 10px;
+            transition: 0.3s;
+        }
+
+        .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+        @media (max-width: 500px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .sentence-text { font-size: 1.1rem; }
+        }
+
+        .opt-btn { 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: white; 
+            padding: 12px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-family: 'Rajdhani'; 
+            font-size: 1.1rem; 
+            transition: 0.3s; 
+        }
+
+        .opt-btn:hover { border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.15); }
+        .opt-btn.active { 
+            background: var(--neon-blue); 
+            color: black; 
+            font-weight: bold; 
+            box-shadow: 0 0 20px var(--neon-blue);
+            border-color: white;
+        }
+
+        .error-input { border: 2px solid #ff4444 !important; animation: shake 0.3s ease; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
     </style>
 </head>
 <body>
     <div class="header-x">
-        <h1 id="x-title" style="font-family: 'Orbitron'; letter-spacing: 5px;">ALIKE-X RADAR</h1>
+        <h1 id="x-title" style="font-family: 'Orbitron'; letter-spacing: 3px; font-size: 1.2rem; color: var(--neon-blue);">ALIKE-X RADAR</h1>
     </div>
     <div id="quiz-screen"></div>
 
@@ -39,15 +130,17 @@
     };
 
     const urlParams = new URLSearchParams(window.location.search);
-    const taskNum = urlParams.get('taskNum') || "1"; 
+    const taskNum = urlParams.get('task') || "1"; // تأكدنا إن الاسم task كما في الأرينا
     let answers = {};
 
     function loadAlikeX() {
         const questions = alikeXData[taskNum] || alikeXData["1"];
         const screen = document.getElementById('quiz-screen');
         screen.innerHTML = questions.map((q, i) => `
-            <div class="question-card">
-                <button class="audio-btn" onclick="playAudio(${i})">▶ PLAY AUDIO CLUE</button>
+            <div class="question-card" id="card-${i}">
+                <button class="audio-btn" onclick="playAudio(${i})">
+                    <span>🔊</span> PLAY AUDIO CLUE
+                </button>
                 <div class="sentence-text">
                     ${q.s.replace('_______', `<span class="missing-word" id="display-${i}">_______</span>`)}
                 </div>
@@ -56,14 +149,19 @@
                 </div>
             </div>
         `).join('');
-        document.getElementById('x-title').innerText = `ALIKE-X: MISSION ${taskNum.padStart(2, '0')}`;
+        document.getElementById('x-title').innerText = `ALIKE-X: RADAR MISSION ${taskNum.padStart(2, '0')}`;
     }
 
     function selectOpt(qIdx, val, btn) {
         const container = btn.parentElement;
         container.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById(`display-${qIdx}`).innerText = val;
+        
+        const display = document.getElementById(`display-${qIdx}`);
+        display.innerText = val.toUpperCase();
+        display.style.color = "var(--neon-purple)";
+        
+        document.getElementById(`card-${qIdx}`).classList.remove('error-input');
         answers[qIdx] = val;
     }
 
@@ -72,16 +170,42 @@
         const questionIndex = parseInt(idx);
         const audioFileNum = ((task - 1) * 5) + (questionIndex + 1);
         const audio = new Audio(`assets/alikeaudio/AX${audioFileNum}.wav`);
-        audio.play().catch(e => console.error("Audio file not found:", audioFileNum));
+        audio.play().catch(e => console.error("Audio Signal Lost:", audioFileNum));
     }
 
+    // الاستماع لزرار Submit من الأرينا
     window.addEventListener('message', function(event) {
         if (event.data.type === 'REQUEST_MISSION_DATA') {
-            const dataArr = [];
-            for(let i=0; i<5; i++) dataArr.push(answers[i] || "");
-            window.parent.postMessage({ type: 'MISSION_ANSWERS', answers: dataArr, missionNum: taskNum }, '*');
+            collectAndSend();
         }
     });
+
+    function collectAndSend() {
+        let finalAnswers = [];
+        let hasMissing = false;
+
+        for(let i=0; i<5; i++) {
+            if (!answers[i]) {
+                document.getElementById(`card-${i}`).classList.add('error-input');
+                hasMissing = true;
+            } else {
+                finalAnswers.push(answers[i]);
+            }
+        }
+
+        if (hasMissing) {
+            alert("⚠️ AGENT! Some Radar Signals are missing. Complete all fields!");
+            window.parent.postMessage({ type: 'MISSION_INCOMPLETE' }, '*');
+            return;
+        }
+
+        // إرسال البيانات للأرينا
+        window.parent.postMessage({ 
+            type: 'MISSION_ANSWERS', 
+            answers: finalAnswers.join(', '), 
+            missionNum: taskNum 
+        }, '*');
+    }
 
     window.onload = loadAlikeX;
 </script>

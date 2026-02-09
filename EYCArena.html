@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EYC Arena | Activity Mode</title>
+    <title>EYC Arena | Titanium Mode</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* ... [ضع هنا كل الـ Styles اللي في كودك الأصلي] ... */
         :root {
             --gold: #D4AF37;
             --gold-glow: rgba(212, 175, 55, 0.5);
@@ -51,7 +52,7 @@
 
     <div id="sync-overlay">
         <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--gold);"></i>
-        <p style="margin-top: 20px; font-family: 'Cinzel'; letter-spacing: 2px;">SYNCING DATA...</p>
+        <p id="sync-text" style="margin-top: 20px; font-family: 'Cinzel'; letter-spacing: 2px;">SYNCING WITH CORE...</p>
     </div>
 
     <div id="star-container"></div>
@@ -59,160 +60,118 @@
     <header>
         <div class="battle-header">
             <div class="info-box">
-                <img id="student-img" src="" class="student-photo">
+                <img id="student-img" class="student-photo" alt="Student">
                 <div style="display: flex; flex-direction: column;">
                     <span class="name" id="student-name">LOADING...</span>
-                    <span id="student-meta" style="font-size: 0.55rem; color: #888; font-family: 'Orbitron';">RANK #-- | TITLE</span>
+                    <span id="student-meta" style="font-size: 0.55rem; color: #888; font-family: 'Orbitron';">RANK -- | TITLE</span>
                 </div>
             </div>
-
             <div class="vs-container">
                 <div class="vs-text">VS</div>
                 <div id="max-score" class="token-score">-- TOKENS</div>
             </div>
-
             <div class="info-box">
                 <div style="display: flex; flex-direction: column; text-align: right;">
                     <span class="name" id="activity-title">ACTIVITY</span>
                     <span id="mission-sub" style="font-size: 0.6rem; color: var(--gold); font-family: 'Orbitron';">MISSION 01</span>
                 </div>
-                <img id="activity-img" src="" class="activity-logo">
+                <img id="activity-img" class="activity-logo" alt="Logo">
             </div>
         </div>
     </header>
 
     <main class="arena-container">
         <div class="glass-iframe-wrapper">
-            <iframe id="contentFrame" allowtransparency="true"></iframe>
+            <iframe id="contentFrame"></iframe>
         </div>
     </main>
 
     <footer>
         <button class="btn btn-side" onclick="openGuide()">GUIDE</button>
         <button id="submitBtn" class="btn btn-submit" onclick="requestSubmit()">SUBMIT MISSION</button>
-        <button class="btn btn-side" onclick="window.location.href='MC.html'">
-            BACK <i class="fas fa-arrow-right" style="font-size: 0.6rem;"></i>
-        </button>
+        <button class="btn btn-side" onclick="window.location.href='MC.html'">BACK</button>
     </footer>
 
     <script>
-        const GITHUB_BASE = "https://eycfde-prog.github.io/superstars-page/";
-        let currentActivity = "";
-        let currentTask = "";
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywwt994TnMUbqZyriXVR1fVOjnREku9yhbMN5d-5F8-JK-RvtUz669KQUiKu2AOBjL/exec";
+        const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE"; // حط رابط الـ Web App بتاعك هنا
+        let currentActivity, currentTask, userEmail, userName;
 
         window.onload = function() {
             generateStars();
             const urlParams = new URLSearchParams(window.location.search);
             
-            const studentName = urlParams.get('name') || "AGENT";
-            const actCode = urlParams.get('activity'); 
-            const taskN = urlParams.get('taskNum');
-            const tokens = urlParams.get('tokens') || "5";
-            const email = urlParams.get('email');
+            userEmail = urlParams.get('email');
+            userName = urlParams.get('name') || "AGENT";
+            currentActivity = urlParams.get('act'); 
+            currentTask = urlParams.get('task');
+            const tokens = (getGroup(currentActivity) === "Titanium") ? "10" : "5";
 
-            if (!actCode) {
-                alert("Mission Data Missing!");
-                window.location.href = 'MC.html';
-                return;
-            }
-
-            currentActivity = actCode;
-            currentTask = taskN;
-
-            document.getElementById('student-name').innerText = studentName;
-            document.getElementById('student-img').src = urlParams.get('image') || "";
-            document.getElementById('student-meta').innerText = `RANK #${urlParams.get('rank') || "--"} | ${urlParams.get('title') || "ELITE"}`;
-            document.getElementById('activity-title').innerText = urlParams.get('activityName') || actCode;
-            document.getElementById('mission-sub').innerText = taskN ? `MISSION ${taskN.padStart(2, '0')}` : "PRACTICE";
+            document.getElementById('student-name').innerText = userName;
+            document.getElementById('student-img').src = `assets/avatars/${urlParams.get('avatar') || 'default.png'}`;
+            document.getElementById('student-meta').innerText = `TITLE: ${urlParams.get('title') || 'RECRUIT'}`;
+            document.getElementById('activity-title').innerText = currentActivity;
+            document.getElementById('mission-sub').innerText = `MISSION ${currentTask.padStart(2, '0')}`;
             document.getElementById('max-score').innerText = `${tokens} TOKENS`;
+            document.getElementById('activity-img').src = `assets/AL/${currentActivity}.png`;
 
-            fetch(`${SCRIPT_URL}?action=checkMission&email=${email}&actCode=${currentActivity}&taskNum=${currentTask}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "completed") {
-                        showAlreadyDoneUI();
-                    } else {
-                        document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?taskNum=${currentTask}`;
-                    }
-                });
-
-            const logoImg = document.getElementById('activity-img');
-            logoImg.src = `assets/AL/${actCode}.png`; 
-
-            logoImg.onerror = function() {
-                this.src = "https://via.placeholder.com/38/000000/D4AF37?text=EYC";
-                this.onerror = null; 
-            };
+            // تحميل محتوى النشاط داخل الـ iframe
+            document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?task=${currentTask}`;
         };
+
+        function getGroup(code) {
+            if (["DX", "SSSX", "ELX", "FX"].includes(code)) return "Titanium";
+            return "Normal";
+        }
 
         function requestSubmit() {
             const frame = document.getElementById('contentFrame').contentWindow;
             frame.postMessage({ type: 'REQUEST_MISSION_DATA' }, '*'); 
+            document.getElementById('sync-overlay').style.display = 'flex';
+            document.getElementById('sync-text').innerText = "EYCVV IS EVALUATING...";
         }
 
         window.addEventListener('message', function(event) {
-            if (event.data.type === 'MISSION_ANSWERS' && event.data.answers) {
-                processCorrection(event.data.answers);
+            if (event.data.type === 'MISSION_ANSWERS') {
+                sendToCore(event.data.answers);
             }
         });
 
-        function processCorrection(answers) {
-            document.getElementById('sync-overlay').style.display = 'flex';
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const report = {
-                action: "submitReport",
-                email: urlParams.get('email'),
-                activityCode: currentActivity,
+        function sendToCore(answers) {
+            const payload = {
+                email: userEmail,
+                name: userName,
+                actCode: currentActivity,
                 taskNum: currentTask,
-                answer: JSON.stringify(answers)
+                answer: answers // ممكن يكون نص أو JSON حسب النشاط
             };
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify(report)
+                body: JSON.stringify(payload)
             })
             .then(res => res.json())
             .then(data => {
-                if(data.status === "success") {
-                    showSuccessUI(urlParams.get('name'), data.grade);
-                } else {
-                    alert("Correction Error: " + data.message);
-                    document.getElementById('sync-overlay').style.display = 'none';
-                }
+                showFinalResult(data);
             })
             .catch(err => {
-                console.error("Critical System Failure", err);
-                alert("Failed to reach Core Server.");
+                alert("CORE CONNECTION FAILED!");
                 document.getElementById('sync-overlay').style.display = 'none';
             });
         }
 
-        function showSuccessUI(name, score) {
+        function showFinalResult(data) {
             const overlay = document.getElementById('sync-overlay');
-            overlay.style.display = 'flex';
             overlay.innerHTML = `
-                <div style="text-align:center; background:rgba(2, 2, 5, 0.95); padding:40px; border:2px solid var(--gold); border-radius:30px; box-shadow:0 0 50px var(--gold-glow); width: 90%; max-width: 400px;">
-                    <div style="font-size:5rem; margin-bottom:10px;">🏆</div>
-                    <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:3px;">MISSION ACCOMPLISHED</h2>
-                    <p style="font-size:1rem; color:#888; margin-top:10px;">AGENT: ${name}</p>
-                    <hr style="border:0; border-top:1px solid var(--glass-border); margin:20px 0;">
-                    <div style="font-size:0.9rem; color:var(--gold);">TOKENS RECOVERED</div>
-                    <div style="font-size:4rem; font-family:'Orbitron'; color:#fff; text-shadow: 0 0 20px var(--gold-glow);">${score}</div>
-                    <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px;" onclick="window.location.href='MC.html'">REDEPLOY</button>
-                </div>`;
-        }
-
-        function showAlreadyDoneUI() {
-            const overlay = document.getElementById('sync-overlay');
-            overlay.style.display = 'flex';
-            overlay.innerHTML = `
-                <div style="text-align:center; background:rgba(2, 15, 2, 0.95); padding:40px; border:2px solid #4CAF50; border-radius:30px; box-shadow:0 0 50px rgba(76, 175, 80, 0.5); width: 90%; max-width: 400px;">
-                    <div style="font-size:5rem; margin-bottom:10px;">✅</div>
-                    <h2 style="font-family:'Cinzel'; color:#4CAF50; letter-spacing:3px;">MISSION COMPLETED</h2>
-                    <p style="font-size:1rem; color:#888; margin-top:10px;">You have already finished this task.</p>
-                    <button class="btn btn-submit" style="margin-top:30px; width:100%; height:50px; background: #4CAF50; color: white;" onclick="window.location.href='MC.html'">RETURN TO BASE</button>
+                <div style="text-align:center; background:rgba(2, 2, 5, 0.98); padding:40px; border:2px solid var(--gold); border-radius:30px; width: 90%; max-width: 420px; border: 1px solid var(--gold-glow);">
+                    <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:20px;">MISSION LOG</h2>
+                    <div style="font-size:0.8rem; color:#888;">GRADE OBTAINED</div>
+                    <div style="font-size:4rem; font-family:'Orbitron'; color:#fff; margin:10px 0;">${data.grade}</div>
+                    ${data.bonus > 0 ? `<div style="color:#4CAF50; font-weight:bold;">+${data.bonus} BONUS TOKENS!</div>` : ''}
+                    <div style="margin:20px 0; font-size:0.85rem; color:#ccc; line-height:1.6; border-top:1px solid #333; padding-top:15px;">
+                        <strong>EYCVV Note:</strong><br>"${data.reason}"
+                    </div>
+                    <div style="font-style:italic; font-size:0.75rem; color:var(--gold); margin-bottom:25px;">"${data.advice}"</div>
+                    <button class="btn btn-submit" style="width:100%;" onclick="window.location.href='MC.html'">REDEPLOY TO BASE</button>
                 </div>`;
         }
 
@@ -221,8 +180,7 @@
             for (let i = 0; i < 80; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.style.width = Math.random() * 2 + 'px';
-                star.style.height = star.style.width;
+                star.style.width = '2px'; star.style.height = '2px';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
                 star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
@@ -231,7 +189,7 @@
         }
 
         function openGuide() {
-            alert(`Mission: ${currentActivity}\nTask: ${currentTask}\nObjective: Earn tokens.`);
+            alert("TITANIUM RULES:\n1. Anti-AI is active.\n2. Every word counts.\n3. Be Creative.");
         }
     </script>
 </body>

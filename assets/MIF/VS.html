@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivid | Picture Description | EYC</title>
+    <title>Vivid | Picture Description | Glassy Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --vivid-blue: #00d4ff; 
-            --glass: rgba(255, 255, 255, 0.03); 
+            --glass-bg: rgba(10, 15, 25, 0.9); 
             --border-glow: rgba(0, 212, 255, 0.3);
+            --scan-line: rgba(0, 212, 255, 0.1);
         }
 
         body { 
@@ -17,134 +18,166 @@
             background: transparent; 
             color: white; 
             margin: 0; 
-            padding: 15px; 
+            padding: 20px; 
             direction: ltr;
         }
 
         .vivid-container {
             max-width: 850px; 
             margin: 0 auto; 
-            text-align: center;
-            animation: fadeIn 0.8s ease-in-out;
+            animation: emerge 1s ease-out;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes emerge { 
+            from { opacity: 0; filter: blur(10px); } 
+            to { opacity: 1; filter: blur(0); } 
+        }
+
+        .header-vivid {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
 
         .header-vivid h1 { 
             font-family: 'Orbitron'; 
             color: var(--vivid-blue); 
-            letter-spacing: 6px; 
-            margin: 0 0 5px 0; 
-            font-size: 1.6rem;
-            text-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+            letter-spacing: 8px; 
+            margin: 0; 
+            font-size: 1.5rem;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
         }
 
-        /* Artistic Image Frame */
+        /* إطار الصورة الاحترافي */
         .image-frame {
             background: #000; 
             border: 1px solid var(--border-glow);
-            padding: 10px; 
-            border-radius: 15px; 
-            margin-bottom: 25px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            padding: 12px; 
+            border-radius: 20px; 
+            margin-bottom: 30px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
             position: relative;
             overflow: hidden;
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.5s;
+        }
+
+        /* تأثير شريط المسح الضوئي */
+        .image-frame::before {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--scan-line), transparent);
+            animation: scan 4s linear infinite;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: -100%; }
+            100% { top: 100%; }
         }
 
         .image-frame::after {
-            content: 'LIVE FEED';
+            content: 'TARGET ACQUIRED';
             position: absolute;
-            top: 15px;
-            right: 15px;
+            bottom: 20px;
+            left: 25px;
             font-family: 'Orbitron';
-            font-size: 10px;
+            font-size: 9px;
             color: var(--vivid-blue);
-            background: rgba(0,0,0,0.5);
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid var(--vivid-blue);
-        }
-
-        .image-frame:hover {
-            border-color: var(--vivid-blue);
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+            letter-spacing: 2px;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            border-left: 3px solid var(--vivid-blue);
         }
 
         #target-image {
             width: 100%; 
-            max-height: 480px; 
+            max-height: 500px; 
             object-fit: contain;
-            border-radius: 8px; 
+            border-radius: 12px; 
             display: block;
-            transition: transform 0.5s;
+            filter: contrast(1.1);
+            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .image-frame:hover #target-image {
-            transform: scale(1.02);
+            transform: scale(1.03);
+            filter: contrast(1.2) brightness(1.1);
         }
 
-        /* Description Zone */
+        /* منطقة التدوين الوصفي */
         .description-zone {
-            background: rgba(10, 10, 15, 0.8); 
-            border-radius: 15px;
-            padding: 20px; 
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(10px);
+            background: var(--glass-bg); 
+            border-radius: 20px;
+            padding: 25px; 
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .description-zone label {
             display: block; 
             font-family: 'Orbitron'; 
             color: var(--vivid-blue);
-            font-size: 11px; 
-            margin-bottom: 15px; 
-            letter-spacing: 2px; 
+            font-size: 10px; 
+            margin-bottom: 18px; 
+            letter-spacing: 3px; 
             text-align: left;
-            opacity: 0.8;
         }
 
         textarea {
             width: 100%; 
-            height: 180px; 
-            background: transparent; 
+            height: 200px; 
+            background: rgba(0,0,0,0.3); 
             border: none;
-            color: #fff; 
+            color: #e0e0e0; 
             font-family: 'Rajdhani'; 
-            font-size: 1.2rem;
-            line-height: 1.6; 
+            font-size: 1.25rem;
+            line-height: 1.7; 
             outline: none; 
             resize: none; 
             box-sizing: border-box;
-            border-left: 2px solid var(--vivid-blue); 
-            padding: 5px 15px;
-            transition: 0.3s;
+            border-left: 3px solid var(--vivid-blue); 
+            padding: 10px 20px;
+            border-radius: 0 15px 15px 0;
+            transition: 0.4s;
         }
 
         textarea:focus {
-            background: rgba(0, 212, 255, 0.03);
+            background: rgba(0, 212, 255, 0.04);
+            color: white;
+            border-left-width: 6px;
         }
 
         .footer-tools {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 12px;
-            padding-top: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
             border-top: 1px solid rgba(255,255,255,0.05);
         }
 
         .hint-text {
             font-size: 11px; 
-            color: #666; 
+            color: #888; 
             font-style: italic;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         .word-counter {
             font-family: 'Orbitron';
-            font-size: 10px;
-            color: #444;
+            font-size: 11px;
+            color: var(--vivid-blue);
+            background: rgba(0, 212, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
         }
 
     </style>
@@ -153,21 +186,21 @@
 
     <div class="vivid-container">
         <div class="header-vivid">
-            <h1 id="v-title">VIVID: MISSION 01</h1>
-            <p style="color: #666; font-size: 13px; margin-bottom: 20px; letter-spacing: 1px;">Analyze the target image and reconstruct it with your words.</p>
+            <h1 id="v-title">VIVID: MISSION ANALYSIS</h1>
+            <p style="color: #888; font-size: 13px; margin: 10px 0 25px 0; letter-spacing: 1.5px;">SYSTEM STATUS: SCANNING VISUAL ELEMENTS...</p>
         </div>
 
         <div class="image-frame">
-            <img id="target-image" src="" alt="Vivid Target" onerror="this.src='https://via.placeholder.com/800x450/050505/00d4ff?text=SCANNING+TARGET...'">
+            <img id="target-image" src="" alt="Vivid Target" onerror="this.src='https://via.placeholder.com/800x450/050505/00d4ff?text=DATA+RECOVERY+IN+PROGRESS...'">
         </div>
 
         <div class="description-zone">
-            <label>VISUAL DATA DECRYPTION:</label>
-            <textarea id="descInput" placeholder="Describe movements, emotions, lighting, and textures..." oninput="updateWordCount()"></textarea>
+            <label>DECODE VISUAL SPECTROME:</label>
+            <textarea id="descInput" placeholder="Enter cinematic description... focus on textures, lighting, and atmosphere." oninput="updateWordCount()"></textarea>
             
             <div class="footer-tools">
-                <div class="hint-text">No word limit. Aim for cinematic detail.</div>
-                <div class="word-counter">WORDS: <span id="wCount" style="color: var(--vivid-blue);">0</span></div>
+                <div class="hint-text">Translate the visual silence into narrative power.</div>
+                <div class="word-counter">SYNCED_WORDS: <span id="wCount">0</span></div>
             </div>
         </div>
     </div>
@@ -177,8 +210,8 @@
     const taskNum = urlParams.get('task') || "1";
 
     function initVivid() {
-        // تحميل الصورة من المسار المطلوب
         const imgElement = document.getElementById('target-image');
+        // تأكد أن المسار صحيح حسب هيكل ملفاتك
         imgElement.src = `assets/vspics/Vs${taskNum}.png`;
         
         document.getElementById('v-title').innerText = `VIVID: MISSION ${taskNum.padStart(2, '0')}`;
@@ -190,13 +223,12 @@
         document.getElementById('wCount').innerText = words;
     }
 
-    // الاستجابة لطلب البيانات من Arena
     window.addEventListener('message', function(event) {
         if (event.data.type === 'REQUEST_VIVID_DATA') {
             const description = document.getElementById('descInput').value.trim();
             
             window.parent.postMessage({ 
-                type: 'MISSION_ANSWERS', // توحيد نوع الرسالة مع بقية المهام
+                type: 'MISSION_ANSWERS', 
                 activityCode: 'VS', 
                 answers: [description], 
                 missionNum: taskNum 

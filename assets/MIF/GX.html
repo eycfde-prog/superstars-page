@@ -2,97 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GX | Grammar Extractor | EYC</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GX | Grammar Extractor | Glassy Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --extractor-gold: #ffcf00;
-            --neon-blue: #00f2ff;
-            --glass: rgba(15, 15, 20, 0.95);
+            --gold: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.3);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(212, 175, 55, 0.2);
         }
 
         body {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: transparent;
             color: white;
             margin: 0; padding: 15px;
             direction: ltr;
         }
 
-        .gx-container {
-            max-width: 900px; margin: 0 auto;
+        /* سكرول بار جلاسي */
+        body::-webkit-scrollbar { width: 4px; }
+        body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        .gx-container { max-width: 900px; margin: 0 auto; animation: fadeIn 0.8s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .header-gx {
-            text-align: center; margin-bottom: 20px;
-            border-bottom: 1px solid var(--extractor-gold);
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; border-bottom: 1px solid var(--glass-border);
             padding-bottom: 10px;
         }
 
         .header-gx h1 {
-            font-family: 'Orbitron'; font-size: 1.3rem;
-            color: var(--extractor-gold); letter-spacing: 4px; margin: 0;
+            font-family: 'Orbitron'; font-size: 1rem;
+            color: var(--gold); letter-spacing: 3px; margin: 0;
         }
 
-        /* منطقة النص (القطعة) */
+        .principle-tags { display: flex; gap: 8px; }
+        .tag {
+            font-family: 'Orbitron'; font-size: 8px; color: var(--gold);
+            border: 1px solid var(--glass-border); padding: 2px 6px; border-radius: 4px;
+        }
+
+        /* حاوية النص الاستخراجي */
         .passage-box {
             background: var(--glass);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px; border-radius: 12px;
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 25px; border-radius: 18px;
             margin-bottom: 25px; line-height: 1.8;
-            font-size: 1.15rem; color: #ececec;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-            position: relative;
+            font-size: 1.1rem; color: #eee;
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .passage-box::before {
-            content: "SOURCE_TEXT"; position: absolute; top: -10px; left: 20px;
-            background: #111; padding: 0 10px; font-family: 'Orbitron';
-            font-size: 10px; color: var(--extractor-gold);
+            content: "INTEL_SOURCE"; position: absolute; top: -10px; left: 20px;
+            background: #020205; padding: 0 12px; font-family: 'Orbitron';
+            font-size: 10px; color: var(--gold); border: 1px solid var(--glass-border);
+            border-radius: 5px;
         }
 
         /* شبكة الاستخراج */
         .extractor-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 15px;
         }
 
         .extraction-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 15px; border-radius: 10px;
-            border-right: 3px solid var(--extractor-gold);
-            transition: 0.3s;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 18px; border-radius: 15px;
+            border-bottom: 3px solid var(--gold);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .extraction-card:hover {
-            background: rgba(255, 207, 0, 0.02);
-            border-color: var(--extractor-gold);
+            border-color: var(--gold);
+            box-shadow: 0 5px 15px var(--gold-glow);
+            transform: translateY(-5px);
         }
 
         .extraction-card label {
-            display: block; font-family: 'Orbitron'; font-size: 11px;
-            color: var(--extractor-gold); margin-bottom: 10px;
+            display: block; font-family: 'Orbitron'; font-size: 9px;
+            color: var(--gold); margin-bottom: 12px;
             text-transform: uppercase; letter-spacing: 1px;
         }
 
         .extraction-input {
             width: 100%; background: rgba(0,0,0,0.4);
-            border: 1px solid #333; border-radius: 5px;
-            color: var(--neon-blue); padding: 12px;
-            font-family: 'Rajdhani'; font-size: 1rem;
+            border: 1px solid var(--glass-border); border-radius: 8px;
+            color: #fff; padding: 12px;
+            font-family: 'Poppins'; font-size: 0.9rem;
             outline: none; box-sizing: border-box;
             transition: 0.3s;
         }
 
         .extraction-input:focus {
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
         }
 
         .requirement-tag {
-            font-size: 10px; color: #666; margin-top: 5px; display: block;
+            font-size: 9px; color: #666; margin-top: 8px; display: block;
+            font-style: italic;
+        }
+
+        .error-card { border-color: #ff4444 !important; animation: shake 0.3s; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
     </style>
 </head>
@@ -100,18 +124,22 @@
 
 <div class="gx-container">
     <div class="header-gx">
-        <h1>GRAMMAR EXTRACTOR</h1>
+        <h1>Grammar Extractor</h1>
+        <div class="principle-tags">
+            <span class="tag">CLR</span>
+            <span class="tag">AAI</span>
+        </div>
     </div>
 
     <div class="passage-box" id="passage-content">
-        </div>
+        Scanning for Intel...
+    </div>
 
     <div class="extractor-grid" id="extractor-fields">
-        </div>
+    </div>
 </div>
 
 <script>
-    // بيانات تجريبية - سيتم دمج النماذج الحقيقية التي سترسلها لاحقاً
     const gxData = {
         "1": {
             passage: "The sun was shining brightly as the small birds flew over the green forest. Yesterday, they built a new nest because they were happy. If it rains tomorrow, they will stay inside.",
@@ -134,30 +162,46 @@
         
         const grid = document.getElementById('extractor-fields');
         grid.innerHTML = data.requirements.map((req, i) => `
-            <div class="extraction-card">
-                <label>DATA_FIELD_${i+1}: ${req.label}</label>
-                <input type="text" class="extraction-input" id="extract-${i}" placeholder="Enter findings...">
-                <span class="requirement-tag">${req.hint}</span>
+            <div class="extraction-card" id="card-${i}">
+                <label>DATA_FIELD_0${i+1}: ${req.label}</label>
+                <input type="text" class="extraction-input gx-input" id="extract-${i}" placeholder="Enter findings...">
+                <span class="requirement-tag">● ${req.hint}</span>
             </div>
         `).join('');
     }
 
-    // استقبال أمر الإرسال من الأرينا
     window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_GX_DATA') {
-            const answers = [];
-            for(let i=0; i<5; i++) {
-                answers.push(document.getElementById(`extract-${i}`).value.trim());
-            }
-
-            window.parent.postMessage({ 
-                type: 'SUBMIT_X', 
-                activityCode: 'GX',
-                answers: answers, 
-                missionNum: taskNum 
-            }, '*');
+        if (event.data.type === 'REQUEST_MISSION_DATA') {
+            collectAndSend();
         }
     });
+
+    function collectAndSend() {
+        const inputs = document.querySelectorAll('.gx-input');
+        let answers = [];
+        let hasError = false;
+
+        inputs.forEach((input, i) => {
+            const val = input.value.trim();
+            if(!val) {
+                hasError = true;
+                document.getElementById(`card-${i}`).classList.add('error-card');
+            } else {
+                document.getElementById(`card-${i}`).classList.remove('error-card');
+                answers.push(val);
+            }
+        });
+
+        if(hasError) {
+            window.parent.postMessage({ type: 'MISSION_INCOMPLETE' }, '*');
+            return;
+        }
+
+        window.parent.postMessage({ 
+            type: 'MISSION_ANSWERS', 
+            answers: answers.join(' | ')
+        }, '*');
+    }
 
     window.onload = loadExtractor;
 </script>

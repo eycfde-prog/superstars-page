@@ -109,8 +109,8 @@
         </div>
     </div>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKx7oXa6sN5flX8JvJYFhWlufPF1td7_cTW6h3cWtvVqCAY-5GG6aPyjtY9dtCBCqkKA/exec";
+<script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNX-fBIgporOLY2hflThpSo85fhTzToGpCqMNracrbQMyJGZoDCmQJHzOwaghRp7Le2Q/exec";
         let currentActivity, currentTask, userEmail, userName;
 
         window.onload = function() {
@@ -134,31 +134,9 @@
             document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?task=${currentTask}`;
         };
 
-        function toggleChat() {
-            const box = document.getElementById('chat-box');
-            box.style.display = box.style.display === 'none' ? 'flex' : 'none';
-        }
-
-        async function askFifi() {
-            const input = document.getElementById('chat-input');
-            const content = document.getElementById('chat-content');
-            const question = input.value.trim();
-            if (!question) return;
-
-            content.innerHTML += `<div style="align-self: flex-end; background: var(--gold); color: black; padding: 8px 12px; border-radius: 15px 15px 0 15px; max-width: 80%; font-weight: 500;">${question}</div>`;
-            input.value = '';
-            content.scrollTop = content.scrollHeight;
-
-            try {
-                const response = await fetch(`${SCRIPT_URL}?action=askQuestion&question=${encodeURIComponent(question)}`);
-                const data = await response.json();
-                
-                content.innerHTML += `<div style="align-self: flex-start; background: rgba(255,255,255,0.1); color: #fff; padding: 8px 12px; border-radius: 15px 15px 15px 0; max-width: 80%; border-left: 2px solid var(--gold);">EYCVV: ${data.answer}</div>`;
-                content.scrollTop = content.scrollHeight;
-            } catch (err) {
-                console.error("Chat Error:", err);
-                content.innerHTML += `<div style="color: #ff4444; font-size: 0.7rem;">⚠️ فشل الاتصال بالمخ الرئيسي!</div>`;
-            }
+        // دالة الـ Guide مستمرة بناءً على طلبك
+        function openGuide() {
+            alert("EYC TITANIUM RULES:\n1. No AI assistance.\n2. Manual creativity only.\n3. Tokens are awarded based on quality.");
         }
 
         function requestSubmit() {
@@ -184,20 +162,20 @@
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 body: JSON.stringify(payload)
             })
-            .then(() => {
+            .then(res => res.json())
+            .then(data => {
                 const syncText = document.getElementById('sync-text');
                 syncText.innerHTML = `
-                    <div style="color: var(--gold); font-size: 1.5rem; font-weight: bold;">MISSION UPLOADED</div>
-                    <div style="font-size: 0.9rem; margin-top: 15px; color: #ccc;">فيفي تقوم بمراجعة إجاباتك الآن...</div>
+                    <div style="color: var(--gold); font-size: 2rem; font-weight: bold;">GRADE: ${data.grade}/10</div>
+                    <div style="font-size: 0.9rem; margin-top: 15px; color: #ccc; max-width: 300px;">${data.reason}</div>
+                    <div style="font-size: 0.7rem; margin-top: 10px; color: var(--gold); font-style: italic;">Redirecting to Command Center...</div>
                 `;
-                setTimeout(() => window.location.href = 'MC.html', 3000);
+                setTimeout(() => window.location.href = 'MC.html', 4500);
             })
             .catch(err => {
-                console.error("Submit Error:", err);
-                alert("خطأ في المزامنة!");
+                alert("SYNC ERROR!");
                 document.getElementById('sync-overlay').style.display = 'none';
             });
         }
@@ -213,10 +191,6 @@
                 star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
                 container.appendChild(star);
             }
-        }
-
-        function openGuide() {
-            alert("EYC TITANIUM RULES:\n1. No AI assistance.\n2. Manual creativity only.\n3. Tokens are awarded based on quality.");
         }
     </script>
 </body>

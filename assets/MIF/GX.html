@@ -2,121 +2,164 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Golden Ear X | Audio Summarization | EYC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GX | Grammar Extractor | EYC</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-purple: #bc13fe;
+            --extractor-gold: #ffcf00;
             --neon-blue: #00f2ff;
-            --glass: rgba(10, 10, 15, 0.95);
+            --glass: rgba(15, 15, 20, 0.95);
         }
 
-        body { 
-            font-family: 'Rajdhani', sans-serif; background: transparent; color: white; 
-            margin: 0; padding: 20px; direction: ltr;
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: transparent;
+            color: white;
+            margin: 0; padding: 15px;
+            direction: ltr;
         }
 
-        .audio-x-panel {
-            background: var(--glass); border: 1px solid rgba(188, 19, 254, 0.3);
-            border-radius: 20px; padding: 30px; text-align: center;
-            box-shadow: 0 0 30px rgba(188, 19, 254, 0.1); margin-bottom: 30px;
+        .gx-container {
+            max-width: 900px; margin: 0 auto;
         }
 
-        .audio-x-panel h1 { 
-            font-family: 'Orbitron'; color: var(--neon-purple); 
-            font-size: 1.4rem; letter-spacing: 5px; margin-bottom: 20px;
+        .header-gx {
+            text-align: center; margin-bottom: 20px;
+            border-bottom: 1px solid var(--extractor-gold);
+            padding-bottom: 10px;
         }
 
-        audio { width: 100%; filter: invert(1) hue-rotate(260deg); }
-
-        .summary-zone { display: flex; flex-direction: column; gap: 20px; }
-
-        .sentence-box {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 20px; position: relative;
+        .header-gx h1 {
+            font-family: 'Orbitron'; font-size: 1.3rem;
+            color: var(--extractor-gold); letter-spacing: 4px; margin: 0;
         }
 
-        .sentence-box label {
-            display: block; font-family: 'Orbitron'; color: var(--neon-blue);
-            font-size: 11px; margin-bottom: 10px; letter-spacing: 2px;
+        /* منطقة النص (القطعة) */
+        .passage-box {
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px; border-radius: 12px;
+            margin-bottom: 25px; line-height: 1.8;
+            font-size: 1.15rem; color: #ececec;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
         }
 
-        .x-input-field {
-            width: 100%; background: transparent; border: none;
-            border-bottom: 1px solid #444; color: #fff;
-            font-family: 'Rajdhani'; font-size: 1.2rem;
-            padding: 10px 0; outline: none; transition: 0.3s;
+        .passage-box::before {
+            content: "SOURCE_TEXT"; position: absolute; top: -10px; left: 20px;
+            background: #111; padding: 0 10px; font-family: 'Orbitron';
+            font-size: 10px; color: var(--extractor-gold);
         }
 
-        .x-input-field:focus { border-bottom-color: var(--neon-purple); }
+        /* شبكة الاستخراج */
+        .extractor-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
 
-        .line-marker {
-            position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
-            width: 4px; height: 30px; background: var(--neon-purple);
-            box-shadow: 0 0 10px var(--neon-purple);
+        .extraction-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px; border-radius: 10px;
+            border-right: 3px solid var(--extractor-gold);
+            transition: 0.3s;
+        }
+
+        .extraction-card:hover {
+            background: rgba(255, 207, 0, 0.02);
+            border-color: var(--extractor-gold);
+        }
+
+        .extraction-card label {
+            display: block; font-family: 'Orbitron'; font-size: 11px;
+            color: var(--extractor-gold); margin-bottom: 10px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .extraction-input {
+            width: 100%; background: rgba(0,0,0,0.4);
+            border: 1px solid #333; border-radius: 5px;
+            color: var(--neon-blue); padding: 12px;
+            font-family: 'Rajdhani'; font-size: 1rem;
+            outline: none; box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        .extraction-input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
+        }
+
+        .requirement-tag {
+            font-size: 10px; color: #666; margin-top: 5px; display: block;
         }
     </style>
 </head>
 <body>
 
-    <div class="audio-x-panel">
-        <h1 id="x-title">GE-X: MISSION RADAR</h1>
-        <audio id="xAudio" controls>
-            <source id="xSource" src="" type="audio/wav">
-        </audio>
+<div class="gx-container">
+    <div class="header-gx">
+        <h1>GRAMMAR EXTRACTOR</h1>
     </div>
 
-    <div class="summary-zone">
-        <div class="sentence-box">
-            <div class="line-marker"></div>
-            <label>CORE SENTENCE 01:</label>
-            <input type="text" class="x-input-field" id="sent-1" placeholder="Detecting primary insight...">
+    <div class="passage-box" id="passage-content">
         </div>
-        <div class="sentence-box">
-            <div class="line-marker"></div>
-            <label>CORE SENTENCE 02:</label>
-            <input type="text" class="x-input-field" id="sent-2" placeholder="Analyzing supporting evidence...">
+
+    <div class="extractor-grid" id="extractor-fields">
         </div>
-        <div class="sentence-box">
-            <div class="line-marker"></div>
-            <label>CORE SENTENCE 03:</label>
-            <input type="text" class="x-input-field" id="sent-3" placeholder="Finalizing conclusion...">
-        </div>
-    </div>
+</div>
 
 <script>
+    // بيانات تجريبية - سيتم دمج النماذج الحقيقية التي سترسلها لاحقاً
+    const gxData = {
+        "1": {
+            passage: "The sun was shining brightly as the small birds flew over the green forest. Yesterday, they built a new nest because they were happy. If it rains tomorrow, they will stay inside.",
+            requirements: [
+                { label: "Extract 3 Verbs", hint: "e.g., built, stay..." },
+                { label: "Extract 2 Adjectives", hint: "e.g., small, green..." },
+                { label: "Extract 1 Past Simple sentence", hint: "Write the whole sentence" },
+                { label: "Extract 3 Nouns", hint: "e.g., birds, forest..." },
+                { label: "Extract 1 Future condition", hint: "If + will..." }
+            ]
+        }
+    };
+
     const urlParams = new URLSearchParams(window.location.search);
     const taskNum = urlParams.get('task') || "1";
 
-    function initGEX() {
-        // تحميل الملف الصوتي من مجلد gexaudio
-        const audio = document.getElementById('xAudio');
-        const source = document.getElementById('xSource');
-        source.src = `assets/gexaudio/GEX${taskNum}.wav`;
-        audio.load();
-
-        document.getElementById('x-title').innerText = `GE-X: MISSION ${taskNum.padStart(2, '0')}`;
+    function loadExtractor() {
+        const data = gxData[taskNum] || gxData["1"];
+        document.getElementById('passage-content').innerText = data.passage;
+        
+        const grid = document.getElementById('extractor-fields');
+        grid.innerHTML = data.requirements.map((req, i) => `
+            <div class="extraction-card">
+                <label>DATA_FIELD_${i+1}: ${req.label}</label>
+                <input type="text" class="extraction-input" id="extract-${i}" placeholder="Enter findings...">
+                <span class="requirement-tag">${req.hint}</span>
+            </div>
+        `).join('');
     }
 
-    // إرسال البيانات للصفحة الأم HybirdX
+    // استقبال أمر الإرسال من الأرينا
     window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_GEX_DATA') {
-            const s1 = document.getElementById('sent-1').value.trim();
-            const s2 = document.getElementById('sent-2').value.trim();
-            const s3 = document.getElementById('sent-3').value.trim();
-
-            // إرسال البيانات حسب طلبك: الجمل مفصولة بفواصل في مصفوفة
-            const combinedData = [s1, s2, s3];
+        if (event.data.type === 'REQUEST_GX_DATA') {
+            const answers = [];
+            for(let i=0; i<5; i++) {
+                answers.push(document.getElementById(`extract-${i}`).value.trim());
+            }
 
             window.parent.postMessage({ 
                 type: 'SUBMIT_X', 
-                answers: combinedData, // إرسال الـ 3 جمل كمصفوفة
+                activityCode: 'GX',
+                answers: answers, 
                 missionNum: taskNum 
             }, '*');
         }
     });
 
-    window.onload = initGEX;
+    window.onload = loadExtractor;
 </script>
 </body>
 </html>

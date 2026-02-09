@@ -2,97 +2,155 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Label Master | EYC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Label Master | EYC Arena</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --gold: #ffcc00;
+            --bg-dark: rgba(10, 10, 15, 0.9);
+        }
+
         body { 
             font-family: 'Rajdhani', sans-serif; 
-            background: transparent; color: #fff; 
-            margin: 0; padding: 15px; direction: ltr;
-        }
-
-        .label-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            animation: fadeIn 0.8s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .image-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 15px;
-            text-align: center;
-            transition: 0.3s;
-        }
-
-        .image-card:hover {
-            transform: translateY(-5px);
-            border-color: #00f2ff;
-            box-shadow: 0 10px 20px rgba(0, 242, 255, 0.1);
-        }
-
-        .img-placeholder {
-            width: 100%; height: 140px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
-            margin-bottom: 15px;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-        }
-
-        .img-placeholder img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
-
-        .label-input {
-            width: 90%;
-            background: rgba(0,0,0,0.3);
-            border: none;
-            border-bottom: 2px solid #555;
-            color: #ffcc00;
-            font-family: 'Orbitron';
-            text-align: center;
-            padding: 8px;
-            font-size: 0.9rem;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .label-input:focus {
-            border-color: #ffcc00;
-            background: rgba(255, 204, 0, 0.05);
+            background: transparent; 
+            color: #fff; 
+            margin: 0; 
+            padding: 15px; 
+            direction: ltr;
+            overflow-x: hidden;
         }
 
         .topic-header {
             font-family: 'Orbitron';
-            color: #00f2ff;
+            color: var(--neon-blue);
             text-transform: uppercase;
-            margin-bottom: 20px;
-            letter-spacing: 3px;
+            margin-bottom: 25px;
+            letter-spacing: 4px;
             text-align: center;
-            font-size: 1.2rem;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            font-size: 1.4rem;
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.6);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            padding-bottom: 10px;
         }
 
-        /* زر إرسال داخلي للتجربة أو الاعتماد */
-        .submit-btn {
-            display: block; margin: 30px auto; padding: 10px 40px;
-            background: var(--gold-gradient, #ffcc00); border: none;
-            border-radius: 50px; font-family: 'Orbitron'; cursor: pointer;
-            font-weight: bold; color: #000;
+        .label-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            perspective: 1000px;
         }
+
+        .image-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: cardSlide 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes cardSlide {
+            from { opacity: 0; transform: translateY(30px) rotateX(-10deg); }
+            to { opacity: 1; transform: translateY(0) rotateX(0); }
+        }
+
+        .image-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--neon-blue);
+            box-shadow: 0 15px 30px rgba(0, 242, 255, 0.15);
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        .img-container {
+            width: 100%; 
+            height: 130px;
+            background: #000;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .img-container img {
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain;
+            transition: 0.5s;
+        }
+
+        .image-card:hover .img-container img {
+            transform: scale(1.1);
+        }
+
+        .label-input {
+            width: 85%;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            border-bottom: 2px solid #444;
+            color: var(--gold);
+            font-family: 'Orbitron';
+            text-align: center;
+            padding: 8px;
+            font-size: 0.85rem;
+            outline: none;
+            transition: 0.3s;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .label-input:focus {
+            border-color: var(--gold);
+            background: rgba(255, 204, 0, 0.08);
+            box-shadow: 0 4px 10px rgba(255, 204, 0, 0.1);
+        }
+
+        .submit-area {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            padding-bottom: 20px;
+        }
+
+        .submit-btn {
+            padding: 12px 50px;
+            background: var(--gold);
+            border: none;
+            border-radius: 50px;
+            font-family: 'Orbitron';
+            cursor: pointer;
+            font-weight: bold;
+            color: #000;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.5);
+            letter-spacing: 4px;
+        }
+
+        /* Delay animation for each card */
+        .image-card:nth-child(1) { animation-delay: 0.1s; }
+        .image-card:nth-child(2) { animation-delay: 0.2s; }
+        .image-card:nth-child(3) { animation-delay: 0.3s; }
+        .image-card:nth-child(n+4) { animation-delay: 0.4s; }
+
     </style>
 </head>
 <body>
 
     <div id="topic-title" class="topic-header">SCANNING TARGETS...</div>
     <div id="label-zone" class="label-grid"></div>
-    <button class="submit-btn" onclick="triggerSubmit()">SUBMIT MISSION</button>
+    
+    <div class="submit-area">
+        <button class="submit-btn" onclick="triggerSubmit()">FINALIZE MISSION</button>
+    </div>
 
 <script>
     const labelData = {
@@ -109,25 +167,24 @@
     };
 
     let currentTaskWords = [];
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskNum = urlParams.get('task') || "1";
 
     function loadLabelMission() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const taskNum = parseInt(urlParams.get('task')) || 1;
-        const currentTask = labelData[taskNum.toString()] || labelData["1"];
+        const currentTask = labelData[taskNum] || labelData["1"];
         currentTaskWords = currentTask.words;
 
         document.getElementById('topic-title').innerText = `TOPIC: ${currentTask.topic}`;
         
         const container = document.getElementById('label-zone');
         container.innerHTML = currentTask.words.map((w, i) => {
-            // المعادلة الذكية لجلب الصورة: ((task-1)*10) + (i+1)
-            const imgID = ((taskNum - 1) * 10) + (i + 1);
+            const imgID = ((parseInt(taskNum) - 1) * 10) + (i + 1);
             return `
                 <div class="image-card">
-                    <div class="img-placeholder">
-                        <img src="assets/lspic/${imgID}.png" alt="Target ${imgID}">
+                    <div class="img-container">
+                        <img src="assets/lspic/${imgID}.png" alt="Target ${imgID}" onerror="this.src='https://via.placeholder.com/150/000000/00f2ff?text=TARGET+${imgID}'">
                     </div>
-                    <input type="text" class="label-input" id="label-${i}" placeholder="IDENTIFY...">
+                    <input type="text" class="label-input" id="label-${i}" placeholder="IDENTIFY..." autocomplete="off">
                 </div>
             `;
         }).join('');
@@ -135,27 +192,34 @@
 
     function triggerSubmit() {
         const studentAnswers = [];
+        let completed = true;
+
         for(let i=0; i<10; i++) {
-            studentAnswers.push(document.getElementById(`label-${i}`).value.trim());
-        }
-        
-      // استلام طلب البيانات من الأرينا
-window.addEventListener('message', function(event) {
-    if (event.data.type === 'REQUEST_MISSION_DATA') {
-        const studentAnswers = [];
-        for(let i=0; i<10; i++) {
-            const val = document.getElementById(`label-${i}`) ? document.getElementById(`label-${i}`).value.trim() : "";
+            const val = document.getElementById(`label-${i}`).value.trim();
+            if(!val) completed = false;
             studentAnswers.push(val);
         }
+
+        if(!completed) {
+            if(!confirm("Some targets are not identified. Do you want to submit anyway?")) return;
+        }
         
-        // إرسال الإجابات للأرينا مع الإجابات النموذجية للتصحيح
+        // إرسال البيانات للأرينا
         window.parent.postMessage({
-            type: 'MISSION_ANSWERS',
+            type: 'MISSION_ANSWERS', // توحيد نوع الرسالة مع بقية المهام
+            activityCode: 'LM',
             answers: studentAnswers,
-            modelAnswers: currentTaskWords // سيستخدمها ملف CC/LS.js
+            modelAnswers: currentTaskWords,
+            missionNum: taskNum
         }, '*');
     }
-});
+
+    // استقبال نداء الأرينا العام
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'REQUEST_MISSION_DATA') {
+            triggerSubmit();
+        }
+    });
 
     window.onload = loadLabelMission;
 </script>

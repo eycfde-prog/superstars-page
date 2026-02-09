@@ -2,45 +2,118 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Golden Ear | Season Mission | EYC</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #ffcc00; --glass: rgba(255, 255, 255, 0.05); }
-        body { 
-            font-family: 'Rajdhani', sans-serif; background: transparent; color: white; 
-            margin: 0; padding: 20px; direction: ltr;
+        :root { 
+            --gold: #ffcc00; 
+            --gold-glow: rgba(255, 204, 0, 0.3);
+            --glass: rgba(15, 15, 20, 0.9); 
         }
+
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background: transparent; 
+            color: white; 
+            margin: 0; 
+            padding: 10px; 
+            direction: ltr;
+        }
+
+        /* Scrollbar Styling */
+        body::-webkit-scrollbar { width: 5px; }
+        body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
         .audio-player-container {
-            background: var(--glass); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,204,0,0.2); border-radius: 20px;
-            padding: 20px; text-align: center; margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: var(--glass); 
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 204, 0, 0.2); 
+            border-radius: 20px;
+            padding: 20px; 
+            text-align: center; 
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border-top: 3px solid var(--gold);
         }
 
-        .audio-player-container h2 { font-family: 'Orbitron'; color: var(--gold); font-size: 1.2rem; }
+        .audio-player-container h2 { 
+            font-family: 'Orbitron'; 
+            color: var(--gold); 
+            font-size: 1.1rem; 
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
 
-        audio { width: 100%; margin-top: 15px; filter: invert(1); }
+        audio { 
+            width: 100%; 
+            filter: invert(1) hue-rotate(180deg) brightness(1.5); 
+            height: 40px;
+        }
 
-        .questions-grid { display: flex; flex-direction: column; gap: 20px; }
+        .questions-grid { display: flex; flex-direction: column; gap: 15px; }
 
         .question-card {
-            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; padding: 20px; transition: 0.3s;
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 15px; 
+            padding: 20px; 
+            transition: 0.3s ease;
         }
 
-        .question-text { font-family: 'Orbitron'; font-size: 0.95rem; margin-bottom: 15px; color: var(--gold); }
+        .question-card:hover { border-color: var(--gold-glow); background: rgba(255, 204, 0, 0.02); }
+
+        .question-text { 
+            font-family: 'Orbitron'; 
+            font-size: 0.9rem; 
+            margin-bottom: 18px; 
+            color: var(--gold);
+            line-height: 1.4;
+        }
 
         .options-list { display: flex; flex-direction: column; gap: 10px; }
 
         .option-item {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            padding: 12px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s;
-            font-size: 1rem; display: flex; align-items: center; gap: 10px;
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 18px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            transition: 0.2s all;
+            font-size: 0.95rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            position: relative;
         }
 
-        .option-item:hover { background: rgba(255, 204, 0, 0.1); border-color: var(--gold); }
-        .option-item.selected { background: var(--gold); color: black; font-weight: bold; }
+        .option-item:hover { 
+            background: rgba(255, 204, 0, 0.1); 
+            border-color: var(--gold); 
+            transform: translateX(5px);
+        }
+
+        .option-item.selected { 
+            background: var(--gold); 
+            color: black; 
+            font-weight: 700; 
+            border-color: var(--gold);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .option-item::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .option-item.selected::before {
+            background: black;
+            border-color: black;
+        }
 
     </style>
 </head>
@@ -82,7 +155,7 @@
                 { q: "What cognitive function is severely affected by chronic sleep deprivation?", options: ["Concentration, mood, and judgment.", "The ability to stand up straight.", "The memory of childhood songs.", "The speed of reading simple text."] },
                 { q: "What does the brain primarily do with memories during sleep?", options: ["Turns short-term memories into long-term ones.", "Forgets all unnecessary information.", "Creates entirely new memories.", "Stops processing all information."] },
                 { q: "What is the key to overall well-being according to the text?", options: ["Treating sleep as a non-negotiable part of our health routine.", "Drinking caffeine throughout the evening.", "Working continuously without breaks.", "Only sleeping when absolutely necessary."] },
-                { q: "What does the body repair during the sleep cycle?", options: ["Muscle tissue.", "Shoes and clothing.", "Broken electronic devices.", "Damaged furniture."] }
+                { q: "What the body repair during the sleep cycle?", options: ["Muscle tissue.", "Shoes and clothing.", "Broken electronic devices.", "Damaged furniture."] }
             ]
         },
         "4": {
@@ -155,15 +228,15 @@
     let selectedAnswers = {};
 
     function initGE() {
-        // تحميل الصوت
+        // Load Audio
         const audio = document.getElementById('mainAudio');
         const source = document.getElementById('audioSource');
         source.src = `assets/gesaudio/GE${taskNum}.wav`;
         audio.load();
 
-        document.getElementById('task-title').innerText = `GOLDEN EAR MISSION #${taskNum}`;
+        document.getElementById('task-title').innerText = `GOLDEN EAR MISSION: UNIT ${taskNum.padStart(2, '0')}`;
 
-        // تحميل الأسئلة
+        // Load Questions
         const mission = geMissions[taskNum] || geMissions["1"];
         const container = document.getElementById('quiz-container');
         
@@ -172,7 +245,7 @@
                 <div class="question-text">${qIdx + 1}. ${qObj.q}</div>
                 <div class="options-list" id="q-${qIdx}">
                     ${qObj.options.map(opt => `
-                        <div class="option-item" onclick="selectOption(${qIdx}, '${opt}', this)">
+                        <div class="option-item" onclick="selectOption(${qIdx}, '${opt.replace(/'/g, "\\'")}', this)">
                             ${opt}
                         </div>
                     `).join('')}
@@ -188,19 +261,38 @@
         selectedAnswers[qIdx] = val;
     }
 
-  window.addEventListener('message', function(event) {
-    if (event.data.type === 'REQUEST_MISSION_DATA') { // توحيد الطلب
+    // Communication with Arena
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'REQUEST_MISSION_DATA') {
+            collectAndSubmit();
+        }
+    });
+
+    function collectAndSubmit() {
         const answersArray = [];
-        for(let i=0; i<5; i++) answersArray.push(selectedAnswers[i] || "");
+        let missing = false;
+
+        for(let i=0; i<5; i++) {
+            if(!selectedAnswers[i]) {
+                missing = true;
+            }
+            answersArray.push(selectedAnswers[i] || "");
+        }
+
+        if(missing) {
+            alert("⚠️ AGENT! You missed some questions. Focus and complete the mission!");
+            window.parent.postMessage({ type: 'MISSION_INCOMPLETE' }, '*');
+            return;
+        }
         
-        // إرسال الرد بالصيغة التي تتوقعها الأرينا
+        // Final Submission to Arena
         window.parent.postMessage({
             type: 'MISSION_ANSWERS',
+            activityCode: 'GE',
             answers: answersArray, 
             missionNum: taskNum
         }, '*');
     }
-});
 
     window.onload = initGE;
 </script>

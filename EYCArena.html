@@ -140,28 +140,51 @@
             box.style.display = box.style.display === 'none' ? 'flex' : 'none';
         }
 
-        async function askFifi() {
-            const input = document.getElementById('chat-input');
-            const content = document.getElementById('chat-content');
-            const question = input.value.trim();
-            if (!question) return;
+function askFifiAI(question) {
+  const prompt = `
+    Identity: You are Gemini, the AI Core of EYC Arena.
+    Style: Smart, encouraging, and a bit witty. Use emojis like 🤖, 🚀, 💎.
+    Language: Arabic (Egyptian style if possible).
+    Context: You are helping a student in EYC Arena. Here is the guide: ${ACTIVITIES_GUIDE}
+    
+    Student Question: "${question}"
+    
+    Response instructions: Be brief, professional yet friendly. Confirm you are Gemini and here to support them.
+  `;
+  return callGemini(prompt, false);
+}
 
-            content.innerHTML += `<div style="align-self: flex-end; background: var(--gold); color: black; padding: 8px 12px; border-radius: 15px 15px 0 15px; max-width: 80%; font-weight: 500;">${question}</div>`;
-            input.value = '';
-            content.scrollTop = content.scrollHeight;
+function callGemini(prompt, isJson) {
+  const options = {
+    method: "post",
+    contentType: "application/json",
+    muteHttpExceptions: true, // مهم جداً عشان نشوف نوع الخطأ لو حصل
+    payload: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  };
 
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "askQuestion", question: question })
-                });
-                const data = await response.json();
-                content.innerHTML += `<div style="align-self: flex-start; background: rgba(255,255,255,0.1); color: #fff; padding: 8px 12px; border-radius: 15px 15px 15px 0; max-width: 80%; border-left: 2px solid var(--gold);">EYCVV: ${data.answer}</div>`;
-                content.scrollTop = content.scrollHeight;
-            } catch (err) {
-                content.innerHTML += `<div style="color: #ff4444; font-size: 0.7rem;">Connection Lost!</div>`;
-            }
-        }
+  try {
+    const response = UrlFetchApp.fetch(GEMINI_URL, options);
+    const resText = response.getContentText();
+    const result = JSON.parse(resText);
+    
+    // التحقق لو الـ API رجع خطأ رسمي
+    if (result.error) {
+      return isJson ? { grade: 5, reason: "API Error", advice: result.error.message } : "عذراً يا بطل، مفتاح الـ API محتاج مراجعة (Error: " + result.error.code + ")";
+    }
+
+    const rawText = result.candidates[0].content.parts[0].text;
+    
+    if (isJson) {
+      // تنظيف الـ JSON بشكل احترافي
+      const cleanJson = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+      return JSON.parse(cleanJson);
+    }
+    return rawText.trim();
+  } catch (err) {
+    console.log("Detailed Error: " + err.toString());
+    return isJson ? { grade: 5, reason: "Connection Lost", advice: "Try again!" } : "أنا موجود، بس السلك اتهز شوية! جرب تبعت سؤالك تاني يا بطل. 🔌";
+  }
+}
 
         function requestSubmit() {
             const frame = document.getElementById('contentFrame').contentWindow;

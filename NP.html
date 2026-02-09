@@ -7,6 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="npstyle.css">
+    <style>
+        .sub-options { display: none; margin-top: 15px; text-align: left; }
+        .golden-ticket-area { display: none; margin-top: 10px; }
+        .ticket-input { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #d4af37; background: rgba(0,0,0,0.5); color: white; }
+    </style>
 </head>
 <body onload="initStars(); initOptions(); updateAvatar();">
 
@@ -142,19 +147,33 @@
             </div>
 
             <div class="step" id="step7">
-                <h2>07. Mission</h2>
+                <h2>07. Mission Program</h2>
                 <div class="input-group">
-                    <label style="margin-bottom: 15px;">Choose Programs</label>
-                    <div style="display: flex; gap: 20px;">
+                    <label style="margin-bottom: 15px;">Select Your Path</label>
+                    <div style="display: flex; gap: 20px; justify-content: center;">
                         <label class="check-label">
                             <input type="checkbox" name="program" value="Season"> Season
                         </label>
                         <label class="check-label">
-                            <input type="checkbox" name="program" value="X-Box"> X-Box
+                            <input type="checkbox" name="program" value="Royal" id="royalCheck" onchange="toggleRoyalOptions()"> Royal
                         </label>
                     </div>
                 </div>
-                <div class="btn-group">
+
+                <div id="royalSubOptions" class="sub-options">
+                    <label>Royal Type:</label>
+                    <select id="royalType" onchange="toggleTicketArea()" style="width:100%; padding:10px; border-radius:10px;">
+                        <option value="free">Free Access</option>
+                        <option value="paid">Paid (Golden Tickets)</option>
+                    </select>
+                    
+                    <div id="ticketArea" class="golden-ticket-area">
+                        <input type="text" id="ticket1" class="ticket-input" placeholder="Golden Ticket Code 1">
+                        <input type="text" id="ticket2" class="ticket-input" placeholder="Golden Ticket Code 2">
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-top:20px;">
                     <button type="button" class="prev-btn" onclick="nextStep(6)">Back</button>
                     <button type="submit">Complete Mission</button>
                 </div>
@@ -260,6 +279,34 @@
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + step).classList.add('active');
         document.getElementById('pBar').style.width = (step * 14.2) + "%";
+    }
+
+    // --- وظيفة حركة الفم الذكية ---
+    let mouthOpen = false;
+    function toggleMouth() {
+        const img = document.getElementById('avatar-img');
+        if (!img.src.includes('avataaars.io')) return;
+        
+        mouthOpen = !mouthOpen;
+        let currentUrl = new URL(img.src);
+        currentUrl.searchParams.set('mouthType', mouthOpen ? 'Twinkle' : 'Default');
+        img.src = currentUrl.toString();
+    }
+
+    document.getElementById('name').addEventListener('focus', () => {
+        const mouthInterval = setInterval(toggleMouth, 300);
+        document.getElementById('name').addEventListener('blur', () => clearInterval(mouthInterval), {once: true});
+    });
+
+    // --- وظائف الـ Royal و الـ Tickets ---
+    function toggleRoyalOptions() {
+        const isRoyal = document.getElementById('royalCheck').checked;
+        document.getElementById('royalSubOptions').style.display = isRoyal ? 'block' : 'none';
+    }
+
+    function toggleTicketArea() {
+        const isPaid = document.getElementById('royalType').value === 'paid';
+        document.getElementById('ticketArea').style.display = isPaid ? 'block' : 'none';
     }
 
     document.getElementById('registrationForm').onsubmit = function(e) {

@@ -2,19 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GS | Grammar Scanner | EYC</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GS | Grammar Scanner | Glassy Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --error-red: #ff003c;
-            --fix-green: #39ff14;
-            --neon-blue: #00f2ff;
-            --glass-bg: rgba(10, 10, 15, 0.9);
+            --gold: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.3);
+            --error-red: #ff4444;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(212, 175, 55, 0.2);
         }
 
         body {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: transparent;
             color: white;
             margin: 0;
@@ -22,104 +23,128 @@
             direction: ltr;
         }
 
+        /* سكرول بار جلاسي */
+        body::-webkit-scrollbar { width: 4px; }
+        body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
         .header-gs {
             text-align: center;
             margin-bottom: 25px;
-            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
-            padding-bottom: 10px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 15px;
+            position: relative;
         }
 
         .header-gs h1 {
             font-family: 'Orbitron';
-            font-size: 1.4rem;
-            color: var(--neon-blue);
-            letter-spacing: 5px;
+            font-size: 1.1rem;
+            color: var(--gold);
+            letter-spacing: 3px;
             margin: 0;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+            text-transform: uppercase;
+        }
+
+        .principle-tag {
+            position: absolute; top: 0; right: 0;
+            font-family: 'Orbitron'; font-size: 8px; color: var(--gold);
+            border: 1px solid var(--glass-border); padding: 2px 6px; border-radius: 4px;
         }
 
         .scanner-grid {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .sentence-card {
-            background: var(--glass-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-left: 4px solid var(--error-red);
-            border-radius: 8px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-left: 3px solid var(--gold);
+            border-radius: 12px;
             padding: 15px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
-            transition: 0.3s;
+            gap: 15px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .sentence-card:hover {
-            background: rgba(255, 255, 255, 0.02);
-            border-color: var(--neon-blue);
+            border-color: var(--gold);
+            box-shadow: 0 5px 15px var(--gold-glow);
+            transform: scale(1.01);
         }
 
         .sentence-text {
-            font-size: 1.1rem;
+            font-size: 1rem;
             flex-grow: 1;
-            color: #ddd;
+            color: #eee;
+            font-weight: 300;
         }
 
         .correction-input {
-            width: 180px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #333;
-            border-radius: 4px;
-            color: var(--fix-green);
+            width: 160px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--gold);
             padding: 10px;
             font-family: 'Orbitron';
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             outline: none;
             transition: 0.3s;
             text-align: center;
         }
 
         .correction-input:focus {
-            border-color: var(--fix-green);
-            box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 10px var(--gold-glow);
         }
 
         .id-tag {
             font-family: 'Orbitron';
-            font-size: 9px;
-            color: #444;
-            margin-right: 10px;
+            font-size: 8px;
+            color: #666;
+            min-width: 80px;
+        }
+
+        .error-input { border-color: var(--error-red) !important; animation: shake 0.3s; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         @media (max-width: 600px) {
-            .sentence-card { flex-direction: column; align-items: flex-start; }
+            .sentence-card { flex-direction: column; align-items: flex-start; gap: 10px; }
             .correction-input { width: 100%; }
+            .id-tag { display: none; }
         }
     </style>
 </head>
 <body>
 
     <div class="header-gs">
-        <h1>GRAMMAR SCANNER</h1>
-        <p style="font-size: 12px; color: #666; letter-spacing: 1px;">IDENTIFY THE ERROR AND PROVIDE THE PATCH</p>
+        <span class="principle-tag">ITS SYSTEM</span>
+        <h1>Grammar Scanner</h1>
+        <p style="font-size: 9px; color: #888; letter-spacing: 1px; margin-top: 5px;">PATCH THE LOGIC ERRORS</p>
     </div>
 
-    <div id="scanner-screen" class="scanner-grid">
-        </div>
+    <div id="scanner-screen" class="scanner-grid"></div>
 
 <script>
-    // بيانات تجريبية - سيتم استبدالها بناءً على الـ task
     const gsData = {
-        "1": [
-            "He go to school every day.",
-            "They has a big house.",
-            "She don't like apples.",
-            "We was playing football.",
-            "I am learn English now."
-        ]
+        "1": ["He go to school every day.", "They has a big house.", "She don't like apples.", "We was playing football.", "I am learn English now."],
+        "2": ["She drink milk every morning.", "Birds flies in the sky.", "He never do his homework.", "They is waiting for you.", "I has two sisters."],
+        // ... سيتم إضافة باقي المهام هنا
     };
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -130,30 +155,46 @@
         const screen = document.getElementById('scanner-screen');
         
         screen.innerHTML = sentences.map((s, i) => `
-            <div class="sentence-card">
-                <span class="id-tag">DETECTION_${i+1}</span>
+            <div class="sentence-card" id="card-${i}">
+                <span class="id-tag">SCANNER_0${i+1}</span>
                 <div class="sentence-text">${s}</div>
-                <input type="text" class="correction-input" id="fix-${i}" placeholder="CORRECTION" autocomplete="off">
+                <input type="text" class="correction-input alike-input" id="fix-${i}" placeholder="PATCH..." autocomplete="off">
             </div>
         `).join('');
     }
 
-    // إرسال الإجابات للمصحح
     window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_GS_DATA') {
-            const answers = [];
-            for(let i=0; i<5; i++) {
-                answers.push(document.getElementById(`fix-${i}`).value.trim());
-            }
-
-            window.parent.postMessage({ 
-                type: 'SUBMIT_X', 
-                activityCode: 'GS',
-                answers: answers, 
-                missionNum: taskNum 
-            }, '*');
+        if (event.data.type === 'REQUEST_MISSION_DATA') {
+            collectAndSend();
         }
     });
+
+    function collectAndSend() {
+        const inputs = document.querySelectorAll('.alike-input');
+        let answers = [];
+        let hasError = false;
+
+        inputs.forEach((input, i) => {
+            const val = input.value.trim();
+            if(!val) {
+                hasError = true;
+                document.getElementById(`card-${i}`).classList.add('error-input');
+            } else {
+                document.getElementById(`card-${i}`).classList.remove('error-input');
+                answers.push(val);
+            }
+        });
+
+        if(hasError) {
+            window.parent.postMessage({ type: 'MISSION_INCOMPLETE' }, '*');
+            return;
+        }
+
+        window.parent.postMessage({ 
+            type: 'MISSION_ANSWERS', 
+            answers: answers.join(', ')
+        }, '*');
+    }
 
     window.onload = loadScanner;
 </script>

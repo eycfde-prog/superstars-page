@@ -37,7 +37,7 @@
             width: 110px; height: 110px; border-radius: 50%;
             padding: 5px; background: var(--gold-gradient);
             box-shadow: 0 0 25px var(--gold-glow); margin-bottom: 15px;
-            position: relative;
+            transition: 0.3s;
         }
         .avatar-main {
             width: 100%; height: 100%; border-radius: 50%;
@@ -60,19 +60,47 @@
         
         .nav-container { display: flex; justify-content: center; margin: 30px 0; }
         .tab-switcher { background: rgba(255,255,255,0.03); padding: 5px; border-radius: 50px; display: flex; border: 1px solid var(--glass-border); width: 320px; }
-        .tab-btn { flex: 1; padding: 12px 10px; border: none; background: transparent; color: #888; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.7rem; letter-spacing: 1px; }
+        .tab-btn { flex: 1; padding: 12px 10px; border: none; background: transparent; color: #888; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.7rem; letter-spacing: 1px; transition: 0.3s; }
         .tab-btn.active { color: #000; background: var(--gold-gradient); }
-        .tab-btn.active.titanium-tab { background: var(--titanium-gradient); }
+        .tab-btn.active.titanium-tab { 
+            background: var(--titanium-gradient); 
+            box-shadow: 0 0 15px rgba(229, 228, 226, 0.4);
+        }
 
-        /* --- Grid --- */
+        /* --- Grid & Cards --- */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 25px; padding: 0 20px 40px; }
-        .activity-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 25px; padding: 30px 15px; text-align: center; cursor: pointer; transition: 0.4s; }
+        .activity-card { 
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 25px; padding: 30px 15px; text-align: center; 
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
         .activity-card:hover { transform: translateY(-10px); border-color: var(--gold); background: rgba(212,175,55,0.1); }
         .card-icon { font-size: 2rem; margin-bottom: 15px; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* --- Modal --- */
+        /* --- Mobile Optimization --- */
+        @media (max-width: 480px) {
+            .grid-container { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 15px;
+                padding: 10px;
+            }
+            .student-name { font-size: 1.2rem; }
+            .avatar-wrapper { width: 90px; height: 90px; }
+            .tab-switcher { width: 95%; }
+            .tab-btn { font-size: 0.6rem; padding: 10px 5px; }
+        }
+
+        /* --- Modals --- */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(15px); }
-        .modal-content { background: #0a0a0c; border-radius: 30px; padding: 40px; width: 90%; max-width: 420px; border: 1px solid var(--gold); text-align: center; }
+        .modal-content { 
+            background: #0a0a0c; border-radius: 30px; padding: 40px; width: 90%; 
+            max-width: 420px; border: 1px solid var(--gold); text-align: center;
+            transform: scale(0.8); transition: transform 0.3s ease;
+        }
+        .modal[style*="display: flex"] .modal-content { transform: scale(1); }
+        
         .tasks-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 25px 0; }
         .task-node { aspect-ratio: 1; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; color: var(--gold); font-family: 'Orbitron'; font-size: 0.9rem; }
         .task-node:hover { background: var(--gold-gradient); color: black; }
@@ -114,30 +142,30 @@
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <h2 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:15px;">ACCESS GRANTED</h2>
-            <input type="email" id="loginEmail" style="width:100%; padding:14px; margin:8px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Email">
-            <input type="password" id="loginCode" style="width:100%; padding:14px; margin:8px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Code">
+            <input type="email" id="loginEmail" style="width:100%; padding:14px; margin:8px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Email Address">
+            <input type="password" id="loginCode" style="width:100%; padding:14px; margin:8px 0; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; text-align:center;" placeholder="Access Code">
             <button class="btn-gold-solid" style="width:100%; margin-top:20px;" onclick="handleLogin()">ENTER ARENA</button>
             <button class="btn-gold-outline" style="width:100%; margin-top:10px; border:none;" onclick="closeModal('loginModal')">BACK</button>
         </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwagu-sgK9akS4fB93osC3Iq5IME-yKdObb7tSgCBtJIrAUh6o2KPeikuf-3rmwcvbuVw/exec"; // حط رابط السكريبت هنا
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwagu-sgK9akS4fB93osC3Iq5IME-yKdObb7tSgCBtJIrAUh6o2KPeikuf-3rmwcvbuVw/exec";
         let currentUser = null;
         let isLoggedIn = false;
 
         const activities = {
             season: [
                 { name: "Alike", icon: "fa-clone", code: "AS" },
-                { name: "AlikeX", icon: "fa-object-group", code: "AX" },
+                { name: "Vivid", icon: "fa-wand-magic-sparkles", code: "VS" },
                 { name: "Label", icon: "fa-tag", code: "LS" },
                 { name: "Grammar", icon: "fa-spell-check", code: "GS" },
                 { name: "Golden Ear", icon: "fa-ear-listen", code: "GES" },
                 { name: "Seeds", icon: "fa-seedling", code: "SS" }
             ],
             royal: [
-                { name: "AlikeX-R", icon: "fa-star", code: "AX-R" },
-                { name: "VividX", icon: "fa-wand-magic-sparkles", code: "VX" },
+                { name: "AlikeX", icon: "fa-star", code: "AX" },
+                { name: "VividX", icon: "fa-wand-magic", code: "VX" },
                 { name: "LabelX", icon: "fa-tags", code: "LX" },
                 { name: "SeedsX", icon: "fa-tree", code: "SX" },
                 { name: "Golden EarX", icon: "fa-ear-deaf", code: "GEX" },
@@ -171,56 +199,36 @@
                     </div>`;
             } else {
                 logoutBtn.style.display = "none";
-                header.innerHTML = `<h1 class="student-name">EYC TITANIUM ARENA</h1>
+                header.innerHTML = `<h1 class="student-name">EYC ELITE ARENA</h1>
                     <div style="margin-top:20px;"><button class="btn-gold-solid" onclick="openLogin()">ACCESS ARENA</button></div>`;
             }
         }
 
-function handleLogin() {
-    const email = document.getElementById('loginEmail').value;
-    const code = document.getElementById('loginCode').value;
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const code = document.getElementById('loginCode').value;
+            if (!email || !code) return alert("Enter credentials, Agent!");
 
-    if (!email || !code) return alert("Please enter both Email and Code!");
-
-    // نستخدم action=getProfile اللي موجود في الماستر سكريبت
-    fetch(`${SCRIPT_URL}?action=getProfile&email=${email}`)
-        .then(res => res.json())
-        .then(res => {
-            // التحقق من الإيميل وجودة الكود (Code)
-            // في الشيت الكود موجود في العمود الثالث (index 2)
-            // الماستر سكريبت بيرجع البيانات لو الإيميل صح
-            if(res.error) {
-                alert("User not found!");
-            } else {
-                // هنا بنعمل تشيك يدوي على الكود لزيادة الأمان
-                // ملحوظة: لازم تتأكد إن دالة getProfile في السكريبت بترجع الـ studentCode
-                // أو نعدلها في السكريبت فوراً
-                
-                // هنفترض إننا بنسجل الدخول بالإيميل والبيانات بترجع فوراً:
-                currentUser = {
-                    name: res.name,
-                    email: email, // الإيميل اللي دخل به
-                    tokens: res.tokens,
-                    stars: res.stars,
-                    tickets: res.tickets,
-                    avatar: res.avatar,
-                    title: res.title,
-                    rank: res.rank || "N/A"
-                };
-                
-                isLoggedIn = true;
-                localStorage.setItem('eyc_user', JSON.stringify(currentUser));
-                closeModal('loginModal');
-                renderHeader();
-                generateCards();
-                alert("Welcome back, Agent " + res.name);
-            }
-        })
-        .catch(err => {
-            console.error("Login Error:", err);
-            alert("Connection Error!");
-        });
-}
+            fetch(`${SCRIPT_URL}?action=getProfile&email=${email}`)
+                .then(res => res.json())
+                .then(res => {
+                    if(res.error) {
+                        alert("User not found!");
+                    } else {
+                        currentUser = {
+                            name: res.name, email: email, tokens: res.tokens,
+                            stars: res.stars, tickets: res.tickets, avatar: res.avatar,
+                            title: res.title, rank: res.rank || "N/A"
+                        };
+                        isLoggedIn = true;
+                        localStorage.setItem('eyc_user', JSON.stringify(currentUser));
+                        closeModal('loginModal');
+                        renderHeader();
+                        generateCards();
+                    }
+                })
+                .catch(err => alert("Connection Error!"));
+        }
 
         function generateCards() {
             const grid = document.getElementById('cardsGrid'); grid.innerHTML = '';
@@ -238,7 +246,9 @@ function handleLogin() {
             document.getElementById('mTitle').innerText = name;
             const tGrid = document.getElementById('tGrid'); tGrid.innerHTML = '';
             const type = document.querySelector('.tab-btn.active').innerText;
-            const tasksCount = (type === 'TITANIUM') ? 5 : 10; // الوحوش 5 مهام بس؟ أو زي ما تحب
+            
+            // تقسيم المهام: Titanium 5 مهام، والباقي 10
+            const tasksCount = (type === 'TITANIUM') ? 5 : 10; 
 
             for (let i = 1; i <= tasksCount; i++) {
                 const node = document.createElement('div');
@@ -246,7 +256,7 @@ function handleLogin() {
                 node.innerText = i;
                 node.onclick = () => {
                     if(!isLoggedIn) return openLogin();
-                    window.location.href = `EYCArena.html?act=${code}&task=${i}&email=${currentUser.email}&name=${currentUser.name}`;
+                    window.location.href = `EYCArena.html?act=${code}&task=${i}&email=${currentUser.email}&name=${encodeURIComponent(currentUser.name)}`;
                 };
                 tGrid.appendChild(node);
             }

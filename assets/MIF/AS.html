@@ -2,47 +2,94 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alike Mission Module | EYC</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #ffcc00; --glass: rgba(255, 255, 255, 0.03); }
+        :root { 
+            --gold: #ffcc00; 
+            --glass: rgba(255, 255, 255, 0.03); 
+            --gold-border: rgba(212, 175, 55, 0.3);
+        }
+        
         body { 
-            font-family: 'Cairo', sans-serif; background: transparent; color: white; 
-            margin: 0; padding: 15px; overflow-x: hidden;
+            font-family: 'Cairo', sans-serif; 
+            background: transparent; /* عشان يظهر خلفية الأرينا */
+            color: white; 
+            margin: 0; 
+            padding: 10px; 
+            overflow-x: hidden;
         }
 
-        .mission-container { display: none; animation: fadeIn 0.5s ease; }
-        .mission-container.active { display: block; }
+        /* تحسين السكرول بار ليناسب شكل الأرينا */
+        body::-webkit-scrollbar { width: 5px; }
+        body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .mission-container { animation: fadeIn 0.5s ease; padding-bottom: 20px; }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
         .alike-grid {
-            display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%;
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 20px; 
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* جعل الكروت صفين في الشاشات الواسعة داخل الفرايم */
+        @media (min-width: 600px) {
+            .alike-grid { grid-template-columns: 1fr 1fr; }
         }
 
         .pair-card {
-            background: var(--glass); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
-            padding: 15px; position: relative;
+            background: var(--glass); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 15px;
+            padding: 20px 15px 15px; 
+            position: relative;
+            transition: 0.3s;
         }
+        
+        .pair-card:hover { border-color: var(--gold); }
 
         .case-tag {
-            position: absolute; top: -10px; right: 15px; background: var(--gold);
-            color: black; font-family: 'Orbitron'; font-size: 10px; 
-            padding: 2px 10px; border-radius: 10px; font-weight: bold;
+            position: absolute; top: -10px; right: 15px; 
+            background: var(--gold);
+            color: black; 
+            font-family: 'Orbitron'; 
+            font-size: 10px; 
+            padding: 2px 10px; 
+            border-radius: 10px; 
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
 
-        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .word-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        label { font-size: 14px; color: #ddd; font-weight: bold; }
+        label { font-size: 13px; color: #bbb; font-weight: bold; }
 
         input {
-            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 8px; padding: 10px; color: var(--gold); text-align: center;
-            font-family: 'Orbitron'; font-size: 16px; outline: none; transition: 0.3s;
+            width: 100%; 
+            background: rgba(0,0,0,0.6); 
+            border: 1px solid var(--gold-border);
+            border-radius: 8px; 
+            padding: 12px 5px; 
+            color: var(--gold); 
+            text-align: center;
+            font-family: 'Orbitron'; 
+            font-size: 15px; 
+            outline: none; 
+            transition: 0.3s;
         }
 
-        input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        input:focus { border-color: var(--gold); background: rgba(0,0,0,0.8); }
+        input.error { border-color: #ff4444 !important; box-shadow: 0 0 5px #ff4444; }
     </style>
 </head>
 <body>
@@ -59,73 +106,78 @@
         "6": [ {a:"ليل", b:"فارس"}, {a:"خشب", b:"سوف"}, {a:"سمح", b:"بصوت عال"}, {a:"أحمر", b:"قرأ"}, {a:"مشهد", b:"رأى"} ],
         "7": [ {a:"الطقس", b:"سواء"}, {a:"فارغ", b:"درس"}, {a:"نظام", b:"جذر"}, {a:"عارية", b:"دب"}, {a:"تحديق", b:"درج"} ],
         "8": [ {a:"رئيسي", b:"عرف الحصان"}, {a:"مملح", b:"حبوب"}, {a:"لوح", b:"ملل"}, {a:"مركب", b:"إناء"}, {a:"تأثير", b:"يؤثر"} ],
-        "9": [ {a:"موقع", b:"بصر"}, {a:"قرض", b:"وحيد"}, {a:"مسموح", b:"بصوت عال"}, {a:"توجيه", b:"يكتب"}, {a:"رصيف", b:"مفتاح"} ],
+        "9": [ {a:"موقع", b Sight:"بصر"}, {a:"قرض", b:"وحيد"}, {a:"مسموح", b:"بصوت عال"}, {a:"توجيه", b:"يكتب"}, {a:"رصيف", b:"مفتاح"} ],
         "10": [ {a:"مجلس", b:"نصيحة"}, {a:"مجاني", b:"تكملة"}, {a:"ثابت", b:"ورق"}, {a:"بحر", b:"يرى"}, {a:"معدن", b:"شجاعة"} ]
     };
 
     function renderActiveMission() {
-    const urlParams = new URLSearchParams(window.location.search);
-    // استقبال رقم المهمة الممرر من الأرينا
-    const taskNum = urlParams.get('taskNum') || "1"; 
-    
-    const pairs = missionsData[taskNum] || missionsData["1"];
-    
-    const wrapper = document.getElementById('mission-wrapper');
-    wrapper.innerHTML = `
-        <div class="mission-container active">
-            <div class="alike-grid">
-                ${pairs.map((p, i) => `
-                    <div class="pair-card">
-                        <span class="case-tag">CASE 0${i+1}</span>
-                        <div class="input-row">
-                            <div class="word-box">
-                                <label>${p.a}</label>
-                                <input type="text" class="alike-input" placeholder="English...">
-                            </div>
-                            <div class="word-box">
-                                <label>${p.b}</label>
-                                <input type="text" class="alike-input" placeholder="English...">
+        const urlParams = new URLSearchParams(window.location.search);
+        // الأرينا تبعث المتغير باسم task
+        const taskNum = urlParams.get('task') || "1"; 
+        
+        const pairs = missionsData[taskNum] || missionsData["1"];
+        
+        const wrapper = document.getElementById('mission-wrapper');
+        wrapper.innerHTML = `
+            <div class="mission-container">
+                <div class="alike-grid">
+                    ${pairs.map((p, i) => `
+                        <div class="pair-card">
+                            <span class="case-tag">CASE 0${i+1}</span>
+                            <div class="input-row">
+                                <div class="word-box">
+                                    <label>${p.a}</label>
+                                    <input type="text" class="alike-input" placeholder="...">
+                                </div>
+                                <div class="word-box">
+                                    <label>${p.b}</label>
+                                    <input type="text" class="alike-input" placeholder="...">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `).join('')}
+                    `).join('')}
+                </div>
             </div>
-        </div>
-    `;
-}
-    // ⚡️ التعديل الجوهري: استقبال الطلب من الأرينا
+        `;
+    }
+
+    // استقبال النداء من زرار Submit اللي في الأرينا
     window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_MISSION_DATA' || event.data.type === 'REQUEST_AL_DATA') {
+        if (event.data.type === 'REQUEST_MISSION_DATA') {
             collectAndSend();
         }
     });
 
-   function collectAndSend() {
-    const inputs = document.querySelectorAll('.alike-input');
-    let answers = [];
-    let missing = false;
+    function collectAndSend() {
+        const inputs = document.querySelectorAll('.alike-input');
+        let answers = [];
+        let hasError = false;
 
-    inputs.forEach(input => {
-        if(!input.value.trim()) {
-            missing = true;
-            input.style.borderColor = "red";
-        } else {
-            input.style.borderColor = "rgba(212, 175, 55, 0.3)";
-            answers.push(input.value.trim().toLowerCase());
+        inputs.forEach(input => {
+            const val = input.value.trim();
+            if(!val) {
+                hasError = true;
+                input.classList.add('error');
+            } else {
+                input.classList.remove('error');
+                answers.push(val.toLowerCase());
+            }
+        });
+
+        if(hasError) {
+            // إرسال تنبيه بسيط للأرينا أو عرضه هنا
+            alert("⚠️ فضلاً يا بطل، أكمل جميع الحقول المطلوبة!");
+            // نبعث للأرينا إننا لسه مخلصناش عشان تخفي الـ Loading
+            window.parent.postMessage({ type: 'MISSION_INCOMPLETE' }, '*');
+            return;
         }
-    });
 
-    if(missing) {
-        alert("يا بطل، كمل كل الكلمات الأول! 🧐");
-        return;
+        // إرسال البيانات النهائية للأرينا
+        window.parent.postMessage({
+            type: 'MISSION_ANSWERS', 
+            answers: answers.join(', ') // تحويل المصفوفة لنص لسهولة المعالجة
+        }, '*');
     }
-
-    // تعديل: إضافة الـ type ليتعرف عليه الـ Arena
-    window.parent.postMessage({
-        type: 'MISSION_ANSWERS', 
-        answers: answers
-    }, '*');
-}
 
     window.onload = renderActiveMission;
 </script>

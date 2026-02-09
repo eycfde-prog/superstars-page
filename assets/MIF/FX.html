@@ -2,51 +2,127 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Figurative X | Idiom Decoder | EYC</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-blue: #00f2ff; --neon-purple: #bc13fe; --glass: rgba(10, 10, 15, 0.95); }
-        body { 
-            font-family: 'Rajdhani', sans-serif; background: transparent; color: white; 
-            margin: 0; padding: 20px; direction: ltr;
+        :root { 
+            --neon-blue: #00f2ff; 
+            --neon-purple: #bc13fe; 
+            --glass: rgba(10, 10, 15, 0.85); 
+            --gold: #ffcc00;
         }
 
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background: transparent; 
+            color: white; 
+            margin: 0; 
+            padding: 10px; 
+            direction: ltr;
+        }
+
+        /* تحسين السكرول بار */
+        body::-webkit-scrollbar { width: 4px; }
+        body::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
+
         .header-x {
-            text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--neon-purple); padding-bottom: 15px;
+            text-align: center; 
+            margin-bottom: 25px; 
+            border-bottom: 2px solid var(--neon-purple); 
+            padding-bottom: 10px;
+            box-shadow: 0 10px 10px -10px var(--neon-purple);
         }
 
         .dialog-card {
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; padding: 25px; margin-bottom: 30px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            background: var(--glass); 
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; 
+            padding: 20px; 
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
         }
 
-        .chat-bubble { margin-bottom: 15px; padding: 10px; border-radius: 10px; position: relative; }
-        .speaker-a { background: rgba(0, 242, 255, 0.05); border-left: 3px solid var(--neon-blue); }
-        .speaker-b { background: rgba(188, 19, 254, 0.05); border-left: 3px solid var(--neon-purple); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-bubble { 
+            margin-bottom: 12px; 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .speaker-a { 
+            background: rgba(0, 242, 255, 0.08); 
+            border-left: 3px solid var(--neon-blue); 
+            color: #cef9ff;
+        }
+
+        .speaker-b { 
+            background: rgba(188, 19, 254, 0.08); 
+            border-left: 3px solid var(--neon-purple); 
+            color: #f3e5ff;
+        }
 
         .idiom-box {
-            background: rgba(255, 204, 0, 0.1); border: 1px dashed #ffcc00;
-            padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;
+            background: rgba(255, 204, 0, 0.05); 
+            border: 1px dashed var(--gold);
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-top: 15px; 
+            text-align: center;
         }
 
-        .idiom-text { font-family: 'Orbitron'; color: #ffcc00; font-size: 1rem; margin-bottom: 10px; }
+        .idiom-text { 
+            font-family: 'Orbitron'; 
+            color: var(--gold); 
+            font-size: 1.1rem; 
+            margin-bottom: 12px; 
+            text-shadow: 0 0 5px rgba(255, 204, 0, 0.3);
+        }
 
         .arabic-input {
-            width: 90%; background: rgba(0,0,0,0.3); border: none;
-            border-bottom: 2px solid var(--neon-blue); color: #fff;
-            font-family: 'Rajdhani'; font-size: 1.2rem; text-align: center;
-            padding: 10px; outline: none; direction: rtl;
+            width: 95%; 
+            background: rgba(0,0,0,0.4); 
+            border: none;
+            border-bottom: 2px solid #555; 
+            color: #fff;
+            font-family: 'Cairo', sans-serif; 
+            font-size: 1.1rem; 
+            text-align: center;
+            padding: 10px; 
+            outline: none; 
+            direction: rtl;
+            transition: 0.3s;
         }
 
-        .label-style { font-size: 12px; color: #888; display: block; margin-bottom: 5px; }
+        .arabic-input:focus { 
+            border-color: var(--neon-blue); 
+            background: rgba(0, 242, 255, 0.05);
+            box-shadow: 0 5px 15px -5px var(--neon-blue);
+        }
+
+        .label-style { 
+            font-family: 'Orbitron';
+            font-size: 10px; 
+            color: #888; 
+            display: block; 
+            margin-bottom: 5px; 
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
     <div class="header-x">
-        <h1 id="x-title" style="font-family: 'Orbitron'; letter-spacing: 5px;">FIGURATIVE-X: DECODER</h1>
-        <p style="color: #888; font-size: 12px;">EXPLAIN THE HIGHLIGHTED IDIOM IN ARABIC (EGYPTIAN OR FORMAL)</p>
+        <h1 id="x-title" style="font-family: 'Orbitron'; letter-spacing: 3px; font-size: 1.3rem; color: var(--neon-blue);">FIGURATIVE-X: DECODER</h1>
+        <p style="color: #bbb; font-size: 11px; font-family: 'Orbitron';">DECODE THE HIDDEN MESSAGE IN ARABIC</p>
     </div>
 
     <div id="dialogs-container"></div>
@@ -61,7 +137,7 @@
             { a: "Why are you so nervous about the presentation?", b: "I always get butterflies in my stomach before speaking in public.", idiom: "Butterflies in my stomach", answers: ["توتر", "اشعر بالتوتر", "قلق", "عندي مغص من التوتر", "رفرفة في معدتي"] }
         ],
         "2": [
-            { a: "Is Sarah still angry with me?", b: "Yes, so don't bring up the accident. Just let sleeping dogs lie.", idiom: "Let sleeping dogs lie", answers: ["تجنب المشاكل", "لا تنبش في الماضي", "سيب المشاكل نايمة", "بلاش تفتح مواضيع قديمة", "ابعد عن المشاكل"] },
+            { a: "Is Sarah still angry with me?", b: "Yes, so don't bring up the accident. Just let sleeping dogs lie.", idiom: "Let sleeping dogs lie", answers: ["تجنب المشاكل", "لا تنبش في الماضي", "سيب المشاافكل نايمة", "بلاش تفتح مواضيع قديمة", "ابعد عن المشاكل"] },
             { a: "Did you hear that Mark is getting married?", b: "Really? Wow, that news came out of the blue!", idiom: "Out of the blue", answers: ["فجأة", "بدون سابق انذار", "من حيث لا ندري", "علي غفلة", "فجأة كدة"] },
             { a: "I'm sorry I can't go to the party. I'm feeling under the weather.", b: "Oh, I'm sorry to hear that. Rest well and get better soon.", idiom: "Under the weather", answers: ["مريض", "تعبان", "حاسس اني مش تمام", "صحتك مش كويسة", "وعكة صحية"] },
             { a: "Learning to drive seems so difficult.", b: "Don't worry, it's a piece of cake once you practice.", idiom: "A piece of cake", answers: ["سهل جدا", "تافه", "زي السكينة في الحلاوة", "بسيط جدا", "لعبة عيال"] },
@@ -81,7 +157,6 @@
             { a: "I spent $5000 on this watch.", b: "Wow! That must have cost an arm and a leg!", idiom: "Cost an arm and a leg", answers: ["غالي جدا", "ثمنه باهظ", "كلفني الشيء الفلاني", "غالي نار", "كلفني ذراع ورجل"] },
             { a: "I don't know the answer to this question.", b: "It's on the tip of my tongue, but I can't remember it!", idiom: "On the tip of my tongue", answers: ["على طرف لساني", "هفتكره حالا", "عارفه بس مش فاكره", "كلمة على لساني"] }
         ],
-        // تم اختصار المجموعات برمجياً، وسيتم تكرار النمط لـ 10 مجموعات
         "5": [
             { a: "He is always talking about his new car.", b: "He is just blowing his own trumpet.", idiom: "Blowing his own trumpet", answers: ["يتفاخر", "بيتباهى بنفسه", "بيطبل لنفسه", "بيفشر", "بيحب المنظرة"] },
             { a: "I'm so nervous about the audition.", b: "Go out there and break a leg!", idiom: "Break a leg", answers: ["بالتوفيق", "حظ سعيد", "اكسر رجل", "وريهم شطارتك", "أتمنى لك النجاح"] },
@@ -89,7 +164,6 @@
             { a: "I'm trying to learn Chinese in two weeks.", b: "I think you've bitten off more than you can chew.", idiom: "Bitten off more than you can chew", answers: ["حملت نفسك فوق طاقتك", "اخذت خازوق", "طمعت في اكتر من طاقتك", "فتحت صدرك على الفاضي"] },
             { a: "She is always happy and full of energy.", b: "Yes, she is definitely the life and soul of the party.", idiom: "Life and soul of the party", answers: ["روح المكان", "شخصية مرحة", "فاكهة القعدة", "محرك الحفلة", "شخص اجتماعي جدا"] }
         ]
-        // ... سيتم تكملة الـ 50 ديالوج في ملف البيانات الفعلي
     };
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -101,32 +175,55 @@
         
         container.innerHTML = dialogs.map((d, i) => `
             <div class="dialog-card">
-                <span class="label-style">DIALOGUE #${i+1}</span>
+                <span class="label-style">DECODING UNIT #${i+1}</span>
                 <div class="chat-bubble speaker-a"><b>A:</b> ${d.a}</div>
                 <div class="chat-bubble speaker-b"><b>B:</b> ${d.b}</div>
                 
                 <div class="idiom-box">
                     <div class="idiom-text">"${d.idiom}"</div>
-                    <span class="label-style">MA MEANING? (بالعربي)</span>
-                    <input type="text" class="arabic-input" id="ans-${i}" placeholder="اكتب المعنى هنا...">
+                    <span class="label-style">ENTER ARABIC MEANING</span>
+                    <input type="text" class="arabic-input" id="ans-${i}" placeholder="...">
                 </div>
             </div>
         `).join('');
         document.getElementById('x-title').innerText = `FIGURATIVE-X: TASK ${taskNum.padStart(2, '0')}`;
     }
 
+    // استقبال النداء من الأرينا
     window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_FIGURATIVEX_DATA') {
-            const userAnswers = [];
-            for(let i=0; i<5; i++) userAnswers.push(document.getElementById(`ans-${i}`).value.trim());
-            
-            window.parent.postMessage({ 
-                type: 'SUBMIT_X', 
-                answers: userAnswers, 
-                missionNum: taskNum 
-            }, '*');
+        if (event.data.type === 'REQUEST_MISSION_DATA') {
+            collectAndSubmit();
         }
     });
+
+    function collectAndSubmit() {
+        const userAnswers = [];
+        let missing = false;
+
+        for(let i=0; i<5; i++) {
+            const val = document.getElementById(`ans-${i}`).value.trim();
+            if(!val) {
+                missing = true;
+                document.getElementById(`ans-${i}`).style.borderColor = "red";
+            } else {
+                document.getElementById(`ans-${i}`).style.borderColor = "var(--neon-blue)";
+                userAnswers.push(val);
+            }
+        }
+
+        if(missing) {
+            alert("⚠️ AGENT! The Decoder is not fully operational. Fill all meanings!");
+            window.parent.postMessage({ type: 'MISSION_INCOMPLETE' }, '*');
+            return;
+        }
+
+        // إرسال البيانات النهائية
+        window.parent.postMessage({ 
+            type: 'MISSION_ANSWERS', 
+            answers: userAnswers.join(' | '), // دمج الإجابات للفصل بينها
+            missionNum: taskNum 
+        }, '*');
+    }
 
     window.onload = loadFigurative;
 </script>

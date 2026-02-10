@@ -159,38 +159,24 @@ function initGE() {
     const audio = document.getElementById('mainAudio');
     const source = document.getElementById('audioSource');
     
-    // التعديل الجديد للمسار الكامل
-    const missionPath = `superstars-page/assets/gesaudio/GES${taskNum}.wav`;
+    // الحل الأضمن: العودة للمجلد الرئيسي ثم الدخول للمجلد المطلوب
+    // أو كتابة المسار المباشر من الجذر
+    const audioPath = `assets/gesaudio/GES${taskNum}.wav`; 
     
-    source.src = missionPath;
+    // إذا لم يعمل، جرب إضافة ../ في البداية لتصبح هكذا:
+    // const audioPath = `../assets/gesaudio/GES${taskNum}.wav`;
+
+    source.src = audioPath;
+    
+    // أمر هام جداً لضمان إعادة تحميل الملف في المتصفح
     audio.load();
 
     document.getElementById('task-title').innerText = `GOLDEN EAR MISSION: UNIT ${taskNum.padStart(2, '0')}`;
 
-    // بقية كود عرض الأسئلة...
-    renderQuestions(); 
-}
-
-    // تحديث واجهة المستخدم
-    document.getElementById('task-title').innerText = `GOLDEN EAR MISSION: UNIT ${taskNum.padStart(2, '0')}`;
-
-    // توليد الأسئلة (باقي الكود المستقر)
+    // باقي كود بناء الأسئلة...
     const mission = geMissions[taskNum] || geMissions["1"];
     const container = document.getElementById('quiz-container');
-    
-    container.innerHTML = mission.questions.map((qObj, qIdx) => `
-        <div class="question-card">
-            <div class="question-text">${qIdx + 1}. ${qObj.q}</div>
-            <div class="options-list" id="q-${qIdx}">
-                ${qObj.options.map(opt => `
-                    <div class="option-item" onclick="selectOption(${qIdx}, '${opt.replace(/'/g, "\\'")}', this)">
-                        <div class="radio-dot"></div>
-                        ${opt}
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `).join('');
+    // ... (نفس كودك السابق)
 }
 
     function selectOption(qIdx, val, el) {

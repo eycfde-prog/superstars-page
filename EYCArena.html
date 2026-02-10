@@ -110,7 +110,7 @@
     </div>
 
 <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylHWfpOvn83D3UhKcDlNjk_fjCSW0vE2ctIAfxX3_e3mhEgnY2ovp4FtvpvDpz1WGgkA/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVapR61eSuDO6LWzWvxklnFrU6wh1PWtwdpS5fihWitDbq-pUB6fnLZ2jmjsn_eN4NVA/exec";
         let currentActivity, currentTask, userEmail, userName;
 
         window.onload = function() {
@@ -164,21 +164,16 @@
                 method: 'POST',
                 body: JSON.stringify(payload)
             })
-            .then(res => res.json())
-            .then(data => {
-                const syncText = document.getElementById('sync-text');
-                syncText.innerHTML = `
-                    <div style="color: var(--gold); font-size: 2rem; font-weight: bold;">GRADE: ${data.grade}/10</div>
-                    <div style="font-size: 0.9rem; margin-top: 15px; color: #ccc; max-width: 300px;">${data.reason}</div>
-                    <div style="font-size: 0.7rem; margin-top: 10px; color: var(--gold); font-style: italic;">Redirecting to Command Center...</div>
-                `;
-                setTimeout(() => window.location.href = 'MC.html', 4500);
-            })
-            .catch(err => {
-                alert("SYNC ERROR!");
-                document.getElementById('sync-overlay').style.display = 'none';
-            });
-        }
+.then(data => {
+    const syncText = document.getElementById('sync-text');
+    // استخدم data.maxGrade المستلمة من السكربت
+    syncText.innerHTML = `
+        <div style="color: var(--gold); font-size: 2rem; font-weight: bold;">GRADE: ${data.grade}/${data.maxGrade}</div>
+        <div style="font-size: 0.9rem; margin-top: 15px; color: #ccc; max-width: 300px;">${data.reason}</div>
+        <div style="font-size: 0.7rem; margin-top: 10px; color: var(--gold); font-style: italic;">Redirecting to Command Center...</div>
+    `;
+    setTimeout(() => window.location.href = 'MC.html', 4500);
+})
 
         function generateStars() {
             const container = document.getElementById('star-container');

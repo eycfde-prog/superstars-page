@@ -1,154 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Golden Ear | Royal Listening Mission | Glassy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-        :root { 
-            --gold: #D4AF37; 
-            --gold-light: #FFD700;
-            --gold-glow: rgba(212, 175, 55, 0.3);
-            --dark-bg: #0a0a0c;
-            --card-bg: rgba(255, 255, 255, 0.03);
-        }
-
-        body { 
-            font-family: 'Rajdhani', sans-serif; 
-            background: transparent; 
-            color: white; 
-            margin: 0; padding: 15px; 
-            direction: ltr;
-        }
-
-        /* سكرول بار ذهبي */
-        body::-webkit-scrollbar { width: 5px; }
-        body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-
-        .audio-player-container {
-            background: linear-gradient(145deg, #15151a, #0a0a0c); 
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 175, 55, 0.2); 
-            border-radius: 30px;
-            padding: 30px; 
-            text-align: center; 
-            margin-bottom: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 0 20px rgba(212, 175, 55, 0.05);
-            animation: slideDown 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-
-        .audio-player-container h2 { 
-            font-family: 'Orbitron'; 
-            color: var(--gold); 
-            font-size: 1rem; 
-            letter-spacing: 4px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 15px var(--gold-glow);
-        }
-
-        /* تخصيص مشغل الصوت ليناسب Glassy */
-        audio { 
-            width: 100%; 
-            height: 45px;
-            filter: invert(0.8) sepia(1) saturate(3) hue-rotate(10deg);
-            opacity: 0.9;
-            transition: 0.3s;
-        }
-        audio:hover { opacity: 1; transform: scale(1.01); }
-
-        .questions-grid { display: flex; flex-direction: column; gap: 20px; }
-
-        .question-card {
-            background: var(--card-bg); 
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px; 
-            padding: 25px; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeIn 1s ease forwards;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .question-text { 
-            font-family: 'Orbitron'; 
-            font-size: 0.85rem; 
-            margin-bottom: 20px; 
-            color: var(--gold-light);
-            line-height: 1.6;
-            letter-spacing: 0.5px;
-        }
-
-        .options-list { display: flex; flex-direction: column; gap: 12px; }
-
-        .option-item {
-            background: rgba(255, 255, 255, 0.02); 
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 14px 20px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            transition: 0.3s all;
-            font-size: 1rem; 
-            display: flex; 
-            align-items: center; 
-            gap: 15px;
-        }
-
-        .option-item:hover { 
-            background: rgba(212, 175, 55, 0.08); 
-            border-color: var(--gold); 
-            transform: translateX(8px);
-        }
-
-        .option-item.selected { 
-            background: var(--gold); 
-            color: #000; 
-            font-weight: 700; 
-            border-color: var(--gold);
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
-        }
-
-        .radio-dot {
-            width: 10px; height: 10px;
-            border: 2px solid var(--gold);
-            border-radius: 50%;
-            transition: 0.3s;
-        }
-
-        .option-item.selected .radio-dot {
-            background: #000;
-            border-color: #000;
-            transform: scale(1.2);
-        }
-
-    </style>
-</head>
-<body>
-
-    <div class="audio-player-container">
-        <h2><span id="task-title">GOLDEN EAR MISSION</span></h2>
-        <audio id="mainAudio" controls>
-            <source id="audioSource" src="" type="audio/wav">
-        </audio>
-    </div>
-
-    <div id="quiz-container" class="questions-grid"></div>
-
 <script>
-    // الداتا كما هي في الكود الأصلي
+    // الداتا الكاملة لـ 10 مهام (تم التحقق من تطابق الأسئلة مع المحتوى الملكي)
     const geMissions = {
-        "1": {
-            questions: [
-                { q: "What is the core definition of critical thinking?", options: ["The ability to analyze information objectively and make a reasoned judgment.", "The ability to memorize large amounts of data quickly.", "The process of accepting information without question.", "The act of forming conclusions based solely on emotion."] },
-                { q: "What is one thing critical thinking helps individuals avoid?", options: ["Logical fallacies.", "Basic conversation.", "Routine physical exercise.", "Reading books."] },
-                { q: "What two qualities are required to develop critical thinking?", options: ["Curiosity and a willingness to question assumptions.", "Ignoring all external opinions.", "Speed reading and perfect recall.", "Strict adherence to tradition."] },
-                { q: "Where is critical thinking considered a vital skill?", options: ["In everyday decision-making and academic settings.", "Only in highly specialized scientific fields.", "Only when dealing with political issues.", "Exclusively in historical research."] },
-                { q: "What is the foundation of scientific inquiry?", options: ["Critical thinking.", "Simple belief.", "Emotional response.", "Random guesswork."] }
-            ]
-        },
-        // ... (بقية الـ Missions من 2 لـ 10 تظل كما هي)
+        "1": { questions: [ { q: "What is the core definition of critical thinking?", options: ["The ability to analyze information objectively and make a reasoned judgment.", "The ability to memorize large amounts of data quickly.", "The process of accepting information without question.", "The act of forming conclusions based solely on emotion."] }, { q: "What is one thing critical thinking helps individuals avoid?", options: ["Logical fallacies.", "Basic conversation.", "Routine physical exercise.", "Reading books."] }, { q: "What two qualities are required to develop critical thinking?", options: ["Curiosity and a willingness to question assumptions.", "Ignoring all external opinions.", "Speed reading and perfect recall.", "Strict adherence to tradition."] }, { q: "Where is critical thinking considered a vital skill?", options: ["In everyday decision-making and academic settings.", "Only in highly specialized scientific fields.", "Only when dealing with political issues.", "Exclusively in historical research."] }, { q: "What is the foundation of scientific inquiry?", options: ["Critical thinking.", "Simple belief.", "Emotional response.", "Random guesswork."] } ] },
         "2": { questions: [ { q: "What primary challenge does the internet present, despite offering information?", options: ["It hosts vast amounts of misinformation.", "It requires expensive equipment.", "It is only available during the day.", "It forces people to read slower."] }, { q: "What does the concept of digital citizenship require users to be?", options: ["Responsible, respectful, and safe online.", "Completely anonymous at all times.", "Experts in coding and software design.", "Always agreeing with others online."] }, { q: "What specific skill is described as no longer optional?", options: ["Learning to evaluate online sources for credibility.", "Learning a new foreign language.", "Starting a professional blog.", "Building a personal website."] }, { q: "What must users protect as part of being a responsible digital citizen?", options: ["Personal data.", "Their computer's physical location.", "The history of the internet.", "Old printed books."] }, { q: "What is the goal of conscious effort in using the internet?", options: ["Harnessing its power while minimizing its potential for harm.", "To completely avoid using all social media platforms.", "To only use it for professional work tasks.", "To spend the maximum amount of time online possible."] } ] },
         "3": { questions: [ { q: "What is sleep described as being crucial for?", options: ["Repair and consolidation for the body and brain.", "Wasting excess time.", "Increasing screen time.", "Reducing physical movement during the day."] }, { q: "What cognitive function is severely affected by chronic sleep deprivation?", options: ["Concentration, mood, and judgment.", "The ability to stand up straight.", "The memory of childhood songs.", "The speed of reading simple text."] }, { q: "What does the brain primarily do with memories during sleep?", options: ["Turns short-term memories into long-term ones.", "Forgets all unnecessary information.", "Creates entirely new memories.", "Stops processing all information."] }, { q: "What is the key to overall well-being according to the text?", options: ["Treating sleep as a non-negotiable part of our health routine.", "Drinking caffeine throughout the evening.", "Working continuously without breaks.", "Only sleeping when absolutely necessary."] }, { q: "What the body repair during the sleep cycle?", options: ["Muscle tissue.", "Shoes and clothing.", "Broken electronic devices.", "Damaged furniture."] } ] },
         "4": { questions: [ { q: "How does innovation primarily differ from invention?", options: ["Innovation focuses on improving or effectively utilizing existing ideas.", "Innovation only occurs in technology companies.", "Invention is always less useful than innovation.", "Invention is the introduction of something new."] }, { q: "What is the driving force behind market competitiveness?", options: ["Innovation.", "Stagnation.", "Strict adherence to old methods.", "Reducing product quality."] }, { q: "What type of culture is required to encourage innovation?", options: ["A culture that accepts risk and views failure as a learning opportunity.", "A culture that punishes any type of experimentation.", "A culture that adheres rigidly to hierarchy.", "A culture that avoids all new processes."] }, { q: "What happens to companies that stagnate and resist change?", options: ["They are quickly surpassed by competitors.", "They become more profitable instantly.", "They become monopolies in their field.", "They invent many new products."] }, { q: "Innovation is described as the continuous process of turning what into reality?", options: ["Potential.", "Defeat.", "Stagnation.", "The past."] } ] },
@@ -167,6 +20,7 @@
     function initGE() {
         const audio = document.getElementById('mainAudio');
         const source = document.getElementById('audioSource');
+        // Joiner Path: assets/gesaudio/GE{n}.wav
         source.src = `assets/gesaudio/GE${taskNum}.wav`;
         audio.load();
 
@@ -217,15 +71,12 @@
             return;
         }
         
+        // إرسال البيانات للـ Arena
         window.parent.postMessage({
             type: 'MISSION_ANSWERS',
-            activityCode: 'GE',
-            answers: answersArray, 
-            missionNum: taskNum
+            answers: answersArray.join(', ') // تحويل المصفوفة لنص مفصول بفاصلة لسهولة العرض
         }, '*');
     }
 
     window.onload = initGE;
 </script>
-</body>
-</html>

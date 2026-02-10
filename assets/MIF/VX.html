@@ -22,7 +22,6 @@
             direction: ltr;
         }
 
-        /* سكرول بار جلاسي */
         body::-webkit-scrollbar { width: 4px; }
         body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
@@ -46,7 +45,6 @@
             text-shadow: 0 0 10px var(--gold-glow);
         }
 
-        /* الإطار الملكي للصورة */
         .image-frame-x {
             background: var(--glass); 
             border: 1px solid var(--glass-border);
@@ -59,17 +57,17 @@
 
         #target-image-x {
             width: 100%; 
-            max-height: 400px; 
-            object-fit: cover;
+            max-height: 420px; 
+            object-fit: contain;
             border-radius: 18px; 
             display: block;
-            border: 1px solid var(--glass-border);
+            background: #000;
         }
 
         .chrono-tag {
             position: absolute;
             top: 25px; right: 25px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             backdrop-filter: blur(5px);
             border: 1px solid var(--gold);
             padding: 5px 15px;
@@ -81,7 +79,6 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* منطقة الكتابة الإبداعية */
         .story-zone {
             background: rgba(10, 10, 15, 0.8); 
             border-radius: 20px;
@@ -121,7 +118,6 @@
         textarea:focus {
             border-color: var(--gold);
             background: rgba(212, 175, 55, 0.03);
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
         }
 
         .footer-info {
@@ -155,13 +151,13 @@
         </div>
 
         <div class="image-frame-x">
-            <img id="target-image-x" src="" alt="VividX Visual">
-            <div class="chrono-tag" id="time-frame-text">LOADING...</div>
+            <img id="target-image-x" src="" alt="VividX Visual" onerror="this.src='https://via.placeholder.com/800x450/000/D4AF37?text=RECONSTRUCTION+IN+PROGRESS...'">
+            <div class="chrono-tag" id="time-frame-text">SYNCING...</div>
         </div>
 
         <div class="story-zone">
             <label>NARRATIVE TRANSMISSION:</label>
-            <textarea id="storyInput" oninput="updateCount()" placeholder="Begin your reconstruction..."></textarea>
+            <textarea id="storyInput" oninput="updateCount()" placeholder="Initializing narrative interface..."></textarea>
             
             <div class="footer-info">
                 <span>OBJECTIVE: 150 WORDS MINIMUM</span>
@@ -189,7 +185,8 @@
 
     function initVividX() {
         const scenario = vividXScenarios[taskNum] || vividXScenarios["1"];
-        document.getElementById('target-image-x').src = `assets/vividxpics/${scenario.img}`;
+        // مسار الصور المحدث
+        document.getElementById('target-image-x').src = `../../assets/vividxpics/${scenario.img}`;
         document.getElementById('time-frame-text').innerText = scenario.time;
         document.getElementById('storyInput').placeholder = scenario.desc;
         document.getElementById('vx-title').innerText = `MISSION VX-${taskNum.padStart(2, '0')}`;
@@ -211,10 +208,13 @@
     window.addEventListener('message', function(event) {
         if (event.data.type === 'REQUEST_MISSION_DATA') {
             const story = document.getElementById('storyInput').value.trim();
-            if(!story) {
-                 window.parent.postMessage({ type: 'MISSION_INCOMPLETE' }, '*');
+            const count = story ? story.split(/\s+/).length : 0;
+
+            if(!story || count < 150) {
+                 alert("❌ SYSTEM: Data transmission requires at least 150 words for reconstruction.");
                  return;
             }
+            
             window.parent.postMessage({ 
                 type: 'MISSION_ANSWERS', 
                 activityCode: 'VX',

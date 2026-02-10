@@ -43,16 +43,33 @@
         .btn-submit { flex: 2; background: var(--gold-gradient); color: #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); font-size: 0.9rem; }
         .btn-side { flex: 1; background: rgba(255,255,255,0.05); color: var(--gold); border: 1px solid var(--glass-border); }
         
-        #sync-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        
+        /* Overlay & Result Card */
+        #sync-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        .result-card { background: rgba(20, 20, 25, 0.95); border: 2px solid var(--gold); border-radius: 20px; padding: 30px; box-shadow: 0 0 40px var(--gold-glow); animation: slideUp 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); max-width: 350px; width: 90%; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Mobile View Optimization */
+        @media (max-width: 600px) {
+            .battle-header { gap: 5px; }
+            .info-box { padding: 4px 6px; }
+            .student-photo, .activity-logo { width: 32px; height: 32px; }
+            .name { font-size: 0.6rem; }
+            .vs-text { font-size: 1rem; }
+            footer { flex-wrap: wrap; padding: 10px; }
+            .btn-submit { order: -1; width: 100%; font-size: 0.8rem; }
+            .btn-side { flex: 1; font-size: 0.65rem; }
+        }
+
         #chat-box { position: fixed; bottom: 90px; right: 20px; width: 300px; height: 400px; background: #0a0a0c; border: 1px solid var(--gold); border-radius: 20px; display: none; flex-direction: column; z-index: 1001; overflow: hidden; backdrop-filter: blur(15px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
     <div id="sync-overlay">
-        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;"></i>
-        <div id="sync-text" style="font-family: 'Cinzel'; letter-spacing: 2px; color: white;">SYNCING WITH CORE...</div>
+        <div id="sync-content">
+            <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;"></i>
+            <div id="sync-text" style="font-family: 'Cinzel'; letter-spacing: 2px; color: white;">SYNCING WITH CORE...</div>
+        </div>
     </div>
 
     <div id="star-container"></div>
@@ -68,7 +85,7 @@
             </div>
             <div class="vs-container">
                 <div class="vs-text">VS</div>
-                <div id="max-score" class="token-score">-- TOKENS</div>
+                <div id="max-score-header" class="token-score">ARENA MISSION</div>
             </div>
             <div class="info-box">
                 <div style="display: flex; flex-direction: column; text-align: right;">
@@ -134,7 +151,6 @@
             document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?task=${currentTask}`;
         };
 
-        // دالة الـ Guide مستمرة بناءً على طلبك
         function openGuide() {
             alert("EYC TITANIUM RULES:\n1. No AI assistance.\n2. Manual creativity only.\n3. Tokens are awarded based on quality.");
         }
@@ -166,18 +182,42 @@
             })
             .then(res => res.json())
             .then(data => {
-                const syncText = document.getElementById('sync-text');
-                syncText.innerHTML = `
-                    <div style="color: var(--gold); font-size: 2rem; font-weight: bold;">GRADE: ${data.grade}/10</div>
-                    <div style="font-size: 0.9rem; margin-top: 15px; color: #ccc; max-width: 300px;">${data.reason}</div>
-                    <div style="font-size: 0.7rem; margin-top: 10px; color: var(--gold); font-style: italic;">Redirecting to Command Center...</div>
+                const syncOverlay = document.getElementById('sync-overlay');
+                
+                // عرض كارت النتيجة النهائي المطور
+                syncOverlay.innerHTML = `
+                    <div class="result-card">
+                        <i class="fas fa-medal" style="font-size: 3.5rem; color: var(--gold); margin-bottom: 15px;"></i>
+                        <div style="font-family: 'Cinzel'; color: white; font-size: 1.1rem; letter-spacing: 1px;">MISSION EVALUATED</div>
+                        
+                        <div style="margin: 20px 0;">
+                            <span style="font-family: 'Orbitron'; font-size: 3rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 15px var(--gold-glow);">
+                                ${data.grade}
+                            </span>
+                            <span style="font-family: 'Orbitron'; font-size: 1.2rem; color: #555;"> / ${data.maxGrade}</span>
+                        </div>
+
+                        <div style="font-size: 0.8rem; color: #ccc; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; border-left: 3px solid var(--gold);">
+                            ${data.reason}
+                        </div>
+
+                        <div style="margin-top: 25px; font-size: 0.6rem; color: var(--gold); letter-spacing: 3px; font-family: 'Orbitron'; opacity: 0.7;">
+                            SYNCING RECORDS...
+                        </div>
+                    </div>
                 `;
-                setTimeout(() => window.location.href = 'MC.html', 4500);
+                
+                setTimeout(() => window.location.href = 'MC.html', 5000);
             })
             .catch(err => {
                 alert("SYNC ERROR!");
                 document.getElementById('sync-overlay').style.display = 'none';
             });
+        }
+
+        function toggleChat() {
+            const chat = document.getElementById('chat-box');
+            chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
         }
 
         function generateStars() {

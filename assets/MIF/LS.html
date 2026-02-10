@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Label Master | Visual Intelligence | Glassy</title>
+    <title>Label Master | Visual Intelligence | Glassy Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,107 +18,99 @@
             font-family: 'Rajdhani', sans-serif; 
             background: transparent; 
             color: #fff; 
-            margin: 0; padding: 20px; 
+            margin: 0; padding: 10px; 
             direction: ltr;
             overflow-x: hidden;
         }
 
-        body::-webkit-scrollbar { width: 6px; }
+        body::-webkit-scrollbar { width: 4px; }
         body::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 10px; }
 
         .topic-header {
             font-family: 'Orbitron';
             color: var(--neon-blue);
             text-transform: uppercase;
-            margin-bottom: 30px;
-            letter-spacing: 6px;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
             text-align: center;
-            font-size: 1.2rem;
-            text-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
-        }
-
-        .topic-header::after {
-            content: ''; display: block; width: 60px; height: 2px; 
-            background: var(--gold); margin: 10px auto;
-            box-shadow: 0 0 10px var(--gold);
+            font-size: 1.1rem;
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
         .label-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
             perspective: 1000px;
         }
 
         .image-card {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 12px;
             text-align: center;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: 0.3s;
             animation: cardAppear 0.5s ease-out backwards;
-            position: relative;
         }
 
         @keyframes cardAppear {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .image-card:hover {
-            transform: translateY(-5px);
             border-color: var(--neon-blue);
-            box-shadow: 0 10px 25px rgba(0, 242, 255, 0.2);
+            transform: translateY(-3px);
         }
 
         .img-container {
-            width: 100%; height: 110px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            margin-bottom: 15px;
+            width: 100%; height: 100px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 10px;
+            margin-bottom: 12px;
             display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.1);
             overflow: hidden;
         }
 
         .img-container img {
             max-width: 90%; max-height: 90%;
             object-fit: contain;
-            filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.3));
+            transition: 0.5s;
         }
 
         .label-input {
             width: 90%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.1);
             color: var(--gold);
             font-family: 'Orbitron';
             text-align: center;
-            padding: 8px;
+            padding: 8px 4px;
             font-size: 0.75rem;
             outline: none;
+            border-radius: 6px;
             transition: 0.3s;
-            border-radius: 8px;
         }
 
         .label-input:focus {
             border-color: var(--gold);
-            box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+            background: rgba(255, 204, 0, 0.05);
         }
 
         .error-card { border-color: var(--error-red) !important; animation: shake 0.3s; }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
         }
     </style>
 </head>
 <body>
 
-    <div id="topic-title" class="topic-header">INITIALIZING...</div>
+    <div id="topic-title" class="topic-header">SCANNING SECTOR...</div>
     <div id="label-zone" class="label-grid"></div>
 
 <script>
@@ -136,22 +128,22 @@
     };
 
     const urlParams = new URLSearchParams(window.location.search);
-    const taskNum = urlParams.get('task') || "1";
+    const taskNum = parseInt(urlParams.get('task')) || 1;
     let currentTaskWords = [];
 
     function loadLabelMission() {
-        const currentTask = labelData[taskNum] || labelData["1"];
+        const currentTask = labelData[taskNum.toString()] || labelData["1"];
         currentTaskWords = currentTask.words;
         document.getElementById('topic-title').innerText = `SECTOR: ${currentTask.topic}`;
         
         const container = document.getElementById('label-zone');
-        container.innerHTML = currentTask.words.map((w, i) => {
-            // معادلة حساب اسم الصورة بناءً على رقم المهمة
-            const imgID = ((parseInt(taskNum) - 1) * 10) + (i + 1);
+        container.innerHTML = currentTaskWords.map((w, i) => {
+            // معادلة حساب رقم الصورة: (رقم المهمة - 1) * 10 + (رقم العنصر من 1 لـ 10)
+            const imgID = ((taskNum - 1) * 10) + (i + 1);
             return `
                 <div class="image-card" id="card-${i}" style="animation-delay: ${i * 0.05}s">
                     <div class="img-container">
-        const rawUrl = `https://raw.githubusercontent.com/$eycfde-prog/$superstars-page/main/assets/lspics/LS${taskNum}.png`;
+                        <img src="../../assets/aspics/LS${imgID}.png" alt="Obj" onerror="this.src='https://via.placeholder.com/150/000000/00f2ff?text=LS${imgID}'">
                     </div>
                     <input type="text" class="label-input" id="label-${i}" placeholder="IDENTIFY..." autocomplete="off">
                 </div>
@@ -159,7 +151,7 @@
         }).join('');
     }
 
-    function triggerSubmit() {
+    function collectData() {
         const studentAnswers = [];
         let missing = false;
 
@@ -184,13 +176,13 @@
             activityCode: 'LM',
             answers: studentAnswers.join(' | '),
             modelAnswers: currentTaskWords.join(' | '),
-            missionNum: taskNum
+            missionNum: taskNum.toString()
         }, '*');
     }
 
     window.addEventListener('message', function(event) {
         if (event.data.type === 'REQUEST_MISSION_DATA') {
-            triggerSubmit();
+            collectData();
         }
     });
 

@@ -125,10 +125,18 @@
     <div id="mission-wrapper"></div>
 
 <script>
-    // بيانات الأنشطة (كما هي مع الحفاظ على التنسيق)
+    // تم حقن المهام العشر بواسطة Joiner
     const missionsData = {
         "1": [ {a:"شمس", b:"ابن"}, {a:"بحر", b:"يرى"}, {a:"إلى", b:"أيضاً"}, {a:"هنا", b:"يسمع"}, {a:"لا", b:"يعرف"} ],
-        // ... باقي البيانات هنا ...
+        "2": [ {a:"نفخ", b:"أزرق"}, {a:"دقيق", b:"زهرة"}, {a:"فارس", b:"ليل"}, {a:"يكتب", b:"يمين"}, {a:"كامل", b:"ثقب"} ],
+        "3": [ {a:"ينتظر", b:"وزن"}, {a:"كسر", b:"فرامل"}, {a:"أسبوع", b:"ضعيف"}, {a:"سنت", b:"أرسل"}, {a:"درجة سلم", b:"نظرة"} ],
+        "4": [ {a:"يشتري", b:"بواسطة"}, {a:"أرنب", b:"شعر"}, {a:"سمع", b:"قطيع"}, {a:"وريث", b:"هواء"}, {a:"فاز", b:"واحد"} ],
+        "5": [ {a:"يقابل", b:"لحم"}, {a:"طريق", b:"ركب"}, {a:"مشهد", b:"مرئي"}, {a:"لوح", b:"ملل"}, {a:"ذيل", b:"قصة"} ],
+        "6": [ {a:"كمثرى", b:"زوج"}, {a:"رئيسي", b:"عرف الأسد"}, {a:"قطعة", b:"سلام"}, {a:"ذكر", b:"بريد"}, {a:"فولاذ", b:"يسرق"} ],
+        "7": [ {a:"خادمة", b:"صنع"}, {a:"سهل/واضح", b:"طائرة"}, {a:"نفايات", b:"خصر"}, {a:"عزيزي", b:"غزال"}, {a:"خشب", b:"سوف"} ],
+        "8": [ {a:"توت", b:"يدفن"}, {a:"جذر", b:"طريق"}, {a:"إبحار", b:"تخفيض"}, {a:"إصبع قدم", b:"يسحب"}, {a:"يشفى", b:"كعب"} ],
+        "9": [ {a:"مسموح", b:"بصوت عال"}, {a:"يكون", b:"نحلة"}, {a:"قبو", b:"بائع"}, {a:"يموت", b:"صبغة"}, {a:"ضيف", b:"خمن"} ],
+        "10": [ {a:"صباح", b:"حداد"}, {a:"أنف", b:"يعرف (للمفرد)"}, {a:"باهت", b:"دلو"}, {a:"وردة", b:"صفوف"}, {a:"رمى", b:"خلال"} ]
     };
 
     function renderActiveMission() {
@@ -146,11 +154,11 @@
                             <div class="input-row">
                                 <div class="word-box">
                                     <label>${p.a}</label>
-                                    <input type="text" class="alike-input" placeholder="Type here">
+                                    <input type="text" class="alike-input" data-pair="${i}" data-word="a" placeholder="...">
                                 </div>
                                 <div class="word-box">
                                     <label>${p.b}</label>
-                                    <input type="text" class="alike-input" placeholder="Type here">
+                                    <input type="text" class="alike-input" data-pair="${i}" data-word="b" placeholder="...">
                                 </div>
                             </div>
                         </div>
@@ -160,6 +168,7 @@
         `;
     }
 
+    // استجابة لطلب صفحة المهام الأم
     window.addEventListener('message', function(event) {
         if (event.data.type === 'REQUEST_MISSION_DATA') {
             collectAndSend();
@@ -168,7 +177,7 @@
 
     function collectAndSend() {
         const inputs = document.querySelectorAll('.alike-input');
-        let answers = [];
+        let answersArray = [];
         let hasError = false;
 
         inputs.forEach(input => {
@@ -178,18 +187,19 @@
                 input.classList.add('error');
             } else {
                 input.classList.remove('error');
-                answers.push(val.toLowerCase());
+                answersArray.push(val.toLowerCase());
             }
         });
 
         if(hasError) {
-            window.parent.postMessage({ type: 'MISSION_INCOMPLETE' }, '*');
-            return;
+            // تنبيه المستخدم داخل الإطار بوجود حقول فارغة
+            return; 
         }
 
+        // إرسال البيانات مدمجة بفاصل لصفحة المهام
         window.parent.postMessage({
             type: 'MISSION_ANSWERS', 
-            answers: answers.join(', ')
+            answers: answersArray.join(', ')
         }, '*');
     }
 

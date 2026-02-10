@@ -50,7 +50,6 @@
         .header-m h1 { font-family: 'Orbitron'; color: var(--gold); letter-spacing: 3px; margin: 0; font-size: 1.2rem; }
         .issue-tag { font-family: 'Orbitron'; font-size: 10px; color: #666; }
 
-        /* منطقة المقال الصحفي */
         .article-box {
             background: var(--glass); 
             border-radius: 20px; 
@@ -64,15 +63,16 @@
             box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
         }
 
-        /* تأثير الحرف الأول للمقال */
-        #article-content::first-letter {
+        /* الحرف الأول الملكي */
+        .drop-cap::first-letter {
             font-family: 'Orbitron';
-            font-size: 3rem;
+            font-size: 3.5rem;
             color: var(--gold);
             float: left;
-            margin-right: 10px;
-            line-height: 1;
-            text-shadow: 0 0 10px var(--gold-glow);
+            margin-right: 12px;
+            line-height: 0.8;
+            text-shadow: 0 0 15px var(--gold-glow);
+            font-weight: 700;
         }
 
         .copy-btn {
@@ -82,9 +82,8 @@
             font-family: 'Orbitron'; font-size: 9px; font-weight: bold;
             transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-        .copy-btn:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 8px 20px var(--gold-glow); }
+        .copy-btn:hover { background: #fff; transform: translateY(-3px); }
 
-        /* منطقة تسجيل الصوت */
         .upload-zone {
             margin-top: 30px; 
             padding: 25px; 
@@ -94,7 +93,7 @@
             text-align: center; 
             transition: 0.4s;
         }
-        .upload-zone:hover { box-shadow: 0 0 20px rgba(0, 242, 255, 0.15); }
+        .upload-zone.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
 
         .upload-label { 
             display: block; 
@@ -119,6 +118,7 @@
             display: none; 
             font-family: 'Orbitron';
             letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .audio-icon { font-size: 24px; color: var(--neon-blue); margin-bottom: 10px; display: block; }
@@ -137,23 +137,22 @@
 
         <div class="article-box">
             <button class="copy-btn" onclick="copyArticle()">COPY SCRIPT</button>
-            <div id="article-content">
-                Loading encrypted news...
+            <div id="article-content" class="drop-cap">
+                Initializing satellite link...
             </div>
         </div>
 
-        <div class="upload-zone">
+        <div class="upload-zone" id="dropZone">
             <span class="audio-icon">🎙️</span>
             <label class="upload-label">TRANSMIT VOICE EVIDENCE (MP3/WAV)</label>
-            <input type="file" id="audioFile" accept="audio/*">
-            <div id="status" class="status-msg">SIGNAL ENCRYPTED & COPIED!</div>
+            <input type="file" id="audioFile" accept="audio/*" onchange="handleFileSelect()">
+            <div id="status" class="status-msg">SIGNAL ENCRYPTED & READY!</div>
         </div>
     </div>
 
 <script>
     const magazineData = {
         "1": "The concept of artificial intelligence has transformed from science fiction into an everyday reality. Today, AI systems help us navigate traffic, suggest movies, and even translate languages in real-time. However, the true power of AI lies in its ability to analyze massive amounts of data to solve complex problems, such as predicting climate changes or discovering new medical treatments. While some people fear that machines might replace human workers, many experts believe that AI will actually act as a powerful tool to enhance human creativity. By handling repetitive and boring tasks, AI allows us to focus on more meaningful work that requires emotional intelligence and critical thinking. As we move forward, the challenge will be to ensure that these technologies are developed ethically and used for the benefit of everyone in society, creating a balanced future.",
-        // ... (بقية النصوص تظل كما هي)
         "2": "The deep ocean remains one of the most mysterious places on our planet, with much of it still unexplored by humans. Despite the extreme pressure and complete darkness, thousands of unique species thrive in this alien environment. Scientists use advanced robotic submarines to reach these depths, discovering glowing fish and giant squids that seem to belong in a fantasy movie. These explorations are not just about curiosity; they are vital for understanding the history of Earth. The ocean floor contains records of ancient climate shifts and volcanic activity that shaped our world. Furthermore, deep-sea organisms might hold the key to new medicines, as many possess unique chemical defenses. Protecting these fragile ecosystems from pollution and deep-sea mining is crucial, as they play a major role in regulating the global climate and supporting the balance of life on Earth.",
         "3": "Sustainable living is no longer just a trend; it has become a necessity for protecting our planet's future. Small changes in our daily routines can lead to significant environmental benefits over time. For example, reducing our reliance on single-use plastics helps protect marine life and keeps our oceans clean. Switching to renewable energy sources, like solar or wind power, reduces our carbon footprint and combats global warming. Additionally, supporting local farmers and eating seasonal food minimizes the energy used for transportation. Education plays a vital role in this movement, as people need to understand the impact of their choices. By choosing to reuse, repair, and recycle, we can move toward a circular economy that values resources rather than wasting them. Collective action is the only way to ensure a healthy, green planet for the generations that will follow us.",
         "4": "Space exploration has always captured the human imagination, driving us to look beyond our own world. Since the first moon landing, our technology has advanced enough to send rovers to Mars and telescopes into deep space. These missions provide us with breathtaking images and invaluable data about the origins of the universe. Many scientists believe that establishing a permanent human colony on Mars is the next logical step in our journey. This would require incredible innovation in life-support systems, radiation shielding, and sustainable food production. Beyond Mars, the search for habitable planets around other stars continues to be a primary goal for astronomers. While the costs of space travel are high, the potential rewards—such as new resources and a backup for humanity—are even higher. Exploring the cosmos reminds us of our small place in the universe and our shared destiny.",
@@ -178,9 +177,20 @@
         const text = document.getElementById('article-content').innerText;
         navigator.clipboard.writeText(text).then(() => {
             const status = document.getElementById('status');
+            status.innerText = "SCRIPT COPIED TO CLIPBOARD!";
             status.style.display = 'block';
             setTimeout(() => { status.style.display = 'none'; }, 2000);
         });
+    }
+
+    function handleFileSelect() {
+        const status = document.getElementById('status');
+        const zone = document.getElementById('dropZone');
+        if(document.getElementById('audioFile').files.length > 0) {
+            status.innerText = "VOICE EVIDENCE LOADED!";
+            status.style.display = 'block';
+            zone.classList.add('active');
+        }
     }
 
     window.addEventListener('message', function(event) {

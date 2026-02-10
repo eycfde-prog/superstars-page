@@ -109,7 +109,7 @@
         </div>
     </div>
 
-<script>
+    <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVapR61eSuDO6LWzWvxklnFrU6wh1PWtwdpS5fihWitDbq-pUB6fnLZ2jmjsn_eN4NVA/exec";
         let currentActivity, currentTask, userEmail, userName;
 
@@ -134,7 +134,6 @@
             document.getElementById('contentFrame').src = `assets/MIF/${currentActivity}.html?task=${currentTask}`;
         };
 
-        // دالة الـ Guide مستمرة بناءً على طلبك
         function openGuide() {
             alert("EYC TITANIUM RULES:\n1. No AI assistance.\n2. Manual creativity only.\n3. Tokens are awarded based on quality.");
         }
@@ -164,16 +163,17 @@
                 method: 'POST',
                 body: JSON.stringify(payload)
             })
-.then(data => {
-    const syncText = document.getElementById('sync-text');
-    // استخدم data.maxGrade المستلمة من السكربت
-    syncText.innerHTML = `
-        <div style="color: var(--gold); font-size: 2rem; font-weight: bold;">GRADE: ${data.grade}/${data.maxGrade}</div>
-        <div style="font-size: 0.9rem; margin-top: 15px; color: #ccc; max-width: 300px;">${data.reason}</div>
-        <div style="font-size: 0.7rem; margin-top: 10px; color: var(--gold); font-style: italic;">Redirecting to Command Center...</div>
-    `;
-    setTimeout(() => window.location.href = 'MC.html', 4500);
-})
+            .then(response => response.json())
+            .then(data => {
+                const syncText = document.getElementById('sync-text');
+                syncText.innerHTML = `
+                    <div style="color: var(--gold); font-size: 2rem; font-weight: bold;">GRADE: ${data.grade}/${data.maxGrade}</div>
+                    <div style="font-size: 0.9rem; margin-top: 15px; color: #ccc; max-width: 300px;">${data.reason}</div>
+                    <div style="font-size: 0.7rem; margin-top: 10px; color: var(--gold); font-style: italic;">Redirecting to Command Center...</div>
+                `;
+                setTimeout(() => window.location.href = 'MC.html', 4500);
+            });
+        }
 
         function generateStars() {
             const container = document.getElementById('star-container');
@@ -185,6 +185,24 @@
                 star.style.top = Math.random() * 100 + '%';
                 star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
                 container.appendChild(star);
+            }
+        }
+
+        function toggleChat() {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.style.display = chatBox.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function askFifi() {
+            const input = document.getElementById('chat-input');
+            const content = document.getElementById('chat-content');
+            if (input.value.trim() !== "") {
+                const userMsg = document.createElement('div');
+                userMsg.style.cssText = "align-self: flex-end; background: var(--gold-glow); padding: 8px; border-radius: 10px; color: white;";
+                userMsg.innerText = input.value;
+                content.appendChild(userMsg);
+                input.value = "";
+                content.scrollTop = content.scrollHeight;
             }
         }
     </script>

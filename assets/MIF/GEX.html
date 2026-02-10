@@ -21,7 +21,6 @@
             direction: ltr;
         }
 
-        /* تنسيق الـ Radar Panel */
         .audio-x-panel {
             background: var(--glass-deep); 
             border: 2px solid var(--border-purple);
@@ -52,7 +51,6 @@
             text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
         }
 
-        /* مشغل صوت بستايل السايبربانك البنفسجي */
         audio { 
             width: 100%; 
             height: 40px;
@@ -120,14 +118,41 @@
             box-shadow: 0 0 10px var(--neon-purple);
         }
 
-        .sentence-box:focus-within .line-marker {
-            animation: pulseMarker 1.5s infinite;
-        }
-
         @keyframes pulseMarker {
             0%, 100% { opacity: 1; height: 60%; }
             50% { opacity: 0.5; height: 80%; }
         }
+    </style>
+</head>
+<body>
+
+    <div class="audio-x-panel">
+        <h1 id="x-title">GE-X: MISSION 01</h1>
+        <audio id="xAudio" controls>
+            <source id="xSource" src="" type="audio/wav">
+        </audio>
+    </div>
+
+    <div class="summary-zone">
+        <div class="sentence-box">
+            <div class="line-marker"></div>
+            <label>SUMMARIZATION LINE 01</label>
+            <input type="text" id="sent-1" class="x-input-field" placeholder="Enter the first key point...">
+        </div>
+
+        <div class="sentence-box">
+            <div class="line-marker"></div>
+            <label>SUMMARIZATION LINE 02</label>
+            <input type="text" id="sent-2" class="x-input-field" placeholder="Enter the second key point...">
+        </div>
+
+        <div class="sentence-box">
+            <div class="line-marker"></div>
+            <label>SUMMARIZATION LINE 03</label>
+            <input type="text" id="sent-3" class="x-input-field" placeholder="Enter the final summary line...">
+        </div>
+    </div>
+
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const taskNum = urlParams.get('task') || "1";
@@ -136,8 +161,10 @@
         const audio = document.getElementById('xAudio');
         const source = document.getElementById('xSource');
         
-        // الربط بمسار الصوت على GitHub Assets
-        source.src = `assets/gexaudio/GEX${taskNum}.wav`;
+        // المسار المطلوب للخروج للجذر والوصول للمجلد
+        const audioPath = `../../assets/gesaudio/GES${taskNum}.wav`;
+        
+        source.src = audioPath;
         audio.load();
 
         document.getElementById('x-title').innerText = `GE-X: MISSION ${taskNum.padStart(2, '0')}`;
@@ -145,7 +172,6 @@
 
     // استماع لطلب صفحة المهام (Arena)
     window.addEventListener('message', function(event) {
-        // المطابقة مع بروتوكول REQUEST_MISSION_DATA
         if (event.data.type === 'REQUEST_MISSION_DATA') {
             collectAndSend();
         }
@@ -156,19 +182,16 @@
         const s2 = document.getElementById('sent-2').value.trim();
         const s3 = document.getElementById('sent-3').value.trim();
 
-        // التحقق من ملء البيانات
         if (!s1 || !s2 || !s3) {
-            // يمكن إضافة تأثير بصري هنا للتنبيه
             document.querySelectorAll('.x-input-field').forEach(input => {
                 if(!input.value) input.style.borderBottomColor = '#ff4444';
             });
+            window.parent.postMessage({ type: 'MISSION_INCOMPLETE' }, '*');
             return; 
         }
 
-        // تجميع الإجابات في نص واحد مفصول بفاصلة
         const finalAnswers = `${s1}, ${s2}, ${s3}`;
 
-        // إرسال البيانات للـ Arena
         window.parent.postMessage({ 
             type: 'MISSION_ANSWERS', 
             answers: finalAnswers

@@ -110,7 +110,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby8IigjiFoj3j7gR4n_z-aOLulGSETX98gzxgv-fU9MKTUGirrJYvlFJHl7Aiu1EAxLNg/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmrNLHJpFNNs3Bn-6dNUOlxIvNJ135Y5SjGnXqW4v_dG3RCFPSiMBQDndJzjw7yUaQjA/exec";
         let currentActivity, currentTask, userEmail, userName;
 
         window.onload = function() {
@@ -159,24 +159,20 @@
                 answer: answers
             };
 
-            document.getElementById('sync-overlay').style.display = 'flex';
-
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            });
-
-            setTimeout(() => {
+            })
+            .then(response => response.json())
+            .then(data => {
                 const syncText = document.getElementById('sync-text');
                 syncText.innerHTML = `
-                    <div style="color: var(--gold); font-size: 1.5rem; font-weight: bold;">MISSION TRANSMITTED</div>
-                    <div style="font-size: 0.8rem; margin-top: 10px; color: #888;">Data sent to Core. Check your Rank soon.</div>
+                    <div style="color: var(--gold); font-size: 2rem; font-weight: bold;">GRADE: ${data.grade}/${data.maxGrade}</div>
+                    <div style="font-size: 0.9rem; margin-top: 15px; color: #ccc; max-width: 300px;">${data.reason}</div>
+                    <div style="font-size: 0.7rem; margin-top: 10px; color: var(--gold); font-style: italic;">Redirecting to Command Center...</div>
                 `;
-                setTimeout(() => window.location.href = 'MC.html', 3000);
-            }, 2000);
+                setTimeout(() => window.location.href = 'MC.html', 4500);
+            });
         }
 
         function generateStars() {

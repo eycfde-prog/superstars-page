@@ -217,7 +217,7 @@
         imgElement.src = rawUrl;
         
         imgElement.onerror = function() {
-            this.src = "https://placehold.co/800x450/050505/00d4ff?text=IMAGE+NOT+FOUND+IN+REPOS";
+            this.src = "https://placehold.co/800x450/050505/00d4ff?text=IMAGE+NOT+FOUND";
         };
         
         document.getElementById('v-title').innerText = `VIVID: MISSION ${taskNum.padStart(2, '0')}`;
@@ -229,21 +229,24 @@
         document.getElementById('wCount').innerText = words;
     }
 
-    function submitVivid() {
-        const description = document.getElementById('descInput').value.trim();
-        
-        if(!description) {
-            alert("❌ SYSTEM ERROR: Description field cannot be empty.");
-            return;
-        }
+    // --- التعديل الجوهري هنا ---
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'REQUEST_MISSION_DATA') {
+            const description = document.getElementById('descInput').value.trim();
+            
+            if(!description) {
+                // بدلاً من alert، نرسل تنبيه بسيط للأم
+                document.getElementById('descInput').style.borderColor = "red";
+                return; 
+            }
 
-        window.parent.postMessage({ 
-            type: 'MISSION_ANSWERS', 
-            activityCode: 'VS', 
-            answers: description, 
-            missionNum: taskNum 
-        }, '*');
-    }
+            // نرسل الإجابة فقط، الصفحة الأم هي من ستتولى الباقي كما في نشاط Alike
+            window.parent.postMessage({ 
+                type: 'MISSION_ANSWERS', 
+                answers: description 
+            }, '*');
+        }
+    });
 
     window.onload = initVivid;
 </script>

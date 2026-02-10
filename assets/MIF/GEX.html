@@ -128,35 +128,6 @@
             0%, 100% { opacity: 1; height: 60%; }
             50% { opacity: 0.5; height: 80%; }
         }
-    </style>
-</head>
-<body>
-
-    <div class="audio-x-panel">
-        <h1 id="x-title">GE-X: MISSION RADAR</h1>
-        <audio id="xAudio" controls>
-            <source id="xSource" src="" type="audio/wav">
-        </audio>
-    </div>
-
-    <div class="summary-zone">
-        <div class="sentence-box">
-            <div class="line-marker"></div>
-            <label>CORE INSIGHT 01</label>
-            <input type="text" class="x-input-field" id="sent-1" placeholder="Detecting primary signal...">
-        </div>
-        <div class="sentence-box">
-            <div class="line-marker"></div>
-            <label>SUPPORTING DATA 02</label>
-            <input type="text" class="x-input-field" id="sent-2" placeholder="Analyzing frequency...">
-        </div>
-        <div class="sentence-box">
-            <div class="line-marker"></div>
-            <label>FINAL CONCLUSION 03</label>
-            <input type="text" class="x-input-field" id="sent-3" placeholder="Decoding message...">
-        </div>
-    </div>
-
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const taskNum = urlParams.get('task') || "1";
@@ -164,28 +135,45 @@
     function initGEX() {
         const audio = document.getElementById('xAudio');
         const source = document.getElementById('xSource');
+        
+        // الربط بمسار الصوت على GitHub Assets
         source.src = `assets/gexaudio/GEX${taskNum}.wav`;
         audio.load();
 
         document.getElementById('x-title').innerText = `GE-X: MISSION ${taskNum.padStart(2, '0')}`;
     }
 
-    // استقبال النداء من Arena
+    // استماع لطلب صفحة المهام (Arena)
     window.addEventListener('message', function(event) {
-        if (event.data.type === 'REQUEST_GEX_DATA') {
-            const s1 = document.getElementById('sent-1').value.trim();
-            const s2 = document.getElementById('sent-2').value.trim();
-            const s3 = document.getElementById('sent-3').value.trim();
-
-            const combinedData = [s1, s2, s3];
-
-            window.parent.postMessage({ 
-                type: 'SUBMIT_X', 
-                answers: combinedData, 
-                missionNum: taskNum 
-            }, '*');
+        // المطابقة مع بروتوكول REQUEST_MISSION_DATA
+        if (event.data.type === 'REQUEST_MISSION_DATA') {
+            collectAndSend();
         }
     });
+
+    function collectAndSend() {
+        const s1 = document.getElementById('sent-1').value.trim();
+        const s2 = document.getElementById('sent-2').value.trim();
+        const s3 = document.getElementById('sent-3').value.trim();
+
+        // التحقق من ملء البيانات
+        if (!s1 || !s2 || !s3) {
+            // يمكن إضافة تأثير بصري هنا للتنبيه
+            document.querySelectorAll('.x-input-field').forEach(input => {
+                if(!input.value) input.style.borderBottomColor = '#ff4444';
+            });
+            return; 
+        }
+
+        // تجميع الإجابات في نص واحد مفصول بفاصلة
+        const finalAnswers = `${s1}, ${s2}, ${s3}`;
+
+        // إرسال البيانات للـ Arena
+        window.parent.postMessage({ 
+            type: 'MISSION_ANSWERS', 
+            answers: finalAnswers
+        }, '*');
+    }
 
     window.onload = initGEX;
 </script>

@@ -155,16 +155,46 @@
             ]
         },
         "2": {
-            passage: "Maha is a clever girl who lives in a quiet village. She often helps her mother in the kitchen. Last week, she cooked a delicious meal for the whole family. She will become a famous chef one day.",
+            passage: "The smart engineer is working in the office. He fixed the old laptop yesterday and now he is buying a fast computer. While he was working, his phone rang.",
             requirements: [
-                { label: "Extract 3 Verbs", hint: "Actions in the text" },
-                { label: "Extract 2 Adjectives", hint: "Describing words" },
-                { label: "Extract 1 Adverb of frequency", hint: "e.g., often, always" },
-                { label: "Extract 1 Past Simple sentence", hint: "Something happened last week" },
-                { label: "Extract 1 Future Simple sentence", hint: "Something will happen" }
+                { label: "Extract 3 Verbs", hint: "working, fixed, buying" },
+                { label: "Extract 2 Adjectives", hint: "smart, fast" },
+                { label: "Extract 1 Past Simple sentence", hint: "The whole sentence" },
+                { label: "Extract 3 Nouns", hint: "engineer, office, phone" },
+                { label: "Extract 1 Past Continuous clause", hint: "was/were + ing" }
+            ]
+        },
+        "3": {
+            passage: "A famous chef is eating in the kitchen. She cooked a large meal for us because the spices smelled delicious. The chef has cooked many meals before.",
+            requirements: [
+                { label: "Extract 3 Verbs", hint: "eating, cooked, smelled" },
+                { label: "Extract 2 Adjectives", hint: "famous, delicious" },
+                { label: "Extract 1 Past Simple sentence", hint: "The whole sentence" },
+                { label: "Extract 3 Nouns", hint: "chef, kitchen, spices" },
+                { label: "Extract 1 Present Perfect", hint: "has/have + V3" }
+            ]
+        },
+        "4": {
+            passage: "The strong runner was running on the track. He won the gold medal last week because he had been training for months. He is the most athletic person I know.",
+            requirements: [
+                { label: "Extract 3 Verbs", hint: "running, won, training" },
+                { label: "Extract 2 Adjectives", hint: "strong, athletic" },
+                { label: "Extract 1 Past Simple sentence", hint: "The whole sentence" },
+                { label: "Extract 3 Nouns", hint: "runner, track, medal" },
+                { label: "Extract 1 Superlative", hint: "The + est" }
+            ]
+        },
+        "5": {
+            passage: "Many tourists are traveling to Egypt. They visited the Great Pyramids and saw ancient temples. If they have enough time, they will visit Luxor next week.",
+            requirements: [
+                { label: "Extract 3 Verbs", hint: "traveling, visited, saw" },
+                { label: "Extract 2 Adjectives", hint: "ancient, many" },
+                { label: "Extract 1 Past Simple sentence", hint: "The whole sentence" },
+                { label: "Extract 3 Nouns", hint: "tourists, pyramids, temples" },
+                { label: "Extract 1 Conditional", hint: "If + will" }
             ]
         }
-        // يمكن إضافة بقية المهام (3-10) هنا بنفس الهيكل
+        // ... يمكنك إضافة من 6 لـ 10 بنفس الطريقة
     };
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -174,7 +204,6 @@
         const data = gxData[taskNum] || gxData["1"];
         document.getElementById('passage-content').innerText = data.passage;
         document.getElementById('task-title').innerText = `Extractor: Task ${taskNum.padStart(2, '0')}`;
-        
         const grid = document.getElementById('extractor-fields');
         grid.innerHTML = data.requirements.map((req, i) => `
             <div class="extraction-card" id="card-${i}">
@@ -185,9 +214,14 @@
         `).join('');
     }
 
+    // استقبال الرسائل من الـ Parent (الأرينا)
     window.addEventListener('message', function(event) {
         if (event.data.type === 'REQUEST_MISSION_DATA') {
             collectAndSend();
+        }
+        // استقبال النتيجة وعرضها
+        if (event.data.type === 'MISSION_RESULT') {
+            alert(`Score: ${event.data.score} / ${event.data.total}`);
         }
     });
 
@@ -214,17 +248,17 @@
             return;
         }
 
-// التعديل: نستخدم الـ Vertical Bar للفصل بين الحقول الخمسة
-window.parent.postMessage({ 
-    type: 'MISSION_ANSWERS', 
-    activityCode: 'GX',
-    answers: answers.join('|'), // نستخدم | للفصل بين الطلبات
-    missionNum: taskNum
-}, '*');
+        window.parent.postMessage({ 
+            type: 'MISSION_ANSWERS', 
+            activityCode: 'GX',
+            answers: answers.join('|'), 
+            missionNum: taskNum
+        }, '*');
     }
 
     window.onload = loadExtractor;
 </script>
 </body>
 </html>
+
 

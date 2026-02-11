@@ -151,8 +151,9 @@
         </div>
 
         <div class="image-frame-x">
-            <img id="target-image-x" src="" alt="VividX Visual" onerror="this.src='https://via.placeholder.com/800x450/000/D4AF37?text=RECONSTRUCTION+IN+PROGRESS...'">
-            <div class="chrono-tag" id="time-frame-text">SYNCING...</div>
+            <img id="target-image-x" src="" alt="VividX Visual" 
+onerror="this.src='https://placehold.jp/24/000000/d4af37/800x450.png?text=RECONSTRUCTION%20IN%20PROGRESS...'"
+                <div class="chrono-tag" id="time-frame-text">SYNCING...</div>
         </div>
 
         <div class="story-zone">
@@ -183,14 +184,22 @@
     const urlParams = new URLSearchParams(window.location.search);
     const taskNum = urlParams.get('task') || "1";
 
-    function initVividX() {
-        const scenario = vividXScenarios[taskNum] || vividXScenarios["1"];
-        // مسار الصور المحدث
-        document.getElementById('target-image-x').src = `../../assets/vividxpics/${scenario.img}`;
-        document.getElementById('time-frame-text').innerText = scenario.time;
-        document.getElementById('storyInput').placeholder = scenario.desc;
-        document.getElementById('vx-title').innerText = `MISSION VX-${taskNum.padStart(2, '0')}`;
-    }
+function initVividX() {
+    const scenario = vividXScenarios[taskNum] || vividXScenarios["1"];
+    const imgElement = document.getElementById('target-image-x');
+    
+    imgElement.src = `../../assets/vividxpics/${scenario.img}`;
+    
+    // If the image fails, update the text to look like a system glitch
+    imgElement.onerror = () => {
+        imgElement.src = "https://placehold.jp/24/000000/d4af37/800x450.png?text=DATA_CORRUPTED%20|%20RECONSTRUCTING...";
+        console.warn(`Mission VX-${taskNum}: Visual asset missing.`);
+    };
+
+    document.getElementById('time-frame-text').innerText = scenario.time;
+    document.getElementById('storyInput').placeholder = scenario.desc;
+    document.getElementById('vx-title').innerText = `MISSION VX-${taskNum.padStart(2, '0')}`;
+}
 
     function updateCount() {
         const text = document.getElementById('storyInput').value.trim();
@@ -228,3 +237,4 @@
 </script>
 </body>
 </html>
+

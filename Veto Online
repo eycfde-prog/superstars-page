@@ -51,6 +51,20 @@
         .type-hw { background: #475569; }      /* H.W */
         .type-tongue { background: #059669; }   /* Tongue Twister */
         .type-shot { background: #db2777; }    /* One Shot */
+/* Activity Type Colors */
+        .type-gr { background: #2563eb; }      /* Grammar: Blue */
+        .type-lis { background: #7c3aed; }     /* Listening: Purple */
+        .type-voc { background: #ea580c; }     /* Vocab: Orange */
+        .type-read { background: #0891b2; }    /* Reading: Cyan */
+        .type-special { background: #be123c; } /* DMT/Squeezer/Wish: Crimson */
+        .type-hw { background: #475569; }      /* H.W: Slate */
+        .type-tongue { background: #059669; }  /* Tongue Twister: Green */
+        .type-shot { background: #db2777; }    /* One Shot: Pink */
+        
+        /* الألوان الجديدة التي تنقصك */
+        .type-test { background: #dc2626; }    /* Any Test: Red */
+        .type-project { background: #ca8a04; } /* GP / Project: Gold */
+        .type-role { background: #0d9488; }    /* Role Play / Discussion: Teal */
     </style>
 </head>
 <body>
@@ -67,7 +81,7 @@
             </div>
     </main>
 
- <script>
+<script>
     // THE MASTER SYLLABUS DATA (Levels 1 - 12)
     const syllabus = {
         1: {
@@ -142,8 +156,76 @@
             3: ["H W", "gp study", "gp rev", "gp sending", "H W", "gp study"],
             4: ["H W", "gp sending", "Session 4", "in class", "gp rev", "gp Viewing", "H W", "gp study"]
         }
-    };
-</script>
+    };    
 
+function getActType(name) {
+            const n = name.toLowerCase();
+            
+            // ترتيب الأولويات مهم هنا
+            if (n.includes('test')) return 'type-test'; // أي نشاط فيه اختبار يتلون بالأحمر
+            if (n.includes('gr')) return 'type-gr';
+            if (n.includes('lis')) return 'type-lis';
+            if (n.includes('vocab')) return 'type-voc';
+            if (n.includes('reading')) return 'type-read';
+            if (n.includes('h w')) return 'type-hw';
+            if (n.includes('tongue')) return 'type-tongue';
+            if (n.includes('one shot')) return 'type-shot';
+            if (n.includes('gp') || n.includes('project')) return 'type-project';
+            if (n.includes('role play')) return 'type-role';
+            if (n.includes('squeezer') || n.includes('dmt') || n.includes('wish')) return 'type-special';
+            
+            return 'type-hw'; // الافتراضي
+        }
+
+        // Initialize Levels
+        const levelContainer = document.getElementById('levelContainer');
+        for (let i = 1; i <= 12; i++) {
+            levelContainer.innerHTML += `
+                <div class="level-item">
+                    <button class="level-btn" onclick="toggleDrawer(${i}, this)">LEVEL ${i} <span>▾</span></button>
+                    <div class="session-drawer" id="drawer-${i}">
+                        ${[1,2,3,4].map(s => `<button class="sess-btn" onclick="loadSession(${i}, ${s}, this)">Session ${s}</button>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleDrawer(lvl, btn) {
+            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const drawer = document.getElementById(`drawer-${lvl}`);
+            const isOpen = drawer.style.maxHeight;
+            document.querySelectorAll('.session-drawer').forEach(d => d.style.maxHeight = null);
+            drawer.style.maxHeight = isOpen ? null : drawer.scrollHeight + "px";
+        }
+
+        function loadSession(lvl, sess, btn) {
+            document.querySelectorAll('.sess-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            document.getElementById('breadcrumb').innerText = `Level ${lvl} / Session ${sess}`;
+            document.getElementById('sessionTitle').innerText = `Your Activities`;
+            
+            const grid = document.getElementById('activityGrid');
+            const activities = syllabus[lvl] ? syllabus[lvl][sess] : null;
+
+            if(!activities) {
+                grid.innerHTML = "<p>Coming Soon...</p>";
+                return;
+            }
+
+            grid.innerHTML = activities.map(act => `
+                <button class="act-card ${getActType(act)}" onclick="launch('${act}')">
+                    <small>${getActType(act).replace('type-', '')}</small>
+                    ${act}
+                </button>
+            `).join('');
+        }
+
+        function launch(name) {
+            alert("System: Loading " + name + "\nAction: Fetching JSON data from /data/L" + name + ".json");
+        }
+    </script>
 </body>
 </html>

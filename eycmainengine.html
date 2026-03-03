@@ -128,21 +128,31 @@
  
 
 Function getStudentData
+// وظيفة جمع الإجابات فقط
 window.getStudentData = function() {
     const inputs = document.querySelectorAll('.blank-input');
-    const results = Array.from(inputs).map(i => ({
-        typed: i.value,
-        correct: i.dataset.ans
-    }));
+    // تحويل الـ NodeList لمصفوفة من القيم فقط
+    const studentAnswers = Array.from(inputs).map(i => i.value.trim());
     
-    // إرجاع البيانات لصفحة VetoO
+    // إرسال نسخة لشيت التخزين (Storage) فوراً كـ Backup
+    saveToStorage(studentAnswers);
+
     return {
-        activity: activityID,
-        responses: results,
-        timestamp: new Date().toISOString()
+        activity: activityID, // مثل Lis_1_test
+        answers: studentAnswers, // مصفوفة القيم ["John", "Sarah", ...]
+        email: "dananeer.ezz@gmail.com" // افتراضي حالياً
     };
 };
 
+function saveToStorage(data) {
+    const storageScriptURL = "https://script.google.com/macros/s/AKfycbyUJ9mRlQ3UVwEVemSBdXi4gv2hEabW51XCDgLBxKAXDGrEViji97bORBl_fgmoZWMf/exec";
+    fetch(storageScriptURL, {
+        method: "POST",
+        body: JSON.stringify({type: "storage", answers: data, activity: activityID})
+    });
+}
+
     </script>
 </body>
+
 </html>

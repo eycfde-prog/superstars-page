@@ -230,18 +230,24 @@
                     method: "POST",
                     body: JSON.stringify(data) 
                 })
-.then(async res => {
-    const text = await res.text(); // بنقرأ الرد كنص الأول
-    try {
-        const result = JSON.parse(text); // بنحاول نحوله لـ JSON
-        alert("Grade: " + result.grade + "% \nTokens: " + result.tokens + "\nAnalysis: " + result.analysis);
-        closeActivity();
-    } catch (e) {
-        // لو فشل التحويل لـ JSON ده معناه إن السكريبت بعت رسالة خطأ واضحة
-        console.error("Server Response:", text);
-        alert("تنبيه من السكريبت: " + text); 
-    }
-})
+                .then(async res => {
+                    const text = await res.text(); // بنقرأ الرد كنص الأول
+                    try {
+                        const result = JSON.parse(text); // بنحاول نحوله لـ JSON
+                        alert("Grade: " + result.grade + "% \nTokens: " + result.tokens + "\nAnalysis: " + result.analysis);
+                        closeActivity();
+                    } catch (e) {
+                        // لو فشل التحويل لـ JSON ده معناه إن السكريبت بعت رسالة خطأ واضحة
+                        console.error("Server Response:", text);
+                        alert("تنبيه من السكريبت: " + text); 
+                    }
+                })
+                .catch(err => {
+                    console.error("Fetch Error:", err);
+                    alert("حدث خطأ في الاتصال. تأكد من الإنترنت أو صلاحيات السكريبت.");
+                });
+            }
+        }
     </script>
 </body>
 </html>

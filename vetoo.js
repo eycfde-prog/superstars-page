@@ -16,10 +16,6 @@ const syllabus = {
 
 let userProfile = null;
 
-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('active');
-}
-
 function getActType(name) {
     const n = name.toLowerCase();
     if (n.includes('test')) return 'type-test';
@@ -59,9 +55,9 @@ function initProfile() {
     if(!userProfile) return;
     document.getElementById('headerAvatar').src = userProfile.avatar || "https://via.placeholder.com/100";
     document.getElementById('headerName').innerText = userProfile.name;
-    document.getElementById('headerCode').innerText = userProfile.offlineCode;
+    document.getElementById('headerCode').innerText = userProfile.offlineCode || userProfile.code || "--";
     document.getElementById('headerTokens').innerText = userProfile.tokens;
-    document.getElementById('headerRank').innerText = `#${userProfile.gRank}`;
+    document.getElementById('headerRank').innerText = `#${userProfile.gRank || 0}`;
     buildLevelMenu();
 }
 
@@ -111,7 +107,8 @@ function showLevels() {
 
 function launchActivity(name, lvl, sess) {
     const fileName = name.replace(/\s+/g, '_');
-    document.getElementById('activityFrame').src = `eycmainengine.html?activity=${fileName}&email=${encodeURIComponent(userProfile.email)}&lvl=${lvl}&sess=${sess}`;
+    // Path matched to "data" folder contents
+    document.getElementById('activityFrame').src = `data/${fileName}.html?email=${encodeURIComponent(userProfile.email)}&lvl=${lvl}&sess=${sess}`;
     document.getElementById('activityOverlay').style.display = 'block';
     document.body.classList.add('activity-open');
 }
@@ -126,3 +123,14 @@ function logout() {
     localStorage.clear();
     location.reload();
 }
+
+// Auto-login if credentials exist
+window.onload = () => {
+    const e = localStorage.getItem('veto_email');
+    const c = localStorage.getItem('veto_code');
+    if(e && c) {
+        document.getElementById('loginEmail').value = e;
+        document.getElementById('loginCode').value = c;
+        attemptLogin();
+    }
+};

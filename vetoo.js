@@ -1,5 +1,8 @@
-// vetoo.js
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBR-GQBOpJt2zyBbS_Vsi9koqhwT6jU9cp4iNl2sFdlDBT6Z-HXJx5eo8kzyK1utGMBQ/exec";
+let flashShown = false;
+let fullData = null;
+let userProfile = null;
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQtf3uJOKb6d69WMSpqh4Zqwf4wZO9nfwDimNkcWCGS9Q5kmT4jCI8dJ1hKSt7hHK49w/exec";
 const syllabus = {
     1: { 1: ["H W", "Lis 1 test", "Gr 1 test"], 2: ["H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"], 3: ["H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"], 4: ["H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"] },
     2: { 1: ["H W"], 2: ["Lis 5 test", "Gr 5 test", "Reading 2 Rec", "One Shot 1 study"], 3: ["H W", "Lis 6 test", "Reading 3 Rec", "Vocab 3 study"], 4: ["H W", "Lis 7 test", "Reading 4 Rec", "Vocab 4 study", "One Shot 2 study", "Lis 8 test", "Reading 5 Rec", "Gr 6 test", "Tongue Twister 1 Rec"] },
@@ -14,8 +17,6 @@ const syllabus = {
     11: { 1: ["H W"], 2: ["gp study", "H W", "Lis 41 test", "Reading 38 Rec", "Tongue Twister 34 Rec", "Wish 3 study"], 3: ["H W", "Lis 42 test", "Reading 39 Rec", "Tongue Twister 35 Rec", "dmt 5 study"], 4: ["H W", "Lis 43 test", "Reading 40 Rec", "Tongue Twister 36 Rec", "Squeezer 6 study", "One Shot 20 study", "gp study", "H W"] },
     12: { 1: ["H W", "gp study"], 2: ["H W"], 3: ["H W", "gp study", "gp sending"], 4: ["H W", "gp sending", "gp study"] }
 };
-
-let userProfile = null;
 
 function getActType(name) {
     const n = name.toLowerCase();
@@ -40,10 +41,14 @@ async function attemptLogin() {
         const res = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
         const data = await res.json();
         if(data.status === "success") {
-            userProfile = data;
+            userProfile = data.profile;
+            fullData = data; 
             localStorage.setItem('veto_email', email);
             localStorage.setItem('veto_code', code);
             document.getElementById('loginOverlay').style.display = 'none';
+            
+            checkMessages(data.profile.msg);
+            if(!flashShown) showFlashScreen();
             initProfile();
         } else { 
             alert(data.message); 
@@ -55,6 +60,64 @@ async function attemptLogin() {
     
     btn.innerText = "ACCESS DASHBOARD";
     btn.disabled = false;
+}
+
+function checkMessages(newMsg) {
+    const oldMsgs = JSON.parse(localStorage.getItem('msgs') || "[]");
+    const notiBtn = document.getElementById('notiBtn');
+    const badge = document.getElementById('notiBadge');
+
+    if (newMsg && !oldMsgs.includes(newMsg)) {
+        notiBtn.classList.add('has-new');
+        badge.style.display = 'block';
+    } else {
+        notiBtn.classList.remove('has-new');
+        badge.style.display = 'none';
+    }
+}
+
+function toggleMailbox() {
+    const box = document.getElementById('mailbox');
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    
+    if(userProfile && userProfile.msg) {
+        document.getElementById('msgList').innerHTML = `<div class="msg-item">${userProfile.msg}</div>`;
+        let read = JSON.parse(localStorage.getItem('msgs') || "[]");
+        if(!read.includes(userProfile.msg)) read.push(userProfile.msg);
+        localStorage.setItem('msgs', JSON.stringify(read));
+        checkMessages(userProfile.msg); 
+    }
+}
+
+function showFlashScreen() {
+    const content = document.getElementById('flashContent');
+    const p = userProfile;
+    const lvls = fullData.levels;
+    const sc = fullData.scard;
+
+    content.innerHTML = `
+        <div class="flash-section">
+            <h4><i class="fas fa-user-shield"></i> BASIC INFO</h4>
+            <div class="info-grid">
+                <span><b>ID:</b> ${p.code}</span> <span><b>Group:</b> ${p.group}</span>
+                <span><b>Tokens:</b> ${p.tokens}</span> <span><b>Stars:</b> ${p.stars} ⭐</span>
+                <span><b>Global Rank:</b> #${p.gRank}</span> <span><b>Local Rank:</b> #${p.lRank}</span>
+            </div>
+        </div>
+        <div class="flash-section">
+            <h4><i class="fas fa-chart-line"></i> LEVELS PROGRESS</h4>
+            <div class="mini-grid">${lvls.map((v, i) => `<div>L${i+1}: ${v}%</div>`).join('')}</div>
+        </div>
+        <div class="flash-section">
+            <h4><i class="fas fa-tasks"></i> ACTIVITY CARD</h4>
+            <div class="info-grid">
+                <span>Attendance: ${sc[0]}</span> <span>Listening: ${sc[3]}</span>
+                <span>Grammar: ${sc[4]}</span> <span>Projects: ${sc[10]}</span>
+            </div>
+        </div>
+    `;
+    document.getElementById('flashScreen').style.display = 'flex';
+    flashShown = true;
 }
 
 function initProfile() {
@@ -117,7 +180,6 @@ function showLevels() {
 function launchActivity(name, lvl, sess) {
     const fileName = name.trim().replace(/\s+/g, '_');
     const iframe = document.getElementById('activityFrame');
-    // Using current profile email and parameters mapping to match iframe structure
     const targetUrl = `data/${fileName}.html?email=${encodeURIComponent(userProfile.email)}&lvl=${lvl}&sess=${sess}`;
     
     iframe.src = targetUrl;
@@ -129,6 +191,10 @@ function closeActivity() {
     document.getElementById('activityOverlay').style.display = 'none';
     document.getElementById('activityFrame').src = "";
     document.body.classList.remove('activity-open');
+}
+
+function closeFlash() {
+    document.getElementById('flashScreen').style.display = 'none';
 }
 
 function logout() {

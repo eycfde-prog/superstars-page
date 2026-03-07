@@ -47,9 +47,7 @@ async function attemptLogin() {
             localStorage.setItem('veto_email', email);
             localStorage.setItem('veto_code', code);
             document.getElementById('loginOverlay').style.display = 'none';
-            buildSidebar();
             initProfile();
-            openFlashCard();
         } else { alert(data.message); }
     } catch (e) { alert("Connection Error. Please check your internet."); }
     
@@ -57,30 +55,42 @@ async function attemptLogin() {
     btn.disabled = false;
 }
 
-function buildSidebar() {
+function initProfile() {
+    if(!userProfile) return;
+    document.getElementById('headerAvatar').src = userProfile.avatar || "https://via.placeholder.com/100";
+    document.getElementById('headerName').innerText = userProfile.name;
+    document.getElementById('headerCode').innerText = userProfile.code;
+    document.getElementById('headerTokens').innerText = userProfile.tokens;
+    document.getElementById('headerRank').innerText = `#${userProfile.rank}`;
+    buildLevelMenu();
+}
+
+function buildLevelMenu() {
     const menu = document.getElementById('levelMenu');
-    let htmlBuffer = [];
+    let html = "";
     for(let i=1; i<=12; i++) {
-        htmlBuffer.push(`
-            <button class="level-btn" onclick="toggleDrawer(${i})">LEVEL ${i}</button>
-            <div class="drawer" id="drawer-${i}">
-                ${[1,2,3,4].map(s => `<button class="sess-btn" onclick="loadSession(${i}, ${s})">Session ${s}</button>`).join('')}
-            </div>`);
+        html += `<div class="level-card" onclick="showSessions(${i})">
+                    <i class="fas fa-layer-group fa-2x" style="color:var(--accent)"></i>
+                    <div style="margin-top:10px; font-weight:900;">LEVEL ${i}</div>
+                 </div>`;
     }
-    menu.innerHTML = htmlBuffer.join('');
+    menu.innerHTML = html;
 }
 
-function toggleDrawer(lvl) {
-    const d = document.getElementById(`drawer-${lvl}`);
-    const isOpen = d.style.maxHeight;
-    document.querySelectorAll('.drawer').forEach(el => el.style.maxHeight = null);
-    d.style.maxHeight = isOpen ? null : "200px";
+function showSessions(lvl) {
+    document.getElementById('navigationView').style.display = 'none';
+    document.getElementById('sessionView').style.display = 'block';
+    document.getElementById('path').innerText = `Level ${lvl}`;
+    
+    const sessList = document.getElementById('sessionList');
+    sessList.innerHTML = [1,2,3,4].map(s => 
+        `<button class="sess-btn" onclick="loadActivities(${lvl}, ${s})">Session ${s}</button>`
+    ).join('');
+    loadActivities(lvl, 1);
 }
 
-function loadSession(lvl, sess) {
-    if(window.innerWidth <= 768) toggleSidebar();
+function loadActivities(lvl, sess) {
     document.getElementById('path').innerText = `Level ${lvl} > Session ${sess}`;
-    document.getElementById('sessionTitle').innerText = `Level ${lvl} - Session ${sess}`;
     const grid = document.getElementById('activityGrid');
     const acts = syllabus[lvl][sess];
     grid.innerHTML = acts.map(a => `
@@ -88,8 +98,20 @@ function loadSession(lvl, sess) {
     `).join('');
 }
 
+function showLevels() {
+    document.getElementById('navigationView').style.display = 'block';
+    document.getElementById('sessionView').style.display = 'none';
+}
+
 function launchActivity(name, lvl, sess) {
     const fileName = name.replace(/\s+/g, '_');
     document.getElementById('activityFrame').src = `eycmainengine.html?activity=${fileName}&email=${userProfile.email}&lvl=${lvl}&sess=${sess}`;
     document.getElementById('activityOverlay').style.display = 'flex';
+    document.body.classList.add('activity-open');
+}
+
+function closeActivity() {
+    document.getElementById('activityOverlay').style.display = 'none';
+    document.getElementById('activityFrame').src = "";
+    document.body.classList.remove('activity-open');
 }

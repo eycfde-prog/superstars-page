@@ -36,6 +36,17 @@
         .act-card { padding: 15px; background: #334155; border-radius: 8px; margin: 5px; cursor: pointer; }
         #activityOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:5000; flex-direction:column; }
         iframe { flex-grow:1; border:none; }
+        .skill-item {
+    background: #0f172a;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #334155;
+    font-size: 0.8rem;
+}
+.skill-item b { color: var(--accent); }
+.flash-card::-webkit-scrollbar { width: 5px; }
+.flash-card::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -69,14 +80,17 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <button id="notiBtn" class="noti-btn" onclick="toggleMailbox()">
-                    <i class="fas fa-bell"></i>
-                    <span id="notiBadge" class="badge"></span>
-                </button>
-                <button class="noti-btn" onclick="logout()"><i class="fas fa-power-off"></i></button>
-            </div>
-        </div>
+<div>
+    <button class="noti-btn" onclick="showFlashScreen()" title="View My Scard">
+        <i class="fas fa-id-card"></i>
+    </button>
+    
+    <button id="notiBtn" class="noti-btn" onclick="toggleMailbox()">
+        <i class="fas fa-bell"></i>
+        <span id="notiBadge" class="badge"></span>
+    </button>
+    <button class="noti-btn" onclick="logout()"><i class="fas fa-power-off"></i></button>
+</div>
 
         <div id="mailbox" class="mailbox-popup">
             <h4>Mailbox</h4>
@@ -207,40 +221,62 @@
             }
         }
 
-        function showFlashScreen() {
-            if(!fullData) return;
-            const content = document.getElementById('flashContent');
-            const { profile, levels, scard } = fullData;
+function showFlashScreen() {
+    if(!fullData) return;
+    const content = document.getElementById('flashContent');
+    const { profile, levels, scard } = fullData;
 
-            content.innerHTML = `
-                <div class="flash-section">
-                    <h4><i class="fas fa-user-shield"></i> BASIC DOSSIER</h4>
-                    <div class="info-grid">
-                        <span><b>Code:</b> ${profile.code}</span>
-                        <span><b>Name:</b> ${profile.name}</span>
-                        <span><b>Group:</b> ${profile.group}</span>
-                        <span><b>Stars:</b> ${profile.stars} ⭐</span>
-                        <span><b>Global Rank:</b> #${profile.gRank}</span>
-                        <span><b>Local Rank:</b> #${profile.lRank}</span>
+    content.innerHTML = `
+        <div class="flash-section">
+            <h4><i class="fas fa-user-circle"></i> CORE DOSSIER</h4>
+            <div class="info-grid">
+                <span><b>Name:</b> ${profile.name}</span>
+                <span><b>Code:</b> ${profile.code}</span>
+                <span><b>Email:</b> ${profile.email}</span>
+                <span><b>Group:</b> ${profile.group}</span>
+                <span><b>Age:</b> ${profile.age || 'N/A'}</span>
+                <span><b>Program:</b> ${profile.program || 'General'}</span>
+                <span><b>Tokens:</b> ${profile.tokens} 🪙</span>
+                <span><b>Stars:</b> ${profile.stars} ⭐</span>
+                <span><b>Global Rank:</b> #${profile.gRank}</span>
+                <span><b>Local Rank:</b> #${profile.lRank}</span>
+            </div>
+        </div>
+
+        <div class="flash-section">
+            <h4><i class="fas fa-chart-line"></i> ACADEMIC PROGRESS (SL)</h4>
+            <div class="mini-grid">
+                ${levels.map((val, i) => `
+                    <div style="background:#334155; padding:5px; border-radius:5px; text-align:center;">
+                        <small>L${i+1}</small><br><b>${val}%</b>
                     </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <div class="flash-section">
+            <h4><i class="fas fa-bolt"></i> SKILL MATRIX (SCARD)</h4>
+            <div class="info-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                <div class="skill-item"><small>Attend</small><br><b>${scard[2] || 0}</b></div>
+                <div class="skill-item"><small>ICA</small><br><b>${scard[3] || 0}</b></div>
+                <div class="skill-item"><small>Listening</small><br><b>${scard[4] || 0}</b></div>
+                <div class="skill-item"><small>Grammar</small><br><b>${scard[5] || 0}</b></div>
+                <div class="skill-item"><small>Reading</small><br><b>${scard[6] || 0}</b></div>
+                <div class="skill-item"><small>T.Twister</small><br><b>${scard[7] || 0}</b></div>
+                <div class="skill-item"><small>One Shot</small><br><b>${scard[8] || 0}</b></div>
+                <div class="skill-item"><small>Games</small><br><b>${scard[9] || 0}</b></div>
+                <div class="skill-item"><small>Squeezer</small><br><b>${scard[10] || 0}</b></div>
+                <div class="skill-item"><small>DMT</small><br><b>${scard[11] || 0}</b></div>
+                <div class="skill-item"><small>Wish</small><br><b>${scard[12] || 0}</b></div>
+                <div class="skill-item"><small>Project</small><br><b>${scard[13] || 0}</b></div>
+                <div class="skill-item" style="grid-column: span 3; background: var(--accent); color:#000;">
+                    <small>Graduation Project</small>: <b>${scard[14] || 'Pending'}</b>
                 </div>
-                <div class="flash-section">
-                    <h4><i class="fas fa-layer-group"></i> ACADEMIC PROGRESS</h4>
-                    <div class="mini-grid">
-                        ${levels.map((val, i) => `<div>L${i+1}: <b>${val}%</b></div>`).join('')}
-                    </div>
-                </div>
-                <div class="flash-section">
-                    <h4><i class="fas fa-id-card"></i> PERFORMANCE SCARD</h4>
-                    <div class="info-grid">
-                        <span>Attend: ${scard[0]}</span> <span>ICA: ${scard[1]}</span>
-                        <span>Grammar: ${scard[4]}</span> <span>DMT: ${scard[11]}</span>
-                        <span>Project: ${scard[13]}</span>
-                    </div>
-                </div>
-            `;
-            document.getElementById('flashScreen').style.display = 'flex';
-        }
+            </div>
+        </div>
+    `;
+    document.getElementById('flashScreen').style.display = 'flex';
+}
 
         function initProfile() {
             if(!userProfile) return;

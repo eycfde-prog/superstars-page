@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYC Veto Program - Mr. Ezz</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --text-color: #ecf0f1;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* Banner Style */
+        .banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+            padding: 10px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            height: 120px;
+        }
+
+        .banner img {
+            height: 90px;
+            border-radius: 10px;
+        }
+
+        .banner h1 {
+            flex-grow: 1;
+            text-align: center;
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+        }
+
+        /* Grid System */
+        .levels-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 50px;
+            padding: 50px;
+            justify-items: center;
+        }
+
+        /* Level Circle */
+        .level-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .main-circle {
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+            border: 3px solid var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 2;
+            position: relative;
+            font-weight: bold;
+        }
+
+        .main-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        /* Sub Circles (Sessions) */
+        .session-circle {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: bold;
+            top: 40px;
+            left: 40px;
+            transition: all 0.5s ease;
+        }
+
+        /* Animation for Rotating Sessions */
+        @keyframes rotateSessions {
+            from { transform: rotate(0deg) translateX(80px) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
+        }
+
+        .active .session-circle {
+            display: flex;
+            animation: rotateSessions 10s linear infinite;
+        }
+
+        /* Offset each session to start at different positions */
+        .active .session-circle:nth-child(2) { animation-delay: 0s; }
+        .active .session-circle:nth-child(3) { animation-delay: -2.5s; }
+        .active .session-circle:nth-child(4) { animation-delay: -5s; }
+        .active .session-circle:nth-child(5) { animation-delay: -7.5s; }
+
+        /* Iframe Fullscreen View */
+        #content-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+        }
+
+        #content-viewer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-ui">
+        <div class="banner">
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/MrEzz.png" alt="Mr. Ezz">
+            <h1>Mr. Ezz .Y. Ali</h1>
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/logo.png" alt="EYC Logo">
+        </div>
+
+        <div class="levels-container" id="levels-grid">
+            </div>
+    </div>
+
+    <div id="content-viewer">
+        <button class="back-btn" onclick="closeViewer()">رجوع للمستويات</button>
+        <iframe id="js-loader"></iframe>
+    </div>
+
+    <script>
+        const grid = document.getElementById('levels-grid');
+        const mainUi = document.getElementById('main-ui');
+        const viewer = document.getElementById('content-viewer');
+        const iframe = document.getElementById('js-loader');
+
+        // إنشاء الـ 12 مستوى
+        for (let i = 1; i <= 12; i++) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'level-wrapper';
+            
+            const mainCircle = document.createElement('div');
+            mainCircle.className = 'main-circle';
+            mainCircle.innerText = `Level ${i}`;
+            mainCircle.onclick = (e) => {
+                // إغلاق أي ليفل مفتوح آخر
+                document.querySelectorAll('.level-wrapper').forEach(el => el.classList.remove('active'));
+                wrapper.classList.toggle('active');
+                e.stopPropagation();
+            };
+
+            wrapper.appendChild(mainCircle);
+
+            // إنشاء الـ 4 جلسات (الدوارة)
+            for (let j = 1; j <= 4; j++) {
+                const session = document.createElement('div');
+                session.className = 'session-circle';
+                session.innerText = j;
+                session.onclick = (e) => {
+                    loadSession(i, j);
+                    e.stopPropagation();
+                };
+                wrapper.appendChild(session);
+            }
+
+            grid.appendChild(wrapper);
+        }
+
+        function loadSession(level, session) {
+            const fileName = `${level}-${session}.js`;
+            console.log(`جارِ تحميل الملف: ${fileName}`);
+            
+            // إخفاء الواجهة وإظهار الـ Iframe
+            mainUi.style.display = 'none';
+            viewer.style.display = 'block';
+            
+            // ملاحظة برمجية: ملف الـ JS لا يمكن تشغيله مباشرة داخل src الـ iframe 
+            // إلا إذا كان ملف HTML يطلبه. هنا سنقوم بإنشاء صفحة مؤقتة لتشغيل السكريبت.
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(`
+                <html>
+                <head><title>Loading ${fileName}</title></head>
+                <body style="background:#1a1a1a; color:white; display:flex; justify-content:center; align-items:center; height:100vh;">
+                    <div style="text-align:center;">
+                        <h2>Session Content: ${fileName}</h2>
+                        <script src="${fileName}"><\/script>
+                    </div>
+                </body>
+                </html>
+            `);
+            doc.close();
+        }
+
+        function closeViewer() {
+            viewer.style.display = 'none';
+            mainUi.style.display = 'block';
+            iframe.src = "about:blank";
+        }
+
+        // إغلاق الدوائر المفتوحة عند الضغط في أي مكان فارغ
+        window.onclick = () => {
+            document.querySelectorAll('.level-wrapper').forEach(el => el.classList.remove('active'));
+        };
+    </script>
+</body>
+</html>

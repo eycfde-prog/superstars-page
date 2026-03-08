@@ -8,152 +8,100 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
+        :root { --accent: #38bdf8; --card-bg: #1e293b; }
+        body { font-family: sans-serif; background: #0f172a; color: white; margin: 0; }
         /* الجرس والرسائل */
-        .noti-btn { 
-            position: relative; 
-            background: none; 
-            border: none; 
-            color: white; 
-            font-size: 1.5rem; 
-            cursor: pointer; 
-        }
-
-        .noti-btn.has-new { 
-            color: #ef4444; 
-            animation: pulse 1s infinite; 
-        }
-
-        .badge { 
-            position: absolute; 
-            top: 0; 
-            right: 0; 
-            width: 10px; 
-            height: 10px; 
-            background: red; 
-            border-radius: 50%; 
-            display: none; 
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .mailbox-popup {
-            position: absolute; 
-            top: 80px; 
-            right: 20px; 
-            width: 250px; 
-            background: var(--card-bg); 
-            border: 1px solid var(--accent); 
-            padding: 15px; 
-            border-radius: 10px; 
-            z-index: 1000;
-        }
-
-        /* Flash Screen */
-        .overlay {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            background: rgba(0,0,0,0.9); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 3000;
-        }
-
-        .flash-card {
-            background: #1e293b; 
-            width: 90%; 
-            max-width: 500px; 
-            padding: 25px; 
-            border-radius: 20px;
-            border: 2px solid var(--accent); 
-            position: relative; 
-            max-height: 80vh; 
-            overflow-y: auto;
-        }
-
-        .flash-section { 
-            margin-bottom: 20px; 
-            border-bottom: 1px solid #334155; 
-            padding-bottom: 10px; 
-        }
-
-        .flash-section h4 { 
-            color: var(--accent); 
-            margin-bottom: 10px; 
-        }
-
-        .info-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 10px; 
-            font-size: 0.85rem; 
-        }
-
-        .mini-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 5px; 
-            font-size: 0.75rem;
-        }
-
-        .close-flash {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .msg-item {
-            padding: 10px;
-            border-bottom: 1px solid #334155;
-            font-size: 0.9rem;
-            color: white;
-        }
+        .noti-btn { position: relative; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        .noti-btn.has-new { color: #ef4444; animation: pulse 1s infinite; }
+        .badge { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: red; border-radius: 50%; display: none; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        
+        .mailbox-popup { position: absolute; top: 80px; right: 20px; width: 250px; background: var(--card-bg); border: 1px solid var(--accent); padding: 15px; border-radius: 10px; z-index: 1000; display: none; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 3000; }
+        .flash-card { background: #1e293b; width: 90%; max-width: 500px; padding: 25px; border-radius: 20px; border: 2px solid var(--accent); position: relative; max-height: 80vh; overflow-y: auto; }
+        .flash-section { margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        .flash-section h4 { color: var(--accent); margin-bottom: 10px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem; }
+        .mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; font-size: 0.75rem; }
+        .close-flash { position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        .msg-item { padding: 10px; border-bottom: 1px solid #334155; font-size: 0.9rem; color: white; }
+        
+        /* Layout */
+        .level-card { background: var(--card-bg); padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid transparent; }
+        .level-card:hover { border-color: var(--accent); }
+        #loginOverlay { background: #0f172a; z-index: 4000; }
+        .login-box { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; width: 300px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
+        button { cursor: pointer; }
+        .act-card { padding: 15px; background: #334155; border-radius: 8px; margin: 5px; cursor: pointer; }
+        #activityOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:5000; flex-direction:column; }
+        iframe { flex-grow:1; border:none; }
     </style>
 </head>
 <body>
 
-    <div id="app">
-        <div class="overlay" id="overlay">
-            <div class="modal">
-                <button class="close-btn" id="closeModal">&times;</button>
-            </div>
+    <div class="overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>VETO LOGIN</h2>
+            <input type="email" id="loginEmail" placeholder="Email Address">
+            <input type="text" id="loginCode" placeholder="Access Code">
+            <button id="loginBtn" onclick="attemptLogin()" style="width:100%; padding:10px; background:var(--accent); border:none; border-radius:5px; font-weight:bold;">ACCESS DASHBOARD</button>
         </div>
+    </div>
 
-        <div class="profile-section">
-            <img src="https://via.placeholder.com/150" alt="Profile" class="profile-img" id="userAvatar">
-            <div class="profile-info">
-                <h1 id="userName">EYC</h1>
-                <p>
-                    <i class="fas fa-id-card"></i> ID: <span id="userId">VTO-2939</span>
-                    <i class="fas fa-coins"></i> TOKENS: <span id="userTokens">10000</span>
-                    <i class="fas fa-trophy"></i> RANK: #<span id="userRank">0</span>
-                </p>
-                <div class="actions">
-                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
-                    <button class="icon-btn"><i class="fas fa-power-off"></i></button>
+    <div class="overlay" id="flashScreen" style="display: none;">
+        <div class="flash-card">
+            <button class="close-flash" onclick="closeFlash()">&times;</button>
+            <div id="flashContent"></div>
+        </div>
+    </div>
+
+    <div id="app">
+        <div style="display:flex; justify-content:space-between; padding:20px; align-items:center; background:var(--card-bg);">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <img id="headerAvatar" src="" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--accent);">
+                <div>
+                    <div id="headerName" style="font-weight:bold; font-size:1.2rem;">---</div>
+                    <div style="font-size:0.8rem; color:var(--accent);">
+                        ID: <span id="headerCode">--</span> | 
+                        TOKENS: <span id="headerTokens">0</span> | 
+                        RANK: <span id="headerRank">#0</span>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="mission-control">
-            <h2><i class="fas fa-rocket"></i> MISSION CONTROL</h2>
-            <p>Select your training level to begin</p>
-            <div class="levels-stack">
-                <i class="fas fa-layer-group"></i>
+            <div>
+                <button id="notiBtn" class="noti-btn" onclick="toggleMailbox()">
+                    <i class="fas fa-bell"></i>
+                    <span id="notiBadge" class="badge"></span>
+                </button>
+                <button class="noti-btn" onclick="logout()"><i class="fas fa-power-off"></i></button>
             </div>
         </div>
+
+        <div id="mailbox" class="mailbox-popup">
+            <h4>Mailbox</h4>
+            <div id="msgList"></div>
+        </div>
+
+        <div id="navigationView" style="padding:20px;">
+            <h2 onclick="showLevels()"><i class="fas fa-rocket"></i> MISSION CONTROL</h2>
+            <div id="levelMenu" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:15px;"></div>
+        </div>
+
+        <div id="sessionView" style="display:none; padding:20px;">
+            <button onclick="showLevels()" style="background:none; border:1px solid var(--accent); color:white; padding:5px 15px; border-radius:5px; margin-bottom:20px;">&larr; BACK</button>
+            <h2 id="path">LEVEL X</h2>
+            <div id="sessionList" style="display:flex; gap:10px; margin-bottom:20px;"></div>
+            <div id="activityGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+        </div>
+    </div>
+
+    <div id="activityOverlay">
+        <div style="padding:10px; background:#1e293b; display:flex; justify-content:space-between;">
+            <span id="actTitle">Activity</span>
+            <button onclick="closeActivity()" style="background:red; color:white; border:none; padding:5px 10px;">CLOSE</button>
+        </div>
+        <iframe id="activityFrame"></iframe>
     </div>
 
     <script>
@@ -244,7 +192,7 @@
         function toggleMailbox() {
             const box = document.getElementById('mailbox');
             const badge = document.getElementById('notiBadge');
-            const isOpening = box.style.display === 'none';
+            const isOpening = box.style.display === 'none' || box.style.display === '';
             
             box.style.display = isOpening ? 'block' : 'none';
             
@@ -277,7 +225,7 @@
                     </div>
                 </div>
                 <div class="flash-section">
-                    <h4><i class="fas fa-layer-group"></i> ACADEMIC PROGRESS (SL)</h4>
+                    <h4><i class="fas fa-layer-group"></i> ACADEMIC PROGRESS</h4>
                     <div class="mini-grid">
                         ${levels.map((val, i) => `<div>L${i+1}: <b>${val}%</b></div>`).join('')}
                     </div>
@@ -326,15 +274,15 @@
             
             const sessList = document.getElementById('sessionList');
             sessList.innerHTML = [1,2,3,4].map(s => 
-                `<button class="sess-btn ${s===1?'active':''}" onclick="changeSession(this, ${lvl}, ${s})">Session ${s}</button>`
+                `<button class="sess-btn" style="padding:5px 10px; cursor:pointer;" onclick="changeSession(this, ${lvl}, ${s})">Session ${s}</button>`
             ).join('');
             
             loadActivities(lvl, 1);
         }
 
         function changeSession(btn, lvl, sess) {
-            document.querySelectorAll('.sess-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            document.querySelectorAll('.sess-btn').forEach(b => b.style.background = 'none');
+            btn.style.background = 'var(--accent)';
             loadActivities(lvl, sess);
         }
 
@@ -342,7 +290,7 @@
             const grid = document.getElementById('activityGrid');
             const acts = syllabus[lvl][sess];
             grid.innerHTML = acts.map(a => `
-                <div class="act-card ${getActType(a)}" onclick="launchActivity('${a}', ${lvl}, ${sess})">${a}</div>
+                <div class="act-card" onclick="launchActivity('${a}', ${lvl}, ${sess})">${a}</div>
             `).join('');
         }
 
@@ -358,13 +306,11 @@
             
             iframe.src = targetUrl;
             document.getElementById('activityOverlay').style.display = 'flex';
-            document.body.classList.add('activity-open');
         }
 
         function closeActivity() {
             document.getElementById('activityOverlay').style.display = 'none';
             document.getElementById('activityFrame').src = "";
-            document.body.classList.remove('activity-open');
         }
 
         function closeFlash() {
@@ -380,13 +326,9 @@
             const savedEmail = localStorage.getItem('veto_email');
             const savedCode = localStorage.getItem('veto_code');
             if(savedEmail && savedCode) {
-                const elEmail = document.getElementById('loginEmail');
-                const elCode = document.getElementById('loginCode');
-                if(elEmail && elCode) {
-                    elEmail.value = savedEmail;
-                    elCode.value = savedCode;
-                    attemptLogin();
-                }
+                document.getElementById('loginEmail').value = savedEmail;
+                document.getElementById('loginCode').value = savedCode;
+                attemptLogin();
             }
         };
     </script>

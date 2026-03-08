@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Veto Program - Level Selection</title>
+    <title>EYC Veto Program - WOLF Edition</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -12,143 +12,52 @@
             --vortex-speed: 5s;
         }
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
-            color: var(--text-color);
-            overflow-x: hidden;
-        }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #1a1a1a; color: var(--text-color); overflow-x: hidden; }
 
-        /* Banner Styling */
-        .banner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 50px;
-            background: linear-gradient(90deg, #000, #2c3e50, #000);
-            border-bottom: 3px solid var(--accent-color);
-        }
+        /* Banner */
+        .banner { display: flex; align-items: center; justify-content: space-between; padding: 10px 50px; background: linear-gradient(90deg, #000, #2c3e50, #000); border-bottom: 3px solid var(--accent-color); }
+        .banner img { height: 80px; border-radius: 50%; border: 2px solid var(--text-color); }
+        .banner h1 { text-align: center; font-size: 1.8em; }
 
-        .banner img { height: 100px; border-radius: 50%; border: 2px solid var(--text-color); }
-        .banner h1 { flex-grow: 1; text-align: center; font-size: 2.5em; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .controls { display: flex; justify-content: center; padding: 10px; background: #000; }
+        .switch-btn { padding: 10px 25px; font-weight: bold; background: var(--accent-color); color: white; border: 2px solid white; border-radius: 25px; cursor: pointer; }
 
-        /* Switch Button Area */
-        .controls {
-            display: flex;
-            justify-content: center;
-            padding: 15px;
-            background: #000;
-        }
-
-        .switch-btn {
-            padding: 12px 30px;
-            font-weight: bold;
-            text-transform: uppercase;
-            background: var(--accent-color);
-            color: white;
-            border: 2px solid white;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 0 10px var(--accent-color);
-        }
-
-        .switch-btn:hover { transform: scale(1.05); background: #c0392b; }
-
-        /* Levels Grid */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 60px;
-            padding: 60px;
-            justify-items: center;
-        }
-
-        .level-wrapper {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .main-circle {
-            width: 100px;
-            height: 100px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-weight: bold;
-            z-index: 10;
-            transition: 0.3s;
-            box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
-        }
-
-        /* Sub-circles positioning */
-        .sub-circle {
-            position: absolute;
-            width: 45px;
-            height: 45px;
-            background: #3498db;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 5;
-            transition: 0.3s;
-        }
-
-        /* Orbiting Animation */
-        @keyframes orbit {
-            from { transform: rotate(0deg) translateX(85px) rotate(0deg); }
-            to   { transform: rotate(360deg) translateX(85px) rotate(-360deg); }
-        }
-
-        .active .sub-circle { display: flex; animation: orbit 6s linear infinite; }
-        
-        /* Math-based distribution for sub-circles */
-        .active .s1 { animation-delay: 0s; }
-        .active .s2 { animation-delay: -1.5s; }
-        .active .s3 { animation-delay: -3s; }
-        .active .s4 { animation-delay: -4.5s; }
-
-        /* Vortex Iframe Area */
-        #vortex-container {
-            display: none;
-            width: 100%;
-            height: 60vh;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px;
-        }
-
-        .vortex {
-            width: 300px;
-            height: 300px;
-            border: 10px double var(--accent-color);
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin var(--vortex-speed) linear infinite;
-            box-shadow: 0 0 50px var(--accent-color);
-        }
-
+        /* Vortex & Input */
+        #vortex-container { display: none; width: 100%; height: 70vh; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+        .vortex { width: 350px; height: 350px; border: 8px double var(--accent-color); border-radius: 50%; border-top-color: transparent; animation: spin var(--vortex-speed) linear infinite; position: absolute; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        .vortex-content { z-index: 20; text-align: center; }
+        .vortex-content input { padding: 12px; border-radius: 10px; border: none; width: 200px; text-align: center; font-size: 1.2em; background: rgba(255,255,255,0.9); }
 
-        /* Session Iframe */
-        #content-frame { display: none; width: 100vw; height: 100vh; border: none; }
-        .back-btn { position: fixed; top: 20px; right: 20px; padding: 10px 20px; background: var(--accent-color); color: white; border: none; cursor: pointer; display: none; z-index: 1000; }
+        /* Flash Screen (The Card) */
+        #flash-screen { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 600px; background: #2c3e50; border-radius: 15px; overflow: hidden; z-index: 1000; box-shadow: 0 0 30px #000; }
+        .card-top { display: flex; align-items: center; padding: 20px; background: #1a1a1a; border-bottom: 3px solid var(--accent-color); }
+        .card-top img { width: 100px; height: 100px; border-radius: 10px; border: 2px solid var(--accent-color); margin-right: 20px; }
+        .student-info { font-size: 0.9em; line-height: 1.4; }
+        
+        .card-bottom { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #2c3e50; max-height: 300px; overflow-y: auto; }
+        .grade-box { position: relative; background: #34495e; padding: 5px; border-radius: 5px; }
+        .grade-box input { width: 90%; background: transparent; border: none; color: white; padding: 10px; font-size: 1em; text-align: center; }
+        .grade-box input::placeholder { color: #bdc3c7; }
+        .grade-box.updated { background: #27ae60 !important; }
+
+        /* Grid */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; padding: 40px; justify-items: center; }
+        .level-wrapper { position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; }
+        .main-circle { width: 80px; height: 80px; background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; z-index: 10; transition: 0.3s; }
+        .sub-circle { position: absolute; width: 35px; height: 35px; background: #3498db; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 5; }
+        @keyframes orbit { from { transform: rotate(0deg) translateX(70px) rotate(0deg); } to { transform: rotate(360deg) translateX(70px) rotate(-360deg); } }
+        .active .sub-circle { display: flex; animation: orbit 6s linear infinite; }
+        .active .s1 { animation-delay: 0s; } .active .s2 { animation-delay: -1.5s; } .active .s3 { animation-delay: -3s; } .active .s4 { animation-delay: -4.5s; }
+
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; }
     </style>
 </head>
 <body>
 
-    <button class="back-btn" onclick="goBack()">Back to Menu</button>
+    <div id="overlay" onclick="closeFlash()"></div>
+    <button class="back-btn" style="display:none" onclick="goBack()">Back</button>
 
     <div id="main-ui">
         <header class="banner">
@@ -158,90 +67,110 @@
         </header>
 
         <div class="controls">
-            <button class="switch-btn" onclick="toggleView()">Switch to Vortex Mode</button>
+            <button class="switch-btn" onclick="toggleView()">Tokens Portal</button>
         </div>
 
         <main class="grid-container" id="levels-grid"></main>
         
         <div id="vortex-container">
             <div class="vortex"></div>
+            <div class="vortex-content">
+                <h2>Enter Offline Code</h2>
+                <input type="text" id="offlineCode" placeholder="Code here..." onkeypress="handleCode(event)">
+            </div>
         </div>
     </div>
 
-    <iframe id="content-frame"></iframe>
+    <div id="flash-screen">
+        <div class="card-top" id="studentHeader">
+            </div>
+        <div class="card-bottom">
+            <div class="grade-box"><input type="number" placeholder="Attendence" onchange="submitGrade(this, 'Attendence')"></div>
+            <div class="grade-box"><input type="number" placeholder="ICA" onchange="submitGrade(this, 'ICA')"></div>
+            <div class="grade-box"><input type="number" placeholder="Listening" onchange="submitGrade(this, 'Listening')"></div>
+            <div class="grade-box"><input type="number" placeholder="Grammar" onchange="submitGrade(this, 'Grammar')"></div>
+            <div class="grade-box"><input type="number" placeholder="Reading" onchange="submitGrade(this, 'Reading')"></div>
+            <div class="grade-box"><input type="number" placeholder="Tongue Twister" onchange="submitGrade(this, 'Tongue Twister')"></div>
+            <div class="grade-box"><input type="number" placeholder="One Shot" onchange="submitGrade(this, 'One Shot')"></div>
+            <div class="grade-box"><input type="number" placeholder="Games" onchange="submitGrade(this, 'Games')"></div>
+            <div class="grade-box"><input type="number" placeholder="Squeezer" onchange="submitGrade(this, 'Squeezer')"></div>
+            <div class="grade-box"><input type="number" placeholder="DMT" onchange="submitGrade(this, 'DMT')"></div>
+            <div class="grade-box"><input type="number" placeholder="Wish" onchange="submitGrade(this, 'Wish')"></div>
+            <div class="grade-box"><input type="number" placeholder="Project" onchange="submitGrade(this, 'Project')"></div>
+            <div class="grade-box"><input type="number" placeholder="Graduation Project" onchange="submitGrade(this, 'Graduation Project')"></div>
+        </div>
+    </div>
 
     <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzqGQrkGOtajDq3Bo1V245lArpKB3kaHdsJF6ZQVUVDavWlVDYqoMUN8KJVmpIJ98laHA/exec";
+        let currentStudent = null;
+
+        function toggleView() {
+            const grid = document.getElementById('levels-grid');
+            const vortex = document.getElementById('vortex-container');
+            const btn = document.querySelector('.switch-btn');
+            if (grid.style.display !== 'none') {
+                grid.style.display = 'none';
+                vortex.style.display = 'flex';
+                btn.innerText = "Back to Levels";
+            } else {
+                grid.style.display = 'grid';
+                vortex.style.display = 'none';
+                btn.innerText = "Tokens Portal";
+            }
+        }
+
+        function handleCode(e) {
+            if (e.key === 'Enter') {
+                const code = e.target.value;
+                google.script.run.withSuccessHandler(showStudentCard).getStudentData(code);
+            }
+        }
+
+        function showStudentCard(data) {
+            if (!data) { alert("Code not found!"); return; }
+            currentStudent = data;
+            document.getElementById('studentHeader').innerHTML = `
+                <img src="${data.avatar}" onerror="this.src='https://via.placeholder.com/100'">
+                <div class="student-info">
+                    <h3>${data.name}</h3>
+                    <p>Tokens: <b>${data.tokens}</b> | Stars: ⭐${data.stars}</p>
+                    <p>Global: #${data.globalRank} | Local: #${data.localRank} | Group: ${data.group}</p>
+                </div>
+            `;
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('flash-screen').style.display = 'block';
+        }
+
+        function submitGrade(input, activity) {
+            const val = input.value;
+            if (!val) return;
+            
+            input.parentElement.style.opacity = "0.5";
+            google.script.run.withSuccessHandler(() => {
+                input.parentElement.classList.add('updated');
+                input.parentElement.style.opacity = "1";
+            }).updateStudentGrades(currentStudent.email, activity, val);
+        }
+
+        function closeFlash() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('flash-screen').style.display = 'none';
+            document.querySelectorAll('.grade-box').forEach(b => b.classList.remove('updated'));
+            document.querySelectorAll('.grade-box input').forEach(i => i.value = "");
+        }
+
+        // Initialize levels (same as before)
         const grid = document.getElementById('levels-grid');
-        const vortex = document.getElementById('vortex-container');
-        const mainUi = document.getElementById('main-ui');
-        const iframe = document.getElementById('content-frame');
-        const backBtn = document.querySelector('.back-btn');
-        const switchBtn = document.querySelector('.switch-btn');
-
-        let isVortexMode = false;
-
-        // Generate 12 levels
         for (let i = 1; i <= 12; i++) {
             const wrapper = document.createElement('div');
             wrapper.className = 'level-wrapper';
             wrapper.innerHTML = `
-                <div class="main-circle" onclick="toggleSubCircles(this)">Level ${i}</div>
-                <div class="sub-circle s1" onclick="loadSession(${i}, 1)">1</div>
-                <div class="sub-circle s2" onclick="loadSession(${i}, 2)">2</div>
-                <div class="sub-circle s3" onclick="loadSession(${i}, 3)">3</div>
-                <div class="sub-circle s4" onclick="loadSession(${i}, 4)">4</div>
+                <div class="main-circle" onclick="this.parentElement.classList.toggle('active')">Level ${i}</div>
+                <div class="sub-circle s1">1</div><div class="sub-circle s2">2</div>
+                <div class="sub-circle s3">3</div><div class="sub-circle s4">4</div>
             `;
             grid.appendChild(wrapper);
-        }
-
-        function toggleView() {
-            isVortexMode = !isVortexMode;
-            if (isVortexMode) {
-                grid.style.display = 'none';
-                vortex.style.display = 'flex';
-                switchBtn.innerText = "Switch to Levels Mode";
-            } else {
-                grid.style.display = 'grid';
-                vortex.style.display = 'none';
-                switchBtn.innerText = "Switch to Vortex Mode";
-            }
-        }
-
-        function toggleSubCircles(element) {
-            document.querySelectorAll('.level-wrapper').forEach(w => {
-                if(w !== element.parentElement) w.classList.remove('active');
-            });
-            element.parentElement.classList.toggle('active');
-        }
-
-        function loadSession(level, session) {
-            // Path to your GitHub files
-            const baseUrl = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/sessions/";
-            const fileName = `${level}-${session}.js`;
-            
-            mainUi.style.display = 'none';
-            iframe.style.display = 'block';
-            backBtn.style.display = 'block';
-
-            const doc = iframe.contentWindow.document;
-            doc.open();
-            doc.write(`
-                <html>
-                <body style="background:#1a1a1a; color:white; display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; margin:0; font-family:sans-serif;">
-                    <h2 style="color:#e74c3c">Session ${level}-${session}</h2>
-                    <div id="loading">Initializing System...</div>
-                    <script src="${baseUrl}${fileName}"><\/script>
-                </body>
-                </html>
-            `);
-            doc.close();
-        }
-
-        function goBack() {
-            mainUi.style.display = 'block';
-            iframe.style.display = 'none';
-            backBtn.style.display = 'none';
-            iframe.src = "about:blank";
         }
     </script>
 </body>

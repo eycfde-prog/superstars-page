@@ -1,48 +1,310 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Veto Program</title>
-    
-    <link rel="stylesheet" href="https://github.com/eycfde-prog/EYCVetoProgram/blob/ef778cffa354b34503c9ab883dbdfb2eb7b20e3e/vetoo.css.css">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>VetoO - Outil de Veto EYC</title>
+    <style>
+        :root {
+            --primary-color: #003399;
+            --secondary-color: #ffcc00;
+            --background-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        main {
+            flex: 1;
+            width: 90%;
+            max-width: 800px;
+            margin: 2rem 0;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .setup-section, .veto-section {
+            margin-bottom: 2rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        input, select, button {
+            padding: 0.7rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #002266;
+        }
+
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .map-card {
+            background: #eee;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .map-card:hover {
+            transform: scale(1.05);
+        }
+
+        .map-card.vetoed {
+            background: #ffcccc;
+            text-decoration: line-through;
+            color: #990000;
+            border-color: #cc0000;
+            cursor: not-allowed;
+        }
+
+        .map-card.picked {
+            background: #ccffcc;
+            font-weight: bold;
+            color: #006600;
+            border-color: #009900;
+        }
+
+        .turn-indicator {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
 
-    <div id="app">
-        <div class="overlay" id="overlay">
-            <div class="modal">
-                <button class="close-btn" id="closeModal">&times;</button>
-            </div>
-        </div>
+    <header>
+        <h1>VetoO</h1>
+        <p>Système de Veto Officiel - EYC</p>
+    </header>
 
-        <div class="profile-section">
-            <img src="https://via.placeholder.com/150" alt="Profile" class="profile-img" id="userAvatar">
-            <div class="profile-info">
-                <h1 id="userName">EYC</h1>
-                <p>
-                    <i class="fas fa-id-card"></i> ID: <span id="userId">VTO-2939</span>
-                    <i class="fas fa-coins"></i> TOKENS: <span id="userTokens">10000</span>
-                    <i class="fas fa-trophy"></i> RANK: #<span id="userRank">0</span>
-                </p>
-                <div class="actions">
-                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
-                    <button class="icon-btn"><i class="fas fa-power-off"></i></button>
+    <main>
+        <section id="setup" class="setup-section">
+            <h2>Configuration du Match</h2>
+            <div class="input-group">
+                <label for="team1">Nom de l'Équipe 1 :</label>
+                <input type="text" id="team1" placeholder="Ex: Team Alpha">
+            </div>
+            <div class="input-group">
+                <label for="team2">Nom de l'Équipe 2 :</label>
+                <input type="text" id="team2" placeholder="Ex: Team Bravo">
+            </div>
+            <div class="input-group">
+                <label for="format">Format du Match :</label>
+                <select id="format">
+                    <option value="BO1">BO1 (1 Map Finale)</option>
+                    <option value="BO3">BO3 (3 Maps Finales)</option>
+                </select>
+            </div>
+            <button id="start-btn">Démarrer le Veto</button>
+        </section>
+
+        <section id="veto-interface" class="veto-section hidden">
+            <div id="turn-display" class="turn-indicator">C'est au tour de [Équipe]</div>
+            <div id="action-instruction" style="text-align: center; margin-bottom: 10px;">Choisissez une map à bannir.</div>
+            <div id="map-pool" class="map-grid">
                 </div>
+            <div id="results" class="hidden" style="margin-top: 2rem; text-align: center;">
+                <h3>Résultat Final</h3>
+                <div id="final-maps"></div>
+                <button onclick="location.reload()" style="margin-top: 1rem;">Réinitialiser</button>
             </div>
-        </div>
+        </section>
+    </main>
 
-        <div class="mission-control">
-            <h2><i class="fas fa-rocket"></i> MISSION CONTROL</h2>
-            <p>Select your training level to begin</p>
-            <div class="levels-stack">
-                <i class="fas fa-layer-group"></i>
-            </div>
-        </div>
-    </div>
+    <footer>
+        &copy; 2024 European Youth Cup - Tous droits réservés.
+    </footer>
 
-    <script src="https://github.com/eycfde-prog/EYCVetoProgram/blob/ef778cffa354b34503c9ab883dbdfb2eb7b20e3e/vetoo.js"></script>
+    <script>
+        const maps = ["Ancient", "Anubis", "Dust II", "Inferno", "Mirage", "Nuke", "Vertigo"];
+        let team1 = "";
+        let team2 = "";
+        let format = "BO1";
+        let currentTurn = "";
+        let step = 0;
+        let vetoedMaps = [];
+        let pickedMaps = [];
+
+        const setupScreen = document.getElementById('setup');
+        const vetoScreen = document.getElementById('veto-interface');
+        const mapPool = document.getElementById('map-pool');
+        const turnDisplay = document.getElementById('turn-display');
+        const actionInstruction = document.getElementById('action-instruction');
+        const resultsDiv = document.getElementById('results');
+        const finalMapsDiv = document.getElementById('final-maps');
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            team1 = document.getElementById('team1').value || "Équipe 1";
+            team2 = document.getElementById('team2').value || "Équipe 2";
+            format = document.getElementById('format').value;
+
+            setupScreen.classList.add('hidden');
+            vetoScreen.classList.remove('hidden');
+            
+            currentTurn = team1;
+            updateUI();
+            renderMaps();
+        });
+
+        function renderMaps() {
+            mapPool.innerHTML = "";
+            maps.forEach(map => {
+                const card = document.createElement('div');
+                card.className = 'map-card';
+                card.innerText = map;
+
+                if (vetoedMaps.includes(map)) card.classList.add('vetoed');
+                if (pickedMaps.includes(map)) card.classList.add('picked');
+
+                card.onclick = () => handleAction(map);
+                mapPool.appendChild(card);
+            });
+        }
+
+        function handleAction(map) {
+            if (vetoedMaps.includes(map) || pickedMaps.includes(map)) return;
+
+            if (format === "BO1") {
+                // BO1 Logic: Ban, Ban, Ban, Ban, Ban, Ban -> Last one stays
+                if (step < 6) {
+                    vetoedMaps.push(map);
+                    step++;
+                    currentTurn = (currentTurn === team1) ? team2 : team1;
+                }
+                
+                if (step === 6) {
+                    const lastMap = maps.find(m => !vetoedMaps.includes(m));
+                    pickedMaps.push(lastMap);
+                    endVeto();
+                }
+            } else if (format === "BO3") {
+                // BO3 Logic: 
+                // 1. Team 1 Ban
+                // 2. Team 2 Ban
+                // 3. Team 1 Pick (Map 1)
+                // 4. Team 2 Pick (Map 2)
+                // 5. Team 1 Ban
+                // 6. Team 2 Ban
+                // 7. Last map is Decider
+                
+                if (step === 0 || step === 1 || step === 4 || step === 5) {
+                    vetoedMaps.push(map);
+                } else if (step === 2 || step === 3) {
+                    pickedMaps.push(map);
+                }
+
+                step++;
+                currentTurn = (currentTurn === team1) ? team2 : team1;
+
+                if (step === 6) {
+                    const decider = maps.find(m => !vetoedMaps.includes(m) && !pickedMaps.includes(m));
+                    pickedMaps.push(decider);
+                    endVeto();
+                }
+            }
+
+            updateUI();
+            renderMaps();
+        }
+
+        function updateUI() {
+            turnDisplay.innerText = `C'est au tour de : ${currentTurn}`;
+            
+            if (format === "BO1") {
+                actionInstruction.innerText = "Bannissez une map.";
+            } else {
+                if (step < 2 || step >= 4) {
+                    actionInstruction.innerText = "Bannissez une map.";
+                } else {
+                    actionInstruction.innerText = "Choisissez votre map.";
+                }
+            }
+        }
+
+        function endVeto() {
+            turnDisplay.classList.add('hidden');
+            actionInstruction.classList.add('hidden');
+            resultsDiv.classList.remove('hidden');
+
+            if (format === "BO1") {
+                finalMapsDiv.innerHTML = `<p>Map à jouer : <strong>${pickedMaps[0]}</strong></p>`;
+            } else {
+                finalMapsDiv.innerHTML = `
+                    <p>Map 1 (Pick ${team1}) : <strong>${pickedMaps[0]}</strong></p>
+                    <p>Map 2 (Pick ${team2}) : <strong>${pickedMaps[1]}</strong></p>
+                    <p>Map 3 (Décideur) : <strong>${pickedMaps[2]}</strong></p>
+                `;
+            }
+        }
+    </script>
 </body>
 </html>

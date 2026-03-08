@@ -95,8 +95,6 @@
         <div class="card-bottom">
             <div class="grade-box"><input type="number" placeholder="Attendence" onchange="submitGrade(this, 'Attendence')"></div>
             <div class="grade-box"><input type="number" placeholder="ICA" onchange="submitGrade(this, 'ICA')"></div>
-            <div class="grade-box"><input type="number" placeholder="Listening" onchange="submitGrade(this, 'Listening')"></div>
-            <div class="grade-box"><input type="number" placeholder="Grammar" onchange="submitGrade(this, 'Grammar')"></div>
             <div class="grade-box"><input type="number" placeholder="Reading" onchange="submitGrade(this, 'Reading')"></div>
             <div class="grade-box"><input type="number" placeholder="Tongue Twister" onchange="submitGrade(this, 'Tongue Twister')"></div>
             <div class="grade-box"><input type="number" placeholder="One Shot" onchange="submitGrade(this, 'One Shot')"></div>
@@ -110,7 +108,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzLw_aIqrZ6137cSx2hO7RVP63o8bZDG-dVZvshE3H4imTGEqkEVl6A5clFYrsDEyI-xg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbz8Kd5pBm4sLMt9ipAHMOu8UP9XkYeRgeB82Vzq8DNuRzviRFoDUaCIzpPTsBI_InyQIw/exec";
         let currentStudent = null;
 
         function toggleView() {
@@ -185,16 +183,18 @@
     fetch(updateUrl)
     .then(response => response.json())
     .then(res => {
-        if(res.status === "success") {
-            parent.classList.add('updated');
-            parent.style.opacity = "1";
-            
-            // تحديث التوكينز في واجهة الكارت فوراً
-            const tokenElement = document.querySelector('.student-info b[style*="#2ecc71"]');
-            if(tokenElement) {
-                let currentTokens = parseInt(tokenElement.innerText) || 0;
-                tokenElement.innerText = currentTokens + parseInt(val);
-            }
+// داخل دالة submitGrade في الـ HTML
+if(res.status === "success") {
+    parent.classList.add('updated');
+    parent.style.opacity = "1";
+    
+    // تحديث التوكينات (المجموع الكلي) في واجهة الكارت فوراً
+    const tokenElement = document.querySelector('.student-info b[style*="#2ecc71"]');
+    if(tokenElement) {
+        let currentTokens = parseInt(tokenElement.innerText) || 0;
+        tokenElement.innerText = currentTokens + parseInt(val);
+    }
+}
         } else {
             alert("Wolf Error: " + res.message);
             parent.style.opacity = "1";

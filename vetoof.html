@@ -42,6 +42,9 @@
         .card-bottom { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #2c3e50; max-height: 350px; overflow-y: auto; }
         .grade-box { position: relative; background: #34495e; padding: 5px; border-radius: 8px; transition: 0.3s; border: 1px solid transparent; }
         .grade-box:hover { border-color: var(--accent-color); }
+        /* تمييز خانة الـ Bonus بلون مختلف */
+        .grade-box.bonus-box { border: 1px solid #f1c40f; background: #3e3e3e; }
+        
         .grade-box input { width: 90%; background: transparent; border: none; color: white; padding: 10px; font-size: 1em; text-align: center; outline: none; }
         .grade-box input::placeholder { color: #95a5a6; font-size: 0.85em; }
         .grade-box.updated { background: #27ae60 !important; transform: scale(1.02); }
@@ -54,11 +57,8 @@
         .sub-circle { position: absolute; width: 35px; height: 35px; background: #3498db; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 5; font-size: 0.8em; }
         @keyframes orbit { from { transform: rotate(0deg) translateX(75px) rotate(0deg); } to { transform: rotate(360deg) translateX(75px) rotate(-360deg); } }
         .active .sub-circle { display: flex; animation: orbit 6s linear infinite; }
-        .active .s1 { animation-delay: 0s; } .active .s2 { animation-delay: -1.5s; } .active .s3 { animation-delay: -3s; } .active .s4 { animation-delay: -4.5s; }
-
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; backdrop-filter: blur(5px); }
         
-        /* Custom Scrollbar */
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; backdrop-filter: blur(5px); }
         .card-bottom::-webkit-scrollbar { width: 6px; }
         .card-bottom::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
     </style>
@@ -93,6 +93,8 @@
     <div id="flash-screen">
         <div class="card-top" id="studentHeader"></div>
         <div class="card-bottom">
+            <div class="grade-box bonus-box"><input type="number" placeholder="EXTRA BONUS (L)" onchange="submitGrade(this, 'Bonus')"></div>
+            
             <div class="grade-box"><input type="number" placeholder="Attendence" onchange="submitGrade(this, 'Attendence')"></div>
             <div class="grade-box"><input type="number" placeholder="ICA" onchange="submitGrade(this, 'ICA')"></div>
             <div class="grade-box"><input type="number" placeholder="Reading" onchange="submitGrade(this, 'Reading')"></div>
@@ -126,13 +128,11 @@
             }
         }
 
-        // دالة التعامل مع الكود (Fetching via Script URL)
         function handleCode(e) {
             if (e.key === 'Enter') {
                 const code = e.target.value.trim();
                 if(!code) return;
                 
-                // إظهار حالة تحميل بسيطة
                 e.target.disabled = true;
                 e.target.placeholder = "Scanning...";
 
@@ -170,42 +170,38 @@
             document.getElementById('flash-screen').style.display = 'block';
         }
 
-  function submitGrade(input, activity) {
-    const val = input.value;
-    if (!val || !currentStudent) return;
-    
-    const parent = input.parentElement;
-    parent.style.opacity = "0.5";
+        function submitGrade(input, activity) {
+            const val = input.value;
+            if (!val || !currentStudent) return;
+            
+            const parent = input.parentElement;
+            parent.style.opacity = "0.5";
 
-    // WOLF Fix: إرسال الطلب عبر fetch للـ API_URL لضمان التزامن مع doGet
-    const updateUrl = `${API_URL}?action=updateGrades&email=${encodeURIComponent(currentStudent.email)}&activity=${encodeURIComponent(activity)}&grade=${val}`;
+            const updateUrl = `${API_URL}?action=updateGrades&email=${encodeURIComponent(currentStudent.email)}&activity=${encodeURIComponent(activity)}&grade=${val}`;
 
-    fetch(updateUrl)
-    .then(response => response.json())
-    .then(res => {
-// داخل دالة submitGrade في الـ HTML
-if(res.status === "success") {
-    parent.classList.add('updated');
-    parent.style.opacity = "1";
-    
-    // تحديث التوكينات (المجموع الكلي) في واجهة الكارت فوراً
-    const tokenElement = document.querySelector('.student-info b[style*="#2ecc71"]');
-    if(tokenElement) {
-        let currentTokens = parseInt(tokenElement.innerText) || 0;
-        tokenElement.innerText = currentTokens + parseInt(val);
-    }
-}
-        } else {
-            alert("Wolf Error: " + res.message);
-            parent.style.opacity = "1";
+            fetch(updateUrl)
+            .then(response => response.json())
+            .then(res => {
+                if(res.status === "success") {
+                    parent.classList.add('updated');
+                    parent.style.opacity = "1";
+                    
+                    const tokenElement = document.querySelector('.student-info b[style*="#2ecc71"]');
+                    if(tokenElement) {
+                        let currentTokens = parseInt(tokenElement.innerText) || 0;
+                        tokenElement.innerText = currentTokens + parseInt(val);
+                    }
+                } else {
+                    alert("Wolf Error: " + res.message);
+                    parent.style.opacity = "1";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Connection Lost!");
+                parent.style.opacity = "1";
+            });
         }
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Connection Lost!");
-        parent.style.opacity = "1";
-    });
-}
 
         function closeFlash() {
             document.getElementById('overlay').style.display = 'none';
@@ -221,18 +217,22 @@ if(res.status === "success") {
             wrapper.className = 'level-wrapper';
             wrapper.innerHTML = `
                 <div class="main-circle" onclick="toggleSubCircles(this)">Level ${i}</div>
-                <div class="sub-circle s1" onclick="console.log('Session ${i}-1')">1</div>
-                <div class="sub-circle s2" onclick="console.log('Session ${i}-2')">2</div>
-                <div class="sub-circle s3" onclick="console.log('Session ${i}-3')">3</div>
-                <div class="sub-circle s4" onclick="console.log('Session ${i}-4')">4</div>
+                <div class="sub-circle s1" style="animation: orbit 6s linear infinite; display:none;">1</div>
             `;
             grid.appendChild(wrapper);
         }
 
         function toggleSubCircles(el) {
+            const sub = el.parentElement.querySelector('.sub-circle');
             const wasActive = el.parentElement.classList.contains('active');
-            document.querySelectorAll('.level-wrapper').forEach(w => w.classList.remove('active'));
-            if (!wasActive) el.parentElement.classList.add('active');
+            document.querySelectorAll('.level-wrapper').forEach(w => {
+                w.classList.remove('active');
+                w.querySelector('.sub-circle').style.display = 'none';
+            });
+            if (!wasActive) {
+                el.parentElement.classList.add('active');
+                sub.style.display = 'flex';
+            }
         }
     </script>
 </body>

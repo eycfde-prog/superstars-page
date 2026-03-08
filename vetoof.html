@@ -1,84 +1,90 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Veto Program - Mr. Ezz</title>
+    <title>EYC Veto System - Mr. Ezz</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #e74c3c;
-            --text-color: #ecf0f1;
+            --primary-gold: #d4af37;
+            --dark-bg: #0f172a;
+            --text-light: #f8fafc;
         }
 
         body {
             margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
-            color: var(--text-color);
+            background-color: var(--dark-bg);
+            color: var(--text-light);
             overflow-x: hidden;
         }
 
         /* Banner Style */
         .banner {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+            align-items: center;
+            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
             padding: 10px 20px;
+            border-bottom: 3px solid var(--primary-gold);
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            height: 120px;
         }
 
         .banner img {
-            height: 90px;
-            border-radius: 10px;
+            height: 80px;
+            width: auto;
+            border-radius: 8px;
         }
 
         .banner h1 {
             flex-grow: 1;
             text-align: center;
-            font-size: 2.5em;
+            font-size: 2.5rem;
             margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-transform: uppercase;
             letter-spacing: 2px;
+            color: var(--primary-gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        /* Grid System */
-        .levels-container {
+        /* Grid Container */
+        #main-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 50px;
-            padding: 50px;
-            justify-items: center;
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        /* Level Circle */
+        /* Level Circle Style */
         .level-wrapper {
             position: relative;
             width: 120px;
             height: 120px;
+            margin: auto;
         }
 
-        .main-circle {
+        .level-circle {
             width: 100%;
             height: 100%;
-            background: var(--primary-color);
-            border: 3px solid var(--accent-color);
             border-radius: 50%;
+            background: var(--primary-gold);
+            color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: transform 0.3s;
-            z-index: 2;
-            position: relative;
             font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            position: relative;
+            transition: transform 0.3s;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
         }
 
-        .main-circle:hover {
+        .level-circle:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 20px var(--accent-color);
         }
 
         /* Sub Circles (Sessions) */
@@ -86,160 +92,144 @@
             position: absolute;
             width: 40px;
             height: 40px;
-            background: var(--accent-color);
+            background: #e2e8f0;
+            color: #1e293b;
             border-radius: 50%;
-            display: none; /* Hidden by default */
+            display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            font-size: 0.8em;
+            font-size: 0.9rem;
             font-weight: bold;
+            cursor: pointer;
             top: 40px;
             left: 40px;
+            opacity: 0;
+            visibility: hidden;
             transition: all 0.5s ease;
+            z-index: 5;
         }
 
-        /* Animation for Rotating Sessions */
-        @keyframes rotateSessions {
-            from { transform: rotate(0deg) translateX(80px) rotate(0deg); }
-            to { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
+        /* Animation for orbiting */
+        @keyframes rotate {
+            from { transform: rotate(0deg) translate(80px) rotate(0deg); }
+            to { transform: rotate(360deg) translate(80px) rotate(-360deg); }
         }
 
-        .active .session-circle {
-            display: flex;
-            animation: rotateSessions 10s linear infinite;
+        .level-wrapper.active .session-circle {
+            opacity: 1;
+            visibility: visible;
         }
 
-        /* Offset each session to start at different positions */
-        .active .session-circle:nth-child(2) { animation-delay: 0s; }
-        .active .session-circle:nth-child(3) { animation-delay: -2.5s; }
-        .active .session-circle:nth-child(4) { animation-delay: -5s; }
-        .active .session-circle:nth-child(5) { animation-delay: -7.5s; }
+        .level-wrapper.active .s1 { animation: rotate 10s linear infinite; }
+        .level-wrapper.active .s2 { animation: rotate 10s linear infinite; animation-delay: -2.5s; }
+        .level-wrapper.active .s3 { animation: rotate 10s linear infinite; animation-delay: -5s; }
+        .level-wrapper.active .s4 { animation: rotate 10s linear infinite; animation-delay: -7.5s; }
 
-        /* Iframe Fullscreen View */
-        #content-viewer {
+        /* iFrame View */
+        #viewer-container {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 9999;
+            width: 100vw;
+            height: 100vh;
+            background: white;
         }
 
-        #content-viewer iframe {
+        iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
 
         .back-btn {
-            position: absolute;
+            position: fixed;
             top: 20px;
-            right: 20px;
+            left: 20px;
             padding: 10px 20px;
-            background: var(--accent-color);
-            color: white;
+            background: var(--primary-gold);
+            color: black;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            z-index: 10000;
+            z-index: 1000;
+            font-weight: bold;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
-    <div id="main-ui">
+    <div id="content-ui">
         <div class="banner">
-            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/MrEzz.png" alt="Mr. Ezz">
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/logo.png" alt="Logo">
             <h1>Mr. Ezz .Y. Ali</h1>
-            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/logo.png" alt="EYC Logo">
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/MrEzz.png" alt="Mr Ezz">
         </div>
 
-        <div class="levels-container" id="levels-grid">
+        <div id="main-container">
             </div>
     </div>
 
-    <div id="content-viewer">
-        <button class="back-btn" onclick="closeViewer()">رجوع للمستويات</button>
+    <div id="viewer-container">
+        <button class="back-btn" onclick="closeViewer()">← Back to Levels</button>
         <iframe id="js-loader"></iframe>
     </div>
 
     <script>
-        const grid = document.getElementById('levels-grid');
-        const mainUi = document.getElementById('main-ui');
-        const viewer = document.getElementById('content-viewer');
-        const iframe = document.getElementById('js-loader');
+        const container = document.getElementById('main-container');
 
-        // إنشاء الـ 12 مستوى
+        // Generate 12 Levels
         for (let i = 1; i <= 12; i++) {
             const wrapper = document.createElement('div');
             wrapper.className = 'level-wrapper';
-            
-            const mainCircle = document.createElement('div');
-            mainCircle.className = 'main-circle';
-            mainCircle.innerText = `Level ${i}`;
-            mainCircle.onclick = (e) => {
-                // إغلاق أي ليفل مفتوح آخر
-                document.querySelectorAll('.level-wrapper').forEach(el => el.classList.remove('active'));
-                wrapper.classList.toggle('active');
-                e.stopPropagation();
-            };
-
-            wrapper.appendChild(mainCircle);
-
-            // إنشاء الـ 4 جلسات (الدوارة)
-            for (let j = 1; j <= 4; j++) {
-                const session = document.createElement('div');
-                session.className = 'session-circle';
-                session.innerText = j;
-                session.onclick = (e) => {
-                    loadSession(i, j);
-                    e.stopPropagation();
-                };
-                wrapper.appendChild(session);
-            }
-
-            grid.appendChild(wrapper);
+            wrapper.innerHTML = `
+                <div class="level-circle" onclick="toggleSessions(this)">Level ${i}</div>
+                <div class="session-circle s1" onclick="loadJS(${i}, 1)">1</div>
+                <div class="session-circle s2" onclick="loadJS(${i}, 2)">2</div>
+                <div class="session-circle s3" onclick="loadJS(${i}, 3)">3</div>
+                <div class="session-circle s4" onclick="loadJS(${i}, 4)">4</div>
+            `;
+            container.appendChild(wrapper);
         }
 
-        function loadSession(level, session) {
+        function toggleSessions(element) {
+            // Close other active levels first
+            document.querySelectorAll('.level-wrapper').forEach(w => {
+                if(w !== element.parentElement) w.classList.remove('active');
+            });
+            element.parentElement.classList.toggle('active');
+        }
+
+        function loadJS(level, session) {
             const fileName = `${level}-${session}.js`;
-            console.log(`جارِ تحميل الملف: ${fileName}`);
+            console.log("Loading session:", fileName);
             
-            // إخفاء الواجهة وإظهار الـ Iframe
-            mainUi.style.display = 'none';
-            viewer.style.display = 'block';
+            // Hide UI
+            document.getElementById('content-ui').style.display = 'none';
+            document.getElementById('viewer-container').style.display = 'block';
+
+            // Load JS into iFrame (Note: JS files can't be "run" inside iframe easily 
+            // unless they are wrapped in HTML or called via a script injector)
+            // Here we assume you want to point to the file URL
+            const iframe = document.getElementById('js-loader');
             
-            // ملاحظة برمجية: ملف الـ JS لا يمكن تشغيله مباشرة داخل src الـ iframe 
-            // إلا إذا كان ملف HTML يطلبه. هنا سنقوم بإنشاء صفحة مؤقتة لتشغيل السكريبت.
-            const doc = iframe.contentWindow.document;
-            doc.open();
-            doc.write(`
-                <html>
-                <head><title>Loading ${fileName}</title></head>
-                <body style="background:#1a1a1a; color:white; display:flex; justify-content:center; align-items:center; height:100vh;">
-                    <div style="text-align:center;">
-                        <h2>Session Content: ${fileName}</h2>
-                        <script src="${fileName}"><\/script>
-                    </div>
-                </body>
-                </html>
-            `);
-            doc.close();
+            /* ملاحظة تقنية: الـ iFrame لا يقوم بتشغيل ملف .js مباشرة. 
+               يجب أن يكون الملف إما صفحة HTML تحتوي على الـ JS 
+               أو نقوم بحقن الكود داخل الـ iframe.
+            */
+            
+            // إذا كانت الملفات مرفوعة على Github Pages مثلاً:
+            // iframe.src = `path/to/your/js/files/${fileName}`;
+            
+            // للتوضيح، سأضع نصاً داخل الإيفريم يعبر عن نجاح التحميل:
+            iframe.srcdoc = `<html><body style="background:#f0f0f0; display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif;">
+                             <h1>Loading Session: ${fileName} ...</h1>
+                             <script src="${fileName}"></script>
+                             </body></html>`;
         }
 
         function closeViewer() {
-            viewer.style.display = 'none';
-            mainUi.style.display = 'block';
-            iframe.src = "about:blank";
+            document.getElementById('content-ui').style.display = 'block';
+            document.getElementById('viewer-container').style.display = 'none';
+            document.getElementById('js-loader').srcdoc = '';
         }
-
-        // إغلاق الدوائر المفتوحة عند الضغط في أي مكان فارغ
-        window.onclick = () => {
-            document.querySelectorAll('.level-wrapper').forEach(el => el.classList.remove('active'));
-        };
     </script>
 </body>
 </html>

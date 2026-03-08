@@ -42,12 +42,11 @@
         .card-bottom { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #2c3e50; max-height: 350px; overflow-y: auto; }
         .grade-box { position: relative; background: #34495e; padding: 5px; border-radius: 8px; transition: 0.3s; border: 1px solid transparent; }
         .grade-box:hover { border-color: var(--accent-color); }
-        /* تمييز خانة الـ Bonus بلون مختلف */
-        .grade-box.bonus-box { border: 1px solid #f1c40f; background: #3e3e3e; }
-        
         .grade-box input { width: 90%; background: transparent; border: none; color: white; padding: 10px; font-size: 1em; text-align: center; outline: none; }
         .grade-box input::placeholder { color: #95a5a6; font-size: 0.85em; }
         .grade-box.updated { background: #27ae60 !important; transform: scale(1.02); }
+        /* استايل خاص لخانة البونص لتمييزها */
+        .grade-box.bonus-box { border: 1px solid #f1c40f; background: #2d3436; }
 
         /* Grid */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; padding: 40px; justify-items: center; }
@@ -57,8 +56,10 @@
         .sub-circle { position: absolute; width: 35px; height: 35px; background: #3498db; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 5; font-size: 0.8em; }
         @keyframes orbit { from { transform: rotate(0deg) translateX(75px) rotate(0deg); } to { transform: rotate(360deg) translateX(75px) rotate(-360deg); } }
         .active .sub-circle { display: flex; animation: orbit 6s linear infinite; }
-        
+        .active .s1 { animation-delay: 0s; } .active .s2 { animation-delay: -1.5s; } .active .s3 { animation-delay: -3s; } .active .s4 { animation-delay: -4.5s; }
+
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; backdrop-filter: blur(5px); }
+        
         .card-bottom::-webkit-scrollbar { width: 6px; }
         .card-bottom::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
     </style>
@@ -93,7 +94,7 @@
     <div id="flash-screen">
         <div class="card-top" id="studentHeader"></div>
         <div class="card-bottom">
-            <div class="grade-box bonus-box"><input type="number" placeholder="EXTRA BONUS (L)" onchange="submitGrade(this, 'Bonus')"></div>
+            <div class="grade-box bonus-box"><input type="number" placeholder="★ Special Bonus" onchange="submitGrade(this, 'Bonus')"></div>
             
             <div class="grade-box"><input type="number" placeholder="Attendence" onchange="submitGrade(this, 'Attendence')"></div>
             <div class="grade-box"><input type="number" placeholder="ICA" onchange="submitGrade(this, 'ICA')"></div>
@@ -210,29 +211,24 @@
             document.querySelectorAll('.grade-box input').forEach(i => i.value = "");
         }
 
-        // توليد المستويات
         const grid = document.getElementById('levels-grid');
         for (let i = 1; i <= 12; i++) {
             const wrapper = document.createElement('div');
             wrapper.className = 'level-wrapper';
             wrapper.innerHTML = `
                 <div class="main-circle" onclick="toggleSubCircles(this)">Level ${i}</div>
-                <div class="sub-circle s1" style="animation: orbit 6s linear infinite; display:none;">1</div>
+                <div class="sub-circle s1" onclick="console.log('Session ${i}-1')">1</div>
+                <div class="sub-circle s2" onclick="console.log('Session ${i}-2')">2</div>
+                <div class="sub-circle s3" onclick="console.log('Session ${i}-3')">3</div>
+                <div class="sub-circle s4" onclick="console.log('Session ${i}-4')">4</div>
             `;
             grid.appendChild(wrapper);
         }
 
         function toggleSubCircles(el) {
-            const sub = el.parentElement.querySelector('.sub-circle');
             const wasActive = el.parentElement.classList.contains('active');
-            document.querySelectorAll('.level-wrapper').forEach(w => {
-                w.classList.remove('active');
-                w.querySelector('.sub-circle').style.display = 'none';
-            });
-            if (!wasActive) {
-                el.parentElement.classList.add('active');
-                sub.style.display = 'flex';
-            }
+            document.querySelectorAll('.level-wrapper').forEach(w => w.classList.remove('active'));
+            if (!wasActive) el.parentElement.classList.add('active');
         }
     </script>
 </body>

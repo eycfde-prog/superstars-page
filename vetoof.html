@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Veto Program - Level Selection</title>
+    <title>EYC Veto Program - Advanced UI</title>
     <style>
         :root {
             --primary-color: #2c3e50;
             --accent-color: #e74c3c;
             --text-color: #ecf0f1;
+            --vortex-color: #3498db;
         }
 
         body {
@@ -17,6 +18,9 @@
             background-color: #1a1a1a;
             color: var(--text-color);
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         /* Banner Styling */
@@ -24,13 +28,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 50px;
+            padding: 15px 50px;
             background: linear-gradient(90deg, #000, #2c3e50, #000);
             border-bottom: 3px solid var(--accent-color);
+            z-index: 100;
         }
 
         .banner img {
-            height: 100px;
+            height: 80px;
             border-radius: 50%;
             border: 2px solid var(--text-color);
         }
@@ -38,29 +43,61 @@
         .banner h1 {
             flex-grow: 1;
             text-align: center;
-            font-size: 2.5em;
+            font-size: 2em;
             letter-spacing: 2px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin: 0;
+        }
+
+        /* Switch Button Area */
+        .controls {
+            display: flex;
+            justify-content: center;
+            background: #111;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .switch-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .switch-btn:hover {
+            transform: scale(1.05);
+            background: #c0392b;
         }
 
         /* Levels Grid */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 50px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 60px;
             padding: 50px;
             justify-items: center;
         }
 
+        /* Level Wrapper & Circles */
         .level-wrapper {
             position: relative;
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .main-circle {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background: var(--accent-color);
             border-radius: 50%;
             display: flex;
@@ -68,59 +105,83 @@
             justify-content: center;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1.2em;
             z-index: 10;
-            position: relative;
-            transition: transform 0.3s;
-            box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
         }
 
-        .main-circle:hover {
-            transform: scale(1.1);
-        }
-
-        /* Sub-circles (Sessions) */
+        /* Fixed positions for Sub-circles */
         .sub-circle {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             background: #3498db;
             border-radius: 50%;
-            display: none; /* Hidden by default */
+            display: none;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: 0.3s;
             z-index: 5;
-        }
-
-        .sub-circle:hover {
-            background: #2ecc71;
-        }
-
-        /* Animation for orbiting */
-        @keyframes orbit {
-            from { transform: rotate(0deg) translateX(100px) rotate(0deg); }
-            to   { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
         }
 
         .active .sub-circle {
             display: flex;
-            animation: orbit 8s linear infinite;
         }
 
-        /* Individual delays to spread them out */
-        .s1 { animation-delay: 0s !important; }
-        .s2 { animation-delay: -2s !important; }
-        .s3 { animation-delay: -4s !important; }
-        .s4 { animation-delay: -6s !important; }
+        /* Positioning logic (Top, Right, Bottom, Left) */
+        .active .s1 { transform: translateY(-80px); }
+        .active .s2 { transform: translateX(80px); }
+        .active .s3 { transform: translateY(80px); }
+        .active .s4 { transform: translateX(-80px); }
 
-        /* Iframe Area */
+        .sub-circle:hover { background: #2ecc71; transform: scale(1.2) !important; }
+
+        /* Vortex Area (The Whirlpool) */
+        #vortex-container {
+            display: none;
+            flex-grow: 1;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #2c3e50 0%, #000 70%);
+            height: 60vh;
+        }
+
+        .vortex {
+            width: 250px;
+            height: 250px;
+            border: 5px solid transparent;
+            border-top: 5px solid var(--vortex-color);
+            border-bottom: 5px solid var(--vortex-color);
+            border-radius: 50%;
+            animation: spin-vortex 2s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .vortex::before {
+            content: '';
+            width: 150px;
+            height: 150px;
+            border: 3px solid var(--accent-color);
+            border-left: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin-vortex 1s linear infinite reverse;
+        }
+
+        @keyframes spin-vortex {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Iframe */
         #content-frame {
             display: none;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 80vh;
             border: none;
         }
 
@@ -132,36 +193,47 @@
             background: var(--accent-color);
             color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
             display: none;
-            z-index: 1000;
+            z-index: 1001;
         }
     </style>
 </head>
 <body>
 
-    <button class="back-btn" onclick="goBack()">Back to Levels</button>
+    <button class="back-btn" onclick="goBack()">Back to Menu</button>
 
-    <div id="main-ui">
-        <header class="banner">
-            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/logo.png" alt="Logo">
-            <h1>Mr. Ezz .Y. Ali</h1>
-            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/MrEzz.png" alt="Mr Ezz">
-        </header>
+    <header class="banner">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/logo.png" alt="Logo">
+        <h1>Mr. Ezz .Y. Ali</h1>
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/215fb6c953e6b31e98de9d0a4e6b955b1e56dca7/MrEzz.png" alt="Mr Ezz">
+    </header>
 
-        <main class="grid-container" id="levels-grid">
-            </main>
+    <div class="controls">
+        <button class="switch-btn" onclick="toggleView()">Switch to Vortex Mode</button>
     </div>
+
+    <main id="main-content">
+        <div id="levels-view" class="grid-container"></div>
+        
+        <div id="vortex-container">
+            <div class="vortex">
+                <span style="position:absolute; font-weight:bold; color:white;">EYC CORE</span>
+            </div>
+        </div>
+    </main>
 
     <iframe id="content-frame"></iframe>
 
     <script>
-        const grid = document.getElementById('levels-grid');
-        const mainUi = document.getElementById('main-ui');
+        const levelsView = document.getElementById('levels-view');
+        const vortexView = document.getElementById('vortex-container');
+        const switchBtn = document.querySelector('.switch-btn');
         const iframe = document.getElementById('content-frame');
         const backBtn = document.querySelector('.back-btn');
 
-        // Generate 12 levels
+        // Initialize 12 levels
         for (let i = 1; i <= 12; i++) {
             const wrapper = document.createElement('div');
             wrapper.className = 'level-wrapper';
@@ -172,34 +244,47 @@
                 <div class="sub-circle s3" onclick="loadSession(${i}, 3)">3</div>
                 <div class="sub-circle s4" onclick="loadSession(${i}, 4)">4</div>
             `;
-            grid.appendChild(wrapper);
+            levelsView.appendChild(wrapper);
         }
 
         function toggleSubCircles(element) {
-            // Close other active levels
+            const parent = element.parentElement;
             document.querySelectorAll('.level-wrapper').forEach(w => {
-                if(w !== element.parentElement) w.classList.remove('active');
+                if(w !== parent) w.classList.remove('active');
             });
-            // Toggle current
-            element.parentElement.classList.toggle('active');
+            parent.classList.toggle('active');
+        }
+
+        function toggleView() {
+            if (levelsView.style.display !== 'none') {
+                levelsView.style.display = 'none';
+                vortexView.style.display = 'flex';
+                switchBtn.innerText = "Switch to Levels Mode";
+            } else {
+                levelsView.style.display = 'grid';
+                vortexView.style.display = 'none';
+                switchBtn.innerText = "Switch to Vortex Mode";
+            }
         }
 
         function loadSession(level, session) {
             const fileName = `${level}-${session}.js`;
-            console.log(`Loading: ${fileName}`);
             
-            // Hide UI and Show Iframe
-            mainUi.style.display = 'none';
+            document.querySelector('.banner').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            levelsView.style.display = 'none';
+            vortexView.style.display = 'none';
+            
             iframe.style.display = 'block';
             backBtn.style.display = 'block';
 
-            // Method to load JS inside iframe
             const doc = iframe.contentWindow.document;
             doc.open();
             doc.write(`
                 <html>
-                <body style="background:#1a1a1a; color:white; display:flex; justify-content:center; align-items:center; height:100vh;">
-                    <h1>Loading Session ${level}-${session}...</h1>
+                <body style="background:#1a1a1a; color:white; display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; margin:0; font-family:sans-serif;">
+                    <h2 style="color:#e74c3c;">EYC SESSION ${level}-${session}</h2>
+                    <p>Loading System Scripts...</p>
                     <script src="${fileName}"><\/script>
                 </body>
                 </html>
@@ -208,9 +293,12 @@
         }
 
         function goBack() {
-            mainUi.style.display = 'block';
+            document.querySelector('.banner').style.display = 'flex';
+            document.querySelector('.controls').style.display = 'flex';
+            levelsView.style.display = 'grid';
             iframe.style.display = 'none';
             backBtn.style.display = 'none';
+            switchBtn.innerText = "Switch to Vortex Mode";
             iframe.src = "about:blank";
         }
     </script>

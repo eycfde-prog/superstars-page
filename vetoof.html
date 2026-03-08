@@ -110,7 +110,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzqGQrkGOtajDq3Bo1V245lArpKB3kaHdsJF6ZQVUVDavWlVDYqoMUN8KJVmpIJ98laHA/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzLw_aIqrZ6137cSx2hO7RVP63o8bZDG-dVZvshE3H4imTGEqkEVl6A5clFYrsDEyI-xg/exec";
         let currentStudent = null;
 
         function toggleView() {
@@ -172,28 +172,40 @@
             document.getElementById('flash-screen').style.display = 'block';
         }
 
-        function submitGrade(input, activity) {
-            const val = input.value;
-            if (!val || !currentStudent) return;
-            
-            const parent = input.parentElement;
-            parent.style.opacity = "0.5";
+  function submitGrade(input, activity) {
+    const val = input.value;
+    if (!val || !currentStudent) return;
+    
+    const parent = input.parentElement;
+    parent.style.opacity = "0.5";
 
-            // في App Script، نحتاج لإرسال البيانات. بما أننا نستخدم GET للتسهيل هنا:
-            // ملاحظة: يفضل استخدام POST في الإنتاج ولكن سنلتزم بالبروتوكول المدمج
-            google.script.run.withSuccessHandler((res) => {
-                if(res === "Success") {
-                    parent.classList.add('updated');
-                    parent.style.opacity = "1";
-                    // تحديث مؤقت للتوكينز في الواجهة لإظهار التفاعل
-                    const tokenElement = document.querySelector('.student-info b');
-                    if(tokenElement) tokenElement.innerText = parseInt(tokenElement.innerText) + parseInt(val);
-                } else {
-                    alert("Update Failed: " + res);
-                    parent.style.opacity = "1";
-                }
-            }).updateStudentGrades(currentStudent.email, activity, val);
+    // WOLF Fix: إرسال الطلب عبر fetch للـ API_URL لضمان التزامن مع doGet
+    const updateUrl = `${API_URL}?action=updateGrades&email=${encodeURIComponent(currentStudent.email)}&activity=${encodeURIComponent(activity)}&grade=${val}`;
+
+    fetch(updateUrl)
+    .then(response => response.json())
+    .then(res => {
+        if(res.status === "success") {
+            parent.classList.add('updated');
+            parent.style.opacity = "1";
+            
+            // تحديث التوكينز في واجهة الكارت فوراً
+            const tokenElement = document.querySelector('.student-info b[style*="#2ecc71"]');
+            if(tokenElement) {
+                let currentTokens = parseInt(tokenElement.innerText) || 0;
+                tokenElement.innerText = currentTokens + parseInt(val);
+            }
+        } else {
+            alert("Wolf Error: " + res.message);
+            parent.style.opacity = "1";
         }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Connection Lost!");
+        parent.style.opacity = "1";
+    });
+}
 
         function closeFlash() {
             document.getElementById('overlay').style.display = 'none';

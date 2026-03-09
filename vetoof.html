@@ -111,7 +111,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxvAmBjoCXzoJZLqoRcugtfEP6FrjOOMTnqDIdR1nzUR2yuVKxVBYGYwX7Esrc4bwMRHg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw9ua5PF26VSy4gzNK0pSNMRuZ5ejXBQaAR0-m-rUNirMW8F7Knk6wYcBz80LCy5PhqvQ/exec";
         let currentStudent = null;
 
         function toggleView() {
@@ -187,13 +187,14 @@
                     parent.classList.add('updated');
                     parent.style.opacity = "1";
                     
-                    const tokenElement = document.querySelector('.student-info b[style*="#2ecc71"]');
-                    if(tokenElement) {
-                        let currentTokens = parseInt(tokenElement.innerText) || 0;
-                        tokenElement.innerText = currentTokens + parseInt(val);
-                    }
+                    // WOLF SMART UPDATE: تحديث بيانات الكارت بالكامل فوراً
+                    // res.data يحتوي على النجوم والترتيب والتوكينات الجديدة بعد الحساب
+                    showStudentCard(res.data); 
+                    
+                    // مسح الخانة بعد الإضافة الناجحة لتسهيل الإضافة التالية
+                    input.value = ""; 
                 } else {
-                    alert("Wolf Error: " + res.message);
+                    alert("Wolf Error: " + (res.message || res));
                     parent.style.opacity = "1";
                 }
             })

@@ -45,6 +45,7 @@
         .grade-box input { width: 90%; background: transparent; border: none; color: white; padding: 10px; font-size: 1em; text-align: center; outline: none; }
         .grade-box input::placeholder { color: #95a5a6; font-size: 0.85em; }
         .grade-box.updated { background: #27ae60 !important; transform: scale(1.02); }
+        /* استايل خاص لخانة البونص لتمييزها */
         .grade-box.bonus-box { border: 1px solid #f1c40f; background: #2d3436; }
 
         /* Grid */
@@ -61,6 +62,36 @@
         
         .card-bottom::-webkit-scrollbar { width: 6px; }
         .card-bottom::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+
+        /* Iframe Overlay Style */
+        #content-frame-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            z-index: 2000;
+        }
+        #content-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .close-frame {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 2100;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -108,9 +139,9 @@
         </div>
     </div>
 
-    <div id="content-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#1a1a1a; z-index:2000;">
-        <button onclick="closeContent()" style="position:absolute; top:20px; right:20px; z-index:2001; padding:10px 20px; background:var(--accent-color); color:white; border:none; cursor:pointer; border-radius:5px;">Back to Menu [X]</button>
-        <iframe id="activity-frame" style="width:100%; height:100%; border:none;"></iframe>
+    <div id="content-frame-container">
+        <button class="close-frame" onclick="closeFrame()">Back to Map</button>
+        <iframe id="content-iframe"></iframe>
     </div>
 
     <script>
@@ -210,16 +241,58 @@
             document.querySelectorAll('.grade-box input').forEach(i => i.value = "");
         }
 
+        function openLecture(level, session) {
+            const frameContainer = document.getElementById('content-frame-container');
+            const iframe = document.getElementById('content-iframe');
+            
+            const menuHTML = `
+                <html>
+                <head>
+                    <style>
+                        body { background: #1a1a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+                        .menu-btn { width: 250px; padding: 20px; margin: 10px; background: #e74c3c; border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+                        .menu-btn:hover { background: #c0392b; transform: scale(1.05); }
+                    </style>
+                </head>
+                <body>
+                    <h1>Level ${level} - Session ${session}</h1>
+                    <button class="menu-btn" onclick="loadScript('Listening')">🎧 Listening</button>
+                    <button class="menu-btn" onclick="loadScript('Grammar')">📝 Grammar</button>
+
+                    <script>
+                        function loadScript(type) {
+                            const scriptPath = \`Data/L\${${level}}S\${${session}}_\${type}.js\`;
+                            const script = document.createElement('script');
+                            script.src = scriptPath;
+                            script.onload = () => console.log(type + ' Loaded');
+                            script.onerror = () => alert('File not found: ' + scriptPath);
+                            document.body.appendChild(script);
+                            document.body.innerHTML = '<h2 style="padding:20px;">Loading ' + type + '...</h2>';
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            iframe.srcdoc = menuHTML;
+            frameContainer.style.display = 'block';
+        }
+
+        function closeFrame() {
+            document.getElementById('content-frame-container').style.display = 'none';
+            document.getElementById('content-iframe').srcdoc = "";
+        }
+
         const grid = document.getElementById('levels-grid');
         for (let i = 1; i <= 12; i++) {
             const wrapper = document.createElement('div');
             wrapper.className = 'level-wrapper';
             wrapper.innerHTML = `
                 <div class="main-circle" onclick="toggleSubCircles(this)">Level ${i}</div>
-                <div class="sub-circle s1" onclick="openSessionMenu(${i}, 1)">1</div>
-                <div class="sub-circle s2" onclick="openSessionMenu(${i}, 2)">2</div>
-                <div class="sub-circle s3" onclick="openSessionMenu(${i}, 3)">3</div>
-                <div class="sub-circle s4" onclick="openSessionMenu(${i}, 4)">4</div>
+                <div class="sub-circle s1" onclick="openLecture(${i}, 1)">1</div>
+                <div class="sub-circle s2" onclick="openLecture(${i}, 2)">2</div>
+                <div class="sub-circle s3" onclick="openLecture(${i}, 3)">3</div>
+                <div class="sub-circle s4" onclick="openLecture(${i}, 4)">4</div>
             `;
             grid.appendChild(wrapper);
         }
@@ -228,48 +301,6 @@
             const wasActive = el.parentElement.classList.contains('active');
             document.querySelectorAll('.level-wrapper').forEach(w => w.classList.remove('active'));
             if (!wasActive) el.parentElement.classList.add('active');
-        }
-
-        function openSessionMenu(level, session) {
-            const frame = document.getElementById('activity-frame');
-            const overlay = document.getElementById('content-overlay');
-            const menuHTML = `
-                <html>
-                <head>
-                    <style>
-                        body { background:#1a1a1a; color:white; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; }
-                        .menu-btn { width:250px; padding:20px; margin:10px; background:#2c3e50; border:2px solid #e74c3c; color:white; font-size:1.2em; cursor:pointer; border-radius:10px; transition:0.3s; }
-                        .menu-btn:hover { background:#e74c3c; }
-                    </style>
-                </head>
-                <body>
-                    <h1>Level ${level} - Session ${session}</h1>
-                    <button class="menu-btn" onclick="window.parent.loadActivity('Listening', ${level}, ${session})">Listening</button>
-                    <button class="menu-btn" onclick="window.parent.loadActivity('Grammar', ${level}, ${session})">Grammar</button>
-                </body>
-                </html>
-            `;
-            frame.srcdoc = menuHTML;
-            overlay.style.display = 'block';
-        }
-
-        function loadActivity(type, level, session) {
-            const frame = document.getElementById('activity-frame');
-            const filePath = `Data/${type}_L${level}_S${session}.js`;
-            frame.srcdoc = `
-                <html>
-                <head><link rel="stylesheet" href="../style.css"></head>
-                <body style="background:#1a1a1a; color:white; padding:20px;">
-                    <div id="activity-container">Loading ${type}...</div>
-                    <script src="../${filePath}"></script>
-                </body>
-                </html>
-            `;
-        }
-
-        function closeContent() {
-            document.getElementById('content-overlay').style.display = 'none';
-            document.getElementById('activity-frame').srcdoc = '';
         }
     </script>
 </body>

@@ -1,42 +1,46 @@
 /* File: L1S1_Grammar.js
    System: EYC Veto Program - WOLF Edition
-   Status: Ready for Iframe Injection
+   Status: Ready for Iframe Injection - Visual Focus Optimized
 */
 
-// استخدمنا var لضمان التعرف عليه داخل الـ Iframe Scope
 var grammarData = {
     metadata: {
         level: "Level 1",
         session: "Session 1",
-        topic: "Subject & Object Pronouns"
+        topic: "Subject & Object Pronouns",
+        header: {
+            logo: "EYC_LOGO_URL", // رابط اللوجو الخاص بك
+            text: "Level 1 - Session 1 - Subject & Object Pronouns"
+        },
+        footer: "EYC - Veto Program"
     },
     slides: [
-        // --- الجزء الأول: العنوان الفاعل ---
+        // --- Slide 1: Main Title ---
         {
             type: "explanation",
             title: "SUBJECT PRONOUNS",
-            // الوصف سيظهر تحت العنوان
+            fontSize: "huge", // إشارة للمحرك بتكبير الخط
             content: [
-                { term: "INFO", desc: "ضمائر الفاعل: تأتي دائمًا (قبل) الفعل." },
-                { term: "I", desc: "أنا" },
-                { term: "He", desc: "هو (للمفرد المذكر)" },
-                { term: "She", desc: "هي (للمفرد المؤنث)" },
-                { term: "It", desc: "هو/هي (لغير العاقل)" },
-                { term: "We", desc: "نحن" },
-                { term: "You", desc: "أنت / أنتم" },
-                { term: "They", desc: "هم" }
+                { term: "I", desc: "" },
+                { term: "HE", desc: "" },
+                { term: "SHE", desc: "" },
+                { term: "IT", desc: "" },
+                { term: "WE", desc: "" },
+                { term: "YOU", desc: "" },
+                { term: "THEY", desc: "" }
             ]
         },
 
-        // --- الجزء الثاني: تدريبات الفاعل ---
+        // --- Slide 2: Subject Practice (Font Size Max) ---
         {
             type: "practice",
-            title: "CHAMPIONS CHALLENGE: SUBJECTS",
+            title: "SUBJECTS CHALLENGE",
+            layout: "large-text",
             questions: [
                 {
                     q: "....... is a clever doctor. (Ahmed)",
                     options: ["He", "She", "It", "They"],
-                    correct: "He" // جعلنا التصحيح بالكلمة ليتوافق مع دالة checkAnswer
+                    correct: "He"
                 },
                 {
                     q: "....... are playing football now.",
@@ -61,41 +65,36 @@ var grammarData = {
             ]
         },
 
-        // --- الجزء الثالث: مفعول به ---
+        // --- Slide 3: Object Pronouns ---
         {
             type: "explanation",
             title: "OBJECT PRONOUNS",
+            fontSize: "huge",
             content: [
-                { term: "INFO", desc: "ضمائر المفعول: تأتي بعد الفعل أو حرف الجر." },
-                { term: "Me", desc: "ني (يعود عليّ)" },
-                { term: "Him", desc: "ـه (يعود عليه)" },
-                { term: "Her", desc: "ـها (يعود عليها)" },
-                { term: "It", desc: "ـه/ـها (لغير العاقل)" },
-                { term: "Us", desc: "ـنا (يعود علينا)" },
-                { term: "You", desc: "ـك / ـكم" },
-                { term: "Them", desc: "ـهم (يعود عليهم)" }
+                { term: "ME", desc: "" },
+                { term: "HIM", desc: "" },
+                { term: "HER", desc: "" },
+                { term: "IT", desc: "" },
+                { term: "US", desc: "" },
+                { term: "YOU", desc: "" },
+                { term: "THEM", desc: "" }
             ]
         },
 
-        // --- الجزء الرابع: مقارنة الفاعل والمفعول ---
+        // --- Slide 4: Dual Column Comparison (Grid Layout) ---
         {
-            type: "explanation",
-            title: "WRITE & COMPARE",
-            content: [
-                { term: "I -> Me", desc: "أنا" },
-                { term: "He -> Him", desc: "هو" },
-                { term: "She -> Her", desc: "هي" },
-                { term: "It -> It", desc: "غير عاقل" },
-                { term: "We -> Us", desc: "نحن" },
-                { term: "You -> You", desc: "أنت" },
-                { term: "They -> Them", desc: "هم" }
-            ]
+            type: "comparison", // نوع شريحة جديد للمقارنة جنباً لجنب
+            title: "SUBJECT vs OBJECT",
+            layout: "two-columns",
+            leftColumn: ["I", "He", "She", "It", "We", "You", "They"],
+            rightColumn: ["Me", "Him", "Her", "It", "Us", "You", "Them"]
         },
 
-        // --- الجزء الخامس: تدريبات المفعول ---
+        // --- Slide 5: Object Practice (Font Size Max) ---
         {
             type: "practice",
-            title: "CHAMPIONS CHALLENGE: OBJECTS",
+            title: "OBJECTS CHALLENGE",
+            layout: "large-text",
             questions: [
                 {
                     q: "Help ....... , please! I can't carry this.",

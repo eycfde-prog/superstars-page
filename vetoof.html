@@ -45,7 +45,6 @@
         .grade-box input { width: 90%; background: transparent; border: none; color: white; padding: 10px; font-size: 1em; text-align: center; outline: none; }
         .grade-box input::placeholder { color: #95a5a6; font-size: 0.85em; }
         .grade-box.updated { background: #27ae60 !important; transform: scale(1.02); }
-        /* استايل خاص لخانة البونص لتمييزها */
         .grade-box.bonus-box { border: 1px solid #f1c40f; background: #2d3436; }
 
         /* Grid */
@@ -249,25 +248,75 @@
                 <html>
                 <head>
                     <style>
-                        body { background: #1a1a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-                        .menu-btn { width: 250px; padding: 20px; margin: 10px; background: #e74c3c; border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+                        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
+                        .menu-btn { width: 250px; padding: 20px; margin: 10px; background: #e74c3c; border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
                         .menu-btn:hover { background: #c0392b; transform: scale(1.05); }
+                        .card { background: #2c3e50; padding: 30px; border-radius: 15px; width: 90%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+                        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #34495e; border: 2px solid #e74c3c; color: white; border-radius: 8px; cursor: pointer; text-align: left; }
+                        .option-btn:hover { background: #e74c3c; }
+                        .explanation-item { background: #1a1a1a; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 5px solid #e74c3c; text-align: left; }
                     </style>
                 </head>
                 <body>
-                    <h1>Level ${level} - Session ${session}</h1>
-                    <button class="menu-btn" onclick="loadScript('Listening')">🎧 Listening</button>
-                    <button class="menu-btn" onclick="loadScript('Grammar')">📝 Grammar</button>
+                    <div id="content-area">
+                        <h1>Level ${level} - Session ${session}</h1>
+                        <button class="menu-btn" onclick="loadScript('Listening')">🎧 Listening</button>
+                        <button class="menu-btn" onclick="loadScript('Grammar')">📝 Grammar</button>
+                    </div>
 
                     <script>
+                        let currentSlide = 0;
+                        let lessonData = null;
+
                         function loadScript(type) {
                             const scriptPath = \`data/L\${${level}}S\${${session}}_\${type}.js\`;
                             const script = document.createElement('script');
                             script.src = scriptPath;
-                            script.onload = () => console.log(type + ' Loaded');
+                            
+                            document.getElementById('content-area').innerHTML = '<h2 style="color:#e74c3c;">Scanning Data...</h2>';
+
+                            script.onload = () => {
+                                lessonData = (type === 'Grammar') ? (window.grammarData || null) : (window.listeningData || null);
+                                if (lessonData) {
+                                    renderSlide(0);
+                                } else {
+                                    document.getElementById('content-area').innerHTML = '<h2>Error: Data Variable not found in JS file</h2>';
+                                }
+                            };
                             script.onerror = () => alert('File not found: ' + scriptPath);
                             document.body.appendChild(script);
-                            document.body.innerHTML = '<h2 style="padding:20px;">Loading ' + type + '...</h2>';
+                        }
+
+                        function renderSlide(index) {
+                            const slide = lessonData.slides[index];
+                            let html = \`<div class="card"><h2>\${slide.title}</h2>\`;
+
+                            if (slide.type === "explanation") {
+                                slide.content.forEach(item => {
+                                    html += \`<div class="explanation-item"><b>\${item.term}:</b> \${item.desc}</div>\`;
+                                });
+                            } else if (slide.type === "practice") {
+                                const q = slide.questions[0];
+                                html += \`<p style="font-size:1.3em;">\${q.q}</p>\`;
+                                q.options.forEach(opt => {
+                                    html += \`<button class="option-btn" onclick="checkAnswer('\${opt}', '\${q.correct}')">\${opt}</button>\`;
+                                });
+                            }
+
+                            html += \`<div style="margin-top:20px;">\`;
+                            if (index > 0) html += \`<button class="menu-btn" style="width:100px; padding:10px;" onclick="renderSlide(\${index-1})">Back</button>\`;
+                            if (index < lessonData.slides.length - 1) html += \`<button class="menu-btn" style="width:100px; padding:10px;" onclick="renderSlide(\${index+1})">Next</button>\`;
+                            html += \`</div></div>\`;
+
+                            document.getElementById('content-area').innerHTML = html;
+                        }
+
+                        function checkAnswer(selected, correct) {
+                            if (selected === correct) {
+                                alert("Correct! 🎉");
+                            } else {
+                                alert("Wrong! Try again. ❌");
+                            }
                         }
                     <\/script>
                 </body>

@@ -1,6 +1,6 @@
 /* File: L1S1_Grammar.js
    System: EYC Veto Program - WOLF Edition
-   Status: Ready for Iframe Injection - Visual Focus Optimized
+   Status: Ready for Iframe Injection - Ultra Focus Mode
 */
 
 var grammarData = {
@@ -9,119 +9,66 @@ var grammarData = {
         session: "Session 1",
         topic: "Subject & Object Pronouns",
         header: {
-            logo: "EYC_LOGO_URL", // رابط اللوجو الخاص بك
+            logo: "EYC_LOGO_URL",
             text: "Level 1 - Session 1 - Subject & Object Pronouns"
         },
         footer: "EYC - Veto Program"
     },
     slides: [
-        // --- Slide 1: Main Title ---
-        {
-            type: "explanation",
-            title: "SUBJECT PRONOUNS",
-            fontSize: "huge", // إشارة للمحرك بتكبير الخط
-            content: [
-                { term: "I", desc: "" },
-                { term: "HE", desc: "" },
-                { term: "SHE", desc: "" },
-                { term: "IT", desc: "" },
-                { term: "WE", desc: "" },
-                { term: "YOU", desc: "" },
-                { term: "THEY", desc: "" }
-            ]
-        },
+        // --- ضمائر الفاعل: كل واحد في شريحة منفصلة خط عملاق ---
+        { type: "explanation", title: "SUBJECT PRONOUN", content: [{ term: "I", desc: "" }] },
+        { type: "explanation", title: "SUBJECT PRONOUN", content: [{ term: "HE", desc: "" }] },
+        { type: "explanation", title: "SUBJECT PRONOUN", content: [{ term: "SHE", desc: "" }] },
+        { type: "explanation", title: "SUBJECT PRONOUN", content: [{ term: "IT", desc: "" }] },
+        { type: "explanation", title: "SUBJECT PRONOUN", content: [{ term: "WE", desc: "" }] },
+        { type: "explanation", title: "SUBJECT PRONOUN", content: [{ term: "YOU", desc: "" }] },
+        { type: "explanation", title: "SUBJECT PRONOUN", content: [{ term: "THEY", desc: "" }] },
 
-        // --- Slide 2: Subject Practice (Font Size Max) ---
+        // --- تدريبات الفاعل (جملة واحدة كبيرة في كل شريحة لضمان الرؤية من بعيد) ---
         {
             type: "practice",
             title: "SUBJECTS CHALLENGE",
-            layout: "large-text",
-            questions: [
-                {
-                    q: "....... is a clever doctor. (Ahmed)",
-                    options: ["He", "She", "It", "They"],
-                    correct: "He"
-                },
-                {
-                    q: "....... are playing football now.",
-                    options: ["I", "We", "He", "She"],
-                    correct: "We"
-                },
-                {
-                    q: "The cat is hungry. ....... wants some milk.",
-                    options: ["He", "She", "It", "You"],
-                    correct: "It"
-                },
-                {
-                    q: "Sara is my friend. ....... lives in Cairo.",
-                    options: ["He", "They", "We", "She"],
-                    correct: "She"
-                },
-                {
-                    q: "My parents are kind. ....... love me.",
-                    options: ["He", "They", "I", "We"],
-                    correct: "They"
-                }
-            ]
+            questions: [{ q: "....... is a clever doctor. (Ahmed)", options: ["He", "She", "It", "They"], correct: "He" }]
+        },
+        {
+            type: "practice",
+            title: "SUBJECTS CHALLENGE",
+            questions: [{ q: "....... are playing football now.", options: ["I", "We", "He", "She"], correct: "We" }]
+        },
+        {
+            type: "practice",
+            title: "SUBJECTS CHALLENGE",
+            questions: [{ q: "The cat is hungry. ....... wants some milk.", options: ["He", "She", "It", "You"], correct: "It" }]
         },
 
-        // --- Slide 3: Object Pronouns ---
-        {
-            type: "explanation",
-            title: "OBJECT PRONOUNS",
-            fontSize: "huge",
-            content: [
-                { term: "ME", desc: "" },
-                { term: "HIM", desc: "" },
-                { term: "HER", desc: "" },
-                { term: "IT", desc: "" },
-                { term: "US", desc: "" },
-                { term: "YOU", desc: "" },
-                { term: "THEM", desc: "" }
-            ]
-        },
+        // --- ضمائر المفعول: كل واحد في شريحة منفصلة ---
+        { type: "explanation", title: "OBJECT PRONOUN", content: [{ term: "ME", desc: "" }] },
+        { type: "explanation", title: "OBJECT PRONOUN", content: [{ term: "HIM", desc: "" }] },
+        { type: "explanation", title: "OBJECT PRONOUN", content: [{ term: "HER", desc: "" }] },
+        { type: "explanation", title: "OBJECT PRONOUN", content: [{ term: "IT", desc: "" }] },
+        { type: "explanation", title: "OBJECT PRONOUN", content: [{ term: "US", desc: "" }] },
+        { type: "explanation", title: "OBJECT PRONOUN", content: [{ term: "YOU", desc: "" }] },
+        { type: "explanation", title: "OBJECT PRONOUN", content: [{ term: "THEM", desc: "" }] },
 
-        // --- Slide 4: Dual Column Comparison (Grid Layout) ---
+        // --- شريحة المقارنة النهائية (الجدول العمودين) ---
         {
-            type: "comparison", // نوع شريحة جديد للمقارنة جنباً لجنب
-            title: "SUBJECT vs OBJECT",
+            type: "comparison",
+            title: "WRITE & COMPARE",
             layout: "two-columns",
             leftColumn: ["I", "He", "She", "It", "We", "You", "They"],
             rightColumn: ["Me", "Him", "Her", "It", "Us", "You", "Them"]
         },
 
-        // --- Slide 5: Object Practice (Font Size Max) ---
+        // --- تدريبات المفعول (جمل منفصلة) ---
         {
             type: "practice",
             title: "OBJECTS CHALLENGE",
-            layout: "large-text",
-            questions: [
-                {
-                    q: "Help ....... , please! I can't carry this.",
-                    options: ["him", "me", "her", "us"],
-                    correct: "me"
-                },
-                {
-                    q: "I saw Ahmed and gave ....... the book.",
-                    options: ["him", "her", "me", "them"],
-                    correct: "him"
-                },
-                {
-                    q: "Our teacher loves ....... because we are good.",
-                    options: ["me", "them", "us", "him"],
-                    correct: "us"
-                },
-                {
-                    q: "Where is Mona? I want to talk to .......",
-                    options: ["him", "her", "it", "me"],
-                    correct: "her"
-                },
-                {
-                    q: "Look at the stars! Can you see .......?",
-                    options: ["it", "them", "us", "her"],
-                    correct: "them"
-                }
-            ]
+            questions: [{ q: "Help ....... , please! I can't carry this.", options: ["him", "me", "her", "us"], correct: "me" }]
+        },
+        {
+            type: "practice",
+            title: "OBJECTS CHALLENGE",
+            questions: [{ q: "I saw Ahmed and gave ....... the book.", options: ["him", "her", "me", "them"], correct: "him" }]
         }
     ]
 };

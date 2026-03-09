@@ -270,20 +270,35 @@
 
                         function loadScript(type) {
                             const scriptPath = \`data/L\${${level}}S\${${session}}_\${type}.js\`;
+                            
+                            // إفراغ المنطقة وعرض رسالة التحميل
+                            document.getElementById('content-area').innerHTML = '<h2 style="color:#e74c3c;">Scanning Veto Records...</h2>';
+
                             const script = document.createElement('script');
                             script.src = scriptPath;
                             
-                            document.getElementById('content-area').innerHTML = '<h2 style="color:#e74c3c;">Scanning Data...</h2>';
-
                             script.onload = () => {
-                                lessonData = (type === 'Grammar') ? (window.grammarData || null) : (window.listeningData || null);
+                                // WOLF SENSOR: محاولة العثور على المتغير بأكثر من طريقة
+                                // نبحث عن grammarData أو listeningData أو أي متغير ينتهي بـ Data
+                                lessonData = (type === 'Grammar') ? (window.grammarData || grammarData) : (window.listeningData || listeningData);
+                                
                                 if (lessonData) {
+                                    currentSlide = 0; // إعادة التصفير عند تحميل درس جديد
                                     renderSlide(0);
                                 } else {
-                                    document.getElementById('content-area').innerHTML = '<h2>Error: Data Variable not found in JS file</h2>';
+                                    document.getElementById('content-area').innerHTML = 
+                                        \`<h2 style="color:#e74c3c;">Incompatible Data Structure</h2>
+                                         <p>Checked: \${type}Data</p>
+                                         <p>Path: \${scriptPath}</p>\`;
                                 }
                             };
-                            script.onerror = () => alert('File not found: ' + scriptPath);
+
+                            script.onerror = () => {
+                                document.getElementById('content-area').innerHTML = 
+                                    \`<h2 style="color:#e74c3c;">File Not Found</h2>
+                                     <p>Mission failed: \${scriptPath} is missing from the data folder.</p>\`;
+                            };
+
                             document.body.appendChild(script);
                         }
 

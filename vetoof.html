@@ -241,106 +241,122 @@
         }
 
         function openLecture(level, session) {
-            const frameContainer = document.getElementById('content-frame-container');
-            const iframe = document.getElementById('content-iframe');
-            
-            const menuHTML = `
-                <html>
-                <head>
-                    <style>
-                        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
-                        .menu-btn { width: 250px; padding: 20px; margin: 10px; background: #e74c3c; border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-                        .menu-btn:hover { background: #c0392b; transform: scale(1.05); }
-                        .card { background: #2c3e50; padding: 30px; border-radius: 15px; width: 90%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-                        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #34495e; border: 2px solid #e74c3c; color: white; border-radius: 8px; cursor: pointer; text-align: left; }
-                        .option-btn:hover { background: #e74c3c; }
-                        .explanation-item { background: #1a1a1a; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 5px solid #e74c3c; text-align: left; }
-                    </style>
-                </head>
-                <body>
-                    <div id="content-area">
-                        <h1>Level ${level} - Session ${session}</h1>
-                        <button class="menu-btn" onclick="loadScript('Listening')">🎧 Listening</button>
-                        <button class="menu-btn" onclick="loadScript('Grammar')">📝 Grammar</button>
-                    </div>
+    const frameContainer = document.getElementById('content-frame-container');
+    const iframe = document.getElementById('content-iframe');
+    
+    // ده الكود اللي هيترسم جوه الـ Iframe
+    const menuHTML = `
+        <html>
+        <head>
+            <style>
+                body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
+                .menu-btn { width: 250px; padding: 20px; margin: 10px; background: #e74c3c; border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+                .menu-btn:hover { background: #c0392b; transform: scale(1.05); }
+                .card { background: #2c3e50; padding: 30px; border-radius: 15px; width: 95%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: auto; }
+                .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #34495e; border: 2px solid #e74c3c; color: white; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
+                .explanation-box { background: #e74c3c; padding: 40px; border-radius: 15px; margin: 20px 0; }
+                table { width: 100%; font-size: 1.5em; border-collapse: collapse; margin-top: 20px; }
+                th, td { padding: 15px; border-bottom: 1px solid #444; }
+                .nav-btn { width: 120px; padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }
+            </style>
+        </head>
+        <body>
+            <div id="content-area">
+                <h1>Level ${level} - Session ${session}</h1>
+                <p>Choose your mission, Agent.</p>
+                <button class="menu-btn" onclick="loadScript('Listening')">🎧 Listening</button>
+                <button class="menu-btn" onclick="loadScript('Grammar')">📝 Grammar</button>
+            </div>
 
-                    <script>
-                        let currentSlide = 0;
-                        let lessonData = null;
+            <script>
+                let currentSlide = 0;
+                let lessonData = null;
 
-                        function loadScript(type) {
-                            const scriptPath = \`data/L\${${level}}S\${${session}}_\${type}.js\`;
-                            
-                            // إفراغ المنطقة وعرض رسالة التحميل
-                            document.getElementById('content-area').innerHTML = '<h2 style="color:#e74c3c;">Scanning Veto Records...</h2>';
+                function loadScript(type) {
+                    const scriptPath = \`data/L\${${level}}S\${${session}}_\${type}.js\`;
+                    document.getElementById('content-area').innerHTML = '<h2 style="color:#e74c3c;">Scanning Veto Records...</h2>';
 
-                            const script = document.createElement('script');
-                            script.src = scriptPath;
-                            
-                            script.onload = () => {
-                                // WOLF SENSOR: محاولة العثور على المتغير بأكثر من طريقة
-                                // نبحث عن grammarData أو listeningData أو أي متغير ينتهي بـ Data
-                                lessonData = (type === 'Grammar') ? (window.grammarData || grammarData) : (window.listeningData || listeningData);
-                                
-                                if (lessonData) {
-                                    currentSlide = 0; // إعادة التصفير عند تحميل درس جديد
-                                    renderSlide(0);
-                                } else {
-                                    document.getElementById('content-area').innerHTML = 
-                                        \`<h2 style="color:#e74c3c;">Incompatible Data Structure</h2>
-                                         <p>Checked: \${type}Data</p>
-                                         <p>Path: \${scriptPath}</p>\`;
-                                }
-                            };
-
-                            script.onerror = () => {
-                                document.getElementById('content-area').innerHTML = 
-                                    \`<h2 style="color:#e74c3c;">File Not Found</h2>
-                                     <p>Mission failed: \${scriptPath} is missing from the data folder.</p>\`;
-                            };
-
-                            document.body.appendChild(script);
-                        }
-
-                        function renderSlide(index) {
-                            const slide = lessonData.slides[index];
-                            let html = \`<div class="card"><h2>\${slide.title}</h2>\`;
-
-                            if (slide.type === "explanation") {
-                                slide.content.forEach(item => {
-                                    html += \`<div class="explanation-item"><b>\${item.term}:</b> \${item.desc}</div>\`;
-                                });
-                            } else if (slide.type === "practice") {
-                                const q = slide.questions[0];
-                                html += \`<p style="font-size:1.3em;">\${q.q}</p>\`;
-                                q.options.forEach(opt => {
-                                    html += \`<button class="option-btn" onclick="checkAnswer('\${opt}', '\${q.correct}')">\${opt}</button>\`;
-                                });
-                            }
-
-                            html += \`<div style="margin-top:20px;">\`;
-                            if (index > 0) html += \`<button class="menu-btn" style="width:100px; padding:10px;" onclick="renderSlide(\${index-1})">Back</button>\`;
-                            if (index < lessonData.slides.length - 1) html += \`<button class="menu-btn" style="width:100px; padding:10px;" onclick="renderSlide(\${index+1})">Next</button>\`;
-                            html += \`</div></div>\`;
-
-                            document.getElementById('content-area').innerHTML = html;
-                        }
-
-                        function checkAnswer(selected, correct) {
-                            if (selected === correct) {
-                                alert("Correct! 🎉");
+                    const script = document.createElement('script');
+                    script.src = scriptPath;
+                    
+                    script.onload = () => {
+                        setTimeout(() => {
+                            // WOLF SENSOR: بيصطاد الداتا سواء كانت var أو window
+                            lessonData = (type === 'Grammar') ? (window.grammarData || grammarData) : (window.listeningData || listeningData);
+                            if (lessonData) {
+                                currentSlide = 0;
+                                renderSlide(0);
                             } else {
-                                alert("Wrong! Try again. ❌");
+                                document.getElementById('content-area').innerHTML = '<h2>Error: Variable not found in ' + scriptPath + '</h2>';
                             }
-                        }
-                    <\/script>
-                </body>
-                </html>
-            `;
+                        }, 100);
+                    };
+                    script.onerror = () => {
+                        document.getElementById('content-area').innerHTML = '<h2>File Not Found: ' + scriptPath + '</h2>';
+                    };
+                    document.body.appendChild(script);
+                }
 
-            iframe.srcdoc = menuHTML;
-            frameContainer.style.display = 'block';
-        }
+                function renderSlide(index) {
+                    const slide = lessonData.slides[index];
+                    let html = \`<div class="card">
+                                 <small style="color:#e74c3c; font-weight:bold;">\${lessonData.metadata.topic}</small>
+                                 <h2 style="font-size:2em; margin:10px 0;">\${slide.title}</h2>\`;
+
+                    if (slide.type === "explanation") {
+                        html += \`<div class="explanation-box">
+                                    <h1 style="font-size:5em; margin:0;">\${slide.term}</h1>
+                                    <p style="font-size:1.5em; opacity:0.9;">\${slide.desc || ''}</p>
+                                 </div>\`;
+                    } 
+                    else if (slide.type === "practice") {
+                        slide.questions.forEach((q, qIndex) => {
+                            html += \`<div style="margin-bottom:30px; border-bottom:1px dashed #444; padding-bottom:20px;">
+                                        <p style="font-size:1.8em; color:#f1c40f;">\${q.q}</p>
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                            \${q.options.map(opt => \`
+                                                <button class="option-btn" onclick="checkAnswer(this, '\${opt}', '\${q.correct}')">\${opt}</button>
+                                            \`).join('')}
+                                        </div>
+                                    </div>\`;
+                        });
+                    }
+                    else if (slide.type === "comparison") {
+                        html += \`<table><tr style="background:#1a1a1a;"><th>Subject</th><th>Object</th></tr>\`;
+                        slide.data.forEach(row => {
+                            html += \`<tr><td style="color:#3498db;">\${row[0]}</td><td style="color:#e67e22;">\${row[1]}</td></tr>\`;
+                        });
+                        html += \`</table>\`;
+                    }
+
+                    html += \`<div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center;">
+                                <button class="nav-btn" onclick="renderSlide(\${index-1})" \${index===0?'disabled style="opacity:0.3"':''}>Previous</button>
+                                <span>Slide \${index+1} / \${lessonData.slides.length}</span>
+                                <button class="nav-btn" onclick="renderSlide(\${index+1})" \${index===lessonData.slides.length-1?'disabled style="opacity:0.3"':''}>Next</button>
+                             </div></div>\`;
+
+                    document.getElementById('content-area').innerHTML = html;
+                }
+
+                function checkAnswer(btn, selected, correct) {
+                    if (selected === correct) {
+                        btn.style.background = "#27ae60";
+                        btn.style.borderColor = "#2ecc71";
+                        alert("Correct! 🎉");
+                    } else {
+                        btn.style.background = "#c0392b";
+                        btn.style.borderColor = "#e74c3c";
+                        alert("Wrong! Try again. ❌");
+                    }
+                }
+            <\/script>
+        </body>
+        </html>
+    `;
+
+    iframe.srcdoc = menuHTML;
+    frameContainer.style.display = 'block';
+}
 
         function closeFrame() {
             document.getElementById('content-frame-container').style.display = 'none';

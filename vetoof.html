@@ -14,214 +14,167 @@
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: var(--bg-color);
             font-family: 'Poppins', sans-serif;
             color: var(--white);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Header Section */
         header {
-            width: 100%;
-            background: linear-gradient(to bottom, #1a1a1a, #000000);
-            padding: 15px 0;
-            border-bottom: 2px solid var(--primary-red);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
+            width: 100%; background: linear-gradient(to bottom, #1a1a1a, #000000);
+            padding: 15px 0; border-bottom: 2px solid var(--primary-red);
+            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
         }
 
         .logo { width: 70px; border-radius: 50%; }
         .profile-img { width: 70px; border-radius: 50%; border: 2px solid var(--white); }
         .teacher-name { font-size: 22px; font-weight: bold; }
 
-        /* Tokens Button */
         .tokens-portal-btn {
-            margin: 20px 0;
-            background-color: var(--primary-red);
-            color: white;
-            padding: 10px 35px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            border: none;
-            z-index: 10;
+            margin: 20px 0; background-color: var(--primary-red);
+            color: white; padding: 10px 35px; border-radius: 25px;
+            font-weight: bold; cursor: pointer; transition: 0.3s; border: none; z-index: 1001;
         }
 
-        .tokens-portal-btn:hover { box-shadow: 0 0 20px var(--primary-red); transform: scale(1.05); }
-
-        /* Main Content Wrapper */
         #main-wrapper {
-            position: relative;
-            width: 100%;
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            padding: 40px 0;
+            position: relative; width: 100%; flex-grow: 1;
+            display: flex; justify-content: center; padding: 20px 0;
         }
 
-        /* Iframe Styles */
-        #portal-iframe {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            border: none;
-            display: none;
-            background: #fff;
-            z-index: 100;
+        /* Container for internal Data Cards (instead of external iframe) */
+        #portal-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); display: none; z-index: 100;
+            padding: 20px; box-sizing: border-box;
         }
 
-        /* Levels Grid */
+        .data-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px; width: 95%; margin: auto;
+        }
+
+        .data-card {
+            background: #1e1e1e; border: 1px solid var(--primary-red);
+            height: 100px; border-radius: 10px; display: flex;
+            align-items: center; justify-content: center; position: relative;
+        }
+
+        .data-card input {
+            width: 90%; height: 80%; background: transparent; border: none;
+            color: var(--primary-red); text-align: center; font-size: 20px;
+            font-weight: bold; outline: none; z-index: 2;
+        }
+
+        .data-card label {
+            position: absolute; color: #888; font-size: 14px;
+            transition: 0.3s; pointer-events: none;
+        }
+
+        /* Hide label when input has text */
+        .data-card input:not(:placeholder-shown) + label { display: none; }
+
+        /* Levels Grid - Full Width */
         .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 80px;
-            max-width: 1100px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 60px; width: 95%; max-width: 1400px; justify-items: center;
         }
 
-        .level-wrapper {
-            position: relative;
-            width: 120px;
-            height: 120px;
-        }
+        .level-wrapper { position: relative; width: 120px; height: 120px; }
 
         .level-btn {
-            width: 100%; height: 100%;
-            background-color: var(--primary-red);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 18px;
-            cursor: pointer;
-            border: 4px solid var(--white);
-            color: white;
-            position: relative;
-            z-index: 5;
-            transition: 0.3s;
+            width: 100%; height: 100%; background-color: var(--primary-red);
+            border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; font-weight: bold; border: 4px solid var(--white);
+            cursor: pointer; position: relative; z-index: 5;
         }
 
-        /* Mini Orbit Buttons */
         .sub-btn {
-            position: absolute;
-            width: var(--sub-btn-size);
-            height: var(--sub-btn-size);
-            background-color: var(--white);
-            color: var(--primary-red);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            font-weight: bold;
-            opacity: 0;
-            transform: scale(0);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
-            z-index: 4;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            text-decoration: none;
+            position: absolute; width: var(--sub-btn-size); height: var(--sub-btn-size);
+            background-color: var(--white); color: var(--primary-red);
+            border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; font-size: 14px; font-weight: bold;
+            opacity: 0; transform: scale(0); transition: 0.4s; z-index: 4;
         }
 
-        /* Reveal Logic */
-        .level-wrapper.active .sub-btn {
-            opacity: 1;
-            transform: scale(1);
-            pointer-events: auto;
-        }
-
-        /* Positions for Orbit (Distance 85px) */
-        .level-wrapper.active .sub-btn:nth-child(2) { top: -45px; left: 35px; } /* 1 */
-        .level-wrapper.active .sub-btn:nth-child(3) { bottom: -45px; left: 35px; } /* 2 */
-        .level-wrapper.active .sub-btn:nth-child(4) { left: -45px; top: 35px; } /* 3 */
-        .level-wrapper.active .sub-btn:nth-child(5) { right: -45px; top: 35px; } /* 4 */
-
-        @media (max-width: 768px) {
-            .grid-container { grid-template-columns: repeat(2, 1fr); gap: 60px; }
-        }
+        .level-wrapper.active .sub-btn { opacity: 1; transform: scale(1); }
+        .level-wrapper.active .sub-btn:nth-child(2) { top: -45px; left: 35px; }
+        .level-wrapper.active .sub-btn:nth-child(3) { bottom: -45px; left: 35px; }
+        .level-wrapper.active .sub-btn:nth-child(4) { left: -45px; top: 35px; }
+        .level-wrapper.active .sub-btn:nth-child(5) { right: -45px; top: 35px; }
     </style>
 </head>
 <body>
 
     <header>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" alt="Logo" class="logo">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" class="logo">
         <div class="teacher-name">Mr. Ezz .Y. Ali</div>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" alt="Profile" class="profile-img">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" class="profile-img">
     </header>
 
-    <button class="tokens-portal-btn" onclick="toggleIframe()">Tokens Portal</button>
+    <button id="toggleBtn" class="tokens-portal-btn" onclick="togglePortal()">Tokens Portal</button>
 
     <div id="main-wrapper">
-        <iframe id="portal-iframe" src="about:blank"></iframe>
+        <div id="portal-container">
+            <div class="data-grid" id="dataGrid"></div>
+        </div>
         
-        <div class="grid-container" id="levelsGrid">
-            </div>
+        <div class="grid-container" id="levelsGrid"></div>
     </div>
 
     <script>
-        const levelsCount = 12;
-        const grid = document.getElementById('levelsGrid');
-        const iframe = document.getElementById('portal-iframe');
+        const levelsGrid = document.getElementById('levelsGrid');
+        const dataGrid = document.getElementById('dataGrid');
+        const portalContainer = document.getElementById('portal-container');
+        const toggleBtn = document.getElementById('toggleBtn');
 
-        // Generate Levels
-        for (let i = 1; i <= levelsCount; i++) {
+        // 1. Generate Levels
+        for (let i = 1; i <= 12; i++) {
             const wrapper = document.createElement('div');
             wrapper.className = 'level-wrapper';
+            wrapper.innerHTML = `<div class="level-btn">Level ${i}</div>`;
             
-            // Main Level Button
-            const btn = document.createElement('div');
-            btn.className = 'level-btn';
-            btn.innerHTML = `Level ${i}`;
-            btn.onclick = (e) => {
+            for (let j = 1; j <= 4; j++) {
+                wrapper.innerHTML += `<div class="sub-btn">${j}</div>`;
+            }
+
+            wrapper.onclick = (e) => {
                 e.stopPropagation();
-                // Close other opened levels
-                document.querySelectorAll('.level-wrapper').forEach(w => {
-                    if(w !== wrapper) w.classList.remove('active');
-                });
+                document.querySelectorAll('.level-wrapper').forEach(w => w !== wrapper && w.classList.remove('active'));
                 wrapper.classList.toggle('active');
             };
-
-            wrapper.appendChild(btn);
-
-            // Generate 4 Sub-buttons (Orbit)
-            for (let j = 1; j <= 4; j++) {
-                const subBtn = document.createElement('a');
-                subBtn.href = `#level-${i}-part-${j}`;
-                subBtn.className = 'sub-btn';
-                subBtn.innerHTML = j;
-                wrapper.appendChild(subBtn);
-            }
-            
-            grid.appendChild(wrapper);
+            levelsGrid.appendChild(wrapper);
         }
 
-        // Close orbits when clicking outside
+        // 2. Generate Data Cards for Portal
+        const categories = ["Attendence", "ICA", "Reading", "Tongue Twister", "One Shot", "Games", "Squeezer", "DMT", "Wish", "Project", "Graduation Project", "Extra Bonus"];
+        
+        categories.forEach(cat => {
+            const card = document.createElement('div');
+            card.className = 'data-card';
+            card.innerHTML = `
+                <input type="text" placeholder=" ">
+                <label>${cat}</label>
+            `;
+            dataGrid.appendChild(card);
+        });
+
+        // 3. Toggle Logic
+        function togglePortal() {
+            if (portalContainer.style.display === 'block') {
+                portalContainer.style.display = 'none';
+                toggleBtn.innerText = "Tokens Portal";
+            } else {
+                portalContainer.style.display = 'block';
+                toggleBtn.innerText = "Levels Portal";
+            }
+        }
+
         document.addEventListener('click', () => {
             document.querySelectorAll('.level-wrapper').forEach(w => w.classList.remove('active'));
         });
-
-        // Function to toggle Iframe
-        function toggleIframe() {
-            if (iframe.style.display === 'block') {
-                iframe.style.display = 'none';
-                iframe.src = 'about:blank';
-            } else {
-                iframe.style.display = 'block';
-                // ضع رابط الصفحة المطلوبة هنا مكان 'https://example.com'
-                iframe.src = 'https://www.google.com/search?q=Tokens+Portal+Demo'; 
-            }
-        }
     </script>
-
 </body>
 </html>

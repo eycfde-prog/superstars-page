@@ -1,98 +1,101 @@
 (function() {
     const container = document.getElementById('activityFinalContent');
     
-    // 1. تنظيف المساحة قبل العرض
+    // 1. تنظيف المساحة وضبط الإعدادات الرئيسية
     container.innerHTML = ''; 
-
-    // 2. ضبط الاستايل العام (المواصفات التقنية المعتمدة)
     container.style.height = "calc(100vh - 140px)";
     container.style.overflowY = "auto";
     container.style.padding = "20px";
     container.style.boxSizing = "border-box";
-    container.style.direction = "ltr"; // لضمان اتجاه اللغة الإنجليزية
+    container.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+    container.style.direction = "ltr";
 
-    // 3. بناء محتوى النشاط
+    // 2. محتوى النشاط (هيكل السلايدز التعليمية)
     const activityHTML = `
-        <div class="activity-inner-wrapper" style="max-width: 900px; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6;">
+        <div class="activity-inner-wrapper" style="max-width: 900px; margin: auto; color: #2c3e50;">
             
-            <div style="text-align: center; border-bottom: 3px solid #e74c3c; margin-bottom: 30px; padding-bottom: 10px;">
-                <h1 style="color: #e74c3c; font-size: 3rem; text-transform: uppercase;">Subject & Object Pronouns</h1>
-                <p style="color: #555;">Level 1 - Session 1: Grammar Basics</p>
+            <div style="text-align: center; margin-bottom: 50px; border-bottom: 4px solid #3498db; padding-bottom: 20px;">
+                <h1 style="font-size: 3.5rem; color: #2980b9; margin: 0;">Subject Pronouns</h1>
+                <p style="font-size: 1.2rem; color: #7f8c8d;">Part 1: The Doer of the Action</p>
             </div>
 
-            <section style="margin-bottom: 50px;">
-                <h2 style="background: #3498db; color: white; padding: 10px 20px; border-radius: 8px;">1. Subject Pronouns (ضمائر الفاعل)</h2>
-                <p style="font-size: 1.2rem; color: #2c3e50;">We use subject pronouns to replace the noun that does the action.</p>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin: 25px 0;">
-                    ${['I', 'He', 'She', 'It', 'We', 'You', 'They'].map(p => `
-                        <div style="border: 2px dashed #3498db; padding: 20px; text-align: center; border-radius: 10px;">
-                            <span style="font-size: 2.5rem; display: block; font-weight: bold; color: #2980b9;">${p}</span>
-                            <input type="text" placeholder="Write here..." style="width: 100%; margin-top: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-                        </div>
-                    `).join('')}
-                </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-bottom: 40px;">
+                ${['I', 'He', 'She', 'It', 'We', 'You', 'They'].map(p => `
+                    <div style="background: #ecf0f1; padding: 20px; text-align: center; border-radius: 10px; font-size: 2rem; font-weight: bold; color: #e67e22; border: 2px dashed #bdc3c7;">
+                        ${p}
+                    </div>
+                `).join('')}
+            </div>
 
-                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; border-left: 5px solid #3498db;">
-                    <h3 style="color: #2980b9;">Exercise: Choose the correct Subject Pronoun</h3>
-                    <div id="subject-questions">
-                        <div style="margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #eee;">
-                            <p style="font-size: 1.1rem;">1. ______ is a doctor. (Ahmed)</p>
-                            <label><input type="radio" name="q1"> He</label> | 
-                            <label><input type="radio" name="q1"> She</label> | 
-                            <label><input type="radio" name="q1"> It</label> | 
-                            <label><input type="radio" name="q1"> They</label>
-                        </div>
-                        </div>
+            <div style="background: #fdfefe; border: 2px solid #3498db; padding: 30px; border-radius: 15px; margin-bottom: 50px; text-align: center;">
+                <h2 style="color: #2980b9;">Write These Down:</h2>
+                <div style="font-size: 2.5rem; letter-spacing: 15px; font-weight: bold; line-height: 2;">
+                    I - HE - SHE - IT - WE - YOU - THEY
                 </div>
-            </section>
+            </div>
 
-            <section style="margin-bottom: 50px;">
-                <h2 style="background: #27ae60; color: white; padding: 10px 20px; border-radius: 8px;">2. Object Pronouns (ضمائر المفعول به)</h2>
-                
-                <div style="margin: 25px 0;">
-                    <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                        <thead>
-                            <tr style="background: #2ecc71; color: white;">
-                                <th style="padding: 15px; border: 1px solid #ddd;">Subject</th>
-                                <th style="padding: 15px; border: 1px solid #ddd;">Object (Write it!)</th>
+            <div style="margin-bottom: 60px;">
+                <h3 style="background: #3498db; color: white; padding: 10px 20px; border-radius: 5px;">Practice: Choose the correct Subject Pronoun</h3>
+                <div id="subjectQuiz" style="margin-top: 20px;">
+                    ${generateQuestions('subject', 10)}
+                </div>
+            </div>
+
+            <hr style="margin: 60px 0; border: 0; border-top: 5px double #bdc3c7;">
+
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h1 style="font-size: 3.5rem; color: #c0392b; margin: 0;">Object Pronouns</h1>
+                <p style="font-size: 1.2rem; color: #7f8c8d;">Part 2: The Receiver of the Action</p>
+            </div>
+
+            <div style="margin-bottom: 50px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 1.5rem; text-align: center;">
+                    <thead>
+                        <tr style="background: #2c3e50; color: white;">
+                            <th style="padding: 15px; border: 1px solid #ddd;">Subject</th>
+                            <th style="padding: 15px; border: 1px solid #ddd;">Object</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${[ ['I','me'], ['He','him'], ['She','her'], ['It','it'], ['We','us'], ['You','you'], ['They','them'] ].map(pair => `
+                            <tr>
+                                <td style="padding: 15px; border: 1px solid #ddd; background: #f9f9f9;">${pair[0]}</td>
+                                <td style="padding: 15px; border: 1px solid #ddd; font-weight: bold; color: #c0392b;">${pair[1]}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${[
-                                {s: 'I', o: 'Me'}, {s: 'He', o: 'Him'}, {s: 'She', o: 'Her'}, 
-                                {s: 'It', o: 'It'}, {s: 'We', o: 'Us'}, {s: 'You', o: 'You'}, {s: 'They', o: 'Them'}
-                            ].map(pair => `
-                                <tr>
-                                    <td style="padding: 15px; border: 1px solid #ddd; text-align: center; font-weight: bold; font-size: 1.5rem;">${pair.s}</td>
-                                    <td style="padding: 15px; border: 1px solid #ddd;">
-                                        <input type="text" placeholder="Type ${pair.o} here" style="width: 90%; padding: 10px; font-size: 1.2rem; border: 1px solid #27ae60; border-radius: 5px;">
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
 
-                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; border-left: 5px solid #27ae60;">
-                    <h3 style="color: #27ae60;">Exercise: Choose the correct Object Pronoun</h3>
-                    <div id="object-questions">
-                        <div style="margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #eee;">
-                            <p style="font-size: 1.1rem;">1. Can you help ______? (I)</p>
-                            <label><input type="radio" name="oq1"> me</label> | 
-                            <label><input type="radio" name="oq1"> him</label> | 
-                            <label><input type="radio" name="oq1"> her</label> | 
-                            <label><input type="radio" name="oq1"> us</label>
-                        </div>
-                        </div>
+            <div>
+                <h3 style="background: #c0392b; color: white; padding: 10px 20px; border-radius: 5px;">Practice: Choose the correct Object Pronoun</h3>
+                <div id="objectQuiz" style="margin-top: 20px;">
+                    ${generateQuestions('object', 10)}
                 </div>
-            </section>
+            </div>
 
-            <button onclick="alert('تم حفظ إجاباتك بنجاح!')" style="display: block; width: 100%; padding: 20px; background: #e74c3c; color: white; border: none; border-radius: 10px; font-size: 1.5rem; cursor: pointer; transition: 0.3s;">
-                Submit My Answers
-            </button>
         </div>
     `;
 
     container.innerHTML = activityHTML;
+
+    // وظيفة مساعدة لتوليد الأسئلة بشكل منظم
+    function generateQuestions(type, count) {
+        let qs = '';
+        for(let i=1; i<=count; i++) {
+            qs += `
+                <div style="margin-bottom: 25px; padding: 15px; border-left: 5px solid ${type === 'subject' ? '#3498db' : '#c0392b'}; background: #fff;">
+                    <p style="font-size: 1.1rem; margin-bottom: 10px;"><b>${i}.</b> ${type === 'subject' ? '_______ is a teacher.' : 'Can you help _______?'}</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button style="padding: 10px; cursor: pointer; border: 1px solid #ddd; background: white;">Option A</button>
+                        <button style="padding: 10px; cursor: pointer; border: 1px solid #ddd; background: white;">Option B</button>
+                        <button style="padding: 10px; cursor: pointer; border: 1px solid #ddd; background: white;">Option C</button>
+                        <button style="padding: 10px; cursor: pointer; border: 1px solid #ddd; background: white;">Option D</button>
+                    </div>
+                </div>
+            `;
+        }
+        return qs;
+    }
+
 })();

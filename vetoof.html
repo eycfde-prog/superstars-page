@@ -4,94 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EYC Veto Program - WOLF Edition</title>
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #e74c3c;
-            --text-color: #ecf0f1;
-            --vortex-speed: 5s;
-        }
-
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #1a1a1a; color: var(--text-color); overflow-x: hidden; }
-
-        /* Banner */
-        .banner { display: flex; align-items: center; justify-content: space-between; padding: 10px 50px; background: linear-gradient(90deg, #000, #2c3e50, #000); border-bottom: 3px solid var(--accent-color); }
-        .banner img { height: 80px; border-radius: 50%; border: 2px solid var(--text-color); }
-        .banner h1 { text-align: center; font-size: 1.8em; }
-
-        .controls { display: flex; justify-content: center; padding: 10px; background: #000; }
-        .switch-btn { padding: 10px 25px; font-weight: bold; background: var(--accent-color); color: white; border: 2px solid white; border-radius: 25px; cursor: pointer; transition: 0.3s; }
-        .switch-btn:hover { background: #c0392b; box-shadow: 0 0 15px var(--accent-color); }
-
-        /* Vortex & Input */
-        #vortex-container { display: none; width: 100%; height: 70vh; flex-direction: column; justify-content: center; align-items: center; position: relative; }
-        .vortex { width: 350px; height: 350px; border: 8px double var(--accent-color); border-radius: 50%; border-top-color: transparent; animation: spin var(--vortex-speed) linear infinite; position: absolute; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        
-        .vortex-content { z-index: 20; text-align: center; }
-        .vortex-content h2 { margin-bottom: 20px; text-shadow: 0 0 10px var(--accent-color); }
-        .vortex-content input { padding: 15px; border-radius: 30px; border: 2px solid var(--accent-color); width: 250px; text-align: center; font-size: 1.2em; background: rgba(0,0,0,0.7); color: white; outline: none; }
-
-        /* Flash Screen (The Card) */
-        #flash-screen { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 600px; background: #2c3e50; border-radius: 15px; overflow: hidden; z-index: 1000; box-shadow: 0 0 50px #000; border: 1px solid rgba(255,255,255,0.1); }
-        .card-top { display: flex; align-items: center; padding: 20px; background: #1a1a1a; border-bottom: 3px solid var(--accent-color); }
-        .card-top img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent-color); margin-right: 20px; object-fit: cover; }
-        .student-info h3 { margin: 0; color: var(--accent-color); font-size: 1.5em; }
-        .student-info p { margin: 5px 0; font-size: 0.9em; opacity: 0.9; }
-        
-        .card-bottom { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #2c3e50; max-height: 350px; overflow-y: auto; }
-        .grade-box { position: relative; background: #34495e; padding: 5px; border-radius: 8px; transition: 0.3s; border: 1px solid transparent; }
-        .grade-box:hover { border-color: var(--accent-color); }
-        .grade-box input { width: 90%; background: transparent; border: none; color: white; padding: 10px; font-size: 1em; text-align: center; outline: none; }
-        .grade-box input::placeholder { color: #95a5a6; font-size: 0.85em; }
-        .grade-box.updated { background: #27ae60 !important; transform: scale(1.02); }
-        .grade-box.bonus-box { border: 1px solid #f1c40f; background: #2d3436; }
-
-        /* Grid */
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; padding: 40px; justify-items: center; }
-        .level-wrapper { position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; }
-        .main-circle { width: 80px; height: 80px; background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; z-index: 10; transition: 0.3s; box-shadow: 0 0 15px rgba(231,76,60,0.4); }
-        .main-circle:hover { transform: scale(1.1); }
-        .sub-circle { position: absolute; width: 35px; height: 35px; background: #3498db; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 5; font-size: 0.8em; }
-        @keyframes orbit { from { transform: rotate(0deg) translateX(75px) rotate(0deg); } to { transform: rotate(360deg) translateX(75px) rotate(-360deg); } }
-        .active .sub-circle { display: flex; animation: orbit 6s linear infinite; }
-        .active .s1 { animation-delay: 0s; } .active .s2 { animation-delay: -1.5s; } .active .s3 { animation-delay: -3s; } .active .s4 { animation-delay: -4.5s; }
-
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; backdrop-filter: blur(5px); }
-        
-        .card-bottom::-webkit-scrollbar { width: 6px; }
-        .card-bottom::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
-
-        /* Iframe Overlay Style */
-        #content-frame-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #1a1a1a;
-            z-index: 2000;
-        }
-        #content-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .close-frame {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 2100;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="vetoof.css">
 </head>
 <body>
 
@@ -241,122 +154,120 @@
         }
 
         function openLecture(level, session) {
-    const frameContainer = document.getElementById('content-frame-container');
-    const iframe = document.getElementById('content-iframe');
-    
-    // ده الكود اللي هيترسم جوه الـ Iframe
-    const menuHTML = `
-        <html>
-        <head>
-            <style>
-                body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
-                .menu-btn { width: 250px; padding: 20px; margin: 10px; background: #e74c3c; border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-                .menu-btn:hover { background: #c0392b; transform: scale(1.05); }
-                .card { background: #2c3e50; padding: 30px; border-radius: 15px; width: 95%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: auto; }
-                .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #34495e; border: 2px solid #e74c3c; color: white; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
-                .explanation-box { background: #e74c3c; padding: 40px; border-radius: 15px; margin: 20px 0; }
-                table { width: 100%; font-size: 1.5em; border-collapse: collapse; margin-top: 20px; }
-                th, td { padding: 15px; border-bottom: 1px solid #444; }
-                .nav-btn { width: 120px; padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }
-            </style>
-        </head>
-        <body>
-            <div id="content-area">
-                <h1>Level ${level} - Session ${session}</h1>
-                <p>Choose your mission, Agent.</p>
-                <button class="menu-btn" onclick="loadScript('Listening')">🎧 Listening</button>
-                <button class="menu-btn" onclick="loadScript('Grammar')">📝 Grammar</button>
-            </div>
+            const frameContainer = document.getElementById('content-frame-container');
+            const iframe = document.getElementById('content-iframe');
+            
+            const menuHTML = `
+                <html>
+                <head>
+                    <style>
+                        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
+                        .menu-btn { width: 250px; padding: 20px; margin: 10px; background: #e74c3c; border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+                        .menu-btn:hover { background: #c0392b; transform: scale(1.05); }
+                        .card { background: #2c3e50; padding: 30px; border-radius: 15px; width: 95%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: auto; }
+                        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #34495e; border: 2px solid #e74c3c; color: white; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
+                        .explanation-box { background: #e74c3c; padding: 40px; border-radius: 15px; margin: 20px 0; }
+                        table { width: 100%; font-size: 1.5em; border-collapse: collapse; margin-top: 20px; }
+                        th, td { padding: 15px; border-bottom: 1px solid #444; }
+                        .nav-btn { width: 120px; padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }
+                    </style>
+                </head>
+                <body>
+                    <div id="content-area">
+                        <h1>Level ${level} - Session ${session}</h1>
+                        <p>Choose your mission, Agent.</p>
+                        <button class="menu-btn" onclick="loadScript('Listening')">🎧 Listening</button>
+                        <button class="menu-btn" onclick="loadScript('Grammar')">📝 Grammar</button>
+                    </div>
 
-            <script>
-                let currentSlide = 0;
-                let lessonData = null;
+                    <script>
+                        let currentSlide = 0;
+                        let lessonData = null;
 
-                function loadScript(type) {
-                    const scriptPath = \`data/L\${${level}}S\${${session}}_\${type}.js\`;
-                    document.getElementById('content-area').innerHTML = '<h2 style="color:#e74c3c;">Scanning Veto Records...</h2>';
+                        function loadScript(type) {
+                            const scriptPath = \`data/L\${${level}}S\${${session}}_\${type}.js\`;
+                            document.getElementById('content-area').innerHTML = '<h2 style="color:#e74c3c;">Scanning Veto Records...</h2>';
 
-                    const script = document.createElement('script');
-                    script.src = scriptPath;
-                    
-                    script.onload = () => {
-                        setTimeout(() => {
-                            // WOLF SENSOR: بيصطاد الداتا سواء كانت var أو window
-                            lessonData = (type === 'Grammar') ? (window.grammarData || grammarData) : (window.listeningData || listeningData);
-                            if (lessonData) {
-                                currentSlide = 0;
-                                renderSlide(0);
-                            } else {
-                                document.getElementById('content-area').innerHTML = '<h2>Error: Variable not found in ' + scriptPath + '</h2>';
+                            const script = document.createElement('script');
+                            script.src = scriptPath;
+                            
+                            script.onload = () => {
+                                setTimeout(() => {
+                                    lessonData = (type === 'Grammar') ? (window.grammarData || grammarData) : (window.listeningData || listeningData);
+                                    if (lessonData) {
+                                        currentSlide = 0;
+                                        renderSlide(0);
+                                    } else {
+                                        document.getElementById('content-area').innerHTML = '<h2>Error: Variable not found in ' + scriptPath + '</h2>';
+                                    }
+                                }, 100);
+                            };
+                            script.onerror = () => {
+                                document.getElementById('content-area').innerHTML = '<h2>File Not Found: ' + scriptPath + '</h2>';
+                            };
+                            document.body.appendChild(script);
+                        }
+
+                        function renderSlide(index) {
+                            const slide = lessonData.slides[index];
+                            let html = \`<div class="card">
+                                         <small style="color:#e74c3c; font-weight:bold;">\${lessonData.metadata.topic}</small>
+                                         <h2 style="font-size:2em; margin:10px 0;">\${slide.title}</h2>\`;
+
+                            if (slide.type === "explanation") {
+                                html += \`<div class="explanation-box">
+                                            <h1 style="font-size:5em; margin:0;">\${slide.term}</h1>
+                                            <p style="font-size:1.5em; opacity:0.9;">\${slide.desc || ''}</p>
+                                         </div>\`;
+                            } 
+                            else if (slide.type === "practice") {
+                                slide.questions.forEach((q, qIndex) => {
+                                    html += \`<div style="margin-bottom:30px; border-bottom:1px dashed #444; padding-bottom:20px;">
+                                                <p style="font-size:1.8em; color:#f1c40f;">\${q.q}</p>
+                                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                                    \${q.options.map(opt => \`
+                                                        <button class="option-btn" onclick="checkAnswer(this, '\${opt}', '\${q.correct}')">\${opt}</button>
+                                                    \`).join('')}
+                                                </div>
+                                            </div>\`;
+                                });
                             }
-                        }, 100);
-                    };
-                    script.onerror = () => {
-                        document.getElementById('content-area').innerHTML = '<h2>File Not Found: ' + scriptPath + '</h2>';
-                    };
-                    document.body.appendChild(script);
-                }
+                            else if (slide.type === "comparison") {
+                                html += \`<table><tr style="background:#1a1a1a;"><th>Subject</th><th>Object</th></tr>\`;
+                                slide.data.forEach(row => {
+                                    html += \`<tr><td style="color:#3498db;">\${row[0]}</td><td style="color:#e67e22;">\${row[1]}</td></tr>\`;
+                                });
+                                html += \`</table>\`;
+                            }
 
-                function renderSlide(index) {
-                    const slide = lessonData.slides[index];
-                    let html = \`<div class="card">
-                                 <small style="color:#e74c3c; font-weight:bold;">\${lessonData.metadata.topic}</small>
-                                 <h2 style="font-size:2em; margin:10px 0;">\${slide.title}</h2>\`;
+                            html += \`<div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center;">
+                                        <button class="nav-btn" onclick="renderSlide(\${index-1})" \${index===0?'disabled style="opacity:0.3"':''}>Previous</button>
+                                        <span>Slide \${index+1} / \${lessonData.slides.length}</span>
+                                        <button class="nav-btn" onclick="renderSlide(\${index+1})" \${index===lessonData.slides.length-1?'disabled style="opacity:0.3"':''}>Next</button>
+                                     </div></div>\`;
 
-                    if (slide.type === "explanation") {
-                        html += \`<div class="explanation-box">
-                                    <h1 style="font-size:5em; margin:0;">\${slide.term}</h1>
-                                    <p style="font-size:1.5em; opacity:0.9;">\${slide.desc || ''}</p>
-                                 </div>\`;
-                    } 
-                    else if (slide.type === "practice") {
-                        slide.questions.forEach((q, qIndex) => {
-                            html += \`<div style="margin-bottom:30px; border-bottom:1px dashed #444; padding-bottom:20px;">
-                                        <p style="font-size:1.8em; color:#f1c40f;">\${q.q}</p>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                                            \${q.options.map(opt => \`
-                                                <button class="option-btn" onclick="checkAnswer(this, '\${opt}', '\${q.correct}')">\${opt}</button>
-                                            \`).join('')}
-                                        </div>
-                                    </div>\`;
-                        });
-                    }
-                    else if (slide.type === "comparison") {
-                        html += \`<table><tr style="background:#1a1a1a;"><th>Subject</th><th>Object</th></tr>\`;
-                        slide.data.forEach(row => {
-                            html += \`<tr><td style="color:#3498db;">\${row[0]}</td><td style="color:#e67e22;">\${row[1]}</td></tr>\`;
-                        });
-                        html += \`</table>\`;
-                    }
+                            document.getElementById('content-area').innerHTML = html;
+                        }
 
-                    html += \`<div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center;">
-                                <button class="nav-btn" onclick="renderSlide(\${index-1})" \${index===0?'disabled style="opacity:0.3"':''}>Previous</button>
-                                <span>Slide \${index+1} / \${lessonData.slides.length}</span>
-                                <button class="nav-btn" onclick="renderSlide(\${index+1})" \${index===lessonData.slides.length-1?'disabled style="opacity:0.3"':''}>Next</button>
-                             </div></div>\`;
+                        function checkAnswer(btn, selected, correct) {
+                            if (selected === correct) {
+                                btn.style.background = "#27ae60";
+                                btn.style.borderColor = "#2ecc71";
+                                alert("Correct! 🎉");
+                            } else {
+                                btn.style.background = "#c0392b";
+                                btn.style.borderColor = "#e74c3c";
+                                alert("Wrong! Try again. ❌");
+                            }
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `;
 
-                    document.getElementById('content-area').innerHTML = html;
-                }
-
-                function checkAnswer(btn, selected, correct) {
-                    if (selected === correct) {
-                        btn.style.background = "#27ae60";
-                        btn.style.borderColor = "#2ecc71";
-                        alert("Correct! 🎉");
-                    } else {
-                        btn.style.background = "#c0392b";
-                        btn.style.borderColor = "#e74c3c";
-                        alert("Wrong! Try again. ❌");
-                    }
-                }
-            <\/script>
-        </body>
-        </html>
-    `;
-
-    iframe.srcdoc = menuHTML;
-    frameContainer.style.display = 'block';
-}
+            iframe.srcdoc = menuHTML;
+            frameContainer.style.display = 'block';
+        }
 
         function closeFrame() {
             document.getElementById('content-frame-container').style.display = 'none';

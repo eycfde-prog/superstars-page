@@ -1,81 +1,101 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr. Ezz .Y. Ali - Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>Mr. Ezz .Y. Ali - Learning Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
+            --bg-color: #0f0f0f;
             --primary-red: #e74c3c;
             --white: #ffffff;
+            --sub-btn-size: 40px;
         }
 
         body {
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
-            font-family: 'Cairo', sans-serif;
+            font-family: 'Poppins', sans-serif;
             color: var(--white);
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Header Section */
         header {
             width: 100%;
             background: linear-gradient(to bottom, #1a1a1a, #000000);
-            padding: 20px 0;
+            padding: 15px 0;
             border-bottom: 2px solid var(--primary-red);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            position: relative;
+            z-index: 1000;
         }
 
-        .logo { width: 80px; border-radius: 50%; }
-        .profile-img { width: 80px; border-radius: 50%; border: 2px solid var(--white); }
-        
-        .teacher-name {
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
+        .logo { width: 70px; border-radius: 50%; }
+        .profile-img { width: 70px; border-radius: 50%; border: 2px solid var(--white); }
+        .teacher-name { font-size: 22px; font-weight: bold; }
 
         /* Tokens Button */
-        .tokens-portal {
+        .tokens-portal-btn {
             margin: 20px 0;
             background-color: var(--primary-red);
             color: white;
-            padding: 10px 30px;
+            padding: 10px 35px;
             border-radius: 25px;
             text-decoration: none;
             font-weight: bold;
+            cursor: pointer;
             transition: 0.3s;
-            border: 2px solid transparent;
+            border: none;
+            z-index: 10;
         }
 
-        .tokens-portal:hover {
-            background-color: transparent;
-            border-color: var(--primary-red);
-            box-shadow: 0 0 15px var(--primary-red);
+        .tokens-portal-btn:hover { box-shadow: 0 0 20px var(--primary-red); transform: scale(1.05); }
+
+        /* Main Content Wrapper */
+        #main-wrapper {
+            position: relative;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        /* Iframe Styles */
+        #portal-iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+            display: none;
+            background: #fff;
+            z-index: 100;
         }
 
         /* Levels Grid */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 30px;
-            padding: 40px;
-            max-width: 1000px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 80px;
+            max-width: 1100px;
+        }
+
+        .level-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
         }
 
         .level-btn {
-            width: 120px;
-            height: 120px;
+            width: 100%; height: 100%;
             background-color: var(--primary-red);
             border-radius: 50%;
             display: flex;
@@ -84,55 +104,122 @@
             font-weight: bold;
             font-size: 18px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.3s;
             border: 4px solid var(--white);
-            text-decoration: none;
             color: white;
-            text-align: center;
+            position: relative;
+            z-index: 5;
+            transition: 0.3s;
         }
 
-        .level-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+        /* Mini Orbit Buttons */
+        .sub-btn {
+            position: absolute;
+            width: var(--sub-btn-size);
+            height: var(--sub-btn-size);
+            background-color: var(--white);
+            color: var(--primary-red);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            z-index: 4;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            text-decoration: none;
         }
 
-        /* Responsive Design */
+        /* Reveal Logic */
+        .level-wrapper.active .sub-btn {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        /* Positions for Orbit (Distance 85px) */
+        .level-wrapper.active .sub-btn:nth-child(2) { top: -45px; left: 35px; } /* 1 */
+        .level-wrapper.active .sub-btn:nth-child(3) { bottom: -45px; left: 35px; } /* 2 */
+        .level-wrapper.active .sub-btn:nth-child(4) { left: -45px; top: 35px; } /* 3 */
+        .level-wrapper.active .sub-btn:nth-child(5) { right: -45px; top: 35px; } /* 4 */
+
         @media (max-width: 768px) {
-            .grid-container { grid-template-columns: repeat(2, 1fr); }
-            .teacher-name { font-size: 18px; }
+            .grid-container { grid-template-columns: repeat(2, 1fr); gap: 60px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" alt="EYC Logo" class="logo">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" alt="Logo" class="logo">
         <div class="teacher-name">Mr. Ezz .Y. Ali</div>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" alt="Mr Ezz" class="profile-img">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" alt="Profile" class="profile-img">
     </header>
 
-    <a href="#" class="tokens-portal">Tokens Portal</a>
+    <button class="tokens-portal-btn" onclick="toggleIframe()">Tokens Portal</button>
 
-    <div class="grid-container" id="levelsGrid">
-        </div>
+    <div id="main-wrapper">
+        <iframe id="portal-iframe" src="about:blank"></iframe>
+        
+        <div class="grid-container" id="levelsGrid">
+            </div>
+    </div>
 
     <script>
-        // مصفوفة المستويات لتسهيل التعديل مستقبلاً
-        const levelsCount = 10;
+        const levelsCount = 12;
         const grid = document.getElementById('levelsGrid');
+        const iframe = document.getElementById('portal-iframe');
 
+        // Generate Levels
         for (let i = 1; i <= levelsCount; i++) {
-            const btn = document.createElement('a');
-            btn.href = `#level-${i}`; // يمكنك وضع لينك المستويات هنا
+            const wrapper = document.createElement('div');
+            wrapper.className = 'level-wrapper';
+            
+            // Main Level Button
+            const btn = document.createElement('div');
             btn.className = 'level-btn';
             btn.innerHTML = `Level ${i}`;
-            
-            // إضافة حدث عند الضغط (للربط مع Backend مستقبلاً)
-            btn.onclick = function() {
-                console.log(`تم اختيار المستوى: ${i}`);
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                // Close other opened levels
+                document.querySelectorAll('.level-wrapper').forEach(w => {
+                    if(w !== wrapper) w.classList.remove('active');
+                });
+                wrapper.classList.toggle('active');
             };
+
+            wrapper.appendChild(btn);
+
+            // Generate 4 Sub-buttons (Orbit)
+            for (let j = 1; j <= 4; j++) {
+                const subBtn = document.createElement('a');
+                subBtn.href = `#level-${i}-part-${j}`;
+                subBtn.className = 'sub-btn';
+                subBtn.innerHTML = j;
+                wrapper.appendChild(subBtn);
+            }
             
-            grid.appendChild(btn);
+            grid.appendChild(wrapper);
+        }
+
+        // Close orbits when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.level-wrapper').forEach(w => w.classList.remove('active'));
+        });
+
+        // Function to toggle Iframe
+        function toggleIframe() {
+            if (iframe.style.display === 'block') {
+                iframe.style.display = 'none';
+                iframe.src = 'about:blank';
+            } else {
+                iframe.style.display = 'block';
+                // ضع رابط الصفحة المطلوبة هنا مكان 'https://example.com'
+                iframe.src = 'https://www.google.com/search?q=Tokens+Portal+Demo'; 
+            }
         }
     </script>
 

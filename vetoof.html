@@ -1,298 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Veto Program - WOLF Edition</title>
-    <link rel="stylesheet" href="vetoof.css">
+    <title>Mr. Ezz .Y. Ali - Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --primary-red: #e74c3c;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Cairo', sans-serif;
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header Section */
+        header {
+            width: 100%;
+            background: linear-gradient(to bottom, #1a1a1a, #000000);
+            padding: 20px 0;
+            border-bottom: 2px solid var(--primary-red);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo { width: 80px; border-radius: 50%; }
+        .profile-img { width: 80px; border-radius: 50%; border: 2px solid var(--white); }
+        
+        .teacher-name {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Tokens Button */
+        .tokens-portal {
+            margin: 20px 0;
+            background-color: var(--primary-red);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .tokens-portal:hover {
+            background-color: transparent;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 15px var(--primary-red);
+        }
+
+        /* Levels Grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 30px;
+            padding: 40px;
+            max-width: 1000px;
+        }
+
+        .level-btn {
+            width: 120px;
+            height: 120px;
+            background-color: var(--primary-red);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            border: 4px solid var(--white);
+            text-decoration: none;
+            color: white;
+            text-align: center;
+        }
+
+        .level-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: repeat(2, 1fr); }
+            .teacher-name { font-size: 18px; }
+        }
+    </style>
 </head>
 <body>
 
-    <div id="overlay" onclick="closeFlash()"></div>
+    <header>
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" alt="EYC Logo" class="logo">
+        <div class="teacher-name">Mr. Ezz .Y. Ali</div>
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" alt="Mr Ezz" class="profile-img">
+    </header>
 
-    <div id="main-ui">
-        <header class="banner">
-            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" alt="Logo">
-            <h1>Mr. Ezz .Y. Ali</h1>
-            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" alt="Mr Ezz">
-        </header>
+    <a href="#" class="tokens-portal">Tokens Portal</a>
 
-        <div class="controls">
-            <button class="switch-btn" onclick="toggleView()">Tokens Portal</button>
+    <div class="grid-container" id="levelsGrid">
         </div>
-
-        <main class="grid-container" id="levels-grid"></main>
-        
-        <div id="vortex-container">
-            <div class="vortex"></div>
-            <div class="vortex-content">
-                <h2>VORTEX ACCESS</h2>
-                <input type="text" id="offlineCode" placeholder="Enter Agent Code..." onkeypress="handleCode(event)">
-                <p style="margin-top:15px; font-size:0.8em; color:rgba(255,255,255,0.5)">Press Enter to Scan</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="flash-screen">
-        <div class="card-top" id="studentHeader"></div>
-        <div class="card-bottom">
-            <div class="grade-box"><input type="number" placeholder="Attendence" onchange="submitGrade(this, 'Attendence')"></div>
-            <div class="grade-box"><input type="number" placeholder="ICA" onchange="submitGrade(this, 'ICA')"></div>
-            <div class="grade-box"><input type="number" placeholder="Reading" onchange="submitGrade(this, 'Reading')"></div>
-            <div class="grade-box"><input type="number" placeholder="Tongue Twister" onchange="submitGrade(this, 'Tongue Twister')"></div>
-            <div class="grade-box"><input type="number" placeholder="One Shot" onchange="submitGrade(this, 'One Shot')"></div>
-            <div class="grade-box"><input type="number" placeholder="Games" onchange="submitGrade(this, 'Games')"></div>
-            <div class="grade-box"><input type="number" placeholder="Squeezer" onchange="submitGrade(this, 'Squeezer')"></div>
-            <div class="grade-box"><input type="number" placeholder="DMT" onchange="submitGrade(this, 'DMT')"></div>
-            <div class="grade-box"><input type="number" placeholder="Wish" onchange="submitGrade(this, 'Wish')"></div>
-            <div class="grade-box"><input type="number" placeholder="Project" onchange="submitGrade(this, 'Project')"></div>
-            <div class="grade-box"><input type="number" placeholder="Graduation Project" onchange="submitGrade(this, 'Graduation Project')"></div>
-            <div class="grade-box bonus-box"><input type="number" placeholder="★ Special Bonus" onchange="submitGrade(this, 'Bonus')"></div>
-        </div>
-    </div>
-
-    <div id="content-frame-container">
-        <button class="close-frame" onclick="closeFrame()">Back to Map</button>
-        <iframe id="content-iframe"></iframe>
-    </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw9ua5PF26VSy4gzNK0pSNMRuZ5ejXBQaAR0-m-rUNirMW8F7Knk6wYcBz80LCy5PhqvQ/exec";
-        let currentStudent = null;
+        // مصفوفة المستويات لتسهيل التعديل مستقبلاً
+        const levelsCount = 10;
+        const grid = document.getElementById('levelsGrid');
 
-        function toggleView() {
-            const grid = document.getElementById('levels-grid');
-            const vortex = document.getElementById('vortex-container');
-            const btn = document.querySelector('.switch-btn');
-            if (grid.style.display !== 'none') {
-                grid.style.display = 'none';
-                vortex.style.display = 'flex';
-                btn.innerText = "Back to Levels";
-            } else {
-                grid.style.display = 'grid';
-                vortex.style.display = 'none';
-                btn.innerText = "Tokens Portal";
-            }
-        }
-
-        function handleCode(e) {
-            if (e.key === 'Enter') {
-                const code = e.target.value.trim();
-                if(!code) return;
-                
-                e.target.disabled = true;
-                e.target.placeholder = "Scanning...";
-
-                fetch(`${API_URL}?action=getStudentByOfflineCode&offlineCode=${code}`)
-                .then(response => response.json())
-                .then(res => {
-                    e.target.disabled = false;
-                    e.target.placeholder = "Enter Agent Code...";
-                    if (res.status === "success") {
-                        showStudentCard(res.data);
-                        e.target.value = "";
-                    } else {
-                        alert(res.message || "Code not found!");
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    e.target.disabled = false;
-                    alert("System Connection Error");
-                });
-            }
-        }
-
-        function showStudentCard(data) {
-            currentStudent = data;
-            document.getElementById('studentHeader').innerHTML = `
-                <img src="${data.avatar}" onerror="this.src='https://via.placeholder.com/100'">
-                <div class="student-info">
-                    <h3>${data.name}</h3>
-                    <p>Tokens: <b style="color:#2ecc71">${data.tokens}</b> | Stars: <b style="color:#f1c40f">⭐${data.stars}</b></p>
-                    <p>Global: #${data.globalRank} | Local: #${data.localRank} | Group: ${data.group}</p>
-                </div>
-            `;
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('flash-screen').style.display = 'block';
-        }
-
-        function submitGrade(input, activity) {
-            const val = input.value;
-            if (!val || !currentStudent) return;
+        for (let i = 1; i <= levelsCount; i++) {
+            const btn = document.createElement('a');
+            btn.href = `#level-${i}`; // يمكنك وضع لينك المستويات هنا
+            btn.className = 'level-btn';
+            btn.innerHTML = `Level ${i}`;
             
-            const parent = input.parentElement;
-            parent.style.opacity = "0.5";
-
-            const updateUrl = `${API_URL}?action=updateGrades&email=${encodeURIComponent(currentStudent.email)}&activity=${encodeURIComponent(activity)}&grade=${val}`;
-
-            fetch(updateUrl)
-            .then(response => response.json())
-            .then(res => {
-                if(res.status === "success") {
-                    parent.classList.add('updated');
-                    parent.style.opacity = "1";
-                    showStudentCard(res.data); 
-                    input.value = ""; 
-                } else {
-                    alert("Wolf Error: " + (res.message || res));
-                    parent.style.opacity = "1";
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Connection Lost!");
-                parent.style.opacity = "1";
-            });
-        }
-
-        function closeFlash() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('flash-screen').style.display = 'none';
-            document.querySelectorAll('.grade-box').forEach(b => b.classList.remove('updated'));
-            document.querySelectorAll('.grade-box input').forEach(i => i.value = "");
-        }
-
-        function openLecture(level, session) {
-            const frameContainer = document.getElementById('content-frame-container');
-            const iframe = document.getElementById('content-iframe');
+            // إضافة حدث عند الضغط (للربط مع Backend مستقبلاً)
+            btn.onclick = function() {
+                console.log(`تم اختيار المستوى: ${i}`);
+            };
             
-            const menuHTML = `
-                <html>
-                <head>
-                    <style>
-                        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
-                        .menu-btn { width: 250px; padding: 20px; margin: 10px; background: #e74c3c; border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-                        .menu-btn:hover { background: #c0392b; transform: scale(1.05); }
-                        .card { background: #2c3e50; padding: 30px; border-radius: 15px; width: 95%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: auto; }
-                        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #34495e; border: 2px solid #e74c3c; color: white; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
-                        .explanation-box { background: #e74c3c; padding: 40px; border-radius: 15px; margin: 20px 0; }
-                        table { width: 100%; font-size: 1.5em; border-collapse: collapse; margin-top: 20px; }
-                        th, td { padding: 15px; border-bottom: 1px solid #444; }
-                        .nav-btn { width: 120px; padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }
-                    </style>
-                </head>
-                <body>
-                    <div id="content-area">
-                        <h1>Level ${level} - Session ${session}</h1>
-                        <p>Choose your mission, Agent.</p>
-                        <button class="menu-btn" onclick="loadScript('Listening')">🎧 Listening</button>
-                        <button class="menu-btn" onclick="loadScript('Grammar')">📝 Grammar</button>
-                    </div>
-
-                    <script>
-                        let currentSlide = 0;
-                        let lessonData = null;
-
-                        function loadScript(type) {
-                            const scriptPath = \`data/L\${${level}}S\${${session}}_\${type}.js\`;
-                            document.getElementById('content-area').innerHTML = '<h2 style="color:#e74c3c;">Scanning Veto Records...</h2>';
-
-                            const script = document.createElement('script');
-                            script.src = scriptPath;
-                            
-                            script.onload = () => {
-                                setTimeout(() => {
-                                    lessonData = (type === 'Grammar') ? (window.grammarData || grammarData) : (window.listeningData || listeningData);
-                                    if (lessonData) {
-                                        currentSlide = 0;
-                                        renderSlide(0);
-                                    } else {
-                                        document.getElementById('content-area').innerHTML = '<h2>Error: Variable not found in ' + scriptPath + '</h2>';
-                                    }
-                                }, 100);
-                            };
-                            script.onerror = () => {
-                                document.getElementById('content-area').innerHTML = '<h2>File Not Found: ' + scriptPath + '</h2>';
-                            };
-                            document.body.appendChild(script);
-                        }
-
-                        function renderSlide(index) {
-                            const slide = lessonData.slides[index];
-                            let html = \`<div class="card">
-                                         <small style="color:#e74c3c; font-weight:bold;">\${lessonData.metadata.topic}</small>
-                                         <h2 style="font-size:2em; margin:10px 0;">\${slide.title}</h2>\`;
-
-                            if (slide.type === "explanation") {
-                                html += \`<div class="explanation-box">
-                                            <h1 style="font-size:5em; margin:0;">\${slide.term}</h1>
-                                            <p style="font-size:1.5em; opacity:0.9;">\${slide.desc || ''}</p>
-                                         </div>\`;
-                            } 
-                            else if (slide.type === "practice") {
-                                slide.questions.forEach((q, qIndex) => {
-                                    html += \`<div style="margin-bottom:30px; border-bottom:1px dashed #444; padding-bottom:20px;">
-                                                <p style="font-size:1.8em; color:#f1c40f;">\${q.q}</p>
-                                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                                                    \${q.options.map(opt => \`
-                                                        <button class="option-btn" onclick="checkAnswer(this, '\${opt}', '\${q.correct}')">\${opt}</button>
-                                                    \`).join('')}
-                                                </div>
-                                            </div>\`;
-                                });
-                            }
-                            else if (slide.type === "comparison") {
-                                html += \`<table><tr style="background:#1a1a1a;"><th>Subject</th><th>Object</th></tr>\`;
-                                slide.data.forEach(row => {
-                                    html += \`<tr><td style="color:#3498db;">\${row[0]}</td><td style="color:#e67e22;">\${row[1]}</td></tr>\`;
-                                });
-                                html += \`</table>\`;
-                            }
-
-                            html += \`<div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center;">
-                                        <button class="nav-btn" onclick="renderSlide(\${index-1})" \${index===0?'disabled style="opacity:0.3"':''}>Previous</button>
-                                        <span>Slide \${index+1} / \${lessonData.slides.length}</span>
-                                        <button class="nav-btn" onclick="renderSlide(\${index+1})" \${index===lessonData.slides.length-1?'disabled style="opacity:0.3"':''}>Next</button>
-                                     </div></div>\`;
-
-                            document.getElementById('content-area').innerHTML = html;
-                        }
-
-                        function checkAnswer(btn, selected, correct) {
-                            if (selected === correct) {
-                                btn.style.background = "#27ae60";
-                                btn.style.borderColor = "#2ecc71";
-                                alert("Correct! 🎉");
-                            } else {
-                                btn.style.background = "#c0392b";
-                                btn.style.borderColor = "#e74c3c";
-                                alert("Wrong! Try again. ❌");
-                            }
-                        }
-                    <\/script>
-                </body>
-                </html>
-            `;
-
-            iframe.srcdoc = menuHTML;
-            frameContainer.style.display = 'block';
-        }
-
-        function closeFrame() {
-            document.getElementById('content-frame-container').style.display = 'none';
-            document.getElementById('content-iframe').srcdoc = "";
-        }
-
-        const grid = document.getElementById('levels-grid');
-        for (let i = 1; i <= 12; i++) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'level-wrapper';
-            wrapper.innerHTML = `
-                <div class="main-circle" onclick="toggleSubCircles(this)">Level ${i}</div>
-                <div class="sub-circle s1" onclick="openLecture(${i}, 1)">1</div>
-                <div class="sub-circle s2" onclick="openLecture(${i}, 2)">2</div>
-                <div class="sub-circle s3" onclick="openLecture(${i}, 3)">3</div>
-                <div class="sub-circle s4" onclick="openLecture(${i}, 4)">4</div>
-            `;
-            grid.appendChild(wrapper);
-        }
-
-        function toggleSubCircles(el) {
-            const wasActive = el.parentElement.classList.contains('active');
-            document.querySelectorAll('.level-wrapper').forEach(w => w.classList.remove('active'));
-            if (!wasActive) el.parentElement.classList.add('active');
+            grid.appendChild(btn);
         }
     </script>
+
 </body>
 </html>

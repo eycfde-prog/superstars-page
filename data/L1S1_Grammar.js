@@ -9,7 +9,7 @@ var grammarData = {
     },
     slides: [
         // --- ضماير الفاعل ---
-        { type: "explanation", title: "SUBJECT PRONOUN", layout: "big-box", term: "I", desc: "أنا (للمتحدث)" },
+        { type: "explanation", title: "SUBJECT PRONOUN", layout: "big-box", term: "I"" },
         { type: "explanation", title: "SUBJECT PRONOUN", layout: "big-box", term: "HE", desc: "هو (مفرد مذكر)" },
         { type: "explanation", title: "SUBJECT PRONOUN", layout: "big-box", term: "SHE", desc: "هي (مفرد مؤنث)" },
         { type: "explanation", title: "SUBJECT PRONOUN", layout: "big-box", term: "IT", desc: "هو/هي (غير عاقل)" },

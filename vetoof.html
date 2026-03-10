@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr. Ezz .Y. Ali - Learning Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <title>Mr. Ezz .Y. Ali - Learning System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0f0f0f;
             --primary-red: #e74c3c;
             --white: #ffffff;
-            --sub-btn-size: 40px;
+            --card-bg: #1e1e1e;
         }
 
         body {
@@ -18,195 +18,201 @@
             background-color: var(--bg-color);
             font-family: 'Poppins', sans-serif;
             color: var(--white);
-            display: flex; flex-direction: column;
-            align-items: center; min-height: 100vh;
             overflow-x: hidden;
         }
 
-        header {
+        /* Common Headers Styling */
+        header, .activity-header {
             width: 100%; background: linear-gradient(to bottom, #1a1a1a, #000000);
-            padding: 15px 0; border-bottom: 2px solid var(--primary-red);
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+            border-bottom: 2px solid var(--primary-red);
+            display: flex; justify-content: space-around; align-items: center;
         }
 
+        header { padding: 15px 0; }
+        .activity-header { padding: 10px 0; font-size: 14px; }
+
         .logo { width: 70px; border-radius: 50%; }
+        .logo-small { width: 45px; border-radius: 50%; }
         .profile-img { width: 70px; border-radius: 50%; border: 2px solid var(--white); }
         .teacher-name { font-size: 22px; font-weight: bold; }
 
-        .tokens-portal-btn {
-            margin: 20px 0; background-color: var(--primary-red);
-            color: white; padding: 10px 35px; border-radius: 25px;
-            font-weight: bold; cursor: pointer; transition: 0.3s; border: none; z-index: 1001;
+        /* Buttons */
+        .main-btn {
+            margin: 20px auto; display: block;
+            background-color: var(--primary-red);
+            color: white; padding: 10px 30px; border-radius: 25px;
+            font-weight: bold; cursor: pointer; border: none; transition: 0.3s;
         }
 
-        #main-wrapper {
-            position: relative; width: 100%; flex-grow: 1;
-            display: flex; justify-content: center; padding: 20px 0;
+        /* Overlays */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); display: none; z-index: 2000;
+            overflow-y: auto;
         }
 
-        /* Portal View Layer */
-        #portal-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); display: none; z-index: 100;
-            padding: 20px; box-sizing: border-box; overflow-y: auto;
+        /* Activity Grid (Squares) */
+        .activity-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px; padding: 40px; max-width: 1200px; margin: auto;
         }
 
-        /* Tokens Grid */
-        .data-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px; width: 95%; margin: auto;
+        .activity-card {
+            background: var(--card-bg); border: 1px solid var(--primary-red);
+            aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 10px; cursor: pointer; border-radius: 12px;
+            font-weight: 600; transition: 0.3s;
         }
+        .activity-card:hover { background: var(--primary-red); transform: translateY(-5px); }
 
-        /* Session Content Style */
-        .session-content {
-            width: 90%; max-width: 600px; margin: auto;
-            background: #1e1e1e; border-left: 5px solid var(--primary-red);
-            padding: 20px; border-radius: 10px;
-        }
-        .session-content h2 { color: var(--primary-red); border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .session-content ul { list-style: none; padding: 0; }
-        .session-content li { padding: 10px 0; border-bottom: 1px solid #2a2a2a; font-size: 18px; }
-
-        .data-card {
-            background: #1e1e1e; border: 1px solid var(--primary-red);
-            height: 100px; border-radius: 10px; display: flex;
-            align-items: center; justify-content: center; position: relative;
-        }
-
-        .data-card input {
-            width: 90%; height: 80%; background: transparent; border: none;
-            color: var(--primary-red); text-align: center; font-size: 20px;
-            font-weight: bold; outline: none; z-index: 2;
-        }
-
-        .data-card label {
-            position: absolute; color: #888; font-size: 14px; pointer-events: none;
-        }
-        .data-card input:not(:placeholder-shown) + label { display: none; }
-
-        /* Levels Grid */
-        .grid-container {
+        /* Level Grid Main */
+        .levels-container {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 80px; width: 95%; max-width: 1400px; justify-items: center;
+            gap: 80px; width: 90%; margin: 40px auto; justify-items: center;
         }
 
         .level-wrapper { position: relative; width: 120px; height: 120px; }
-
         .level-btn {
-            width: 100%; height: 100%; background-color: var(--primary-red);
-            border-radius: 50%; display: flex; justify-content: center;
-            align-items: center; font-weight: bold; border: 4px solid var(--white);
-            cursor: pointer; position: relative; z-index: 5;
+            width: 100%; height: 100%; background: var(--primary-red);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; border: 4px solid white; cursor: pointer; z-index: 5; position: relative;
         }
 
         .sub-btn {
-            position: absolute; width: var(--sub-btn-size); height: var(--sub-btn-size);
-            background-color: var(--white); color: var(--primary-red);
-            border-radius: 50%; display: flex; justify-content: center;
-            align-items: center; font-size: 14px; font-weight: bold;
+            position: absolute; width: 40px; height: 40px; background: white;
+            color: var(--primary-red); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-weight: bold;
             opacity: 0; transform: scale(0); transition: 0.4s; z-index: 4; cursor: pointer;
         }
-
         .level-wrapper.active .sub-btn { opacity: 1; transform: scale(1); }
         .level-wrapper.active .sub-btn:nth-child(2) { top: -45px; left: 35px; }
         .level-wrapper.active .sub-btn:nth-child(3) { bottom: -45px; left: 35px; }
         .level-wrapper.active .sub-btn:nth-child(4) { left: -45px; top: 35px; }
         .level-wrapper.active .sub-btn:nth-child(5) { right: -45px; top: 35px; }
+
+        /* Final Activity View */
+        #activity-view-footer {
+            position: fixed; bottom: 0; width: 100%;
+            background: #000; padding: 15px 0; text-align: center;
+            border-top: 1px solid #333; font-weight: bold; color: var(--primary-red);
+        }
+
+        .tokens-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px; padding: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <header>
+    <header id="main-header">
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" class="logo">
         <div class="teacher-name">Mr. Ezz .Y. Ali</div>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" class="profile-img">
     </header>
 
-    <button id="toggleBtn" class="tokens-portal-btn" onclick="togglePortal('tokens')">Tokens Portal</button>
+    <button class="main-btn" id="portalActionBtn" onclick="toggleTokens()">Tokens Portal</button>
 
-    <div id="main-wrapper">
-        <div id="portal-container">
-            <div id="portal-content"></div>
+    <div class="levels-container" id="levelsGrid"></div>
+
+    <div id="sessionOverlay" class="overlay">
+        <div id="sessionContent"></div>
+    </div>
+
+    <div id="activityOverlay" class="overlay">
+        <div class="activity-header">
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" class="logo-small" style="margin-left: 20px;">
+            <div id="activityDetails" style="text-align: center; flex-grow: 1;">
+                </div>
+            <div style="margin-right: 20px; font-weight: bold; color: var(--primary-red);">Trainer. Ezz Y. Ali</div>
         </div>
         
-        <div class="grid-container" id="levelsGrid"></div>
+        <div id="activityFinalContent" style="padding: 50px; text-align: center;">
+            <h1 style="color: #444;">Activity Content Loading...</h1>
+        </div>
+
+        <div id="activity-view-footer">EYC - Veto Program</div>
     </div>
 
     <script>
-        // Data Structure for Sessions
         const sessionData = {
-            "level-1-1": ["Gr 1 study", "Lis 1 intro"],
-            "level-1-2": ["Lis 1 Rev", "Gr 1 Rev", "Gr 2 study", "Vocab 1 Rev"],
-            "level-1-3": ["Lis 2 Rev", "Gr 2 Rev", "Gr 3 study", "Vocab 1 test", "Vocab 2 Rev"],
-            "level-1-4": ["Lis 3 Rev", "Gr 3 Rev", "Gr 4 study", "Vocab 2 test", "Reading 1 Rev"]
+            "1-1": ["Gr 1 study", "Lis 1 intro"],
+            "1-2": ["Lis 1 Rev", "Gr 1 Rev", "Gr 2 study", "Vocab 1 Rev"],
+            "1-3": ["Lis 2 Rev", "Gr 2 Rev", "Gr 3 study", "Vocab 1 test", "Vocab 2 Rev"],
+            "1-4": ["Lis 3 Rev", "Gr 3 Rev", "Gr 4 study", "Vocab 2 test", "Reading 1 Rev"]
         };
 
-        const levelsGrid = document.getElementById('levelsGrid');
-        const portalContainer = document.getElementById('portal-container');
-        const portalContent = document.getElementById('portal-content');
-        const toggleBtn = document.getElementById('toggleBtn');
-
-        // 1. Generate 12 Levels
+        // Initialize Levels
+        const grid = document.getElementById('levelsGrid');
         for (let i = 1; i <= 12; i++) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'level-wrapper';
-            wrapper.innerHTML = `<div class="level-btn">Level ${i}</div>`;
-            
+            const wrap = document.createElement('div');
+            wrap.className = 'level-wrapper';
+            wrap.innerHTML = `<div class="level-btn">Level ${i}</div>`;
             for (let j = 1; j <= 4; j++) {
-                const sBtn = document.createElement('div');
-                sBtn.className = 'sub-btn';
-                sBtn.innerText = j;
-                sBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    showSessionContent(i, j);
-                };
-                wrapper.appendChild(sBtn);
+                const s = document.createElement('div');
+                s.className = 'sub-btn'; s.innerText = j;
+                s.onclick = (e) => { e.stopPropagation(); openSession(i, j); };
+                wrap.appendChild(s);
             }
-
-            wrapper.onclick = (e) => {
+            wrap.onclick = (e) => {
                 e.stopPropagation();
-                document.querySelectorAll('.level-wrapper').forEach(w => w !== wrapper && w.classList.remove('active'));
-                wrapper.classList.toggle('active');
+                document.querySelectorAll('.level-wrapper').forEach(w => w!==wrap && w.classList.remove('active'));
+                wrap.classList.toggle('active');
             };
-            levelsGrid.appendChild(wrapper);
+            grid.appendChild(wrap);
         }
 
-        // 2. Function to show Session Content
-        function showSessionContent(lv, ss) {
-            const key = `level-${lv}-${ss}`;
-            const content = sessionData[key] || ["Content coming soon for this level..."];
-            
-            let html = `<div class="session-content">
-                            <h2>Level ${lv} - Session ${ss}</h2>
-                            <ul>${content.map(item => `<li>${item}</li>`).join('')}</ul>
-                        </div>`;
-            
-            portalContent.innerHTML = html;
-            portalContainer.style.display = 'block';
-            toggleBtn.innerText = "Levels Portal";
-        }
-
-        // 3. Tokens Portal Content
-        function showTokens() {
-            const categories = ["Attendence", "ICA", "Reading", "Tongue Twister", "One Shot", "Games", "Squeezer", "DMT", "Wish", "Project", "Graduation Project", "Extra Bonus"];
-            let html = `<div class="data-grid">`;
-            categories.forEach(cat => {
-                html += `<div class="data-card"><input type="text" placeholder=" "><label>${cat}</label></div>`;
+        // Open Session (Activity Grid)
+        function openSession(lv, ss) {
+            const activities = sessionData[`${lv}-${ss}`] || ["Coming Soon"];
+            let html = `<div class="activity-grid">`;
+            activities.forEach(act => {
+                html += `<div class="activity-card" onclick="openFinalActivity(${lv}, ${ss}, '${act}')">${act}</div>`;
             });
             html += `</div>`;
-            portalContent.innerHTML = html;
+            
+            document.getElementById('sessionContent').innerHTML = html;
+            document.getElementById('sessionOverlay').style.display = 'block';
+            updateBtn("Levels Portal", () => closeAll());
         }
 
-        // 4. Global Toggle
-        function togglePortal(mode) {
-            if (portalContainer.style.display === 'block') {
-                portalContainer.style.display = 'none';
-                toggleBtn.innerText = "Tokens Portal";
-            } else {
-                if(mode === 'tokens') showTokens();
-                portalContainer.style.display = 'block';
-                toggleBtn.innerText = "Levels Portal";
-            }
+        // Open Final Activity View
+        function openFinalActivity(lv, ss, actName) {
+            const details = `
+                <span style="margin: 0 10px;">Level ${lv}</span> | 
+                <span style="margin: 0 10px;">Session ${ss}</span> | 
+                <span style="color: var(--primary-red); margin: 0 10px;">${actName}</span>
+                <button class="main-btn" style="display:inline-block; margin-left:20px; padding: 5px 15px;" onclick="closeAll()">Levels Portal</button>
+            `;
+            document.getElementById('activityDetails').innerHTML = details;
+            document.getElementById('activityOverlay').style.display = 'block';
+        }
+
+        // Tokens Portal
+        function toggleTokens() {
+            const categories = ["Attendence", "ICA", "Reading", "Tongue Twister", "One Shot", "Games", "Squeezer", "DMT", "Wish", "Project", "Graduation Project", "Extra Bonus"];
+            let html = `<div class="tokens-grid">`;
+            categories.forEach(c => {
+                html += `<div style="background:#1e1e1e; border:1px solid #e74c3c; height:80px; border-radius:10px; display:flex; align-items:center; justify-content:center; position:relative;">
+                            <input type="text" style="width:100%; background:transparent; border:none; color:#e74c3c; text-align:center; font-size:18px; outline:none;" placeholder=" ">
+                            <label style="position:absolute; color:#555; pointer-events:none;">${c}</label>
+                         </div>`;
+            });
+            html += `</div>`;
+            document.getElementById('sessionContent').innerHTML = html;
+            document.getElementById('sessionOverlay').style.display = 'block';
+            updateBtn("Levels Portal", () => closeAll());
+        }
+
+        function updateBtn(text, fn) {
+            const btn = document.getElementById('portalActionBtn');
+            btn.innerText = text;
+            btn.onclick = fn;
+        }
+
+        function closeAll() {
+            document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none');
+            updateBtn("Tokens Portal", () => toggleTokens());
         }
 
         document.addEventListener('click', () => {

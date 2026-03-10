@@ -44,19 +44,28 @@
             display: flex; justify-content: center; padding: 20px 0;
         }
 
-        /* Portal View Overlay */
+        /* Portal View Layer */
         #portal-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color); display: none; z-index: 100;
-            padding: 20px; box-sizing: border-box;
-            text-align: center;
+            padding: 20px; box-sizing: border-box; overflow-y: auto;
         }
 
-        /* Data Cards Style */
+        /* Tokens Grid */
         .data-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px; width: 95%; margin: auto;
         }
+
+        /* Session Content Style */
+        .session-content {
+            width: 90%; max-width: 600px; margin: auto;
+            background: #1e1e1e; border-left: 5px solid var(--primary-red);
+            padding: 20px; border-radius: 10px;
+        }
+        .session-content h2 { color: var(--primary-red); border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .session-content ul { list-style: none; padding: 0; }
+        .session-content li { padding: 10px 0; border-bottom: 1px solid #2a2a2a; font-size: 18px; }
 
         .data-card {
             background: #1e1e1e; border: 1px solid var(--primary-red);
@@ -66,48 +75,43 @@
 
         .data-card input {
             width: 90%; height: 80%; background: transparent; border: none;
-            color: var(--primary-red); text-align: center; font-size: 22px;
+            color: var(--primary-red); text-align: center; font-size: 20px;
             font-weight: bold; outline: none; z-index: 2;
         }
 
         .data-card label {
-            position: absolute; color: #888; font-size: 14px;
-            transition: 0.3s; pointer-events: none;
+            position: absolute; color: #888; font-size: 14px; pointer-events: none;
         }
-
         .data-card input:not(:placeholder-shown) + label { display: none; }
 
         /* Levels Grid */
         .grid-container {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 60px; width: 95%; max-width: 1400px; justify-items: center;
+            gap: 80px; width: 95%; max-width: 1400px; justify-items: center;
         }
 
         .level-wrapper { position: relative; width: 120px; height: 120px; }
 
-        .main-circle {
+        .level-btn {
             width: 100%; height: 100%; background-color: var(--primary-red);
             border-radius: 50%; display: flex; justify-content: center;
             align-items: center; font-weight: bold; border: 4px solid var(--white);
             cursor: pointer; position: relative; z-index: 5;
         }
 
-        .sub-circle {
+        .sub-btn {
             position: absolute; width: var(--sub-btn-size); height: var(--sub-btn-size);
             background-color: var(--white); color: var(--primary-red);
             border-radius: 50%; display: flex; justify-content: center;
             align-items: center; font-size: 14px; font-weight: bold;
-            opacity: 0; transform: scale(0); transition: 0.4s; z-index: 4;
-            cursor: pointer;
+            opacity: 0; transform: scale(0); transition: 0.4s; z-index: 4; cursor: pointer;
         }
 
-        .level-wrapper.active .sub-circle { opacity: 1; transform: scale(1); }
-        .level-wrapper.active .s1 { top: -45px; left: 35px; }
-        .level-wrapper.active .s2 { bottom: -45px; left: 35px; }
-        .level-wrapper.active .s3 { left: -45px; top: 35px; }
-        .level-wrapper.active .s4 { right: -45px; top: 35px; }
-
-        .session-content { font-size: 24px; color: var(--primary-red); margin-top: 50px; }
+        .level-wrapper.active .sub-btn { opacity: 1; transform: scale(1); }
+        .level-wrapper.active .sub-btn:nth-child(2) { top: -45px; left: 35px; }
+        .level-wrapper.active .sub-btn:nth-child(3) { bottom: -45px; left: 35px; }
+        .level-wrapper.active .sub-btn:nth-child(4) { left: -45px; top: 35px; }
+        .level-wrapper.active .sub-btn:nth-child(5) { right: -45px; top: 35px; }
     </style>
 </head>
 <body>
@@ -118,89 +122,91 @@
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" class="profile-img">
     </header>
 
-    <button id="toggleBtn" class="tokens-portal-btn" onclick="openTokensView()">Tokens Portal</button>
+    <button id="toggleBtn" class="tokens-portal-btn" onclick="togglePortal('tokens')">Tokens Portal</button>
 
     <div id="main-wrapper">
         <div id="portal-container">
             <div id="portal-content"></div>
         </div>
         
-        <div class="grid-container" id="levelsGrid">
-            <div class="level-wrapper" id="level-1-wrapper">
-                <div class="main-circle" onclick="toggleSubCircles(this)">Level 1</div>
-                <div class="sub-circle s1" onclick="openSessionView(1, 1)">1</div>
-                <div class="sub-circle s2" onclick="openSessionView(1, 2)">2</div>
-                <div class="sub-circle s3" onclick="openSessionView(1, 3)">3</div>
-                <div class="sub-circle s4" onclick="openSessionView(1, 4)">4</div>
-            </div>
-        </div>
+        <div class="grid-container" id="levelsGrid"></div>
     </div>
 
     <script>
+        // Data Structure for Sessions
+        const sessionData = {
+            "level-1-1": ["Gr 1 study", "Lis 1 intro"],
+            "level-1-2": ["Lis 1 Rev", "Gr 1 Rev", "Gr 2 study", "Vocab 1 Rev"],
+            "level-1-3": ["Lis 2 Rev", "Gr 2 Rev", "Gr 3 study", "Vocab 1 test", "Vocab 2 Rev"],
+            "level-1-4": ["Lis 3 Rev", "Gr 3 Rev", "Gr 4 study", "Vocab 2 test", "Reading 1 Rev"]
+        };
+
+        const levelsGrid = document.getElementById('levelsGrid');
         const portalContainer = document.getElementById('portal-container');
         const portalContent = document.getElementById('portal-content');
         const toggleBtn = document.getElementById('toggleBtn');
-        const categories = ["Attendence", "ICA", "Reading", "Tongue Twister", "One Shot", "Games", "Squeezer", "DMT", "Wish", "Project", "Graduation Project", "Extra Bonus"];
 
-        // Toggle Orbit
-        function toggleSubCircles(element) {
-            const wrapper = element.parentElement;
-            document.querySelectorAll('.level-wrapper').forEach(w => w !== wrapper && w.classList.remove('active'));
-            wrapper.classList.toggle('active');
-            event.stopPropagation();
-        }
-
-        // View 1: Tokens Portal (Attendance, ICA, etc.)
-        function openTokensView() {
-            if (portalContainer.style.display === 'block') {
-                closePortal();
-            } else {
-                let html = '<div class="data-grid">';
-                categories.forEach(cat => {
-                    html += `
-                        <div class="data-card">
-                            <input type="text" placeholder=" ">
-                            <label>${cat}</label>
-                        </div>`;
-                });
-                html += '</div>';
-                portalContent.innerHTML = html;
-                portalContainer.style.display = 'block';
-                toggleBtn.innerText = "Levels Portal";
+        // 1. Generate 12 Levels
+        for (let i = 1; i <= 12; i++) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'level-wrapper';
+            wrapper.innerHTML = `<div class="level-btn">Level ${i}</div>`;
+            
+            for (let j = 1; j <= 4; j++) {
+                const sBtn = document.createElement('div');
+                sBtn.className = 'sub-btn';
+                sBtn.innerText = j;
+                sBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    showSessionContent(i, j);
+                };
+                wrapper.appendChild(sBtn);
             }
+
+            wrapper.onclick = (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.level-wrapper').forEach(w => w !== wrapper && w.classList.remove('active'));
+                wrapper.classList.toggle('active');
+            };
+            levelsGrid.appendChild(wrapper);
         }
 
-        // View 2: Session Content (When clicking 1, 2, 3, or 4)
-        function openSessionView(level, session) {
-            portalContent.innerHTML = `
-                <div class="session-content">
-                    <h2>Level ${level} - Session ${session}</h2>
-                    <p>Welcome to the content of this session!</p>
-                    <div style="color:white; font-size: 16px;">Here you can add videos, links or tasks.</div>
-                </div>
-            `;
+        // 2. Function to show Session Content
+        function showSessionContent(lv, ss) {
+            const key = `level-${lv}-${ss}`;
+            const content = sessionData[key] || ["Content coming soon for this level..."];
+            
+            let html = `<div class="session-content">
+                            <h2>Level ${lv} - Session ${ss}</h2>
+                            <ul>${content.map(item => `<li>${item}</li>`).join('')}</ul>
+                        </div>`;
+            
+            portalContent.innerHTML = html;
             portalContainer.style.display = 'block';
             toggleBtn.innerText = "Levels Portal";
         }
 
-        function closePortal() {
-            portalContainer.style.display = 'none';
-            toggleBtn.innerText = "Tokens Portal";
+        // 3. Tokens Portal Content
+        function showTokens() {
+            const categories = ["Attendence", "ICA", "Reading", "Tongue Twister", "One Shot", "Games", "Squeezer", "DMT", "Wish", "Project", "Graduation Project", "Extra Bonus"];
+            let html = `<div class="data-grid">`;
+            categories.forEach(cat => {
+                html += `<div class="data-card"><input type="text" placeholder=" "><label>${cat}</label></div>`;
+            });
+            html += `</div>`;
+            portalContent.innerHTML = html;
         }
 
-        // Generate rest of levels (2-12) for visual symmetry
-        const grid = document.getElementById('levelsGrid');
-        for (let i = 2; i <= 12; i++) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'level-wrapper';
-            wrapper.innerHTML = `
-                <div class="main-circle" onclick="toggleSubCircles(this)">Level ${i}</div>
-                <div class="sub-circle s1" onclick="openSessionView(${i}, 1)">1</div>
-                <div class="sub-circle s2" onclick="openSessionView(${i}, 2)">2</div>
-                <div class="sub-circle s3" onclick="openSessionView(${i}, 3)">3</div>
-                <div class="sub-circle s4" onclick="openSessionView(${i}, 4)">4</div>
-            `;
-            grid.appendChild(wrapper);
+        // 4. Global Toggle
+        function togglePortal(mode) {
+            if (portalContainer.style.display === 'block') {
+                portalContainer.style.display = 'none';
+                toggleBtn.innerText = "Tokens Portal";
+            } else {
+                if(mode === 'tokens') showTokens();
+                portalContainer.style.display = 'block';
+                toggleBtn.innerText = "Levels Portal";
+            }
         }
 
         document.addEventListener('click', () => {

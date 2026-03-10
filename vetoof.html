@@ -135,12 +135,12 @@
     </div>
 
     <script>
-        const sessionData = {
-            "1-1": ["Gr 1 study", "Lis 1 intro"],
-            "1-2": ["Lis 1 Rev", "Gr 1 Rev", "Gr 2 study", "Vocab 1 Rev"],
-            "1-3": ["Lis 2 Rev", "Gr 2 Rev", "Gr 3 study", "Vocab 1 test", "Vocab 2 Rev"],
-            "1-4": ["Lis 3 Rev", "Gr 3 Rev", "Gr 4 study", "Vocab 2 test", "Reading 1 Rev"]
-        };
+const sessionData = {
+    "1-1": ["Grammar", "Listening intro"],
+    "1-2": ["Listening Rev", "Gr1", "Gr2", "Vocab Rev"], // هنا قسمنا الجرامر لجزئين
+    "1-3": ["Listening Rev", "Grammar Rev", "Grammar study", "Vocab test", "Vocab Rev"],
+    "1-4": ["Listening Rev", "Grammar Rev", "Grammar study", "Vocab test", "Reading Rev"]
+};
 
         // Initialize Levels
         const grid = document.getElementById('levelsGrid');
@@ -177,46 +177,55 @@
         }
 
         // Open Final Activity View with dynamic script loading
-        function openFinalActivity(lv, ss, actName) {
-            // 1. تحديث بيانات الهيدر في نافذة النشاط
-            const details = `
-                <span style="margin: 0 10px;">Level ${lv}</span> | 
-                <span style="margin: 0 10px;">Session ${ss}</span> | 
-                <span style="color: var(--primary-red); margin: 0 10px;">${actName}</span>
-                <button class="main-btn" style="display:inline-block; margin-left:20px; padding: 5px 15px;" onclick="closeAll()">Levels Portal</button>
-            `;
-            document.getElementById('activityDetails').innerHTML = details;
+function openFinalActivity(lv, ss, actName) {
+    const details = `
+        <span style="margin: 0 10px;">Level ${lv}</span> | 
+        <span style="margin: 0 10px;">Session ${ss}</span> | 
+        <span style="color: var(--primary-red); margin: 0 10px;">${actName}</span>
+        <button class="main-btn" style="display:inline-block; margin-left:20px; padding: 5px 15px;" onclick="closeAll()">Levels Portal</button>
+    `;
+    document.getElementById('activityDetails').innerHTML = details;
 
-            // 2. تجهيز منطقة المحتوى وإظهار رسالة تحميل
-            const container = document.getElementById('activityFinalContent');
-            container.innerHTML = '<h2 style="color: #666;">Loading Activity Contents...</h2>';
-            document.getElementById('activityOverlay').style.display = 'block';
+    const container = document.getElementById('activityFinalContent');
+    container.innerHTML = '<h2 style="color: #666;">Loading Activity Contents...</h2>';
+    document.getElementById('activityOverlay').style.display = 'block';
 
-            // 3. بناء اسم الملف
-            const shortName = actName.substring(0, 3);
-            const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
-            const filePath = `data/${fileName}`;
+    // --- منطق بناء اسم الملف المطور ---
+    let fileName = "";
+    
+    // إذا كان اسم النشاط هو Gr1 أو Gr2 نستخدمه كما هو
+    if (actName === "Gr1" || actName === "Gr2") {
+        fileName = `L-${lv}-S-${ss}-${actName}.js`;
+    } else {
+        // لبقية الأنشطة: نأخذ أول 3 حروف وننظف الاسم
+        let cleanName = actName.replace(/\s+/g, ''); 
+        let shortName = cleanName.substring(0, 3);
+        shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
+        fileName = `L-${lv}-S-${ss}-${shortName}.js`;
+    }
 
-            // 4. استدعاء ملف الـ JS ديناميكياً
-            const oldScript = document.getElementById('activity-script');
-            if (oldScript) oldScript.remove();
+    const filePath = `data/${fileName}`;
+    // --------------------------------
 
-            const script = document.createElement('script');
-            script.id = 'activity-script';
-            script.src = filePath;
-            
-            script.onerror = () => {
-                container.innerHTML = `
-                    <div style="color: #e74c3c; padding: 20px;">
-                        <h3>File Not Found!</h3>
-                        <p>Path: ${filePath}</p>
-                        <p>تأكد من وجود الملف داخل مجلد data بنفس الاسم المذكور أعلاه.</p>
-                    </div>
-                `;
-            };
+    const oldScript = document.getElementById('activity-script');
+    if (oldScript) oldScript.remove();
 
-            document.body.appendChild(script);
-        }
+    const script = document.createElement('script');
+    script.id = 'activity-script';
+    script.src = filePath;
+    
+    script.onerror = () => {
+        container.innerHTML = `
+            <div style="color: #e74c3c; padding: 20px; border: 2px dashed #e74c3c; border-radius: 15px; background: rgba(231, 76, 60, 0.1);">
+                <h3>⚠️ File Not Found!</h3>
+                <p>Expected File: <span style="color: yellow;">${fileName}</span></p>
+                <p>Path: <span style="color: #fff;">${filePath}</span></p>
+            </div>
+        `;
+    };
+
+    document.body.appendChild(script);
+}
 
         // Tokens Portal
         function toggleTokens() {

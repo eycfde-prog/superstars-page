@@ -164,7 +164,6 @@
                         :root { --accent: #e74c3c; --bg: #1a1a1a; }
                         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
                         
-                        /* Fixed Header */
                         .veto-header { 
                             display: flex; align-items: center; justify-content: space-between; 
                             padding: 10px 20px; background: #000; border-bottom: 2px solid var(--accent);
@@ -176,16 +175,13 @@
                         .veto-header .info p { margin: 0; font-size: 0.85em; opacity: 0.8; }
                         .veto-header .trainer { font-size: 0.9em; font-weight: bold; text-align: right; }
 
-                        /* Scrollable Content Area */
                         #content-area { flex-grow: 1; overflow-y: auto; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
 
-                        /* Fixed Footer */
                         .veto-footer { 
                             background: #000; text-align: center; padding: 8px; 
                             font-size: 0.8em; border-top: 1px solid #333; color: var(--accent);
                         }
 
-                        /* Standard Veto Styles for Dynamic Content */
                         .menu-btn { width: 250px; padding: 20px; margin: 10px; background: var(--accent); border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; }
                         .card { background: #2c3e50; padding: 30px; border-radius: 15px; width: 95%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: auto; }
                         .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #34495e; border: 2px solid var(--accent); color: white; border-radius: 8px; cursor: pointer; }
@@ -238,30 +234,62 @@
 
                         function renderSlide(index) {
                             const slide = lessonData.slides[index];
-                            let html = \`<div class="card">
-                                         <h2 style="font-size:2em; margin:10px 0;">\${slide.title}</h2>\`;
+                            let html = \`<div class="slide-container" style="animation: zoomIn 0.5s ease-out;">\`;
 
+                            // 1. تصميم شريحة الـ Explanation (المربعات الضخمة)
                             if (slide.type === "explanation") {
-                                html += \`<div class="explanation-box">
-                                            <h1 style="font-size:5em; margin:0;">\${slide.term}</h1>
-                                            <p style="font-size:1.5em;">\${slide.desc || ''}</p>
-                                         </div>\`;
-                            } else if (slide.type === "practice") {
+                                html += \`
+                                    <div class="giant-box-wrapper">
+                                        <h1 class="slide-title-pop">\${slide.title}</h1>
+                                        <div class="main-term-card animate-bounceIn">
+                                            <span class="term-text">\${slide.term}</span>
+                                        </div>
+                                        \${slide.desc ? \`<p class="term-desc-pop">\${slide.desc}</p>\` : ''}
+                                    </div>\`;
+                            } 
+                            
+                            // 2. تصميم شريحة الـ Practice (الأسئلة الكبيرة)
+                            else if (slide.type === "practice") {
+                                html += \`<h1 class="slide-title-pop">\${slide.title}</h1>\`;
                                 slide.questions.forEach((q) => {
-                                    html += \`<div style="margin-bottom:30px; border-bottom:1px dashed #444; padding-bottom:20px;">
-                                                <p style="font-size:1.8em; color:#f1c40f;">\${q.q}</p>
-                                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                                                    \${q.options.map(opt => \`<button class="option-btn" onclick="checkAnswer(this, '\${opt}', '\${q.correct}')">\${opt}</button>\`).join('')}
-                                                </div>
-                                            </div>\`;
+                                    html += \`
+                                        <div class="practice-card-giant animate-fadeInUp">
+                                            <p class="question-text">\${q.q}</p>
+                                            <div class="options-grid-giant">
+                                                \${q.options.map(opt => \`
+                                                    <button class="option-btn-giant" onclick="checkAnswer(this, '\${opt}', '\${q.correct}')">\${opt}</button>
+                                                \`).join('')}
+                                            </div>
+                                        </div>\`;
                                 });
                             }
 
-                            html += \`<div style="margin-top:30px; display:flex; justify-content:space-between;">
-                                        <button class="nav-btn" onclick="renderSlide(\${index-1})" \${index===0?'disabled style="opacity:0.3"':''}>Previous</button>
-                                        <span>\${index+1} / \${lessonData.slides.length}</span>
-                                        <button class="nav-btn" onclick="renderSlide(\${index+1})" \${index===lessonData.slides.length-1?'disabled style="opacity:0.3"':''}>Next</button>
-                                     </div></div>\`;
+                            // 3. تصميم شريحة الـ Comparison (الجدول العملاق)
+                            else if (slide.type === "comparison") {
+                                html += \`
+                                    <h1 class="slide-title-pop">\${slide.title}</h1>
+                                    <div class="comparison-table-wrapper animate-fadeIn">
+                                        <table class="giant-table">
+                                            <tr class="table-header-row"><th>SUBJECT</th><th>OBJECT</th></tr>
+                                            \${slide.data.map((row, i) => \`
+                                                <tr style="animation: slideInRight \${0.2 + (i*0.1)}s ease-out;">
+                                                    <td class="col-subject">\${row[0]}</td>
+                                                    <td class="col-object">\${row[1]}</td>
+                                                </tr>
+                                            \`).join('')}
+                                        </table>
+                                    </div>\`;
+                            }
+
+                            // أزرار التنقل (شفافة ومكبرة)
+                            html += \`
+                                <div class="nav-controls-overlay">
+                                    <button class="nav-btn-round" onclick="renderSlide(\${index-1})" \${index===0?'disabled':''}>❮</button>
+                                    <span class="slide-counter-bubble">\${index+1} / \${lessonData.slides.length}</span>
+                                    <button class="nav-btn-round" onclick="renderSlide(\${index+1})" \${index===lessonData.slides.length-1?'disabled':''}>❯</button>
+                                </div>
+                            </div>\`;
+
                             document.getElementById('inner-view').innerHTML = html;
                             document.getElementById('content-area').scrollTop = 0;
                         }

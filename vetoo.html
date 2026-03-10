@@ -3,343 +3,379 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EYC Veto Program</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        :root { --accent: #38bdf8; --card-bg: #1e293b; }
-        body { font-family: sans-serif; background: #0f172a; color: white; margin: 0; }
-        /* الجرس والرسائل */
-        .noti-btn { position: relative; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
-        .noti-btn.has-new { color: #ef4444; animation: pulse 1s infinite; }
-        .badge { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: red; border-radius: 50%; display: none; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-        
-        .mailbox-popup { position: absolute; top: 80px; right: 20px; width: 250px; background: var(--card-bg); border: 1px solid var(--accent); padding: 15px; border-radius: 10px; z-index: 1000; display: none; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 3000; }
-        .flash-card { background: #1e293b; width: 90%; max-width: 500px; padding: 25px; border-radius: 20px; border: 2px solid var(--accent); position: relative; max-height: 80vh; overflow-y: auto; }
-        .flash-section { margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
-        .flash-section h4 { color: var(--accent); margin-bottom: 10px; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem; }
-        .mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; font-size: 0.75rem; }
-        .close-flash { position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
-        .msg-item { padding: 10px; border-bottom: 1px solid #334155; font-size: 0.9rem; color: white; }
-        
-        /* Layout */
-        .level-card { background: var(--card-bg); padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid transparent; }
-        .level-card:hover { border-color: var(--accent); }
-        #loginOverlay { background: #0f172a; z-index: 4000; }
-        .login-box { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; width: 300px; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
-        button { cursor: pointer; }
-        .act-card { padding: 15px; background: #334155; border-radius: 8px; margin: 5px; cursor: pointer; }
-        #activityOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:5000; flex-direction:column; }
-        iframe { flex-grow:1; border:none; }
-    </style>
+    <title>EYC Veto Program - WOLF Edition</title>
+    <link rel="stylesheet" href="vetoof.css">
 </head>
 <body>
 
-    <div class="overlay" id="loginOverlay">
-        <div class="login-box">
-            <h2>VETO LOGIN</h2>
-            <input type="email" id="loginEmail" placeholder="Email Address">
-            <input type="text" id="loginCode" placeholder="Access Code">
-            <button id="loginBtn" onclick="attemptLogin()" style="width:100%; padding:10px; background:var(--accent); border:none; border-radius:5px; font-weight:bold;">ACCESS DASHBOARD</button>
-        </div>
-    </div>
+    <div id="overlay" onclick="closeFlash()"></div>
 
-    <div class="overlay" id="flashScreen" style="display: none;">
-        <div class="flash-card">
-            <button class="close-flash" onclick="closeFlash()">&times;</button>
-            <div id="flashContent"></div>
-        </div>
-    </div>
+    <div id="main-ui">
+        <header class="banner">
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" alt="Logo">
+            <h1>Mr. Ezz .Y. Ali</h1>
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" alt="Mr Ezz">
+        </header>
 
-    <div id="app">
-        <div style="display:flex; justify-content:space-between; padding:20px; align-items:center; background:var(--card-bg);">
-            <div style="display:flex; align-items:center; gap:15px;">
-                <img id="headerAvatar" src="" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--accent);">
-                <div>
-                    <div id="headerName" style="font-weight:bold; font-size:1.2rem;">---</div>
-                    <div style="font-size:0.8rem; color:var(--accent);">
-                        ID: <span id="headerCode">--</span> | 
-                        TOKENS: <span id="headerTokens">0</span> | 
-                        RANK: <span id="headerRank">#0</span>
-                    </div>
-                </div>
+        <div class="controls">
+            <button class="switch-btn" onclick="toggleView()">Tokens Portal</button>
+        </div>
+
+        <main class="grid-container" id="levels-grid"></main>
+        
+        <div id="vortex-container">
+            <div class="vortex"></div>
+            <div class="vortex-content">
+                <h2>VORTEX ACCESS</h2>
+                <input type="text" id="offlineCode" placeholder="Enter Agent Code..." onkeypress="handleCode(event)">
+                <p style="margin-top:15px; font-size:0.8em; color:rgba(255,255,255,0.5)">Press Enter to Scan</p>
             </div>
-<div>
-    <button class="noti-btn" onclick="showFlashScreen()" title="Your Agent Card">
-        <i class="fas fa-id-card"></i>
-    </button>
-
-    <button id="notiBtn" class="noti-btn" onclick="toggleMailbox()">
-        <i class="fas fa-bell"></i>
-        <span id="notiBadge" class="badge"></span>
-    </button>
-
-    <button class="noti-btn" onclick="logout()"><i class="fas fa-power-off"></i></button>
-</div>
-        </div>
-
-        <div id="mailbox" class="mailbox-popup">
-            <h4>Mailbox</h4>
-            <div id="msgList"></div>
-        </div>
-
-        <div id="navigationView" style="padding:20px;">
-            <h2 onclick="showLevels()"><i class="fas fa-rocket"></i> MISSION CONTROL</h2>
-            <div id="levelMenu" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:15px;"></div>
-        </div>
-
-        <div id="sessionView" style="display:none; padding:20px;">
-            <button onclick="showLevels()" style="background:none; border:1px solid var(--accent); color:white; padding:5px 15px; border-radius:5px; margin-bottom:20px;">&larr; BACK</button>
-            <h2 id="path">LEVEL X</h2>
-            <div id="sessionList" style="display:flex; gap:10px; margin-bottom:20px;"></div>
-            <div id="activityGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
         </div>
     </div>
 
-    <div id="activityOverlay">
-        <div style="padding:10px; background:#1e293b; display:flex; justify-content:space-between;">
-            <span id="actTitle">Activity</span>
-            <button onclick="closeActivity()" style="background:red; color:white; border:none; padding:5px 10px;">CLOSE</button>
+    <div id="flash-screen">
+        <div class="card-top" id="studentHeader"></div>
+        <div class="card-bottom">
+            <div class="grade-box"><input type="number" placeholder="Attendence" onchange="submitGrade(this, 'Attendence')"></div>
+            <div class="grade-box"><input type="number" placeholder="ICA" onchange="submitGrade(this, 'ICA')"></div>
+            <div class="grade-box"><input type="number" placeholder="Reading" onchange="submitGrade(this, 'Reading')"></div>
+            <div class="grade-box"><input type="number" placeholder="Tongue Twister" onchange="submitGrade(this, 'Tongue Twister')"></div>
+            <div class="grade-box"><input type="number" placeholder="One Shot" onchange="submitGrade(this, 'One Shot')"></div>
+            <div class="grade-box"><input type="number" placeholder="Games" onchange="submitGrade(this, 'Games')"></div>
+            <div class="grade-box"><input type="number" placeholder="Squeezer" onchange="submitGrade(this, 'Squeezer')"></div>
+            <div class="grade-box"><input type="number" placeholder="DMT" onchange="submitGrade(this, 'DMT')"></div>
+            <div class="grade-box"><input type="number" placeholder="Wish" onchange="submitGrade(this, 'Wish')"></div>
+            <div class="grade-box"><input type="number" placeholder="Project" onchange="submitGrade(this, 'Project')"></div>
+            <div class="grade-box"><input type="number" placeholder="Graduation Project" onchange="submitGrade(this, 'Graduation Project')"></div>
+            <div class="grade-box bonus-box"><input type="number" placeholder="★ Special Bonus" onchange="submitGrade(this, 'Bonus')"></div>
         </div>
-        <iframe id="activityFrame"></iframe>
+    </div>
+
+    <div id="content-frame-container">
+        <button class="close-frame" onclick="closeFrame()">Back to Map</button>
+        <iframe id="content-iframe"></iframe>
     </div>
 
     <script>
-        let flashShown = false;
-        let fullData = null;
-        let userProfile = null;
+        const API_URL = "https://script.google.com/macros/s/AKfycbw9ua5PF26VSy4gzNK0pSNMRuZ5ejXBQaAR0-m-rUNirMW8F7Knk6wYcBz80LCy5PhqvQ/exec";
+        let currentStudent = null;
 
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZlGvKVStYuuZ6_pwGooDcXEbC6EjB3IMCmEJdeGZ39dW_4GtsDFaFGhsrd72mXgUZuQ/exec";
-        const syllabus = {
-            1: { 1: ["H W", "Lis 1 test", "Gr 1 test"], 2: ["H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"], 3: ["H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"], 4: ["H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"] },
-            2: { 1: ["H W"], 2: ["Lis 5 test", "Gr 5 test", "Reading 2 Rec", "One Shot 1 study"], 3: ["H W", "Lis 6 test", "Reading 3 Rec", "Vocab 3 study"], 4: ["H W", "Lis 7 test", "Reading 4 Rec", "Vocab 4 study", "One Shot 2 study", "Lis 8 test", "Reading 5 Rec", "Gr 6 test", "Tongue Twister 1 Rec"] },
-            3: { 1: ["H W"], 2: ["H W", "Lis 9 test", "Reading 6 Rec", "Tongue Twister 2 Rec", "One Shot 3 study"], 3: ["H W", "Lis 10 test", "Reading 7 Rec", "Tongue Twister 3 Rec", "Vocab 5 study"], 4: ["H W", "Lis 11 test", "Reading 8 Rec", "Tongue Twister 4 Rec", "Vocab 6 study", "One Shot 4 study", "H W", "Lis 12 test", "Reading 9 Rec", "Tongue Twister 5 Rec", "Gr 8 test", "Squeezer 1 study"] },
-            4: { 1: ["H W"], 2: ["H W", "Lis 13 test", "Gr 9 test", "Reading 10 Rec", "Tongue Twister 6 Rec", "Squeezer 2 study", "One Shot 5 study"], 3: ["H W", "Lis 14 test", "Reading 11 Rec", "Tongue Twister 7 Rec", "Vocab 7 study"], 4: ["H W", "Lis 15 test", "Reading 12 Rec", "Tongue Twister 8 Rec", "Vocab 8 study", "One Shot 6 study", "H W", "Lis 16 test", "Reading 13 Rec", "Tongue Twister 9 Rec", "Gr 10 test", "DMT 1 study"] },
-            5: { 1: ["H W"], 2: ["H W", "Lis 17 test", "Gr 11 test", "Reading 14 Rec", "Tongue Twister 10 Rec", "DMT 2 study", "One Shot 7 study"], 3: ["H W", "Lis 18 test", "Reading 15 Rec", "Tongue Twister 11 Rec", "Vocab 9 study"], 4: ["H W", "Lis 19 test", "Reading 16 Rec", "Tongue Twister 12 Rec", "Vocab 10 study", "One Shot 8 study", "H W", "Lis 20 test", "Reading 17 Rec", "Tongue Twister 13 Rec", "Gr 12 test", "job interview role play"] },
-            6: { 1: ["H W"], 2: ["H W", "Lis 21 test", "Gr 13 test", "Reading 18 Rec", "Tongue Twister 14 Rec", "DMT 3 study", "One Shot 9 study"], 3: ["H W", "Lis 22 test", "Reading 19 Rec", "Tongue Twister 15 Rec", "Vocab 11 study"], 4: ["H W", "Lis 23 test", "Reading 20 Rec", "Tongue Twister 16 Rec", "Vocab 12 study", "One Shot 10 study", "H W", "Lis 24 test", "Reading 21 Rec", "Tongue Twister 17 Rec", "Gr 14 test", "Wish 1 study"] },
-            7: { 1: ["H W"], 2: ["H W", "Lis 25 test", "Gr 15 test", "Reading 22 Rec", "Tongue Twister 18 Rec", "Squeezer 3 study", "One Shot 11 study"], 3: ["H W", "Lis 26 test", "Reading 23 Rec", "Tongue Twister 19 Rec", "Vocab 13 study"], 4: ["H W", "Lis 27 test", "Reading 24 Rec", "Tongue Twister 20 Rec", "Vocab 14 study", "One Shot 12 study", "H W", "Lis 28 test", "Reading 25 Rec", "Tongue Twister 21 Rec", "Gr 16 test", "Wish 2 study"] },
-            8: { 1: ["H W"], 2: ["H W", "Lis 29 test", "Gr 17 test", "Reading 26 Rec", "Tongue Twister 22 Rec", "Squeezer 4 study", "One Shot 13 study"], 3: ["H W", "Lis 30 test", "Reading 27 Rec", "Tongue Twister 23 Rec", "Vocab 15 study"], 4: ["H W", "Lis 31 test", "Reading 28 Rec", "Tongue Twister 24 Rec", "Vocab 16 study", "One Shot 14 study", "H W", "Lis 32 test", "Reading 29 Rec", "Tongue Twister 25 Rec", "Gr 18 test", "Project 1 study"] },
-            9: { 1: ["H W"], 2: ["H W", "Lis 33 test", "Gr 19 test", "Reading 30 Rec", "Tongue Twister 26 Rec", "Squeezer 5 study", "One Shot 15 study"], 3: ["H W", "Lis 34 test", "Reading 31 Rec", "Tongue Twister 27 Rec", "Vocab 17 study"], 4: ["H W", "Lis 35 test", "Reading 32 Rec", "Tongue Twister 28 Rec", "Vocab 18 study", "One Shot 16 study", "H W", "Lis 36 test", "Reading 33 Rec", "Tongue Twister 29 Rec", "Gr 20 test", "DMT 4 study"] },
-            10: { 1: ["H W"], 2: ["H W", "Lis 37 test", "Reading 34 Rec", "Tongue Twister 30 Rec", "Wish 3 study"], 3: ["H W", "Lis 38 test", "Reading 35 Rec", "Tongue Twister 31 Rec", "Vocab 19 study"], 4: ["H W", "Lis 39 test", "Reading 36 Rec", "Tongue Twister 32 Rec", "Vocab 20 study", "One Shot 18 study", "H W", "Lis 40 test", "Reading 37 Rec", "Tongue Twister 33 Rec", "Project 2 study"] },
-            11: { 1: ["H W"], 2: ["gp study", "H W", "Lis 41 test", "Reading 38 Rec", "Tongue Twister 34 Rec", "Wish 3 study"], 3: ["H W", "Lis 42 test", "Reading 39 Rec", "Tongue Twister 35 Rec", "dmt 5 study"], 4: ["H W", "Lis 43 test", "Reading 40 Rec", "Tongue Twister 36 Rec", "Squeezer 6 study", "One Shot 20 study", "gp study", "H W"] },
-            12: { 1: ["H W", "gp study"], 2: ["H W"], 3: ["H W", "gp study", "gp sending"], 4: ["H W", "gp sending", "gp study"] }
-        };
-
-        function getActType(name) {
-            const n = name.toLowerCase();
-            if (n.includes('test')) return 'type-test';
-            if (n.includes('study')) return 'type-study';
-            if (n.includes('hw') || n.includes('h w')) return 'type-hw';
-            if (n.includes('rec')) return 'type-rec';
-            if (n.includes('gp')) return 'type-gp';
-            return 'type-special';
-        }
-
-        async function attemptLogin() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const code = document.getElementById('loginCode').value.trim();
-            if(!email || !code) return;
-            
-            const btn = document.getElementById('loginBtn');
-            btn.innerText = "AUTHENTICATING...";
-            btn.disabled = true;
-
-            try {
-                const res = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
-                const data = await res.json();
-                if(data.status === "success") {
-                    userProfile = data.profile;
-                    fullData = data; 
-                    localStorage.setItem('veto_email', email);
-                    localStorage.setItem('veto_code', code);
-                    document.getElementById('loginOverlay').style.display = 'none';
-                    
-                    checkMessages(data.profile.msg);
-                    initProfile();
-                    
-                    if(!flashShown) {
-                        showFlashScreen();
-                        flashShown = true;
-                    }
-                } else { 
-                    alert(data.message); 
-                    localStorage.clear();
-                }
-            } catch (e) { 
-                alert("Connection Error. Please check your internet."); 
-            }
-            
-            btn.innerText = "ACCESS DASHBOARD";
-            btn.disabled = false;
-        }
-
-        function checkMessages(newMsg) {
-            if(!newMsg) return;
-            const oldMsgs = JSON.parse(localStorage.getItem('msgs') || "[]");
-            const notiBtn = document.getElementById('notiBtn');
-            const badge = document.getElementById('notiBadge');
-
-            if (newMsg && !oldMsgs.includes(newMsg)) {
-                notiBtn.classList.add('has-new');
-                badge.style.display = 'block';
+        function toggleView() {
+            const grid = document.getElementById('levels-grid');
+            const vortex = document.getElementById('vortex-container');
+            const btn = document.querySelector('.switch-btn');
+            if (grid.style.display !== 'none') {
+                grid.style.display = 'none';
+                vortex.style.display = 'flex';
+                btn.innerText = "Back to Levels";
             } else {
-                notiBtn.classList.remove('has-new');
-                badge.style.display = 'none';
-            }
-            document.getElementById('msgList').innerHTML = `<div class="msg-item">${newMsg}</div>`;
-        }
-
-        function toggleMailbox() {
-            const box = document.getElementById('mailbox');
-            const badge = document.getElementById('notiBadge');
-            const isOpening = box.style.display === 'none' || box.style.display === '';
-            
-            box.style.display = isOpening ? 'block' : 'none';
-            
-            if(isOpening && userProfile && userProfile.msg) {
-                let read = JSON.parse(localStorage.getItem('msgs') || "[]");
-                if(!read.includes(userProfile.msg)) {
-                    read.push(userProfile.msg);
-                    localStorage.setItem('msgs', JSON.stringify(read));
-                }
-                badge.style.display = 'none';
-                document.getElementById('notiBtn').classList.remove('has-new');
+                grid.style.display = 'grid';
+                vortex.style.display = 'none';
+                btn.innerText = "Tokens Portal";
             }
         }
 
-        function showFlashScreen() {
-            if(!fullData) return;
-            const content = document.getElementById('flashContent');
-            const { profile, levels, scard } = fullData;
+        function handleCode(e) {
+            if (e.key === 'Enter') {
+                const code = e.target.value.trim();
+                if(!code) return;
+                
+                e.target.disabled = true;
+                e.target.placeholder = "Scanning...";
 
-            content.innerHTML = `
-                <div class="flash-section">
-                    <h4><i class="fas fa-user-shield"></i> BASIC DOSSIER</h4>
-                    <div class="info-grid">
-                        <span><b>Code:</b> ${profile.code}</span>
-                        <span><b>Name:</b> ${profile.name}</span>
-                        <span><b>Group:</b> ${profile.group}</span>
-                        <span><b>Stars:</b> ${profile.stars} ⭐</span>
-                        <span><b>Global Rank:</b> #${profile.gRank}</span>
-                        <span><b>Local Rank:</b> #${profile.lRank}</span>
-                    </div>
-                </div>
-                <div class="flash-section">
-                    <h4><i class="fas fa-layer-group"></i> ACADEMIC PROGRESS</h4>
-                    <div class="mini-grid">
-                        ${levels.map((val, i) => `<div>L${i+1}: <b>${val}%</b></div>`).join('')}
-                    </div>
-                </div>
-                <div class="flash-section">
-                    <h4><i class="fas fa-id-card"></i> PERFORMANCE SCARD</h4>
-                    <div class="info-grid">
-                        <span>Attend: ${scard[2]}</span> <span>ICA: ${scard[3]}</span>
-                        <span>Listening: ${scard[4]}</span> <span>Grammar: ${scard[5]}</span>
-                        <span>Reading: ${scard[6]}</span> <span>Tongue Twister: ${scard[7]}</span>
-                        <span>One Shot: ${scard[8]}</span> <span>Games: ${scard[9]}</span>
-                        <span>Squeezer: ${scard[10]}</span> <span>DMT: ${scard[11]}</span>
-                        <span>Wish: ${scard[12]}</span> <span>Project: ${scard[13]}</span>
-                        <span>Graduation Project: ${scard[14]}</span> 
-                    </div>
+                fetch(`${API_URL}?action=getStudentByOfflineCode&offlineCode=${code}`)
+                .then(response => response.json())
+                .then(res => {
+                    e.target.disabled = false;
+                    e.target.placeholder = "Enter Agent Code...";
+                    if (res.status === "success") {
+                        showStudentCard(res.data);
+                        e.target.value = "";
+                    } else {
+                        alert(res.message || "Code not found!");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    e.target.disabled = false;
+                    alert("System Connection Error");
+                });
+            }
+        }
+
+        function showStudentCard(data) {
+            currentStudent = data;
+            document.getElementById('studentHeader').innerHTML = `
+                <img src="${data.avatar}" onerror="this.src='https://via.placeholder.com/100'">
+                <div class="student-info">
+                    <h3>${data.name}</h3>
+                    <p>Tokens: <b style="color:#2ecc71">${data.tokens}</b> | Stars: <b style="color:#f1c40f">⭐${data.stars}</b></p>
+                    <p>Global: #${data.globalRank} | Local: #${data.localRank} | Group: ${data.group}</p>
                 </div>
             `;
-            document.getElementById('flashScreen').style.display = 'flex';
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('flash-screen').style.display = 'block';
         }
 
-        function initProfile() {
-            if(!userProfile) return;
-            document.getElementById('headerAvatar').src = userProfile.avatar || "https://via.placeholder.com/100";
-            document.getElementById('headerName').innerText = userProfile.name;
-            document.getElementById('headerCode').innerText = userProfile.code || "--";
-            document.getElementById('headerTokens').innerText = userProfile.tokens;
-            document.getElementById('headerRank').innerText = `#${userProfile.rank || 0}`;
-            buildLevelMenu();
-        }
-
-        function buildLevelMenu() {
-            const menu = document.getElementById('levelMenu');
-            menu.innerHTML = ""; 
-            for(let i=1; i<=12; i++) {
-                const card = document.createElement('div');
-                card.className = 'level-card';
-                card.onclick = () => showSessions(i);
-                card.innerHTML = `
-                    <i class="fas fa-layer-group fa-2x" style="color:var(--accent); margin-bottom:10px;"></i>
-                    <div style="font-weight:bold; color:white;">LEVEL ${i}</div>
-                `;
-                menu.appendChild(card);
-            }
-        }
-
-        function showSessions(lvl) {
-            document.getElementById('navigationView').style.display = 'none';
-            document.getElementById('sessionView').style.display = 'block';
-            document.getElementById('path').innerText = `LEVEL ${lvl}`;
+        function submitGrade(input, activity) {
+            const val = input.value;
+            if (!val || !currentStudent) return;
             
-            const sessList = document.getElementById('sessionList');
-            sessList.innerHTML = [1,2,3,4].map(s => 
-                `<button class="sess-btn" style="padding:5px 10px; cursor:pointer;" onclick="changeSession(this, ${lvl}, ${s})">Session ${s}</button>`
-            ).join('');
-            
-            loadActivities(lvl, 1);
-        }
+            const parent = input.parentElement;
+            parent.style.opacity = "0.5";
 
-        function changeSession(btn, lvl, sess) {
-            document.querySelectorAll('.sess-btn').forEach(b => b.style.background = 'none');
-            btn.style.background = 'var(--accent)';
-            loadActivities(lvl, sess);
-        }
+            const updateUrl = `${API_URL}?action=updateGrades&email=${encodeURIComponent(currentStudent.email)}&activity=${encodeURIComponent(activity)}&grade=${val}`;
 
-        function loadActivities(lvl, sess) {
-            const grid = document.getElementById('activityGrid');
-            const acts = syllabus[lvl][sess];
-            grid.innerHTML = acts.map(a => `
-                <div class="act-card" onclick="launchActivity('${a}', ${lvl}, ${sess})">${a}</div>
-            `).join('');
-        }
-
-        function showLevels() {
-            document.getElementById('navigationView').style.display = 'block';
-            document.getElementById('sessionView').style.display = 'none';
-        }
-
-        function launchActivity(name, lvl, sess) {
-            const fileName = name.trim().replace(/\s+/g, '_');
-            const iframe = document.getElementById('activityFrame');
-            const targetUrl = `data/${fileName}.html?email=${encodeURIComponent(userProfile.email)}&lvl=${lvl}&sess=${sess}`;
-            
-            iframe.src = targetUrl;
-            document.getElementById('activityOverlay').style.display = 'flex';
-        }
-
-        function closeActivity() {
-            document.getElementById('activityOverlay').style.display = 'none';
-            document.getElementById('activityFrame').src = "";
+            fetch(updateUrl)
+            .then(response => response.json())
+            .then(res => {
+                if(res.status === "success") {
+                    parent.classList.add('updated');
+                    parent.style.opacity = "1";
+                    showStudentCard(res.data); 
+                    input.value = ""; 
+                } else {
+                    alert("Wolf Error: " + (res.message || res));
+                    parent.style.opacity = "1";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Connection Lost!");
+                parent.style.opacity = "1";
+            });
         }
 
         function closeFlash() {
-            document.getElementById('flashScreen').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('flash-screen').style.display = 'none';
+            document.querySelectorAll('.grade-box').forEach(b => b.classList.remove('updated'));
+            document.querySelectorAll('.grade-box input').forEach(i => i.value = "");
         }
 
-        function logout() {
-            localStorage.clear();
-            location.reload();
+        function openLecture(level, session) {
+            const frameContainer = document.getElementById('content-frame-container');
+            const iframe = document.getElementById('content-iframe');
+            
+            const baseHTML = `
+                <html>
+                <head>
+                    <style>
+                        :root { --accent: #e74c3c; --bg: #1a1a1a; }
+                        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+                        
+                        /* Animations */
+                        @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); opacity: 1; } 70% { transform: scale(0.9); } 100% { transform: scale(1); } }
+                        @keyframes fadeInUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                        @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+                        .animate-bounceIn { animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+                        .animate-fadeInUp { animation: fadeInUp 0.6s ease-out; }
+
+                        /* Fixed Header */
+                        .veto-header { 
+                            display: flex; align-items: center; justify-content: space-between; 
+                            padding: 10px 20px; background: #000; border-bottom: 2px solid var(--accent);
+                            height: 60px; shrink: 0;
+                        }
+                        .veto-header img { height: 45px; border-radius: 50%; }
+                        .veto-header .info { text-align: center; flex-grow: 1; }
+                        .veto-header .info h2 { margin: 0; font-size: 1.1em; color: var(--accent); }
+                        .veto-header .info p { margin: 0; font-size: 0.85em; opacity: 0.8; }
+                        .veto-header .trainer { font-size: 0.9em; font-weight: bold; text-align: right; }
+
+                        /* Scrollable Content Area */
+                        #content-area { flex-grow: 1; overflow-y: auto; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+
+                        /* Fixed Footer */
+                        .veto-footer { 
+                            background: #000; text-align: center; padding: 8px; 
+                            font-size: 0.8em; border-top: 1px solid #333; color: var(--accent);
+                        }
+
+                        /* Giant Display Classes */
+                        .slide-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
+                        .slide-title-pop { font-size: 3vw; color: #f1c40f; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); margin-bottom: 20px; }
+                        .main-term-card {
+                            background: #3498db; width: 60vw; height: 40vh;
+                            display: flex; align-items: center; justify-content: center;
+                            border-radius: 30px; border: 10px solid white;
+                            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+                        }
+                        .term-text { font-size: 15vw; font-weight: 900; color: white; }
+                        .term-desc-pop { font-size: 4vw; margin-top: 20px; color: #bdc3c7; }
+
+                        /* Practice Giant */
+                        .question-text { font-size: 5vw; margin-bottom: 30px; color: white; text-align: center; }
+                        .options-grid-giant { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 80vw; }
+                        .option-btn-giant { 
+                            padding: 30px; font-size: 4vw; font-weight: bold; 
+                            background: #2c3e50; border: 4px solid var(--accent); color: white; 
+                            border-radius: 20px; cursor: pointer; transition: 0.3s;
+                        }
+                        .option-btn-giant:hover { background: var(--accent); transform: scale(1.05); }
+
+                        /* Comparison Table Giant */
+                        .giant-table { width: 80vw; border-collapse: separate; border-spacing: 0 15px; }
+                        .giant-table td { padding: 25px; font-size: 5vw; font-weight: bold; text-align: center; border-radius: 15px; }
+                        .col-subject { background: #3498db; color: white; }
+                        .col-object { background: #e67e22; color: white; }
+
+                        /* Floating Controls */
+                        .nav-controls-overlay { position: fixed; bottom: 80px; width: 100%; display: flex; justify-content: center; gap: 50px; align-items: center; pointer-events: none; }
+                        .nav-btn-round { 
+                            pointer-events: auto; width: 80px; height: 80px; border-radius: 50%; 
+                            background: rgba(231, 76, 60, 0.8); border: none; color: white; 
+                            font-size: 2em; cursor: pointer; transition: 0.3s; 
+                        }
+                        .nav-btn-round:hover { background: var(--accent); transform: scale(1.2); }
+                        .slide-counter-bubble { background: rgba(0,0,0,0.7); padding: 10px 25px; border-radius: 30px; font-size: 1.5em; }
+
+                        /* Startup Menu */
+                        .menu-btn { width: 250px; padding: 20px; margin: 10px; background: var(--accent); border: none; color: white; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+                    </style>
+                </head>
+                <body>
+                    <header class="veto-header">
+                        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" alt="Logo">
+                        <div class="info">
+                            <h2>EYC - Veto Program</h2>
+                            <p id="dynamic-subtitle">Level ${level} | Session ${session} | <span id="activity-name">Mission Selection</span></p>
+                        </div>
+                        <div class="trainer">Trainer: Mr Ezz Y.Ali</div>
+                    </header>
+
+                    <div id="content-area">
+                        <div id="inner-view">
+                            <h1>Level ${level} - Session ${session}</h1>
+                            <p>Choose your mission, Agent.</p>
+                            <button class="menu-btn" onclick="loadScript('Listening')">🎧 Listening</button>
+                            <button class="menu-btn" onclick="loadScript('Grammar')">📝 Grammar</button>
+                        </div>
+                    </div>
+
+                    <footer class="veto-footer">EYC - Veto Program</footer>
+
+                    <script>
+                        let currentSlide = 0;
+                        let lessonData = null;
+
+                        function loadScript(type) {
+                            const scriptPath = \`data/L\${${level}}S\${${session}}_\${type}.js\`;
+                            document.getElementById('activity-name').innerText = type;
+                            document.getElementById('inner-view').innerHTML = '<h2 style="color:#e74c3c;">Scanning Veto Records...</h2>';
+
+                            const script = document.createElement('script');
+                            script.src = scriptPath;
+                            script.onload = () => {
+                                setTimeout(() => {
+                                    lessonData = (type === 'Grammar') ? (window.grammarData || grammarData) : (window.listeningData || listeningData);
+                                    if (lessonData) { renderSlide(0); }
+                                }, 100);
+                            };
+                            document.body.appendChild(script);
+                        }
+
+                        function renderSlide(index) {
+                            const slide = lessonData.slides[index];
+                            let html = \`<div class="slide-container" style="animation: zoomIn 0.5s ease-out;">\`;
+
+                            if (slide.type === "explanation") {
+                                html += \`
+                                    <div class="giant-box-wrapper">
+                                        <h1 class="slide-title-pop">\${slide.title}</h1>
+                                        <div class="main-term-card animate-bounceIn">
+                                            <span class="term-text">\${slide.term}</span>
+                                        </div>
+                                        \${slide.desc ? \`<p class="term-desc-pop">\${slide.desc}</p>\` : ''}
+                                    </div>\`;
+                            } 
+                            else if (slide.type === "practice") {
+                                html += \`<h1 class="slide-title-pop">\${slide.title}</h1>\`;
+                                slide.questions.forEach((q) => {
+                                    html += \`
+                                        <div class="practice-card-giant animate-fadeInUp">
+                                            <p class="question-text">\${q.q}</p>
+                                            <div class="options-grid-giant">
+                                                \${q.options.map(opt => \`
+                                                    <button class="option-btn-giant" onclick="checkAnswer(this, '\${opt}', '\${q.correct}')">\${opt}</button>
+                                                \`).join('')}
+                                            </div>
+                                        </div>\`;
+                                });
+                            }
+                            else if (slide.type === "comparison") {
+                                html += \`
+                                    <h1 class="slide-title-pop">\${slide.title}</h1>
+                                    <div class="comparison-table-wrapper">
+                                        <table class="giant-table">
+                                            <tr class="table-header-row"><th>SUBJECT</th><th>OBJECT</th></tr>
+                                            \${slide.data.map((row, i) => \`
+                                                <tr style="animation: slideInRight \${0.2 + (i*0.1)}s ease-out fill-mode: backwards;">
+                                                    <td class="col-subject">\${row[0]}</td>
+                                                    <td class="col-object">\${row[1]}</td>
+                                                </tr>
+                                            \`).join('')}
+                                        </table>
+                                    </div>\`;
+                            }
+
+                            html += \`
+                                <div class="nav-controls-overlay">
+                                    <button class="nav-btn-round" onclick="renderSlide(\${index-1})" \${index===0?'disabled style="opacity:0.3"':''}>❮</button>
+                                    <span class="slide-counter-bubble">\${index+1} / \${lessonData.slides.length}</span>
+                                    <button class="nav-btn-round" onclick="renderSlide(\${index+1})" \${index===lessonData.slides.length-1?'disabled style="opacity:0.3"':''}>❯</button>
+                                </div>
+                            </div>\`;
+
+                            document.getElementById('inner-view').innerHTML = html;
+                            document.getElementById('content-area').scrollTop = 0;
+                        }
+
+                        function checkAnswer(btn, selected, correct) {
+                            if (selected === correct) { 
+                                btn.style.background = "#27ae60"; 
+                                btn.style.transform = "scale(1.1)";
+                                alert("Correct! 🎉"); 
+                            } else { 
+                                btn.style.background = "#c0392b"; 
+                                btn.classList.add('animate-bounceIn');
+                                alert("Wrong! ❌"); 
+                            }
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            iframe.srcdoc = baseHTML;
+            frameContainer.style.display = 'block';
         }
 
-        window.onload = () => {
-            const savedEmail = localStorage.getItem('veto_email');
-            const savedCode = localStorage.getItem('veto_code');
-            if(savedEmail && savedCode) {
-                document.getElementById('loginEmail').value = savedEmail;
-                document.getElementById('loginCode').value = savedCode;
-                attemptLogin();
-            }
-        };
+        function closeFrame() {
+            document.getElementById('content-frame-container').style.display = 'none';
+            document.getElementById('content-iframe').srcdoc = "";
+        }
+
+        const grid = document.getElementById('levels-grid');
+        for (let i = 1; i <= 12; i++) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'level-wrapper';
+            wrapper.innerHTML = `
+                <div class="main-circle" onclick="toggleSubCircles(this)">Level ${i}</div>
+                <div class="sub-circle s1" onclick="openLecture(${i}, 1)">1</div>
+                <div class="sub-circle s2" onclick="openLecture(${i}, 2)">2</div>
+                <div class="sub-circle s3" onclick="openLecture(${i}, 3)">3</div>
+                <div class="sub-circle s4" onclick="openLecture(${i}, 4)">4</div>
+            `;
+            grid.appendChild(wrapper);
+        }
+
+        function toggleSubCircles(el) {
+            const wasActive = el.parentElement.classList.contains('active');
+            document.querySelectorAll('.level-wrapper').forEach(w => w.classList.remove('active'));
+            if (!wasActive) el.parentElement.classList.add('active');
+        }
     </script>
 </body>
 </html>

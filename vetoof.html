@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr. Ezz .Y. Ali - Learning Portal</title>
+    <title>Mr. Ezz .Y. Ali - Advanced Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,37 +18,62 @@
             background-color: var(--bg-color);
             font-family: 'Poppins', sans-serif;
             color: var(--white);
-            display: flex; flex-direction: column;
-            align-items: center; min-height: 100vh;
             overflow-x: hidden;
         }
 
+        /* Standard Header */
         header {
             width: 100%; background: linear-gradient(to bottom, #1a1a1a, #000000);
             padding: 15px 0; border-bottom: 2px solid var(--primary-red);
             display: flex; justify-content: space-around; align-items: center; z-index: 1000;
         }
 
-        .logo { width: 70px; border-radius: 50%; }
-        .profile-img { width: 70px; border-radius: 50%; border: 2px solid var(--white); }
-        .teacher-name { font-size: 22px; font-weight: bold; }
+        .logo { width: 60px; border-radius: 50%; }
+        .profile-img { width: 60px; border-radius: 50%; border: 2px solid var(--white); }
+        .teacher-name { font-size: 20px; font-weight: bold; }
 
+        /* Navigation Buttons */
+        .controls { text-align: center; padding: 20px; }
         .tokens-portal-btn {
-            margin: 20px 0; background-color: var(--primary-red);
-            color: white; padding: 10px 35px; border-radius: 25px;
-            font-weight: bold; cursor: pointer; transition: 0.3s; border: none; z-index: 1001;
+            background-color: var(--primary-red); color: white;
+            padding: 10px 35px; border-radius: 25px;
+            font-weight: bold; cursor: pointer; border: none; transition: 0.3s;
         }
 
-        #main-wrapper {
-            position: relative; width: 100%; flex-grow: 1;
-            display: flex; justify-content: center; padding: 20px 0;
+        #main-wrapper { position: relative; width: 100%; min-height: 80vh; display: flex; justify-content: center; }
+
+        /* Level Grid */
+        .grid-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 60px; width: 95%; max-width: 1400px; padding: 40px; justify-items: center;
         }
 
-        /* Container for internal Data Cards (instead of external iframe) */
-        #portal-container {
+        .level-wrapper { position: relative; width: 120px; height: 120px; }
+        .main-circle {
+            width: 100%; height: 100%; background-color: var(--primary-red);
+            border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; font-weight: bold; border: 4px solid var(--white);
+            cursor: pointer; position: relative; z-index: 5;
+        }
+
+        .sub-circle {
+            position: absolute; width: var(--sub-btn-size); height: var(--sub-btn-size);
+            background-color: var(--white); color: var(--primary-red);
+            border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; font-size: 14px; font-weight: bold;
+            opacity: 0; transform: scale(0); transition: 0.4s; z-index: 4; cursor: pointer;
+        }
+
+        .level-wrapper.active .sub-circle { opacity: 1; transform: scale(1); }
+        .level-wrapper.active .s1 { top: -45px; left: 35px; }
+        .level-wrapper.active .s2 { bottom: -45px; left: 35px; }
+        .level-wrapper.active .s3 { left: -45px; top: 35px; }
+        .level-wrapper.active .s4 { right: -45px; top: 35px; }
+
+        /* View Overlays */
+        .overlay-view {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); display: none; z-index: 100;
-            padding: 20px; box-sizing: border-box;
+            background: var(--bg-color); display: none; z-index: 100; padding: 20px; box-sizing: border-box;
         }
 
         .data-grid {
@@ -59,7 +84,7 @@
         .data-card {
             background: #1e1e1e; border: 1px solid var(--primary-red);
             height: 100px; border-radius: 10px; display: flex;
-            align-items: center; justify-content: center; position: relative;
+            align-items: center; justify-content: center; position: relative; cursor: pointer;
         }
 
         .data-card input {
@@ -68,106 +93,135 @@
             font-weight: bold; outline: none; z-index: 2;
         }
 
-        .data-card label {
-            position: absolute; color: #888; font-size: 14px;
-            transition: 0.3s; pointer-events: none;
-        }
-
-        /* Hide label when input has text */
+        .data-card label { position: absolute; color: #888; font-size: 14px; pointer-events: none; }
         .data-card input:not(:placeholder-shown) + label { display: none; }
 
-        /* Levels Grid - Full Width */
-        .grid-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 60px; width: 95%; max-width: 1400px; justify-items: center;
+        /* Full Screen Content View */
+        #content-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 2000; display: none;
         }
 
-        .level-wrapper { position: relative; width: 120px; height: 120px; }
-
-        .level-btn {
-            width: 100%; height: 100%; background-color: var(--primary-red);
-            border-radius: 50%; display: flex; justify-content: center;
-            align-items: center; font-weight: bold; border: 4px solid var(--white);
-            cursor: pointer; position: relative; z-index: 5;
+        .content-header {
+            height: 70px; background: #1a1a1a; display: flex; 
+            justify-content: space-between; align-items: center; padding: 0 20px;
+            border-bottom: 2px solid var(--primary-red);
         }
 
-        .sub-btn {
-            position: absolute; width: var(--sub-btn-size); height: var(--sub-btn-size);
-            background-color: var(--white); color: var(--primary-red);
-            border-radius: 50%; display: flex; justify-content: center;
-            align-items: center; font-size: 14px; font-weight: bold;
-            opacity: 0; transform: scale(0); transition: 0.4s; z-index: 4;
+        .back-btn {
+            background: var(--primary-red); color: white; border: none;
+            padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-left: 10px;
         }
 
-        .level-wrapper.active .sub-btn { opacity: 1; transform: scale(1); }
-        .level-wrapper.active .sub-btn:nth-child(2) { top: -45px; left: 35px; }
-        .level-wrapper.active .sub-btn:nth-child(3) { bottom: -45px; left: 35px; }
-        .level-wrapper.active .sub-btn:nth-child(4) { left: -45px; top: 35px; }
-        .level-wrapper.active .sub-btn:nth-child(5) { right: -45px; top: 35px; }
+        iframe { width: 100%; height: calc(100% - 70px); border: none; background: white; }
     </style>
 </head>
 <body>
 
-    <header>
+    <header id="main-header">
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" class="logo">
         <div class="teacher-name">Mr. Ezz .Y. Ali</div>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" class="profile-img">
     </header>
 
-    <button id="toggleBtn" class="tokens-portal-btn" onclick="togglePortal()">Tokens Portal</button>
+    <div class="controls">
+        <button id="toggleBtn" class="tokens-portal-btn" onclick="togglePortal()">Tokens Portal</button>
+    </div>
 
     <div id="main-wrapper">
-        <div id="portal-container">
+        <div id="portal-container" class="overlay-view">
+            <h2 id="portal-title" style="text-align: center; color: var(--primary-red);">Activities</h2>
             <div class="data-grid" id="dataGrid"></div>
         </div>
         
         <div class="grid-container" id="levelsGrid"></div>
     </div>
 
-    <script>
-        const levelsGrid = document.getElementById('levelsGrid');
-        const dataGrid = document.getElementById('dataGrid');
-        const portalContainer = document.getElementById('portal-container');
-        const toggleBtn = document.getElementById('toggleBtn');
+    <div id="content-view">
+        <div class="content-header">
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" style="width: 40px; border-radius: 50%;">
+            <div id="session-info">
+                <span id="header-title">Level 1 - Session 1</span>
+                <button class="back-btn" onclick="closeContentView()">Back</button>
+            </div>
+            <div style="font-size: 14px;">Mr. Ezz .Y. Ali</div>
+        </div>
+        <iframe id="content-iframe" src=""></iframe>
+    </div>
 
-        // 1. Generate Levels
+    <script>
+        const categories = ["Attendence", "ICA", "Reading", "Tongue Twister", "One Shot", "Games", "Squeezer", "DMT", "Wish", "Project", "Graduation Project", "Extra Bonus"];
+        let currentLevel = 0;
+        let currentSession = 0;
+
+        // 1. Generate 12 Levels
+        const levelsGrid = document.getElementById('levelsGrid');
         for (let i = 1; i <= 12; i++) {
             const wrapper = document.createElement('div');
             wrapper.className = 'level-wrapper';
-            wrapper.innerHTML = `<div class="level-btn">Level ${i}</div>`;
-            
-            for (let j = 1; j <= 4; j++) {
-                wrapper.innerHTML += `<div class="sub-btn">${j}</div>`;
-            }
-
-            wrapper.onclick = (e) => {
-                e.stopPropagation();
-                document.querySelectorAll('.level-wrapper').forEach(w => w !== wrapper && w.classList.remove('active'));
-                wrapper.classList.toggle('active');
-            };
+            wrapper.innerHTML = `
+                <div class="main-circle" onclick="event.stopPropagation(); toggleSubCircles(this, ${i})">Level ${i}</div>
+                <div class="sub-circle s1" onclick="openSession(${i}, 1)">1</div>
+                <div class="sub-circle s2" onclick="openSession(${i}, 2)">2</div>
+                <div class="sub-circle s3" onclick="openSession(${i}, 3)">3</div>
+                <div class="sub-circle s4" onclick="openSession(${i}, 4)">4</div>
+            `;
             levelsGrid.appendChild(wrapper);
         }
 
-        // 2. Generate Data Cards for Portal
-        const categories = ["Attendence", "ICA", "Reading", "Tongue Twister", "One Shot", "Games", "Squeezer", "DMT", "Wish", "Project", "Graduation Project", "Extra Bonus"];
-        
-        categories.forEach(cat => {
-            const card = document.createElement('div');
-            card.className = 'data-card';
-            card.innerHTML = `
-                <input type="text" placeholder=" ">
-                <label>${cat}</label>
-            `;
-            dataGrid.appendChild(card);
-        });
+        function toggleSubCircles(element, levelIdx) {
+            const wrapper = element.parentElement;
+            document.querySelectorAll('.level-wrapper').forEach(w => w !== wrapper && w.classList.remove('active'));
+            wrapper.classList.toggle('active');
+        }
 
-        // 3. Toggle Logic
+        // 2. Open Session (Tokens-like View)
+        function openSession(level, session) {
+            currentLevel = level;
+            currentSession = session;
+            const portal = document.getElementById('portal-container');
+            const dataGrid = document.getElementById('dataGrid');
+            const toggleBtn = document.getElementById('toggleBtn');
+            
+            dataGrid.innerHTML = '';
+            categories.forEach(cat => {
+                const card = document.createElement('div');
+                card.className = 'data-card';
+                card.onclick = () => openContent(cat);
+                card.innerHTML = `<input type="text" placeholder=" "><label>${cat}</label>`;
+                dataGrid.appendChild(card);
+            });
+
+            portal.style.display = 'block';
+            toggleBtn.innerText = "Levels Portal";
+            document.getElementById('portal-title').innerText = `Level ${level} - Session ${session}`;
+        }
+
+        // 3. Open Final Content Iframe
+        function openContent(activityName) {
+            const contentView = document.getElementById('content-view');
+            const headerTitle = document.getElementById('header-title');
+            const iframe = document.getElementById('content-iframe');
+            
+            headerTitle.innerText = `Level ${currentLevel} | Session ${currentSession} | ${activityName}`;
+            // هنا تضع رابط النشاط، حالياً سأضع رابط تجريبي
+            iframe.src = "https://www.wikipedia.org"; 
+            contentView.style.display = 'block';
+        }
+
+        function closeContentView() {
+            document.getElementById('content-view').style.display = 'none';
+            document.getElementById('content-iframe').src = '';
+        }
+
         function togglePortal() {
-            if (portalContainer.style.display === 'block') {
-                portalContainer.style.display = 'none';
+            const portal = document.getElementById('portal-container');
+            const toggleBtn = document.getElementById('toggleBtn');
+            if (portal.style.display === 'block') {
+                portal.style.display = 'none';
                 toggleBtn.innerText = "Tokens Portal";
             } else {
-                portalContainer.style.display = 'block';
+                openSession("X", "X"); // Default view
                 toggleBtn.innerText = "Levels Portal";
             }
         }

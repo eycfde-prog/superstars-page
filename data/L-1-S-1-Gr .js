@@ -1,151 +1,177 @@
 (function() {
     const container = document.getElementById('activityFinalContent');
-    
-    // 1. إعداد الحاوية الرئيسية (شفافة وبملء المساحة)
     container.innerHTML = ''; 
-    container.style.cssText = `
-        height: calc(100vh - 140px);
-        overflow: hidden;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-        font-family: 'Arial', sans-serif;
-    `;
-
-    // 2. بيانات السلايدات (المحتوى التعليمي)
-    const slidesData = [
-        { type: 'title', content: 'Subject Pronouns', subtitle: 'الدرس الأول: ضمائر الفاعل' },
-        { type: 'grid', title: 'Subject Pronouns List', items: ['I', 'He', 'She', 'It', 'We', 'You', 'They'] },
-        { 
-            type: 'quiz', 
-            question: '_______ am a teacher.', 
-            options: ['I', 'He', 'She', 'It'], 
-            correct: 0,
-            category: 'subject'
-        },
-        { 
-            type: 'quiz', 
-            question: 'Ali is happy. _______ is playing.', 
-            options: ['She', 'It', 'He', 'They'], 
-            correct: 2,
-            category: 'subject'
-        },
-        { type: 'title', content: 'Object Pronouns', subtitle: 'الدرس الثاني: ضمائر المفعول' },
-        { 
-            type: 'quiz', 
-            question: 'Help _______, please! (I)', 
-            options: ['I', 'me', 'my', 'mine'], 
-            correct: 1,
-            category: 'object'
-        },
-        { 
-            type: 'table', 
-            title: 'Subject vs Object',
-            data: [['I','me'], ['He','him'], ['She','her'], ['It','it'], ['We','us'], ['You','you'], ['They','them']]
-        },
-        { type: 'end', content: 'End of Lesson', button: 'Go to Test' }
-    ];
+    container.style.cssText = `height:calc(100vh - 140px); overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#f9f9f9; font-family:'Segoe UI',Arial,sans-serif; direction:ltr;`;
 
     let currentSlide = 0;
+    let subStep = 0;
 
-    // 3. وظيفة بناء السلايد
-    function renderSlide(index) {
+    const slides = [
+        /* 1: Title */
+        { type: 'title', content: 'PASSIVES', color: '#2c3e50' },
+        
+        /* 2: Usage */
+        { 
+            type: 'writing', 
+            title: 'Usage', 
+            content: 'Expressing the <span style="color:#e74c3c;">Object</span> case in the sentence.' 
+        },
+
+        /* 3: Presentation */
+        { type: 'title', content: 'Present Continuous (Passive)', color: '#2980b9' },
+
+        /* 4: Main Example Animation */
+        { 
+            type: 'step-by-step', 
+            steps: [
+                { label: 'Active:', text: 'She is washing the dishes.', color: '#2c3e50' },
+                { label: 'Passive:', text: 'The dishes are being washed.', color: '#27ae60' },
+                { label: 'Rule:', text: 'Object + verb be + being + V3 (PP)', color: '#e74c3c' }
+            ]
+        },
+
+        /* 5: Present Simple */
+        { 
+            type: 'step-by-step', 
+            steps: [
+                { label: 'Present Simple Active:', text: 'She cleans the house every day.', color: '#2c3e50' },
+                { label: 'Passive:', text: 'The house is cleaned every day.', color: '#27ae60' },
+                { label: 'Rule:', text: 'Object + am / is / are + V3', color: '#e74c3c' }
+            ]
+        },
+
+        /* 6: Past Simple */
+        { 
+            type: 'step-by-step', 
+            steps: [
+                { label: 'Past Simple Active:', text: 'He wrote the letter yesterday.', color: '#2c3e50' },
+                { label: 'Passive:', text: 'The letter was written yesterday.', color: '#27ae60' },
+                { label: 'Rule:', text: 'Object + was / were + V3', color: '#e74c3c' }
+            ]
+        },
+
+        /* 7: Past Continuous */
+        { 
+            type: 'step-by-step', 
+            steps: [
+                { label: 'Past Continuous Active:', text: 'They were painting the walls.', color: '#2c3e50' },
+                { label: 'Passive:', text: 'The walls were being painted.', color: '#27ae60' },
+                { label: 'Rule:', text: 'Object + was / were + being + V3', color: '#e74c3c' }
+            ]
+        },
+
+        /* 8: Future Simple */
+        { 
+            type: 'step-by-step', 
+            steps: [
+                { label: 'Future Simple Active:', text: 'We will finish the project tomorrow.', color: '#2c3e50' },
+                { label: 'Passive:', text: 'The project will be finished tomorrow.', color: '#27ae60' },
+                { label: 'Rule:', text: 'Object + will be + V3', color: '#e74c3c' }
+            ]
+        },
+
+        /* 9: Future Continuous */
+        { 
+            type: 'step-by-step', 
+            steps: [
+                { label: 'Future Continuous Active:', text: 'They will be using the hall.', color: '#2c3e50' },
+                { label: 'Passive:', text: 'The hall will be being used.', color: '#27ae60' },
+                { label: 'Rule:', text: 'Object + will be + being + V3', color: '#e74c3c' }
+            ]
+        },
+
+        /* 10: Present Perfect Simple */
+        { 
+            type: 'step-by-step', 
+            steps: [
+                { label: 'Present Perfect Active:', text: 'She has broken the window.', color: '#2c3e50' },
+                { label: 'Passive:', text: 'The window has been broken.', color: '#27ae60' },
+                { label: 'Rule:', text: 'Object + have / has + been + V3', color: '#e74c3c' }
+            ]
+        },
+
+        /* 11: Past Perfect */
+        { 
+            type: 'step-by-step', 
+            steps: [
+                { label: 'Past Perfect Active:', text: 'They had closed the door.', color: '#2c3e50' },
+                { label: 'Passive:', text: 'The door had been closed.', color: '#27ae60' },
+                { label: 'Rule:', text: 'Object + had + been + V3', color: '#e74c3c' }
+            ]
+        },
+
+        /* 12: Quiz (The 10 Questions) */
+        { 
+            type: 'quiz', 
+            questions: [
+                "1. The cake (eat) ________ by the children now.",
+                "2. A new car (buy) ________ by my father last week.",
+                "3. The homework (finish) ________ yet.",
+                "4. English (speak) ________ all over the world.",
+                "5. The room (clean) ________ when I arrived.",
+                "6. The letters (post) ________ tomorrow.",
+                "7. The trees (cut) ________ down before winter.",
+                "8. This house (build) ________ in 1990.",
+                "9. The report (write) ________ right now.",
+                "10. Dinner (prepare) ________ by the time you come."
+            ] 
+        }
+    ];
+
+    function render() {
         container.innerHTML = '';
-        const data = slidesData[index];
-        const slideDiv = document.createElement('div');
-        slideDiv.className = 'slide-wrapper';
-        slideDiv.style.cssText = `
-            width: 100%;
-            max-width: 1000px;
-            text-align: center;
-            animation: slideInRight 0.5s forwards;
-            color: #2c3e50;
-        `;
+        const s = slides[currentSlide];
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = `width:95%; text-align:center; animation: fadeIn 0.3s ease;`;
 
-        if (data.type === 'title') {
-            slideDiv.innerHTML = `<h1 style="font-size: 5rem; margin:0;">${data.content}</h1><p style="font-size: 2rem;">${data.subtitle}</p>`;
+        if (s.type === 'title') {
+            wrapper.innerHTML = `<h1 style="font-size:10rem; font-weight:900; color:${s.color}; text-transform:uppercase;">${s.content}</h1>`;
         } 
-        else if (data.type === 'grid') {
-            slideDiv.innerHTML = `
-                <h2 style="font-size: 2.5rem; color:#3498db;">${data.title}</h2>
-                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 30px;">
-                    ${data.items.map(item => `<div style="background:rgba(255,255,255,0.8); padding: 30px 50px; border-radius: 15px; font-size: 3rem; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 2px solid #3498db;">${item}</div>`).join('')}
+        else if (s.type === 'writing') {
+            wrapper.innerHTML = `
+                <div style="display:inline-block; text-align:left; background:white; padding:60px; border-left:20px solid #f1c40f; box-shadow:0 20px 50px rgba(0,0,0,0.1); border-radius:20px; width:100%;">
+                    <div style="color:#f1c40f; font-weight:bold; font-size:2rem; margin-bottom:20px;">📝 WRITING TIME</div>
+                    <h2 style="font-size:5rem; margin-bottom:20px; color:#2c3e50;">${s.title}</h2>
+                    <div style="font-size:4rem; line-height:1.4; color:#34495e; font-weight:500;">${s.content}</div>
                 </div>`;
         }
-        else if (data.type === 'quiz') {
-            slideDiv.innerHTML = `
-                <div style="font-size: 2.5rem; margin-bottom: 40px; font-weight: bold;">${data.question}</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    ${data.options.map((opt, i) => `<button class="quiz-opt" onclick="window.checkAnswer(this, ${i === data.correct})" style="padding: 25px; font-size: 1.8rem; cursor: pointer; border: 2px solid #ddd; background: white; border-radius: 10px;">${opt}</button>`).join('')}
+        else if (s.type === 'step-by-step') {
+            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; gap:30px; text-align:left; background:white; padding:50px; border-radius:30px; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+                ${s.steps.map((step, i) => `
+                    <div style="opacity:${i <= subStep ? 1 : 0}; transform:translateX(${i <= subStep ? 0 : -20}px); transition:all 0.4s; font-size:3.5rem; font-weight:bold;">
+                        <span style="color:#95a5a6; font-size:2rem; display:block;">${step.label}</span>
+                        <span style="color:${step.color};">${step.text}</span>
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+        else if (s.type === 'quiz') {
+            wrapper.innerHTML = `
+                <div style="text-align:left; background:#fff; padding:40px; border-radius:20px; height:80vh; overflow-y:auto;">
+                    <h2 style="font-size:3rem; color:#2c3e50; border-bottom:5px solid #27ae60; padding-bottom:10px;">Practice Time (Passive)</h2>
+                    <div style="font-size:2.2rem; line-height:2; color:#2c3e50; margin-top:20px;">
+                        ${s.questions.map((q, i) => `<div style="margin-bottom:15px; border-bottom:1px dashed #eee;">${q}</div>`).join('')}
+                    </div>
                 </div>`;
-        }
-        else if (data.type === 'table') {
-            slideDiv.innerHTML = `
-                <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Memory Table</h2>
-                <table style="width: 80%; margin: auto; font-size: 2rem; background: white; border-collapse: collapse; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                    <tr style="background:#2c3e50; color:white;"><th>Subject</th><th>Object</th></tr>
-                    ${data.data.map(row => `<tr style="border-bottom: 1px solid #eee;"><td>${row[0]}</td><td style="color:#c0392b; font-weight:bold;">${row[1]}</td></tr>`).join('')}
-                </table>`;
-        }
-        else if (data.type === 'end') {
-            slideDiv.innerHTML = `
-                <h1 style="font-size: 4rem;">${data.content}</h1>
-                <button onclick="alert('Navigating to test...')" style="padding: 20px 50px; font-size: 2rem; background: #27ae60; color: white; border: none; border-radius: 50px; cursor: pointer; margin-top: 30px;">${data.button}</button>`;
         }
 
-        container.appendChild(slideDiv);
+        container.appendChild(wrapper);
     }
 
-    // 4. منطق الإجابة الصحيحة
-    window.checkAnswer = function(btn, isCorrect) {
-        if (isCorrect) {
-            btn.style.backgroundColor = '#2ecc71';
-            btn.style.color = 'white';
-            btn.style.borderColor = '#27ae60';
-            setTimeout(() => {
-                if (currentSlide < slidesData.length - 1) {
-                    currentSlide++;
-                    renderSlide(currentSlide);
-                }
-            }, 1000);
-        } else {
-            btn.style.backgroundColor = '#e74c3c';
-            btn.style.color = 'white';
-            setTimeout(() => {
-                btn.style.backgroundColor = 'white';
-                btn.style.color = 'black';
-            }, 500);
+    document.onkeydown = (e) => {
+        const s = slides[currentSlide];
+        // Next: Right Arrow (39), Enter (13), Space (32)
+        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { 
+            if (s.type === 'step-by-step' && subStep < s.steps.length - 1) subStep++;
+            else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
+        } 
+        // Back: Left Arrow (37)
+        else if (e.keyCode === 37) { 
+            if (subStep > 0) subStep--;
+            else if (currentSlide > 0) { currentSlide--; subStep = 0; }
         }
+        render();
     };
 
-    // 5. التحكم بالكيبورد
-    document.onkeydown = function(e) {
-        if (e.keyCode === 39) { // سهم يمين
-            if (currentSlide < slidesData.length - 1) {
-                currentSlide++;
-                renderSlide(currentSlide);
-            }
-        } else if (e.keyCode === 37) { // سهم يسار
-            if (currentSlide > 0) {
-                currentSlide--;
-                renderSlide(currentSlide);
-            }
-        }
-    };
-
-    // إضافة الأنميشن في الـ CSS
-    const style = document.createElement('style');
-    style.innerHTML = `
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .quiz-opt:hover { background: #f1f1f1 !important; }
-    `;
-    document.head.appendChild(style);
-
-    // البداية
-    renderSlide(currentSlide);
+    render();
 })();

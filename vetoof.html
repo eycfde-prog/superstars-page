@@ -257,22 +257,23 @@ function openFinalActivity(lv, ss, actName) {
     container.innerHTML = '<h2 style="color: #666;">Loading Activity Contents...</h2>';
     document.getElementById('activityOverlay').style.display = 'block';
 
-    // --- منطق بناء اسم الملف المطور ---
-    let fileName = "";
+    // --- نظام WOLF الموحد لتسمية الملفات ---
     
-    // إذا كان اسم النشاط هو Gr1 أو Gr2 نستخدمه كما هو
-    if (actName === "Gr1" || actName === "Gr2") {
-        fileName = `L-${lv}-S-${ss}-${actName}.js`;
-    } else {
-        // لبقية الأنشطة: نأخذ أول 3 حروف وننظف الاسم
-        let cleanName = actName.replace(/\s+/g, ''); 
-        let shortName = cleanName.substring(0, 3);
-        shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
-        fileName = `L-${lv}-S-${ss}-${shortName}.js`;
-    }
-
+    // 1. تنظيف الاسم من المسافات والأرقام تماماً قبل أخذ الاختصار
+    // Regex: [^a-zA-Z] بيشيل أي حاجة مش حرف (زي الأرقام والمسافات)
+    let cleanName = actName.replace(/[^a-zA-Z]/g, ''); 
+    
+    // 2. أخذ أول 3 حروف فقط
+    let shortName = cleanName.substring(0, 3);
+    
+    // 3. جعل أول حرف كبير والباقي صغير (PascalCase) لضمان مطابقة الملفات
+    shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1).toLowerCase();
+    
+    // 4. بناء اسم الملف النهائي
+    const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
     const filePath = `data/${fileName}`;
-    // --------------------------------
+    
+    // ---------------------------------------
 
     const oldScript = document.getElementById('activity-script');
     if (oldScript) oldScript.remove();
@@ -287,6 +288,7 @@ function openFinalActivity(lv, ss, actName) {
                 <h3>⚠️ File Not Found!</h3>
                 <p>Expected File: <span style="color: yellow;">${fileName}</span></p>
                 <p>Path: <span style="color: #fff;">${filePath}</span></p>
+                <p style="font-size: 12px; color: #aaa;">Make sure the file name is exactly: <b>${fileName}</b></p>
             </div>
         `;
     };

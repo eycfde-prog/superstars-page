@@ -17,7 +17,7 @@
             <h1 style="font-size:2.5rem; margin-bottom:30px; text-transform:uppercase; border-bottom:2px solid #333; padding-bottom:15px;">${storyTitle}</h1>
             
             <div style="width:100%; border-radius:15px; overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom:40px; background:#000;">
-                <img src="data/reading/${partNumber}.jpg" alt="Part ${partNumber}" style="width:100%; height:auto; display:block; transition: transform 0.3s ease;">
+                <img src="data/reading/${partNumber}.png" alt="Part ${partNumber}" style="width:100%; height:auto; display:block; transition: transform 0.3s ease;">
             </div>
 
             <div style="font-size:1.6rem; line-height:1.8; text-align:justify; color:#ddd; padding:0 20px; background: rgba(255,255,255,0.05); padding:30px; border-radius:10px; border-left:5px solid #e74c3c;">

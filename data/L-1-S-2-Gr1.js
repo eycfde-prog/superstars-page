@@ -1,178 +1,170 @@
 (function() {
     const container = document.getElementById('activityFinalContent');
-    
-    // 1. إعداد الحاوية الرئيسية
-    container.innerHTML = ''; 
-    container.style.cssText = `
-        height: calc(100vh - 140px);
-        overflow: hidden;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-        font-family: 'Arial', sans-serif;
-        direction: ltr;
-    `;
+    if (!container) return;
 
-    // 2. بيانات درس الملكية (Possessives)
-    const slidesData = [
-        { type: 'title', content: 'Possessive Adjectives', subtitle: 'الدرس الثاني: صفات الملكية' },
-        { 
-            type: 'grid', 
-            title: 'Possessive Adjectives (Followed by Noun)', 
-            items: ['My', 'His', 'Her', 'Its', 'Our', 'Your', 'Their'],
-            color: '#8e44ad'
-        },
-        { 
-            type: 'quiz', 
-            question: 'This is _______ book. (I)', 
-            options: ['Me', 'My', 'Mine', 'I'], 
-            correct: 1
-        },
-        { 
-            type: 'quiz', 
-            question: 'The cat is eating _______ food.', 
-            options: ['Her', 'His', 'Its', 'It'], 
-            correct: 2
-        },
-        { type: 'title', content: 'Possessive Pronouns', subtitle: 'الدرس الثاني: ضمائر الملكية' },
-        { 
-            type: 'grid', 
-            title: 'Possessive Pronouns (Stand Alone)', 
-            items: ['Mine', 'His', 'Hers', 'Its', 'Ours', 'Yours', 'Theirs'],
-            color: '#27ae60'
-        },
-        { 
-            type: 'quiz', 
-            question: 'This car is _______! (We)', 
-            options: ['Our', 'Ours', 'Us', 'We'], 
-            correct: 1
-        },
-        { 
-            type: 'table', 
-            title: 'Full Ownership Table',
-            data: [
-                ['I', 'My', 'Mine'],
-                ['He', 'His', 'His'],
-                ['She', 'Her', 'Hers'],
-                ['It', 'Its', 'Its'],
-                ['We', 'Our', 'Ours'],
-                ['You', 'Your', 'Yours'],
-                ['They', 'Their', 'Theirs']
-            ],
-            headers: ['Subject', 'Adj', 'Pronoun']
-        },
-        { type: 'end', content: 'Well Done, Mr. Ezz Students!', button: 'Go to Test' }
-    ];
+    container.innerHTML = ''; 
+    container.style.cssText = `height:calc(100vh - 200px); overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#0f0f0f; font-family:'Poppins', sans-serif; direction:ltr; color:white;`;
 
     let currentSlide = 0;
+    let subStep = 0;
 
-    // 3. وظيفة بناء السلايد
-    function renderSlide(index) {
+    const slides = [
+        /* 1: Title */
+        { type: 'big-title', content: 'Possessive Adjectives & Pronouns', color: '#f1c40f' },
+
+        /* 2: Possessive Adjectives (From Source) */
+        { 
+            type: 'definitions', 
+            title: 'Possessive Adjectives [cite: 59]',
+            desc: 'Must be followed by a NOUN (يتبعها اسم)',
+            items: [
+                { p: "My", d: "My car [cite: 67]" },
+                { p: "His", d: "His book [cite: 68]" },
+                { p: "Her", d: "Her bag [cite: 69]" },
+                { p: "Its", d: "Its tail " },
+                { p: "Our", d: "Our house [cite: 71]" },
+                { p: "Their", d: "Their pens [cite: 72]" },
+                { p: "Your", d: "Your phone [cite: 73]" }
+            ] 
+        },
+
+        /* 3: Comparison Table (Adjective vs Pronoun) */
+        {
+            type: 'compare-table',
+            title: 'The Full Family',
+            headers: ["Subject", "Adj (+ Noun)", "Pronoun (Alone)"],
+            rows: [
+                { s: "I", a: "My", p: "Mine" },
+                { s: "He", a: "His", p: "His" },
+                { s: "She", a: "Her", p: "Hers" },
+                { s: "It", a: "Its", p: "-" },
+                { s: "We", a: "Our", p: "Ours" },
+                { s: "They", a: "Their", p: "Theirs" },
+                { s: "You", a: "Your", p: "Yours" }
+            ]
+        },
+
+        /* 4: The "Noun" Rule Animation */
+        {
+            type: 'rule-anim',
+            title: 'Spot the Difference!',
+            examples: [
+                { left: "This is <span style='color:#f1c40f;'>my</span> book.", right: "This book is <span style='color:#e74c3c;'>mine</span>." },
+                { left: "That is <span style='color:#f1c40f;'>her</span> car.", right: "That car is <span style='color:#e74c3c;'>hers</span>." },
+                { left: "These are <span style='color:#f1c40f;'>our</span> bags.", right: "These bags are <span style='color:#e74c3c;'>ours</span>." }
+            ]
+        },
+
+        /* 5: Exercise (Based on source logic) */
+        { 
+            type: 'fill-practice', 
+            title: 'Practice: Possessives',
+            items: [
+                { q: "I have a cat. ____ tail is long.", a: "Its" },
+                { q: "This is my pen. It is ____.", a: "mine" },
+                { q: "They have a house. It is ____ house.", a: "their" },
+                { q: "We won! The trophy is ____.", a: "ours" },
+                { q: "Give ____ my car. (you)", a: "your" }
+            ] 
+        },
+
+        /* 6: Final Challenge */
+        { 
+            type: 'mcq-final', 
+            question: "Is this your phone? No, it's ________.",
+            options: ["A) her", "B) hers", "C) she"],
+            answer: 1 
+        }
+    ];
+
+    function render() {
         container.innerHTML = '';
-        const data = slidesData[index];
-        const slideDiv = document.createElement('div');
-        slideDiv.style.cssText = `
-            width: 100%;
-            max-width: 1000px;
-            text-align: center;
-            animation: slideInRight 0.5s forwards;
-            color: #2c3e50;
-        `;
+        const s = slides[currentSlide];
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = `width:95%; text-align:center;`;
 
-        if (data.type === 'title') {
-            slideDiv.innerHTML = `<h1 style="font-size: 5rem; margin:0; color:#2c3e50;">${data.content}</h1><p style="font-size: 2.2rem; color:#7f8c8d;">${data.subtitle}</p>`;
+        if (s.type === 'big-title') {
+            wrapper.innerHTML = `<h1 style="font-size:8rem; font-weight:900; color:${s.color}; line-height:1.1;">${s.content}</h1>`;
         } 
-        else if (data.type === 'grid') {
-            slideDiv.innerHTML = `
-                <h2 style="font-size: 2.8rem; color:${data.color}; margin-bottom:30px;">${data.title}</h2>
-                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                    ${data.items.map(item => `<div style="background:rgba(255,255,255,0.9); padding: 25px 40px; border-radius: 15px; font-size: 2.8rem; font-weight: bold; box-shadow: 0 8px 15px rgba(0,0,0,0.1); border: 3px solid ${data.color};">${item}</div>`).join('')}
+        else if (s.type === 'definitions') {
+            wrapper.innerHTML = `
+                <h2 style="font-size:3.5rem; color:#f1c40f; margin-bottom:10px;">${s.title}</h2>
+                <p style="font-size:1.8rem; color:#888; margin-bottom:30px;">${s.desc}</p>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left;">
+                    ${s.items.map((item, i) => `
+                        <div style="background:#1e1e1e; padding:15px; border-radius:10px; opacity:${i <= subStep ? 1 : 0}; transition:0.3s; border-right:5px solid #f1c40f;">
+                            <b style="color:#f1c40f; font-size:2.5rem;">${item.p}:</b> <span style="font-size:2rem;">${item.d}</span>
+                        </div>
+                    `).join('')}
                 </div>`;
         }
-        else if (data.type === 'quiz') {
-            slideDiv.innerHTML = `
-                <div style="font-size: 3rem; margin-bottom: 50px; font-weight: bold; color:#2c3e50;">${data.question}</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
-                    ${data.options.map((opt, i) => `<button class="quiz-opt" onclick="window.checkAnswer(this, ${i === data.correct})" style="padding: 30px; font-size: 2.2rem; cursor: pointer; border: 3px solid #dfe6e9; background: white; border-radius: 15px; transition: 0.3s;">${opt}</button>`).join('')}
-                </div>`;
-        }
-        else if (data.type === 'table') {
-            slideDiv.innerHTML = `
-                <h2 style="font-size: 2.5rem; margin-bottom: 25px; color:#2980b9;">Comprehensive Review</h2>
-                <table style="width: 100%; font-size: 1.8rem; background: white; border-collapse: collapse; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-                    <tr style="background:#2c3e50; color:white;">
-                        ${data.headers.map(h => `<th style="padding:15px;">${h}</th>`).join('')}
+        else if (s.type === 'compare-table') {
+            wrapper.innerHTML = `
+                <h2 style="font-size:3.5rem; color:#3498db; margin-bottom:30px;">${s.title}</h2>
+                <table style="width:100%; border-collapse:collapse; font-size:2rem;">
+                    <tr style="color:#3498db; border-bottom:2px solid #444;">
+                        ${s.headers.map(h => `<th style="padding:15px;">${h}</th>`).join('')}
                     </tr>
-                    ${data.data.map(row => `
-                        <tr style="border-bottom: 1px solid #eee;">
-                            <td style="padding:12px;">${row[0]}</td>
-                            <td style="padding:12px; color:#8e44ad; font-weight:bold;">${row[1]}</td>
-                            <td style="padding:12px; color:#27ae60; font-weight:bold;">${row[2]}</td>
-                        </tr>`).join('')}
+                    ${s.rows.map((r, i) => `
+                        <tr style="opacity:${i <= subStep ? 1 : 0}; transition:0.3s; border-bottom:1px solid #222;">
+                            <td style="padding:10px;">${r.s}</td>
+                            <td style="padding:10px; color:#f1c40f;">${r.a}</td>
+                            <td style="padding:10px; color:#e74c3c;">${r.p}</td>
+                        </tr>
+                    `).join('')}
                 </table>`;
         }
-        else if (data.type === 'end') {
-            slideDiv.innerHTML = `
-                <h1 style="font-size: 5rem; color:#27ae60;">${data.content}</h1>
-                <button onclick="console.log('Redirecting...')" style="padding: 25px 60px; font-size: 2.5rem; background: #27ae60; color: white; border: none; border-radius: 50px; cursor: pointer; margin-top: 40px; box-shadow: 0 10px 20px rgba(39,174,96,0.3);">Go to Test</button>`;
+        else if (s.type === 'rule-anim') {
+            let pair = s.examples[subStep] || s.examples[0];
+            wrapper.innerHTML = `
+                <h2 style="font-size:3.5rem; color:#e74c3c; margin-bottom:50px;">${s.title}</h2>
+                <div style="display:flex; justify-content:space-around; align-items:center; gap:30px;">
+                    <div style="background:#1e1e1e; padding:40px; border-radius:20px; font-size:3rem; flex:1;">${pair.left}</div>
+                    <div style="font-size:4rem; color:#f1c40f;">➞</div>
+                    <div style="background:#1e1e1e; padding:40px; border-radius:20px; font-size:3rem; flex:1; border:2px dashed #e74c3c;">${pair.right}</div>
+                </div>`;
+        }
+        else if (s.type === 'fill-practice') {
+            wrapper.innerHTML = `
+                <h2 style="font-size:3.5rem; color:#2ecc71; margin-bottom:40px;">${s.title}</h2>
+                <div style="text-align:left; display:flex; flex-direction:column; gap:25px;">
+                    ${s.items.map((item, i) => `
+                        <div style="font-size:2.5rem; opacity:${i <= subStep ? 1 : 0};">
+                            ${item.q} <span style="color:#2ecc71; font-weight:bold; visibility:${subStep > i ? 'visible' : 'hidden'}">➞ ${item.a}</span>
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
+        else if (s.type === 'mcq-final') {
+            wrapper.innerHTML = `
+                <div style="background:#1e1e1e; padding:50px; border-radius:30px; border:2px solid #f1c40f;">
+                    <div style="font-size:4rem; margin-bottom:40px;">${s.question}</div>
+                    <div style="display:flex; gap:30px; justify-content:center;">
+                        ${s.options.map((opt, i) => `
+                            <div style="padding:20px 50px; background:#2c3e50; border-radius:15px; font-size:2.5rem; border:4px solid ${subStep >= 1 && i === 1 ? '#2ecc71' : 'transparent'}">${opt}</div>
+                        `).join('')}
+                    </div>
+                </div>`;
         }
 
-        container.appendChild(slideDiv);
+        container.appendChild(wrapper);
     }
 
-    // 4. منطق الإجابة
-    window.checkAnswer = function(btn, isCorrect) {
-        if (isCorrect) {
-            btn.style.backgroundColor = '#2ecc71';
-            btn.style.color = 'white';
-            btn.style.borderColor = '#27ae60';
-            setTimeout(() => {
-                if (currentSlide < slidesData.length - 1) {
-                    currentSlide++;
-                    renderSlide(currentSlide);
-                }
-            }, 800);
-        } else {
-            btn.style.backgroundColor = '#e74c3c';
-            btn.style.color = 'white';
-            btn.style.transform = 'shake 0.5s'; // يمكن إضافة أنميشن اهتزاز هنا
-            setTimeout(() => {
-                btn.style.backgroundColor = 'white';
-                btn.style.color = 'black';
-            }, 600);
+    document.onkeydown = (e) => {
+        const s = slides[currentSlide];
+        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { // Next
+            if (s.type === 'definitions' && subStep < s.items.length - 1) subStep++;
+            else if (s.type === 'compare-table' && subStep < s.rows.length - 1) subStep++;
+            else if (s.type === 'rule-anim' && subStep < s.examples.length - 1) subStep++;
+            else if (s.type === 'fill-practice' && subStep < (s.items.length * 2) - 1) subStep++;
+            else if (s.type === 'mcq-final' && subStep < 1) subStep++;
+            else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
+        } else if (e.keyCode === 37) { // Back
+            if (subStep > 0) subStep--;
+            else if (currentSlide > 0) { currentSlide--; subStep = 0; }
         }
+        render();
     };
 
-    // 5. التحكم بالكيبورد (يمين ويسار)
-    document.onkeydown = function(e) {
-        if (e.keyCode === 39) { // Right Arrow
-            if (currentSlide < slidesData.length - 1) {
-                currentSlide++;
-                renderSlide(currentSlide);
-            }
-        } else if (e.keyCode === 37) { // Left Arrow
-            if (currentSlide > 0) {
-                currentSlide--;
-                renderSlide(currentSlide);
-            }
-        }
-    };
-
-    // إضافة الأنميشن
-    if (!document.getElementById('slideStyles')) {
-        const style = document.createElement('style');
-        style.id = 'slideStyles';
-        style.innerHTML = `
-            @keyframes slideInRight {
-                from { transform: translateX(100px); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            .quiz-opt:hover { border-color: #3498db !important; background: #f8f9fa !important; }
-        `;
-        document.head.appendChild(style);
-    }
-
-    renderSlide(currentSlide);
+    render();
 })();

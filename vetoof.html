@@ -244,51 +244,55 @@ const sessionData = {
         }
 
         // Open Final Activity View with dynamic script loading
-        function openFinalActivity(lv, ss, actName) {
-            const details = `
-                <span style="margin: 0 10px;">Level ${lv}</span> | 
-                <span style="margin: 0 10px;">Session ${ss}</span> | 
-                <span style="color: var(--primary-red); margin: 0 10px;">${actName}</span>
-                <button class="main-btn" style="display:inline-block; margin-left:20px; padding: 5px 15px;" onclick="closeAll()">Levels Portal</button>
-            `;
-            document.getElementById('activityDetails').innerHTML = details;
+function openFinalActivity(lv, ss, actName) {
+    const details = `
+        <span style="margin: 0 10px;">Level ${lv}</span> | 
+        <span style="margin: 0 10px;">Session ${ss}</span> | 
+        <span style="color: var(--primary-red); margin: 0 10px;">${actName}</span>
+        <button class="main-btn" style="display:inline-block; margin-left:20px; padding: 5px 15px;" onclick="closeAll()">Levels Portal</button>
+    `;
+    document.getElementById('activityDetails').innerHTML = details;
 
-            const container = document.getElementById('activityFinalContent');
-            container.innerHTML = '<h2 style="color: #666;">Loading Activity Contents...</h2>';
-            document.getElementById('activityOverlay').style.display = 'block';
+    const container = document.getElementById('activityFinalContent');
+    container.innerHTML = '<h2 style="color: #666;">Loading Activity Contents...</h2>';
+    document.getElementById('activityOverlay').style.display = 'block';
 
-            // --- نظام التسمية الموحد (WOLF Standard) ---
-            // 1. تنظيف الاسم من المسافات
-            let cleanName = actName.replace(/\s+/g, ''); 
-            // 2. أخذ أول 3 حروف فقط
-            let shortName = cleanName.substring(0, 3);
-            // 3. جعل أول حرف كبير (Upper Case) للباقة (اختياري، حسب تسميتك للملفات)
-            shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
-            
-            // بناء اسم الملف النهائي
-            const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
-            const filePath = `data/${fileName}`;
-            // ------------------------------------------
+    // --- منطق بناء اسم الملف المطور ---
+    let fileName = "";
+    
+    // إذا كان اسم النشاط هو Gr1 أو Gr2 نستخدمه كما هو
+    if (actName === "Gr1" || actName === "Gr2") {
+        fileName = `L-${lv}-S-${ss}-${actName}.js`;
+    } else {
+        // لبقية الأنشطة: نأخذ أول 3 حروف وننظف الاسم
+        let cleanName = actName.replace(/\s+/g, ''); 
+        let shortName = cleanName.substring(0, 3);
+        shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
+        fileName = `L-${lv}-S-${ss}-${shortName}.js`;
+    }
 
-            const oldScript = document.getElementById('activity-script');
-            if (oldScript) oldScript.remove();
+    const filePath = `data/${fileName}`;
+    // --------------------------------
 
-            const script = document.createElement('script');
-            script.id = 'activity-script';
-            script.src = filePath;
-            
-            script.onerror = () => {
-                container.innerHTML = `
-                    <div style="color: #e74c3c; padding: 20px; border: 2px dashed #e74c3c; border-radius: 15px; background: rgba(231, 76, 60, 0.1);">
-                        <h3>⚠️ File Not Found!</h3>
-                        <p>Expected File: <span style="color: yellow;">${fileName}</span></p>
-                        <p>Path: <span style="color: #fff;">${filePath}</span></p>
-                    </div>
-                `;
-            };
+    const oldScript = document.getElementById('activity-script');
+    if (oldScript) oldScript.remove();
 
-            document.body.appendChild(script);
-        }
+    const script = document.createElement('script');
+    script.id = 'activity-script';
+    script.src = filePath;
+    
+    script.onerror = () => {
+        container.innerHTML = `
+            <div style="color: #e74c3c; padding: 20px; border: 2px dashed #e74c3c; border-radius: 15px; background: rgba(231, 76, 60, 0.1);">
+                <h3>⚠️ File Not Found!</h3>
+                <p>Expected File: <span style="color: yellow;">${fileName}</span></p>
+                <p>Path: <span style="color: #fff;">${filePath}</span></p>
+            </div>
+        `;
+    };
+
+    document.body.appendChild(script);
+}
 
         // Tokens Portal
         function toggleTokens() {

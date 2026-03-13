@@ -136,56 +136,80 @@
 
     <script>
 const sessionData = {
+    // Level 1
     "1-1": ["Gr 1 study", "Lis 1 intro", "Reading 1 Rev"],
     "1-2": ["Gr 1 Rev", "Gr 2 study"],
     "1-3": ["Gr 2 Rev", "Gr 3 study"],
     "1-4": ["Gr 3 Rev", "Gr 4 study"],
+
+    // Level 2
     "2-1": ["Lis 4 Rev", "Gr 4 Rev", "Reading 5 Rev"],
     "2-2": ["Gr 5 test", "Reading 2 Rec"],
     "2-3": ["Vocab 3 Rev", "Reading 7 Rev"],
     "2-4": ["Lis 7 test", "Reading 4 Rec"],
+
+    // Level 3
     "3-1": ["Lis 8 Rev", "Gr 6 Rev", "Reading 9 Rev"],
     "3-2": ["Lis 9 test", "Reading 6 Rec"],
     "3-3": ["Reading 6 Rev", "Reading 11 Rev"],
     "3-4": ["Reading 8 Rev", "Reading 12 Rev"],
+
+    // Level 4
     "4-1": ["Lis 12 Rev", "Gr 8 Rev", "Reading 13 Rev"],
     "4-2": ["Lis 13 test", "Reading 10 Rec"],
     "4-3": ["Reading 10 Rev", "Reading 15 Rev"],
     "4-4": ["Reading 12 Rec", "Reading 16 Rev"],
+
+    // Level 5
     "5-1": ["Lis 16 Rev", "Gr 10 Rev", "Reading 17 Rev"],
     "5-2": ["Lis 17 test", "Reading 14 Rec"],
     "5-3": ["Reading 14 Rev", "Reading 19 Rev"],
     "5-4": ["Reading 16 Rec", "Reading 20 Rev"],
+
+    // Level 6
     "6-1": ["Lis 20 Rev", "Gr 12 Rev", "Reading 21 Rev"],
     "6-2": ["Lis 21 test", "Reading 18 Rec"],
     "6-3": ["Reading 18 Rev", "Reading 23 Rev"],
     "6-4": ["Reading 20 Rec", "Reading 24 Rev"],
+
+    // Level 7
     "7-1": ["Lis 24 Rev", "Gr 14 Rev", "Reading 25 Rev"],
     "7-2": ["Lis 25 test", "Reading 22 Rec"],
     "7-3": ["Reading 22 Rev", "Reading 27 Rev"],
     "7-4": ["Reading 24 Rec", "Reading 28 Rev"],
+
+    // Level 8
     "8-1": ["Lis 28 Rev", "Gr 16 Rev", "Reading 29 Rev"],
     "8-2": ["Lis 29 test", "Reading 26 Rec"],
     "8-3": ["Reading 26 Rev", "Reading 31 Rev"],
     "8-4": ["Reading 28 Rec", "Reading 32 Rev"],
+
+    // Level 9
     "9-1": ["Lis 32 Rev", "Gr 18 Rev", "Reading 33 Rev"],
     "9-2": ["Lis 33 test", "Reading 30 Rec"],
     "9-3": ["Reading 30 Rev", "Reading 35 Rev"],
     "9-4": ["Reading 32 Rec", "Reading 36 Rev"],
+
+    // Level 10
     "10-1": ["Lis 36 Rev", "Gr 20 Rev", "Reading 37 Rev"],
     "10-2": ["Lis 37 test", "Reading 34 Rec"],
     "10-3": ["Reading 34 Rev", "Reading 39 Rev"],
     "10-4": ["Reading 36 Rec", "Reading 40 Rev"],
+
+    // Level 11
     "11-1": ["Lis 40 Rev", "GP intro", "Lis 1 test"],
     "11-2": ["Lis 41 test", "Reading 38 Rec"],
     "11-3": ["Reading 38 Rev", "Gr 3 test"],
     "11-4": ["Reading 40 Rec", "Vocab 4 test"],
+
+    // Level 12
     "12-1": ["gp rev", "GP intro", "Gr 1 test"],
     "12-2": ["Gr 2 study", "Reading 38 Rec"],
     "12-3": ["dmt 5 rev", "Gr 3 test"],
     "12-4": ["dmt 5 test", "Vocab 4 test"]
 };
 
+        // Initialize Levels
         const grid = document.getElementById('levelsGrid');
         for (let i = 1; i <= 12; i++) {
             const wrap = document.createElement('div');
@@ -205,11 +229,12 @@ const sessionData = {
             grid.appendChild(wrap);
         }
 
+        // Open Session (Activity Grid)
         function openSession(lv, ss) {
             const activities = sessionData[`${lv}-${ss}`] || ["Coming Soon"];
             let html = `<div class="activity-grid">`;
             activities.forEach(act => {
-                html += `<div class="activity-card" onclick="openFinalActivity(${lv}, ss, '${act}')">${act}</div>`;
+                html += `<div class="activity-card" onclick="openFinalActivity(${lv}, ${ss}, '${act}')">${act}</div>`;
             });
             html += `</div>`;
             
@@ -218,55 +243,54 @@ const sessionData = {
             updateBtn("Levels Portal", () => closeAll());
         }
 
-function openFinalActivity(lv, ss, actName) {
-    const details = `
-        <span style="margin: 0 10px;">Level ${lv}</span> | 
-        <span style="margin: 0 10px;">Session ${ss}</span> | 
-        <span style="color: var(--primary-red); margin: 0 10px;">${actName}</span>
-        <button class="main-btn" style="display:inline-block; margin-left:20px; padding: 5px 15px;" onclick="closeAll()">Levels Portal</button>
-    `;
-    document.getElementById('activityDetails').innerHTML = details;
+        // Open Final Activity View with dynamic script loading
+        function openFinalActivity(lv, ss, actName) {
+            const details = `
+                <span style="margin: 0 10px;">Level ${lv}</span> | 
+                <span style="margin: 0 10px;">Session ${ss}</span> | 
+                <span style="color: var(--primary-red); margin: 0 10px;">${actName}</span>
+                <button class="main-btn" style="display:inline-block; margin-left:20px; padding: 5px 15px;" onclick="closeAll()">Levels Portal</button>
+            `;
+            document.getElementById('activityDetails').innerHTML = details;
 
-    const container = document.getElementById('activityFinalContent');
-    container.innerHTML = '<h2 style="color: #666;">Loading Activity Contents...</h2>';
-    document.getElementById('activityOverlay').style.display = 'block';
+            const container = document.getElementById('activityFinalContent');
+            container.innerHTML = '<h2 style="color: #666;">Loading Activity Contents...</h2>';
+            document.getElementById('activityOverlay').style.display = 'block';
 
-    // --- منطق WOLF المطور لبناء اسم الملف ---
-    let fileName = "";
-    let cleanName = actName.replace(/\s+/g, ''); 
-    let shortName = cleanName.substring(0, 3);
-    shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
+            // --- نظام التسمية الموحد (WOLF Standard) ---
+            // 1. تنظيف الاسم من المسافات
+            let cleanName = actName.replace(/\s+/g, ''); 
+            // 2. أخذ أول 3 حروف فقط
+            let shortName = cleanName.substring(0, 3);
+            // 3. جعل أول حرف كبير (Upper Case) للباقة (اختياري، حسب تسميتك للملفات)
+            shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
+            
+            // بناء اسم الملف النهائي
+            const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
+            const filePath = `data/${fileName}`;
+            // ------------------------------------------
 
-    if (lv === 1 && ss === 2 && shortName === "Gra") {
-        fileName = `L-${lv}-S-${ss}-${shortName}1.js`; 
-    } else if (actName === "Gr1" || actName === "Gr2") {
-        fileName = `L-${lv}-S-${ss}-${actName}.js`;
-    } else {
-        fileName = `L-${lv}-S-${ss}-${shortName}.js`;
-    }
-    const filePath = `data/${fileName}`;
-    // ---------------------------------------
+            const oldScript = document.getElementById('activity-script');
+            if (oldScript) oldScript.remove();
 
-    const oldScript = document.getElementById('activity-script');
-    if (oldScript) oldScript.remove();
+            const script = document.createElement('script');
+            script.id = 'activity-script';
+            script.src = filePath;
+            
+            script.onerror = () => {
+                container.innerHTML = `
+                    <div style="color: #e74c3c; padding: 20px; border: 2px dashed #e74c3c; border-radius: 15px; background: rgba(231, 76, 60, 0.1);">
+                        <h3>⚠️ File Not Found!</h3>
+                        <p>Expected File: <span style="color: yellow;">${fileName}</span></p>
+                        <p>Path: <span style="color: #fff;">${filePath}</span></p>
+                    </div>
+                `;
+            };
 
-    const script = document.createElement('script');
-    script.id = 'activity-script';
-    script.src = filePath;
-    
-    script.onerror = () => {
-        container.innerHTML = `
-            <div style="color: #e74c3c; padding: 20px; border: 2px dashed #e74c3c; border-radius: 15px; background: rgba(231, 76, 60, 0.1);">
-                <h3>⚠️ File Not Found!</h3>
-                <p>Expected File: <span style="color: yellow;">${fileName}</span></p>
-                <p>Path: <span style="color: #fff;">${filePath}</span></p>
-            </div>
-        `;
-    };
+            document.body.appendChild(script);
+        }
 
-    document.body.appendChild(script);
-}
-
+        // Tokens Portal
         function toggleTokens() {
             const categories = ["Attendence", "ICA", "Reading", "Tongue Twister", "One Shot", "Games", "Squeezer", "DMT", "Wish", "Project", "Graduation Project", "Extra Bonus"];
             let html = `<div class="tokens-grid">`;

@@ -9,178 +9,100 @@
     let subStep = 0;
 
     const slides = [
-        /* 1: Title */
-        { type: 'title', content: 'IF CONDITIONS', color: '#e74c3c' },
-        
-        /* 2: Usage */
+        /* 1: Intro */
+        { type: 'title', content: 'TELLING THE TIME', color: '#f1c40f' },
+
+        /* 2: Clock Types */
         { 
-            type: 'writing', 
-            title: 'Usage', 
-            content: 'Expressing:<br>• Facts<br>• Advice<br>• Regret' 
+            type: 'clock-types', 
+            left: { name: 'Analog (العقارب)', val: '12, 1, 2, 3...' },
+            right: { name: 'Digital (الرقمية)', val: '00:00' } 
         },
 
-        /* 3: Zero Condition Title */
-        { type: 'title', content: 'Condition Zero (Facts)', color: '#ffffff' },
+        /* 3: Teaching the Times (6:00 to 6:55) */
+        ...[
+            { h: 6, m: 0, ways: ["It’s 6 o’clock"] },
+            { h: 6, m: 5, ways: ["It’s 5 after 6", "It’s 6 O 5"] },
+            { h: 6, m: 10, ways: ["It’s 10 after 6", "It’s 6 - 10"] },
+            { h: 6, m: 15, ways: ["It’s 15 after 6", "It’s 6 - 15"] },
+            { h: 6, m: 30, ways: ["It’s 6 - 30", "It’s half past 6"] },
+            { h: 6, m: 35, ways: ["It’s 25 to 7", "It’s 6 - 35"] },
+            { h: 6, m: 45, ways: ["It’s 15 to 7", "It’s 6 - 45"] },
+            { h: 6, m: 55, ways: ["It’s 5 to 7", "It’s 6 - 55"] }
+        ].map(t => ({ type: 'interactive-clock', hour: t.h, min: t.m, text: t.ways })),
 
-        /* 4: Zero Formulation */
+        /* 4: Exercise Time (Based on PPT Exercises) */
         { 
-            type: 'writing', 
-            title: 'Formulation', 
-            content: '<span style="color:#e74c3c;">If + Present simple</span> (cause)<br>+<br><span style="color:#f1c40f;">Present simple</span> (result)<br><br><small>Example: If you heat ice, it melts.</small>' 
+            type: 'quiz', 
+            title: 'Exercise Time',
+            hour: 2, min: 20, 
+            ans: ["It’s 20 after 2", "It’s 2 - 20"] 
         },
-
-        /* 5: Zero Examples (One by One) */
         { 
-            type: 'reveal-list', 
-            items: [
-                "If you heat water to 100°C, it boils.",
-                "If you don't water plants, they die.",
-                "If you touch a fire, you get burned.",
-                "If people eat too many sweets, they get cavities.",
-                "If the sun sets, it gets dark."
-            ] 
+            type: 'quiz', 
+            title: 'Exercise Time',
+            hour: 1, min: 40, 
+            ans: ["It’s 20 to 2", "It’s 1 - 40"] 
         },
-
-        /* 6: Condition One Title */
-        { type: 'title', content: 'Condition One (Possible Future)', color: '#2ecc71' },
-
-        /* 7: One Formulation */
         { 
-            type: 'writing', 
-            title: 'Formulation', 
-            content: '<span style="color:#e74c3c;">If + Present simple</span> (cause)<br>+<br><span style="color:#f1c40f;">Will + Inf</span> (result)' 
-        },
-
-        /* 8: One Examples (One by One) */
-        { 
-            type: 'reveal-list', 
-            items: [
-                "If you study hard, you will pass the exam easily.",
-                "If it rains tomorrow, we will stay at home.",
-                "If he saves enough money, he will buy a new car.",
-                "If she cooks dinner, I will wash the dishes.",
-                "If they arrive early, they will get the best seats."
-            ] 
-        },
-
-        /* 9: Zero VS One Comparison */
-        { 
-            type: 'writing', 
-            title: 'Zero VS One', 
-            content: 'Fact: <small>If you don\'t water plants, they die.</small><br>Possibility: <small>If she cooks dinner, I will wash the dishes.</small>' 
-        },
-
-        /* 10: Condition Two Title */
-        { type: 'title', content: 'Condition Two (Imaginary)', color: '#3498db' },
-
-        /* 11: Two Formulation */
-        { 
-            type: 'writing', 
-            title: 'Formulation', 
-            content: '<span style="color:#e74c3c;">If + Past simple</span> (cause)<br>+<br><span style="color:#f1c40f;">Would + Inf</span> (result)' 
-        },
-
-        /* 12: Two Examples (One by One) */
-        { 
-            type: 'reveal-list', 
-            items: [
-                "If you studied hard, you would pass the exam.",
-                "If I won the lottery, I would travel the world.",
-                "If he had more time, he would learn a language.",
-                "If she were taller, she would join the team.",
-                "If they lived in France, they would speak French."
-            ] 
-        },
-
-        /* 13: Condition Three Title */
-        { type: 'title', content: 'Condition Three (Past Regret)', color: '#9b59b6' },
-
-        /* 14: Three Formulation */
-        { 
-            type: 'writing', 
-            title: 'Formulation', 
-            content: '<span style="color:#e74c3c;">If + Past Perfect (had + V3)</span><br>+<br><span style="color:#f1c40f;">Would have + V3</span>' 
-        },
-
-        /* 15: Three Examples */
-        { 
-            type: 'reveal-list', 
-            items: [
-                "If the doctor had come early, the patient would have lived.",
-                "If you had studied harder, you would have passed.",
-                "If I had known, I would have left sooner.",
-                "If she had seen the light, she would have stopped.",
-                "If they had invited me, I would have gone."
-            ] 
-        },
-
-        /* 16: Two VS Three Comparison */
-        { 
-            type: 'writing', 
-            title: 'Two VS Three', 
-            content: 'Two: <small>If I won the lottery, I would travel.</small><br>Three: <small>If the doctor had come, the patient would have lived.</small>' 
-        },
-
-        /* 17: Interactive Quiz Question (from the table) */
-        { 
-            type: 'mcq', 
-            question: "If she learned English well, she ________ the job.",
-            options: ["A) would get", "B) would learn / get", "C) Will learn / got", "D) Learn / get"],
-            answer: 0 
-        },
-
-        /* 10 PRACTICE QUESTIONS FOR PASSIVES/IF (Generating 10 Mixed) */
-        { type: 'mcq', question: "1. If I ________ you, I wouldn't do that.", options: ["A) am", "B) was", "C) were", "D) had been"], answer: 2 },
-        { type: 'mcq', question: "2. If it ________, we will cancel the trip.", options: ["A) rains", "B) rained", "C) will rain", "D) had rained"], answer: 0 },
-        { type: 'mcq', question: "3. If she ________ her phone, she would have called.", options: ["A) didn't lose", "B) hasn't lost", "C) hadn't lost", "D) wouldn't lose"], answer: 2 },
-        { type: 'mcq', question: "4. Water ________ if you heat it to 100°C.", options: ["A) boil", "B) boils", "C) will boil", "D) boiled"], answer: 1 },
-        { type: 'mcq', question: "5. If I ________ time, I would start a hobby.", options: ["A) have", "B) will have", "C) had", "D) had had"], answer: 2 },
-        { type: 'mcq', question: "6. If they ________ earlier, they wouldn't have missed the bus.", options: ["A) leave", "B) left", "C) had left", "D) were leaving"], answer: 2 },
-        { type: 'mcq', question: "7. You ________ weight if you eat too much junk food.", options: ["A) gain", "B) gained", "C) would gain", "D) had gained"], answer: 0 },
-        { type: 'mcq', question: "8. If he ________ the truth, he would be angry.", options: ["A) knows", "B) knew", "C) will know", "D) had known"], answer: 1 },
-        { type: 'mcq', question: "9. If it ________ cold, I wear a jacket.", options: ["A) is", "B) was", "C) will be", "D) were"], answer: 0 },
-        { type: 'mcq', question: "10. If we had practiced more, we ________ the match.", options: ["A) will win", "B) would win", "C) would have won", "D) won"], answer: 2 },
-        
-        { type: 'title', content: 'EXCELLENT!', color: '#2ecc71' }
+            type: 'quiz', 
+            title: 'Exercise Time',
+            hour: 10, min: 50, 
+            ans: ["It’s 10 to 11", "It’s 10 - 50"] 
+        }
     ];
 
     function render() {
         container.innerHTML = '';
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = `width:95%; text-align:center; animation: fadeIn 0.4s ease;`;
+        wrapper.style.cssText = `width:90%; text-align:center;`;
 
         if (s.type === 'title') {
-            wrapper.innerHTML = `<h1 style="font-size:8rem; font-weight:900; color:${s.color}; margin:0;">${s.content}</h1>`;
+            wrapper.innerHTML = `<h1 style="font-size:8rem; font-weight:900; color:${s.color};">${s.content}</h1>`;
         } 
-        else if (s.type === 'writing') {
+        else if (s.type === 'clock-types') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#1e1e1e; padding:50px; border-left:15px solid #e74c3c; border-radius:15px; width:100%;">
-                    <div style="color:#e74c3c; font-weight:bold; font-size:1.8rem; margin-bottom:10px;">📝 WRITING TIME</div>
-                    <h2 style="font-size:4.5rem; margin-bottom:15px; color:#fff;">${s.title}</h2>
-                    <div style="font-size:3.5rem; line-height:1.3; color:#ccc;">${s.content}</div>
+                <div style="display:flex; gap:40px; justify-content:center;">
+                    <div style="background:#1e1e1e; padding:40px; border-radius:30px; border:4px solid #3498db; width:40%;">
+                        <h2 style="font-size:2.5rem;">${s.left.name}</h2>
+                        <div style="font-size:1.5rem; color:#888;">[cite: 191]</div>
+                    </div>
+                    <div style="background:#1e1e1e; padding:40px; border-radius:30px; border:4px solid #e74c3c; width:40%;">
+                        <h2 style="font-size:2.5rem;">${s.right.name}</h2>
+                        <div style="font-size:4rem; font-family:monospace;">${s.right.val}</div>
+                        <div style="font-size:1.5rem; color:#888;">[cite: 192, 205]</div>
+                    </div>
                 </div>`;
         }
-        else if (s.type === 'reveal-list') {
-            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; text-align:left;">
-                ${s.items.map((item, i) => `
-                    <div style="opacity:${i <= subStep ? 1 : 0}; transform:translateX(${i <= subStep ? 0 : -30}px); transition:all 0.4s; background:#1e1e1e; padding:20px; border-radius:10px; font-size:2.8rem; font-weight:bold; color:#fff; border-left:8px solid #3498db;">
-                        ${item}
-                    </div>
-                `).join('')}
-            </div>`;
-        }
-        else if (s.type === 'mcq') {
+        else if (s.type === 'interactive-clock' || s.type === 'quiz') {
+            const hDeg = (s.hour * 30) + (s.min * 0.5);
+            const mDeg = s.min * 6;
+            
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#1e1e1e; padding:40px; border-radius:20px; border: 2px solid #333;">
-                    <div style="font-size:2.8rem; font-weight:bold; color:#fff; margin-bottom:30px;">${s.question}</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; opacity:${subStep >= 1 ? 1 : 0}; transition: 0.5s;">
-                        ${s.options.map((opt, i) => {
-                            let bgColor = "#2c3e50";
-                            let border = "3px solid transparent";
-                            if (subStep >= 2 && i === s.answer) { bgColor = "#27ae60"; border = "3px solid #fff"; }
-                            return `<div style="background:${bgColor}; padding:20px; border-radius:10px; font-size:1.8rem; font-weight:600; border: ${border}; transition: 0.3s;">${opt}</div>`;
-                        }).join('')}
+                <div style="display:flex; align-items:center; justify-content:space-around; gap:20px;">
+                    <div style="width:300px; height:300px; border:10px solid white; border-radius:50%; position:relative; background:#222;">
+                        <div style="position:absolute; top:10px; left:50%; transform:translateX(-50%); font-size:1.5rem;">12</div>
+                        <div style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); font-size:1.5rem;">6</div>
+                        <div style="position:absolute; right:15px; top:50%; transform:translateY(-50%); font-size:1.5rem;">3</div>
+                        <div style="position:absolute; left:15px; top:50%; transform:translateY(-50%); font-size:1.5rem;">9</div>
+                        <div style="position:absolute; bottom:50%; left:50%; width:6px; height:70px; background:#e74c3c; transform-origin:bottom; transform:translateX(-50%) rotate(${hDeg}deg); border-radius:10px;"></div>
+                        <div style="position:absolute; bottom:50%; left:50%; width:4px; height:110px; background:#3498db; transform-origin:bottom; transform:translateX(-50%) rotate(${mDeg}deg); border-radius:10px;"></div>
+                        <div style="position:absolute; top:50%; left:50%; width:15px; height:15px; background:white; border-radius:50%; transform:translate(-50%,-50%);"></div>
+                    </div>
+
+                    <div style="text-align:left; flex:1;">
+                        <div style="font-size:1.5rem; color:#888; margin-bottom:10px;">Digital Display:</div>
+                        <div style="font-size:6rem; font-family:monospace; background:#111; padding:10px 30px; border-radius:15px; display:inline-block; border:2px solid #333;">
+                            ${s.hour}:${s.min < 10 ? '0'+s.min : s.min}
+                        </div>
+                        <div style="margin-top:30px; display:flex; flex-direction:column; gap:15px;">
+                            ${(s.type === 'quiz' ? s.ans : s.text).map((text, i) => `
+                                <div style="font-size:2.5rem; font-weight:bold; color:#f1c40f; opacity:${subStep >= i ? 1 : 0}; transition:0.3s; transform:translateX(${subStep >= i ? 0 : -20}px);">
+                                    ${text}
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>`;
         }
@@ -190,11 +112,11 @@
 
     document.onkeydown = (e) => {
         const s = slides[currentSlide];
-        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { 
-            if (s.type === 'reveal-list' && subStep < s.items.length - 1) subStep++;
-            else if (s.type === 'mcq' && subStep < 2) subStep++;
+        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { // Next
+            let maxSteps = s.type === 'interactive-clock' ? s.text.length - 1 : (s.type === 'quiz' ? s.ans.length - 1 : 0);
+            if (subStep < maxSteps) subStep++;
             else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
-        } else if (e.keyCode === 37) { 
+        } else if (e.keyCode === 37) { // Back
             if (subStep > 0) subStep--;
             else if (currentSlide > 0) { currentSlide--; subStep = 0; }
         }

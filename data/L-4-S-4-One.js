@@ -3,28 +3,30 @@
     if (!container) return;
 
     // --- إعدادات القصة ---
-    const storyTitle = "The Chef and the Big Mistake";
+    const storyTitle = "The Dog Who Thought He Was a Cat";
     
     const storyContent = `
-        Mario was a very <span class="target-word">famous</span> chef in a small town. Everyone loved his <span class="target-word">pasta</span> and his delicious cakes. 
-        Mario was very <span class="target-word">proud</span> of his work. Every morning, he went to the <span class="target-word">market</span> to buy fresh <span class="target-word">vegetables</span> and sweet fruit.
+        Max was a big, friendly <span class="target-word">dog</span> with a very waggy tail. He lived in a house with a small <span class="target-word">garden</span> and a clever cat named Luna. 
+        Because Max spent all his time with Luna, he started to <span class="target-word">believe</span> he was a cat too.
         <br><br>
-        One Monday, Mario woke up with a very big <span class="target-word">cold</span>. His nose was blocked, and he couldn't <span class="target-word">smell</span> anything. 
-        "Oh no!" he said. "Today is the day of the Mayor's <span class="target-word">dinner</span>." 
-        Mario was <span class="target-word">nervous</span>, but he had to go to the kitchen.
+        Every morning, Max tried to <span class="target-word">jump</span> on the kitchen <span class="target-word">counter</span>. But Max was too heavy! 
+        He would crash into the <span class="target-word">dishes</span> with a loud noise. "Woof!" he said, but then he tried to <span class="target-word">purr</span> like Luna. 
+        It sounded like a broken <span class="target-word">engine</span>.
         <br><br>
-        He started to cook his special <span class="target-word">soup</span>. Because he couldn't smell, he was very <span class="target-word">confused</span>. 
-        He saw a bowl of white <span class="target-word">powder</span>. He thought it was <span class="target-word">salt</span>, so he put five spoons of it into the pot. 
-        But it wasn't salt; it was <span class="target-word">sugar</span>!
+        One sunny afternoon, Max saw a <span class="target-word">squirrel</span> in the tree. Luna climbed the tree <span class="target-word">quickly</span> to catch it. Max tried to do the same. 
+        He put his big <span class="target-word">paws</span> on the tree, but he just slid down and landed on his <span class="target-word">back</span>. 
+        He looked very <span class="target-word">silly</span>, and the squirrel just looked at him with <span class="target-word">surprise</span>.
         <br><br>
-        Then, he wanted to add some <span class="target-word">pepper</span> for a bit of spice. Instead, he grabbed a jar of <span class="target-word">chocolate</span> chips by mistake. 
-        "This looks a bit <span class="target-word">strange</span>," Mario whispered, but he was too <span class="target-word">busy</span> to stop. He even added some <span class="target-word">lemons</span> to a dish that needed onions.
+        Later, the owner brought a bowl of <span class="target-word">milk</span> for Luna and a <span class="target-word">bone</span> for Max. 
+        Max ignored his bone. He tried to drink the milk from the tiny <span class="target-word">bowl</span>, but his big nose pushed the milk all over the <span class="target-word">floor</span>. 
+        He was very <span class="target-word">hungry</span>, but he was also very <span class="target-word">stubborn</span>.
         <br><br>
-        When the Mayor arrived, he sat at the <span class="target-word">table</span> and took a big spoon of the soup. Mario watched him from behind the <span class="target-word">curtain</span>. 
-        The Mayor’s face turned <span class="target-word">purple</span>. He didn't scream; instead, he started to laugh.
+        Suddenly, a <span class="target-word">stranger</span> walked past the gate. Luna ran away and hid under the <span class="target-word">sofa</span>. 
+        But Max didn't hide. He stood up, barked loudly, and <span class="target-word">protected</span> the house. The stranger was scared and ran away.
         <br><br>
-        "Mario!" the Mayor called. "This is the most <span class="target-word">creative</span> meal I have ever eaten! It is like a dessert and a dinner at the same time." 
-        Mario felt very <span class="target-word">lucky</span>. He learned that even when you make a <span class="target-word">mistake</span>, sometimes the result can be wonderful.
+        His owner hugged him and said, "You are a <span class="target-word">brave</span> dog, Max!" 
+        Max felt very happy. He finally understood that he was not a cat, and that being a dog was actually a lot of <span class="target-word">fun</span>. 
+        He went back to the garden and finally chewed his bone.
     `;
     // -------------------------------------------------------
 

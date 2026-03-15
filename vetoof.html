@@ -8,11 +8,12 @@
     <style>
         :root {
             --bg-dark: #0a0a0a;
-            --veto-red: #ff3131; /* لون أحمر أكثر سطوعاً للشاشات الكبيرة */
+            --veto-red: #ff3131; 
             --veto-blue: #007bff;
             --text-main: #ffffff;
             --glass: rgba(255, 255, 255, 0.1);
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --font-giant: clamp(2rem, 5vw, 4rem);
         }
 
         body {
@@ -20,10 +21,9 @@
             background-color: var(--bg-dark);
             font-family: 'Oswald', 'Cairo', sans-serif;
             color: var(--text-main);
-            overflow: hidden; /* لمنع التمرير غير الضروري في العرض */
+            overflow: hidden; 
         }
 
-        /* --- Global Header (The Banner) --- */
         header {
             height: 12vh;
             background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(20,20,20,1) 100%);
@@ -36,7 +36,6 @@
         .logo-container img { height: 9vh; border-radius: 50%; border: 2px solid #fff; }
         .teacher-title { font-size: 2.5rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* --- Levels Map (Grid) --- */
         .levels-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -55,7 +54,7 @@
         .level-btn {
             width: 100%; height: 100%;
             background: var(--veto-red);
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; /* شكل هندسي مميز */
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
             display: flex; align-items: center; justify-content: center;
             font-size: 2rem; font-weight: bold; cursor: pointer;
             transition: var(--transition);
@@ -65,7 +64,6 @@
 
         .level-wrapper:hover .level-btn { transform: scale(1.1) rotate(5deg); background: #fff; color: var(--veto-red); }
 
-        /* --- Sub-Sessions (Floating Bubbles) --- */
         .sub-btn {
             position: absolute; width: 60px; height: 60px;
             background: var(--veto-blue); color: white;
@@ -81,7 +79,6 @@
         .level-wrapper.active .sub-btn:nth-child(4) { left: -30px; top: 60px; }
         .level-wrapper.active .sub-btn:nth-child(5) { right: -30px; top: 60px; }
 
-        /* --- Overlays (Full Screen Cinema) --- */
         .overlay {
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.95);
@@ -91,7 +88,7 @@
 
         .activity-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* عمودين ضخمين للوضوح */
+            grid-template-columns: repeat(2, 1fr);
             gap: 30px; padding: 10vh 10vw;
         }
 
@@ -101,6 +98,7 @@
             padding: 40px; font-size: 2.2rem;
             border-radius: 15px; cursor: pointer;
             transition: var(--transition);
+            color: #fff;
         }
 
         .activity-card:hover {
@@ -108,7 +106,6 @@
             transform: translateX(20px);
         }
 
-        /* --- The Stage (Activity Viewer) --- */
         .stage-header {
             padding: 20px; background: #000; display: flex; 
             justify-content: space-between; align-items: center;
@@ -121,11 +118,15 @@
             padding: 10px; text-align: center; font-weight: 900; font-size: 1.5rem;
         }
 
-        /* Keyboard Hint */
         .kb-hint {
             position: fixed; bottom: 80px; right: 20px;
             background: rgba(255,255,255,0.2); padding: 5px 15px;
             border-radius: 10px; font-size: 1rem; color: #aaa;
+        }
+
+        .loader-veto {
+            color: var(--veto-red);
+            font-weight: bold;
         }
     </style>
 </head>
@@ -152,23 +153,20 @@
             <div id="activityDetails" style="font-size: 1.8rem;"></div>
             <button onclick="closeAll()" style="background:var(--veto-red); border:none; color:#000; padding:10px 30px; font-weight:bold; cursor:pointer;">EXIT VIEW</button>
         </div>
-        <div id="activityFinalContent" style="height: 80vh; overflow: hidden;">
-            </div>
+        <div id="activityFinalContent" style="height: 80vh; overflow: hidden;"></div>
         <div id="activity-view-footer">VETO PROGRAM | INTERACTIVE STAGE</div>
     </div>
 
     <div class="kb-hint">Press [1-4] for Sessions | [ESC] to Back</div>
 
     <script>
-        // دمج بياناتك السابقة
-        const sessionData = { /* ... بياناتك المسجلة سابقاً ... */ };
+        const sessionData = {};
 
-        // بناء المستويات
         const grid = document.getElementById('levelsGrid');
         for (let i = 1; i <= 12; i++) {
             const wrap = document.createElement('div');
             wrap.className = 'level-wrapper';
-            wrap.innerHTML = `<div class="level-btn" onclick="toggleLevel(event, this)">L ${i}</div>`;
+            wrap.innerHTML = `<div class="level-btn" onclick="toggleLevel(event, this)">Level ${i}</div>`;
             for (let j = 1; j <= 4; j++) {
                 const s = document.createElement('div');
                 s.className = 'sub-btn'; s.innerText = j;
@@ -191,7 +189,6 @@
             document.getElementById('sessionTitle').innerText = `Level ${lv} - Session ${ss}`;
             let html = `<div class="activity-grid">`;
             activities.forEach((act, index) => {
-                // إضافة رقم النشاط ليسهل اختياره كيبوردياً مستقبلاً
                 html += `<div class="activity-card" onclick="openFinalActivity(${lv}, ${ss}, '${act}')">
                             <span style="color:var(--veto-red)">${index + 1}.</span> ${act}
                          </div>`;
@@ -203,36 +200,36 @@
 
         function openFinalActivity(lv, ss, actName) {
             document.getElementById('activityDetails').innerHTML = `L${lv} / S${ss} / <span style="color:var(--veto-red)">${actName}</span>`;
+            const container = document.getElementById('activityFinalContent');
+            
+            container.innerHTML = `
+                <div id="veto-stage" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: var(--font-giant);">
+                    <div class="loader-veto">جاري تحضير المحتوى...</div>
+                </div>
+            `;
+
             document.getElementById('activityOverlay').style.display = 'block';
             
-            // لوجيك تحميل الـ JS الخاص بك (WOLF Standard)
-            let cleanName = actName.replace(/\s+/g, ''); 
-            let shortName = cleanName.substring(0, 3).charAt(0).toUpperCase() + cleanName.substring(0, 3).slice(1);
-            const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
-            
+            const fileName = `L-${lv}-S-${ss}-${actName.replace(/\s+/g, '').substring(0, 3)}.js`;
             console.log("Architect Loading:", fileName);
-            // هنا يتم حقن الـ Script بنفس طريقتك الأصلية
         }
 
         function closeAll() {
             document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none');
         }
 
-        // محرك الكيبورد (Keyboard Engine)
         document.addEventListener('keydown', (e) => {
             if (e.key === "Escape") closeAll();
-            
-            // اختيار الجلسات بالأرقام عند فتح ليفل
+
             const activeLevel = document.querySelector('.level-wrapper.active');
             if (activeLevel && !document.getElementById('sessionOverlay').offsetParent) {
-                if (e.key >= 1 && e.key <= 4) {
-                    const lvText = activeLevel.querySelector('.level-btn').innerText.split(' ')[1];
-                    openSession(lvText, e.key);
+                const levelNum = activeLevel.querySelector('.level-btn').innerText.replace('Level ', '');
+                if (['1', '2', '3', '4'].includes(e.key)) {
+                    openSession(parseInt(levelNum), parseInt(e.key));
                 }
             }
         });
 
-        // إغلاق القوائم عند الضغط في أي مكان فارغ
         document.addEventListener('click', () => {
             document.querySelectorAll('.level-wrapper').forEach(w => w.classList.remove('active'));
         });

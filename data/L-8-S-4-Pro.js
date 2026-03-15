@@ -2,73 +2,82 @@
     const container = document.getElementById('activityFinalContent');
     if (!container) return;
 
-    // --- عناصر المشروع من ملفك (The 10 Keys) ---
-    const projectKeys = [
-        "Host", "Guest", "Characters", "Questions", "Answers",
-        "Opening", "Closing", "Harmony", "Back", "T.V Show"
+    // --- عناصر مشروع برنامج التلفزيون ---
+    const elements = [
+        { icon: "🎤", label: "Host", desc: "The person who leads the talk." },
+        { icon: "🌟", label: "Guest", desc: "A famous person or an expert." },
+        { icon: "🎭", label: "Characters", desc: "Interesting people in the show." },
+        { icon: "❓", label: "Questions", desc: "Prepare deep and fun questions." },
+        { icon: "💬", label: "Answers", desc: "Smart and exciting responses." },
+        { icon: "🎬", label: "Opening", desc: "How you start the show (Intro)." },
+        { icon: "🏁", label: "Closing", desc: "How you end and say goodbye." },
+        { icon: "🤝", label: "Harmony", desc: "Teamwork and smooth talking." }
     ];
 
     // --- التنسيق البصري ---
     container.innerHTML = '';
-    container.style.cssText = `height:calc(100vh - 100px); display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; color:#fff; font-family: 'Impact', sans-serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:calc(100vh - 100px); display:flex; flex-direction:column; align-items:center; background:#050505; color:#fff; font-family: 'Arial Black', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            /* خلفية الاستوديو */
-            .studio-overlay { position:absolute; inset:0; background: radial-gradient(circle, #1e3a8a 0%, #000 80%); opacity:0.6; z-index:1; }
+            .tv-header { text-align:center; margin-top:30px; z-index:10; }
+            .tv-header h1 { font-size: 4rem; color: #ff0000; text-transform: uppercase; letter-spacing: 5px; margin:0; text-shadow: 0 0 20px #ff0000; }
+            .tv-live { background:#ff0000; color:#fff; padding:5px 15px; border-radius:5px; font-size:1.2rem; display:inline-block; animation: blink 1s infinite; margin-top:10px; }
             
-            /* الكاميرا "On Air" */
-            .on-air { 
-                position:absolute; top:40px; right:60px; background:#ff0000; color:#fff; 
-                padding:10px 30px; border-radius:5px; font-size:1.5rem; font-weight:bold;
-                animation: blink 1.5s infinite; z-index:10; box-shadow: 0 0 20px #ff0000;
-            }
-            @keyframes blink { 0%, 100% { opacity:1; } 50% { opacity:0.3; } }
+            @keyframes blink { 0%, 100% { opacity:1; } 50% { opacity:0; } }
 
-            .project-title { font-size:5rem; color:#fff; text-transform:uppercase; letter-spacing:10px; margin-bottom:10px; z-index:5; text-shadow: 0 0 20px #38bdf8; }
-            .project-subtitle { font-size:1.5rem; color:#38bdf8; margin-bottom:50px; z-index:5; letter-spacing:2px; }
+            .elements-grid { 
+                display: grid; 
+                grid-template-columns: repeat(4, 1fr); 
+                gap: 20px; 
+                width: 90%; max-width: 1100px; 
+                margin-top: 40px; z-index:10;
+            }
 
-            /* شبكة العناصر الـ 10 */
-            .keys-grid { 
-                display:grid; grid-template-columns: repeat(5, 1fr); gap:15px; 
-                width:90%; max-width:1100px; z-index:5; 
+            .el-card {
+                background: linear-gradient(145deg, #1a1a1a, #000);
+                border: 2px solid #333;
+                padding: 20px; text-align: center; border-radius: 15px;
+                transition: 0.3s; cursor: pointer;
             }
-            .key-box { 
-                background:rgba(255,255,255,0.05); border:1px solid #38bdf8; 
-                padding:20px 10px; text-align:center; border-radius:10px;
-                font-family:'Segoe UI'; font-size:1.2rem; transition:0.3s;
-                display:flex; align-items:center; justify-content:center;
-            }
-            .key-box:hover { background:#38bdf8; color:#000; transform:scale(1.05); box-shadow:0 0 20px #38bdf8; }
+
+            .el-card:hover { border-color: #ff0000; transform: scale(1.05); box-shadow: 0 0 20px rgba(255,0,0,0.3); }
             
-            /* تنبيه الجروبات */
-            .group-info { 
-                margin-top:50px; background:#fff; color:#000; padding:15px 40px; 
-                border-radius:50px; font-size:1.2rem; z-index:5; font-family:'Segoe UI'; font-weight:bold;
-            }
+            .el-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+            .el-label { font-size: 1.5rem; color: #ff0000; display: block; margin-bottom: 5px; }
+            .el-desc { font-size: 0.9rem; color: #888; font-family: 'Segoe UI', sans-serif; }
+
+            /* تأثير أضواء الاستوديو */
+            .light { position:absolute; top:-100px; width:400px; height:600px; background: radial-gradient(circle, rgba(255,0,0,0.1) 0%, transparent 70%); filter:blur(50px); z-index:1; }
+            .light-left { left:-100px; transform: rotate(45deg); }
+            .light-right { right:-100px; transform: rotate(-45deg); }
         </style>
 
-        <div class="studio-overlay"></div>
-        <div class="on-air">● ON AIR</div>
+        <div class="light light-left"></div>
+        <div class="light light-right"></div>
 
-        <h1 class="project-title">PROJECT #1</h1>
-        <p class="project-subtitle">THE ULTIMATE T.V SHOW EXPERIENCE</p>
-
-        <div class="keys-grid" id="keysGrid"></div>
-
-        <div class="group-info">
-            Groups: 2 - 3 Students Only
+        <div class="tv-header">
+            <h1>T.V SHOW</h1>
+            <div class="tv-live">● LIVE SESSION</div>
+            <p style="color:#666; margin-top:15px; font-family:sans-serif;">Project #1: Work in groups of 2-3 to create your own show.</p>
         </div>
+
+        <div class="elements-grid" id="elementsGrid"></div>
+        
+        <div style="position:absolute; bottom:30px; color:#444; font-size:0.8rem; z-index:10;">PROJECT PREPARATION MODE</div>
     `;
 
-    const grid = document.getElementById('keysGrid');
-    
-    // ترتيب العناصر لعرضها (وضعت T.V Show في المركز أو النهاية حسب رغبتك)
-    projectKeys.forEach(key => {
-        const box = document.createElement('div');
-        box.className = 'key-box';
-        box.innerText = key;
-        grid.appendChild(box);
+    const grid = document.getElementById('elementsGrid');
+
+    elements.forEach(el => {
+        const card = document.createElement('div');
+        card.className = 'el-card';
+        card.innerHTML = `
+            <span class="el-icon">${el.icon}</span>
+            <span class="el-label">${el.label}</span>
+            <span class="el-desc">${el.desc}</span>
+        `;
+        grid.appendChild(card);
     });
 
 })();

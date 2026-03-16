@@ -34,7 +34,7 @@
             to { background-position: 100% 100%; }
         }
 
-        header, .activity-header {
+        header, .banner {
             width: 100%;
             background: linear-gradient(110deg, rgba(255,255,255,0.1) 40%, var(--accent-sun) 50%, rgba(255,255,255,0.1) 60%);
             background-size: 200% 100%;
@@ -47,7 +47,20 @@
         }
 
         header { padding: 15px 0; height: 100px; }
-        .activity-header { padding: 10px 0; font-size: 14px; color: var(--text-light); }
+
+        .activity-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+            z-index: 1000;
+            height: 100px;
+            background: #1e293b;
+            border-bottom: 4px solid var(--primary-tech-blue);
+            padding: 0 20px;
+            font-size: 2rem !important;
+        }
 
         @keyframes sunGleam {
             0% { background-position: 200% 0; }
@@ -130,14 +143,69 @@
         .level-wrapper.active .sub-btn:nth-child(4) { animation: subOrbit 4s linear infinite; animation-delay: -2s; }
         .level-wrapper.active .sub-btn:nth-child(5) { animation: subOrbit 4s linear infinite reverse; animation-delay: -3s; }
 
-        #activityFinalContent { padding: 0 !important; height: calc(100vh - 150px); overflow: hidden; background: white; border-radius: 20px; margin: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
-        #activity-view-footer { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.9); padding: 15px 0; text-align: center; border-top: 1px solid #ddd; font-weight: bold; color: var(--primary-tech-blue); }
+        #activityOverlay { background: #0f172a; }
+
+        #activityFinalContent {
+            height: calc(100vh - 160px) !important;
+            margin: 10px 20px !important;
+            border-radius: 15px;
+            background: #ffffff;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 0 !important;
+        }
+
+        #activity-view-footer {
+            height: 60px;
+            font-size: 1.5rem;
+            background: #1e293b;
+            color: #94a3b8;
+            border-top: 2px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
 
         .tokens-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; padding: 20px; }
-        .nav-link-btn { background: none; border: none; color: var(--text-light); font-size: var(--font-medium); font-weight: bold; cursor: pointer; padding: 5px 15px; border-radius: 10px; transition: 0.3s; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .nav-link-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+        
+        .nav-link-btn {
+            font-size: 1.8rem !important;
+            color: #3498db !important;
+            font-weight: 800;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px 15px;
+            transition: 0.3s;
+        }
+
         .nav-separator { color: rgba(255,255,255,0.5); font-size: var(--font-medium); margin: 0 5px; }
-        .nav-active-act { color: #f1c40f; font-size: var(--font-medium); font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        
+        .nav-active-act {
+            font-size: 2.2rem !important;
+            color: #f1c40f !important;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -227,28 +295,27 @@
 
         function openFinalActivity(lv, ss, actName) {
             const detailsHtml = `
-                <button class="nav-link-btn" onclick="goToLevels()">Level ${lv}</button>
-                <span class="nav-separator">|</span>
-                <button class="nav-link-btn" onclick="goToSession(${lv}, ${ss})">Session ${ss}</button>
-                <span class="nav-separator">|</span>
+                <button class="nav-link-btn" onclick="goToLevels()">L${lv}</button>
+                <span class="nav-separator">»</span>
+                <button class="nav-link-btn" onclick="goToSession(${lv}, ${ss})">S${ss}</button>
+                <span class="nav-separator">»</span>
                 <span class="nav-active-act">${actName}</span>
             `;
             document.getElementById('activityDetails').innerHTML = detailsHtml;
 
             const container = document.getElementById('activityFinalContent');
-            container.innerHTML = '<h2 style="color: #666; text-align:center; margin-top:50px;">Loading Activity Contents...</h2>';
+            container.innerHTML = '<div class="loader"></div><h2 style="font-size:3rem; color:#3498db;">Loading Session...</h2>';
+            
             document.getElementById('activityOverlay').style.display = 'block';
             document.body.style.overflow = 'hidden';
 
-            let cleanName = actName.replace(/\s+/g, ''); 
-            let shortName = cleanName.substring(0, 3);
-            shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
-            
-            const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
-            const filePath = `data/${fileName}`;
-
             const oldScript = document.getElementById('activity-script');
             if (oldScript) oldScript.remove();
+
+            let cleanName = actName.replace(/\s+/g, ''); 
+            let shortName = cleanName.substring(0, 3).charAt(0).toUpperCase() + cleanName.substring(0, 3).slice(1);
+            const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
+            const filePath = `data/${fileName}`;
 
             const script = document.createElement('script');
             script.id = 'activity-script';
@@ -256,11 +323,9 @@
             
             script.onerror = () => {
                 container.innerHTML = `
-                    <div style="color: #e74c3c; padding: 30px; border: 3px dashed #e74c3c; border-radius: 15px; background: rgba(231, 76, 60, 0.1); margin: 50px; text-align:center;">
-                        <h1 style="font-size:3rem;">⚠️ File Not Found!</h1>
-                        <p style="font-size:1.5rem;">Expected File: <span style="color: #c0392b; font-weight:bold;">${fileName}</span></p>
-                        <p style="font-size:1.2rem;">Path: <span style="color: #333;">${filePath}</span></p>
-                        <button class="main-btn" onclick="closeAll()">Back to Portal</button>
+                    <div style="text-align:center; color:#e74c3c;">
+                        <h1 style="font-size:5rem;">404</h1>
+                        <p style="font-size:2rem;">Missing File: ${fileName}</p>
                     </div>
                 `;
             };
@@ -329,8 +394,21 @@
             document.querySelectorAll('.level-wrapper').forEach(w => w.classList.remove('active'));
         });
 
+        // نظام التحكم بلوحة المفاتيح - Keyboard Master Control
         document.addEventListener('keydown', (e) => {
-            if (e.key === "Escape") closeAll();
+            if (e.key === "Escape") {
+                closeAll();
+            }
+            
+            if (e.key === "Enter") {
+                const currentActivity = document.getElementById('activityOverlay');
+                if (currentActivity.style.display === 'block') {
+                    console.log("Veto System: Moving to next step...");
+                    if (typeof window.nextStep === "function") {
+                        window.nextStep();
+                    }
+                }
+            }
         });
     </script>
 </body>

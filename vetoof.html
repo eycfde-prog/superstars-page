@@ -4,103 +4,140 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mr. Ezz .Y. Ali - Learning System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f0f0f;
+            --bg-sky: #87CEEB;
+            --cloud-white: rgba(255, 255, 255, 0.9);
+            --primary-tech-blue: #3498db;
+            --accent-sun: rgba(255, 223, 0, 0.25);
+            --text-dark: #2c3e50;
+            --text-light: #ffffff;
+            --font-huge: 2.5rem;
+            --font-medium: 1.8rem;
             --primary-red: #e74c3c;
-            --white: #ffffff;
-            --card-bg: #1e1e1e;
         }
 
         body {
             margin: 0; padding: 0;
-            background-color: var(--bg-color);
-            font-family: 'Poppins', sans-serif;
-            color: var(--white);
+            background: var(--bg-sky) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="25" cy="25" r="20" fill="rgba(255,255,255,0.6)" stroke="rgba(192,192,192,0.5)" stroke-width="0.5"/><circle cx="75" cy="50" r="15" fill="rgba(255,255,255,0.7)" stroke="rgba(192,192,192,0.5)" stroke-width="0.5"/><circle cx="50" cy="80" r="25" fill="rgba(255,255,255,0.5)" stroke="rgba(192,192,192,0.5)" stroke-width="0.5"/></svg>');
+            background-size: 300px 300px;
+            animation: moveClouds 15s linear infinite;
+            font-family: 'Poppins', 'Cairo', sans-serif;
+            color: var(--text-dark);
             overflow-x: hidden;
+            perspective: 1000px;
         }
 
-        /* Common Headers Styling */
+        @keyframes moveClouds {
+            from { background-position: 0 0; }
+            to { background-position: 100% 100%; }
+        }
+
         header, .activity-header {
-            width: 100%; background: linear-gradient(to bottom, #1a1a1a, #000000);
-            border-bottom: 2px solid var(--primary-red);
+            width: 100%;
+            background: linear-gradient(110deg, rgba(255,255,255,0.1) 40%, var(--accent-sun) 50%, rgba(255,255,255,0.1) 60%);
+            background-size: 200% 100%;
+            animation: sunGleam 20s infinite;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(255,255,255,0.2);
             display: flex; justify-content: space-around; align-items: center;
+            position: relative; z-index: 1000;
         }
 
-        header { padding: 15px 0; }
-        .activity-header { padding: 10px 0; font-size: 14px; }
+        header { padding: 15px 0; height: 100px; }
+        .activity-header { padding: 10px 0; font-size: 14px; color: var(--text-light); }
 
-        .logo { width: 70px; border-radius: 50%; }
-        .logo-small { width: 45px; border-radius: 50%; }
-        .profile-img { width: 70px; border-radius: 50%; border: 2px solid var(--white); }
-        .teacher-name { font-size: 22px; font-weight: bold; }
+        @keyframes sunGleam {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
 
-        /* Buttons */
+        .logo { width: 70px; border-radius: 50%; filter: drop-shadow(0 0 10px rgba(255, 223, 0, 0.3)); }
+        header::before {
+            content: ''; position: absolute; top: 10px; left: 20px;
+            width: 60px; height: 60px;
+            background: radial-gradient(circle, rgba(255,255,200,0.4) 0%, rgba(255,223,0,0.1) 70%, transparent 100%);
+            border-radius: 50%; filter: blur(5px); z-index: -1;
+        }
+
+        .profile-img { width: 70px; border-radius: 50%; border: 2px solid white; filter: drop-shadow(-5px 5px 10px rgba(255, 223, 0, 0.2)); }
+        .teacher-name { font-size: 22px; font-weight: bold; color: var(--text-dark); }
+
         .main-btn {
-            margin: 20px auto; display: block;
-            background-color: var(--primary-red);
-            color: white; padding: 10px 30px; border-radius: 25px;
+            margin: 20px auto; display: block; background-color: var(--primary-tech-blue);
+            color: white; padding: 12px 35px; border-radius: 25px;
             font-weight: bold; cursor: pointer; border: none; transition: 0.3s;
+            font-size: 1.1rem; box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
         }
 
-        /* Overlays */
         .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); display: none; z-index: 2000;
-            overflow-y: auto;
+            background: rgba(135, 206, 235, 0.95); display: none; z-index: 2000;
+            overflow-y: auto; backdrop-filter: blur(5px);
         }
 
-        /* Activity Grid (Squares) */
         .activity-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 20px; padding: 40px; max-width: 1200px; margin: auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px; padding: 50px;
         }
 
         .activity-card {
-            background: var(--card-bg); border: 1px solid var(--primary-red);
-            aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
-            text-align: center; padding: 10px; cursor: pointer; border-radius: 12px;
-            font-weight: 600; transition: 0.3s;
+            background: rgba(255,255,255,0.9); border: 2px solid rgba(52, 152, 219, 0.3);
+            min-height: 150px; font-size: var(--font-huge); border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s ease; color: var(--text-dark); cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
-        .activity-card:hover { background: var(--primary-red); transform: translateY(-5px); }
 
-        /* Level Grid Main */
+        .activity-card:hover {
+            background: var(--primary-tech-blue); color: white;
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.4); border-color: white;
+        }
+
         .levels-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 80px; width: 90%; margin: 40px auto; justify-items: center;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 80px; width: 90%; margin: 60px auto; justify-items: center;
+            transform-style: preserve-3d;
         }
 
-        .level-wrapper { position: relative; width: 120px; height: 120px; }
+        .level-wrapper { position: relative; width: 150px; height: 150px; transform-style: preserve-3d; transition: transform 0.5s; }
         .level-btn {
-            width: 100%; height: 100%; background: var(--primary-red);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; border: 4px solid white; cursor: pointer; z-index: 5; position: relative;
+            width: 100%; height: 100%; background: radial-gradient(circle at 30% 30%, #5dade2, var(--primary-tech-blue));
+            color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.2rem; border: 4px solid rgba(255,255,255,0.8);
+            cursor: pointer; z-index: 5; position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2), inset 0 0 20px rgba(0,0,0,0.3);
+            animation: orbitSpace 20s linear infinite;
         }
 
         .sub-btn {
-            position: absolute; width: 40px; height: 40px; background: white;
-            color: var(--primary-red); border-radius: 50%; display: flex;
+            position: absolute; width: 45px; height: 45px; background: radial-gradient(circle at 30% 30%, #ffffff, #bdc3c7);
+            color: var(--primary-tech-blue); border-radius: 50%; display: flex;
             align-items: center; justify-content: center; font-weight: bold;
-            opacity: 0; transform: scale(0); transition: 0.4s; z-index: 4; cursor: pointer;
-        }
-        .level-wrapper.active .sub-btn { opacity: 1; transform: scale(1); }
-        .level-wrapper.active .sub-btn:nth-child(2) { top: -45px; left: 35px; }
-        .level-wrapper.active .sub-btn:nth-child(3) { bottom: -45px; left: 35px; }
-        .level-wrapper.active .sub-btn:nth-child(4) { left: -45px; top: 35px; }
-        .level-wrapper.active .sub-btn:nth-child(5) { right: -45px; top: 35px; }
-
-        /* Final Activity View */
-        #activity-view-footer {
-            position: fixed; bottom: 0; width: 100%;
-            background: #000; padding: 15px 0; text-align: center;
-            border-top: 1px solid #333; font-weight: bold; color: var(--primary-red);
+            opacity: 0; transform: scale(0) translateZ(20px); transition: 0.4s; z-index: 4; cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2); border: 2px solid var(--primary-tech-blue);
         }
 
-        .tokens-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px; padding: 20px;
-        }
+        @keyframes orbitSpace { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+        @keyframes subOrbit { from { transform: rotate(0deg) translateX(65px) rotate(0deg); } to { transform: rotate(360deg) translateX(65px) rotate(-360deg); } }
+
+        .level-wrapper.active .sub-btn { opacity: 1; transform: scale(1) translateZ(30px); }
+        .level-wrapper.active .sub-btn:nth-child(2) { animation: subOrbit 4s linear infinite; }
+        .level-wrapper.active .sub-btn:nth-child(3) { animation: subOrbit 4s linear infinite reverse; animation-delay: -1s; }
+        .level-wrapper.active .sub-btn:nth-child(4) { animation: subOrbit 4s linear infinite; animation-delay: -2s; }
+        .level-wrapper.active .sub-btn:nth-child(5) { animation: subOrbit 4s linear infinite reverse; animation-delay: -3s; }
+
+        #activityFinalContent { padding: 0 !important; height: calc(100vh - 150px); overflow: hidden; background: white; border-radius: 20px; margin: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        #activity-view-footer { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.9); padding: 15px 0; text-align: center; border-top: 1px solid #ddd; font-weight: bold; color: var(--primary-tech-blue); }
+
+        .tokens-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; padding: 20px; }
+        .nav-link-btn { background: none; border: none; color: var(--text-light); font-size: var(--font-medium); font-weight: bold; cursor: pointer; padding: 5px 15px; border-radius: 10px; transition: 0.3s; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .nav-link-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+        .nav-separator { color: rgba(255,255,255,0.5); font-size: var(--font-medium); margin: 0 5px; }
+        .nav-active-act { color: #f1c40f; font-size: var(--font-medium); font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -119,16 +156,16 @@
         <div id="sessionContent"></div>
     </div>
 
-    <div id="activityOverlay" class="overlay" style="background: #000;">
+    <div id="activityOverlay" class="overlay">
         <div class="activity-header">
-            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" class="logo-small">
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" style="width: 45px; border-radius: 50%;">
             <div id="activityDetails" style="flex-grow: 1; text-align: center;"></div>
-            <div style="margin-right: 30px;">Veto Architect</div>
+            <div style="margin-right: 30px; font-weight: bold; color: white;">Veto Architect</div>
         </div>
         
         <div id="activityFinalContent"></div>
 
-        <div id="activity-view-footer" style="height: 50px; font-size: 1.2rem;">
+        <div id="activity-view-footer">
             ESC to Close | Power by Veto System
         </div>
     </div>
@@ -185,7 +222,51 @@
           "12-4": ["GP Viewing"]
         };
 
-        // Initialize Levels
+        function goToLevels() { closeAll(); }
+        function goToSession(lv, ss) { document.getElementById('activityOverlay').style.display = 'none'; openSession(lv, ss); }
+
+        function openFinalActivity(lv, ss, actName) {
+            const detailsHtml = `
+                <button class="nav-link-btn" onclick="goToLevels()">Level ${lv}</button>
+                <span class="nav-separator">|</span>
+                <button class="nav-link-btn" onclick="goToSession(${lv}, ${ss})">Session ${ss}</button>
+                <span class="nav-separator">|</span>
+                <span class="nav-active-act">${actName}</span>
+            `;
+            document.getElementById('activityDetails').innerHTML = detailsHtml;
+
+            const container = document.getElementById('activityFinalContent');
+            container.innerHTML = '<h2 style="color: #666; text-align:center; margin-top:50px;">Loading Activity Contents...</h2>';
+            document.getElementById('activityOverlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+
+            let cleanName = actName.replace(/\s+/g, ''); 
+            let shortName = cleanName.substring(0, 3);
+            shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
+            
+            const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
+            const filePath = `data/${fileName}`;
+
+            const oldScript = document.getElementById('activity-script');
+            if (oldScript) oldScript.remove();
+
+            const script = document.createElement('script');
+            script.id = 'activity-script';
+            script.src = filePath;
+            
+            script.onerror = () => {
+                container.innerHTML = `
+                    <div style="color: #e74c3c; padding: 30px; border: 3px dashed #e74c3c; border-radius: 15px; background: rgba(231, 76, 60, 0.1); margin: 50px; text-align:center;">
+                        <h1 style="font-size:3rem;">⚠️ File Not Found!</h1>
+                        <p style="font-size:1.5rem;">Expected File: <span style="color: #c0392b; font-weight:bold;">${fileName}</span></p>
+                        <p style="font-size:1.2rem;">Path: <span style="color: #333;">${filePath}</span></p>
+                        <button class="main-btn" onclick="closeAll()">Back to Portal</button>
+                    </div>
+                `;
+            };
+            document.body.appendChild(script);
+        }
+
         const grid = document.getElementById('levelsGrid');
         for (let i = 1; i <= 12; i++) {
             const wrap = document.createElement('div');
@@ -212,60 +293,18 @@
                 html += `<div class="activity-card" onclick="openFinalActivity(${lv}, ${ss}, '${act}')">${act}</div>`;
             });
             html += `</div>`;
-            
             document.getElementById('sessionContent').innerHTML = html;
             document.getElementById('sessionOverlay').style.display = 'block';
             updateBtn("Levels Portal", () => closeAll());
-        }
-
-        let openFinalActivity = function(lv, ss, actName) {
-            const details = `
-                <span style="margin: 0 10px;">Level ${lv}</span> | 
-                <span style="margin: 0 10px;">Session ${ss}</span> | 
-                <span style="color: var(--primary-red); margin: 0 10px;">${actName}</span>
-                <button class="main-btn" style="display:inline-block; margin-left:20px; padding: 5px 15px;" onclick="closeAll()">Levels Portal</button>
-            `;
-            document.getElementById('activityDetails').innerHTML = details;
-
-            const container = document.getElementById('activityFinalContent');
-            container.innerHTML = '<h2 style="color: #666; text-align:center; padding:50px;">Loading Activity Contents...</h2>';
-            document.getElementById('activityOverlay').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-
-            let cleanName = actName.replace(/\s+/g, ''); 
-            let shortName = cleanName.substring(0, 3);
-            shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
-            
-            const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
-            const filePath = `data/${fileName}`;
-
-            const oldScript = document.getElementById('activity-script');
-            if (oldScript) oldScript.remove();
-
-            const script = document.createElement('script');
-            script.id = 'activity-script';
-            script.src = filePath;
-            
-            script.onerror = () => {
-                container.innerHTML = `
-                    <div style="color: #e74c3c; padding: 20px; border: 2px dashed #e74c3c; border-radius: 15px; background: rgba(231, 76, 60, 0.1); margin: 50px auto; max-width: 600px; text-align: center;">
-                        <h3>⚠️ File Not Found!</h3>
-                        <p>Expected File: <span style="color: yellow;">${fileName}</span></p>
-                        <p>Path: <span style="color: #fff;">${filePath}</span></p>
-                    </div>
-                `;
-            };
-
-            document.body.appendChild(script);
         }
 
         function toggleTokens() {
             const categories = ["Attendence", "ICA", "Reading", "Tongue Twister", "One Shot", "Games", "Squeezer", "DMT", "Wish", "Project", "Graduation Project", "Extra Bonus"];
             let html = `<div class="tokens-grid">`;
             categories.forEach(c => {
-                html += `<div style="background:#1e1e1e; border:1px solid #e74c3c; height:80px; border-radius:10px; display:flex; align-items:center; justify-content:center; position:relative;">
-                            <input type="text" style="width:100%; background:transparent; border:none; color:#e74c3c; text-align:center; font-size:18px; outline:none;" placeholder=" ">
-                            <label style="position:absolute; color:#555; pointer-events:none;">${c}</label>
+                html += `<div style="background:#1e1e1e; border:1px solid #3498db; height:120px; border-radius:10px; display:flex; align-items:center; justify-content:center; position:relative;">
+                            <input type="text" style="width:100%; background:transparent; border:none; color:white; text-align:center; font-size:1.8rem; outline:none;" placeholder=" ">
+                            <label style="position:absolute; color:#555; pointer-events:none; font-size: 1.2rem;">${c}</label>
                          </div>`;
             });
             html += `</div>`;
@@ -291,18 +330,7 @@
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === "Escape") {
-                closeAll();
-            }
-            
-            const activeLevel = document.querySelector('.level-wrapper.active');
-            if (activeLevel) {
-                const subBtns = activeLevel.querySelectorAll('.sub-btn');
-                if (e.key >= "1" && e.key <= "4") {
-                    const idx = parseInt(e.key) - 1;
-                    if(subBtns[idx]) subBtns[idx].click();
-                }
-            }
+            if (e.key === "Escape") closeAll();
         });
     </script>
 </body>

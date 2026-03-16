@@ -10,23 +10,45 @@
     --font-medium: 1.8rem;
     --primary-red: #ff3c2b; /* Preserved from original for specific logic */
     --transition-fast: 0.3s;
+    --bg-static: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/cdef90ec0bbc81b2db9bddcc107c8b06cd4fbc22/vetoofb.webp');
+    --bg-clouds: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/cdef90ec0bbc81b2db9bddcc107c8b06cd4fbc22/vetoofc.webp');
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg-sky) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="25" cy="25" r="20" fill="rgba(255,255,255,0.6)" stroke="rgba(192,192,192,0.5)" stroke-width="0.5"/><circle cx="75" cy="50" r="15" fill="rgba(255,255,255,0.7)" stroke="rgba(192,192,192,0.5)" stroke-width="0.5"/><circle cx="50" cy="80" r="25" fill="rgba(255,255,255,0.5)" stroke="rgba(192,192,192,0.5)" stroke-width="0.5"/></svg>');
-    background-size: 300px 300px;
-    animation: moveClouds 15s linear infinite;
+    margin: 0; padding: 0;
+    /* الخلفية الثابتة */
+    background-image: var(--bg-static);
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
     font-family: 'Poppins', 'Cairo', sans-serif;
     color: var(--text-dark);
     overflow-x: hidden;
     perspective: 1000px;
+    position: relative;
 }
 
-@keyframes moveClouds {
-    from { background-position: 0 0; }
-    to { background-position: 100% 100%; }
+/* طبقة السحب المتحركة */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 200%; /* ضعف الارتفاع للسماح بالحركة المستمرة */
+    background-image: var(--bg-clouds);
+    background-size: contain;
+    background-repeat: repeat-y;
+    z-index: -1; /* خلف العناصر وأمام الخلفية الثابتة */
+    animation: moveCloudsUp 30s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes moveCloudsUp {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(-50%); /* تتحرك للأعلى بمقدار نصف طول الخلفية المكررة */
+    }
 }
 
 /* --- UI COMPONENTS & HEADER --- */

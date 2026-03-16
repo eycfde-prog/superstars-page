@@ -1,10 +1,5 @@
-/* Veto System - Styling Architect 
-    Developed for: Mr. Ezz .Y. Ali
-    Version: 2.2 (Dynamic Motion Update)
-*/
-
 :root {
-    /* لوحة ألوان الثيم الجديد */
+    /* لوحة ألوان الثيم الجديد: سماوي مبهج ومريح */
     --bg-sky: #87CEEB;
     --cloud-white: rgba(255, 255, 255, 0.9);
     --primary-tech-blue: #3498db;
@@ -13,20 +8,18 @@
     --text-light: #ffffff;
     --font-huge: 2.5rem;
     --font-medium: 1.8rem;
-    --primary-red: #ff3c2b;
+    --primary-red: #ff3c2b; /* Preserved for specific logic */
     --transition-fast: 0.3s;
-    
-    /* رابط الخلفية المتحركة الجديدة */
-    --bg-dynamic: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/cc1a19c948140fe870b0666920ba20b5668d2336/vetoofb.webp');
-    /* رابط السحب المتحركة */
+    /* التعديل هنا: تم تحديث رابط الخلفية المتحركة الجديد */
+    --bg-static: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/cc1a19c948140fe870b0666920ba20b5668d2336/vetoofb.webp');
     --bg-clouds: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/cdef90ec0bbc81b2db9bddcc107c8b06cd4fbc22/vetoofc.webp');
 }
 
 body {
     margin: 0; 
     padding: 0;
-    /* تعيين الخلفية المتحركة الجديدة كأساس */
-    background-image: var(--bg-dynamic);
+    /* الخلفية الثابتة (الآن الصورة المتحركة الجديدة) */
+    background-image: var(--bg-static);
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
@@ -35,15 +28,14 @@ body {
     overflow-x: hidden;
     perspective: 1000px;
     position: relative;
-    min-height: 100vh;
 }
 
-/* طبقة السحب المتحركة الإضافية (من أسفل لأعلى) */
+/* طبقة السحب المتحركة - تعمل فوق الخلفية الأساسية */
 body::after {
     content: "";
     position: fixed;
     top: 0; left: 0;
-    width: 100%; height: 200%;
+    width: 100%; height: 200%; 
     background-image: var(--bg-clouds);
     background-size: contain;
     background-repeat: repeat-y;
@@ -137,7 +129,7 @@ header, .banner {
 
 /* --- LEVELS GRID & 3D SYSTEM --- */
 
-.levels-container {
+.levels-container, .grid-container {
     display: grid; 
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 80px; 
@@ -155,7 +147,7 @@ header, .banner {
     transition: transform 0.5s;
 }
 
-.level-btn {
+.level-btn, .main-circle {
     width: 100%; height: 100%; 
     background: radial-gradient(circle at 30% 30%, #5dade2, var(--primary-tech-blue));
     color: white;
@@ -167,49 +159,7 @@ header, .banner {
     animation: orbitSpace 20s linear infinite;
 }
 
-.sub-btn {
-    position: absolute; width: 45px; height: 45px; 
-    background: radial-gradient(circle at 30% 30%, #ffffff, #bdc3c7);
-    color: var(--primary-tech-blue); border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; font-weight: bold;
-    opacity: 0; transform: scale(0) translateZ(20px); 
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-    z-index: 4; cursor: pointer;
-    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-    border: 2px solid var(--primary-tech-blue);
-}
-
-@keyframes orbitSpace {
-    from { transform: rotateY(0deg) rotateX(5deg); }
-    to { transform: rotateY(360deg) rotateX(5deg); }
-}
-
-@keyframes subOrbit {
-    from { transform: rotate(0deg) translateX(65px) rotate(0deg); }
-    to { transform: rotate(360deg) translateX(65px) rotate(-360deg); }
-}
-
-.level-wrapper.active .sub-btn { 
-    opacity: 1; 
-    transform: scale(1) translateZ(30px); 
-    display: flex;
-}
-
-.level-wrapper.active .sub-btn:nth-child(2) { animation: subOrbit 4s linear infinite; }
-.level-wrapper.active .sub-btn:nth-child(3) { animation: subOrbit 4s linear infinite reverse; animation-delay: -1s; }
-.level-wrapper.active .sub-btn:nth-child(4) { animation: subOrbit 4s linear infinite; animation-delay: -2s; }
-.level-wrapper.active .sub-btn:nth-child(5) { animation: subOrbit 4s linear infinite reverse; animation-delay: -3s; }
-
-/* --- STAGE & OVERLAY --- */
-
-.overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(135, 206, 235, 0.95); 
-    display: none; z-index: 2000; 
-    overflow-y: auto; backdrop-filter: blur(5px);
-}
-
-#activityOverlay { background: #0f172a; }
+/* --- SLIDES & NAVIGATION --- */
 
 #activityFinalContent {
     height: calc(100vh - 160px) !important;
@@ -224,24 +174,16 @@ header, .banner {
     overflow: hidden;
 }
 
-#activity-view-footer {
-    height: 60px;
-    font-size: 1.5rem;
-    background: #1e293b;
-    color: #94a3b8;
-    border-top: 2px solid #334155;
-    display: flex; align-items: center; justify-content: center;
-}
-
 .nav-link-btn {
     font-size: 1.8rem !important;
     color: #3498db !important;
     font-weight: 800;
-    background: none; border: none; cursor: pointer;
 }
 
-.nav-active-act {
-    font-size: 2.2rem !important;
-    color: #f1c40f !important;
-    text-decoration: underline;
+.close-frame {
+    position: fixed; top: 10px; right: 10px;
+    background: white; color: var(--primary-tech-blue);
+    border: 2px solid var(--primary-tech-blue);
+    padding: 8px 20px; border-radius: 8px;
+    z-index: 3000; cursor: pointer; font-weight: bold;
 }

@@ -1,5 +1,10 @@
+/* Veto System - Styling Architect
+    Developed for: Mr. Ezz .Y. Ali
+    Version: 2.1 (Cloud Motion Update)
+*/
+
 :root {
-    /* لوحة ألوان الثيم الجديد: سماوي مبهج ومريح */
+    /* لوحة ألوان الثيم: سماوي مبهج ومريح */
     --bg-sky: #87CEEB;
     --cloud-white: rgba(255, 255, 255, 0.9);
     --primary-tech-blue: #3498db;
@@ -8,14 +13,17 @@
     --text-light: #ffffff;
     --font-huge: 2.5rem;
     --font-medium: 1.8rem;
-    --primary-red: #ff3c2b; /* Preserved from original for specific logic */
+    --primary-red: #ff3c2b;
     --transition-fast: 0.3s;
+    
+    /* روابط الخلفيات الجديدة */
     --bg-static: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/cdef90ec0bbc81b2db9bddcc107c8b06cd4fbc22/vetoofb.webp');
     --bg-clouds: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/cdef90ec0bbc81b2db9bddcc107c8b06cd4fbc22/vetoofc.webp');
 }
 
 body {
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
     /* الخلفية الثابتة */
     background-image: var(--bg-static);
     background-size: cover;
@@ -25,30 +33,26 @@ body {
     color: var(--text-dark);
     overflow-x: hidden;
     perspective: 1000px;
-    position: relative;
+    min-height: 100vh;
 }
 
-/* طبقة السحب المتحركة */
+/* طبقة السحب المتحركة من أسفل لأعلى */
 body::after {
     content: "";
     position: fixed;
     top: 0; left: 0;
-    width: 100%; height: 200%; /* ضعف الارتفاع للسماح بالحركة المستمرة */
+    width: 100%; height: 200%; /* ارتفاع مزدوج للتكرار */
     background-image: var(--bg-clouds);
     background-size: contain;
     background-repeat: repeat-y;
-    z-index: -1; /* خلف العناصر وأمام الخلفية الثابتة */
+    z-index: -1; 
     animation: moveCloudsUp 30s linear infinite;
-    pointer-events: none;
+    pointer-events: none; /* لضمان عدم إعاقة النقر على العناصر */
 }
 
 @keyframes moveCloudsUp {
-    from {
-        transform: translateY(0);
-    }
-    to {
-        transform: translateY(-50%); /* تتحرك للأعلى بمقدار نصف طول الخلفية المكررة */
-    }
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
 }
 
 /* --- UI COMPONENTS & HEADER --- */
@@ -66,11 +70,10 @@ header, .banner {
     align-items: center;
     position: relative;
     z-index: 1000;
+    padding: 15px 0; 
+    height: 100px;
 }
 
-header, .banner { padding: 15px 0; height: 100px; }
-
-/* هيدر النشاط - جعل الخطوط عملاقة وعريضة */
 .activity-header {
     width: 100%;
     display: flex;
@@ -82,7 +85,7 @@ header, .banner { padding: 15px 0; height: 100px; }
     background: #1e293b;
     border-bottom: 4px solid var(--primary-tech-blue);
     padding: 0 20px;
-    font-size: 2rem !important; /* مقروء من 4 أمتار */
+    font-size: 2rem !important;
 }
 
 @keyframes sunGleam {
@@ -96,17 +99,6 @@ header, .banner { padding: 15px 0; height: 100px; }
     border-radius: 50%; 
     filter: drop-shadow(0 0 10px rgba(255, 223, 0, 0.3));
     border: 2px solid white;
-}
-
-header::before, .banner::before {
-    content: '';
-    position: absolute;
-    top: 10px; left: 20px;
-    width: 60px; height: 60px;
-    background: radial-gradient(circle, rgba(255,255,200,0.4) 0%, rgba(255,223,0,0.1) 70%, transparent 100%);
-    border-radius: 50%;
-    filter: blur(5px);
-    z-index: -1;
 }
 
 /* --- ACTIVITY GRID & CARDS --- */
@@ -143,7 +135,7 @@ header::before, .banner::before {
 
 /* --- LEVELS GRID & 3D SYSTEM --- */
 
-.levels-container, .grid-container {
+.levels-container {
     display: grid; 
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 80px; 
@@ -161,7 +153,7 @@ header::before, .banner::before {
     transition: transform 0.5s;
 }
 
-.level-btn, .main-circle {
+.level-btn {
     width: 100%; height: 100%; 
     background: radial-gradient(circle at 30% 30%, #5dade2, var(--primary-tech-blue));
     color: white;
@@ -173,7 +165,7 @@ header::before, .banner::before {
     animation: orbitSpace 20s linear infinite;
 }
 
-.sub-btn, .sub-circle {
+.sub-btn {
     position: absolute; width: 45px; height: 45px; 
     background: radial-gradient(circle at 30% 30%, #ffffff, #bdc3c7);
     color: var(--primary-tech-blue); border-radius: 50%; display: flex;
@@ -195,32 +187,27 @@ header::before, .banner::before {
     to { transform: rotate(360deg) translateX(65px) rotate(-360deg); }
 }
 
-.level-wrapper.active .sub-btn, .level-wrapper.active .sub-circle { 
+.level-wrapper.active .sub-btn { 
     opacity: 1; 
     transform: scale(1) translateZ(30px); 
-    display: flex;
 }
 
-.level-wrapper.active .sub-btn:nth-child(2), .level-wrapper.active .s1 { animation: subOrbit 4s linear infinite; }
-.level-wrapper.active .sub-btn:nth-child(3), .level-wrapper.active .s2 { animation: subOrbit 4s linear infinite reverse; animation-delay: -1s; }
-.level-wrapper.active .sub-btn:nth-child(4), .level-wrapper.active .s3 { animation: subOrbit 4s linear infinite; animation-delay: -2s; }
-.level-wrapper.active .sub-btn:nth-child(5), .level-wrapper.active .s4 { animation: subOrbit 4s linear infinite reverse; animation-delay: -3s; }
+.level-wrapper.active .sub-btn:nth-child(2) { animation: subOrbit 4s linear infinite; }
+.level-wrapper.active .sub-btn:nth-child(3) { animation: subOrbit 4s linear infinite reverse; animation-delay: -1s; }
+.level-wrapper.active .sub-btn:nth-child(4) { animation: subOrbit 4s linear infinite; animation-delay: -2s; }
+.level-wrapper.active .sub-btn:nth-child(5) { animation: subOrbit 4s linear infinite reverse; animation-delay: -3s; }
 
-/* --- THE STAGE & CONTENT --- */
+/* --- THE STAGE & OVERLAYS --- */
 
-#content-frame-container, .overlay {
+.overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     background: rgba(135, 206, 235, 0.95); 
     display: none; z-index: 2000; 
     overflow-y: auto; backdrop-filter: blur(5px);
 }
 
-/* تحسين منطقة العرض لتصبح كالسينما */
-#activityOverlay {
-    background: #0f172a; /* خلفية داكنة جداً لتركيز الانتباه */
-}
+#activityOverlay { background: #0f172a; }
 
-/* حاوية المحتوى - Full Screen تقريباً */
 #activityFinalContent {
     height: calc(100vh - 160px) !important;
     margin: 10px 20px !important;
@@ -234,63 +221,42 @@ header::before, .banner::before {
     overflow: hidden;
 }
 
-/* --- SLIDES & NAVIGATION --- */
-
-.main-term-card {
-    background: var(--primary-tech-blue); 
-    width: 60vw; height: 40vh;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 30px; border: 10px solid white;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-    margin: 20px auto;
-}
-
-.option-btn-giant {
-    padding: 30px; font-size: 4vw; font-weight: bold;
-    background: white; border: 4px solid var(--primary-tech-blue);
-    color: var(--text-dark); border-radius: 20px;
-    cursor: pointer; transition: 0.3s;
-}
-
-.option-btn-giant:hover {
-    background: var(--primary-tech-blue);
-    color: white;
-    transform: scale(1.05);
-}
-
-.nav-btn-round {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: var(--primary-tech-blue); border: 3px solid white;
-    color: white; font-size: 2.5em; cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* أزرار التنقل داخل الهيدر */
-.nav-link-btn {
-    font-size: 1.8rem !important;
-    color: #3498db !important;
-    font-weight: 800;
-}
-
-.nav-active-act {
-    font-size: 2.2rem !important;
-    color: #f1c40f !important; /* أصفر فاقع للتمييز */
-    text-decoration: underline;
-}
-
-/* فوتر التحكم */
 #activity-view-footer {
     height: 60px;
     font-size: 1.5rem;
     background: #1e293b;
     color: #94a3b8;
     border-top: 2px solid #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
 }
 
-.close-frame {
-    position: fixed; top: 10px; right: 10px;
-    background: white; color: var(--primary-tech-blue);
-    border: 2px solid var(--primary-tech-blue);
-    padding: 8px 20px; border-radius: 8px;
-    z-index: 3000; cursor: pointer; font-weight: bold;
+/* --- NAVIGATION & UTILS --- */
+
+.nav-link-btn {
+    font-size: 1.8rem !important;
+    color: #3498db !important;
+    font-weight: 800;
+    background: none; border: none; cursor: pointer;
+}
+
+.nav-active-act {
+    font-size: 2.2rem !important;
+    color: #f1c40f !important;
+    text-decoration: underline;
+}
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid var(--primary-tech-blue);
+    border-radius: 50%;
+    width: 60px; height: 60px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

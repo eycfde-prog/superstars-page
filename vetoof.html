@@ -18,37 +18,58 @@
             --primary-red: #e74c3c;
         }
 
-/* Veto Architect Optimized Background - Fixed Aspect Ratio */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 200%; /* تقليل الارتفاع لزيادة الجودة */
-    background: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/4940b6bbd5ca38042de66f63a8619a4dc684c91b/vetoofb.webp');
-    background-repeat: repeat-y;
-    background-size: cover; /* دي أهم نقطة: الصورة هتحافظ على أبعادها وتغطي العرض بالكامل */
-    z-index: -1;
-    
-    animation: cloudsRise 60s linear infinite; /* حركة أبطأ قليلاً لراحة العين */
-    
-    will-change: transform;
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    opacity: 0.8; /* وضوح أعلى للسحب */
-}
+        /* Veto Architect Optimized Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200%;
+            background: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/4940b6bbd5ca38042de66f63a8619a4dc684c91b/vetoofb.webp');
+            background-repeat: repeat-y;
+            background-size: cover;
+            z-index: -1;
+            animation: cloudsRise 60s linear infinite;
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            opacity: 0.8;
+        }
 
-@keyframes cloudsRise {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(-50%); /* الحركة بمقدار نصف الارتفاع الكلي (لأننا استخدمنا 200%) */
-    }
-}
+        @keyframes cloudsRise {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
 
-        header { padding: 15px 0; height: 100px; }
+        /* الهالة الشمسية */
+        .sun-halo {
+            filter: drop-shadow(0 0 15px rgba(255, 223, 0, 0.8)) drop-shadow(0 0 30px rgba(255, 200, 0, 0.4));
+        }
+
+        header {
+            display: flex;
+            flex-direction: row-reverse;
+            /* اللوجو يمين والاسم يسار */
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 40px;
+            height: 120px;
+            position: relative;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .teacher-name {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-shadow: 0 0 10px rgba(255, 223, 0, 0.5);
+        }
 
         .activity-header {
             width: 100%;
@@ -64,22 +85,9 @@ body::before {
             font-size: 2rem !important;
         }
 
-        @keyframes sunGleam {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
+        .logo { width: 70px; border-radius: 50%; }
 
-        .logo { width: 70px; border-radius: 50%; filter: drop-shadow(0 0 10px rgba(255, 223, 0, 0.3)); }
-        
-        header::before {
-            content: ''; position: absolute; top: 10px; left: 20px;
-            width: 60px; height: 60px;
-            background: radial-gradient(circle, rgba(255,255,200,0.4) 0%, rgba(255,223,0,0.1) 70%, transparent 100%);
-            border-radius: 50%; filter: blur(5px); z-index: -1;
-        }
-
-        .profile-img { width: 70px; border-radius: 50%; border: 2px solid white; filter: drop-shadow(-5px 5px 10px rgba(255, 223, 0, 0.2)); }
-        .teacher-name { font-size: 22px; font-weight: bold; color: var(--text-dark); }
+        .profile-img { width: 70px; border-radius: 50%; border: 2px solid white; }
 
         .main-btn {
             margin: 20px auto; display: block; background-color: var(--primary-tech-blue);
@@ -120,27 +128,64 @@ body::before {
         }
 
         .level-wrapper { position: relative; width: 150px; height: 150px; transform-style: preserve-3d; transition: transform 0.5s; }
+
+        /* الدائرة الكبيرة */
         .level-btn {
-            width: 100%; height: 100%; background: radial-gradient(circle at 30% 30%, #5dade2, var(--primary-tech-blue));
-            color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 1.2rem; border: 4px solid rgba(255,255,255,0.8);
-            cursor: pointer; z-index: 5; position: relative;
+            position: relative;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 30% 30%, #5dade2, var(--primary-tech-blue));
+            color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.2rem;
+            cursor: pointer; z-index: 5;
             box-shadow: 0 10px 20px rgba(0,0,0,0.2), inset 0 0 20px rgba(0,0,0,0.3);
-            animation: orbitSpace 20s linear infinite;
+            transition: 0.5s;
         }
 
+        /* الإطار المقطع للدائرة الكبيرة */
+        .level-wrapper::after {
+            content: "";
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border: 4px dashed #f1c40f;
+            border-radius: 50%;
+            animation: rotateBorder 10s linear infinite; /* سرعة بطيئة */
+            pointer-events: none;
+        }
+
+        /* الدوائر الصغيرة */
         .sub-btn {
-            position: absolute; width: 45px; height: 45px; background: radial-gradient(circle at 30% 30%, #ffffff, #bdc3c7);
-            color: var(--primary-tech-blue); border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; font-weight: bold;
-            opacity: 0; transform: scale(0) translateZ(20px); transition: 0.4s; z-index: 4; cursor: pointer;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2); border: 2px solid var(--primary-tech-blue);
+            position: absolute;
+            width: 50px; height: 50px;
+            background: #fff;
+            color: var(--primary-tech-blue);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.3rem;
+            z-index: 10; opacity: 0; transform: scale(0);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
         }
 
-        @keyframes orbitSpace { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
-        @keyframes subOrbit { from { transform: rotate(0deg) translateX(65px) rotate(0deg); } to { transform: rotate(360deg) translateX(65px) rotate(-360deg); } }
+        /* إطار الدوائر الصغيرة */
+        .sub-btn::before {
+            content: "";
+            position: absolute;
+            top: -5px; left: -5px; right: -5px; bottom: -5px;
+            border: 2px dashed var(--primary-tech-blue);
+            border-radius: 50%;
+            animation: rotateBorder 3s linear infinite; /* سرعة أكبر */
+        }
 
-        .level-wrapper.active .sub-btn { opacity: 1; transform: scale(1) translateZ(30px); }
+        @keyframes rotateBorder {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes subOrbit { from { transform: rotate(0deg) translateX(85px) rotate(0deg); } to { transform: rotate(360deg) translateX(85px) rotate(-360deg); } }
+
+        .level-wrapper.active .sub-btn { opacity: 1; transform: scale(1); }
         .level-wrapper.active .sub-btn:nth-child(2) { animation: subOrbit 4s linear infinite; }
         .level-wrapper.active .sub-btn:nth-child(3) { animation: subOrbit 4s linear infinite reverse; animation-delay: -1s; }
         .level-wrapper.active .sub-btn:nth-child(4) { animation: subOrbit 4s linear infinite; animation-delay: -2s; }
@@ -214,9 +259,11 @@ body::before {
 <body>
 
     <header id="main-header">
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" class="logo">
-        <div class="teacher-name">Mr. Ezz .Y. Ali</div>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" class="profile-img">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" class="logo sun-halo">
+        <div class="header-left">
+            <div class="teacher-name">Mr. Ezz .Y. Ali</div>
+            <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" class="profile-img sun-halo">
+        </div>
     </header>
 
     <button class="main-btn" id="portalActionBtn" onclick="toggleTokens()">Tokens Portal</button>
@@ -348,8 +395,15 @@ body::before {
             }
             wrap.onclick = (e) => {
                 e.stopPropagation();
-                document.querySelectorAll('.level-wrapper').forEach(w => w!==wrap && w.classList.remove('active'));
-                wrap.classList.toggle('active');
+                const levelIndex = i;
+                
+                document.querySelectorAll('.level-wrapper').forEach((w, index) => {
+                    if ((index + 1) <= levelIndex) {
+                        w.classList.add('active');
+                    } else {
+                        w.classList.remove('active');
+                    }
+                });
             };
             grid.appendChild(wrap);
         }

@@ -1,8 +1,8 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
+    // --- Story Data ---
     const storyTitle = "The Professor’s Time Travel Trouble";
     
     const storyContent = `
@@ -33,43 +33,109 @@
         The Professor looked at the remote and then at his cat. He decided that the past was too dusty and the future was too expensive. 
         The <span class="target-word">conclusion</span> he reached was simple: the present moment is the only place where you can find a decent cup of coffee without being chased by guards or robots.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; width:100%; display:block; background:#0a0a0c; color:#ddd; overflow-y:auto; padding:60px 0; font-family: 'Segoe UI', Tahoma, serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
+            #stage-content::-webkit-scrollbar { width: 8px; }
+            #stage-content::-webkit-scrollbar-track { background: #050505; }
+            #stage-content::-webkit-scrollbar-thumb { background: #3498db; border-radius: 10px; }
+
+            .story-wrapper {
+                max-width: 900px;
+                margin: 0 auto;
+                background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+                padding: 70px;
+                border: 1px solid #222;
+                border-radius: 20px;
+                box-shadow: 0 40px 100px rgba(0,0,0,0.9);
+                position: relative;
+            }
+
+            .header-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #333;
+                padding-bottom: 20px;
+                margin-bottom: 40px;
+            }
+
+            .label { color: #3498db; font-weight: 900; letter-spacing: 3px; font-size: 0.9rem; }
+            .version { color: #444; font-size: 0.8rem; }
+
+            .main-title {
+                color: #fff;
+                font-size: 3vw;
+                font-weight: 900;
+                margin-bottom: 40px;
+                line-height: 1.2;
+                text-align: left;
+                background: linear-gradient(to right, #fff, #3498db);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .text-body {
+                line-height: 2;
+                font-size: 1.6vw;
+                color: #bbb;
+                font-family: 'Georgia', serif;
+            }
+
             .target-word {
                 color: #f1c40f; 
                 font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
+                border-bottom: 1px dashed #f1c40f;
+                transition: 0.3s ease;
+                cursor: pointer;
+                position: relative;
+            }
+
+            .target-word:hover {
+                color: #fff;
+                background: #f1c40f;
                 padding: 0 5px;
                 border-radius: 4px;
+                box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
             }
-            .story-container {
-                max-width: 1000px;
-                margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
-            }
-            .title {
-                color: #e74c3c;
+
+            .end-note {
+                margin-top: 60px;
+                padding: 30px;
+                background: #111;
+                border-radius: 10px;
+                border: 1px solid #222;
+                font-size: 1.1vw;
+                color: #555;
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
-                text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
             }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
-            <div id="textBody">
+
+        <div class="story-wrapper">
+            <div class="header-info">
+                <span class="label">VETO ONE-SHOT: LVL 3</span>
+                <span class="version">STORY_ID: B-772</span>
+            </div>
+
+            <h1 class="main-title">${storyTitle}</h1>
+            
+            <div class="text-body">
                 ${storyContent}
             </div>
+
+            <div class="end-note">
+                ⚡ Vocabulary Training: Leveling up to intermediate concepts.
+            </div>
         </div>
+        <div style="height:100px;"></div>
     `;
 
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) { // Space
+            if (window.triggerVetoDone) window.triggerVetoDone();
+        }
+    };
 })();

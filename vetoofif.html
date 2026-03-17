@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VETO PROGRAM | Session Explorer</title>
-    <script src="levels.js"></script>
-    
+    <title>VETO PROGRAM | Session Content</title>
     <style>
         :root {
             --primary-gold: #c5a059;
             --bg-dark: #050505;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --banner-height: 120px;
-            --accent-glow: rgba(197, 160, 89, 0.4);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --banner-height: 140px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,106 +17,86 @@
         body {
             background-color: var(--bg-dark);
             color: white;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        /* Top Banner - Optimized for Large Screens */
+        /* Consistent Banner */
         .top-banner {
             height: var(--banner-height);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 50px;
-            background: linear-gradient(to bottom, #111, #050505);
-            border-bottom: 4px solid var(--primary-gold);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            padding: 0 40px;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 3px solid var(--primary-gold);
         }
 
-        .logo-img { height: 80px; filter: drop-shadow(0 0 10px var(--accent-glow)); }
-        .mr-ezz-img { height: 100px; border-radius: 12px; border: 2px solid var(--primary-gold); }
+        .logo-img { height: 70px; }
+        .mr-ezz-img { height: 100px; border-radius: 8px; }
+
+        .session-info {
+            text-align: center;
+            flex-grow: 1;
+        }
 
         .session-info h1 {
-            font-size: clamp(2rem, 4vw, 3.5rem); /* Responsive font size */
+            font-size: 2.5rem;
             color: var(--primary-gold);
             text-transform: uppercase;
-            letter-spacing: 5px;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 3px;
         }
 
-        /* Main Content Grid - The 4-Meter Rule Layout */
+        /* Content Grid */
         .content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-            padding: 40px;
-            max-width: 1800px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 50px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Large Actionable Cards */
+        /* Material Style Cards */
         .content-card {
             background: var(--card-bg);
-            border: 2px solid rgba(197, 160, 89, 0.1);
-            padding: 40px 20px;
-            border-radius: 20px;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            padding: 40px;
+            border-radius: 15px;
             text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 180px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            min-height: 200px;
         }
 
-        /* Card Hover & Focus States */
-        .content-card:hover, .content-card.active {
+        .content-card:hover {
             border-color: var(--primary-gold);
-            background: rgba(197, 160, 89, 0.15);
-            transform: scale(1.03);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 20px var(--accent-glow);
+            background: rgba(197, 160, 89, 0.1);
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .content-card h2 {
-            font-size: 2.2rem; /* Big enough for the back of the room */
-            color: #ffffff;
-            font-weight: 600;
-            letter-spacing: 1px;
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 10px;
         }
 
-        /* Back Button - Professional & Visible */
+        /* Back Button */
         .back-btn {
             position: fixed;
-            bottom: 40px;
-            right: 40px; /* Changed to right for better ergonomic reach */
-            padding: 18px 40px;
+            bottom: 30px;
+            left: 30px;
+            padding: 15px 30px;
             background: var(--primary-gold);
-            color: #000;
+            color: black;
             text-decoration: none;
-            font-weight: 900;
-            font-size: 1.2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-            transition: 0.3s;
-            z-index: 100;
-        }
-
-        .back-btn:hover { background: #fff; transform: translateY(-5px); }
-
-        /* No Data State */
-        .no-data {
-            grid-column: 1/-1;
-            text-align: center;
-            padding: 100px;
-            font-size: 2rem;
-            opacity: 0.3;
-            border: 2px dashed var(--primary-gold);
-            border-radius: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -128,7 +105,7 @@
     <header class="top-banner">
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" alt="Logo" class="logo-img">
         <div class="session-info">
-            <h1 id="display-title">SELECTING SESSION...</h1>
+            <h1 id="display-title">Loading...</h1>
         </div>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" alt="Mr Ezz" class="mr-ezz-img">
     </header>
@@ -136,72 +113,44 @@
     <main class="content-grid" id="content-container">
         </main>
 
-    <a href="vetoof.html" class="back-btn">← BACK TO DASHBOARD</a>
+    <a href="vetoof.html" class="back-btn">← BACK TO LEVELS</a>
 
     <script>
-        // 1. استخراج معرف الحصة من الرابط
+        // 1. Get Session ID from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session'); 
+        const sessionId = urlParams.get('session'); // format: "1-1"
 
-        // 2. معالجة وعرض البيانات
-        function initSession() {
-            const container = document.getElementById('content-container');
-            const title = document.getElementById('display-title');
-
-            if (sessionId && sessionData[sessionId]) {
-                const [lvl, sess] = sessionId.split('-');
-                title.innerText = `LEVEL ${lvl} | SESSION ${sess}`;
-                
-                renderCards(sessionData[sessionId]);
-            } else {
-                title.innerText = "DATA NOT FOUND";
-                container.innerHTML = `<div class="no-data">Session ${sessionId || ''} Data is not ready in levels.js</div>`;
-            }
+        if (sessionId) {
+            const [lvl, sess] = sessionId.split('-');
+            document.getElementById('display-title').innerText = `Level ${lvl} - Session ${sess}`;
+            loadSessionData(sessionId);
         }
 
-        function renderCards(dataArray) {
+        async function loadSessionData(id) {
             const container = document.getElementById('content-container');
-            container.innerHTML = ""; 
-
-            dataArray.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'content-card';
-                // إضافة تأخير بسيط في الحركة ليعطي شكل احترافي (Entrance Animation)
-                card.style.animation = `fadeIn 0.5s ease forwards ${index * 0.1}s`;
-                card.style.opacity = "0";
+            
+            try {
+                // 2. Fetch from data/levels folder
+                const response = await fetch(`data/levels/${id}.json`);
+                if (!response.ok) throw new Error('File not found');
                 
-                card.innerHTML = `<h2>${item}</h2>`;
+                const data = await response.json();
                 
-                // إضافة حدث عند الضغط (للتطوير المستقبلي)
-                card.onclick = () => {
-                    console.log(`Selected: ${item}`);
-                    // يمكنك هنا إضافة كود لفتح ملف الـ PDF أو الفيديو الخاص بهذا العنصر
-                };
+                // 3. Render Cards
+                container.innerHTML = ""; // Clear loader
+                data.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'content-card';
+                    card.innerHTML = `<h2>${item}</h2>`;
+                    container.appendChild(card);
+                });
 
-                container.appendChild(card);
-            });
+            } catch (error) {
+                console.error("Error loading data:", error);
+                container.innerHTML = `<h2 style="grid-column: 1/-1; text-align: center; opacity: 0.5;">
+                    Data file for ${id} is not ready yet.</h2>`;
+            }
         }
-
-        // 3. دعم اختصارات الكيبورد (Keyboard Shortcuts)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "Enter") {
-                // العودة للرئيسية عند ضغط Enter (أو يمكنك تخصيصها لفتح أول عنصر)
-                window.location.href = 'vetoof.html';
-            }
-        });
-
-        // إضافة CSS للانيميشن برمجياً
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // تشغيل الكود
-        window.onload = initSession;
     </script>
 </body>
 </html>

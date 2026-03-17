@@ -1,9 +1,9 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:flex; align-items:center; justify-content:center; background:#000; overflow:hidden; position:relative;`;
+    container.style.cssText = `height:100%; width:100%; display:flex; align-items:center; justify-content:center; background:#050505; overflow:hidden; position:relative; font-family: 'Segoe UI', sans-serif;`;
 
     let currentPairIndex = 0;
     let showOpposite = false;
@@ -24,28 +24,55 @@
     function playSound(wordNum) {
         const audioPath = `data/vocab/${sessionFolder}/${wordNum}.mp3`;
         const audio = new Audio(audioPath);
-        audio.play().catch(e => console.log("Audio not found:", audioPath));
+        audio.play().catch(e => console.log("Audio not found"));
     }
 
     function render() {
         const pair = adjectives[currentPairIndex];
+        const progress = ((currentPairIndex + 1) / adjectives.length) * 100;
+
         container.innerHTML = `
-            <div style="width:100%; display:flex; flex-direction:column; align-items:center; gap:50px;">
-                <div style="font-size:1.5rem; color:#444;">Pair ${currentPairIndex + 1} / 25</div>
+            <style>
+                .voc-wrapper { width:100%; display:flex; flex-direction:column; align-items:center; gap:80px; animation: fadeIn 0.4s ease; }
+                .voc-progress-container { position:absolute; top:0; left:0; width:100%; height:6px; background:#111; }
+                .voc-progress-bar { width:${progress}%; height:100%; background:#c5a059; transition:0.3s; box-shadow:0 0 15px #c5a059; }
                 
-                <div style="display:flex; justify-content:center; align-items:center; width:100%; gap:100px;">
-                    <div style="font-size:10rem; font-weight:900; color:#fff; text-transform:uppercase;">
-                        ${pair.a}
-                    </div>
+                .voc-counter { font-size:1.2vw; color:#444; font-weight:bold; letter-spacing:5px; text-transform:uppercase; }
+                
+                .voc-display { display:flex; justify-content:center; align-items:center; width:100%; gap:5vw; }
+                
+                .word { font-size:9vw; font-weight:900; text-transform:uppercase; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                .primary { color:#fff; }
+                .opposite { color:#c5a059; text-shadow: 0 0 30px rgba(197, 160, 89, 0.3); }
+                
+                .vs-badge { 
+                    font-size:5vw; color:#ef4444; font-style:italic; font-weight:900;
+                    opacity:${showOpposite ? 1 : 0}; 
+                    transform: scale(${showOpposite ? 1 : 0.5}) rotate(${showOpposite ? -15 : 0}deg); 
+                    transition:0.4s;
+                    text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+                }
 
-                    <div style="font-size:5rem; color:#e74c3c; font-style:italic; opacity:${showOpposite ? 1 : 0}; transition:0.3s;">X</div>
+                .footer-nav { position:absolute; bottom:40px; color:#222; font-size:0.9vw; letter-spacing:2px; text-transform:uppercase; }
+                @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+            </style>
 
-                    <div style="font-size:10rem; font-weight:900; color:#f1c40f; text-transform:uppercase; opacity:${showOpposite ? 1 : 0}; transition:0.5s;">
+            <div class="voc-progress-container"><div class="voc-progress-bar"></div></div>
+            
+            <div class="voc-wrapper">
+                <div class="voc-counter">Adjective Set B • ${currentPairIndex + 1} / ${adjectives.length}</div>
+                
+                <div class="voc-display">
+                    <div class="word primary" style="transform: translateX(${showOpposite ? -20 : 0}px)">${pair.a}</div>
+
+                    <div class="vs-badge">VS</div>
+
+                    <div class="word opposite" style="opacity:${showOpposite ? 1 : 0}; transform: translateX(${showOpposite ? 20 : 60}px);">
                         ${pair.o}
                     </div>
                 </div>
 
-                <div style="color:#444; font-size:1rem;">Press SPACE to reveal opposite / ARROW to move</div>
+                <div class="footer-nav">Space: Reveal | Arrows: Move | Veto Adjectives Part II</div>
             </div>
         `;
 
@@ -59,13 +86,15 @@
                 showOpposite = true;
                 render();
             }
-        } else if (e.keyCode === 39) { // Next
+        } else if (e.keyCode === 39) { // NEXT
             if (currentPairIndex < adjectives.length - 1) {
                 currentPairIndex++;
                 showOpposite = false;
                 render();
+            } else {
+                if(window.triggerVetoDone) window.triggerVetoDone();
             }
-        } else if (e.keyCode === 37) { // Previous
+        } else if (e.keyCode === 37) { // PREV
             if (currentPairIndex > 0) {
                 currentPairIndex--;
                 showOpposite = false;

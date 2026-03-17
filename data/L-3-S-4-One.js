@@ -1,8 +1,8 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
+    // --- Story Settings ---
     const storyTitle = "The Robot Who Wanted to Cook";
     
     const storyContent = `
@@ -33,43 +33,87 @@
         Bolt realized that even though he was a <span class="target-word">failure</span> at traditional cooking, he had invented something new. 
         The <span class="target-word">lesson</span> he learned was that being different is better than being perfect.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#08080a; color:#cfcfcf; overflow-y:auto; padding:60px; font-family: 'Segoe UI', Roboto, sans-serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
-            .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
-            }
-            .story-container {
-                max-width: 1000px;
+            #stage-content::-webkit-scrollbar { width: 10px; }
+            #stage-content::-webkit-scrollbar-track { background: #050505; }
+            #stage-content::-webkit-scrollbar-thumb { background: #e74c3c; border-radius: 5px; }
+
+            .story-wrapper {
+                max-width: 950px;
                 margin: 0 auto;
-                line-height: 1.8;
+                line-height: 2;
                 font-size: 1.8rem;
+                background: #111115;
+                padding: 50px;
+                border-radius: 15px;
+                border: 1px solid #222;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             }
-            .title {
-                color: #e74c3c;
+
+            .title-box {
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
-                text-transform: uppercase;
-                border-bottom: 2px solid #333;
+                margin-bottom: 50px;
+                border-bottom: 2px solid #e74c3c;
                 padding-bottom: 20px;
             }
+
+            .title-tag { color: #e74c3c; font-size: 1rem; font-weight: 900; letter-spacing: 5px; }
+            .title-main { color: #fff; font-size: 3.5rem; text-transform: uppercase; margin: 10px 0; }
+
+            .target-word {
+                color: #00ffcc; 
+                font-weight: bold;
+                padding: 2px 8px;
+                background: rgba(0, 255, 204, 0.1);
+                border-radius: 4px;
+                border-bottom: 2px solid #00ffcc;
+                transition: 0.3s ease;
+                cursor: help;
+            }
+
+            .target-word:hover {
+                background: #00ffcc;
+                color: #000;
+                box-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
+            }
+
+            #textBody { text-align: justify; }
+            
+            .footer-note {
+                margin-top: 50px;
+                text-align: center;
+                font-size: 1.1rem;
+                color: #555;
+                font-style: italic;
+            }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
+
+        <div class="story-wrapper">
+            <div class="title-box">
+                <div class="title-tag">VETO ONE-SHOT // L3-S4</div>
+                <h1 class="title-main">${storyTitle}</h1>
+            </div>
+            
             <div id="textBody">
                 ${storyContent}
             </div>
+
+            <div class="footer-note">
+                ⚡ Moral: Innovation often comes from unexpected mistakes.
+            </div>
         </div>
+        <div style="height:100px;"></div>
     `;
 
+    // Keyboard support for scrolling or finishing
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) { // Space
+             if(window.triggerVetoDone) window.triggerVetoDone();
+        }
+    };
 })();

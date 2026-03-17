@@ -233,59 +233,73 @@
             }
         }, { passive: true });
 
-        // --- كود فيتو المطور للربط بين قاعدة البيانات والملفات ---
+        // --- Veto Architect Engine: Data Linking ---
         const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('id'); // سيقرأ مثلاً 6-1
-        
+        const sessionId = urlParams.get('id'); 
+
         if (sessionId && typeof sessionData !== 'undefined') {
             const data = sessionData[sessionId] || [];
             const container = document.getElementById('content-container');
             
-            document.getElementById('display-title').innerText = `LEVEL ${sessionId.split('-')[0]} | SESSION ${sessionId.split('-')[1]}`;
+            // تحديث العنوان بناءً على المستوى والسيشن
+            const [lvl, sess] = sessionId.split('-');
+            document.getElementById('display-title').innerText = `LEVEL ${lvl} | SESSION ${sess}`;
+
+            // خريطة الأيقونات والرموز البرمجية لكل أنواع المحتوى
+            const contentMap = {
+                "Grammar": { icon: "⚙️", code: "Gra" },
+                "Vocab": { icon: "🔖", code: "Voc" },
+                "Listening": { icon: "🎧", code: "Lis" },
+                "Reading": { icon: "📖", code: "Rea" },
+                "DMT": { icon: "⏱️", code: "DMT" },
+                "One Shot": { icon: "🎯", code: "One" },
+                "Tongue Twister": { icon: "👅", code: "Ton" },
+                "Squeezer": { icon: "🍋", code: "Squ" },
+                "Project": { icon: "🏗️", code: "Pro" },
+                "Wish": { icon: "✨", code: "Wsh" },
+                "Job": { icon: "💼", code: "Job" }
+            };
 
             data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
-                card.onclick = () => openActivity(item);
                 
-                // أيقونات ذكية حسب نوع النشاط
-                let icon = "📚";
-                if (item.includes("Grammar")) icon = "⚙️";
-                if (item.includes("DMT")) icon = "⏱️";
-                if (item.includes("One Shot")) icon = "📖";
-                if (item.includes("Vocab")) icon = "🔖";
+                // البحث عن النوع المناسب من الخريطة
+                let matchedKey = Object.keys(contentMap).find(key => item.includes(key)) || "Default";
+                let config = contentMap[matchedKey] || { icon: "📚", code: "Gen" };
 
                 card.innerHTML = `
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">${icon}</div>
-                    <h2 style="color:var(--primary-gold); font-size:1.5rem;">${item}</h2>
+                    <div style="font-size: 3.5rem; margin-bottom: 15px;">${config.icon}</div>
+                    <h2 style="color:var(--primary-gold); font-size:1.8rem; font-weight:bold;">${item}</h2>
                 `;
+
+                card.onclick = () => openActivity(item, config.code, lvl, sess);
                 container.appendChild(card);
             });
         }
 
-        function openActivity(activityName) {
-            const [lvl, sess] = sessionId.split('-');
-            let prefix = "";
-
-            // تحويل المسمى الطويل إلى اسم الملف المختصر
-            if (activityName.includes("Grammar")) prefix = "Gra";
-            else if (activityName.includes("Vocab")) prefix = "Voc";
-            else if (activityName.includes("DMT")) prefix = "DMT";
-            else if (activityName.includes("One Shot")) prefix = "One";
-            else {
-                alert("This activity type is not linked yet!");
-                return;
-            }
-
+        function openActivity(activityName, prefix, lvl, sess) {
+            // بناء اسم الملف بشكل ديناميكي واحترافي
+            // مثال: data/L-1-S-1-Gra.js
             const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
             
-            console.log("Attempting to load:", filePath); // لمراقبة التحميل في المتصفح
+            console.log(`%c Veto System: Loading ${filePath}`, 'color: #c5a059; font-weight: bold;');
 
-            document.getElementById('activity-stage').style.display = 'block';
-            document.getElementById('stage-content').innerHTML = ""; // تنظيف المسرح
+            const stage = document.getElementById('activity-stage');
+            const content = document.getElementById('stage-content');
             
+            stage.style.display = 'block';
+            content.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; font-size:2rem; color:var(--primary-gold);">Loading Session Content...</div>`; 
+
+            // تحميل ملف الـ JS الخاص بالمحتوى
             const script = document.createElement('script');
             script.src = filePath;
+            script.onerror = () => {
+                content.innerHTML = `<div style="text-align:center; padding-top:20vh;">
+                    <h1 style="color:#ff4757; font-size:4rem;">File Not Found!</h1>
+                    <p style="font-size:1.5rem;">Path: ${filePath}</p>
+                </div>`;
+            };
             document.head.appendChild(script);
         }
     </script>

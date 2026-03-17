@@ -1,11 +1,9 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة (تغير النص والكلمات في النسخ الـ 40) ---
     const storyTitle = "The Squirrel Who Forgot Everything";
     
-    // ملاحظة: وضعت الكلمات داخل <span> بلون مختلف لسهولة التعرف عليها أثناء القراءة
     const storyContent = `
         Once upon a time, in a forest where the trees were so tall they tickled the clouds, lived a squirrel named Sammy. 
         Sammy was not an ordinary squirrel; he was the most <span class="target-word">forgetful</span> creature in nature. 
@@ -36,43 +34,93 @@
         <br><br>
         Sammy returned to the village a hero. The <span class="target-word">moral</span> of the story? You don't need a perfect memory if you have a good sense of humor and a bit of luck.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; width:100%; display:block; background:#0a0a0a; color:#ccc; overflow-y:auto; padding:60px 0; font-family: 'Georgia', serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
-            .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
-            }
-            .story-container {
-                max-width: 1000px;
+            /* تخصيص شريط التمرير */
+            #stage-content::-webkit-scrollbar { width: 8px; }
+            #stage-content::-webkit-scrollbar-track { background: #050505; }
+            #stage-content::-webkit-scrollbar-thumb { background: #c5a059; border-radius: 10px; }
+
+            .story-wrapper {
+                max-width: 900px;
                 margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+                background: #111;
+                padding: 80px;
+                border-radius: 20px;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                border: 1px solid #222;
+                position: relative;
             }
-            .title {
-                color: #e74c3c;
+
+            .story-title {
+                color: #c5a059;
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
+                font-size: 3.5vw;
+                font-weight: 900;
+                margin-bottom: 50px;
                 text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                letter-spacing: 2px;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .story-body {
+                line-height: 1.8;
+                font-size: 1.8vw;
+                color: #ddd;
+                text-align: justify;
+            }
+
+            .target-word {
+                color: #c5a059; 
+                font-weight: bold;
+                background: rgba(197, 160, 89, 0.1);
+                padding: 2px 8px;
+                border-radius: 6px;
+                border-bottom: 2px solid #c5a059;
+                transition: 0.3s;
+                cursor: help;
+            }
+
+            .target-word:hover {
+                background: #c5a059;
+                color: #000;
+                box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+            }
+
+            .one-shot-badge {
+                position: absolute;
+                top: -20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #c5a059;
+                color: #000;
+                padding: 5px 30px;
+                border-radius: 50px;
+                font-family: sans-serif;
+                font-weight: 900;
+                font-size: 1rem;
+                letter-spacing: 3px;
             }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
-            <div id="textBody">
+
+        <div class="story-wrapper">
+            <div class="one-shot-badge">ONE SHOT</div>
+            <h1 class="story-title">${storyTitle}</h1>
+            <div class="story-body">
                 ${storyContent}
             </div>
         </div>
-    `;
 
+        <div style="height: 100px;"></div> `;
+
+    // إضافة زر إنهاء النشاط
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) { // مفتاح المسافة
+            if (window.triggerVetoDone) window.triggerVetoDone();
+        }
+    };
 })();

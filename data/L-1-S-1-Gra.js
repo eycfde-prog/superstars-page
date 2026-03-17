@@ -119,13 +119,18 @@
             
             // الانتقال للسؤال التالي بعد ثانية
             setTimeout(() => {
-                if (subStep < slides[currentSlide].questions.length - 1) {
+                const s = slides[currentSlide];
+                if (subStep < s.questions.length - 1) {
                     subStep++;
                     render();
                 } else {
-                    currentSlide++;
-                    subStep = 0;
-                    render();
+                    if (currentSlide < slides.length - 1) {
+                        currentSlide++;
+                        subStep = 0;
+                        render();
+                    } else {
+                        if (window.triggerVetoDone) window.triggerVetoDone();
+                    }
                 }
             }, 1200);
         } else {
@@ -139,20 +144,33 @@
     document.onkeydown = (e) => {
         if (e.keyCode === 39 || e.keyCode === 32 || e.keyCode === 13) { // Right, Space, Enter
             const s = slides[currentSlide];
-            if (s.type === 'definitions' && subStep < s.items.length - 1) subStep++;
-            else if (s.type === 'transform-table' && subStep < s.pairs.length - 1) subStep++;
-            else if (currentSlide < slides.length - 1) { 
+            if (s.type === 'definitions' && subStep < s.items.length - 1) {
+                subStep++;
+                render();
+            } else if (s.type === 'transform-table' && subStep < s.pairs.length - 1) {
+                subStep++;
+                render();
+            } else if (currentSlide < slides.length - 1) { 
                 currentSlide++; 
                 subStep = 0; 
+                render();
+            } else {
+                if (window.triggerVetoDone) window.triggerVetoDone();
             }
         } else if (e.keyCode === 37) { // Left (Back)
-            if (subStep > 0) subStep--;
-            else if (currentSlide > 0) { 
+            if (subStep > 0) {
+                subStep--;
+                render();
+            } else if (currentSlide > 0) { 
                 currentSlide--; 
-                subStep = 0; 
+                const prevSlide = slides[currentSlide];
+                if (prevSlide.type === 'definitions') subStep = prevSlide.items.length - 1;
+                else if (prevSlide.type === 'mcq-interactive') subStep = prevSlide.questions.length - 1;
+                else if (prevSlide.type === 'transform-table') subStep = prevSlide.pairs.length - 1;
+                else subStep = 0;
+                render();
             }
         }
-        render();
     };
 
     render();

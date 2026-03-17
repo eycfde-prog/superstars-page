@@ -1,8 +1,7 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- قاعدة بيانات الأسئلة (Do & Does) ---
     const questions = [
         "Do you speak English every day?", "Does your father work in an office?", "Do lions eat grass?",
         "Does it rain in the desert?", "Do we have a lesson tomorrow?", "Does your mother cook delicious food?",
@@ -18,38 +17,66 @@
 
     let currentIdx = 0;
     let countdownInterval = null;
-    const folderNumber = 2; // المجلد الخاص بـ Do & Does
+    const folderNumber = 2; 
 
-    // --- التنسيق البصري ---
     container.innerHTML = '';
-    container.style.cssText = `height:calc(100vh - 200px); display:flex; flex-direction:column; justify-content:center; align-items:center; background:#0a0a0a; color:#fff; font-family: 'Arial Black', sans-serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#050505; color:#fff; font-family: 'Inter', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            .sq-counter { position:absolute; top:30px; left:50px; font-size:1.5rem; color:#e74c3c; font-weight:bold; text-transform:uppercase; letter-spacing:2px; }
-            .sq-indicator { position:absolute; top:30px; right:50px; font-size:1.3rem; border: 2px solid #2980b9; padding:8px 20px; border-radius:30px; font-weight:bold; }
-            .sq-question { font-size:5.5rem; text-align:center; max-width:85%; line-height:1.1; font-weight:900; text-shadow: 4px 4px 15px rgba(0,0,0,0.8); display:none; }
-            .test-timer { font-size:4.5rem; color:#f1c40f; font-weight:bold; margin-top:40px; width:120px; height:120px; border: 6px solid #f1c40f; border-radius:50%; display:none; align-items:center; justify-content:center; text-shadow: 0 0 10px rgba(241,196,15,0.5); }
-            .go-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; }
-            .go-btn { background:#2980b9; color:white; border:none; padding:30px 100px; font-size:4rem; cursor:pointer; border-radius:20px; font-weight:900; box-shadow: 0 12px 0 #1c5982; transition:0.1s; }
-            .go-btn:active { transform:translateY(6px); box-shadow: 0 6px 0 #1c5982; }
+            .sq-counter { position:absolute; top:40px; left:60px; font-size:1.2rem; color:#444; font-weight:900; letter-spacing:3px; }
+            .sq-indicator { position:absolute; top:40px; right:60px; font-size:1.1rem; border: 2px solid #e74c3c; padding:8px 25px; border-radius:30px; font-weight:bold; color: #e74c3c; }
+            
+            .sq-question { 
+                font-size:5rem; text-align:center; max-width:85%; line-height:1.1; font-weight:900; 
+                display:none; transition: 0.2s; text-transform: uppercase;
+            }
+
+            .test-timer-wrap {
+                position: relative; width: 140px; height: 140px; margin-top: 50px; display: none;
+                justify-content: center; align-items: center;
+            }
+
+            #sqTimerDisplay { font-size: 5rem; font-weight: 900; color: #f1c40f; z-index: 5; }
+
+            .go-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.98); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; }
+            .go-btn { 
+                background:#e74c3c; color:white; border:none; padding:40px 120px; font-size:5rem; 
+                cursor:pointer; border-radius:25px; font-weight:900; box-shadow: 0 15px 0 #962d22; 
+                transition:0.1s; letter-spacing: -2px;
+            }
+            .go-btn:active { transform:translateY(8px); box-shadow: 0 7px 0 #962d22; }
             .highlight { color: #f1c40f; }
+            
+            @keyframes shake {
+                0% { transform: translate(1px, 1px) rotate(0deg); }
+                20% { transform: translate(-3px, 0px) rotate(-1deg); }
+                40% { transform: translate(3px, 2px) rotate(1deg); }
+                100% { transform: translate(1px, -1px) rotate(0deg); }
+            }
+            .urgent { color: #e74c3c !important; animation: shake 0.2s infinite; }
         </style>
         
         <div class="go-overlay" id="goOverlay">
-            <h1 style="margin-bottom:40px; font-size:3.5rem; color:#fff;">DO / DOES <span class="highlight">TEST</span></h1>
+            <h1 style="margin-bottom:50px; font-size:4rem; font-weight:900; letter-spacing:-2px;">SPEED TEST: <span class="highlight">DO / DOES</span></h1>
             <button class="go-btn" id="startTestBtn">GO!</button>
         </div>
 
-        <div class="sq-counter">Squeezer #2 [TEST]</div>
-        <div class="sq-indicator">Focus: <span class="highlight">Do / Does</span></div>
+        <div class="sq-counter">SQUEEZER LEVEL 5 [ULTRA]</div>
+        <div class="sq-indicator">TIME LIMIT: <span class="highlight">2 SEC</span></div>
+        
         <div id="sqQuestionDisplay" class="sq-question"></div>
-        <div id="sqTimerDisplay" class="test-timer">2</div>
+        
+        <div class="test-timer-wrap" id="timerWrap">
+            <div id="sqTimerDisplay">2</div>
+        </div>
+
         <audio id="sqAudioPlayer"></audio>
     `;
 
     const display = document.getElementById('sqQuestionDisplay');
     const timerDisplay = document.getElementById('sqTimerDisplay');
+    const timerWrap = document.getElementById('timerWrap');
     const audioPlayer = document.getElementById('sqAudioPlayer');
     const goOverlay = document.getElementById('goOverlay');
     const startBtn = document.getElementById('startTestBtn');
@@ -57,6 +84,7 @@
     function startTimer() {
         let timeLeft = 2;
         timerDisplay.innerText = timeLeft;
+        timerDisplay.classList.remove('urgent');
         
         if (countdownInterval) clearInterval(countdownInterval);
         
@@ -64,6 +92,7 @@
             timeLeft--;
             if (timeLeft >= 0) {
                 timerDisplay.innerText = timeLeft;
+                if (timeLeft === 0) timerDisplay.classList.add('urgent');
             } else {
                 clearInterval(countdownInterval);
                 nextQuestion();
@@ -78,35 +107,33 @@
         } else {
             clearInterval(countdownInterval);
             display.innerText = "CHALLENGE COMPLETE!";
-            display.style.color = "#f1c40f";
-            timerDisplay.style.display = "none";
+            display.style.color = "#2ecc71";
+            timerWrap.style.display = "none";
         }
     }
 
     function updateSlide(index) {
         display.style.opacity = '0';
-        display.style.transform = 'scale(0.9)';
-        
         setTimeout(() => {
             display.innerText = questions[index];
             display.style.opacity = '1';
-            display.style.transform = 'scale(1)';
             
-            // تشغيل الصوت
             const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
             audioPlayer.src = audioPath;
-            audioPlayer.play().catch(e => {});
+            audioPlayer.play().catch(() => {});
             
-            // بدء التايمر
             startTimer();
-        }, 150);
+        }, 50);
     }
 
     startBtn.onclick = () => {
-        goOverlay.style.display = 'none';
-        display.style.display = 'block';
-        timerDisplay.style.display = 'flex';
-        updateSlide(0);
+        goOverlay.style.opacity = '0';
+        setTimeout(() => {
+            goOverlay.style.display = 'none';
+            display.style.display = 'block';
+            timerWrap.style.display = 'flex';
+            updateSlide(0);
+        }, 300);
     };
 
 })();

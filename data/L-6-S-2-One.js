@@ -1,8 +1,8 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
+    // --- Story Settings ---
     const storyTitle = "The Camping Trip and the Hungry Guest";
     
     const storyContent = `
@@ -26,43 +26,82 @@
         They shared some <span class="target-word">crackers</span> instead and spent the night telling <span class="target-word">ghost</span> stories under the stars. 
         They learned a valuable <span class="target-word">lesson</span>: always lock your food in the car when you go to the <span class="target-word">wilderness</span>!
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0a0f0a; color:#dcdcdc; overflow-y:auto; padding:60px 40px; font-family: 'Crimson Pro', serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
-            .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
-            }
-            .story-container {
-                max-width: 1000px;
+            @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;700&family=Montserrat:wght@800&display=swap');
+
+            .story-wrapper {
+                max-width: 950px;
                 margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+                background: rgba(20, 30, 20, 0.6);
+                padding: 60px;
+                border-radius: 30px;
+                border: 1px solid #1a2a1a;
+                box-shadow: 0 40px 100px rgba(0,0,0,0.9);
             }
-            .title {
-                color: #e74c3c;
+
+            .category-tag {
+                color: #2ecc71;
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 0.9rem;
+                letter-spacing: 6px;
                 text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                margin-bottom: 15px;
+                display: block;
             }
+
+            .story-title {
+                color: #ffffff;
+                text-align: center;
+                font-size: 3.8rem;
+                font-family: 'Montserrat', sans-serif;
+                margin-bottom: 50px;
+                line-height: 1.1;
+                text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            }
+
+            #textBody {
+                line-height: 1.9;
+                font-size: 1.9rem;
+                color: #c8d6c8;
+            }
+
+            .target-word {
+                color: #f39c12; 
+                font-weight: 700;
+                border-bottom: 2px dashed rgba(243, 156, 18, 0.3);
+                transition: 0.3s;
+                cursor: help;
+            }
+
+            .target-word:hover {
+                color: #fff;
+                background: #f39c12;
+                border-radius: 5px;
+                padding: 0 8px;
+                text-decoration: none;
+            }
+
+            /* Hidden Scrollbar */
+            #stage-content::-webkit-scrollbar { width: 10px; }
+            #stage-content::-webkit-scrollbar-track { background: #0a0f0a; }
+            #stage-content::-webkit-scrollbar-thumb { background: #1a2a1a; border-radius: 10px; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
+        
+        <div class="story-wrapper">
+            <span class="category-tag">Nature & Adventure</span>
+            <h1 class="story-title">${storyTitle}</h1>
             <div id="textBody">
                 ${storyContent}
             </div>
+            <div style="height:50px;"></div>
         </div>
+        <div style="height:100px;"></div>
     `;
 
 })();

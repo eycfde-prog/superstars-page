@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VETO PROGRAM | Session Content</title>
     <style>
         :root {
@@ -12,7 +12,7 @@
             --banner-height: 140px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
 
         body {
             background-color: var(--bg-dark);
@@ -35,14 +35,7 @@
 
         .logo-img { height: 70px; }
         .mr-ezz-img { height: 100px; border-radius: 8px; }
-
-        .session-info h1 {
-            font-size: 2.5rem;
-            color: var(--primary-gold);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-align: center;
-        }
+        .session-info h1 { font-size: 2.5rem; color: var(--primary-gold); text-transform: uppercase; letter-spacing: 3px; text-align: center; }
 
         /* Content Grid */
         .content-grid {
@@ -60,61 +53,62 @@
             padding: 40px;
             border-radius: 15px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: 0.3s ease;
             cursor: pointer;
             animation: fadeInUp 0.5s ease forwards;
         }
 
-        .content-card:hover {
-            border-color: var(--primary-gold);
-            background: rgba(197, 160, 89, 0.1);
-            transform: translateY(-10px);
+        .content-card:hover { border-color: var(--primary-gold); background: rgba(197, 160, 89, 0.1); transform: translateY(-10px); }
+
+        /* --- ToolBox UI --- */
+        .toolbox-wrapper { position: fixed; bottom: 30px; right: 30px; z-index: 5000; display: flex; flex-direction: column-reverse; align-items: center; gap: 15px; }
+        .tool-btn { 
+            width: 60px; height: 60px; border-radius: 50%; background: var(--primary-gold); border: none; 
+            cursor: pointer; font-size: 1.5rem; display: none; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .main-tool-toggle { display: flex; z-index: 5001; font-size: 2rem; }
+        .tool-btn.active { background: #ff4757; color: white; transform: scale(1.1); }
+        .toolbox-wrapper.open .tool-btn { display: flex; animation: slideIn 0.3s forwards; }
+
+        /* --- Laser & Drawing --- */
+        #laser-pointer {
+            position: fixed; width: 20px; height: 20px; background: #ff0000; border-radius: 50%;
+            pointer-events: none; z-index: 9999; display: none;
+            box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 40px #ff0000;
+        }
+        #drawing-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; }
+
+        /* --- Quick Notes --- */
+        #note-pad {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 6000; 
+            display: none; flex-direction: column; padding: 40px;
+        }
+        #note-text { 
+            width: 100%; height: 80%; background: transparent; border: 2px solid var(--primary-gold);
+            color: white; font-size: 2rem; padding: 20px; border-radius: 10px; resize: none; outline: none;
         }
 
         /* Done Overlay */
         #done-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 2000;
         }
-        
-        .done-text {
-            font-size: 8rem;
-            color: #2ecc71;
-            font-weight: 900;
-            margin-bottom: 40px;
-            text-shadow: 0 0 20px rgba(46,204,113,0.5);
-        }
-        
-        .test-btn {
-            padding: 20px 60px;
-            background: var(--primary-gold);
-            color: black;
-            border-radius: 50px;
-            font-size: 2.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            transition: 0.3s;
-        }
+        .done-text { font-size: 8rem; color: #2ecc71; font-weight: 900; text-shadow: 0 0 20px rgba(46,204,113,0.5); }
+        .test-btn { padding: 20px 60px; background: var(--primary-gold); color: black; border-radius: 50px; font-size: 2rem; font-weight: bold; cursor: pointer; border: none; }
 
-        .test-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--primary-gold); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        .back-btn {
-            position: fixed; bottom: 30px; left: 30px;
-            padding: 15px 30px; background: var(--primary-gold);
-            color: black; text-decoration: none; font-weight: bold;
-            border-radius: 50px; z-index: 100;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .top-banner { height: 100px; padding: 0 15px; }
+            .logo-img { height: 40px; }
+            .mr-ezz-img { height: 60px; }
+            .session-info h1 { font-size: 1.2rem; }
+            .content-grid { padding: 20px; gap: 15px; }
+            .content-card { padding: 20px; }
         }
     </style>
 </head>
@@ -129,87 +123,149 @@
     <main class="content-grid" id="content-container"></main>
 
     <div id="activity-stage" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:1000;">
-        <button onclick="closeStage()" style="position:absolute; top:20px; right:20px; z-index:2001; background:var(--primary-gold); border:none; padding:10px 20px; cursor:pointer; font-weight:bold; border-radius:5px;">CLOSE [ESC]</button>
-        
+        <button onclick="closeStage()" style="position:absolute; top:20px; left:20px; z-index:2001; background:var(--primary-gold); border:none; padding:10px 20px; cursor:pointer; font-weight:bold; border-radius:5px;">EXIT [ESC]</button>
         <div id="stage-content" style="width:100%; height:100%;"></div>
-    
         <div id="done-overlay">
             <div class="done-text">DONE!</div>
             <button id="test-link" class="test-btn">GO TO TEST</button>
         </div>
     </div>
 
-    <a href="vetoof.html" class="back-btn">← BACK TO LEVELS</a>
+    <div id="laser-pointer"></div>
+    <canvas id="drawing-canvas"></canvas>
+
+    <div id="note-pad">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <h2 style="color:var(--primary-gold)">Quick Board</h2>
+            <button onclick="toggleNotePad()" style="background:#ff4757; border:none; color:white; padding:10px 25px; border-radius:5px; cursor:pointer; font-weight:bold;">CLOSE</button>
+        </div>
+        <textarea id="note-text" placeholder="Write anything here..."></textarea>
+    </div>
+
+    <div class="toolbox-wrapper" id="toolBox">
+        <button class="tool-btn main-tool-toggle" onclick="toggleToolBox()" style="display:flex;">🛠️</button>
+        <button class="tool-btn" id="laserBtn" onclick="toggleLaser()" title="Laser Pointer">🔦</button>
+        <button class="tool-btn" onclick="toggleNotePad()" title="Quick Board">📝</button>
+        <button class="tool-btn" onclick="location.reload()" title="Refresh Session">🔄</button>
+    </div>
+
+    <a href="vetoof.html" class="back-btn" style="position:fixed; bottom:30px; left:30px; padding:15px 30px; background:var(--primary-gold); color:black; text-decoration:none; font-weight:bold; border-radius:50px; z-index:100;">← BACK</a>
 
     <script src="data/levels.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session');
         let currentActivityName = "";
+        
+        // --- Laser & Drawing Logic ---
+        let laserActive = false;
+        let isDrawing = false;
+        const laser = document.getElementById('laser-pointer');
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
 
-        if (sessionId) {
-            const [lvl, sess] = sessionId.split('-');
-            document.getElementById('display-title').innerText = `Level ${lvl} - Session ${sess}`;
-            renderSessionData(sessionId);
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.onresize = resizeCanvas;
+        resizeCanvas();
+
+        function toggleLaser() {
+            laserActive = !laserActive;
+            document.getElementById('laserBtn').classList.toggle('active');
+            laser.style.display = laserActive ? 'block' : 'none';
+            document.body.style.cursor = laserActive ? 'none' : 'default';
         }
 
-        function getFilePrefix(name) { return name.split(' ')[0].substring(0, 3); }
+        window.addEventListener('mousemove', (e) => {
+            if (!laserActive) return;
+            laser.style.left = e.clientX - 10 + 'px';
+            laser.style.top = e.clientY - 10 + 'px';
 
+            if (isDrawing) {
+                ctx.lineTo(e.clientX, e.clientY);
+                ctx.stroke();
+            }
+        });
+
+        window.addEventListener('mousedown', (e) => {
+            if (!laserActive) return;
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.clientX, e.clientY);
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#ff0000';
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDrawing = false;
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // يختفي بمجرد ترك الماوس
+        });
+
+        // --- ToolBox & Pad Logic ---
+        function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
+        function toggleNotePad() {
+            const pad = document.getElementById('note-pad');
+            pad.style.display = (pad.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        // --- Core Functions ---
         function openActivity(activityName, isTest = false) {
             const [lvl, sess] = sessionId.split('-');
-            const prefix = getFilePrefix(activityName);
+            const prefix = activityName.split(' ')[0].substring(0, 3);
             currentActivityName = activityName;
 
-            // تصحيح: إزالة المسافة بعد حرف L-
             let fileName = `L-${lvl}-S-${sess}-${prefix}.js`;
             let filePath = `data/${fileName}`;
-
-            if (isTest) {
-                fileName = `L-${lvl}-S-${sess}-${prefix}t.js`;
-                filePath = `data/vetoo/${fileName}`;
-            }
-
-            console.log("Loading File:", filePath);
+            if (isTest) filePath = `data/vetoo/L-${lvl}-S-${sess}-${prefix}t.js`;
 
             const stage = document.getElementById('activity-stage');
-            const doneOverlay = document.getElementById('done-overlay');
             const stageContent = document.getElementById('stage-content');
 
             stage.style.display = 'block';
-            doneOverlay.style.display = 'none';
             stageContent.innerHTML = "";
 
             const script = document.createElement('script');
             script.src = filePath;
-            script.onerror = () => {
-                stageContent.innerHTML = `<div style="color:white; text-align:center; margin-top:20%; font-size:2rem;">
-                    File Not Found:<br><span style="color:var(--primary-gold)">${filePath}</span>
-                </div>`;
-            };
             document.head.appendChild(script);
         }
-
-        window.triggerVetoDone = function() {
-            document.getElementById('done-overlay').style.display = 'flex';
-            document.getElementById('test-link').onclick = () => openActivity(currentActivityName, true);
-        };
 
         function closeStage() {
             document.getElementById('activity-stage').style.display = 'none';
             document.getElementById('stage-content').innerHTML = "";
         }
 
+        // --- Mobile Magic: Convert Touch to Enter ---
+        document.addEventListener('touchstart', (e) => {
+            if (document.getElementById('activity-stage').style.display === 'block') {
+                // محاكاة زر Enter لملفات Squeezer و Vocab
+                const enterEvent = new KeyboardEvent('keydown', {
+                    key: 'Enter', keyCode: 13, code: 'Enter', which: 13, bubbles: true
+                });
+                document.dispatchEvent(enterEvent);
+                
+                // محاكاة السهم الأيمن أيضاً لضمان التوافق
+                const rightEvent = new KeyboardEvent('keydown', {
+                    key: 'ArrowRight', keyCode: 39, bubbles: true
+                });
+                document.dispatchEvent(rightEvent);
+            }
+        }, { passive: true });
+
         window.addEventListener('keydown', (e) => { if(e.key === "Escape") closeStage(); });
 
-        function renderSessionData(id) {
+        if (sessionId) {
+            const [lvl, sess] = sessionId.split('-');
+            document.getElementById('display-title').innerText = `Level ${lvl} - Session ${sess}`;
             const container = document.getElementById('content-container');
-            const data = sessionData[id] || [];
-            container.innerHTML = data.length ? "" : `<h2 style="grid-column:1/-1;text-align:center;opacity:0.5;">No content found</h2>`;
-            
-            data.forEach((item, index) => {
+            const data = sessionData[sessionId] || [];
+            data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
-                card.style.animationDelay = `${index * 0.1}s`;
                 card.onclick = () => openActivity(item);
                 card.innerHTML = `<h2>${item}</h2>`;
                 container.appendChild(card);

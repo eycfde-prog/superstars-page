@@ -1,5 +1,5 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
     // --- إعدادات القصة ---
@@ -31,43 +31,98 @@
         She realized that the hardest paths often lead to the most <span class="target-word">rewarding</span> views. 
         She sat on a rock, ate her bread, and felt like she was truly touching the clouds.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; width:100%; display:block; background:#050505; color:#eee; overflow-y:auto; padding:5vh 10vw; font-family: 'Segoe UI', sans-serif; scrollbar-width: thin; scrollbar-color: #c5a059 #111;`;
 
     container.innerHTML = `
         <style>
             .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
+                color: #c5a059; 
+                font-weight: 900;
+                text-decoration: none;
+                background: rgba(197, 160, 89, 0.1);
+                padding: 2px 8px;
+                border-radius: 6px;
+                border-bottom: 2px solid #c5a059;
+                transition: 0.3s;
+            }
+            .target-word:hover {
+                background: #c5a059;
+                color: #000;
+                box-shadow: 0 0 15px #c5a059;
             }
             .story-container {
-                max-width: 1000px;
+                max-width: 1200px;
                 margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+                line-height: 1.7;
+                font-size: 2.2vw;
+                background: rgba(255,255,255,0.02);
+                padding: 60px;
+                border-radius: 30px;
+                border: 1px solid #222;
+                box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+                animation: vetoFadeUp 0.8s ease-out;
+            }
+            .title-area {
+                text-align: center;
+                margin-bottom: 60px;
+            }
+            .one-shot-label {
+                color: #c5a059;
+                font-weight: 900;
+                letter-spacing: 10px;
+                font-size: 1.2vw;
+                display: block;
+                margin-bottom: 10px;
             }
             .title {
-                color: #3498db; /* لون سماوي يعبر عن السحاب والقمة */
-                text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
+                color: #fff;
+                font-size: 4vw;
+                margin: 0;
                 text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                font-weight: 900;
+                line-height: 1.1;
+            }
+            .footer-note {
+                margin-top: 60px;
+                text-align: center;
+                opacity: 0.3;
+                font-size: 1vw;
+                border-top: 1px solid #333;
+                padding-top: 20px;
+            }
+            @keyframes vetoFadeUp {
+                from { opacity: 0; transform: translateY(40px); }
+                to { opacity: 1; transform: translateY(0); }
             }
         </style>
+
         <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
+            <div class="title-area">
+                <span class="one-shot-label">ONE SHOT SESSION</span>
+                <h1 class="title">${storyTitle}</h1>
+            </div>
             <div id="textBody">
                 ${storyContent}
+            </div>
+            
+            <div style="text-align:center; margin-top:50px;">
+                <button onclick="window.triggerVetoDone()" style="padding:15px 40px; background:#c5a059; border:none; border-radius:50px; font-weight:bold; font-size:1.5vw; cursor:pointer;">DONE READING</button>
+            </div>
+
+            <div class="footer-note">
+                © VETO PROGRAM - ADVANCED READING COMPREHENSION
             </div>
         </div>
     `;
 
+    // دعم مفتاح المسافة للتمرير بسلاسة
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32 || e.keyCode === 40) { // Space or Down
+            container.scrollBy({ top: 150, behavior: 'smooth' });
+        } else if (e.keyCode === 38) { // Up
+            container.scrollBy({ top: -150, behavior: 'smooth' });
+        }
+    };
 })();

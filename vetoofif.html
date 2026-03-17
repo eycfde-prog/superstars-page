@@ -13,10 +13,10 @@
             --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* منع التحديد واللمس العشوائي لتحسين تجربة السبورة */
+        /* منع التحديد واللمس العشوائي */
         * { 
             margin: 0; padding: 0; box-sizing: border-box; 
-            touch-action: manipulation;
+            touch-action: none; /* تم الضبط للتحكم يدويًا في التاتش */
             -webkit-user-select: none;
             user-select: none;
         }
@@ -29,122 +29,115 @@
             overflow: hidden;
         }
 
-        /* Banner - Optimized for distance */
+        /* الوضع العرضي للموبايل عند فتح البورد */
+        @media screen and (max-width: 900px) and (orientation: portrait) {
+            #note-pad.open-mobile {
+                transform: rotate(90deg);
+                transform-origin: bottom left;
+                position: absolute;
+                top: -100vw;
+                left: 0;
+                height: 100vw;
+                width: 100vh;
+            }
+        }
+
+        /* Banner */
         .top-banner {
             height: var(--banner-height);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 50px;
+            padding: 0 40px;
             background: rgba(0, 0, 0, 0.95);
             border-bottom: 4px solid var(--primary-gold);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .logo-img { height: 80px; }
-        .mr-ezz-img { height: 110px; border-radius: 12px; border: 2px solid var(--primary-gold); }
-        .session-info h1 { 
-            font-size: 3rem; 
-            color: var(--primary-gold); 
-            text-transform: uppercase; 
-            letter-spacing: 5px;
-            text-shadow: 2px 2px 10px rgba(197, 160, 89, 0.3);
+        .back-btn {
+            background: var(--primary-gold);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.2rem;
         }
 
-        /* Content Grid - 4-Meter Rule Applied */
+        .logo-img { height: 70px; }
+        .mr-ezz-img { height: 100px; border-radius: 12px; border: 2px solid var(--primary-gold); }
+        .session-info h1 { font-size: 2.5rem; color: var(--primary-gold); letter-spacing: 3px; }
+
+        /* Content Grid */
         .content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 40px;
-            padding: 60px;
-            max-width: 1600px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 40px;
             overflow-y: auto;
             height: calc(100vh - var(--banner-height));
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary-gold) transparent;
+            touch-action: pan-y; /* السماح بالسكرول الرأسي هنا فقط */
         }
 
         .content-card {
             background: var(--card-bg);
             border: 2px solid rgba(197, 160, 89, 0.15);
-            padding: 60px 30px;
-            border-radius: 25px;
+            padding: 50px 20px;
+            border-radius: 20px;
             text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: 0.3s;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         }
 
-        .content-card h2 {
-            font-size: 2.5rem; /* خط ضخم للطلاب */
-            font-weight: 800;
-            color: #efefef;
-        }
+        .content-card h2 { font-size: 2rem; }
+        .content-card:hover { border-color: var(--primary-gold); transform: translateY(-10px); }
 
-        .content-card:hover { 
-            border-color: var(--primary-gold); 
-            background: rgba(197, 160, 89, 0.1);
-            transform: translateY(-15px) scale(1.03);
-            box-shadow: 0 20px 50px rgba(197, 160, 89, 0.2);
-        }
-
-        /* Quick Board Mode */
+        /* Quick Board */
         #note-pad {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9000; 
-            display: none; flex-direction: column; padding: 40px;
+            position: fixed; inset: 0; background: #000; z-index: 9000; 
+            display: none; flex-direction: column; padding: 20px;
         }
 
         #note-text { 
-            width: 100%; height: 85%; 
-            background: #111; border: 4px solid var(--primary-gold);
-            color: #fff; font-size: 5rem; /* خط فائق الضخامة */
-            padding: 40px; border-radius: 30px; resize: none; outline: none;
-            line-height: 1.2; font-weight: bold; text-align: center;
-            user-select: text; -webkit-user-select: text;
+            width: 100%; height: 80%; 
+            background: #111; border: 3px solid var(--primary-gold);
+            color: #fff; font-size: 4rem; padding: 20px; border-radius: 20px;
+            outline: none; text-align: center; touch-action: auto;
         }
 
-        /* Laser & Tools */
+        /* Laser */
         #laser-pointer {
-            position: fixed; width: 25px; height: 25px; background: #ff0000; border-radius: 50%;
-            pointer-events: none; z-index: 10000; display: none;
-            box-shadow: 0 0 15px #ff0000, 0 0 40px #ff0000;
+            position: fixed; width: 30px; height: 30px; background: rgba(255, 0, 0, 0.8); 
+            border-radius: 50%; pointer-events: none; z-index: 10000; display: none;
+            box-shadow: 0 0 20px red, 0 0 40px red;
         }
-        #drawing-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; }
+        #drawing-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
 
-        .toolbox-wrapper { position: fixed; bottom: 40px; right: 40px; z-index: 9500; display: flex; flex-direction: column-reverse; gap: 20px; }
+        /* Tools */
+        .toolbox-wrapper { position: fixed; bottom: 30px; right: 30px; z-index: 9500; display: flex; flex-direction: column-reverse; gap: 15px; }
         .tool-btn { 
-            width: 80px; height: 80px; border-radius: 50%; background: var(--primary-gold); border: none; 
-            cursor: pointer; font-size: 2.2rem; display: none; align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6); transition: 0.3s;
+            width: 70px; height: 70px; border-radius: 50%; background: var(--primary-gold); border: none; 
+            cursor: pointer; font-size: 1.8rem; display: none; align-items: center; justify-content: center;
         }
         .toolbox-wrapper.open .tool-btn { display: flex; }
-        .tool-btn.active { background: #ff4757; transform: scale(1.15); }
+        .tool-btn.active { background: #ff4757; }
 
         #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
-        
-        .exit-btn {
-            position: absolute; top: 30px; left: 30px; z-index: 8500;
-            background: #ff4757; color: white; border: none; padding: 15px 35px;
-            font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer;
-        }
     </style>
 </head>
 <body oncontextmenu="return false;"> 
 
     <header class="top-banner">
+        <button class="back-btn" onclick="window.location.href='vetoof.html'">⬅ BACK</button>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
-        <div class="session-info"><h1 id="display-title">SESSION CONTENT</h1></div>
+        <div class="session-info"><h1 id="display-title">VETO SYSTEM</h1></div>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="mr-ezz-img">
     </header>
 
     <main class="content-grid" id="content-container"></main>
 
     <div id="activity-stage">
-        <button class="exit-btn" onclick="closeStage()">ESC | EXIT</button>
+        <button onclick="closeStage()" style="position:absolute; top:20px; left:20px; z-index:8500; background:#ff4757; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:bold;">EXIT</button>
         <div id="stage-content" style="width:100%; height:100%;"></div>
     </div>
 
@@ -152,15 +145,12 @@
     <canvas id="drawing-canvas"></canvas>
 
     <div id="note-pad">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;">
-            <h2 style="color:var(--primary-gold); font-size: 2.5rem;">VETO QUICK BOARD</h2>
-            <button onclick="toggleNotePad()" style="background:#ff4757; border:none; color:white; padding:15px 40px; border-radius:15px; cursor:pointer; font-size:1.8rem; font-weight:bold;">CLOSE</button>
-        </div>
-        <textarea id="note-text" placeholder="Start writing Mr. Ezz..."></textarea>
+        <button onclick="toggleNotePad()" style="align-self: flex-end; background:#ff4757; color:white; border:none; padding:10px 30px; border-radius:10px; margin-bottom:10px;">CLOSE</button>
+        <textarea id="note-text" placeholder="Explain here..."></textarea>
     </div>
 
     <div class="toolbox-wrapper" id="toolBox">
-        <button class="tool-btn" style="display:flex; background:#222; border:3px solid var(--primary-gold);" onclick="toggleToolBox()">🛠️</button>
+        <button class="tool-btn" style="display:flex; background:#222; border:2px solid var(--primary-gold);" onclick="toggleToolBox()">🛠️</button>
         <button class="tool-btn" id="laserBtn" onclick="toggleLaser()">🔦</button>
         <button class="tool-btn" onclick="toggleNotePad()">📝</button>
         <button class="tool-btn" onclick="location.reload()">🔄</button>
@@ -169,10 +159,8 @@
     <script src="data/levels.js"></script>
 
     <script>
-        // 2. مستشعر الـ Session ID (الحل للمشكلة)
         const urlParams = new URLSearchParams(window.location.search);
-        const currentSessionId = urlParams.get('session'); // يجلب مثلاً 1-1
-
+        const currentSessionId = urlParams.get('session');
         let laserActive = false;
         let isDrawing = false;
         const laser = document.getElementById('laser-pointer');
@@ -182,19 +170,11 @@
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.onresize = resizeCanvas; resizeCanvas();
 
-        // عرض المحتوى بناءً على المعرف
         function initSession() {
-            if (!currentSessionId || !sessionData[currentSessionId]) {
-                document.getElementById('content-container').innerHTML = `<h1 style="grid-column: 1/-1; text-align:center; color:red;">ERROR: SESSION NOT FOUND</h1>`;
-                return;
-            }
-
-            document.getElementById('display-title').innerText = `LEVEL ${currentSessionId.split('-')[0]} | SESSION ${currentSessionId.split('-')[1]}`;
-            
-            const data = sessionData[currentSessionId];
+            if (!currentSessionId || !sessionData[currentSessionId]) return;
+            document.getElementById('display-title').innerText = `L-${currentSessionId}`;
             const container = document.getElementById('content-container');
-            
-            data.forEach(item => {
+            sessionData[currentSessionId].forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
                 card.onclick = () => openActivity(item);
@@ -207,7 +187,6 @@
             const [lvl, sess] = currentSessionId.split('-');
             const prefix = activityName.split(' ')[0].substring(0, 3);
             const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
-            
             document.getElementById('activity-stage').style.display = 'block';
             const script = document.createElement('script');
             script.src = filePath;
@@ -219,49 +198,67 @@
             document.getElementById('stage-content').innerHTML = "";
         }
 
-        // لوحة الشرح والاختصارات
         function toggleNotePad() {
             const pad = document.getElementById('note-pad');
             const isOpen = pad.style.display === 'flex';
             pad.style.display = isOpen ? 'none' : 'flex';
-            if (!isOpen) setTimeout(() => document.getElementById('note-text').focus(), 100);
+            pad.classList.toggle('open-mobile');
         }
 
         function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
 
-        // الليزر والتحكم
         function toggleLaser() {
             laserActive = !laserActive;
             document.getElementById('laserBtn').classList.toggle('active');
-            laser.style.display = laserActive ? 'block' : 'none';
-            document.body.style.cursor = laserActive ? 'none' : 'default';
+            laser.style.display = 'none';
         }
 
-        window.addEventListener('mousemove', (e) => {
-            if (!laserActive) return;
-            laser.style.left = e.clientX - 12 + 'px';
-            laser.style.top = e.clientY - 12 + 'px';
-            if (isDrawing) { ctx.lineTo(e.clientX, e.clientY); ctx.stroke(); }
+        // --- نظام التحكم بالتاتش (Laser & Navigation) ---
+        let touchStartX = 0;
+
+        window.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            if (laserActive) {
+                isDrawing = true;
+                const touch = e.touches[0];
+                laser.style.display = 'block';
+                laser.style.left = touch.clientX - 15 + 'px';
+                laser.style.top = touch.clientY - 15 + 'px';
+                ctx.beginPath();
+                ctx.moveTo(touch.clientX, touch.clientY);
+            }
         });
 
-        window.addEventListener('mousedown', (e) => {
-            if (!laserActive) return;
-            isDrawing = true;
-            ctx.beginPath();
-            ctx.moveTo(e.clientX, e.clientY);
-            ctx.strokeStyle = '#ff0000';
-            ctx.lineWidth = 6;
-            ctx.lineCap = 'round';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#ff0000';
+        window.addEventListener('touchmove', (e) => {
+            if (laserActive && isDrawing) {
+                const touch = e.touches[0];
+                laser.style.left = touch.clientX - 15 + 'px';
+                laser.style.top = touch.clientY - 15 + 'px';
+                ctx.lineTo(touch.clientX, touch.clientY);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 5;
+                ctx.stroke();
+            }
         });
 
-        window.addEventListener('mouseup', () => {
-            isDrawing = false;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        window.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            
+            // الليزر يختفي فوراً عند ترك الشاشة
+            if (laserActive) {
+                isDrawing = false;
+                laser.style.display = 'none';
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            } else if (document.getElementById('activity-stage').style.display === 'block') {
+                // نظام الملاحة (يمين/شمال) في وضع المحتوى
+                const diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 50) {
+                    const key = diff > 0 ? 'ArrowRight' : 'ArrowLeft';
+                    document.dispatchEvent(new KeyboardEvent('keydown', { key: key }));
+                }
+            }
         });
 
-        // تشغيل الجلسة فور التحميل
         initSession();
     </script>
 </body>

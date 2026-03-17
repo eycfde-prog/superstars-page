@@ -226,27 +226,17 @@
             if(laserActive) toggleLaser(); 
         }
 
-        document.addEventListener('touchstart', (e) => {
-            if (document.getElementById('activity-stage').style.display === 'block' && !laserActive) {
-                const enterEvent = new KeyboardEvent('keydown', { key: 'ArrowRight', keyCode: 39, bubbles: true });
-                document.dispatchEvent(enterEvent);
-            }
-        }, { passive: true });
-
-        // --- كود فيتو المطور للربط الذكي ---
         const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('id'); // يقرأ ID من الرابط مثل 6-2
-        
+        const sessionId = urlParams.get('id');
+
         if (sessionId && typeof sessionData !== 'undefined') {
             const data = sessionData[sessionId] || [];
             const container = document.getElementById('content-container');
             
-            // تحديث عنوان الصفحة
-            const [lvl, sess] = sessionId.split('-');
-            document.getElementById('display-title').innerText = `LEVEL ${lvl} | SESSION ${sess}`;
+            document.getElementById('display-title').innerText = `LEVEL ${sessionId.split('-')[0]} | SESSION ${sessionId.split('-')[1]}`;
 
             if (data.length === 0) {
-                container.innerHTML = `<h2 style="color:#ff4757; grid-column: 1/-1;">⚠️ Session [${sessionId}] is empty or not defined!</h2>`;
+                container.innerHTML = `<h2 style="color:red; grid-column: 1/-1;">Session [${sessionId}] not found</h2>`;
             }
 
             data.forEach(item => {
@@ -254,66 +244,41 @@
                 card.className = 'content-card';
                 card.onclick = () => openActivity(item);
                 
-                // اختيار الأيقونة المناسبة بناءً على الكلمة الموجودة في الاسم
-                let icon = "📖"; // الافتراضي
-                if (item.toLowerCase().includes("vocab")) icon = "🔖";
-                if (item.toLowerCase().includes("grammar")) icon = "⚙️";
-                if (item.toLowerCase().includes("dmt")) icon = "⏱️";
-                if (item.toLowerCase().includes("one shot")) icon = "🎬";
-                if (item.toLowerCase().includes("listening")) icon = "🎧";
+                // تحديد الأيقونة بناءً على محتوى النص الفعلي
+                let icon = '📖';
+                if(item.includes('Vocab')) icon = '📚';
+                if(item.includes('Grammar')) icon = '⚙️';
+                if(item.includes('Listening')) icon = '🎧';
 
                 card.innerHTML = `
                     <div style="font-size: 3rem; margin-bottom: 10px;">${icon}</div>
-                    <h2 style="color:var(--primary-gold); font-size:1.4rem;">${item}</h2>
-                    <p style="color:#666; margin-top:10px; font-size:0.9rem;">Launch Activity</p>
+                    <h2 style="color:var(--primary-gold)">${item}</h2>
+                    <p style="color:#888; margin-top:10px;">Click to Start</p>
                 `;
                 container.appendChild(card);
             });
-        } else {
-            document.getElementById('content-container').innerHTML = `
-                <div style="text-align:center; grid-column:1/-1; padding:50px;">
-                    <h2 style="color:#ff4757;">❌ Access Error</h2>
-                    <p style="color:#888; margin-top:20px;">Please use a valid link. Example: session.html?id=6-2</p>
-                </div>`;
         }
 
-        // دالة فتح النشاط مع "المترجم الذكي" للملفات
         function openActivity(activityName) {
             const [lvl, sess] = sessionId.split('-');
-            let prefix = "";
-
-            // المترجم: يحول الاسم الطويل إلى اسم الملف المختصر
-            const name = activityName.toLowerCase();
-            if (name.includes("vocab")) prefix = "Voc";
-            else if (name.includes("grammar")) prefix = "Gra";
-            else if (name.includes("dmt")) prefix = "DMT";
-            else if (name.includes("one shot")) prefix = "One";
-            else {
-                console.warn("No prefix mapping for:", activityName);
-                prefix = "Unknown"; 
-            }
-
-            const filePath = `data/L-$.{lvl}-S-$.{sess}-$.{prefix}.js`.replace('$.{','${').replace('$.{','${').replace('$.{','${'); 
-            // Correcting Template Literal for the final integration block:
-            const finalPath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
             
-            console.log("🚀 Veto is launching:", finalPath);
+            // تصحيح منطق التحويل من الاسم الطويل للاختصار المطلوب في اسم الملف
+            let prefix = "";
+            if(activityName.includes("Vocab")) prefix = "Voc";
+            else if(activityName.includes("Grammar")) prefix = "Gra";
+            else if(activityName.includes("Listening")) prefix = "Lis";
+            else if(activityName.includes("Reading")) prefix = "Rea";
+            else if(activityName.includes("One Shot")) prefix = "One";
+            else if(activityName.includes("DMT")) prefix = "DMT";
+            else prefix = activityName.split(' ')[0];
+
+            const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
             
             document.getElementById('activity-stage').style.display = 'block';
-            document.getElementById('stage-content').innerHTML = ""; // تنظيف المسرح
+            document.getElementById('stage-content').innerHTML = "";
             
             const script = document.createElement('script');
-            script.src = finalPath;
-            // تنبيه في حالة عدم وجود الملف
-            script.onerror = () => {
-                document.getElementById('stage-content').innerHTML = `
-                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:white; text-align:center; flex-direction:column; gap:20px;">
-                        <h1 style="font-size:5rem;">📍</h1>
-                        <h2>File Not Found</h2>
-                        <p style="color:#666;">Expected Path: ${finalPath}</p>
-                        <button onclick="closeStage()" style="padding:10px 30px; background:var(--primary-gold); border:none; cursor:pointer; border-radius:5px;">Go Back</button>
-                    </div>`;
-            };
+            script.src = filePath;
             document.head.appendChild(script);
         }
     </script>

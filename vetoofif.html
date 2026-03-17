@@ -80,12 +80,53 @@
         }
 
         .toolbox-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 9500; display: flex; flex-direction: column-reverse; gap: 10px; }
+        
+        /* تحسين شكل أزرار الأدوات */
         .tool-btn { 
-            width: 60px; height: 60px; border-radius: 50%; background: var(--primary-gold); 
-            border: none; font-size: 1.5rem; display: none; align-items: center; justify-content: center;
+            width: 45px; /* تصغير الحجم */
+            height: 45px; 
+            border-radius: 12px; /* شكل عصري أكثر من الدائري */
+            background: #1a1a1a; 
+            border: 1px solid var(--primary-gold); 
+            color: var(--primary-gold);
+            font-size: 1.2rem; 
+            display: none; 
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.2s ease; /* تأثير ناعم */
+            cursor: pointer;
         }
+
+        /* تأثير عند الضغط */
+        .tool-btn:active {
+            background: var(--primary-gold);
+            color: #000;
+            transform: scale(0.9); /* تأثير الانضغاط */
+        }
+
+        .tool-btn.active { 
+            background: #ff4757; 
+            border-color: #ff4757; 
+            color: white; 
+        }
+
+        /* مناطق اللمس الجانبية للموبايل */
+        .nav-hotspot {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 15%; /* مساحة 15% من الجوانب للتنقل */
+            z-index: 8500;
+            display: none;
+        }
+        .nav-next { right: 0; }
+        .nav-prev { left: 0; }
+
+        @media screen and (max-width: 900px) {
+            .nav-hotspot { display: block; } /* تظهر فقط في الموبايل */
+        }
+
         .toolbox-wrapper.open .tool-btn { display: flex; }
-        .tool-btn.active { background: #ff4757; }
     </style>
 </head>
 <body>
@@ -101,6 +142,8 @@
 
     <div id="activity-stage">
         <button class="exit-btn" onclick="closeStage()">EXIT (ESC)</button>
+        <div class="nav-hotspot nav-prev" onclick="if(typeof prevSlide === 'function') prevSlide()"></div>
+        <div class="nav-hotspot nav-next" onclick="if(typeof nextSlide === 'function') nextSlide()"></div>
         <div id="stage-content" style="width:100%; height:100%;"></div>
     </div>
 
@@ -109,8 +152,8 @@
 
     <div class="toolbox-wrapper" id="toolBox">
         <button class="tool-btn" style="display:flex; background:#222;" onclick="toggleToolBox()">🛠️</button>
-        <button class="tool-btn" id="laserBtn" onclick="toggleLaser()">🔦</button>
-        <button class="tool-btn" onclick="location.reload()">🔄</button>
+        <button class="tool-btn" id="laserBtn" onclick="handleToolClick('laserBtn', toggleLaser)">🔦</button>
+        <button class="tool-btn" id="reloadBtn" onclick="handleToolClick('reloadBtn', () => location.reload())">🔄</button>
     </div>
 
     <script src="data/levels.js"></script>
@@ -149,7 +192,6 @@
             const stage = document.getElementById('activity-stage');
             stage.style.display = 'block';
             
-            // Full Screen for Mobile
             if (isMobile && stage.requestFullscreen) {
                 stage.requestFullscreen().catch(err => console.log(err));
             }
@@ -167,13 +209,26 @@
 
         function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
 
+        // تم استبدال المنطق القديم بمناطق اللمس (Hotspots) في الـ HTML 
+        // هذا الجزء للتعامل مع ضغطة الزر وتغيير اللون برمجياً
+        function handleToolClick(btnId, action) {
+            const btn = document.getElementById(btnId);
+            action();
+            if(!btn.classList.contains('active')) {
+                btn.style.background = "var(--primary-gold)";
+                btn.style.color = "#000";
+                setTimeout(() => {
+                    btn.style.background = "#1a1a1a";
+                    btn.style.color = "var(--primary-gold)";
+                }, 150);
+            }
+        }
+
         function toggleLaser() {
             laserActive = !laserActive;
             document.getElementById('laserBtn').classList.toggle('active');
             laser.style.display = (laserActive && !isMobile) ? 'block' : 'none';
         }
-
-        // --- المود المدمج (تاتش + ماوس) ---
 
         function getCoords(e) {
             const t = e.touches ? e.touches[0] : e;
@@ -215,7 +270,6 @@
             laser.style.top = pos.y + 'px';
         }
 
-        // إدراج المستمعات
         window.addEventListener('mousedown', startAction);
         window.addEventListener('mousemove', moveAction);
         window.addEventListener('mouseup', endAction);
@@ -223,24 +277,8 @@
         window.addEventListener('touchmove', (e) => { if(laserActive) e.preventDefault(); moveAction(e); }, {passive: false});
         window.addEventListener('touchend', endAction);
 
-        // --- منطق التنقل (Navigation) ---
-
-        // 1. Mobile Click Navigation (الجوانب)
-        document.getElementById('activity-stage').addEventListener('click', (e) => {
-            if (!isMobile || laserActive) return; // لا ينقل لو ليزر شغال أو ديسك توب
-            
-            const width = window.innerWidth;
-            if (e.clientX > width * 0.8) {
-                if(typeof nextSlide === "function") nextSlide();
-            } else if (e.clientX < width * 0.2) {
-                if(typeof prevSlide === "function") prevSlide();
-            }
-        });
-
-        // 2. Desktop Keyboard Navigation
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('activity-stage').style.display === 'none') return;
-            
             if (e.key === "Enter" || e.key === "ArrowRight" || e.key === " ") {
                 if(typeof nextSlide === "function") nextSlide();
             } else if (e.key === "ArrowLeft" || e.key === "Backspace") {

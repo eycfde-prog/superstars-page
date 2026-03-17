@@ -115,42 +115,39 @@
 
     <a href="vetoof.html" class="back-btn">← BACK TO LEVELS</a>
 
-    <script>
-        // 1. Get Session ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session'); // format: "1-1"
+<script src="levels.js"></script> <script>
+    // 1. Get Session ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session'); // format: "1-1"
 
-        if (sessionId) {
-            const [lvl, sess] = sessionId.split('-');
-            document.getElementById('display-title').innerText = `Level ${lvl} - Session ${sess}`;
-            loadSessionData(sessionId);
-        }
+    if (sessionId) {
+        const [lvl, sess] = sessionId.split('-');
+        document.getElementById('display-title').innerText = `Level ${lvl} - Session ${sess}`;
+        renderSessionData(sessionId);
+    }
 
-        async function loadSessionData(id) {
-            const container = document.getElementById('content-container');
+    function renderSessionData(id) {
+        const container = document.getElementById('content-container');
+        
+        // 2. التحقق من وجود البيانات في ملف levels.js
+        if (typeof sessionData !== 'undefined' && sessionData[id]) {
+            const data = sessionData[id];
             
-            try {
-                // 2. Fetch from data/levels folder
-                const response = await fetch(`data/levels/${id}.json`);
-                if (!response.ok) throw new Error('File not found');
-                
-                const data = await response.json();
-                
-                // 3. Render Cards
-                container.innerHTML = ""; // Clear loader
-                data.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'content-card';
-                    card.innerHTML = `<h2>${item}</h2>`;
-                    container.appendChild(card);
-                });
-
-            } catch (error) {
-                console.error("Error loading data:", error);
-                container.innerHTML = `<h2 style="grid-column: 1/-1; text-align: center; opacity: 0.5;">
-                    Data file for ${id} is not ready yet.</h2>`;
-            }
+            // 3. Render Cards
+            container.innerHTML = ""; // Clear loader
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'content-card';
+                card.innerHTML = `<h2>${item}</h2>`;
+                container.appendChild(card);
+            });
+        } else {
+            // في حالة عدم وجود الحصة في ملف الـ JS
+            console.error("Session not found in levels.js:", id);
+            container.innerHTML = `<h2 style="grid-column: 1/-1; text-align: center; opacity: 0.5;">
+                Data for Session ${id} is not defined in levels.js</h2>`;
         }
-    </script>
+    }
+</script>
 </body>
 </html>

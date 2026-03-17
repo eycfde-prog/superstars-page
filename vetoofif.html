@@ -155,7 +155,7 @@
         <button class="tool-btn" onclick="location.reload()">🔄</button>
     </div>
 
-<script src="data/levels.js"></script>
+    <script src="data/levels.js"></script>
     <script>
         let laserActive = false;
         let isDrawing = false;
@@ -233,48 +233,56 @@
             }
         }, { passive: true });
 
-        // --- تعديل فيتو الذكي لقراءة الجلسة من الرابط ---
+        // --- كود فيتو المطور للربط بين قاعدة البيانات والملفات ---
         const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('id'); // سيقرأ مثلاً 6-1 من الرابط
-
+        const sessionId = urlParams.get('id'); // سيقرأ مثلاً 6-1
+        
         if (sessionId && typeof sessionData !== 'undefined') {
             const data = sessionData[sessionId] || [];
             const container = document.getElementById('content-container');
             
-            // تحديث العنوان ليظهر برقم المستوى والسيشن
             document.getElementById('display-title').innerText = `LEVEL ${sessionId.split('-')[0]} | SESSION ${sessionId.split('-')[1]}`;
-
-            if (data.length === 0) {
-                container.innerHTML = `<h2 style="color:red; grid-column: 1/-1;">Session [${sessionId}] not found in levels.js</h2>`;
-            }
 
             data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
                 card.onclick = () => openActivity(item);
+                
+                // أيقونات ذكية حسب نوع النشاط
+                let icon = "📚";
+                if (item.includes("Grammar")) icon = "⚙️";
+                if (item.includes("DMT")) icon = "⏱️";
+                if (item.includes("One Shot")) icon = "📖";
+                if (item.includes("Vocab")) icon = "🔖";
+
                 card.innerHTML = `
-                    <div style="font-size: 3rem; margin-bottom: 10px;">${item.split(' ')[0] === 'Voc' ? '📚' : (item.split(' ')[0] === 'Gra' ? '⚙️' : '📖')}</div>
-                    <h2 style="color:var(--primary-gold)">${item}</h2>
-                    <p style="color:#888; margin-top:10px;">Click to Start</p>
+                    <div style="font-size: 2.5rem; margin-bottom: 10px;">${icon}</div>
+                    <h2 style="color:var(--primary-gold); font-size:1.5rem;">${item}</h2>
                 `;
                 container.appendChild(card);
             });
-        } else {
-            document.getElementById('content-container').innerHTML = `<h2 style="color:red; grid-column: 1/-1;">Error: No Session ID provided or levels.js missing!</h2>`;
         }
 
-        // تعديل دالة فتح النشاط لتناسب التسمية الجديدة
         function openActivity(activityName) {
             const [lvl, sess] = sessionId.split('-');
-            const prefix = activityName.split(' ')[0]; // سياخذ Voc أو Gra أو One أو DMT
+            let prefix = "";
+
+            // تحويل المسمى الطويل إلى اسم الملف المختصر
+            if (activityName.includes("Grammar")) prefix = "Gra";
+            else if (activityName.includes("Vocab")) prefix = "Voc";
+            else if (activityName.includes("DMT")) prefix = "DMT";
+            else if (activityName.includes("One Shot")) prefix = "One";
+            else {
+                alert("This activity type is not linked yet!");
+                return;
+            }
+
             const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
             
-            console.log("Loading path:", filePath); // للتأكد في الكونسول
-            
+            console.log("Attempting to load:", filePath); // لمراقبة التحميل في المتصفح
+
             document.getElementById('activity-stage').style.display = 'block';
-            
-            // تنظيف المسرح قبل التحميل الجديد
-            document.getElementById('stage-content').innerHTML = "";
+            document.getElementById('stage-content').innerHTML = ""; // تنظيف المسرح
             
             const script = document.createElement('script');
             script.src = filePath;

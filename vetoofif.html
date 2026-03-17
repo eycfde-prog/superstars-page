@@ -69,18 +69,35 @@
 
         .content-card:hover { border-color: var(--primary-gold); transform: translateY(-10px); }
 
+        /* منع تحديد النصوص في مسرح العرض */
+        #stage-content {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
         /* --- Giant Quick Board --- */
         #note-pad {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; 
             display: none; flex-direction: column; padding: 30px;
         }
+
+        /* التعديل الجديد لـ Quick Board */
         #note-text { 
-            width: 100%; height: 85%; background: transparent; border: none;
-            color: #fff; font-size: 4.5rem; /* خط عملاق للشرح */
-            font-weight: bold; padding: 20px; outline: none;
-            resize: none; overflow-y: auto;
-            line-height: 1.3; text-align: center;
-            -webkit-user-select: text; user-select: text; /* السماح بالكتابة هنا فقط */
+            width: 100%; 
+            height: 80%; 
+            background: rgba(255, 255, 255, 0.02); 
+            border: 3px solid var(--primary-gold);
+            color: white; 
+            font-size: 4rem; /* خط كبير جداً للشرح */
+            padding: 30px; 
+            border-radius: 20px; 
+            resize: none; 
+            outline: none;
+            line-height: 1.4;
+            overflow-y: auto; /* سكرول عند الكتابة الكثيرة */
+            font-weight: bold;
+            -webkit-user-select: text; 
+            user-select: text; /* السماح بالكتابة هنا فقط */
         }
 
         /* --- Laser & Pointer --- */
@@ -106,7 +123,8 @@
         @media (max-width: 768px) { #note-text { font-size: 2.5rem; } }
     </style>
 </head>
-<body oncontextmenu="return false;"> <header class="top-banner">
+<body oncontextmenu="return false;"> 
+    <header class="top-banner">
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
         <div class="session-info"><h1 id="display-title">VETO SYSTEM</h1></div>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="mr-ezz-img">
@@ -123,7 +141,7 @@
     <canvas id="drawing-canvas"></canvas>
 
     <div id="note-pad">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom: 20px;">
             <span style="color:var(--primary-gold); font-weight:bold; letter-spacing:2px;">QUICK BOARD MODE</span>
             <button onclick="toggleNotePad()" style="background:#ff4757; border:none; color:white; padding:10px 30px; border-radius:50px; cursor:pointer; font-weight:bold;">DONE</button>
         </div>
@@ -139,7 +157,6 @@
 
     <script src="data/levels.js"></script>
     <script>
-        // --- حماية المحتوى والتحكم في الليزر ---
         let laserActive = false;
         let isDrawing = false;
         const laser = document.getElementById('laser-pointer');
@@ -151,11 +168,25 @@
 
         function toggleLaser() {
             laserActive = !laserActive;
-            document.getElementById('laserBtn').classList.toggle('active');
+            const laserBtn = document.getElementById('laserBtn');
+            const stage = document.getElementById('stage-content');
+            
+            laserBtn.classList.toggle('active');
             laser.style.display = laserActive ? 'block' : 'none';
-            // منع سحب الصور أو النصوص أثناء تفعيل الليزر
-            document.getElementById('stage-content').style.pointerEvents = laserActive ? 'none' : 'auto';
+            
+            if (laserActive) {
+                document.body.style.cursor = 'none';
+                stage.style.pointerEvents = 'none'; // تجعل الليزر لا يتداخل مع عناصر الـ JS
+            } else {
+                document.body.style.cursor = 'default';
+                stage.style.pointerEvents = 'auto';
+            }
         }
+
+        // إضافة منع القائمة الجانبية (Click Right) لمنع التشويش أثناء الرسم بالليزر
+        window.addEventListener('contextmenu', (e) => {
+            if (laserActive) e.preventDefault();
+        });
 
         window.addEventListener('mousemove', (e) => {
             if (!laserActive) return;
@@ -166,10 +197,16 @@
 
         window.addEventListener('mousedown', (e) => {
             if (!laserActive) return;
+            // منع تحديد أي نص برمجياً عند بدء الرسم
+            e.preventDefault(); 
             isDrawing = true;
-            ctx.beginPath(); ctx.moveTo(e.clientX, e.clientY);
-            ctx.strokeStyle = '#ff0000'; ctx.lineWidth = 5; ctx.lineCap = 'round';
-            ctx.shadowBlur = 15; ctx.shadowColor = '#ff0000';
+            ctx.beginPath();
+            ctx.moveTo(e.clientX, e.clientY);
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 5; // خط أوضح قليلاً
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ff0000';
         });
 
         window.addEventListener('mouseup', () => {
@@ -177,7 +214,6 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
 
-        // --- وظائف الأدوات ---
         function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
         function toggleNotePad() {
             const pad = document.getElementById('note-pad');
@@ -186,7 +222,6 @@
             if (!isOpen) setTimeout(() => document.getElementById('note-text').focus(), 100);
         }
 
-        // --- تشغيل النشاط ---
         function openActivity(activityName) {
             const [lvl, sess] = sessionId.split('-');
             const prefix = activityName.split(' ')[0].substring(0, 3);
@@ -201,10 +236,9 @@
         function closeStage() {
             document.getElementById('activity-stage').style.display = 'none';
             document.getElementById('stage-content').innerHTML = "";
-            if(laserActive) toggleLaser(); // قفل الليزر تلقائياً عند الخروج
+            if(laserActive) toggleLaser(); 
         }
 
-        // --- دعم الموبايل (Touch to Next) ---
         document.addEventListener('touchstart', (e) => {
             if (document.getElementById('activity-stage').style.display === 'block' && !laserActive) {
                 const enterEvent = new KeyboardEvent('keydown', { key: 'ArrowRight', keyCode: 39, bubbles: true });
@@ -212,8 +246,7 @@
             }
         }, { passive: true });
 
-        // تحميل البيانات
-        if (sessionId) {
+        if (typeof sessionId !== 'undefined') {
             const data = sessionData[sessionId] || [];
             const container = document.getElementById('content-container');
             data.forEach(item => {

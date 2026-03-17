@@ -176,14 +176,13 @@
             
             if (laserActive) {
                 document.body.style.cursor = 'none';
-                stage.style.pointerEvents = 'none'; // تجعل الليزر لا يتداخل مع عناصر الـ JS
+                stage.style.pointerEvents = 'none';
             } else {
                 document.body.style.cursor = 'default';
                 stage.style.pointerEvents = 'auto';
             }
         }
 
-        // إضافة منع القائمة الجانبية (Click Right) لمنع التشويش أثناء الرسم بالليزر
         window.addEventListener('contextmenu', (e) => {
             if (laserActive) e.preventDefault();
         });
@@ -197,13 +196,12 @@
 
         window.addEventListener('mousedown', (e) => {
             if (!laserActive) return;
-            // منع تحديد أي نص برمجياً عند بدء الرسم
             e.preventDefault(); 
             isDrawing = true;
             ctx.beginPath();
             ctx.moveTo(e.clientX, e.clientY);
             ctx.strokeStyle = '#ff0000';
-            ctx.lineWidth = 5; // خط أوضح قليلاً
+            ctx.lineWidth = 5;
             ctx.lineCap = 'round';
             ctx.shadowBlur = 15;
             ctx.shadowColor = '#ff0000';
@@ -222,17 +220,6 @@
             if (!isOpen) setTimeout(() => document.getElementById('note-text').focus(), 100);
         }
 
-        function openActivity(activityName) {
-            const [lvl, sess] = sessionId.split('-');
-            const prefix = activityName.split(' ')[0].substring(0, 3);
-            const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
-            
-            document.getElementById('activity-stage').style.display = 'block';
-            const script = document.createElement('script');
-            script.src = filePath;
-            document.head.appendChild(script);
-        }
-
         function closeStage() {
             document.getElementById('activity-stage').style.display = 'none';
             document.getElementById('stage-content').innerHTML = "";
@@ -246,16 +233,52 @@
             }
         }, { passive: true });
 
-        if (typeof sessionId !== 'undefined') {
+        // --- تعديل فيتو الذكي لقراءة الجلسة من الرابط ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('id'); // سيقرأ مثلاً 6-1 من الرابط
+
+        if (sessionId && typeof sessionData !== 'undefined') {
             const data = sessionData[sessionId] || [];
             const container = document.getElementById('content-container');
+            
+            // تحديث العنوان ليظهر برقم المستوى والسيشن
+            document.getElementById('display-title').innerText = `LEVEL ${sessionId.split('-')[0]} | SESSION ${sessionId.split('-')[1]}`;
+
+            if (data.length === 0) {
+                container.innerHTML = `<h2 style="color:red; grid-column: 1/-1;">Session [${sessionId}] not found in levels.js</h2>`;
+            }
+
             data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
                 card.onclick = () => openActivity(item);
-                card.innerHTML = `<h2>${item}</h2>`;
+                card.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 10px;">${item.split(' ')[0] === 'Voc' ? '📚' : (item.split(' ')[0] === 'Gra' ? '⚙️' : '📖')}</div>
+                    <h2 style="color:var(--primary-gold)">${item}</h2>
+                    <p style="color:#888; margin-top:10px;">Click to Start</p>
+                `;
                 container.appendChild(card);
             });
+        } else {
+            document.getElementById('content-container').innerHTML = `<h2 style="color:red; grid-column: 1/-1;">Error: No Session ID provided or levels.js missing!</h2>`;
+        }
+
+        // تعديل دالة فتح النشاط لتناسب التسمية الجديدة
+        function openActivity(activityName) {
+            const [lvl, sess] = sessionId.split('-');
+            const prefix = activityName.split(' ')[0]; // سياخذ Voc أو Gra أو One أو DMT
+            const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
+            
+            console.log("Loading path:", filePath); // للتأكد في الكونسول
+            
+            document.getElementById('activity-stage').style.display = 'block';
+            
+            // تنظيف المسرح قبل التحميل الجديد
+            document.getElementById('stage-content').innerHTML = "";
+            
+            const script = document.createElement('script');
+            script.src = filePath;
+            document.head.appendChild(script);
         }
     </script>
 </body>

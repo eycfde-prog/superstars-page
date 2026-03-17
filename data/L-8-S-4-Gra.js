@@ -3,13 +3,13 @@
     if (!container) return;
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#0a0a0a; font-family:'Inter', sans-serif; direction:ltr; color:white;`;
+    container.style.cssText = `height:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#0a0a0a; font-family:'Segoe UI', sans-serif; direction:ltr; color:white;`;
 
     let currentSlide = 0;
     let subStep = 0;
 
     const slides = [
-        { type: 'title', content: 'IF CONDITIONS', subtitle: 'The Master Guide', color: '#e74c3c' },
+        { type: 'title', content: 'IF CONDITIONS', subtitle: 'The Master Guide', color: '#c5a059' },
         
         { 
             type: 'writing', 
@@ -17,12 +17,19 @@
             content: 'We use If Conditions to express:<br>• <span style="color:#ffffff;">Facts</span> (Always true)<br>• <span style="color:#2ecc71;">Possibilities</span> (Future)<br>• <span style="color:#3498db;">Imaginary</span> (Present)<br>• <span style="color:#9b59b6;">Regrets</span> (Past)' 
         },
 
-        { type: 'title', content: 'ZERO CONDITION', subtitle: 'Scientific Facts & Habits', color: '#ffffff' },
+        // سلايد العنوان المحدثة (الاستخدام بخط عريض)
+        { 
+            type: 'title', 
+            content: 'ZERO CONDITION', 
+            subtitle: 'USAGE: SCIENTIFIC FACTS & HABITS', 
+            color: '#ffffff',
+            usage: '100% TRUE & CERTAIN' 
+        },
 
         { 
             type: 'writing', 
             title: 'Zero Formulation', 
-            content: '<span style="color:#e74c3c;">If + Present Simple</span><br><center>+</center><span style="color:#f1c40f;">Present Simple</span><br><br><small>Used for things that are 100% true.</small>' 
+            content: '<span style="color:#e74c3c;">If + Present Simple</span><br><center>+</center><span style="color:#f1c40f;">Present Simple</span>' 
         },
 
         { 
@@ -36,12 +43,18 @@
             ] 
         },
 
-        { type: 'title', content: 'FIRST CONDITION', subtitle: 'Possible Future Results', color: '#2ecc71' },
+        { 
+            type: 'title', 
+            content: 'FIRST CONDITION', 
+            subtitle: 'USAGE: POSSIBLE FUTURE RESULTS', 
+            color: '#2ecc71',
+            usage: 'LIKELY TO HAPPEN'
+        },
 
         { 
             type: 'writing', 
             title: 'First Formulation', 
-            content: '<span style="color:#e74c3c;">If + Present Simple</span><br><center>+</center><span style="color:#f1c40f;">Will + Infinity</span><br><br><small>Used for possible future situations.</small>' 
+            content: '<span style="color:#e74c3c;">If + Present Simple</span><br><center>+</center><span style="color:#f1c40f;">Will + Infinity</span>' 
         },
 
         { 
@@ -55,12 +68,18 @@
             ] 
         },
 
-        { type: 'title', content: 'SECOND CONDITION', subtitle: 'Hypothetical / Imaginary', color: '#3498db' },
+        { 
+            type: 'title', 
+            content: 'SECOND CONDITION', 
+            subtitle: 'USAGE: HYPOTHETICAL / IMAGINARY', 
+            color: '#3498db',
+            usage: 'UNLIKELY / DREAMING'
+        },
 
         { 
             type: 'writing', 
             title: 'Second Formulation', 
-            content: '<span style="color:#e74c3c;">If + Past Simple</span><br><center>+</center><span style="color:#f1c40f;">Would + Infinity</span><br><br><small>Used for "Unlikely" or "Imaginary" now.</small>' 
+            content: '<span style="color:#e74c3c;">If + Past Simple</span><br><center>+</center><span style="color:#f1c40f;">Would + Infinity</span>' 
         },
 
         { 
@@ -74,12 +93,18 @@
             ] 
         },
 
-        { type: 'title', content: 'THIRD CONDITION', subtitle: 'Past Regrets & Impossible', color: '#9b59b6' },
+        { 
+            type: 'title', 
+            content: 'THIRD CONDITION', 
+            subtitle: 'USAGE: PAST REGRETS & IMPOSSIBLE', 
+            color: '#9b59b6',
+            usage: 'TOO LATE / DIDN\'T HAPPEN'
+        },
 
         { 
             type: 'writing', 
             title: 'Third Formulation', 
-            content: '<span style="color:#e74c3c;">If + Past Perfect (had + V3)</span><br><center>+</center><span style="color:#f1c40f;">Would have + V3</span><br><br><small>Used for things that DID NOT happen.</small>' 
+            content: '<span style="color:#e74c3c;">If + Past Perfect (had + V3)</span><br><center>+</center><span style="color:#f1c40f;">Would have + V3</span>' 
         },
 
         { 
@@ -93,7 +118,7 @@
             ] 
         },
 
-        { type: 'title', content: 'PRACTICE TIME', subtitle: 'Let\'s check your skills!', color: '#f1c40f' },
+        { type: 'title', content: 'PRACTICE TIME', subtitle: 'LET\'S CHECK YOUR SKILLS!', color: '#f1c40f' },
 
         { type: 'mcq', question: "1. If I ________ you, I wouldn't do that.", options: ["A) am", "B) was", "C) were", "D) had been"], answer: 2 },
         { type: 'mcq', question: "2. If it ________, we will cancel the trip.", options: ["A) rains", "B) rained", "C) will rain", "D) had rained"], answer: 0 },
@@ -108,28 +133,28 @@
         container.innerHTML = '';
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = `width:90%; max-width:1100px; text-align:center; animation: slideUp 0.5s ease;`;
+        wrapper.style.cssText = `width:92%; max-width:1300px; text-align:center; animation: slideUp 0.4s ease-out;`;
 
         if (s.type === 'title') {
             wrapper.innerHTML = `
-                <h1 style="font-size:8.5rem; font-weight:900; color:${s.color}; margin:0; line-height:0.9; text-transform:uppercase;">${s.content}</h1>
-                <div style="font-size:3.5rem; color:#efefef; background:rgba(255,255,255,0.1); display:inline-block; padding:10px 40px; border-radius:15px; margin-top:30px; border: 1px solid ${s.color};">${s.subtitle}</div>
+                <div style="font-size:2rem; color:#aaa; letter-spacing:8px; margin-bottom:15px; text-transform:uppercase; font-weight:bold;">${s.subtitle}</div>
+                <h1 style="font-size:7.5rem; font-weight:900; color:${s.color}; margin:0; line-height:1; text-shadow: 0 10px 30px rgba(0,0,0,0.5);">${s.content}</h1>
+                ${s.usage ? `<div style="display:inline-block; margin-top:40px; padding:15px 40px; border:4px solid ${s.color}; color:${s.color}; font-size:3.5rem; font-weight:900; border-radius:15px;">${s.usage}</div>` : ''}
             `;
         } 
         else if (s.type === 'writing') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#111; padding:60px; border-radius:30px; border:2px solid #333; position:relative;">
-                    <div style="position:absolute; top:0; left:0; width:15px; height:100%; background:#e74c3c;"></div>
-                    <div style="color:#e74c3c; font-weight:bold; font-size:1.8rem; margin-bottom:20px; letter-spacing:3px;">STRUCTURE & USAGE</div>
+                <div style="text-align:left; background:#111; padding:60px; border-radius:40px; border:2px solid #333; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+                    <div style="color:${slides[currentSlide-1]?.color || '#c5a059'}; font-weight:bold; font-size:2rem; margin-bottom:20px; letter-spacing:3px;">STRUCTURE:</div>
                     <h2 style="font-size:5.5rem; margin-bottom:30px; color:#fff;">${s.title}</h2>
-                    <div style="font-size:3.8rem; line-height:1.4; color:#efefef;">${s.content}</div>
+                    <div style="font-size:4rem; line-height:1.5; color:#eee; font-weight:600;">${s.content}</div>
                 </div>`;
         }
         else if (s.type === 'reveal-list') {
-            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; gap:25px; text-align:left;">
-                <div style="color:#3498db; font-weight:bold; font-size:1.5rem; margin-bottom:10px; letter-spacing:5px;">EXAMPLES:</div>
+            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; text-align:left;">
+                <div style="color:#c5a059; font-weight:bold; font-size:1.5rem; margin-bottom:5px; letter-spacing:5px;">EXAMPLES:</div>
                 ${s.items.map((item, i) => `
-                    <div style="opacity:${i <= subStep ? 1 : 0}; transform:translateX(${i <= subStep ? 0 : -50}px); transition:0.4s; background:#161616; padding:30px; border-radius:20px; font-size:3rem; font-weight:800; color:#fff; border:2px solid ${i <= subStep ? '#3498db' : '#222'};">
+                    <div style="opacity:${i <= subStep ? 1 : 0}; transform:translateY(${i <= subStep ? 0 : 20}px); transition:0.3s; background:#161616; padding:30px; border-radius:20px; font-size:2.6rem; font-weight:700; color:#fff; border-left:10px solid ${i <= subStep ? '#c5a059' : '#222'};">
                         ${item}
                     </div>
                 `).join('')}
@@ -137,12 +162,12 @@
         }
         else if (s.type === 'mcq') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#111; padding:55px; border-radius:40px; border: 3px solid #333;">
-                    <div style="font-size:4rem; font-weight:900; color:#fff; margin-bottom:45px;">${s.question}</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; opacity:${subStep >= 1 ? 1 : 0}; transition: 0.5s;">
+                <div style="text-align:left; background:#111; padding:50px; border-radius:40px; border: 2px solid #444;">
+                    <div style="font-size:3.5rem; font-weight:800; color:#fff; margin-bottom:40px;">${s.question}</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px; opacity:${subStep >= 1 ? 1 : 0}; transition: 0.5s;">
                         ${s.options.map((opt, i) => {
                             let bgColor = "#222";
-                            let border = "3px solid #444";
+                            let border = "2px solid #444";
                             if (subStep >= 2 && i === s.answer) { bgColor = "#27ae60"; border = "3px solid #fff"; }
                             return `<div style="background:${bgColor}; padding:35px; border-radius:20px; font-size:2.5rem; font-weight:bold; border: ${border}; transition: 0.3s; color:#fff;">${opt}</div>`;
                         }).join('')}
@@ -153,33 +178,23 @@
         container.appendChild(wrapper);
     }
 
-    // منطق التنقل الموحد (كيبورد + تاتش)
-    function next() {
+    // دوال التحكم العالمية ليتم استدعاؤها من الصفحة الأم (index.html)
+    window.nextSlide = () => {
         const s = slides[currentSlide];
-        if (s.type === 'reveal-list' && subStep < s.items.length - 1) subStep++;
-        else if (s.type === 'mcq' && subStep < 2) subStep++;
-        else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
-        render();
-    }
-
-    function prev() {
-        if (subStep > 0) subStep--;
-        else if (currentSlide > 0) { currentSlide--; subStep = 0; }
-        render();
-    }
-
-    // دعم التاتش السريع (يمين وشمال)
-    container.onclick = (e) => {
-        // إذا كان الليزر شغال، لا تنفذ التنقل لترك مساحة للشرح
-        if (window.laserActive) return; 
-        const width = window.innerWidth;
-        if (e.clientX > width / 2) next();
-        else prev();
+        if (s.type === 'reveal-list' && subStep < s.items.length - 1) { subStep++; render(); }
+        else if (s.type === 'mcq' && subStep < 2) { subStep++; render(); }
+        else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; render(); }
     };
 
+    window.prevSlide = () => {
+        if (subStep > 0) { subStep--; render(); }
+        else if (currentSlide > 0) { currentSlide--; subStep = 0; render(); }
+    };
+
+    // دعم الكيبورد للسبورات التي تستخدم ريموت أو كيبورد لاسلكي
     document.onkeydown = (e) => {
-        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) next();
-        else if (e.keyCode === 37) prev();
+        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) window.nextSlide();
+        else if (e.keyCode === 37) window.prevSlide();
     };
 
     render();

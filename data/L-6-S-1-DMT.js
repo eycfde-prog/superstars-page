@@ -1,8 +1,8 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- قائمة الأفكار (Friends Topic) ---
+    // --- Friends Topic Ideas ---
     const ideas = [
         { title: "Best Friend", detail: "Who is your best friend? How long have you known each other?" },
         { title: "First Meeting", detail: "Where and how did you meet for the first time?" },
@@ -16,44 +16,65 @@
         { title: "Definition", detail: "In your opinion, what makes a 'true friend'?" }
     ];
 
-    // --- التنسيق البصري ---
     container.innerHTML = '';
-    container.style.cssText = `height:calc(100vh - 100px); display:flex; flex-direction:column; align-items:center; background:#f8fafc; color:#1e293b; font-family: 'Segoe UI', Tahoma, sans-serif; overflow-y: auto; padding: 40px 20px;`;
+    container.style.cssText = `height:100%; display:flex; flex-direction:column; align-items:center; background:#f1f5f9; color:#1e293b; font-family: 'Inter', sans-serif; overflow-y: auto; padding: 60px 20px;`;
 
     container.innerHTML = `
         <style>
-            .dmt-prep-header { text-align:center; margin-bottom:40px; }
-            .dmt-prep-header h1 { font-size: 3rem; color: #f59e0b; margin:0; } /* لون برتقالي مميز للأصدقاء */
-            .dmt-prep-header p { font-size: 1.2rem; color: #64748b; font-weight: 500; }
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+            .dmt-header { text-align:center; margin-bottom:50px; }
+            .dmt-header span { font-size: 1rem; color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; }
+            .dmt-header h1 { font-size: 4rem; color: #f59e0b; margin: 10px 0; font-weight: 900; letter-spacing: -2px; }
             
             .ideas-grid { 
                 display: grid; 
-                grid-template-columns: 1fr 1fr; 
-                gap: 20px; 
-                max-width: 1000px; 
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+                gap: 25px; 
+                max-width: 1100px; 
                 width: 100%; 
+                padding-bottom: 50px;
             }
 
             .idea-card {
                 background: #ffffff;
-                padding: 20px;
-                border-radius: 15px;
-                border-left: 8px solid #f59e0b; /* لون الأصدقاء */
-                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-                transition: transform 0.2s;
+                padding: 30px;
+                border-radius: 24px;
+                border: 1px solid #e2e8f0;
+                position: relative;
+                overflow: hidden;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
-            .idea-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-            
-            .idea-num { font-weight: 900; color: #cbd5e1; font-size: 1.5rem; margin-bottom: 5px; }
-            .idea-title { font-weight: bold; color: #1e293b; font-size: 1.4rem; margin-bottom: 8px; display:block; }
-            .idea-detail { color: #475569; font-size: 1.1rem; line-height: 1.4; }
+            .idea-card:hover { 
+                transform: translateY(-8px); 
+                box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
+                border-color: #f59e0b;
+            }
 
-            @media (max-width: 800px) { .ideas-grid { grid-template-columns: 1fr; } }
+            .idea-card::before {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; width: 6px; height: 100%;
+                background: #f59e0b;
+            }
+            
+            .idea-num { 
+                position: absolute; right: 20px; top: 10px;
+                font-weight: 900; color: #f1f5f9; font-size: 4rem; z-index: 0; 
+            }
+            
+            .idea-content { position: relative; z-index: 1; }
+            .idea-title { font-weight: 800; color: #0f172a; font-size: 1.6rem; margin-bottom: 12px; display:block; }
+            .idea-detail { color: #475569; font-size: 1.2rem; line-height: 1.6; font-weight: 500; }
+
+            /* Scrollbar */
+            #stage-content::-webkit-scrollbar { width: 8px; }
+            #stage-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         </style>
 
-        <div class="dmt-prep-header">
-            <p>DMT Preparation Topic:</p>
+        <div class="dmt-header">
+            <span>Daily Mind Training (L6)</span>
             <h1>My Friends</h1>
         </div>
 
@@ -67,8 +88,10 @@
         card.className = 'idea-card';
         card.innerHTML = `
             <div class="idea-num">${(index + 1).toString().padStart(2, '0')}</div>
-            <span class="idea-title">${item.title}</span>
-            <div class="idea-detail">${item.detail}</div>
+            <div class="idea-content">
+                <span class="idea-title">${item.title}</span>
+                <div class="idea-detail">${item.detail}</div>
+            </div>
         `;
         grid.appendChild(card);
     });

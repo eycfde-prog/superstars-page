@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VETO PROGRAM | Session Content</title>
     <style>
         :root {
@@ -12,16 +12,25 @@
             --banner-height: 140px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* حماية المحتوى من التحديد والكليك يمين */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            touch-action: manipulation;
+            -webkit-user-select: none; /* Chrome/Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE */
+            user-select: none; /* Standard */
+        }
 
         body {
             background-color: var(--bg-dark);
             color: white;
             font-family: 'Segoe UI', sans-serif;
             min-height: 100vh;
+            overflow: hidden; /* منع السكرول الخارجي أثناء النشاط */
         }
 
-        /* Consistent Banner */
+        /* Banner Style */
         .top-banner {
             height: var(--banner-height);
             display: flex;
@@ -34,18 +43,7 @@
 
         .logo-img { height: 70px; }
         .mr-ezz-img { height: 100px; border-radius: 8px; }
-
-        .session-info {
-            text-align: center;
-            flex-grow: 1;
-        }
-
-        .session-info h1 {
-            font-size: 2.5rem;
-            color: var(--primary-gold);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
+        .session-info h1 { font-size: 2.5rem; color: var(--primary-gold); text-transform: uppercase; letter-spacing: 3px; }
 
         /* Content Grid */
         .content-grid {
@@ -55,99 +53,241 @@
             padding: 50px;
             max-width: 1400px;
             margin: 0 auto;
+            overflow-y: auto;
+            height: calc(100vh - var(--banner-height));
         }
 
-        /* Material Style Cards */
         .content-card {
             background: var(--card-bg);
             border: 1px solid rgba(197, 160, 89, 0.2);
             padding: 40px;
             border-radius: 15px;
             text-align: center;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 200px;
+            transition: 0.3s ease;
+            cursor: pointer;
         }
 
-        .content-card:hover {
-            border-color: var(--primary-gold);
-            background: rgba(197, 160, 89, 0.1);
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .content-card:hover { border-color: var(--primary-gold); transform: translateY(-10px); }
+
+        /* منع تحديد النصوص في مسرح العرض */
+        #stage-content {
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        .content-card h2 {
-            font-size: 1.8rem;
-            color: #fff;
-            margin-bottom: 10px;
+        /* --- Giant Quick Board --- */
+        #note-pad {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; 
+            display: none; flex-direction: column; padding: 30px;
         }
 
-        /* Back Button */
-        .back-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            padding: 15px 30px;
-            background: var(--primary-gold);
-            color: black;
-            text-decoration: none;
+        /* التعديل الجديد لـ Quick Board */
+        #note-text { 
+            width: 100%; 
+            height: 80%; 
+            background: rgba(255, 255, 255, 0.02); 
+            border: 3px solid var(--primary-gold);
+            color: white; 
+            font-size: 4rem; /* خط كبير جداً للشرح */
+            padding: 30px; 
+            border-radius: 20px; 
+            resize: none; 
+            outline: none;
+            line-height: 1.4;
+            overflow-y: auto; /* سكرول عند الكتابة الكثيرة */
             font-weight: bold;
-            border-radius: 50px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            -webkit-user-select: text; 
+            user-select: text; /* السماح بالكتابة هنا فقط */
         }
+
+        /* --- Laser & Pointer --- */
+        #laser-pointer {
+            position: fixed; width: 18px; height: 18px; background: #ff0000; border-radius: 50%;
+            pointer-events: none; z-index: 9999; display: none;
+            box-shadow: 0 0 10px #ff0000, 0 0 25px #ff0000, 0 0 50px #ff0000;
+        }
+        #drawing-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; }
+
+        /* --- ToolBox --- */
+        .toolbox-wrapper { position: fixed; bottom: 30px; right: 30px; z-index: 7000; display: flex; flex-direction: column-reverse; gap: 15px; }
+        .tool-btn { 
+            width: 65px; height: 65px; border-radius: 50%; background: var(--primary-gold); border: none; 
+            cursor: pointer; font-size: 1.8rem; display: none; align-items: center; justify-content: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5); transition: 0.3s;
+        }
+        .toolbox-wrapper.open .tool-btn { display: flex; }
+        .tool-btn.active { background: #ff4757; transform: scale(1.1); box-shadow: 0 0 20px #ff4757; }
+
+        #activity-stage { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background:#000; z-index: 1000; display: none; }
+        
+        @media (max-width: 768px) { #note-text { font-size: 2.5rem; } }
     </style>
 </head>
-<body>
-
+<body oncontextmenu="return false;"> 
     <header class="top-banner">
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" alt="Logo" class="logo-img">
-        <div class="session-info">
-            <h1 id="display-title">Loading...</h1>
-        </div>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" alt="Mr Ezz" class="mr-ezz-img">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
+        <div class="session-info"><h1 id="display-title">VETO SYSTEM</h1></div>
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="mr-ezz-img">
     </header>
 
-    <main class="content-grid" id="content-container">
-        </main>
+    <main class="content-grid" id="content-container"></main>
 
-    <a href="vetoof.html" class="back-btn">← BACK TO LEVELS</a>
+    <div id="activity-stage">
+        <button onclick="closeStage()" style="position:absolute; top:20px; left:20px; z-index:2001; background:var(--primary-gold); border:none; padding:12px 25px; cursor:pointer; font-weight:900; border-radius:8px;">EXIT SESSION</button>
+        <div id="stage-content" style="width:100%; height:100%;"></div>
+    </div>
 
-<script src="levels.js"></script> <script>
-    // 1. Get Session ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('session'); // format: "1-1"
+    <div id="laser-pointer"></div>
+    <canvas id="drawing-canvas"></canvas>
 
-    if (sessionId) {
-        const [lvl, sess] = sessionId.split('-');
-        document.getElementById('display-title').innerText = `Level ${lvl} - Session ${sess}`;
-        renderSessionData(sessionId);
-    }
+    <div id="note-pad">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom: 20px;">
+            <span style="color:var(--primary-gold); font-weight:bold; letter-spacing:2px;">QUICK BOARD MODE</span>
+            <button onclick="toggleNotePad()" style="background:#ff4757; border:none; color:white; padding:10px 30px; border-radius:50px; cursor:pointer; font-weight:bold;">DONE</button>
+        </div>
+        <textarea id="note-text" placeholder="Type explanation here..."></textarea>
+    </div>
 
-    function renderSessionData(id) {
-        const container = document.getElementById('content-container');
-        
-        // 2. التحقق من وجود البيانات في ملف levels.js
-        if (typeof sessionData !== 'undefined' && sessionData[id]) {
-            const data = sessionData[id];
+    <div class="toolbox-wrapper" id="toolBox">
+        <button class="tool-btn" style="display:flex; background:#222; color:var(--primary-gold); border:2px solid var(--primary-gold);" onclick="toggleToolBox()">🛠️</button>
+        <button class="tool-btn" id="laserBtn" onclick="toggleLaser()">🔦</button>
+        <button class="tool-btn" onclick="toggleNotePad()">📝</button>
+        <button class="tool-btn" onclick="location.reload()">🔄</button>
+    </div>
+
+    <script src="data/levels.js"></script>
+    <script>
+        let laserActive = false;
+        let isDrawing = false;
+        const laser = document.getElementById('laser-pointer');
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resizeCanvas; resizeCanvas();
+
+        function toggleLaser() {
+            laserActive = !laserActive;
+            const laserBtn = document.getElementById('laserBtn');
+            const stage = document.getElementById('stage-content');
             
-            // 3. Render Cards
-            container.innerHTML = ""; // Clear loader
+            laserBtn.classList.toggle('active');
+            laser.style.display = laserActive ? 'block' : 'none';
+            
+            if (laserActive) {
+                document.body.style.cursor = 'none';
+                stage.style.pointerEvents = 'none';
+            } else {
+                document.body.style.cursor = 'default';
+                stage.style.pointerEvents = 'auto';
+            }
+        }
+
+        window.addEventListener('contextmenu', (e) => {
+            if (laserActive) e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!laserActive) return;
+            laser.style.left = e.clientX - 9 + 'px';
+            laser.style.top = e.clientY - 9 + 'px';
+            if (isDrawing) { ctx.lineTo(e.clientX, e.clientY); ctx.stroke(); }
+        });
+
+        window.addEventListener('mousedown', (e) => {
+            if (!laserActive) return;
+            e.preventDefault(); 
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.clientX, e.clientY);
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ff0000';
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDrawing = false;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
+        function toggleNotePad() {
+            const pad = document.getElementById('note-pad');
+            const isOpen = pad.style.display === 'flex';
+            pad.style.display = isOpen ? 'none' : 'flex';
+            if (!isOpen) setTimeout(() => document.getElementById('note-text').focus(), 100);
+        }
+
+        function closeStage() {
+            document.getElementById('activity-stage').style.display = 'none';
+            document.getElementById('stage-content').innerHTML = "";
+            if(laserActive) toggleLaser(); 
+        }
+
+        document.addEventListener('touchstart', (e) => {
+            if (document.getElementById('activity-stage').style.display === 'block' && !laserActive) {
+                const enterEvent = new KeyboardEvent('keydown', { key: 'ArrowRight', keyCode: 39, bubbles: true });
+                document.dispatchEvent(enterEvent);
+            }
+        }, { passive: true });
+
+        // --- كود فيتو المطور للربط بين قاعدة البيانات والملفات ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('id'); // سيقرأ مثلاً 6-1
+        
+        if (sessionId && typeof sessionData !== 'undefined') {
+            const data = sessionData[sessionId] || [];
+            const container = document.getElementById('content-container');
+            
+            document.getElementById('display-title').innerText = `LEVEL ${sessionId.split('-')[0]} | SESSION ${sessionId.split('-')[1]}`;
+
             data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
-                card.innerHTML = `<h2>${item}</h2>`;
+                card.onclick = () => openActivity(item);
+                
+                // أيقونات ذكية حسب نوع النشاط
+                let icon = "📚";
+                if (item.includes("Grammar")) icon = "⚙️";
+                if (item.includes("DMT")) icon = "⏱️";
+                if (item.includes("One Shot")) icon = "📖";
+                if (item.includes("Vocab")) icon = "🔖";
+
+                card.innerHTML = `
+                    <div style="font-size: 2.5rem; margin-bottom: 10px;">${icon}</div>
+                    <h2 style="color:var(--primary-gold); font-size:1.5rem;">${item}</h2>
+                `;
                 container.appendChild(card);
             });
-        } else {
-            // في حالة عدم وجود الحصة في ملف الـ JS
-            console.error("Session not found in levels.js:", id);
-            container.innerHTML = `<h2 style="grid-column: 1/-1; text-align: center; opacity: 0.5;">
-                Data for Session ${id} is not defined in levels.js</h2>`;
         }
-    }
-</script>
+
+        function openActivity(activityName) {
+            const [lvl, sess] = sessionId.split('-');
+            let prefix = "";
+
+            // تحويل المسمى الطويل إلى اسم الملف المختصر
+            if (activityName.includes("Grammar")) prefix = "Gra";
+            else if (activityName.includes("Vocab")) prefix = "Voc";
+            else if (activityName.includes("DMT")) prefix = "DMT";
+            else if (activityName.includes("One Shot")) prefix = "One";
+            else {
+                alert("This activity type is not linked yet!");
+                return;
+            }
+
+            const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
+            
+            console.log("Attempting to load:", filePath); // لمراقبة التحميل في المتصفح
+
+            document.getElementById('activity-stage').style.display = 'block';
+            document.getElementById('stage-content').innerHTML = ""; // تنظيف المسرح
+            
+            const script = document.createElement('script');
+            script.src = filePath;
+            document.head.appendChild(script);
+        }
+    </script>
 </body>
 </html>

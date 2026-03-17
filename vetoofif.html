@@ -9,16 +9,14 @@
             --primary-gold: #c5a059;
             --bg-dark: #050505;
             --card-bg: rgba(255, 255, 255, 0.05);
-            --banner-height: 140px;
+            --banner-height: 120px;
             --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* منع التحديد واللمس العشوائي */
         * { 
             margin: 0; padding: 0; box-sizing: border-box; 
-            touch-action: none; /* تم الضبط للتحكم يدويًا في التاتش */
-            -webkit-user-select: none;
-            user-select: none;
+            touch-action: none; /* تحكم يدوي كامل */
+            -webkit-user-select: none; user-select: none;
         }
 
         body {
@@ -29,121 +27,83 @@
             overflow: hidden;
         }
 
-        /* الوضع العرضي للموبايل عند فتح البورد */
+        /* Landscape Mode Fix for Mobile */
         @media screen and (max-width: 900px) and (orientation: portrait) {
-            #note-pad.open-mobile {
-                transform: rotate(90deg);
-                transform-origin: bottom left;
-                position: absolute;
-                top: -100vw;
-                left: 0;
-                height: 100vw;
-                width: 100vh;
-            }
-            #activity-stage { 
-                transform: rotate(90deg); 
-                transform-origin: bottom left; 
-                width: 100vh; 
-                height: 100vw; 
-                position: absolute; 
-                top: -100vw; 
-                left: 0; 
+            #activity-stage, #note-pad { 
+                transform: rotate(90deg); transform-origin: bottom left; 
+                width: 100vh; height: 100vw; position: absolute; top: -100vw; left: 0; 
             }
         }
-
-        /* مناطق اللمس غير المرئية للتنقل */
-        .nav-touch-zone {
-            position: fixed; top: 0; height: 100%; width: 15%; z-index: 8001; /* فوق المحتوى */
-        }
-        #prev-zone { left: 0; }
-        #next-zone { right: 0; }
 
         /* Banner */
         .top-banner {
             height: var(--banner-height);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 40px;
-            background: rgba(0, 0, 0, 0.95);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 40px; background: rgba(0, 0, 0, 0.95);
             border-bottom: 4px solid var(--primary-gold);
+            z-index: 100;
         }
 
-        .logo-img { height: 70px; }
-        .mr-ezz-img { height: 100px; border-radius: 12px; border: 2px solid var(--primary-gold); }
-        .session-info h1 { font-size: 2.5rem; color: var(--primary-gold); letter-spacing: 3px; }
+        .logo-img { height: 60px; }
+        .mr-ezz-img { height: 90px; border-radius: 12px; border: 2px solid var(--primary-gold); }
+        .session-info h1 { font-size: 2.2rem; color: var(--primary-gold); letter-spacing: 2px; }
 
         /* Content Grid */
         .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            padding: 40px;
-            overflow-y: auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px; padding: 40px; overflow-y: auto;
             height: calc(100vh - var(--banner-height));
-            touch-action: pan-y; /* السماح بالسكرول الرأسي هنا فقط */
+            touch-action: pan-y;
         }
 
         .content-card {
-            background: var(--card-bg);
-            border: 2px solid rgba(197, 160, 89, 0.15);
-            padding: 50px 20px;
-            border-radius: 20px;
-            text-align: center;
-            transition: 0.3s;
-            cursor: pointer;
+            background: var(--card-bg); border: 2px solid rgba(197, 160, 89, 0.15);
+            padding: 50px 20px; border-radius: 20px; text-align: center;
+            transition: 0.3s; cursor: pointer;
         }
+        .content-card h2 { font-size: 2rem; color: #fff; }
+        .content-card:hover { border-color: var(--primary-gold); transform: translateY(-10px); background: rgba(197, 160, 89, 0.1); }
 
-        .content-card h2 { font-size: 2rem; }
-        .content-card:hover { border-color: var(--primary-gold); transform: translateY(-10px); }
+        /* Activity Stage */
+        #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
+        .exit-btn { position: absolute; top: 20px; left: 20px; z-index: 9999; background: #ff4757; color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        /* Quick Board */
-        #note-pad {
-            position: fixed; inset: 0; background: #000; z-index: 9000; 
-            display: none; flex-direction: column; padding: 20px;
-        }
-
-        #note-text { 
-            width: 100%; height: 80%; 
-            background: #111; border: 3px solid var(--primary-gold);
-            color: #fff; font-size: 4rem; padding: 20px; border-radius: 20px;
-            outline: none; text-align: center; touch-action: auto;
-        }
-
-        /* Laser */
+        /* Laser & Drawing */
         #laser-pointer {
-            position: fixed; width: 30px; height: 30px; background: rgba(255, 0, 0, 0.8); 
+            position: fixed; width: 35px; height: 35px; background: rgba(255, 0, 0, 0.9); 
             border-radius: 50%; pointer-events: none; z-index: 10000; display: none;
             box-shadow: 0 0 20px red, 0 0 40px red;
         }
         #drawing-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
 
-        /* Tools */
+        /* Toolbox */
         .toolbox-wrapper { position: fixed; bottom: 30px; right: 30px; z-index: 9500; display: flex; flex-direction: column-reverse; gap: 15px; }
         .tool-btn { 
             width: 70px; height: 70px; border-radius: 50%; background: var(--primary-gold); border: none; 
             cursor: pointer; font-size: 1.8rem; display: none; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
         .toolbox-wrapper.open .tool-btn { display: flex; }
-        .tool-btn.active { background: #ff4757; }
+        .tool-btn.active { background: #ff4757; box-shadow: 0 0 20px #ff4757; }
 
-        #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
+        /* Quick Board */
+        #note-pad { position: fixed; inset: 0; background: #000; z-index: 9000; display: none; flex-direction: column; padding: 20px; }
+        #note-text { width: 100%; height: 80%; background: #111; border: 3px solid var(--primary-gold); color: #fff; font-size: 3.5rem; padding: 20px; border-radius: 20px; outline: none; text-align: center; }
     </style>
 </head>
 <body oncontextmenu="return false;"> 
 
     <header class="top-banner">
-        <button onclick="window.location.href='vetoof.html'" style="background:none; border:2px solid var(--primary-gold); color:var(--primary-gold); padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold; font-size:1.2rem;">← BACK</button>
-        
+        <button onclick="window.location.href='vetoof.html'" style="background:none; border:2px solid var(--primary-gold); color:var(--primary-gold); padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold;">← BACK</button>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
-        <div class="session-info"><h1 id="display-title">SESSION CONTENT</h1></div>
+        <div class="session-info"><h1 id="display-title">VETO CONTENT</h1></div>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="mr-ezz-img">
     </header>
 
     <main class="content-grid" id="content-container"></main>
 
     <div id="activity-stage">
-        <button onclick="closeStage()" style="position:absolute; top:20px; left:20px; z-index:8500; background:#ff4757; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:bold;">EXIT</button>
+        <button class="exit-btn" onclick="closeStage()">EXIT (ESC)</button>
         <div id="stage-content" style="width:100%; height:100%;"></div>
     </div>
 
@@ -151,8 +111,8 @@
     <canvas id="drawing-canvas"></canvas>
 
     <div id="note-pad">
-        <button onclick="toggleNotePad()" style="align-self: flex-end; background:#ff4757; color:white; border:none; padding:10px 30px; border-radius:10px; margin-bottom:10px;">CLOSE</button>
-        <textarea id="note-text" placeholder="Explain here..."></textarea>
+        <button onclick="toggleNotePad()" style="align-self: flex-end; background:#ff4757; color:white; border:none; padding:15px 40px; border-radius:10px; font-size:1.5rem;">CLOSE</button>
+        <textarea id="note-text" placeholder="Write here Mr. Ezz..."></textarea>
     </div>
 
     <div class="toolbox-wrapper" id="toolBox">
@@ -167,6 +127,8 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const currentSessionId = urlParams.get('session');
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
         let laserActive = false;
         let isDrawing = false;
         const laser = document.getElementById('laser-pointer');
@@ -178,7 +140,7 @@
 
         function initSession() {
             if (!currentSessionId || !sessionData[currentSessionId]) return;
-            document.getElementById('display-title').innerText = `L-${currentSessionId}`;
+            document.getElementById('display-title').innerText = `SESSION ${currentSessionId}`;
             const container = document.getElementById('content-container');
             sessionData[currentSessionId].forEach(item => {
                 const card = document.createElement('div');
@@ -194,6 +156,10 @@
             const prefix = activityName.split(' ')[0].substring(0, 3);
             const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
             document.getElementById('activity-stage').style.display = 'block';
+            
+            // Fullscreen request for Mobile
+            if(isMobile) document.documentElement.requestFullscreen().catch(() => {});
+            
             const script = document.createElement('script');
             script.src = filePath;
             document.head.appendChild(script);
@@ -202,93 +168,89 @@
         function closeStage() {
             document.getElementById('activity-stage').style.display = 'none';
             document.getElementById('stage-content').innerHTML = "";
-        }
-
-        function toggleNotePad() {
-            const pad = document.getElementById('note-pad');
-            const isOpen = pad.style.display === 'flex';
-            pad.style.display = isOpen ? 'none' : 'flex';
-            pad.classList.toggle('open-mobile');
+            if (document.fullscreenElement) document.exitFullscreen();
         }
 
         function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
+        function toggleNotePad() {
+            const pad = document.getElementById('note-pad');
+            pad.style.display = (pad.style.display === 'flex') ? 'none' : 'flex';
+        }
 
         function toggleLaser() {
             laserActive = !laserActive;
             document.getElementById('laserBtn').classList.toggle('active');
-            laser.style.display = 'none';
         }
 
-        // 1. نظام الليزر المطور (Touch & Mouse)
-        function handlePointerMove(e) {
-            if (!laserActive) return;
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            
-            laser.style.left = clientX - 12 + 'px';
-            laser.style.top = clientY - 12 + 'px';
-
-            if (isDrawing) {
-                ctx.lineTo(clientX, clientY);
-                ctx.stroke();
+        // --- نظام الليزر والرسم الذكي ---
+        function startAction(e) {
+            if (!laserActive) {
+                // لو مش مشغل الليزر وفي الموبايل، نتحقق من لمسة الأطراف للتقليب
+                if (isMobile && document.getElementById('activity-stage').style.display === 'block') {
+                    handleMobileNav(e);
+                }
+                return;
             }
-        }
-
-        function startDrawing(e) {
-            if (!laserActive) return;
             isDrawing = true;
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-            ctx.beginPath();
-            ctx.moveTo(clientX, clientY);
-            ctx.strokeStyle = '#ff0000';
-            ctx.lineWidth = 8;
-            ctx.lineCap = 'round';
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = '#ff0000';
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            
             laser.style.display = 'block';
+            laser.style.left = x - 17 + 'px';
+            laser.style.top = y - 17 + 'px';
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'red';
         }
 
-        function stopDrawing() {
+        function moveAction(e) {
+            if (!isDrawing || !laserActive) return;
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            laser.style.left = x - 17 + 'px';
+            laser.style.top = y - 17 + 'px';
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function endAction() {
             isDrawing = false;
             laser.style.display = 'none';
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        // إضافة المستمعات لدعم التاتش والماوس
-        window.addEventListener('mousemove', handlePointerMove);
-        window.addEventListener('touchstart', (e) => { 
-            if(laserActive) { e.preventDefault(); startDrawing(e); } 
-        }, {passive: false});
-        window.addEventListener('touchmove', (e) => { 
-            if(laserActive) { e.preventDefault(); handlePointerMove(e); } 
-        }, {passive: false});
-        window.addEventListener('mousedown', startDrawing);
-        window.addEventListener('mouseup', stopDrawing);
-        window.addEventListener('touchend', (e) => {
-            stopDrawing();
-            if (!laserActive && document.getElementById('activity-stage').style.display === 'block') {
-                const touchEndX = e.changedTouches[0].clientX;
-                // Navigation Logic
+        // --- نظام التنقل للموبايل (لمس الجوانب) ---
+        function handleMobileNav(e) {
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const width = window.innerWidth;
+            if (x > width * 0.8) { if(typeof nextSlide === "function") nextSlide(); }
+            else if (x < width * 0.2) { if(typeof prevSlide === "function") prevSlide(); }
+        }
+
+        // --- مستمعات الأحداث ---
+        window.addEventListener('mousedown', startAction);
+        window.addEventListener('mousemove', moveAction);
+        window.addEventListener('mouseup', endAction);
+
+        window.addEventListener('touchstart', (e) => { if(laserActive) e.preventDefault(); startAction(e); }, {passive: false});
+        window.addEventListener('touchmove', (e) => { if(laserActive) e.preventDefault(); moveAction(e); }, {passive: false});
+        window.addEventListener('touchend', endAction);
+
+        // --- نظام الكيبورد للديسك توب فقط ---
+        window.addEventListener('keydown', (e) => {
+            if (document.getElementById('activity-stage').style.display === 'block') {
+                if (e.key === "ArrowRight" || e.key === "Enter") { if(typeof nextSlide === "function") nextSlide(); }
+                if (e.key === "ArrowLeft") { if(typeof prevSlide === "function") prevSlide(); }
+                if (e.key === "Escape") closeStage();
             }
         });
 
-        // 2. نظام التنقل (يمين/شمال) وداخل المحتوى
-        function initNavigation() {
-            const stage = document.getElementById('activity-stage');
-            
-            stage.addEventListener('click', (e) => {
-                const width = window.innerWidth;
-                if (e.clientX > width * 0.8) {
-                    if(typeof nextSlide === "function") nextSlide(); 
-                } else if (e.clientX < width * 0.2) {
-                    if(typeof prevSlide === "function") prevSlide();
-                }
-            });
-        }
-
-        initNavigation();
         initSession();
     </script>
 </body>

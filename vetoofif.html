@@ -99,9 +99,53 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
+        /* Done Screen Overlay */
+        #done-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none; /* مخفي افتراضياً */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .done-text {
+            font-size: 8rem;
+            color: #2ecc71;
+            font-weight: 900;
+            text-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+            margin-bottom: 40px;
+        }
+        
+        .test-btn {
+            padding: 20px 50px;
+            background: var(--primary-gold);
+            color: black;
+            border: none;
+            border-radius: 50px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        
+        .test-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px var(--primary-gold);
+        }
+
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -119,7 +163,13 @@
 
     <div id="activity-stage" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:1000;">
         <button onclick="closeStage()" style="position:absolute; top:20px; right:20px; z-index:1001; background:var(--primary-gold); border:none; padding:10px 20px; cursor:pointer; font-weight:bold; border-radius:5px;">CLOSE [ESC]</button>
+        
         <div id="stage-content" style="width:100%; height:100%;"></div>
+    
+        <div id="done-overlay">
+            <div class="done-text">DONE!</div>
+            <button id="test-link" class="test-btn">GO TO TEST</button>
+        </div>
     </div>
 
     <a href="vetoof.html" class="back-btn">← BACK TO LEVELS</a>
@@ -139,32 +189,61 @@
             return activityName.split(' ')[0].substring(0, 3);
         }
 
-        function openActivity(activityName) {
+        let currentActivityFile = ""; // لمتابعة اسم الملف الحالي
+        
+        function openActivity(activityName, isTest = false) {
             const [lvl, sess] = sessionId.split('-');
             const prefix = getFilePrefix(activityName);
-            const fileName = `L-${lvl}-S-${sess}-${prefix}.js`;
-            const filePath = `data/${fileName}`;
-
-            console.log("Attempting to load Board:", filePath);
-
+            
+            // بناء اسم الملف الأساسي
+            let fileName = `L- ${lvl}-S-${sess}-${prefix}.js`;
+            let filePath = `data/${fileName}`;
+        
+            // إذا كان المطلوب هو الاختبار
+            if (isTest) {
+                fileName = `L-${lvl}-S-${sess}-${prefix}t.js`;
+                filePath = `data/vetoo/${fileName}`;
+            }
+        
+            currentActivityFile = activityName; // حفظ الاسم للرجوع له عند طلب الاختبار
+            
             const stage = document.getElementById('activity-stage');
             const stageContent = document.getElementById('stage-content');
+            const doneOverlay = document.getElementById('done-overlay');
+            
             stage.style.display = 'block';
-
+            doneOverlay.style.display = 'none'; // إخفاء واجهة Done عند البدء
             stageContent.innerHTML = "";
+        
             const script = document.createElement('script');
             script.src = filePath;
+            
+            // عند حدوث خطأ في تحميل الملف
             script.onerror = () => {
                 stageContent.innerHTML = `<div style="color:white; text-align:center; margin-top:20%; font-size:2rem;">
-                    Activity File Not Found:<br><span style="color:var(--primary-gold)">${fileName}</span>
+                    File Not Found:<br><span style="color:var(--primary-gold)">${filePath}</span>
                 </div>`;
             };
             document.head.appendChild(script);
         }
-
+        
+        // دالة يتم استدعاؤها من داخل ملفات الـ JS عند الوصول لآخر سلايد
+        window.triggerVetoDone = function() {
+            const doneOverlay = document.getElementById('done-overlay');
+            const testBtn = document.getElementById('test-link');
+            
+            doneOverlay.style.display = 'flex';
+            
+            // ربط زر الاختبار بالملف الجديد في مجلد vetoo
+            testBtn.onclick = () => {
+                openActivity(currentActivityFile, true);
+            };
+        };
+        
         function closeStage() {
             document.getElementById('activity-stage').style.display = 'none';
             document.getElementById('stage-content').innerHTML = "";
+            document.getElementById('done-overlay').style.display = 'none';
         }
 
         window.addEventListener('keydown', (e) => {

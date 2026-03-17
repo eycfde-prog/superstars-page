@@ -1,8 +1,7 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
     const storyTitle = "The City of Silence";
     
     const storyContent = `
@@ -30,40 +29,70 @@
         The city wasn't silent anymore; it was <span class="target-word">echoing</span> with laughter and song. 
         Elias realized that while technology can give us <span class="target-word">efficiency</span>, only art can give us a <span class="target-word">soul</span>.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0a0a0c; color:#cfcfcf; overflow-y:auto; padding:60px 20px; font-family: 'Inter', 'Georgia', serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
-            .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
+            @keyframes wordGlow {
+                0%, 100% { text-shadow: 0 0 5px rgba(241, 196, 15, 0.3); color: #f1c40f; }
+                50% { text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); color: #fff; }
             }
-            .story-container {
-                max-width: 1000px;
+            .story-card {
+                max-width: 900px;
                 margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+                background: rgba(20, 20, 25, 0.8);
+                padding: 60px;
+                border-radius: 40px;
+                box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+                border: 1px solid #1f1f2a;
             }
-            .title {
-                color: #9b59b6; /* لون بنفسجي يعبر عن الروحيات والموسيقى */
+            .title-section {
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
-                text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                margin-bottom: 60px;
             }
+            .title-section h1 {
+                font-size: 3.5rem;
+                color: #9b59b6;
+                text-transform: uppercase;
+                letter-spacing: 8px;
+                margin: 0;
+                font-weight: 900;
+                text-shadow: 0 0 30px rgba(155, 89, 182, 0.3);
+            }
+            .subtitle {
+                color: #666;
+                font-size: 1rem;
+                letter-spacing: 4px;
+                text-transform: uppercase;
+            }
+            .target-word {
+                color: #f1c40f;
+                font-weight: bold;
+                border-bottom: 2px solid rgba(241, 196, 15, 0.3);
+                cursor: help;
+                padding: 0 4px;
+                animation: wordGlow 3s infinite ease-in-out;
+                display: inline-block;
+            }
+            .text-content {
+                line-height: 2.3;
+                font-size: 1.9rem;
+                text-align: justify;
+                color: #b0b0b0;
+            }
+            #stage-content::-webkit-scrollbar { width: 10px; }
+            #stage-content::-webkit-scrollbar-track { background: #0a0a0c; }
+            #stage-content::-webkit-scrollbar-thumb { background: #9b59b6; border-radius: 10px; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
-            <div id="textBody">
+        
+        <div class="story-card">
+            <div class="title-section">
+                <span class="subtitle">Advanced One-Shot • Session 2</span>
+                <h1>${storyTitle}</h1>
+            </div>
+            <div class="text-content">
                 ${storyContent}
             </div>
         </div>

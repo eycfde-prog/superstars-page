@@ -1,92 +1,52 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#0f0f0f; font-family:'Poppins', sans-serif; direction:ltr; color:white;`;
+    container.style.cssText = `height:100%; width:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#050505; font-family:'Segoe UI', sans-serif; direction:ltr; color:white;`;
 
     let currentSlide = 0;
     let subStep = 0;
 
     const slides = [
-        /* 1: Title */
-        { type: 'title', content: 'PLURAL (الجمع)', color: '#e74c3c' },
-        
-        /* 2: Words Reveal (Nouns/Verbs/Countable...) */
+        { type: 'title', content: 'PLURAL (الجمع)', color: '#c5a059' },
         { 
-            type: 'reveal-list', 
-            items: ["Cars", "Cats", "Pens", "Pins", "Bins", "---", "Nouns - Verbs - Adjectives", "Good", "Water", "---", "Nouns:", "Countable", "Uncountable", "Liquid", "Powder", "Money"] 
+            type: 'reveal-grid', 
+            items: ["Cars", "Cats", "Pens", "Pins", "Bins", "Nouns", "Verbs", "Adjectives", "Good", "Water", "Countable", "Uncountable", "Liquid", "Powder", "Money"] 
         },
-
-        /* 3: Rule 0 (S) */
         { 
             type: 'writing', 
-            title: 'Rule', 
-            content: 'We add <span style="color:#f1c40f;">S</span> to the countable noun.<br><br><small>Not uncountable like: Liquid, Powder, Money.</small>' 
+            title: 'Rule: The Standard', 
+            content: 'We add <span style="color:#c5a059;">S</span> to the countable noun.<br><br><small style="color:#666;">Not uncountable like: Liquid, Powder, Money.</small>' 
         },
-
-        /* 4: ES Words (Reveal addition) */
         { 
             type: 'reveal-plus', 
+            title: 'Add ( ES ) if ends with: S, Ss, O, X, Ch, Sh',
             items: [
-                { base: "Bus", add: "es" },
-                { base: "Class", add: "es" },
-                { base: "Potato", add: "es" },
-                { base: "Box", add: "es" },
-                { base: "Watch", add: "es" },
-                { base: "Dish", add: "es" }
+                { base: "Bus", add: "es" }, { base: "Class", add: "es" },
+                { base: "Potato", add: "es" }, { base: "Box", add: "es" },
+                { base: "Watch", add: "es" }, { base: "Dish", add: "es" }
             ] 
         },
-
-        /* 5: Rule 1 (ES) */
         { 
-            type: 'writing', 
-            title: 'Rule: Add ES', 
-            content: 'We add <span style="color:#f1c40f;">es</span> to nouns ending with:<br><span style="color:#e74c3c;">S, Ss, O, X, Ch, Sh</span>' 
+            type: 'reveal-grid', 
+            title: 'The Letter ( Y ) Rule',
+            items: ["Company ➞ Companies", "Boy ➞ Boys"] 
         },
-
-        /* 6: Y Rule Words */
-        { 
-            type: 'reveal-list', 
-            items: ["Company → Companies", "Boy → Boys"] 
-        },
-
-        /* 7: Rule 2 (IES) */
         { 
             type: 'writing', 
             title: 'Rule: Letter Y', 
-            content: 'We remove letter <span style="color:#e74c3c;">Y</span> if the letter before is <span style="color:#f1c40f;">consonant</span> and add <span style="color:#2ecc71;">ies</span>.' 
+            content: 'Remove <span style="color:#e74c3c;">Y</span> if preceded by a <span style="color:#c5a059;">consonant</span> and add <span style="color:#2ecc71;">IES</span>.' 
         },
-
-        /* 8: F/FE Words & Rule */
         { 
             type: 'dual-reveal', 
-            items: ["Wolf → Wolves", "Wife → Wives"],
-            rule: "We remove <span style='color:#e74c3c;'>f</span> or <span style='color:#e74c3c;'>fe</span> and add <span style='color:#f1c40f;'>ves</span>."
+            items: ["Wolf ➞ Wolves", "Wife ➞ Wives"],
+            rule: "Remove <span style='color:#e74c3c;'>f / fe</span> and add <span style='color:#c5a059;'>VES</span>."
         },
-
-        /* 9: Irregular Nouns */
         { 
-            type: 'reveal-list', 
-            items: [
-                "Man → Men", "Woman → Women", "Child → Children", 
-                "Person → People", "Ox → Oxen", "Foot → Feet", 
-                "Tooth → Teeth", "Mouse → Mice", "Deer → Deer", 
-                "Sheep → Sheep", "Information → Information", "Fish → Fish"
-            ] 
-        },
-
-        /* 10: Quiz/Exercises (Reveal addition) */
-        { 
-            type: 'reveal-plus', 
-            title: 'Exercise',
-            items: [
-                { base: "Dress", add: "es" },
-                { base: "Fox", add: "es" },
-                { base: "Countr", add: "ies (from Country)" },
-                { base: "Hal", add: "ves (from Half)" },
-                { base: "Child", add: "ren" }
-            ] 
+            type: 'reveal-grid', 
+            title: 'Irregular Nouns (حفظ كما هي)',
+            items: ["Man ➞ Men", "Woman ➞ Women", "Child ➞ Children", "Person ➞ People", "Foot ➞ Feet", "Tooth ➞ Teeth", "Mouse ➞ Mice", "Deer ➞ Deer", "Sheep ➞ Sheep", "Fish ➞ Fish"] 
         }
     ];
 
@@ -94,45 +54,47 @@
         container.innerHTML = '';
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = `width:95%; text-align:center; animation: fadeIn 0.4s ease;`;
+        wrapper.style.cssText = `width:90%; text-align:center; animation: vetoFadeIn 0.4s ease;`;
 
         if (s.type === 'title') {
-            wrapper.innerHTML = `<h1 style="font-size:8rem; font-weight:900; color:${s.color}; margin:0;">${s.content}</h1>`;
+            wrapper.innerHTML = `<h1 style="font-size:10vw; font-weight:900; color:${s.color}; text-shadow: 0 0 30px rgba(197,160,89,0.3);">${s.content}</h1>`;
         } 
         else if (s.type === 'writing') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#1e1e1e; padding:50px; border-left:15px solid #e74c3c; border-radius:15px;">
-                    <h2 style="font-size:4rem; margin-bottom:20px; color:#e74c3c;">${s.title}</h2>
-                    <div style="font-size:3.5rem; line-height:1.4; color:#fff;">${s.content}</div>
+                <div style="text-align:left; background:#111; padding:60px; border-left:15px solid #c5a059; border-radius:20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+                    <h2 style="font-size:3.5vw; margin-bottom:20px; color:#c5a059;">${s.title}</h2>
+                    <div style="font-size:4vw; line-height:1.2; color:#fff;">${s.content}</div>
                 </div>`;
         }
-        else if (s.type === 'reveal-list') {
-            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; gap:10px; text-align:left; max-height:80vh; overflow-y:auto;">
-                ${s.items.map((item, i) => `
-                    <div style="opacity:${i <= subStep ? 1 : 0}; transition:0.3s; background:#1e1e1e; padding:10px 20px; border-radius:8px; font-size:2rem; font-weight:bold; border-left:5px solid #e74c3c;">
-                        ${item}
-                    </div>
-                `).join('')}
-            </div>`;
+        else if (s.type === 'reveal-grid') {
+            wrapper.innerHTML = `
+                ${s.title ? `<h2 style="font-size:3vw; color:#c5a059; margin-bottom:30px;">${s.title}</h2>` : ''}
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
+                    ${s.items.map((item, i) => `
+                        <div style="opacity:${i <= subStep ? 1 : 0}; transform: scale(${i <= subStep ? 1 : 0.8}); transition:0.3s; background:#111; padding:25px; border-radius:15px; font-size:2.5vw; font-weight:bold; border: 1px solid #222;">
+                            ${item}
+                        </div>
+                    `).join('')}
+                </div>`;
         }
         else if (s.type === 'reveal-plus') {
             wrapper.innerHTML = `
-                <h2 style="font-size:3rem; color:#e74c3c;">${s.title || 'Practice'}</h2>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; text-align:left;">
-                ${s.items.map((item, i) => `
-                    <div style="opacity:${i <= subStep ? 1 : 0}; font-size:2.8rem; background:#1e1e1e; padding:15px; border-radius:10px;">
-                        ${item.base}<span style="color:#f1c40f; opacity:${subStep > i || (subStep === i && subStep%1==0) ? 1 : 0}; transition:0.5s;">${item.add}</span>
-                    </div>
-                `).join('')}
-            </div>`;
+                <h2 style="font-size:3vw; color:#c5a059; margin-bottom:40px;">${s.title}</h2>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
+                    ${s.items.map((item, i) => `
+                        <div style="opacity:${i <= subStep ? 1 : 0}; font-size:4vw; background:#111; padding:30px; border-radius:20px; font-weight:bold;">
+                            ${item.base}<span style="color:#c5a059; text-shadow: 0 0 15px #c5a059;">${item.add}</span>
+                        </div>
+                    `).join('')}
+                </div>`;
         }
         else if (s.type === 'dual-reveal') {
             wrapper.innerHTML = `
-                <div style="display:flex; flex-direction:column; gap:30px;">
+                <div style="display:flex; flex-direction:column; gap:40px; align-items:center;">
                     ${s.items.map((item, i) => `
-                        <div style="opacity:${i <= subStep ? 1 : 0}; font-size:4rem; font-weight:bold;">${item}</div>
+                        <div style="opacity:${i <= subStep ? 1 : 0}; font-size:6vw; font-weight:bold; background:#111; padding:20px 60px; border-radius:50px; border:2px solid #c5a059;">${item}</div>
                     `).join('')}
-                    <div style="opacity:${subStep >= s.items.length ? 1 : 0}; background:#e74c3c; padding:20px; border-radius:15px; font-size:2.5rem;">
+                    <div style="opacity:${subStep >= s.items.length ? 1 : 0}; background:#c5a059; color:black; padding:30px; border-radius:20px; font-size:3vw; font-weight:bold; margin-top:20px;">
                         ${s.rule}
                     </div>
                 </div>`;
@@ -143,12 +105,16 @@
 
     document.onkeydown = (e) => {
         const s = slides[currentSlide];
-        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { // Next
-            if (s.type === 'reveal-list' && subStep < s.items.length - 1) subStep++;
-            else if (s.type === 'reveal-plus' && subStep < s.items.length - 1) subStep++;
-            else if (s.type === 'dual-reveal' && subStep < s.items.length) subStep++;
-            else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
-        } else if (e.keyCode === 37) { // Back
+        if ([13, 32, 39].includes(e.keyCode)) {
+            if ((s.items && subStep < s.items.length - 1) || (s.type === 'dual-reveal' && subStep < s.items.length)) {
+                subStep++;
+            } else if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                subStep = 0;
+            } else {
+                if (window.triggerVetoDone) window.triggerVetoDone();
+            }
+        } else if (e.keyCode === 37) {
             if (subStep > 0) subStep--;
             else if (currentSlide > 0) { currentSlide--; subStep = 0; }
         }

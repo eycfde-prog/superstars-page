@@ -233,59 +233,87 @@
             }
         }, { passive: true });
 
-        // --- كود فيتو المطور للربط بين قاعدة البيانات والملفات ---
+        // --- كود فيتو المطور للربط الذكي ---
         const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('id'); // سيقرأ مثلاً 6-1
+        const sessionId = urlParams.get('id'); // يقرأ ID من الرابط مثل 6-2
         
         if (sessionId && typeof sessionData !== 'undefined') {
             const data = sessionData[sessionId] || [];
             const container = document.getElementById('content-container');
             
-            document.getElementById('display-title').innerText = `LEVEL ${sessionId.split('-')[0]} | SESSION ${sessionId.split('-')[1]}`;
+            // تحديث عنوان الصفحة
+            const [lvl, sess] = sessionId.split('-');
+            document.getElementById('display-title').innerText = `LEVEL ${lvl} | SESSION ${sess}`;
+
+            if (data.length === 0) {
+                container.innerHTML = `<h2 style="color:#ff4757; grid-column: 1/-1;">⚠️ Session [${sessionId}] is empty or not defined!</h2>`;
+            }
 
             data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
                 card.onclick = () => openActivity(item);
                 
-                // أيقونات ذكية حسب نوع النشاط
-                let icon = "📚";
-                if (item.includes("Grammar")) icon = "⚙️";
-                if (item.includes("DMT")) icon = "⏱️";
-                if (item.includes("One Shot")) icon = "📖";
-                if (item.includes("Vocab")) icon = "🔖";
+                // اختيار الأيقونة المناسبة بناءً على الكلمة الموجودة في الاسم
+                let icon = "📖"; // الافتراضي
+                if (item.toLowerCase().includes("vocab")) icon = "🔖";
+                if (item.toLowerCase().includes("grammar")) icon = "⚙️";
+                if (item.toLowerCase().includes("dmt")) icon = "⏱️";
+                if (item.toLowerCase().includes("one shot")) icon = "🎬";
+                if (item.toLowerCase().includes("listening")) icon = "🎧";
 
                 card.innerHTML = `
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">${icon}</div>
-                    <h2 style="color:var(--primary-gold); font-size:1.5rem;">${item}</h2>
+                    <div style="font-size: 3rem; margin-bottom: 10px;">${icon}</div>
+                    <h2 style="color:var(--primary-gold); font-size:1.4rem;">${item}</h2>
+                    <p style="color:#666; margin-top:10px; font-size:0.9rem;">Launch Activity</p>
                 `;
                 container.appendChild(card);
             });
+        } else {
+            document.getElementById('content-container').innerHTML = `
+                <div style="text-align:center; grid-column:1/-1; padding:50px;">
+                    <h2 style="color:#ff4757;">❌ Access Error</h2>
+                    <p style="color:#888; margin-top:20px;">Please use a valid link. Example: session.html?id=6-2</p>
+                </div>`;
         }
 
+        // دالة فتح النشاط مع "المترجم الذكي" للملفات
         function openActivity(activityName) {
             const [lvl, sess] = sessionId.split('-');
             let prefix = "";
 
-            // تحويل المسمى الطويل إلى اسم الملف المختصر
-            if (activityName.includes("Grammar")) prefix = "Gra";
-            else if (activityName.includes("Vocab")) prefix = "Voc";
-            else if (activityName.includes("DMT")) prefix = "DMT";
-            else if (activityName.includes("One Shot")) prefix = "One";
+            // المترجم: يحول الاسم الطويل إلى اسم الملف المختصر
+            const name = activityName.toLowerCase();
+            if (name.includes("vocab")) prefix = "Voc";
+            else if (name.includes("grammar")) prefix = "Gra";
+            else if (name.includes("dmt")) prefix = "DMT";
+            else if (name.includes("one shot")) prefix = "One";
             else {
-                alert("This activity type is not linked yet!");
-                return;
+                console.warn("No prefix mapping for:", activityName);
+                prefix = "Unknown"; 
             }
 
-            const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
+            const filePath = `data/L-$.{lvl}-S-$.{sess}-$.{prefix}.js`.replace('$.{','${').replace('$.{','${').replace('$.{','${'); 
+            // Correcting Template Literal for the final integration block:
+            const finalPath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
             
-            console.log("Attempting to load:", filePath); // لمراقبة التحميل في المتصفح
-
+            console.log("🚀 Veto is launching:", finalPath);
+            
             document.getElementById('activity-stage').style.display = 'block';
             document.getElementById('stage-content').innerHTML = ""; // تنظيف المسرح
             
             const script = document.createElement('script');
-            script.src = filePath;
+            script.src = finalPath;
+            // تنبيه في حالة عدم وجود الملف
+            script.onerror = () => {
+                document.getElementById('stage-content').innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:white; text-align:center; flex-direction:column; gap:20px;">
+                        <h1 style="font-size:5rem;">📍</h1>
+                        <h2>File Not Found</h2>
+                        <p style="color:#666;">Expected Path: ${finalPath}</p>
+                        <button onclick="closeStage()" style="padding:10px 30px; background:var(--primary-gold); border:none; cursor:pointer; border-radius:5px;">Go Back</button>
+                    </div>`;
+            };
             document.head.appendChild(script);
         }
     </script>

@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veto Program - Interactive Board</title>
+    <title>Veto Program - Smart Interface</title>
     <style>
-        /* 1. CSS Variables لسهولة التعديل مستقبلاً */
+        /* Veto Architect Styles - 4-Meter Rule Applied */
         :root {
             --primary-bg: #0a0a0a;
-            --overlay-color: rgba(0, 0, 0, 0.65); /* طبقة تباين لحماية عين الطالب */
             --text-color: #ffffff;
-            --accent-color: #00d4ff; /* لون تمييز للعناصر التفاعلية */
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --overlay-opacity: 0.4; /* تتحكم في مدى ظهور الخلفية خلف المحتوى */
         }
 
-        /* 2. Reset & Full Screen Layout */
         * {
             margin: 0;
             padding: 0;
@@ -23,96 +20,101 @@
 
         body, html {
             height: 100%;
-            width: 100%;
-            overflow: hidden; /* لمنع التمرير العشوائي أثناء الشرح */
-            font-family: var(--font-main);
+            overflow: hidden; /* لمنع التمرير غير الضروري والحفاظ على ثبات العرض */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--primary-bg);
         }
 
-        /* 3. Animated Background Layer */
-        .veto-background {
+        /* حاوية الخلفية المتحركة */
+        .background-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            /* استخدام رابط الـ Raw لضمان العرض المباشر */
-            background: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/51f1d5c58d4bcd34b8a4ddc1cd05d6fda68fade5/vetoofb.webp') no-repeat center center fixed;
-            background-size: cover;
             z-index: -2;
+            background-image: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/51f1d5c58d4bcd34b8a4ddc1cd05d6fda68fade5/vetoofb.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        /* 4. Contrast Overlay (طبقة الحماية والوضوح) */
+        /* طبقة التباين (Overlay) لراحة العين ووضوح المحتوى */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--overlay-color);
+            background: rgba(0, 0, 0, var(--overlay-opacity));
             z-index: -1;
         }
 
-        /* 5. Main Content Container (Smart iFrame Ready) */
-        .main-container {
+        /* الحاوية الرئيسية للمحتوى (السبورة الذكية) */
+        .main-stage {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            padding: 40px;
-            text-align: center;
             color: var(--text-color);
+            text-align: center;
+            padding: 40px;
         }
 
-        /* Typography - 4 Meter Rule */
         h1 {
-            font-size: 5rem; /* حجم ضخم للقراءة من بعيد */
-            font-weight: 800;
+            font-size: 5rem; /* حجم ضخم للرؤية من مسافة 4 أمتar */
             text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
+            font-weight: 800;
+            letter-spacing: 2px;
         }
 
         .status-badge {
-            padding: 10px 25px;
-            background: var(--accent-color);
-            color: #000;
+            margin-top: 20px;
+            padding: 10px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            animation: pulse 2s infinite;
+            font-size: 1.5rem;
+            backdrop-filter: blur(5px);
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
+        /* تأثير الحركة اللطيف للمحتوى */
+        .fade-in {
+            animation: fadeIn 1.5s ease-in-out;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-    <div class="veto-background"></div>
+    <div class="background-container"></div>
     
     <div class="overlay"></div>
 
-    <main class="main-container">
+    <main class="main-stage fade-in">
         <h1>VETO PROGRAM</h1>
-        <div class="status-badge">جاهز لاستقبال المحتوى التعليمي...</div>
-        
-        </main>
+        <div class="status-badge">جاهز للعرض الذكي | Smart Display Ready</div>
+    </main>
 
     <script>
-        // تجهيز مستمعات الكيبورد (Keyboard Listeners)
+        // بروتوكول التحكم بالكيبورد (Veto Architect Logic)
         document.addEventListener('keydown', function(event) {
             if (event.key === "Enter") {
-                console.log("Enter key pressed: Ready for next slide transition.");
-                // سيتم إضافة كود الانتقال بين ملفات الـ JS هنا
+                console.log("Enter key pressed: Switching Slide...");
+                // هنا سيتم ربط منطق التنقل بين ملفات الـ JS لاحقاً
+                alert("مرحباً مستر عز، تم تفعيل اختصارات الكيبورد بنجاح.");
             }
         });
 
-        console.log("Veto Architect: System Initialized with Animated Background.");
+        // التأكد من استمرارية عمل الخلفية دون توقف
+        window.addEventListener('load', () => {
+            console.log("Veto Background is now active and looping.");
+        });
     </script>
 </body>
 </html>

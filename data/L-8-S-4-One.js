@@ -1,8 +1,7 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
     const storyTitle = "The Mystery of the Iron Chamber";
     
     const storyContent = `
@@ -25,40 +24,82 @@
         He stood in the sunlight, exhausted but <span class="target-word">victorious</span>. 
         He knew that the gold stayed underground, but the knowledge he saved was the greatest <span class="target-word">fortune</span> of all.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0d0d0d; color:#e0e0e0; overflow-y:auto; padding:60px 40px; font-family: 'Inter', 'Georgia', serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
+            @keyframes treasureGlow {
+                0% { box-shadow: 0 0 5px rgba(241, 196, 15, 0.2); }
+                50% { box-shadow: 0 0 15px rgba(241, 196, 15, 0.5); }
+                100% { box-shadow: 0 0 5px rgba(241, 196, 15, 0.2); }
+            }
+            .story-wrapper {
+                max-width: 950px;
+                margin: 0 auto;
+                background: linear-gradient(145deg, #151515, #0a0a0a);
+                padding: 50px;
+                border-radius: 25px;
+                border: 1px solid #2a2a2a;
+                box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            }
             .target-word {
                 color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
+                font-weight: 800;
+                background: rgba(241, 196, 15, 0.08);
+                padding: 0px 8px;
+                border-radius: 5px;
+                border-bottom: 2px solid #f1c40f;
+                transition: 0.3s;
+                cursor: pointer;
+                display: inline-block;
             }
-            .story-container {
-                max-width: 1000px;
-                margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+            .target-word:hover {
+                background: #f1c40f;
+                color: #000;
+                transform: translateY(-2px);
+                animation: treasureGlow 1s infinite;
             }
-            .title {
-                color: #e67e22; /* لون برونزي يناسب أجواء الآثار والحفر */
+            .story-header {
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
-                text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                margin-bottom: 50px;
+                border-bottom: 1px solid #333;
+                padding-bottom: 30px;
             }
+            .story-header h1 {
+                font-size: 3.8rem;
+                margin: 0;
+                color: #e67e22;
+                text-transform: uppercase;
+                letter-spacing: 3px;
+                font-weight: 900;
+                text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            }
+            .meta-tag {
+                color: #888;
+                font-size: 1rem;
+                letter-spacing: 5px;
+                display: block;
+                margin-bottom: 10px;
+            }
+            .story-text {
+                line-height: 2.2;
+                font-size: 1.85rem;
+                text-align: justify;
+                color: #d1d1d1;
+            }
+            #stage-content::-webkit-scrollbar { width: 8px; }
+            #stage-content::-webkit-scrollbar-track { background: #0d0d0d; }
+            #stage-content::-webkit-scrollbar-thumb { background: #e67e22; border-radius: 10px; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
-            <div id="textBody">
+        
+        <div class="story-wrapper">
+            <div class="story-header">
+                <span class="meta-tag">LEVEL 8 • ADVENTURE ONE SHOT</span>
+                <h1>${storyTitle}</h1>
+            </div>
+            <div class="story-text">
                 ${storyContent}
             </div>
         </div>

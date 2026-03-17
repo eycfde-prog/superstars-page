@@ -6,6 +6,94 @@
     <title>Mr. Ezz .Y. Ali - Learning System</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="vetoof.css">
+    <style>
+        /* تجميل البانر داخل المحتوى */
+        .content-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--primary-blue);
+            height: 110px;
+        }
+
+        .banner-right, .banner-left { display: flex; align-items: center; gap: 20px; }
+
+        .mini-logo, .mini-profile { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--veto-gold); }
+
+        .session-info #sessionLabel { color: var(--primary-blue); font-weight: bold; font-size: 1.1rem; display: block; }
+        .session-info h2 { color: var(--text-light); font-size: 2.2rem; font-weight: 900; }
+
+        .back-btn {
+            background: var(--veto-gold);
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 12px;
+            font-weight: 900;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .back-btn:hover { background: #fff; transform: translateX(5px); }
+
+        /* شبكة النشاطات المبتكرة - Perspective Grid */
+        .innovation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 35px;
+            padding: 60px;
+            perspective: 1000px; /* يعطي إيحاء بالعمق */
+        }
+
+        .activity-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-right: 5px solid var(--primary-blue); /* شريط جانبي مميز */
+            border-bottom: 5px solid var(--primary-blue);
+            height: 220px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .activity-card::before {
+            content: "VETO";
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            font-size: 8rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.03);
+            z-index: 0;
+        }
+
+        .activity-card:hover {
+            transform: rotateY(10deg) rotateX(5deg) scale(1.05);
+            background: rgba(0, 162, 255, 0.2);
+            border-color: var(--veto-gold);
+            box-shadow: 0 25px 50px rgba(0, 162, 255, 0.3);
+        }
+
+        .activity-card span {
+            position: relative;
+            z-index: 1;
+            font-size: 3.5rem; /* ضخم جداً للقراءة من بعيد */
+            font-weight: 900;
+            color: #fff;
+            text-align: center;
+            line-height: 1.2;
+            text-shadow: 2px 4px 10px rgba(0,0,0,0.3);
+        }
+    </style>
 </head>
 <body>
 
@@ -22,8 +110,23 @@
 
     <div class="levels-container" id="levelsGrid"></div>
 
-    <div id="sessionOverlay" class="overlay">
-        <div id="sessionContent"></div>
+    <div id="sessionOverlay" class="overlay" style="background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);">
+        <header class="content-banner">
+            <div class="banner-right">
+                <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/logo.png" class="mini-logo">
+                <div class="session-info">
+                    <span id="sessionLabel">SESSION CONTENT</span>
+                    <h2 id="sessionTitleDisplay">Level 1 - Session 1</h2>
+                </div>
+            </div>
+            
+            <div class="banner-left">
+                <button class="back-btn" onclick="closeAll()">◀ العودة للمستويات</button>
+                <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/600916c2888a13d5855b23a1cd18d59c270b542e/MrEzz.png" class="mini-profile">
+            </div>
+        </header>
+
+        <div id="sessionContent" class="innovation-grid"></div>
     </div>
 
     <div id="activityOverlay" class="overlay">
@@ -119,7 +222,7 @@
             const fileName = `L-${lv}-S-${ss}-${shortName}.js`;
             const filePath = `data/${fileName}`;
 
-                  const script = document.createElement('script');
+            const script = document.createElement('script');
             script.id = 'activity-script';
             script.src = filePath;
 
@@ -147,13 +250,9 @@
             }
             wrap.onclick = (e) => {
                 e.stopPropagation();
-                const targetLevelIndex = i; // المستوى الذي ضغطت عليه
-
-                // منطق الفتح التراكمي (Veto Cumulative Orbit)
+                const targetLevelIndex = i;
                 document.querySelectorAll('.level-wrapper').forEach((w, index) => {
                     const currentLevelNum = index + 1;
-
-                    // إذا كان رقم الليفل أقل من أو يساوي الليفل المختار، اجعله Active
                     if (currentLevelNum <= targetLevelIndex) {
                         w.classList.add('active');
                     } else {
@@ -165,14 +264,16 @@
         }
 
         function openSession(lv, ss) {
-            const activities = sessionData[`${lv}-${ss}`] || ["Coming Soon"];
-            let html = `<div class="activity-grid">`;
+            document.getElementById('sessionTitleDisplay').innerText = `Level ${lv} - Session ${ss}`;
+            const activities = sessionData[`${lv}-${ss}`] || ["قريباً"];
+            let html = "";
             activities.forEach(act => {
-                html += `<div class="activity-card" onclick="openFinalActivity(${lv}, ${ss}, '${act}')">${act}</div>`;
+                html += `<div class="activity-card" onclick="openFinalActivity(${lv}, ${ss}, '${act}')">
+                            <span>${act}</span>
+                         </div>`;
             });
-            html += `</div>`;
             document.getElementById('sessionContent').innerHTML = html;
-            document.getElementById('sessionOverlay').style.display = 'block';
+            document.getElementById('sessionOverlay').style.display = 'flex';
             updateBtn("Levels Portal", () => closeAll());
         }
 
@@ -187,7 +288,7 @@
             });
             html += `</div>`;
             document.getElementById('sessionContent').innerHTML = html;
-            document.getElementById('sessionOverlay').style.display = 'block';
+            document.getElementById('sessionOverlay').style.display = 'flex';
             updateBtn("Levels Portal", () => closeAll());
         }
 

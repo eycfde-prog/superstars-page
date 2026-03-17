@@ -1,67 +1,71 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    let timeLeft = 120; // دقيقتين بالثواني
+    let timeLeft = 120; // دقيقتين
     let timerInterval = null;
     let isRunning = false;
 
-    // --- التنسيق البصري (Style) ---
+    // --- التنسيق البصري الاحترافي (Veto Control Room) ---
     container.innerHTML = '';
-    container.style.cssText = `height:calc(100vh - 200px); display:flex; flex-direction:column; justify-content:center; align-items:center; background:#0f172a; color:#fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#050505; color:#fff; font-family:'Segoe UI', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            .dmt-title { font-size: 3rem; font-weight: 900; color: #38bdf8; margin-bottom: 20px; text-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
-            .dmt-subtitle { font-size: 1.2rem; color: #94a3b8; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 4px; }
+            .dmt-title { font-size: 5vw; font-weight: 900; color: #c5a059; margin-bottom: 1vh; text-shadow: 0 0 30px rgba(197, 160, 89, 0.3); text-transform: uppercase; }
+            .dmt-subtitle { font-size: 1.5vw; color: #555; margin-bottom: 5vh; text-transform: uppercase; letter-spacing: 6px; font-weight: bold; }
             
-            /* تصميم الساعة الأنالوج */
             .analog-clock {
-                width: 350px; height: 350px;
-                border: 10px solid #1e293b;
+                width: 45vh; height: 45vh;
+                border: 15px solid #111;
                 border-radius: 50%;
                 position: relative;
                 display: flex; justify-content: center; align-items: center;
-                background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
-                box-shadow: 0 0 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
+                background: radial-gradient(circle, #0a0a0a 0%, #000 100%);
+                box-shadow: 0 0 100px rgba(0,0,0,0.8), inset 0 0 30px rgba(197, 160, 89, 0.1);
+                border: 8px solid #c5a059;
             }
 
-            /* مؤشر الثواني الدوار */
             .hand {
                 position: absolute; bottom: 50%; left: 50%;
-                width: 4px; height: 140px;
-                background: #38bdf8;
+                width: 6px; height: 18vh;
+                background: #c5a059;
                 transform-origin: bottom;
                 transform: translateX(-50%) rotate(0deg);
                 transition: transform 1s linear;
-                border-radius: 4px;
-                box-shadow: 0 0 10px #38bdf8;
+                border-radius: 10px;
+                box-shadow: 0 0 15px #c5a059;
                 z-index: 2;
             }
 
-            /* المربع الديجيتال في المنتصف */
             .digital-box {
-                width: 160px; height: 100px;
-                background: #0f172a;
-                border: 2px solid #38bdf8;
-                border-radius: 15px;
+                width: 25vh; height: 15vh;
+                background: #000;
+                border: 3px solid #c5a059;
+                border-radius: 20px;
                 display: flex; justify-content: center; align-items: center;
-                font-size: 3.5rem; font-weight: 900; color: #fff;
-                box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+                font-size: 6vw; font-weight: 900; color: #fff;
+                box-shadow: 0 0 50px rgba(197, 160, 89, 0.1);
                 z-index: 3;
             }
 
-            .controls { margin-top: 50px; display: flex; gap: 20px; }
+            .controls { margin-top: 6vh; display: flex; gap: 30px; }
             .btn {
-                padding: 15px 40px; font-size: 1.5rem; font-weight: bold; border: none; border-radius: 12px;
-                cursor: pointer; transition: 0.3s; text-transform: uppercase;
+                padding: 20px 60px; font-size: 2vw; font-weight: bold; border: none; border-radius: 50px;
+                cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
             }
-            .btn-start { background: #22c55e; color: #fff; box-shadow: 0 4px 0 #16a34a; }
-            .btn-reset { background: #ef4444; color: #fff; box-shadow: 0 4px 0 #dc2626; }
-            .btn:active { transform: translateY(4px); box-shadow: none; }
+            .btn-start { background: #c5a059; color: #000; }
+            .btn-reset { background: transparent; color: #555; border: 2px solid #333; }
+            .btn:hover { transform: scale(1.1); filter: brightness(1.2); }
             
-            /* نقاط الساعة الخارجية */
-            .dot { position: absolute; width: 6px; height: 6px; background: #334155; border-radius: 50%; }
+            .dot { position: absolute; width: 8px; height: 8px; background: #c5a059; border-radius: 50%; opacity: 0.3; }
+            
+            .pulse-danger { animation: danger-pulse 1s infinite; }
+            @keyframes danger-pulse {
+                0% { box-shadow: 0 0 20px rgba(197, 160, 89, 0.1); }
+                50% { box-shadow: 0 0 60px rgba(239, 68, 68, 0.4); border-color: #ef4444; }
+                100% { box-shadow: 0 0 20px rgba(197, 160, 89, 0.1); }
+            }
         </style>
 
         <div class="dmt-title">Double Minutes Talk</div>
@@ -85,14 +89,15 @@
     const startBtn = document.getElementById('btnStart');
     const resetBtn = document.getElementById('btnReset');
     const bell = document.getElementById('bellSound');
+    const clock = document.getElementById('clock');
 
-    // توزيع النقاط حول الساعة
+    // توزيع النقاط الذهبية
     for (let i = 0; i < 12; i++) {
         const dot = document.createElement('div');
         dot.className = 'dot';
         const angle = i * 30;
-        dot.style.transform = `rotate(${angle}deg) translateY(-160px)`;
-        document.getElementById('clock').appendChild(dot);
+        dot.style.transform = `rotate(${angle}deg) translateY(-21vh)`;
+        clock.appendChild(dot);
     }
 
     function updateDisplay() {
@@ -100,17 +105,15 @@
         const secs = timeLeft % 60;
         digital.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         
-        // تحريك العقرب (360 درجة مقسمة على 60 ثانية)
         const rotation = (120 - timeLeft) * 6; 
         hand.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
 
-        // تغيير اللون عند اقتراب الوقت من النهاية
         if (timeLeft <= 10) {
             digital.style.color = '#ef4444';
-            hand.style.background = '#ef4444';
+            clock.classList.add('pulse-danger');
         } else {
             digital.style.color = '#fff';
-            hand.style.background = '#38bdf8';
+            clock.classList.remove('pulse-danger');
         }
     }
 
@@ -118,12 +121,12 @@
         if (isRunning) {
             clearInterval(timerInterval);
             startBtn.innerText = "Resume";
-            startBtn.style.background = "#22c55e";
+            startBtn.style.background = "#c5a059";
             isRunning = false;
         } else {
             isRunning = true;
             startBtn.innerText = "Pause";
-            startBtn.style.background = "#f59e0b";
+            startBtn.style.background = "#f59e0b"; // برتقالي أثناء العمل
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
                     timeLeft--;
@@ -132,7 +135,9 @@
                     clearInterval(timerInterval);
                     bell.play();
                     startBtn.innerText = "Time's Up!";
+                    startBtn.style.background = "#ef4444";
                     startBtn.disabled = true;
+                    if (window.triggerVetoDone) window.triggerVetoDone();
                 }
             }, 1000);
         }
@@ -144,11 +149,17 @@
         isRunning = false;
         startBtn.innerText = "Start Talking";
         startBtn.disabled = false;
-        startBtn.style.background = "#22c55e";
+        startBtn.style.background = "#c5a059";
         updateDisplay();
     }
 
     startBtn.onclick = startTimer;
     resetBtn.onclick = resetTimer;
+
+    // دعم مفتاح المسافة لبدء/إيقاف الوقت
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) startTimer();
+        if (e.keyCode === 82) resetTimer(); // حرف R للرستة
+    };
 
 })();

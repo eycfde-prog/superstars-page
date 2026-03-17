@@ -112,24 +112,24 @@
 
         if (s.type === 'title') {
             wrapper.innerHTML = `
-                <div style="font-size:1.5rem; color:#888; letter-spacing:10px; margin-bottom:20px; text-transform:uppercase;">${s.subtitle}</div>
-                <h1 style="font-size:8rem; font-weight:900; color:${s.color}; margin:0; line-height:0.9;">${s.content}</h1>
+                <h1 style="font-size:8.5rem; font-weight:900; color:${s.color}; margin:0; line-height:0.9; text-transform:uppercase;">${s.content}</h1>
+                <div style="font-size:3.5rem; color:#efefef; background:rgba(255,255,255,0.1); display:inline-block; padding:10px 40px; border-radius:15px; margin-top:30px; border: 1px solid ${s.color};">${s.subtitle}</div>
             `;
         } 
         else if (s.type === 'writing') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#161616; padding:60px; border-radius:30px; border:1px solid #333; position:relative; overflow:hidden;">
-                    <div style="position:absolute; top:0; left:0; width:10px; height:100%; background:#e74c3c;"></div>
-                    <div style="color:#e74c3c; font-weight:bold; font-size:1.5rem; margin-bottom:20px; letter-spacing:3px;">GRAMMAR STRUCTURE</div>
-                    <h2 style="font-size:5rem; margin-bottom:30px; color:#fff;">${s.title}</h2>
-                    <div style="font-size:3.2rem; line-height:1.4; color:#aaa;">${s.content}</div>
+                <div style="text-align:left; background:#111; padding:60px; border-radius:30px; border:2px solid #333; position:relative;">
+                    <div style="position:absolute; top:0; left:0; width:15px; height:100%; background:#e74c3c;"></div>
+                    <div style="color:#e74c3c; font-weight:bold; font-size:1.8rem; margin-bottom:20px; letter-spacing:3px;">STRUCTURE & USAGE</div>
+                    <h2 style="font-size:5.5rem; margin-bottom:30px; color:#fff;">${s.title}</h2>
+                    <div style="font-size:3.8rem; line-height:1.4; color:#efefef;">${s.content}</div>
                 </div>`;
         }
         else if (s.type === 'reveal-list') {
-            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; gap:20px; text-align:left;">
-                <div style="color:#3498db; font-weight:bold; font-size:1.2rem; margin-bottom:10px; letter-spacing:5px;">EXAMPLES:</div>
+            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; gap:25px; text-align:left;">
+                <div style="color:#3498db; font-weight:bold; font-size:1.5rem; margin-bottom:10px; letter-spacing:5px;">EXAMPLES:</div>
                 ${s.items.map((item, i) => `
-                    <div style="opacity:${i <= subStep ? 1 : 0}; transform:translateX(${i <= subStep ? 0 : -50}px); transition:0.4s; background:#161616; padding:25px; border-radius:15px; font-size:2.8rem; font-weight:800; color:#fff; border:1px solid ${i <= subStep ? '#3498db' : '#222'};">
+                    <div style="opacity:${i <= subStep ? 1 : 0}; transform:translateX(${i <= subStep ? 0 : -50}px); transition:0.4s; background:#161616; padding:30px; border-radius:20px; font-size:3rem; font-weight:800; color:#fff; border:2px solid ${i <= subStep ? '#3498db' : '#222'};">
                         ${item}
                     </div>
                 `).join('')}
@@ -137,14 +137,14 @@
         }
         else if (s.type === 'mcq') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#161616; padding:50px; border-radius:30px; border: 2px solid #333;">
-                    <div style="font-size:3.5rem; font-weight:900; color:#fff; margin-bottom:40px;">${s.question}</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px; opacity:${subStep >= 1 ? 1 : 0}; transition: 0.5s;">
+                <div style="text-align:left; background:#111; padding:55px; border-radius:40px; border: 3px solid #333;">
+                    <div style="font-size:4rem; font-weight:900; color:#fff; margin-bottom:45px;">${s.question}</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; opacity:${subStep >= 1 ? 1 : 0}; transition: 0.5s;">
                         ${s.options.map((opt, i) => {
                             let bgColor = "#222";
-                            let border = "2px solid #444";
-                            if (subStep >= 2 && i === s.answer) { bgColor = "#27ae60"; border = "2px solid #fff"; }
-                            return `<div style="background:${bgColor}; padding:30px; border-radius:15px; font-size:2.2rem; font-weight:bold; border: ${border}; transition: 0.3s; color:#fff;">${opt}</div>`;
+                            let border = "3px solid #444";
+                            if (subStep >= 2 && i === s.answer) { bgColor = "#27ae60"; border = "3px solid #fff"; }
+                            return `<div style="background:${bgColor}; padding:35px; border-radius:20px; font-size:2.5rem; font-weight:bold; border: ${border}; transition: 0.3s; color:#fff;">${opt}</div>`;
                         }).join('')}
                     </div>
                 </div>`;
@@ -153,17 +153,33 @@
         container.appendChild(wrapper);
     }
 
-    document.onkeydown = (e) => {
+    // منطق التنقل الموحد (كيبورد + تاتش)
+    function next() {
         const s = slides[currentSlide];
-        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { 
-            if (s.type === 'reveal-list' && subStep < s.items.length - 1) subStep++;
-            else if (s.type === 'mcq' && subStep < 2) subStep++;
-            else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
-        } else if (e.keyCode === 37) { 
-            if (subStep > 0) subStep--;
-            else if (currentSlide > 0) { currentSlide--; subStep = 0; }
-        }
+        if (s.type === 'reveal-list' && subStep < s.items.length - 1) subStep++;
+        else if (s.type === 'mcq' && subStep < 2) subStep++;
+        else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
         render();
+    }
+
+    function prev() {
+        if (subStep > 0) subStep--;
+        else if (currentSlide > 0) { currentSlide--; subStep = 0; }
+        render();
+    }
+
+    // دعم التاتش السريع (يمين وشمال)
+    container.onclick = (e) => {
+        // إذا كان الليزر شغال، لا تنفذ التنقل لترك مساحة للشرح
+        if (window.laserActive) return; 
+        const width = window.innerWidth;
+        if (e.clientX > width / 2) next();
+        else prev();
+    };
+
+    document.onkeydown = (e) => {
+        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) next();
+        else if (e.keyCode === 37) prev();
     };
 
     render();

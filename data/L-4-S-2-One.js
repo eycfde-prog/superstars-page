@@ -1,8 +1,8 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
+    // --- Story Settings ---
     const storyTitle = "The Chef and the Big Mistake";
     
     const storyContent = `
@@ -26,43 +26,111 @@
         "Mario!" the Mayor called. "This is the most <span class="target-word">creative</span> meal I have ever eaten! It is like a dessert and a dinner at the same time." 
         Mario felt very <span class="target-word">lucky</span>. He learned that even when you make a <span class="target-word">mistake</span>, sometimes the result can be wonderful.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0a0a0a; color:#f0f0f0; overflow-y:auto; padding:60px; font-family: 'Crimson Text', serif;`;
 
     container.innerHTML = `
         <style>
-            .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
-            }
-            .story-container {
-                max-width: 1000px;
+            @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&display=swap');
+            
+            #stage-content::-webkit-scrollbar { width: 8px; }
+            #stage-content::-webkit-scrollbar-thumb { background: #e74c3c; border-radius: 10px; }
+
+            .story-card {
+                max-width: 900px;
                 margin: 0 auto;
                 line-height: 1.8;
-                font-size: 1.8rem;
+                font-size: 1.9rem;
+                background: #151515;
+                padding: 60px;
+                border-radius: 4px;
+                border: 1px solid #222;
+                box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+                position: relative;
             }
-            .title {
-                color: #e74c3c;
+
+            .story-card::before {
+                content: '';
+                position: absolute;
+                top: 10px; left: 10px; right: 10px; bottom: 10px;
+                border: 1px solid #333;
+                pointer-events: none;
+            }
+
+            .title-section {
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
+                margin-bottom: 50px;
+            }
+
+            .title-label {
+                color: #e74c3c;
+                font-size: 1rem;
+                letter-spacing: 4px;
                 text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                font-weight: bold;
+            }
+
+            .title-text {
+                font-size: 3.5rem;
+                margin: 10px 0;
+                color: #fff;
+                font-family: 'Crimson Text', serif;
+                font-style: italic;
+            }
+
+            .target-word {
+                color: #f1c40f; 
+                font-weight: 700;
+                background: rgba(241, 196, 15, 0.05);
+                border-bottom: 1px dashed #f1c40f;
+                padding: 0 4px;
+                transition: all 0.3s;
+                cursor: help;
+            }
+
+            .target-word:hover {
+                background: #f1c40f;
+                color: #000;
+                border-bottom: 1px solid #f1c40f;
+            }
+
+            #textBody {
+                color: #ddd;
+                text-align: justify;
+            }
+
+            .moral-box {
+                margin-top: 60px;
+                border-top: 1px solid #333;
+                padding-top: 30px;
+                text-align: center;
+                font-style: italic;
+                color: #777;
             }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
+
+        <div class="story-card">
+            <div class="title-section">
+                <div class="title-label">One Shot Reading // L4-S2</div>
+                <h1 class="title-text">${storyTitle}</h1>
+            </div>
+            
             <div id="textBody">
                 ${storyContent}
             </div>
+
+            <div class="moral-box">
+                "Sometimes, mistakes are just surprises waiting to happen."
+            </div>
         </div>
+        <div style="height:100px;"></div>
     `;
 
+    // Trigger done on Space
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) { 
+             if(window.triggerVetoDone) window.triggerVetoDone();
+        }
+    };
 })();

@@ -1,108 +1,84 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#0f0f0f; font-family:'Poppins', sans-serif; direction:ltr; color:white;`;
+    container.style.cssText = `height:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#050505; font-family:'Inter', sans-serif; direction:ltr; color:white;`;
 
     let currentSlide = 0;
     let subStep = 0;
 
     const slides = [
         /* 1: Title */
-        { type: 'title', content: 'PRESENT PERFECT CONTINUOUS', color: '#e74c3c' },
+        { type: 'title', content: 'PRESENT PERFECT CONTINUOUS', sub: 'Action in Progress since the Past', color: '#2ecc71' },
         
         /* 2: Timeline Usage */
         { 
             type: 'timeline', 
-            title: 'Usage', 
-            content: 'An action started in the past and has been happening to the present moment.' 
+            title: 'The Flow of Time', 
+            content: 'An action started in the <span style="color:#e74c3c">Past</span> and is <span style="color:#2ecc71">Still Happening</span> now.' 
         },
 
         /* 3: Formulation */
         { 
             type: 'writing', 
-            title: 'Formulation', 
-            content: '<span style="color:#f1c40f;">Subject + (have/has) + been + V-ing</span><br><br><small>Example: I <span style="color:#e74c3c;">have been waiting</span> for a long time.</small>' 
+            title: 'The Formula', 
+            content: `
+                <div style="background:#111; padding:35px; border-radius:20px; border:1px solid #333; font-weight:700;">
+                    <span style="color:#fff">Sub + </span>
+                    <span style="color:#f1c40f">have / has</span>
+                    <span style="color:#fff"> + </span>
+                    <span style="color:#3498db">been</span>
+                    <span style="color:#fff"> + </span>
+                    <span style="color:#2ecc71">V-ing</span>
+                </div>
+            ` 
         },
 
-        /* 4: Examples (One by One) */
+        /* 4: Examples */
         { 
             type: 'reveal-list', 
+            title: 'Focus on Continuity',
             items: [
-                "I have been waiting for you for a long time at the station.",
-                "He has been working on this project since early morning.",
-                "She has been studying English for three hours straight.",
-                "It has been raining heavily all night long.",
-                "We have been looking for our lost keys everywhere.",
-                "You have been watching television for too long today.",
-                "They have been playing football in the garden since 4 PM."
+                "I have been waiting for two hours.",
+                "He has been working since 7 AM.",
+                "It has been raining all day long.",
+                "They have been playing for a long time."
             ] 
         },
 
-        /* 5: Positive Focus */
-        { 
-            type: 'writing', 
-            title: 'Positive Form', 
-            content: '• I have been waiting for you.<br>• She has been studying English.<br>• You have been watching television.' 
-        },
-
-        /* 6: Negative (Transformation) */
+        /* 5: Negative & Question */
         { 
             type: 'transform', 
-            title: 'Negative Form',
+            title: 'Negatives & Questions',
             pairs: [
-                { pos: "I have been waiting...", neg: "I <span style='color:#e74c3c;'>have not</span> been waiting..." },
-                { pos: "She has been studying...", neg: "She <span style='color:#e74c3c;'>has not</span> been studying..." },
-                { pos: "You have been watching...", neg: "You <span style='color:#e74c3c;'>have not</span> been watching..." }
+                { pos: "She has been cooking...", neg: "She <span style='color:#e74c3c;'>has not</span> been cooking..." },
+                { pos: "They have been running...", neg: "<span style='color:#f1c40f;'>Have they</span> been running...?" }
             ]
         },
 
-        /* 7: Question (Transformation) */
-        { 
-            type: 'transform', 
-            title: 'Question Form',
-            pairs: [
-                { pos: "I have been waiting...", neg: "<span style='color:#f1c40f;'>Have I</span> been waiting...?" },
-                { pos: "She has been studying...", neg: "<span style='color:#f1c40f;'>Has she</span> been studying...?" },
-                { pos: "You have been watching...", neg: "<span style='color:#f1c40f;'>Have you</span> been watching...?" }
-            ]
-        },
+        /* 6: Spelling Rule 1 */
+        { type: 'writing', title: 'Spelling: Rule 1', content: 'Remove <span style="color:#e74c3c;">e</span> → Add <span style="color:#2ecc71;">ing</span><br><br><span style="color:#f1c40f;">Hide ➔ Hiding</span><br><span style="color:#f1c40f;">Make ➔ Making</span>' },
 
-        /* 8: Hide -> Hiding */
-        { type: 'title', content: 'Hide <br> Hiding', color: '#ffffff' },
+        /* 7: Spelling Rule 2 */
+        { type: 'writing', title: 'Spelling: Rule 2', content: 'Change <span style="color:#e74c3c;">ie</span> to <span style="color:#f1c40f;">y</span> + <span style="color:#2ecc71;">ing</span><br><br><span style="color:#f1c40f;">Lie ➔ Lying</span><br><span style="color:#f1c40f;">Die ➔ Dying</span>' },
 
-        /* 9: Rule 1 */
-        { type: 'writing', title: 'Rule 1', content: 'Verbs end with <span style="color:#e74c3c;">e</span>: we remove <span style="color:#e74c3c;">e</span> before adding <span style="color:#f1c40f;">ing</span>' },
+        /* 8: Spelling Rule 3 */
+        { type: 'writing', title: 'Spelling: Rule 3 (CVC)', content: 'Double the last letter<br><br><span style="color:#f1c40f;">Swim ➔ Swimming</span><br><span style="color:#f1c40f;">Run ➔ Running</span>' },
 
-        /* 10: Lie -> Lying */
-        { type: 'title', content: 'Lie <br> Lying', color: '#ffffff' },
-
-        /* 11: Rule 2 */
-        { type: 'writing', title: 'Rule 2', content: 'Verbs end with <span style="color:#e74c3c;">ie</span>: we remove <span style="color:#e74c3c;">ie</span> and add <span style="color:#f1c40f;">ying</span>' },
-
-        /* 12: Swim -> Swimming */
-        { type: 'title', content: 'Swim <br> Swimming', color: '#ffffff' },
-
-        /* 13: Rule 3 (CVC) */
-        { 
-            type: 'writing', 
-            title: 'Rule 3 (CVC)', 
-            content: 'One syllable (C V C):<br>Double the last letter before adding <span style="color:#f1c40f;">ing</span>' 
-        },
-
-        /* 14: Keywords */
+        /* 9: Keywords */
         { 
             type: 'reveal-list', 
-            items: ["For", "Since", "All (day/morning/week)", "How long?", "Lately", "Recently"] 
+            title: 'Time Markers',
+            items: ["For", "Since", "All day / All week", "How long...?", "Lately / Recently"] 
         },
 
-        /* 15: Quiz */
+        /* 10: Quiz */
         { 
             type: 'mcq', 
-            question: "The government _________ much on education recently.",
-            options: ["A) Hasn’t been spending", "B) Have been spending", "C) Is spent", "D) Will spend"],
-            answer: 0 
+            question: "How long _________ for the bus?",
+            options: ["A) Have you been wait", "B) Has you been waiting", "C) Have you been waiting", "D) Are you waiting"],
+            answer: 2 
         }
     ];
 
@@ -110,66 +86,56 @@
         container.innerHTML = '';
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = `width:95%; text-align:center; animation: fadeIn 0.4s ease;`;
+        wrapper.style.cssText = `width:90%; text-align:center; animation: fadeIn 0.4s ease;`;
 
         if (s.type === 'title') {
-            wrapper.innerHTML = `<h1 style="font-size:7rem; font-weight:900; color:${s.color}; margin:0; line-height:1.2;">${s.content}</h1>`;
+            wrapper.innerHTML = `
+                <h1 style="font-size:6rem; font-weight:900; color:${s.color}; margin:0;">${s.content}</h1>
+                <p style="font-size:1.5rem; color:#555; letter-spacing:5px; margin-top:20px; font-weight:bold;">${s.sub}</p>
+            `;
         } 
         else if (s.type === 'timeline') {
             wrapper.innerHTML = `
-                <div style="text-align:center;">
-                    <h2 style="font-size:3rem; color:#e74c3c; margin-bottom:50px;">${s.title}</h2>
-                    <p style="font-size:2rem; margin-bottom:60px;">${s.content}</p>
-                    <div style="position:relative; width:80%; margin:40px auto; height:8px; background:white; display:flex; align-items:center; justify-content:space-between;">
-                        <div style="position:absolute; left:-20px; border:20px solid transparent; border-right:20px solid white;"></div>
-                        <div style="position:absolute; right:-20px; border:20px solid transparent; border-left:20px solid white;"></div>
-                        <div style="height:40px; width:4px; background:#e74c3c; position:absolute; left:50%;">
-                            <span style="position:absolute; top:50px; left:-30px; font-size:1.5rem; color:#e74c3c; font-weight:bold;">Present</span>
-                        </div>
-                        <span style="position:absolute; left:10%; top:25px; font-size:1.5rem; color:#888;">Past</span>
-                        <span style="position:absolute; right:10%; top:25px; font-size:1.5rem; color:#888;">Future</span>
-                        <div style="position:absolute; left:25%; width:25%; height:12px; background:#2ecc71; transition:all 0.8s ease-out; opacity:${subStep >= 1 ? 1 : 0}; border-radius:10px; box-shadow: 0 0 15px #2ecc71;">
-                             <span style="position:absolute; bottom:25px; left:0; font-size:1.3rem; color:#2ecc71; width:100%; text-align:center; font-weight:bold;">Continuous Action</span>
-                        </div>
-                    </div>
+                <h2 style="font-size:3.5rem; color:#2ecc71; margin-bottom:30px;">${s.title}</h2>
+                <p style="font-size:2rem; margin-bottom:60px;">${s.content}</p>
+                <div style="position:relative; width:85%; margin:60px auto; height:4px; background:#222;">
+                    <div style="position:absolute; left:20%; height:30px; width:2px; background:#666; top:-13px;"><span style="position:absolute; top:40px; left:-15px; color:#666;">Past</span></div>
+                    <div style="position:absolute; left:80%; height:30px; width:4px; background:#fff; top:-13px;"><span style="position:absolute; top:40px; left:-25px; color:#fff; font-weight:bold;">Now</span></div>
+                    <div style="position:absolute; left:20%; width:60%; height:12px; background:linear-gradient(90deg, #2ecc71, #f1c40f); top:-4px; border-radius:10px; opacity:${subStep >= 1 ? 1 : 0}; transition:1.2s; box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);"></div>
                 </div>`;
         }
         else if (s.type === 'writing') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#1e1e1e; padding:50px; border-left:15px solid #e74c3c; border-radius:15px; width:100%;">
-                    <h2 style="font-size:4rem; margin-bottom:15px; color:#e74c3c;">${s.title}</h2>
-                    <div style="font-size:3.5rem; line-height:1.4; color:#fff;">${s.content}</div>
-                </div>`;
+                <h2 style="font-size:4rem; color:#2ecc71; margin-bottom:40px;">${s.title}</h2>
+                <div style="font-size:3.2rem; line-height:1.5;">${s.content}</div>`;
         }
         else if (s.type === 'reveal-list') {
-            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; gap:10px; text-align:left;">
-                ${s.items.map((item, i) => `
-                    <div style="opacity:${i <= subStep ? 1 : 0}; transform:translateX(${i <= subStep ? 0 : -30}px); transition:0.4s; background:#1e1e1e; padding:15px; border-radius:10px; font-size:1.9rem; font-weight:bold; color:#fff; border-left:5px solid #e74c3c;">
-                        ${item}
-                    </div>
-                `).join('')}
-            </div>`;
+            wrapper.innerHTML = `
+                <h2 style="font-size:3.5rem; color:#2ecc71; margin-bottom:40px;">${s.title}</h2>
+                <div style="display:flex; flex-direction:column; gap:15px; text-align:left;">
+                    ${s.items.map((item, i) => `
+                        <div style="opacity:${i <= subStep ? 1 : 0}; transition:0.3s; background:#111; padding:20px; border-radius:15px; font-size:2rem; border-left:10px solid #2ecc71;">${item}</div>
+                    `).join('')}
+                </div>`;
         }
         else if (s.type === 'transform') {
             let pair = s.pairs[Math.floor(subStep/2)] || s.pairs[0];
             let isChanged = subStep % 2 !== 0;
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#1e1e1e; padding:50px; border-radius:15px; border:2px solid #444;">
-                    <h2 style="font-size:3rem; color:#e74c3c; margin-bottom:30px;">${s.title}</h2>
-                    <div style="font-size:3.5rem; transition:0.3s; color:${isChanged ? '#f1c40f' : '#fff'};">
-                        ${isChanged ? pair.neg : pair.pos}
-                    </div>
+                <h2 style="font-size:3.5rem; color:#2ecc71; margin-bottom:40px;">${s.title}</h2>
+                <div style="background:#111; padding:60px; border-radius:30px; font-size:3.2rem; border:1px solid #333; color:${isChanged ? '#f1c40f' : '#fff'}">
+                    ${isChanged ? pair.neg : pair.pos}
                 </div>`;
         }
         else if (s.type === 'mcq') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#1e1e1e; padding:40px; border-radius:20px; border: 2px solid #333;">
-                    <div style="font-size:2.5rem; font-weight:bold; color:#fff; margin-bottom:30px;">${s.question}</div>
-                    <div style="display:grid; grid-template-columns: 1fr; gap:15px; opacity:${subStep >= 1 ? 1 : 0}; transition: 0.5s;">
+                <div style="text-align:left; background:#111; padding:50px; border-radius:30px; border:1px solid #333;">
+                    <div style="font-size:2.8rem; font-weight:bold; margin-bottom:40px;">${s.question}</div>
+                    <div style="display:grid; grid-template-columns: 1fr; gap:20px; opacity:${subStep >= 1 ? 1 : 0}; transition:0.5s;">
                         ${s.options.map((opt, i) => {
-                            let bgColor = "#2c3e50";
-                            if (subStep >= 2 && i === s.answer) bgColor = "#27ae60";
-                            return `<div style="background:${bgColor}; padding:15px; border-radius:10px; font-size:2rem; font-weight:600;">${opt}</div>`;
+                            let border = (subStep >= 2 && i === s.answer) ? '3px solid #2ecc71' : '1px solid #333';
+                            let color = (subStep >= 2 && i === s.answer) ? '#2ecc71' : '#fff';
+                            return `<div style="padding:20px; border-radius:15px; font-size:2.2rem; border:${border}; color:${color}">${opt}</div>`;
                         }).join('')}
                     </div>
                 </div>`;
@@ -180,13 +146,13 @@
 
     document.onkeydown = (e) => {
         const s = slides[currentSlide];
-        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { // Next
+        if (e.keyCode === 39 || e.keyCode === 32 || e.keyCode === 13) { 
             if (s.type === 'timeline' && subStep < 1) subStep++;
             else if (s.type === 'reveal-list' && subStep < s.items.length - 1) subStep++;
             else if (s.type === 'transform' && subStep < (s.pairs.length * 2) - 1) subStep++;
             else if (s.type === 'mcq' && subStep < 2) subStep++;
             else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
-        } else if (e.keyCode === 37) { // Back
+        } else if (e.keyCode === 37) { 
             if (subStep > 0) subStep--;
             else if (currentSlide > 0) { currentSlide--; subStep = 0; }
         }

@@ -1,8 +1,7 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- قاعدة بيانات الأسئلة (Was - Were - Did) ---
     const questions = [
         "Did you sleep well last night?",
         "Was it sunny yesterday?",
@@ -38,80 +37,86 @@
 
     let currentIdx = 0;
     const totalQuestions = questions.length;
-    const folderNumber = 3; // المجلد الخاص بالماضي
+    const folderNumber = 3; 
 
-    // --- التنسيق البصري ---
     container.innerHTML = '';
-    container.style.cssText = `height:calc(100vh - 200px); display:flex; flex-direction:column; justify-content:center; align-items:center; background:#041421; color:#eee; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#020b12; color:#eee; font-family:'Inter', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            .sq-counter { position:absolute; top:30px; left:50px; font-size:1.5rem; color:#f1c40f; font-weight:bold; letter-spacing:1px; }
-            .sq-question { font-size:5.2rem; text-align:center; max-width:85%; line-height:1.15; font-weight:900; text-shadow: 0 10px 20px rgba(0,0,0,0.6); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-            .sq-controls { position:absolute; bottom:50px; display:flex; gap:30px; }
-            .sq-btn { background:#f1c40f; color:#041421; border:none; padding:15px 50px; font-size:1.2rem; cursor:pointer; border-radius:50px; font-weight:bold; transition:0.3s; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3); }
-            .sq-btn:hover { background:#d4ac0d; transform:translateY(-2px); }
-            .sq-btn:active { transform:translateY(1px); }
-            .sq-indicator { position:absolute; top:30px; right:50px; font-size:1.3rem; background:rgba(241,196,15,0.15); padding:10px 25px; border-radius:15px; border-left: 5px solid #f1c40f; }
-            .past-tag { color: #f1c40f; font-weight: bold; }
+            @keyframes pulseShadow {
+                0% { text-shadow: 0 0 20px rgba(241, 196, 15, 0.2); }
+                50% { text-shadow: 0 0 40px rgba(241, 196, 15, 0.5); }
+                100% { text-shadow: 0 0 20px rgba(241, 196, 15, 0.2); }
+            }
+            .sq-header { position:absolute; top:40px; width:90%; display:flex; justify-content:space-between; align-items:center; }
+            .sq-title { font-size:1.2rem; color:#f1c40f; font-weight:900; letter-spacing:4px; text-transform:uppercase; border-left:4px solid #f1c40f; padding-left:15px; }
+            .sq-tag { background:rgba(241,196,15,0.1); color:#f1c40f; padding:8px 20px; border-radius:30px; border:1px solid rgba(241,196,15,0.3); font-weight:bold; }
+            .sq-main { font-size:5.5rem; text-align:center; max-width:85%; line-height:1.2; font-weight:900; animation: pulseShadow 3s infinite ease-in-out; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+            .sq-footer { position:absolute; bottom:50px; display:flex; gap:20px; }
+            .sq-btn { background:#f1c40f; color:#020b12; border:none; padding:18px 45px; font-size:1.1rem; cursor:pointer; border-radius:12px; font-weight:900; transition:0.3s; text-transform:uppercase; letter-spacing:1px; }
+            .sq-btn:hover { background:#fff; transform:translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+            .sq-progress { position:absolute; bottom:0; left:0; height:6px; background:#f1c40f; transition:0.4s; }
         </style>
         
-        <div class="sq-counter">Squeezer #3</div>
-        <div class="sq-indicator">History: <span class="past-tag">Was - Were - Did</span></div>
-        <div id="sqQuestionDisplay" class="sq-question">${questions[currentIdx]}</div>
+        <div class="sq-header">
+            <div class="sq-title">Squeezer Level 8</div>
+            <div class="sq-tag">History: Was - Were - Did</div>
+        </div>
         
-        <div class="sq-controls">
-            <button class="sq-btn" id="sqPrev">Back</button>
+        <div id="sqDisplay" class="sq-main">${questions[currentIdx]}</div>
+        
+        <div class="sq-footer">
+            <button class="sq-btn" id="sqBack">Previous</button>
             <button class="sq-btn" id="sqNext">Next Question</button>
         </div>
-        <audio id="sqAudioPlayer"></audio>
+        
+        <div id="sqProgressBar" class="sq-progress" style="width:0%"></div>
+        <audio id="sqAudio"></audio>
     `;
 
-    const display = document.getElementById('sqQuestionDisplay');
-    const audioPlayer = document.getElementById('sqAudioPlayer');
-    const btnNext = document.getElementById('sqNext');
-    const btnPrev = document.getElementById('sqPrev');
+    const display = document.getElementById('sqDisplay');
+    const audio = document.getElementById('sqAudio');
+    const progress = document.getElementById('sqProgressBar');
+    const nextBtn = document.getElementById('sqNext');
+    const backBtn = document.getElementById('sqBack');
 
-    function updateSlide(index) {
-        display.style.transform = 'translateY(20px)';
+    function update(idx) {
         display.style.opacity = '0';
+        display.style.transform = 'scale(0.9)';
         
         setTimeout(() => {
-            display.innerText = questions[index];
-            display.style.transform = 'translateY(0)';
+            display.innerText = questions[idx];
             display.style.opacity = '1';
-        }, 200);
+            display.style.transform = 'scale(1)';
+            progress.style.width = `${((idx + 1) / totalQuestions) * 100}%`;
+        }, 300);
 
-        // المسار الصوتي لمجلد رقم 3
-        const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
-        audioPlayer.src = audioPath;
-        audioPlayer.play().catch(e => console.log("Audio waiting..."));
+        const path = `data/Squeezer/${folderNumber}/${idx + 1}.mp3`;
+        audio.src = path;
+        audio.play().catch(() => console.log("Audio Syncing..."));
     }
 
-    btnNext.onclick = () => {
+    nextBtn.onclick = () => {
         if (currentIdx < totalQuestions - 1) {
             currentIdx++;
-            updateSlide(currentIdx);
+            update(currentIdx);
         } else {
             display.innerHTML = "<span style='color:#f1c40f'>PAST MASTERED!</span>";
         }
     };
 
-    btnPrev.onclick = () => {
+    backBtn.onclick = () => {
         if (currentIdx > 0) {
             currentIdx--;
-            updateSlide(currentIdx);
-            display.style.color = "#eee";
+            update(currentIdx);
         }
     };
 
-    // التحكم بالأسهم لسهولة الإلقاء مستر عز
     document.onkeydown = (e) => {
-        if (e.key === "ArrowRight") btnNext.click();
-        if (e.key === "ArrowLeft") btnPrev.click();
-        if (e.key === " ") btnNext.click();
+        if (e.key === "ArrowRight" || e.key === " ") nextBtn.click();
+        if (e.key === "ArrowLeft") backBtn.click();
     };
 
-    updateSlide(0);
-
+    update(0);
 })();

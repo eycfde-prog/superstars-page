@@ -1,8 +1,8 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
+    // --- Story Settings ---
     const storyTitle = "The Secret Recipe of the Magic Factory";
     
     const storyContent = `
@@ -27,43 +27,84 @@
         Timmy left the factory with a giant box of sweets and a huge smile. 
         He learned that sometimes, a small <span class="target-word">accident</span> can lead to a very sweet <span class="target-word">discovery</span>.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#1a0f08; color:#f3e5ab; overflow-y:auto; padding:60px 40px; font-family: 'Georgia', serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
-            .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
-            }
-            .story-container {
-                max-width: 1000px;
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap');
+
+            .story-card {
+                max-width: 900px;
                 margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+                background: rgba(44, 30, 20, 0.8);
+                padding: 50px;
+                border: 4px solid #d4af37;
+                border-radius: 15px;
+                box-shadow: 0 0 50px rgba(0,0,0,0.8);
+                position: relative;
             }
-            .title {
-                color: #e74c3c;
+
+            .story-card::before {
+                content: "GOLDEN TICKET";
+                position: absolute;
+                top: -20px; left: 50%;
+                transform: translateX(-50%);
+                background: #d4af37;
+                color: #2c1e14;
+                padding: 5px 20px;
+                font-weight: bold;
+                font-family: sans-serif;
+                border-radius: 5px;
+                letter-spacing: 3px;
+            }
+
+            .story-title {
+                color: #d4af37;
                 text-align: center;
-                font-size: 3rem;
+                font-size: 3.5rem;
+                font-family: 'Playfair Display', serif;
                 margin-bottom: 40px;
                 text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                line-height: 1.2;
             }
+
+            #textBody {
+                line-height: 2;
+                font-size: 1.85rem;
+                color: #f3e5ab;
+                text-align: justify;
+            }
+
+            .target-word {
+                color: #fff; 
+                font-weight: bold;
+                background: linear-gradient(transparent 70%, #d4af37 30%);
+                padding: 0 4px;
+                transition: 0.3s;
+                cursor: pointer;
+            }
+
+            .target-word:hover {
+                background: #d4af37;
+                color: #1a0f08;
+                border-radius: 4px;
+            }
+
+            /* Custom Scrollbar for the chocolate factory */
+            #stage-content::-webkit-scrollbar { width: 12px; }
+            #stage-content::-webkit-scrollbar-track { background: #1a0f08; }
+            #stage-content::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; border: 3px solid #1a0f08; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
+        
+        <div class="story-card">
+            <h1 class="story-title">${storyTitle}</h1>
             <div id="textBody">
                 ${storyContent}
             </div>
         </div>
+        <div style="height:100px;"></div>
     `;
 
 })();

@@ -1,8 +1,8 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
+    // --- Story Settings ---
     const storyTitle = "A Wild Day at the Theme Park";
     
     const storyContent = `
@@ -26,43 +26,91 @@
         Before leaving, they went to the <span class="target-word">gift shop</span>. Mia chose a <span class="target-word">sparkly</span> hat, and Leo bought a small <span class="target-word">poster</span> of the park. 
         They were very tired but also very happy. On the way home in the car, both children fell <span class="target-word">asleep</span> immediately, dreaming about the flying tea cups and the giant wheel.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0a0a0c; color:#e0e0e0; overflow-y:auto; padding:60px 30px; font-family: 'Inter', sans-serif;`;
 
     container.innerHTML = `
         <style>
-            .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
-            }
-            .story-container {
-                max-width: 1000px;
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;600&display=swap');
+
+            .story-wrapper {
+                max-width: 950px;
                 margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+                background: #121215;
+                padding: 60px;
+                border-radius: 30px;
+                box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+                border: 1px solid #1f1f23;
             }
-            .title {
+
+            .one-shot-label {
                 color: #e74c3c;
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
+                font-size: 1.1rem;
+                font-weight: 800;
+                letter-spacing: 6px;
                 text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                margin-bottom: 15px;
+                display: block;
             }
+
+            .story-title {
+                color: #ffffff;
+                text-align: center;
+                font-size: 3.8rem;
+                font-family: 'Playfair Display', serif;
+                margin-bottom: 50px;
+                font-style: italic;
+                line-height: 1.2;
+            }
+
+            #textBody {
+                line-height: 1.9;
+                font-size: 1.9rem;
+                color: #b0b0b5;
+                text-align: justify;
+                word-spacing: 2px;
+            }
+
+            .target-word {
+                color: #f1c40f; 
+                font-weight: 700;
+                border-bottom: 2px solid rgba(241, 196, 15, 0.3);
+                cursor: help;
+                transition: all 0.3s ease;
+                padding: 0 2px;
+            }
+
+            .target-word:hover {
+                color: #ffffff;
+                background: #f1c40f;
+                border-bottom-color: transparent;
+                border-radius: 6px;
+                box-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
+            }
+
+            /* Scrollbar Styling */
+            #stage-content::-webkit-scrollbar { width: 10px; }
+            #stage-content::-webkit-scrollbar-track { background: #0a0a0c; }
+            #stage-content::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; }
+            #stage-content::-webkit-scrollbar-thumb:hover { background: #444; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
+        
+        <div class="story-wrapper">
+            <span class="one-shot-label">One Shot Session</span>
+            <h1 class="story-title">${storyTitle}</h1>
             <div id="textBody">
                 ${storyContent}
             </div>
         </div>
+        <div style="height:100px;"></div>
     `;
 
+    // Space to finish or next step
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) { 
+             if(window.triggerVetoDone) window.triggerVetoDone();
+        }
+    };
 })();

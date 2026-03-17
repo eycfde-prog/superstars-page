@@ -16,10 +16,10 @@
         * { 
             margin: 0; padding: 0; box-sizing: border-box; 
             touch-action: manipulation;
-            -webkit-user-select: none; /* Chrome/Safari */
-            -moz-user-select: none; /* Firefox */
-            -ms-user-select: none; /* IE */
-            user-select: none; /* Standard */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         body {
@@ -27,7 +27,7 @@
             color: white;
             font-family: 'Segoe UI', sans-serif;
             min-height: 100vh;
-            overflow: hidden; /* منع السكرول الخارجي أثناء النشاط */
+            overflow: hidden;
         }
 
         /* Banner Style */
@@ -45,13 +45,13 @@
         .mr-ezz-img { height: 100px; border-radius: 8px; }
         .session-info h1 { font-size: 2.5rem; color: var(--primary-gold); text-transform: uppercase; letter-spacing: 3px; }
 
-        /* Content Grid */
+        /* Content Grid - Optimized for Large Screens */
         .content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
             padding: 50px;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             overflow-y: auto;
             height: calc(100vh - var(--banner-height));
@@ -63,17 +63,22 @@
             padding: 40px;
             border-radius: 15px;
             text-align: center;
-            transition: 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
-        .content-card:hover { border-color: var(--primary-gold); transform: translateY(-10px); }
-
-        /* منع تحديد النصوص في مسرح العرض */
-        #stage-content {
-            user-select: none;
-            -webkit-user-select: none;
+        .content-card:hover { 
+            border-color: var(--primary-gold); 
+            transform: translateY(-10px);
+            background: rgba(197, 160, 89, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+
+        #stage-content { user-select: none; }
 
         /* --- Giant Quick Board --- */
         #note-pad {
@@ -81,23 +86,12 @@
             display: none; flex-direction: column; padding: 30px;
         }
 
-        /* التعديل الجديد لـ Quick Board */
         #note-text { 
-            width: 100%; 
-            height: 80%; 
-            background: rgba(255, 255, 255, 0.02); 
-            border: 3px solid var(--primary-gold);
-            color: white; 
-            font-size: 4rem; /* خط كبير جداً للشرح */
-            padding: 30px; 
-            border-radius: 20px; 
-            resize: none; 
-            outline: none;
-            line-height: 1.4;
-            overflow-y: auto; /* سكرول عند الكتابة الكثيرة */
-            font-weight: bold;
-            -webkit-user-select: text; 
-            user-select: text; /* السماح بالكتابة هنا فقط */
+            width: 100%; height: 80%; background: rgba(255, 255, 255, 0.02); 
+            border: 3px solid var(--primary-gold); color: white; 
+            font-size: 4rem; padding: 30px; border-radius: 20px; 
+            resize: none; outline: none; line-height: 1.4; font-weight: bold;
+            -webkit-user-select: text; user-select: text;
         }
 
         /* --- Laser & Pointer --- */
@@ -113,10 +107,10 @@
         .tool-btn { 
             width: 65px; height: 65px; border-radius: 50%; background: var(--primary-gold); border: none; 
             cursor: pointer; font-size: 1.8rem; display: none; align-items: center; justify-content: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5); transition: 0.3s;
+            transition: 0.3s;
         }
         .toolbox-wrapper.open .tool-btn { display: flex; }
-        .tool-btn.active { background: #ff4757; transform: scale(1.1); box-shadow: 0 0 20px #ff4757; }
+        .tool-btn.active { background: #ff4757; transform: scale(1.1); }
 
         #activity-stage { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background:#000; z-index: 1000; display: none; }
         
@@ -133,7 +127,7 @@
     <main class="content-grid" id="content-container"></main>
 
     <div id="activity-stage">
-        <button onclick="closeStage()" style="position:absolute; top:20px; left:20px; z-index:2001; background:var(--primary-gold); border:none; padding:12px 25px; cursor:pointer; font-weight:900; border-radius:8px;">EXIT SESSION</button>
+        <button onclick="closeStage()" style="position:absolute; top:20px; left:20px; z-index:2001; background:var(--primary-gold); border:none; padding:12px 25px; cursor:pointer; font-weight:900; border-radius:8px; color:#000;">EXIT SESSION</button>
         <div id="stage-content" style="width:100%; height:100%;"></div>
     </div>
 
@@ -157,6 +151,7 @@
 
     <script src="data/levels.js"></script>
     <script>
+        // --- Veto Architect Engine: Core Logic ---
         let laserActive = false;
         let isDrawing = false;
         const laser = document.getElementById('laser-pointer');
@@ -170,22 +165,11 @@
             laserActive = !laserActive;
             const laserBtn = document.getElementById('laserBtn');
             const stage = document.getElementById('stage-content');
-            
             laserBtn.classList.toggle('active');
             laser.style.display = laserActive ? 'block' : 'none';
-            
-            if (laserActive) {
-                document.body.style.cursor = 'none';
-                stage.style.pointerEvents = 'none';
-            } else {
-                document.body.style.cursor = 'default';
-                stage.style.pointerEvents = 'auto';
-            }
+            document.body.style.cursor = laserActive ? 'none' : 'default';
+            stage.style.pointerEvents = laserActive ? 'none' : 'auto';
         }
-
-        window.addEventListener('contextmenu', (e) => {
-            if (laserActive) e.preventDefault();
-        });
 
         window.addEventListener('mousemove', (e) => {
             if (!laserActive) return;
@@ -196,7 +180,6 @@
 
         window.addEventListener('mousedown', (e) => {
             if (!laserActive) return;
-            e.preventDefault(); 
             isDrawing = true;
             ctx.beginPath();
             ctx.moveTo(e.clientX, e.clientY);
@@ -226,13 +209,6 @@
             if(laserActive) toggleLaser(); 
         }
 
-        document.addEventListener('touchstart', (e) => {
-            if (document.getElementById('activity-stage').style.display === 'block' && !laserActive) {
-                const enterEvent = new KeyboardEvent('keydown', { key: 'ArrowRight', keyCode: 39, bubbles: true });
-                document.dispatchEvent(enterEvent);
-            }
-        }, { passive: true });
-
         // --- Veto Architect Engine: Data Linking ---
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('id'); 
@@ -240,12 +216,9 @@
         if (sessionId && typeof sessionData !== 'undefined') {
             const data = sessionData[sessionId] || [];
             const container = document.getElementById('content-container');
-            
-            // تحديث العنوان بناءً على المستوى والسيشن
             const [lvl, sess] = sessionId.split('-');
             document.getElementById('display-title').innerText = `LEVEL ${lvl} | SESSION ${sess}`;
 
-            // خريطة الأيقونات والرموز البرمجية لكل أنواع المحتوى
             const contentMap = {
                 "Grammar": { icon: "⚙️", code: "Gra" },
                 "Vocab": { icon: "🔖", code: "Voc" },
@@ -263,8 +236,6 @@
             data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
-                
-                // البحث عن النوع المناسب من الخريطة
                 let matchedKey = Object.keys(contentMap).find(key => item.includes(key)) || "Default";
                 let config = contentMap[matchedKey] || { icon: "📚", code: "Gen" };
 
@@ -279,25 +250,19 @@
         }
 
         function openActivity(activityName, prefix, lvl, sess) {
-            // بناء اسم الملف بشكل ديناميكي واحترافي
-            // مثال: data/L-1-S-1-Gra.js
             const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
-            
-            console.log(`%c Veto System: Loading ${filePath}`, 'color: #c5a059; font-weight: bold;');
-
             const stage = document.getElementById('activity-stage');
             const content = document.getElementById('stage-content');
             
             stage.style.display = 'block';
-            content.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; font-size:2rem; color:var(--primary-gold);">Loading Session Content...</div>`; 
+            content.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; font-size:2rem; color:var(--primary-gold);">Loading Content...</div>`; 
 
-            // تحميل ملف الـ JS الخاص بالمحتوى
             const script = document.createElement('script');
             script.src = filePath;
             script.onerror = () => {
                 content.innerHTML = `<div style="text-align:center; padding-top:20vh;">
-                    <h1 style="color:#ff4757; font-size:4rem;">File Not Found!</h1>
-                    <p style="font-size:1.5rem;">Path: ${filePath}</p>
+                    <h1 style="color:#ff4757; font-size:4rem;">File Missing!</h1>
+                    <p style="font-size:1.5rem; color:#aaa;">Target: ${filePath}</p>
                 </div>`;
             };
             document.head.appendChild(script);

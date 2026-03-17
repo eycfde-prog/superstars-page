@@ -1,5 +1,5 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
     // --- قاعدة بيانات الأسئلة (Can - Could) ---
@@ -20,38 +20,95 @@
     let countdownInterval = null;
     const folderNumber = 6;
 
-    // --- التنسيق البصري ---
     container.innerHTML = '';
-    container.style.cssText = `height:calc(100vh - 200px); display:flex; flex-direction:column; justify-content:center; align-items:center; background:#002b1b; color:#fff; font-family: 'Trebuchet MS', sans-serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#050505; color:#fff; font-family: 'Segoe UI', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            .sq-counter { position:absolute; top:30px; left:50px; font-size:1.5rem; color:#2ecc71; font-weight:bold; text-shadow: 0 0 10px rgba(46, 204, 113, 0.5); }
-            .sq-indicator { position:absolute; top:30px; right:50px; font-size:1.3rem; border: 2px solid #2ecc71; padding:8px 20px; border-radius:50px; color:#2ecc71; }
-            .sq-question { font-size:5.2rem; text-align:center; max-width:85%; line-height:1.2; font-weight:900; color:#ffffff; text-shadow: 4px 4px 0px #27ae60; display:none; }
-            .test-timer { font-size:4.5rem; color:#2ecc71; font-weight:bold; margin-top:40px; width:120px; height:120px; border: 6px solid #2ecc71; border-radius:50%; display:none; align-items:center; justify-content:center; box-shadow: 0 0 15px rgba(46, 204, 113, 0.4); }
-            .go-overlay { position:absolute; inset:0; background:rgba(0, 43, 27, 0.98); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; }
-            .go-btn { background:#2ecc71; color:#002b1b; border:none; padding:30px 90px; font-size:3.5rem; cursor:pointer; border-radius:50px; font-weight:900; box-shadow: 0 10px 0 #27ae60; transition:0.1s; }
-            .go-btn:active { transform:translateY(5px); box-shadow: 0 5px 0 #27ae60; }
+            .sq-header { position:absolute; top:40px; width:90%; display:flex; justify-content:space-between; z-index:10; }
+            .sq-title { font-size:1.2vw; color:#2ecc71; font-weight:900; letter-spacing:5px; text-transform:uppercase; }
+            
+            .sq-question { 
+                font-size:7vw; 
+                text-align:center; 
+                max-width:85%; 
+                line-height:1.1; 
+                font-weight:900; 
+                color:#ffffff; 
+                display:none;
+                animation: vetoPop 0.3s ease-out;
+            }
+
+            .test-timer-wrapper {
+                margin-top: 50px;
+                position: relative;
+                display: none;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .test-timer { 
+                font-size:5rem; 
+                color:#2ecc71; 
+                font-weight:900; 
+                width:150px; height:150px; 
+                border: 8px solid #111; 
+                border-top-color: #2ecc71;
+                border-radius:50%; 
+                display:flex; 
+                align-items:center; 
+                justify-content:center; 
+                box-shadow: 0 0 30px rgba(46, 204, 113, 0.2);
+                animation: timerRotate 1s linear infinite;
+            }
+
+            .timer-num { position: absolute; font-size: 4rem; font-weight: 900; color: #fff; }
+
+            .go-overlay { 
+                position:absolute; inset:0; 
+                background: radial-gradient(circle, #0a1f16 0%, #050505 100%); 
+                display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; 
+            }
+            .go-btn { 
+                background:#2ecc71; color:#000; border:none; padding:30px 100px; 
+                font-size:3.5vw; cursor:pointer; border-radius:100px; font-weight:900; 
+                box-shadow: 0 20px 40px rgba(46,204,113,0.3); transition:0.3s;
+                letter-spacing: 5px;
+            }
+            .go-btn:hover { transform: scale(1.1); filter: brightness(1.1); }
+
+            @keyframes timerRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes vetoPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         </style>
         
         <div class="go-overlay" id="goOverlay">
-            <h1 style="margin-bottom:30px; font-size:3.5rem; color:#fff; text-align:center;">CAN / COULD<br><span style="color:#2ecc71">ABILITY TEST</span></h1>
+            <p style="color:#2ecc71; font-weight:900; letter-spacing:10px; margin-bottom:10px;">FINAL LEVEL TEST</p>
+            <h1 style="margin-bottom:50px; font-size:5vw; color:#fff; text-align:center; line-height:1;">CAN / COULD<br><span style="color:#fff; opacity:0.5">SPEED CHALLENGE</span></h1>
             <button class="go-btn" id="startTestBtn">START</button>
         </div>
 
-        <div class="sq-counter">Squeezer #6 [FINAL TEST]</div>
-        <div class="sq-indicator">Skill: <span style="font-weight:bold">Can / Could</span></div>
+        <div class="sq-header">
+            <div class="sq-title">Squeezer Final Test</div>
+            <div class="sq-title" id="sqProgress">Question 1 / 30</div>
+        </div>
+
         <div id="sqQuestionDisplay" class="sq-question"></div>
-        <div id="sqTimerDisplay" class="test-timer">2</div>
+
+        <div class="test-timer-wrapper" id="timerWrapper">
+            <div class="test-timer"></div>
+            <div class="timer-num" id="sqTimerDisplay">2</div>
+        </div>
+
         <audio id="sqAudioPlayer"></audio>
     `;
 
     const display = document.getElementById('sqQuestionDisplay');
     const timerDisplay = document.getElementById('sqTimerDisplay');
+    const timerWrapper = document.getElementById('timerWrapper');
     const audioPlayer = document.getElementById('sqAudioPlayer');
     const goOverlay = document.getElementById('goOverlay');
     const startBtn = document.getElementById('startTestBtn');
+    const progressText = document.getElementById('sqProgress');
 
     function startTimer() {
         let timeLeft = 2;
@@ -76,34 +133,36 @@
             updateSlide(currentIdx);
         } else {
             clearInterval(countdownInterval);
-            display.innerHTML = "<span style='color:#2ecc71'>ALL SQUEEZERS DONE!</span>";
-            timerDisplay.style.display = "none";
+            display.innerHTML = "<span style='color:#2ecc71; font-size:6vw;'>CHALLENGE COMPLETE!</span>";
+            timerWrapper.style.display = "none";
+            if (window.triggerVetoDone) window.triggerVetoDone();
         }
     }
 
     function updateSlide(index) {
-        display.style.opacity = '0';
-        display.style.transform = 'translateX(-30px)';
+        progressText.innerText = `Question ${index + 1} / ${questions.length}`;
         
-        setTimeout(() => {
-            display.innerText = questions[index];
-            display.style.opacity = '1';
-            display.style.transform = 'translateX(0)';
-            
-            // تشغيل الصوت
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
-            audioPlayer.src = audioPath;
-            audioPlayer.play().catch(e => {});
-            
-            startTimer();
-        }, 150);
+        display.style.display = 'none';
+        void display.offsetWidth; // Trigger reflow
+        display.style.display = 'block';
+        
+        display.innerText = questions[index];
+
+        const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+        audioPlayer.src = audioPath;
+        audioPlayer.play().catch(e => {});
+        
+        startTimer();
     }
 
     startBtn.onclick = () => {
-        goOverlay.style.display = 'none';
-        display.style.display = 'block';
-        timerDisplay.style.display = 'flex';
-        updateSlide(0);
+        goOverlay.style.animation = "vetoPop 0.3s reverse forwards";
+        setTimeout(() => {
+            goOverlay.style.display = 'none';
+            display.style.display = 'block';
+            timerWrapper.style.display = 'flex';
+            updateSlide(0);
+        }, 300);
     };
 
 })();

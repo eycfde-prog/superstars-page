@@ -40,7 +40,23 @@
                 height: 100vw;
                 width: 100vh;
             }
+            #activity-stage { 
+                transform: rotate(90deg); 
+                transform-origin: bottom left; 
+                width: 100vh; 
+                height: 100vw; 
+                position: absolute; 
+                top: -100vw; 
+                left: 0; 
+            }
         }
+
+        /* مناطق اللمس غير المرئية للتنقل */
+        .nav-touch-zone {
+            position: fixed; top: 0; height: 100%; width: 15%; z-index: 8001; /* فوق المحتوى */
+        }
+        #prev-zone { left: 0; }
+        #next-zone { right: 0; }
 
         /* Banner */
         .top-banner {
@@ -51,17 +67,6 @@
             padding: 0 40px;
             background: rgba(0, 0, 0, 0.95);
             border-bottom: 4px solid var(--primary-gold);
-        }
-
-        .back-btn {
-            background: var(--primary-gold);
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1.2rem;
         }
 
         .logo-img { height: 70px; }
@@ -128,9 +133,10 @@
 <body oncontextmenu="return false;"> 
 
     <header class="top-banner">
-        <button class="back-btn" onclick="window.location.href='vetoof.html'">⬅ BACK</button>
+        <button onclick="window.location.href='vetoof.html'" style="background:none; border:2px solid var(--primary-gold); color:var(--primary-gold); padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold; font-size:1.2rem;">← BACK</button>
+        
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
-        <div class="session-info"><h1 id="display-title">VETO SYSTEM</h1></div>
+        <div class="session-info"><h1 id="display-title">SESSION CONTENT</h1></div>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="mr-ezz-img">
     </header>
 
@@ -213,52 +219,76 @@
             laser.style.display = 'none';
         }
 
-        // --- نظام التحكم بالتاتش (Laser & Navigation) ---
-        let touchStartX = 0;
+        // 1. نظام الليزر المطور (Touch & Mouse)
+        function handlePointerMove(e) {
+            if (!laserActive) return;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            laser.style.left = clientX - 12 + 'px';
+            laser.style.top = clientY - 12 + 'px';
 
-        window.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            if (laserActive) {
-                isDrawing = true;
-                const touch = e.touches[0];
-                laser.style.display = 'block';
-                laser.style.left = touch.clientX - 15 + 'px';
-                laser.style.top = touch.clientY - 15 + 'px';
-                ctx.beginPath();
-                ctx.moveTo(touch.clientX, touch.clientY);
-            }
-        });
-
-        window.addEventListener('touchmove', (e) => {
-            if (laserActive && isDrawing) {
-                const touch = e.touches[0];
-                laser.style.left = touch.clientX - 15 + 'px';
-                laser.style.top = touch.clientY - 15 + 'px';
-                ctx.lineTo(touch.clientX, touch.clientY);
-                ctx.strokeStyle = 'red';
-                ctx.lineWidth = 5;
+            if (isDrawing) {
+                ctx.lineTo(clientX, clientY);
                 ctx.stroke();
             }
-        });
+        }
 
+        function startDrawing(e) {
+            if (!laserActive) return;
+            isDrawing = true;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            ctx.beginPath();
+            ctx.moveTo(clientX, clientY);
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ff0000';
+            laser.style.display = 'block';
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            laser.style.display = 'none';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // إضافة المستمعات لدعم التاتش والماوس
+        window.addEventListener('mousemove', handlePointerMove);
+        window.addEventListener('touchstart', (e) => { 
+            if(laserActive) { e.preventDefault(); startDrawing(e); } 
+        }, {passive: false});
+        window.addEventListener('touchmove', (e) => { 
+            if(laserActive) { e.preventDefault(); handlePointerMove(e); } 
+        }, {passive: false});
+        window.addEventListener('mousedown', startDrawing);
+        window.addEventListener('mouseup', stopDrawing);
         window.addEventListener('touchend', (e) => {
-            const touchEndX = e.changedTouches[0].clientX;
-            
-            // الليزر يختفي فوراً عند ترك الشاشة
-            if (laserActive) {
-                isDrawing = false;
-                laser.style.display = 'none';
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            } else if (document.getElementById('activity-stage').style.display === 'block') {
-                // نظام الملاحة (يمين/شمال) في وضع المحتوى
-                const diff = touchStartX - touchEndX;
-                if (Math.abs(diff) > 50) {
-                    const key = diff > 0 ? 'ArrowRight' : 'ArrowLeft';
-                    document.dispatchEvent(new KeyboardEvent('keydown', { key: key }));
-                }
+            stopDrawing();
+            if (!laserActive && document.getElementById('activity-stage').style.display === 'block') {
+                const touchEndX = e.changedTouches[0].clientX;
+                // Navigation Logic
             }
         });
 
+        // 2. نظام التنقل (يمين/شمال) وداخل المحتوى
+        function initNavigation() {
+            const stage = document.getElementById('activity-stage');
+            
+            stage.addEventListener('click', (e) => {
+                const width = window.innerWidth;
+                if (e.clientX > width * 0.8) {
+                    if(typeof nextSlide === "function") nextSlide(); 
+                } else if (e.clientX < width * 0.2) {
+                    if(typeof prevSlide === "function") prevSlide();
+                }
+            });
+        }
+
+        initNavigation();
         initSession();
     </script>
 </body>

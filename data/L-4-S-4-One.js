@@ -1,8 +1,8 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
+    // --- Story Settings ---
     const storyTitle = "The Dog Who Thought He Was a Cat";
     
     const storyContent = `
@@ -28,43 +28,99 @@
         Max felt very happy. He finally understood that he was not a cat, and that being a dog was actually a lot of <span class="target-word">fun</span>. 
         He went back to the garden and finally chewed his bone.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0d0d0d; color:#e0e0e0; overflow-y:auto; padding:60px 20px; font-family: 'Crimson Text', serif;`;
 
     container.innerHTML = `
         <style>
-            .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
-            }
-            .story-container {
-                max-width: 1000px;
+            @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;700&display=swap');
+            
+            #stage-content::-webkit-scrollbar { width: 8px; }
+            #stage-content::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+
+            .story-box {
+                max-width: 900px;
                 margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+                background: #151515;
+                padding: 50px;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+                border: 1px solid #222;
             }
-            .title {
+
+            .title-tag {
                 color: #e74c3c;
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
+                font-size: 1rem;
+                font-weight: bold;
+                letter-spacing: 5px;
                 text-transform: uppercase;
-                border-bottom: 2px solid #333;
+                margin-bottom: 10px;
+            }
+
+            .main-title {
+                color: #fff;
+                text-align: center;
+                font-size: 3.5rem;
+                margin-top: 0;
+                margin-bottom: 40px;
+                font-family: 'Crimson Text', serif;
+                font-style: italic;
+                border-bottom: 1px solid #333;
                 padding-bottom: 20px;
             }
+
+            #textBody {
+                line-height: 1.8;
+                font-size: 2rem;
+                color: #ccc;
+                text-align: justify;
+            }
+
+            .target-word {
+                color: #f1c40f; 
+                font-weight: 700;
+                cursor: pointer;
+                border-bottom: 1px dashed #f1c40f;
+                padding: 0 3px;
+                transition: 0.2s;
+            }
+
+            .target-word:hover {
+                background: #f1c40f;
+                color: #000;
+                border-radius: 4px;
+            }
+
+            .moral {
+                margin-top: 50px;
+                padding-top: 30px;
+                border-top: 1px solid #333;
+                text-align: center;
+                color: #666;
+                font-style: italic;
+                font-size: 1.5rem;
+            }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
+        
+        <div class="story-box">
+            <div class="title-tag">One Shot Reading</div>
+            <h1 class="main-title">${storyTitle}</h1>
             <div id="textBody">
                 ${storyContent}
             </div>
+            <div class="moral">
+                "Be yourself; everyone else is already taken."
+            </div>
         </div>
+        <div style="height:50px;"></div>
     `;
 
+    // Interaction for finishing
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) { // Space
+             if(window.triggerVetoDone) window.triggerVetoDone();
+        }
+    };
 })();

@@ -1,8 +1,7 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
     const storyTitle = "The Professor and the Purple Soap";
     
     const storyContent = `
@@ -28,43 +27,63 @@
         It took him five hours to clean the basement. He was very <span class="target-word">tired</span> and his skin was a little bit purple. 
         He learned a big <span class="target-word">lesson</span>: sometimes, it is better to clean the house with a simple <span class="target-word">broom</span> and some water.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0f0c29; color:#eee; overflow-y:auto; padding:60px 20px; font-family: 'Georgia', serif; position:relative;`;
 
     container.innerHTML = `
         <style>
+            @keyframes float {
+                0% { transform: translateY(0) translateX(0); opacity: 0.8; }
+                50% { transform: translateY(-100px) translateX(20px); opacity: 0.4; }
+                100% { transform: translateY(-200px) translateX(-20px); opacity: 0; }
+            }
+            .bubble {
+                position: absolute; background: rgba(142, 68, 173, 0.3);
+                border-radius: 50%; pointer-events: none; animation: float 4s infinite linear;
+            }
             .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
+                color: #e0b0ff; font-weight: bold;
+                border-bottom: 2px dashed #8e44ad;
+                background: rgba(142, 68, 173, 0.1);
+                padding: 0 4px; border-radius: 4px;
+                transition: 0.3s; cursor: pointer;
             }
-            .story-container {
-                max-width: 1000px;
-                margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+            .target-word:hover { background: #8e44ad; color: #fff; }
+            .story-card {
+                max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.03);
+                padding: 50px; border-radius: 30px; border: 1px solid rgba(142, 68, 173, 0.2);
+                position: relative; z-index: 2; backdrop-filter: blur(5px);
             }
-            .title {
-                color: #8e44ad; /* لون بنفسجي صابوني */
-                text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
-                text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+            .title-header h1 {
+                font-size: 3.2rem; color: #8e44ad; text-align: center;
+                text-transform: uppercase; margin-bottom: 40px; font-weight: 900;
+                text-shadow: 0 0 20px rgba(142, 68, 173, 0.5);
             }
+            .story-body { line-height: 2; font-size: 1.85rem; text-align: left; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
-            <div id="textBody">
+        
+        <div id="bubbles-container"></div>
+        <div class="story-card">
+            <div class="title-header">
+                <h1>ONE SHOT: ${storyTitle}</h1>
+            </div>
+            <div class="story-body">
                 ${storyContent}
             </div>
         </div>
     `;
 
+    // توليد فقاعات عشوائية
+    const bubbleBox = document.getElementById('bubbles-container');
+    for (let i = 0; i < 15; i++) {
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        const size = Math.random() * 60 + 20 + 'px';
+        b.style.width = size; b.style.height = size;
+        b.style.left = Math.random() * 100 + '%';
+        b.style.bottom = '-50px';
+        b.style.animationDelay = Math.random() * 4 + 's';
+        bubbleBox.appendChild(b);
+    }
 })();

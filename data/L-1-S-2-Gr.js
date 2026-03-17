@@ -29,36 +29,28 @@
         },
         { 
             type: 'big-title', 
-            content: 'Rule 1:<br>For negative, we use <span style="color:#e74c3c;">NOT</span> after am, is, are.', 
+            content: 'Rule 1:<br>Negative = <span style="color:#e74c3c;">NOT</span> after am, is, are.', 
             color: '#fff' 
         },
         ...[
-            {sub: "I am", rest: "a student at the local school."},
-            {sub: "He is", rest: "very good at playing football."},
-            {sub: "She is", rest: "a talented artist who loves painting."},
-            {sub: "It is", rest: "a beautiful day to go to the park."},
-            {sub: "We are", rest: "excited about the upcoming field trip."},
-            {sub: "You are", rest: "my best friend."},
-            {sub: "They are", rest: "busy finishing their homework."}
+            {sub: "I am", rest: "a student."},
+            {sub: "He is", rest: "very good."},
+            {sub: "She is", rest: "an artist."},
+            {sub: "It is", rest: "a beautiful day."},
+            {sub: "We are", rest: "excited."},
+            {sub: "You are", rest: "my friend."},
+            {sub: "They are", rest: "busy."}
         ].map(item => ({ type: 'neg-transform', sub: item.sub, rest: item.rest })),
         { 
-            type: 'writing-focus', 
-            title: 'Negative Form',
-            content: "I am <span style='color:#e74c3c;'>not</span> a student...<br><br>She is <span style='color:#e74c3c;'>not</span> a talented artist...<br><br>You are <span style='color:#e74c3c;'>not</span> my best friend." 
-        },
-        { 
             type: 'big-title', 
-            content: 'Rule 2:<br>For questions, we <span style="color:#f1c40f;">switch</span> between the subject and am/is/are.', 
+            content: 'Rule 2:<br><span style="color:#f1c40f;">Switch</span> Subject and Verb for Questions.', 
             color: '#fff' 
         },
         ...[
-            {v: "am", s: "I", rest: "a student at the local school?"},
-            {v: "is", s: "He", rest: "very good at playing football?"},
-            {v: "is", s: "She", rest: "a talented artist who loves painting?"},
-            {v: "is", s: "It", rest: "a beautiful day to go to the park?"},
-            {v: "are", s: "We", rest: "excited about the field trip?"},
-            {v: "are", s: "You", rest: "my best friend?"},
-            {v: "are", s: "They", rest: "busy finishing their homework?"}
+            {v: "am", s: "I", rest: "a student?"},
+            {v: "is", s: "He", rest: "good at football?"},
+            {v: "is", s: "She", rest: "an artist?"},
+            {v: "are", s: "They", rest: "busy?"}
         ].map(item => ({ type: 'q-transform', v: item.v, s: item.s, rest: item.rest })),
         { 
             type: 'mcq-simple', 
@@ -66,20 +58,13 @@
             options: ["are", "is", "am", "do"],
             answer: 1 
         },
-        { type: 'big-title', content: 'Short Forms & Contractions', color: '#3498db' },
-        {
-            type: 'contract-pos',
-            items: [
-                {full: "I am", short: "I'm"}, {full: "He is", short: "He's"}, {full: "She is", short: "She's"},
-                {full: "It is", short: "It's"}, {full: "We are", short: "We're"}, {full: "You are", short: "You're"}, {full: "They are", short: "They're"}
-            ]
-        },
+        { type: 'big-title', content: 'Possessives', color: '#f1c40f' },
         {
             type: 'definitions', 
             title: 'Possessive Adjectives',
             items: [
                 { p: "My", d: "My car" }, { p: "His", d: "His book" }, { p: "Her", d: "Her bag" },
-                { p: "Its", d: "Its tail " }, { p: "Our", d: "Our house" }, { p: "Their", d: "Their pens" }, { p: "Your", d: "Your phone" }
+                { p: "Our", d: "Our house" }, { p: "Their", d: "Their pens" }, { p: "Your", d: "Your phone" }
             ] 
         },
         {
@@ -88,7 +73,7 @@
             headers: ["Subject", "Adj (+ Noun)", "Pronoun (Alone)"],
             rows: [
                 { s: "I", a: "My", p: "Mine" }, { s: "He", a: "His", p: "His" }, { s: "She", a: "Her", p: "Hers" },
-                { s: "It", a: "Its", p: "-" }, { s: "We", a: "Our", p: "Ours" }, { s: "They", a: "Their", p: "Theirs" }, { s: "You", a: "Your", p: "Yours" }
+                { s: "We", a: "Our", p: "Ours" }, { s: "They", a: "Their", p: "Theirs" }, { s: "You", a: "Your", p: "Yours" }
             ]
         },
         { 
@@ -110,17 +95,11 @@
         wrapper.style.cssText = `width:90%; text-align:center; animation: fadeIn 0.5s ease;`;
 
         if (s.type === 'big-title') {
-            wrapper.innerHTML = `<h1 style="font-size:6rem; font-weight:900; color:${s.color};">${s.content}</h1>`;
+            wrapper.innerHTML = `<h1 style="font-size:6rem; font-weight:900; color:${s.color}; line-height:1.2;">${s.content}</h1>`;
         } 
         else if (s.type === 'reveal-list') {
             wrapper.innerHTML = `<div style="text-align:left; display:flex; flex-direction:column; gap:10px; max-width:800px; margin:auto;">
                 ${s.items.map((item, i) => `<div style="font-size:1.8rem; padding:12px; background:#1e1e1e; border-radius:10px; opacity:${i <= subStep ? 1 : 0.1}; transition:0.3s;">${item}</div>`).join('')}
-            </div>`;
-        }
-        else if (s.type === 'writing-focus') {
-            wrapper.innerHTML = `<div style="border-left:15px solid #e74c3c; padding-left:40px; text-align:left; max-width:900px; margin:auto;">
-                <h2 style="font-size:3rem; color:#e74c3c;">${s.title}</h2>
-                <div style="font-size:3.5rem; font-weight:bold;">${s.content}</div>
             </div>`;
         }
         else if (s.type === 'neg-transform') {
@@ -134,13 +113,6 @@
                 <span style="color:${swapped ? '#f1c40f' : '#fff'}; transform:translateX(${swapped ? '120px' : '0'}); transition:0.6s;">${swapped ? s.s : s.v}</span>
                 <span style="color:${swapped ? '#fff' : '#f1c40f'}; transform:translateX(${swapped ? '-120px' : '0'}); transition:0.6s;">${swapped ? s.v : s.s}</span>
                 <span>${s.rest}</span>
-            </div>`;
-        }
-        else if (s.type === 'contract-pos') {
-            wrapper.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; max-width:900px; margin:auto;">
-                ${s.items.map((item, i) => `<div style="font-size:1.8rem; background:#1e1e1e; padding:15px; border-radius:10px; display:flex; justify-content:space-between;">
-                    <span style="opacity:0.6">${item.full}</span> <span style="color:#3498db; opacity:${i <= subStep ? 1 : 0}; transition:0.3s;">➞ ${item.short}</span>
-                </div>`).join('')}
             </div>`;
         }
         else if (s.type === 'definitions') {
@@ -180,13 +152,11 @@
         container.appendChild(wrapper);
     }
 
-    // البروتوكول الموحد للتحكم
     document.onkeydown = (e) => {
         const s = slides[currentSlide];
         if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { // Next
             if (s.type === 'reveal-list' && subStep < s.items.length - 1) { subStep++; render(); }
             else if ((s.type === 'neg-transform' || s.type === 'q-transform' || s.type === 'mcq-simple') && subStep < 1) { subStep++; render(); }
-            else if (s.type === 'contract-pos' && subStep < s.items.length - 1) { subStep++; render(); }
             else if (s.type === 'definitions' && subStep < s.items.length - 1) { subStep++; render(); }
             else if (s.type === 'compare-table' && subStep < s.rows.length - 1) { subStep++; render(); }
             else if (s.type === 'fill-practice' && subStep < s.items.length) { subStep++; render(); }

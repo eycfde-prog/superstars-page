@@ -38,60 +38,19 @@
         .mr-ezz-img { height: 70px; border-radius: 8px; border: 1px solid var(--primary-gold); }
         .session-info h1 { font-size: 1.8rem; color: var(--primary-gold); }
 
-        /* Grid for Cards - Glassy Theme Applied */
+        /* Grid for Cards */
         .content-grid {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            padding: 50px;
-            overflow-y: auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px; padding: 40px; overflow-y: auto;
             height: calc(100vh - var(--banner-height));
             touch-action: pan-y;
         }
 
         .content-card {
-            width: 80%;
-            max-width: 900px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(197, 160, 89, 0.3);
-            padding: 25px 50px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
+            background: var(--card-bg); border: 1px solid rgba(197,160,89,0.2);
+            padding: 40px; border-radius: 15px; text-align: center; transition: 0.3s; cursor: pointer;
         }
-
-        .content-card::before {
-            content: "TASK";
-            position: absolute;
-            left: -20px;
-            top: 50%;
-            transform: translateY(-50%) rotate(-90deg);
-            font-size: 0.7rem;
-            color: var(--primary-gold);
-            letter-spacing: 5px;
-            opacity: 0.5;
-        }
-
-        .content-card h2 {
-            font-size: 2.2rem;
-            font-weight: 300;
-            color: #fff;
-            text-align: left;
-        }
-
-        .content-card:hover {
-            background: rgba(197, 160, 89, 0.1);
-            border-color: var(--primary-gold);
-            transform: scale(1.02);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
+        .content-card:hover { border-color: var(--primary-gold); background: rgba(197,160,89,0.05); }
 
         /* Activity Stage */
         #activity-stage { 
@@ -190,6 +149,7 @@
             const stage = document.getElementById('activity-stage');
             stage.style.display = 'block';
             
+            // Full Screen for Mobile
             if (isMobile && stage.requestFullscreen) {
                 stage.requestFullscreen().catch(err => console.log(err));
             }
@@ -212,6 +172,8 @@
             document.getElementById('laserBtn').classList.toggle('active');
             laser.style.display = (laserActive && !isMobile) ? 'block' : 'none';
         }
+
+        // --- المود المدمج (تاتش + ماوس) ---
 
         function getCoords(e) {
             const t = e.touches ? e.touches[0] : e;
@@ -253,6 +215,7 @@
             laser.style.top = pos.y + 'px';
         }
 
+        // إدراج المستمعات
         window.addEventListener('mousedown', startAction);
         window.addEventListener('mousemove', moveAction);
         window.addEventListener('mouseup', endAction);
@@ -260,8 +223,12 @@
         window.addEventListener('touchmove', (e) => { if(laserActive) e.preventDefault(); moveAction(e); }, {passive: false});
         window.addEventListener('touchend', endAction);
 
+        // --- منطق التنقل (Navigation) ---
+
+        // 1. Mobile Click Navigation (الجوانب)
         document.getElementById('activity-stage').addEventListener('click', (e) => {
-            if (!isMobile || laserActive) return;
+            if (!isMobile || laserActive) return; // لا ينقل لو ليزر شغال أو ديسك توب
+            
             const width = window.innerWidth;
             if (e.clientX > width * 0.8) {
                 if(typeof nextSlide === "function") nextSlide();
@@ -270,8 +237,10 @@
             }
         });
 
+        // 2. Desktop Keyboard Navigation
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('activity-stage').style.display === 'none') return;
+            
             if (e.key === "Enter" || e.key === "ArrowRight" || e.key === " ") {
                 if(typeof nextSlide === "function") nextSlide();
             } else if (e.key === "ArrowLeft" || e.key === "Backspace") {

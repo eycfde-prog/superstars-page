@@ -1,5 +1,5 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
     const questions = [
@@ -19,24 +19,49 @@
     const folderNumber = 5;
 
     container.innerHTML = '';
-    container.style.cssText = `height:calc(100vh - 200px); display:flex; flex-direction:column; justify-content:center; align-items:center; background:#1a0f00; color:#fff; font-family: 'Verdana', sans-serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#050505; color:#fff; font-family:'Segoe UI', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            .sq-counter { position:absolute; top:30px; left:50px; font-size:1.5rem; color:#ffa502; font-weight:bold; }
-            .sq-question { font-size:5.5rem; text-align:center; max-width:85%; line-height:1.2; font-weight:bold; color:#ffffff; text-shadow: 3px 3px 0px #ffa502; transition: transform 0.2s; }
-            .sq-controls { position:absolute; bottom:50px; display:flex; gap:20px; }
-            .sq-btn { background:#ffa502; color:#1a0f00; border:none; padding:15px 40px; font-size:1.2rem; cursor:pointer; border-radius:8px; font-weight:bold; }
-            .sq-indicator { position:absolute; top:30px; right:50px; font-size:1.3rem; border-bottom:3px solid #ffa502; padding:5px 10px; }
+            .sq-counter { position:absolute; top:40px; left:60px; font-size:2vw; color:#c5a059; font-weight:900; letter-spacing:3px; }
+            .sq-indicator { position:absolute; top:40px; right:60px; font-size:1.5vw; border: 2px solid #c5a059; padding:10px 25px; border-radius:50px; color:#c5a059; font-weight:bold; }
+            
+            .sq-question { 
+                font-size:6vw; 
+                text-align:center; 
+                max-width:85%; 
+                line-height:1.1; 
+                font-weight:900; 
+                color:#ffffff; 
+                text-shadow: 0 10px 30px rgba(0,0,0,1); 
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                text-transform: uppercase;
+            }
+            
+            .sq-controls { position:absolute; bottom:60px; display:flex; gap:30px; }
+            .sq-btn { 
+                background:#111; 
+                color:#c5a059; 
+                border:2px solid #c5a059; 
+                padding:15px 50px; 
+                font-size:1.5vw; 
+                cursor:pointer; 
+                border-radius:50px; 
+                font-weight:bold; 
+                transition: 0.3s;
+            }
+            .sq-btn:hover { background:#c5a059; color:#000; box-shadow: 0 0 30px rgba(197,160,89,0.4); }
+            
+            .highlight-word { color: #c5a059; text-decoration: underline; }
         </style>
         
-        <div class="sq-counter">Squeezer #5</div>
-        <div class="sq-indicator">Target: <span style="color:#ffa502">Have / Has</span></div>
-        <div id="sqQuestionDisplay" class="sq-question">${questions[currentIdx]}</div>
+        <div class="sq-counter">SQUEEZER #${folderNumber}</div>
+        <div class="sq-indicator">FOCUS: <span style="color:#fff">HAVE / HAS</span></div>
+        <div id="sqQuestionDisplay" class="sq-question"></div>
         
         <div class="sq-controls">
-            <button class="sq-btn" id="sqPrev">PREV</button>
-            <button class="sq-btn" id="sqNext">NEXT</button>
+            <button class="sq-btn" id="sqPrev">PREVIOUS</button>
+            <button class="sq-btn" id="sqNext">NEXT QUESTION</button>
         </div>
         <audio id="sqAudioPlayer"></audio>
     `;
@@ -46,30 +71,56 @@
     const btnNext = document.getElementById('sqNext');
     const btnPrev = document.getElementById('sqPrev');
 
+    function formatQuestion(text) {
+        // تلوين أول كلمة (Have/Has) تلقائياً بالذهبي
+        const words = text.split(' ');
+        if (words.length > 0) {
+            words[0] = `<span class="highlight-word">${words[0]}</span>`;
+        }
+        return words.join(' ');
+    }
+
     function updateSlide(index) {
-        display.style.transform = 'scale(0.8)';
+        display.style.opacity = '0';
+        display.style.transform = 'scale(0.9)';
+        
         setTimeout(() => {
-            display.innerText = questions[index];
+            display.innerHTML = formatQuestion(questions[index]);
+            display.style.opacity = '1';
             display.style.transform = 'scale(1)';
-        }, 100);
+        }, 200);
 
         const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
         audioPlayer.src = audioPath;
-        audioPlayer.play().catch(e => {});
+        audioPlayer.play().catch(e => console.log("Audio not ready"));
     }
 
     btnNext.onclick = () => {
-        if (currentIdx < questions.length - 1) { currentIdx++; updateSlide(currentIdx); }
+        if (currentIdx < questions.length - 1) { 
+            currentIdx++; 
+            updateSlide(currentIdx); 
+        } else {
+            if (window.triggerVetoDone) window.triggerVetoDone();
+        }
     };
 
     btnPrev.onclick = () => {
-        if (currentIdx > 0) { currentIdx--; updateSlide(currentIdx); }
+        if (currentIdx > 0) { 
+            currentIdx--; 
+            updateSlide(currentIdx); 
+        }
     };
 
     document.onkeydown = (e) => {
-        if (e.key === "ArrowRight" || e.key === " ") btnNext.click();
-        if (e.key === "ArrowLeft") btnPrev.click();
+        if (e.key === "ArrowRight" || e.key === " ") {
+            e.preventDefault();
+            btnNext.click();
+        }
+        if (e.key === "ArrowLeft") {
+            btnPrev.click();
+        }
     };
 
+    // التشغيل الأول
     updateSlide(0);
 })();

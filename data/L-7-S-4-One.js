@@ -1,8 +1,7 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
     const storyTitle = "Lost in the Green Maze";
     
     const storyContent = `
@@ -29,40 +28,80 @@
         It was a <span class="target-word">tiring</span> day, but Maya and Sam felt like real <span class="target-word">explorers</span>. 
         They learned that the forest is full of <span class="target-word">secrets</span> if you know where to look.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0a0f0b; color:#d1d5db; overflow-y:auto; padding:60px 40px; font-family: 'Georgia', serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
+            @keyframes leafSway {
+                0%, 100% { transform: rotate(0deg); }
+                50% { transform: rotate(1deg); }
+            }
+            .adventure-wrapper {
+                max-width: 950px;
+                margin: 0 auto;
+                background: rgba(46, 204, 113, 0.05);
+                padding: 50px;
+                border-radius: 40px;
+                border: 1px solid rgba(46, 204, 113, 0.2);
+                box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+                animation: leafSway 6s infinite ease-in-out;
+            }
             .target-word {
                 color: #f1c40f; 
                 font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
+                text-decoration: none;
+                border-bottom: 2px solid rgba(241, 196, 15, 0.3);
+                padding: 2px 4px;
                 border-radius: 4px;
+                transition: 0.3s;
             }
-            .story-container {
-                max-width: 1000px;
-                margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+            .target-word:hover {
+                background: #f1c40f;
+                color: #052e16;
+                box-shadow: 0 0 15px #f1c40f;
             }
-            .title {
-                color: #2ecc71; /* لون أخضر مناسب للغابة */
+            .story-text {
+                line-height: 1.9;
+                font-size: 2rem;
+                text-align: justify;
+                color: #e2e8f0;
+            }
+            .header-box {
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
-                text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                margin-bottom: 60px;
+                border-bottom: 2px solid rgba(46, 204, 113, 0.1);
+                padding-bottom: 30px;
             }
+            .header-box span {
+                color: #2ecc71;
+                font-family: 'Inter', sans-serif;
+                font-weight: 800;
+                letter-spacing: 10px;
+                text-transform: uppercase;
+                font-size: 1.1rem;
+                display: block;
+                margin-bottom: 15px;
+            }
+            .header-box h1 {
+                font-size: 4rem;
+                margin: 0;
+                color: #fff;
+                font-family: 'Inter', sans-serif;
+                font-weight: 900;
+            }
+            #stage-content::-webkit-scrollbar { width: 8px; }
+            #stage-content::-webkit-scrollbar-track { background: #0a0f0b; }
+            #stage-content::-webkit-scrollbar-thumb { background: #14532d; border-radius: 10px; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
-            <div id="textBody">
+        
+        <div class="adventure-wrapper">
+            <div class="header-box">
+                <span>Mission: Reading</span>
+                <h1>${storyTitle}</h1>
+            </div>
+            <div class="story-text">
                 ${storyContent}
             </div>
         </div>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VETO PROGRAM | Session Content</title>
+    <style>
+        :root {
+            --primary-gold: #c5a059;
+            --bg-dark: #050505;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --banner-height: 140px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Consistent Banner */
+        .top-banner {
+            height: var(--banner-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 3px solid var(--primary-gold);
+        }
+
+        .logo-img { height: 70px; }
+        .mr-ezz-img { height: 100px; border-radius: 8px; }
+
+        .session-info {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .session-info h1 {
+            font-size: 2.5rem;
+            color: var(--primary-gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Material Style Cards */
+        .content-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .content-card:hover {
+            border-color: var(--primary-gold);
+            background: rgba(197, 160, 89, 0.1);
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .content-card h2 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            padding: 15px 30px;
+            background: var(--primary-gold);
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-banner">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" alt="Logo" class="logo-img">
+        <div class="session-info">
+            <h1 id="display-title">Loading...</h1>
+        </div>
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" alt="Mr Ezz" class="mr-ezz-img">
+    </header>
+
+    <main class="content-grid" id="content-container">
+        </main>
+
+    <a href="vetoof.html" class="back-btn">← BACK TO LEVELS</a>
+
+    <script>
+        // 1. Get Session ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session'); // format: "1-1"
+
+        if (sessionId) {
+            const [lvl, sess] = sessionId.split('-');
+            document.getElementById('display-title').innerText = `Level ${lvl} - Session ${sess}`;
+            loadSessionData(sessionId);
+        }
+
+        async function loadSessionData(id) {
+            const container = document.getElementById('content-container');
+            
+            try {
+                // 2. Fetch from data/levels folder
+                const response = await fetch(`data/levels/${id}.json`);
+                if (!response.ok) throw new Error('File not found');
+                
+                const data = await response.json();
+                
+                // 3. Render Cards
+                container.innerHTML = ""; // Clear loader
+                data.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'content-card';
+                    card.innerHTML = `<h2>${item}</h2>`;
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Error loading data:", error);
+                container.innerHTML = `<h2 style="grid-column: 1/-1; text-align: center; opacity: 0.5;">
+                    Data file for ${id} is not ready yet.</h2>`;
+            }
+        }
+    </script>
+</body>
+</html>

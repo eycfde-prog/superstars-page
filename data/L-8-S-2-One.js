@@ -1,8 +1,7 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
     const storyTitle = "The Dragon Who Could Not Breathe Fire";
     
     const storyContent = `
@@ -29,40 +28,80 @@
         He didn't need fire to be a <span class="target-word">hero</span>. The King gave him a golden <span class="target-word">necklace</span>, and Sparky became the official "Party Dragon" of the <span class="target-word">kingdom</span>. 
         He lived a very <span class="target-word">peaceful</span> life, making everyone laugh with his bubbles.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0a0a0a; color:#f0f0f0; overflow-y:auto; padding:60px 50px; font-family: 'Inter', 'Georgia', serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
+            @keyframes bubbleFloat {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-5px); }
+            }
+            .story-wrapper {
+                max-width: 900px;
+                margin: 0 auto;
+                background: rgba(255, 255, 255, 0.02);
+                padding: 60px;
+                border-radius: 40px;
+                border: 1px solid rgba(243, 156, 18, 0.2);
+                box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+            }
             .target-word {
                 color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
+                font-weight: 800;
+                background: rgba(236, 64, 122, 0.15);
+                padding: 2px 8px;
+                border-radius: 8px;
+                display: inline-block;
+                animation: bubbleFloat 3s infinite ease-in-out;
+                transition: 0.3s;
+                cursor: help;
             }
-            .story-container {
-                max-width: 1000px;
-                margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+            .target-word:hover {
+                background: #f1c40f;
+                color: #000;
+                transform: scale(1.1);
             }
-            .title {
-                color: #f39c12; /* لون برتقالي ناري مناسب للتنانين */
+            .story-content {
+                line-height: 2.1;
+                font-size: 1.9rem;
+                text-align: justify;
+                letter-spacing: 0.5px;
+            }
+            .story-header {
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
-                text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                margin-bottom: 50px;
+                border-bottom: 3px double rgba(243, 156, 18, 0.3);
+                padding-bottom: 30px;
             }
+            .story-header h1 {
+                font-size: 3.5rem;
+                margin: 0;
+                color: #f39c12;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                font-weight: 900;
+            }
+            .subtitle {
+                color: #ec407a;
+                font-weight: bold;
+                letter-spacing: 5px;
+                font-size: 1.1rem;
+                display: block;
+                margin-bottom: 10px;
+            }
+            #stage-content::-webkit-scrollbar { width: 10px; }
+            #stage-content::-webkit-scrollbar-track { background: #0a0a0a; }
+            #stage-content::-webkit-scrollbar-thumb { background: #f39c12; border-radius: 10px; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
-            <div id="textBody">
+        
+        <div class="story-wrapper">
+            <div class="story-header">
+                <span class="subtitle">LEVEL 8 • READING SHOT</span>
+                <h1>${storyTitle}</h1>
+            </div>
+            <div class="story-content">
                 ${storyContent}
             </div>
         </div>

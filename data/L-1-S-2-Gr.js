@@ -32,6 +32,7 @@
             content: 'Rule 1:<br>Negative = <span style="color:#e74c3c;">NOT</span> after am, is, are.', 
             color: '#fff' 
         },
+        // التصحيح هنا: دمج المصفوفة بشكل سليم
         ...[
             {sub: "I am", rest: "a student."},
             {sub: "He is", rest: "very good."},

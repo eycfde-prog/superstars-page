@@ -1,8 +1,7 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
     const storyTitle = "The Astronaut and the Space Pizza";
     
     const storyContent = `
@@ -29,40 +28,74 @@
         Leo realized that even in the <span class="target-word">middle</span> of the dark <span class="target-word">universe</span>, sharing a meal is the best way to make a new <span class="target-word">friend</span>. 
         He finished his dinner and went to sleep, dreaming of more space adventures.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0a0a0c; color:#e2e8f0; overflow-y:auto; padding:60px 40px; font-family: 'Georgia', serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
+            @keyframes starGlow {
+                0% { text-shadow: 0 0 5px #f1c40f88; }
+                50% { text-shadow: 0 0 15px #f1c40f; }
+                100% { text-shadow: 0 0 5px #f1c40f88; }
+            }
+            .story-wrapper {
+                max-width: 900px;
+                margin: 0 auto;
+                background: rgba(255, 255, 255, 0.03);
+                padding: 50px;
+                border-radius: 30px;
+                border: 1px solid #1e293b;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            }
             .target-word {
                 color: #f1c40f; 
                 font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
+                border-bottom: 2px dashed #f1c40f55;
+                cursor: help;
+                transition: 0.3s;
+                animation: starGlow 3s infinite;
+            }
+            .target-word:hover {
+                background: #f1c40f;
+                color: #000;
                 border-radius: 4px;
             }
-            .story-container {
-                max-width: 1000px;
-                margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+            .story-text {
+                line-height: 2;
+                font-size: 1.9rem;
+                text-align: justify;
             }
-            .title {
-                color: #e74c3c;
+            .story-header {
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
-                text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                margin-bottom: 50px;
             }
+            .story-header span {
+                color: #e74c3c;
+                font-family: 'Arial';
+                font-weight: 900;
+                letter-spacing: 5px;
+                font-size: 1.2rem;
+                display: block;
+                margin-bottom: 10px;
+            }
+            .story-header h1 {
+                font-size: 3.5rem;
+                margin: 0;
+                color: #fff;
+                text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            }
+            #stage-content::-webkit-scrollbar { width: 10px; }
+            #stage-content::-webkit-scrollbar-track { background: #0a0a0c; }
+            #stage-content::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
-            <div id="textBody">
+        
+        <div class="story-wrapper">
+            <div class="story-header">
+                <span>ONE SHOT READING</span>
+                <h1>${storyTitle}</h1>
+            </div>
+            <div class="story-text">
                 ${storyContent}
             </div>
         </div>

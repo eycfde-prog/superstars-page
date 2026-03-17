@@ -98,6 +98,11 @@
             border-radius: 50px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -110,45 +115,40 @@
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" alt="Mr Ezz" class="mr-ezz-img">
     </header>
 
-    <main class="content-grid" id="content-container">
-        </main>
+    <main class="content-grid" id="content-container"></main>
 
     <a href="vetoof.html" class="back-btn">← BACK TO LEVELS</a>
 
+    <script src="data/levels.js"></script>
     <script>
-        // 1. Get Session ID from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session'); // format: "1-1"
+        const sessionId = urlParams.get('session');
 
         if (sessionId) {
             const [lvl, sess] = sessionId.split('-');
             document.getElementById('display-title').innerText = `Level ${lvl} - Session ${sess}`;
-            loadSessionData(sessionId);
+            renderSessionData(sessionId);
         }
 
-        async function loadSessionData(id) {
+        function renderSessionData(id) {
             const container = document.getElementById('content-container');
             
-            try {
-                // 2. Fetch from data/levels folder
-                const response = await fetch(`data/levels/${id}.json`);
-                if (!response.ok) throw new Error('File not found');
-                
-                const data = await response.json();
-                
-                // 3. Render Cards
-                container.innerHTML = ""; // Clear loader
-                data.forEach(item => {
+            // Access data from the global object in levels.js
+            const data = sessionData[id];
+            
+            if (data && data.length > 0) {
+                container.innerHTML = ""; 
+                data.forEach((item, index) => {
                     const card = document.createElement('div');
                     card.className = 'content-card';
+                    // Animation delay for each card
+                    card.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.1}s`;
+                    card.style.opacity = "0";
                     card.innerHTML = `<h2>${item}</h2>`;
                     container.appendChild(card);
                 });
-
-            } catch (error) {
-                console.error("Error loading data:", error);
-                container.innerHTML = `<h2 style="grid-column: 1/-1; text-align: center; opacity: 0.5;">
-                    Data file for ${id} is not ready yet.</h2>`;
+            } else {
+                container.innerHTML = `<h2 style="grid-column: 1/-1; text-align: center; opacity: 0.5;">No content found for ${id}</h2>`;
             }
         }
     </script>

@@ -1,8 +1,7 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
     const storyTitle = "The Knight Who Was Scared of Shadows";
     
     const storyContent = `
@@ -32,43 +31,107 @@
         The King was so happy that he gave the knight a <span class="target-word">medal</span>. 
         Sir Pumpernickel learned that being brave doesn't mean you aren't scared; it means you go into the cave anyway—even if you're wearing your <span class="target-word">pajamas</span> under your armor.
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; width:100%; display:block; background:#080808; color:#ddd; overflow-y:auto; padding:80px 0; font-family: 'Georgia', serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
+            #stage-content::-webkit-scrollbar { width: 10px; }
+            #stage-content::-webkit-scrollbar-track { background: #050505; }
+            #stage-content::-webkit-scrollbar-thumb { background: #e74c3c; border-radius: 5px; }
+
+            .story-frame {
+                max-width: 950px;
+                margin: 0 auto;
+                background: #111;
+                padding: 60px 80px;
+                border-radius: 5px;
+                border: 1px solid #222;
+                box-shadow: 0 0 100px rgba(0,0,0,0.8);
+                position: relative;
+            }
+
+            .story-frame::before {
+                content: '';
+                position: absolute;
+                top: 10px; left: 10px; right: 10px; bottom: 10px;
+                border: 1px solid #222;
+                pointer-events: none;
+            }
+
+            .main-title {
+                color: #e74c3c;
+                text-align: center;
+                font-size: 3vw;
+                font-weight: 900;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+                font-family: 'Times New Roman', serif;
+            }
+
+            .one-shot-label {
+                text-align: center;
+                color: #555;
+                font-size: 1rem;
+                letter-spacing: 8px;
+                margin-bottom: 40px;
+                display: block;
+            }
+
+            .text-content {
+                line-height: 2;
+                font-size: 1.8vw;
+                color: #ccc;
+                text-align: left;
+            }
+
             .target-word {
                 color: #f1c40f; 
                 font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
+                border-bottom: 2px solid #e74c3c;
+                padding: 0 4px;
+                transition: 0.3s;
+                cursor: help;
+                background: rgba(231, 76, 60, 0.05);
             }
-            .story-container {
-                max-width: 1000px;
-                margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+
+            .target-word:hover {
+                background: #f1c40f;
+                color: #000;
+                border-color: #000;
+                box-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
             }
-            .title {
-                color: #e74c3c;
-                text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
-                text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+
+            .moral-box {
+                margin-top: 50px;
+                padding: 30px;
+                background: rgba(231, 76, 60, 0.1);
+                border-left: 5px solid #e74c3c;
+                font-style: italic;
+                font-size: 1.5vw;
+                color: #eee;
             }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
-            <div id="textBody">
+
+        <div class="story-frame">
+            <span class="one-shot-label">VETO READING • ONE SHOT</span>
+            <h1 class="main-title">${storyTitle}</h1>
+            <div class="text-content">
                 ${storyContent}
             </div>
+            <div class="moral-box">
+                "Bravery is not the absence of fear, but the triumph over it."
+            </div>
         </div>
+
+        <div style="height: 100px;"></div>
     `;
 
+    // نظام التنقل بالمسافة
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) { // Space to complete
+            if (window.triggerVetoDone) window.triggerVetoDone();
+        }
+    };
 })();

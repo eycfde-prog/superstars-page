@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VETO PROGRAM | Session Content</title>
+    <title>VETO PROGRAM | Smart Board</title>
     <style>
         :root {
             --primary-gold: #c5a059;
             --bg-dark: #050505;
             --card-bg: rgba(255, 255, 255, 0.05);
-            --banner-height: 120px;
+            --banner-height: 100px;
             --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         * { 
             margin: 0; padding: 0; box-sizing: border-box; 
-            touch-action: none; /* تحكم يدوي كامل */
+            touch-action: none; 
             -webkit-user-select: none; user-select: none;
         }
 
@@ -23,80 +23,77 @@
             background-color: var(--bg-dark);
             color: white;
             font-family: var(--font-main);
-            min-height: 100vh;
+            height: 100vh;
             overflow: hidden;
         }
 
-        /* Landscape Mode Fix for Mobile */
-        @media screen and (max-width: 900px) and (orientation: portrait) {
-            #activity-stage, #note-pad { 
-                transform: rotate(90deg); transform-origin: bottom left; 
-                width: 100vh; height: 100vw; position: absolute; top: -100vw; left: 0; 
-            }
-        }
-
-        /* Banner */
+        /* Responsive Banner */
         .top-banner {
             height: var(--banner-height);
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 40px; background: rgba(0, 0, 0, 0.95);
-            border-bottom: 4px solid var(--primary-gold);
-            z-index: 100;
+            padding: 0 30px; background: #000; border-bottom: 3px solid var(--primary-gold);
         }
 
-        .logo-img { height: 60px; }
-        .mr-ezz-img { height: 90px; border-radius: 12px; border: 2px solid var(--primary-gold); }
-        .session-info h1 { font-size: 2.2rem; color: var(--primary-gold); letter-spacing: 2px; }
+        .logo-img { height: 50px; }
+        .mr-ezz-img { height: 70px; border-radius: 8px; border: 1px solid var(--primary-gold); }
+        .session-info h1 { font-size: 1.8rem; color: var(--primary-gold); }
 
-        /* Content Grid */
+        /* Grid for Cards */
         .content-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px; padding: 40px; overflow-y: auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px; padding: 40px; overflow-y: auto;
             height: calc(100vh - var(--banner-height));
             touch-action: pan-y;
         }
 
         .content-card {
-            background: var(--card-bg); border: 2px solid rgba(197, 160, 89, 0.15);
-            padding: 50px 20px; border-radius: 20px; text-align: center;
-            transition: 0.3s; cursor: pointer;
+            background: var(--card-bg); border: 1px solid rgba(197,160,89,0.2);
+            padding: 40px; border-radius: 15px; text-align: center; transition: 0.3s; cursor: pointer;
         }
-        .content-card h2 { font-size: 2rem; color: #fff; }
-        .content-card:hover { border-color: var(--primary-gold); transform: translateY(-10px); background: rgba(197, 160, 89, 0.1); }
+        .content-card:hover { border-color: var(--primary-gold); background: rgba(197,160,89,0.05); }
 
         /* Activity Stage */
-        #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
-        .exit-btn { position: absolute; top: 20px; left: 20px; z-index: 9999; background: #ff4757; color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        #activity-stage { 
+            position: fixed; inset: 0; background:#000; z-index: 8000; display: none; 
+        }
 
-        /* Laser & Drawing */
+        /* Laser & Canvas */
         #laser-pointer {
-            position: fixed; width: 35px; height: 35px; background: rgba(255, 0, 0, 0.9); 
+            position: fixed; width: 25px; height: 25px; background: rgba(255, 0, 0, 0.9); 
             border-radius: 50%; pointer-events: none; z-index: 10000; display: none;
-            box-shadow: 0 0 20px red, 0 0 40px red;
+            box-shadow: 0 0 15px red, 0 0 30px red; transform: translate(-50%, -50%);
         }
         #drawing-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
 
-        /* Toolbox */
-        .toolbox-wrapper { position: fixed; bottom: 30px; right: 30px; z-index: 9500; display: flex; flex-direction: column-reverse; gap: 15px; }
+        /* Mobile Orientation Force (CSS) */
+        @media screen and (max-width: 900px) and (orientation: portrait) {
+            #activity-stage { 
+                transform: rotate(90deg); transform-origin: bottom left;
+                width: 100vh; height: 100vw; top: -100vw; left: 0;
+            }
+        }
+
+        /* Controls */
+        .exit-btn {
+            position: absolute; top: 15px; left: 15px; z-index: 8500;
+            background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 8px;
+        }
+
+        .toolbox-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 9500; display: flex; flex-direction: column-reverse; gap: 10px; }
         .tool-btn { 
-            width: 70px; height: 70px; border-radius: 50%; background: var(--primary-gold); border: none; 
-            cursor: pointer; font-size: 1.8rem; display: none; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            width: 60px; height: 60px; border-radius: 50%; background: var(--primary-gold); 
+            border: none; font-size: 1.5rem; display: none; align-items: center; justify-content: center;
         }
         .toolbox-wrapper.open .tool-btn { display: flex; }
-        .tool-btn.active { background: #ff4757; box-shadow: 0 0 20px #ff4757; }
-
-        /* Quick Board */
-        #note-pad { position: fixed; inset: 0; background: #000; z-index: 9000; display: none; flex-direction: column; padding: 20px; }
-        #note-text { width: 100%; height: 80%; background: #111; border: 3px solid var(--primary-gold); color: #fff; font-size: 3.5rem; padding: 20px; border-radius: 20px; outline: none; text-align: center; }
+        .tool-btn.active { background: #ff4757; }
     </style>
 </head>
-<body oncontextmenu="return false;"> 
+<body>
 
     <header class="top-banner">
-        <button onclick="window.location.href='vetoof.html'" style="background:none; border:2px solid var(--primary-gold); color:var(--primary-gold); padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold;">← BACK</button>
+        <button onclick="window.location.href='vetoof.html'" style="background:none; border:1px solid var(--primary-gold); color:var(--primary-gold); padding:8px 15px; border-radius:5px; cursor:pointer;">← BACK</button>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
-        <div class="session-info"><h1 id="display-title">VETO CONTENT</h1></div>
+        <div class="session-info"><h1 id="display-title">VETO BOARD</h1></div>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="mr-ezz-img">
     </header>
 
@@ -110,24 +107,18 @@
     <div id="laser-pointer"></div>
     <canvas id="drawing-canvas"></canvas>
 
-    <div id="note-pad">
-        <button onclick="toggleNotePad()" style="align-self: flex-end; background:#ff4757; color:white; border:none; padding:15px 40px; border-radius:10px; font-size:1.5rem;">CLOSE</button>
-        <textarea id="note-text" placeholder="Write here Mr. Ezz..."></textarea>
-    </div>
-
     <div class="toolbox-wrapper" id="toolBox">
-        <button class="tool-btn" style="display:flex; background:#222; border:2px solid var(--primary-gold);" onclick="toggleToolBox()">🛠️</button>
+        <button class="tool-btn" style="display:flex; background:#222;" onclick="toggleToolBox()">🛠️</button>
         <button class="tool-btn" id="laserBtn" onclick="toggleLaser()">🔦</button>
-        <button class="tool-btn" onclick="toggleNotePad()">📝</button>
         <button class="tool-btn" onclick="location.reload()">🔄</button>
     </div>
 
     <script src="data/levels.js"></script>
 
     <script>
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const urlParams = new URLSearchParams(window.location.search);
         const currentSessionId = urlParams.get('session');
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
         let laserActive = false;
         let isDrawing = false;
@@ -140,7 +131,6 @@
 
         function initSession() {
             if (!currentSessionId || !sessionData[currentSessionId]) return;
-            document.getElementById('display-title').innerText = `SESSION ${currentSessionId}`;
             const container = document.getElementById('content-container');
             sessionData[currentSessionId].forEach(item => {
                 const card = document.createElement('div');
@@ -151,15 +141,19 @@
             });
         }
 
-        function openActivity(activityName) {
+        async function openActivity(activityName) {
             const [lvl, sess] = currentSessionId.split('-');
             const prefix = activityName.split(' ')[0].substring(0, 3);
             const filePath = `data/L-${lvl}-S-${sess}-${prefix}.js`;
-            document.getElementById('activity-stage').style.display = 'block';
             
-            // Fullscreen request for Mobile
-            if(isMobile) document.documentElement.requestFullscreen().catch(() => {});
+            const stage = document.getElementById('activity-stage');
+            stage.style.display = 'block';
             
+            // Full Screen for Mobile
+            if (isMobile && stage.requestFullscreen) {
+                stage.requestFullscreen().catch(err => console.log(err));
+            }
+
             const script = document.createElement('script');
             script.src = filePath;
             document.head.appendChild(script);
@@ -172,82 +166,87 @@
         }
 
         function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
-        function toggleNotePad() {
-            const pad = document.getElementById('note-pad');
-            pad.style.display = (pad.style.display === 'flex') ? 'none' : 'flex';
-        }
 
         function toggleLaser() {
             laserActive = !laserActive;
             document.getElementById('laserBtn').classList.toggle('active');
+            laser.style.display = (laserActive && !isMobile) ? 'block' : 'none';
         }
 
-        // --- نظام الليزر والرسم الذكي ---
+        // --- المود المدمج (تاتش + ماوس) ---
+
+        function getCoords(e) {
+            const t = e.touches ? e.touches[0] : e;
+            return { x: t.clientX, y: t.clientY };
+        }
+
         function startAction(e) {
-            if (!laserActive) {
-                // لو مش مشغل الليزر وفي الموبايل، نتحقق من لمسة الأطراف للتقليب
-                if (isMobile && document.getElementById('activity-stage').style.display === 'block') {
-                    handleMobileNav(e);
-                }
-                return;
-            }
+            if (!laserActive) return;
             isDrawing = true;
-            const x = e.touches ? e.touches[0].clientX : e.clientX;
-            const y = e.touches ? e.touches[0].clientY : e.clientY;
-            
-            laser.style.display = 'block';
-            laser.style.left = x - 17 + 'px';
-            laser.style.top = y - 17 + 'px';
-            
+            const pos = getCoords(e);
             ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.strokeStyle = 'red';
+            ctx.moveTo(pos.x, pos.y);
+            ctx.strokeStyle = '#ff0000';
             ctx.lineWidth = 6;
             ctx.lineCap = 'round';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = 'red';
+            if (isMobile) laser.style.display = 'block';
+            updateLaserPos(e);
         }
 
         function moveAction(e) {
-            if (!isDrawing || !laserActive) return;
-            const x = e.touches ? e.touches[0].clientX : e.clientX;
-            const y = e.touches ? e.touches[0].clientY : e.clientY;
-            
-            laser.style.left = x - 17 + 'px';
-            laser.style.top = y - 17 + 'px';
-            ctx.lineTo(x, y);
-            ctx.stroke();
+            if (!laserActive) return;
+            const pos = getCoords(e);
+            updateLaserPos(e);
+            if (isDrawing) {
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            }
         }
 
         function endAction() {
             isDrawing = false;
-            laser.style.display = 'none';
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (isMobile) laser.style.display = 'none';
         }
 
-        // --- نظام التنقل للموبايل (لمس الجوانب) ---
-        function handleMobileNav(e) {
-            const x = e.touches ? e.touches[0].clientX : e.clientX;
-            const width = window.innerWidth;
-            if (x > width * 0.8) { if(typeof nextSlide === "function") nextSlide(); }
-            else if (x < width * 0.2) { if(typeof prevSlide === "function") prevSlide(); }
+        function updateLaserPos(e) {
+            const pos = getCoords(e);
+            laser.style.left = pos.x + 'px';
+            laser.style.top = pos.y + 'px';
         }
 
-        // --- مستمعات الأحداث ---
+        // إدراج المستمعات
         window.addEventListener('mousedown', startAction);
         window.addEventListener('mousemove', moveAction);
         window.addEventListener('mouseup', endAction);
-
         window.addEventListener('touchstart', (e) => { if(laserActive) e.preventDefault(); startAction(e); }, {passive: false});
         window.addEventListener('touchmove', (e) => { if(laserActive) e.preventDefault(); moveAction(e); }, {passive: false});
         window.addEventListener('touchend', endAction);
 
-        // --- نظام الكيبورد للديسك توب فقط ---
+        // --- منطق التنقل (Navigation) ---
+
+        // 1. Mobile Click Navigation (الجوانب)
+        document.getElementById('activity-stage').addEventListener('click', (e) => {
+            if (!isMobile || laserActive) return; // لا ينقل لو ليزر شغال أو ديسك توب
+            
+            const width = window.innerWidth;
+            if (e.clientX > width * 0.8) {
+                if(typeof nextSlide === "function") nextSlide();
+            } else if (e.clientX < width * 0.2) {
+                if(typeof prevSlide === "function") prevSlide();
+            }
+        });
+
+        // 2. Desktop Keyboard Navigation
         window.addEventListener('keydown', (e) => {
-            if (document.getElementById('activity-stage').style.display === 'block') {
-                if (e.key === "ArrowRight" || e.key === "Enter") { if(typeof nextSlide === "function") nextSlide(); }
-                if (e.key === "ArrowLeft") { if(typeof prevSlide === "function") prevSlide(); }
-                if (e.key === "Escape") closeStage();
+            if (document.getElementById('activity-stage').style.display === 'none') return;
+            
+            if (e.key === "Enter" || e.key === "ArrowRight" || e.key === " ") {
+                if(typeof nextSlide === "function") nextSlide();
+            } else if (e.key === "ArrowLeft" || e.key === "Backspace") {
+                if(typeof prevSlide === "function") prevSlide();
+            } else if (e.key === "Escape") {
+                closeStage();
             }
         });
 

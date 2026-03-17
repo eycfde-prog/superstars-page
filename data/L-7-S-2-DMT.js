@@ -1,79 +1,81 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    let timeLeft = 120; // دقيقتين بالثواني
+    let timeLeft = 120; // 2 Minutes
     let timerInterval = null;
     let isRunning = false;
 
-    // --- التنسيق البصري (Style) ---
     container.innerHTML = '';
-    container.style.cssText = `height:calc(100vh - 200px); display:flex; flex-direction:column; justify-content:center; align-items:center; background:#0f172a; color:#fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#020617; color:#fff; font-family: 'Inter', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            .dmt-title { font-size: 3rem; font-weight: 900; color: #38bdf8; margin-bottom: 20px; text-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
-            .dmt-subtitle { font-size: 1.2rem; color: #94a3b8; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 4px; }
-            
-            /* تصميم الساعة الأنالوج */
-            .analog-clock {
-                width: 350px; height: 350px;
-                border: 10px solid #1e293b;
-                border-radius: 50%;
+            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;900&display=swap');
+
+            .dmt-header { text-align: center; margin-bottom: 30px; }
+            .dmt-title { font-size: 3.5rem; font-weight: 900; color: #38bdf8; text-transform: uppercase; letter-spacing: 2px; }
+            .dmt-subtitle { font-size: 1.1rem; color: #64748b; letter-spacing: 5px; }
+
+            .clock-wrapper {
                 position: relative;
+                width: 400px; height: 400px;
                 display: flex; justify-content: center; align-items: center;
-                background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
-                box-shadow: 0 0 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
+                background: radial-gradient(circle, #0f172a 60%, #38bdf822 100%);
+                border: 8px solid #1e293b;
+                border-radius: 50%;
+                box-shadow: 0 0 80px rgba(56, 189, 248, 0.1);
             }
 
-            /* مؤشر الثواني الدوار */
             .hand {
                 position: absolute; bottom: 50%; left: 50%;
-                width: 4px; height: 140px;
+                width: 4px; height: 160px;
                 background: #38bdf8;
                 transform-origin: bottom;
                 transform: translateX(-50%) rotate(0deg);
                 transition: transform 1s linear;
-                border-radius: 4px;
-                box-shadow: 0 0 10px #38bdf8;
+                border-radius: 10px;
+                box-shadow: 0 0 15px #38bdf8;
                 z-index: 2;
             }
 
-            /* المربع الديجيتال في المنتصف */
-            .digital-box {
-                width: 160px; height: 100px;
-                background: #0f172a;
-                border: 2px solid #38bdf8;
-                border-radius: 15px;
+            .digital-display {
+                width: 200px; height: 100px;
+                background: #020617;
+                border: 2px solid #1e293b;
+                border-radius: 20px;
                 display: flex; justify-content: center; align-items: center;
-                font-size: 3.5rem; font-weight: 900; color: #fff;
-                box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+                font-size: 4rem; font-weight: 700; color: #fff;
+                font-family: 'Orbitron', sans-serif;
                 z-index: 3;
+                box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
             }
 
-            .controls { margin-top: 50px; display: flex; gap: 20px; }
+            .controls { margin-top: 40px; display: flex; gap: 20px; }
             .btn {
-                padding: 15px 40px; font-size: 1.5rem; font-weight: bold; border: none; border-radius: 12px;
-                cursor: pointer; transition: 0.3s; text-transform: uppercase;
+                padding: 18px 50px; font-size: 1.4rem; font-weight: 800; border: none; border-radius: 15px;
+                cursor: pointer; transition: 0.3s; text-transform: uppercase; font-family: 'Inter', sans-serif;
             }
-            .btn-start { background: #22c55e; color: #fff; box-shadow: 0 4px 0 #16a34a; }
-            .btn-reset { background: #ef4444; color: #fff; box-shadow: 0 4px 0 #dc2626; }
+            .btn-start { background: #0ea5e9; color: #fff; box-shadow: 0 6px 0 #0369a1; }
+            .btn-reset { background: #334155; color: #fff; box-shadow: 0 6px 0 #1e293b; }
             .btn:active { transform: translateY(4px); box-shadow: none; }
-            
-            /* نقاط الساعة الخارجية */
-            .dot { position: absolute; width: 6px; height: 6px; background: #334155; border-radius: 50%; }
+            .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+            .marking { position: absolute; width: 2px; height: 15px; background: #334155; }
         </style>
 
-        <div class="dmt-title">Double Minutes Talk</div>
-        <div class="dmt-subtitle">No Papers • No Fear • Just English</div>
+        <div class="dmt-header">
+            <div class="dmt-title">2 Minute Challenge</div>
+            <div class="dmt-subtitle">LEVEL 7 • SESSION 2</div>
+        </div>
 
-        <div class="analog-clock" id="clock">
+        <div class="clock-wrapper" id="clock">
             <div class="hand" id="secondHand"></div>
-            <div class="digital-box" id="digitalTimer">02:00</div>
+            <div class="digital-display" id="digitalTimer">02:00</div>
         </div>
 
         <div class="controls">
-            <button class="btn btn-start" id="btnStart">Start Talking</button>
+            <button class="btn btn-start" id="btnStart">Start Talk</button>
             <button class="btn btn-reset" id="btnReset">Reset</button>
         </div>
         
@@ -86,13 +88,17 @@
     const resetBtn = document.getElementById('btnReset');
     const bell = document.getElementById('bellSound');
 
-    // توزيع النقاط حول الساعة
-    for (let i = 0; i < 12; i++) {
-        const dot = document.createElement('div');
-        dot.className = 'dot';
-        const angle = i * 30;
-        dot.style.transform = `rotate(${angle}deg) translateY(-160px)`;
-        document.getElementById('clock').appendChild(dot);
+    // Add markings to the clock
+    for (let i = 0; i < 60; i++) {
+        const mark = document.createElement('div');
+        mark.className = 'marking';
+        mark.style.transform = `rotate(${i * 6}deg) translateY(-185px)`;
+        if (i % 5 === 0) {
+            mark.style.height = '25px';
+            mark.style.background = '#64748b';
+            mark.style.width = '4px';
+        }
+        document.getElementById('clock').appendChild(mark);
     }
 
     function updateDisplay() {
@@ -100,14 +106,14 @@
         const secs = timeLeft % 60;
         digital.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         
-        // تحريك العقرب (360 درجة مقسمة على 60 ثانية)
-        const rotation = (120 - timeLeft) * 6; 
-        hand.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+        const rotation = (120 - timeLeft) * 3; // For 2 minutes, 1.5 deg per second if 360, but we want 2 full circles or 1? Let's do 1 full circle for the whole 2 mins
+        hand.style.transform = `translateX(-50%) rotate(${(120 - timeLeft) * 3}deg)`;
 
-        // تغيير اللون عند اقتراب الوقت من النهاية
         if (timeLeft <= 10) {
             digital.style.color = '#ef4444';
+            digital.style.textShadow = '0 0 20px #ef444455';
             hand.style.background = '#ef4444';
+            hand.style.boxShadow = '0 0 15px #ef4444';
         } else {
             digital.style.color = '#fff';
             hand.style.background = '#38bdf8';
@@ -117,13 +123,14 @@
     function startTimer() {
         if (isRunning) {
             clearInterval(timerInterval);
-            startBtn.innerText = "Resume";
-            startBtn.style.background = "#22c55e";
+            startBtn.innerText = "Resume Talk";
+            startBtn.style.background = "#0ea5e9";
             isRunning = false;
         } else {
             isRunning = true;
             startBtn.innerText = "Pause";
             startBtn.style.background = "#f59e0b";
+            startBtn.style.boxShadow = "0 6px 0 #b45309";
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
                     timeLeft--;
@@ -131,7 +138,9 @@
                 } else {
                     clearInterval(timerInterval);
                     bell.play();
-                    startBtn.innerText = "Time's Up!";
+                    startBtn.innerText = "Well Done!";
+                    startBtn.style.background = "#22c55e";
+                    startBtn.style.boxShadow = "0 6px 0 #15803d";
                     startBtn.disabled = true;
                 }
             }, 1000);
@@ -142,9 +151,10 @@
         clearInterval(timerInterval);
         timeLeft = 120;
         isRunning = false;
-        startBtn.innerText = "Start Talking";
+        startBtn.innerText = "Start Talk";
         startBtn.disabled = false;
-        startBtn.style.background = "#22c55e";
+        startBtn.style.background = "#0ea5e9";
+        startBtn.style.boxShadow = "0 6px 0 #0369a1";
         updateDisplay();
     }
 

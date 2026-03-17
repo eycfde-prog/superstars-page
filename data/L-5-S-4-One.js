@@ -1,8 +1,8 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات القصة ---
+    // --- Story Settings ---
     const storyTitle = "The Missing Dinosaur Bone";
     
     const storyContent = `
@@ -27,43 +27,81 @@
         The next day, the museum put a <span class="target-word">fence</span> around the dinosaur so no more "thieves" could enter. 
         Mr. Higgins stayed <span class="target-word">awake</span> for the rest of the week!
     `;
-    // -------------------------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:block; background:#121212; color:#eee; overflow-y:auto; padding:50px; font-family: 'Georgia', serif;`;
+    container.style.cssText = `height:100%; display:block; background:#0d0d0f; color:#d1d1d1; overflow-y:auto; padding:60px 40px; font-family: 'Inter', sans-serif;`;
 
     container.innerHTML = `
         <style>
-            .target-word {
-                color: #f1c40f; 
-                font-weight: bold;
-                text-decoration: underline;
-                background: rgba(241, 196, 15, 0.1);
-                padding: 0 5px;
-                border-radius: 4px;
-            }
-            .story-container {
-                max-width: 1000px;
+            @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;700&family=Inter:wght@400;800&display=swap');
+
+            .mystery-wrapper {
+                max-width: 900px;
                 margin: 0 auto;
-                line-height: 1.8;
-                font-size: 1.8rem;
+                background: #141418;
+                padding: 50px 70px;
+                border-radius: 20px;
+                border: 1px solid #222;
+                box-shadow: 0 30px 80px rgba(0,0,0,0.8);
             }
-            .title {
+
+            .label {
                 color: #e74c3c;
                 text-align: center;
-                font-size: 3rem;
-                margin-bottom: 40px;
+                font-size: 1rem;
+                font-weight: 800;
+                letter-spacing: 5px;
                 text-transform: uppercase;
-                border-bottom: 2px solid #333;
-                padding-bottom: 20px;
+                margin-bottom: 10px;
+                display: block;
             }
+
+            .story-title {
+                color: #ffffff;
+                text-align: center;
+                font-size: 3.5rem;
+                font-family: 'Crimson Pro', serif;
+                margin-bottom: 45px;
+                font-weight: 700;
+                letter-spacing: -1px;
+            }
+
+            #textBody {
+                line-height: 1.8;
+                font-size: 1.85rem;
+                color: #b0b0b0;
+                font-family: 'Crimson Pro', serif;
+            }
+
+            .target-word {
+                color: #f1c40f; 
+                font-weight: 700;
+                padding: 0 4px;
+                border-bottom: 1px solid rgba(241, 196, 15, 0.4);
+                transition: all 0.3s ease;
+            }
+
+            .target-word:hover {
+                background: #f1c40f;
+                color: #000;
+                border-radius: 4px;
+            }
+
+            #textBody p { margin-bottom: 25px; }
+            
+            /* Custom Scrollbar */
+            #stage-content::-webkit-scrollbar { width: 8px; }
+            #stage-content::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         </style>
-        <div class="story-container">
-            <h1 class="title">ONE SHOT: ${storyTitle}</h1>
+        
+        <div class="mystery-wrapper">
+            <span class="label">One Shot Reader</span>
+            <h1 class="story-title">${storyTitle}</h1>
             <div id="textBody">
                 ${storyContent}
             </div>
         </div>
+        <div style="height:80px;"></div>
     `;
 
 })();

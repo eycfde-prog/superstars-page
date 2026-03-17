@@ -1,70 +1,85 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- عناصر مشروع برنامج التلفزيون ---
     const elements = [
-        { icon: "🎤", label: "Host", desc: "The person who leads the talk." },
-        { icon: "🌟", label: "Guest", desc: "A famous person or an expert." },
-        { icon: "🎭", label: "Characters", desc: "Interesting people in the show." },
-        { icon: "❓", label: "Questions", desc: "Prepare deep and fun questions." },
-        { icon: "💬", label: "Answers", desc: "Smart and exciting responses." },
-        { icon: "🎬", label: "Opening", desc: "How you start the show (Intro)." },
-        { icon: "🏁", label: "Closing", desc: "How you end and say goodbye." },
-        { icon: "🤝", label: "Harmony", desc: "Teamwork and smooth talking." }
+        { icon: "🎤", label: "Host", desc: "The leader who drives the conversation." },
+        { icon: "🌟", label: "Guest", desc: "An expert, celebrity, or a person with a story." },
+        { icon: "🎭", label: "Characters", desc: "Unique personalities to make it fun." },
+        { icon: "❓", label: "Questions", desc: "Prepare 'Open' questions (How/Why)." },
+        { icon: "💬", label: "Answers", desc: "Exciting, detailed, and smart responses." },
+        { icon: "🎬", label: "Intro", desc: "A powerful opening to grab attention." },
+        { icon: "🏁", label: "Outro", desc: "Summary and a professional goodbye." },
+        { icon: "🤝", label: "Harmony", desc: "Teamwork and listening to each other." }
     ];
 
-    // --- التنسيق البصري ---
     container.innerHTML = '';
-    container.style.cssText = `height:calc(100vh - 100px); display:flex; flex-direction:column; align-items:center; background:#050505; color:#fff; font-family: 'Arial Black', sans-serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; display:flex; flex-direction:column; align-items:center; background:#050505; color:#fff; font-family: 'Inter', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            .tv-header { text-align:center; margin-top:30px; z-index:10; }
-            .tv-header h1 { font-size: 4rem; color: #ff0000; text-transform: uppercase; letter-spacing: 5px; margin:0; text-shadow: 0 0 20px #ff0000; }
-            .tv-live { background:#ff0000; color:#fff; padding:5px 15px; border-radius:5px; font-size:1.2rem; display:inline-block; animation: blink 1s infinite; margin-top:10px; }
+            @keyframes scanline { 0% { bottom: 100%; } 100% { bottom: 0%; } }
+            @keyframes blink { 0%, 100% { opacity:1; } 50% { opacity:0.3; } }
             
-            @keyframes blink { 0%, 100% { opacity:1; } 50% { opacity:0; } }
+            .tv-overlay {
+                position: absolute; inset: 0;
+                background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                            linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+                background-size: 100% 2px, 3px 100%;
+                pointer-events: none; z-index: 20;
+            }
 
+            .tv-header { text-align:center; margin-top:40px; z-index:10; }
+            .tv-header h1 { font-size: 5rem; color: #fff; text-transform: uppercase; letter-spacing: 15px; margin:0; font-weight: 900; }
+            .tv-live { background:#ff0000; color:#fff; padding:8px 25px; border-radius:4px; font-size:1.5rem; display:inline-block; animation: blink 0.8s infinite; margin-top:15px; font-weight:bold; letter-spacing:2px; }
+            
             .elements-grid { 
                 display: grid; 
                 grid-template-columns: repeat(4, 1fr); 
-                gap: 20px; 
-                width: 90%; max-width: 1100px; 
-                margin-top: 40px; z-index:10;
+                gap: 25px; 
+                width: 92%; max-width: 1200px; 
+                margin-top: 50px; z-index:10;
             }
 
             .el-card {
-                background: linear-gradient(145deg, #1a1a1a, #000);
-                border: 2px solid #333;
-                padding: 20px; text-align: center; border-radius: 15px;
-                transition: 0.3s; cursor: pointer;
+                background: #111;
+                border: 1px solid #222;
+                padding: 30px 20px; text-align: center; border-radius: 4px;
+                transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position:relative;
+                overflow:hidden;
             }
 
-            .el-card:hover { border-color: #ff0000; transform: scale(1.05); box-shadow: 0 0 20px rgba(255,0,0,0.3); }
+            .el-card:hover { 
+                border-color: #ff0000; 
+                transform: translateY(-10px); 
+                background: #1a0000;
+                box-shadow: 0 10px 30px rgba(255,0,0,0.2); 
+            }
             
-            .el-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
-            .el-label { font-size: 1.5rem; color: #ff0000; display: block; margin-bottom: 5px; }
-            .el-desc { font-size: 0.9rem; color: #888; font-family: 'Segoe UI', sans-serif; }
+            .el-icon { font-size: 3.5rem; margin-bottom: 15px; display: block; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
+            .el-label { font-size: 1.6rem; color: #ff0000; display: block; margin-bottom: 10px; font-weight: 900; text-transform: uppercase; }
+            .el-desc { font-size: 1.1rem; color: #aaa; line-height: 1.4; }
 
-            /* تأثير أضواء الاستوديو */
-            .light { position:absolute; top:-100px; width:400px; height:600px; background: radial-gradient(circle, rgba(255,0,0,0.1) 0%, transparent 70%); filter:blur(50px); z-index:1; }
-            .light-left { left:-100px; transform: rotate(45deg); }
-            .light-right { right:-100px; transform: rotate(-45deg); }
+            .studio-light {
+                position:absolute; top:-150px; width:500px; height:500px; 
+                background: radial-gradient(circle, rgba(255,0,0,0.15) 0%, transparent 70%); 
+                filter:blur(80px); z-index:1;
+            }
         </style>
 
-        <div class="light light-left"></div>
-        <div class="light light-right"></div>
+        <div class="tv-overlay"></div>
+        <div class="studio-light" style="left:-100px;"></div>
+        <div class="studio-light" style="right:-100px;"></div>
 
         <div class="tv-header">
-            <h1>T.V SHOW</h1>
-            <div class="tv-live">● LIVE SESSION</div>
-            <p style="color:#666; margin-top:15px; font-family:sans-serif;">Project #1: Work in groups of 2-3 to create your own show.</p>
+            <h1>TV SHOW</h1>
+            <div class="tv-live">● ON AIR</div>
+            <p style="color:#888; margin-top:20px; font-size:1.3rem; letter-spacing:2px;">CREATIVE PRODUCTION: LEVEL 8 PROJECT</p>
         </div>
 
         <div class="elements-grid" id="elementsGrid"></div>
         
-        <div style="position:absolute; bottom:30px; color:#444; font-size:0.8rem; z-index:10;">PROJECT PREPARATION MODE</div>
+        <div style="position:absolute; bottom:30px; color:#333; font-size:1rem; z-index:10; letter-spacing:5px;">PRODUCTION STATUS: PRE-FILMING</div>
     `;
 
     const grid = document.getElementById('elementsGrid');

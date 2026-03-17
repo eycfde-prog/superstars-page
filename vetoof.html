@@ -3,74 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veto Program - Optimized Background</title>
+    <title>Veto Program - Interactive Board</title>
     <style>
         :root {
             --primary-bg: #000;
-            --text-color: #ffffff;
-            --overlay-opacity: 0.4; /* زيادة التباين قليلاً لبروز النص */
+            --accent-color: #00d4ff; /* لون تقني واضح */
+            --level-size: 100px;
+            --session-size: 50px;
+            --text-gold: #ffcc00;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body, html {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
+        body {
             background-color: var(--primary-bg);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            overflow: hidden; /* منع التمرير لضمان مظهر السبورة */
+            height: 100vh;
         }
 
-        /* حاوية الخلفية المطورة */
+        /* الخلفية والطبقة الضبابية */
         .background-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* تحديث الرابط ليشير إلى الفرع الرئيسي لضمان الاستمرارية */
+            inset: 0;
             background-image: url('https://cdn.jsdelivr.net/gh/eycfde-prog/EYCVetoProgram@main/vetoofb.webp');
             background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            z-index: 1; /* جعلها في الأسفل */
-            transition: opacity 0.5s ease-in-out;
+            background-position: center;
+            z-index: -2;
         }
 
-        /* الطبقة الضبابية (Overlay) لضمان وضوح النص */
         .overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, var(--overlay-opacity));
-            z-index: 2;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(2px);
+            z-index: -1;
         }
 
-        .main-stage {
-            position: relative; /* لضمان ظهور المحتوى فوق الـ fixed elements */
+        /* شبكة المستويات */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 20px;
+            height: 100vh;
+            padding: 40px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .level-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* الدائرة الرئيسية (Level) */
+        .level-circle {
+            width: var(--level-size);
+            height: var(--level-size);
+            background: #111;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: var(--text-color);
-            z-index: 3;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: clamp(2.5rem, 12vw, 8rem); 
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
             font-weight: 900;
-            letter-spacing: -2px;
-            text-shadow: 0 10px 50px rgba(0,0,0,1);
-            animation: fadeIn 1.5s ease-out;
+            font-size: 1.5rem;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* الإطار الدوار */
+        .level-circle::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            background: conic-gradient(from 0deg, transparent, var(--accent-color), transparent);
+            border-radius: 50%;
+            animation: rotateBorder 4s linear infinite;
+            z-index: -1;
         }
+
+        @keyframes rotateBorder {
+            to { transform: rotate(360deg); }
+        }
+
+        .level-circle:hover { transform: scale(1.1); }
+
+        /* حاوية الدوائر الصغيرة (Sessions) */
+        .sessions-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 240px;
+            height: 240px;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .level-wrapper.active .sessions-container {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .session-node {
+            position: absolute;
+            width: var(--session-size);
+            height: var(--session-size);
+            background: var(--accent-color);
+            border-radius: 50%;
+            color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent-color);
+            transition: 0.3s;
+        }
+
+        .session-node:hover { background: #fff; transform: scale(1.2); }
+
+        /* توزيع الـ 4 دوائر حول السنتر */
+        .s1 { top: 0; left: 50%; transform: translateX(-50%); }
+        .s2 { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .s3 { left: 0; top: 50%; transform: translateY(-50%); }
+        .s4 { right: 0; top: 50%; transform: translateY(-50%); }
+
+        /* نافذة عرض المحتوى (Modal) */
+        #content-display {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px 40px;
+            border-radius: 50px;
+            border: 2px solid var(--accent-color);
+            max-width: 80%;
+            text-align: center;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+        }
+
+        #content-display h2 { color: var(--text-gold); font-size: 2rem; }
     </style>
 </head>
 <body>
@@ -78,19 +163,75 @@
     <div class="background-container"></div>
     <div class="overlay"></div>
 
-    <main class="main-stage">
-        <h1>VETO PROGRAM</h1>
-    </main>
+    <div class="levels-grid" id="grid">
+        </div>
+
+    <div id="content-display">
+        <h2 id="session-title">Session Content</h2>
+        <p id="session-tasks" style="font-size: 1.5rem;"></p>
+    </div>
 
     <script>
-        // كود بسيط للتأكد من تحميل الصورة بنجاح
-        const bg = document.querySelector('.background-container');
-        const img = new Image();
-        img.src = "https://cdn.jsdelivr.net/gh/eycfde-prog/EYCVetoProgram@main/vetoofb.webp";
-        img.onerror = function() {
-            console.error("WOLF Error: فشل تحميل صورة الخلفية من GitHub.");
-            bg.style.backgroundColor = "#111"; // خلفية احتياطية
+        const sessionData = {
+            "1-1": ["Grammar 1 Study", "Listening 1 Intro"],
+            "1-2": ["Grammar 2 Study", "Vocab 1 Review"],
+            // ... (باقي البيانات التي أرسلتها يا مستر عز)
+            "12-4": ["GP Viewing"]
         };
+
+        const grid = document.getElementById('grid');
+        const display = document.getElementById('content-display');
+
+        // إنشاء الـ 12 مستوى
+        for (let i = 1; i <= 12; i++) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'level-wrapper';
+            wrapper.id = `lvl-wrap-${i}`;
+
+            wrapper.innerHTML = `
+                <div class="level-circle" onclick="toggleLevel(${i})">L${i}</div>
+                <div class="sessions-container">
+                    <div class="session-node s1" onclick="showData('${i}-1')">S1</div>
+                    <div class="session-node s2" onclick="showData('${i}-2')">S2</div>
+                    <div class="session-node s3" onclick="showData('${i}-3')">S3</div>
+                    <div class="session-node s4" onclick="showData('${i}-4')">S4</div>
+                </div>
+            `;
+            grid.appendChild(wrapper);
+        }
+
+        function toggleLevel(num) {
+            // منطق التراكمي: افتح الليفل المختار وكل اللي قبله
+            for (let i = 1; i <= 12; i++) {
+                const el = document.getElementById(`lvl-wrap-${i}`);
+                if (i <= num) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            }
+        }
+
+        function showData(key) {
+            const tasks = sessionData[key];
+            if (tasks) {
+                display.style.display = 'block';
+                document.getElementById('session-title').innerText = `Session ${key}`;
+                document.getElementById('session-tasks').innerText = tasks.join(' | ');
+                
+                // إخفاء التنبيه بعد 8 ثوانٍ لراحة العين
+                setTimeout(() => { display.style.display = 'none'; }, 8000);
+            }
+        }
+
+        // اختصار الكيبورد (Enter لفتح المستوى التالي)
+        let currentLvl = 0;
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                currentLvl = (currentLvl % 12) + 1;
+                toggleLevel(currentLvl);
+            }
+        });
     </script>
 </body>
 </html>

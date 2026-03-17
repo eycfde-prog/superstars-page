@@ -1,42 +1,77 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- إعدادات الجزء (تغير فقط هذه البيانات في النسخ الـ 40) ---
+    // --- Configuration ---
     const ttNumber = 1; 
     const ttSentence = "She sells sea shells by the sea shore, the shells she sells are shells I'm sure.";
-    // -------------------------------------------------------
+    // ---------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); display:flex; flex-direction:column; align-items:center; justify-content:center; background:#0f0f0f; color:#fff; overflow:hidden; padding:20px; font-family: 'Arial Rounded MT Bold', sans-serif;`;
+    container.style.cssText = `height:100%; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#050505; color:#fff; overflow:hidden; font-family: 'Segoe UI', sans-serif;`;
+
+    // معالجة النص لتمييز حروف S و SH بصرياً
+    const highlightedSentence = ttSentence
+        .replace(/sh/gi, '<span class="sh-sound">sh</span>')
+        .replace(/s/gi, '<span class="s-sound">s</span>');
 
     container.innerHTML = `
-        <div style="width:100%; max-width:1000px; text-align:center;">
-            <div style="background:#f1c40f; color:#000; display:inline-block; padding:5px 20px; font-weight:900; border-radius:50px; margin-bottom:20px; font-size:1.2rem; letter-spacing:2px;">
-                TONGUE TWISTER #${ttNumber}
-            </div>
+        <style>
+            .tt-wrapper { width:90%; max-width:1100px; text-align:center; animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
             
-            <div style="width:300px; height:300px; margin: 0 auto 30px; border-radius:50%; border:8px solid #f1c40f; overflow:hidden; box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);">
-                <img src="data/t-t/${ttNumber}.png" alt="Twister ${ttNumber}" style="width:100%; height:100%; object-fit:cover;">
+            .tt-badge { 
+                background:#c5a059; color:#000; display:inline-block; padding:8px 30px; 
+                font-weight:900; border-radius:4px; margin-bottom:30px; font-size:1.1vw; 
+                letter-spacing:4px; text-transform:uppercase; 
+            }
+
+            .tt-image-container { 
+                width:22vw; height:22vw; margin: 0 auto 40px; border-radius:30px; 
+                border:4px solid #222; overflow:hidden; position:relative;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                transform: rotate(-2deg);
+            }
+
+            .tt-text-card { 
+                background: #111; padding:60px; border-radius:30px; 
+                border: 1px solid #222; position:relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            }
+
+            .tt-quote { font-size:4vw; line-height:1.2; font-weight:900; color:#fff; margin:0; }
+            
+            /* تمييز الأصوات */
+            .sh-sound { color: #e74c3c; text-decoration: underline; } /* الأحمر لصوت SH */
+            .s-sound { color: #c5a059; } /* الذهبي لصوت S */
+
+            .tt-instruction { margin-top:40px; color:#444; font-size:1.2vw; letter-spacing:2px; font-weight:bold; }
+            
+            @keyframes bounceIn {
+                from { opacity:0; transform: scale(0.9) translateY(20px); }
+                to { opacity:1; transform: scale(1) translateY(0); }
+            }
+        </style>
+
+        <div class="tt-wrapper">
+            <div class="tt-badge">Tongue Twister Challenger #${ttNumber}</div>
+            
+            <div class="tt-image-container">
+                <img src="data/t-t/${ttNumber}.png" onerror="this.src='https://via.placeholder.com/400?text=Twister'" style="width:100%; height:100%; object-fit:cover;">
             </div>
 
-            <div style="background: rgba(255,255,255,0.05); padding:40px; border-radius:20px; border: 2px dashed #f1c40f; position:relative;">
-                <p id="twisterText" style="font-size:3.5rem; line-height:1.2; font-weight:bold; color:#fff; margin:0; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
-                    ${ttSentence}
-                </p>
-                <div style="position:absolute; top:-20px; left:50%; transform:translateX(-50%); background:#0f0f0f; padding:0 15px; color:#f1c40f; font-size:2rem;">"</div>
+            <div class="tt-text-card">
+                <p class="tt-quote">${highlightedSentence}</p>
             </div>
 
-            <div style="margin-top:30px; color:#666; font-size:1.2rem; font-style:italic;">
-                Try to say it 3 times fast! ⚡
+            <div class="tt-instruction">
+                ⚡ REPEAT 3 TIMES AS FAST AS YOU CAN ⚡
             </div>
         </div>
     `;
 
-    // تأثير خفيف: تكبير النص عند النقر عليه للتركيز
-    const textElement = document.getElementById('twisterText');
-    textElement.onclick = function() {
-        this.style.color = (this.style.color === 'rgb(241, 196, 15)') ? '#fff' : '#f1c40f';
+    // إضافة تفاعل عند الضغط
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) { // Space
+            if(window.triggerVetoDone) window.triggerVetoDone();
+        }
     };
-
 })();

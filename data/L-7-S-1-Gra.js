@@ -1,101 +1,87 @@
 (function() {
-    const container = document.getElementById('activityFinalContent');
+    const container = document.getElementById('stage-content');
     if (!container) return;
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:calc(100vh - 200px); overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#0f0f0f; font-family:'Poppins', sans-serif; direction:ltr; color:white;`;
+    container.style.cssText = `height:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#050505; font-family:'Inter', sans-serif; direction:ltr; color:white;`;
 
     let currentSlide = 0;
     let subStep = 0;
 
     const slides = [
         /* 1: Title */
-        { type: 'title', content: 'PAST PERFECT SIMPLE', color: '#e74c3c' },
+        { type: 'title', content: 'PAST PERFECT SIMPLE', sub: 'The Past of the Past', color: '#e74c3c' },
         
         /* 2: Timeline Usage */
         { 
             type: 'timeline', 
-            title: 'Usage', 
-            content: 'An action had happened before another action happened.' 
+            title: 'Which happened first?', 
+            content: 'We use it to show that <span style="color:#f1c40f">Action 1</span> happened before <span style="color:#3498db">Action 2</span>.' 
         },
 
         /* 3: Formulation */
         { 
             type: 'writing', 
-            title: 'Formulation', 
-            content: '<span style="color:#f1c40f;">Subject + had + V3 (PP)</span><br><br><small>Example: They <span style="color:#e74c3c;">had cleaned</span> the car before they traveled.</small>' 
+            title: 'The Formula', 
+            content: `
+                <div style="background:#111; padding:40px; border-radius:20px; border:2px solid #333; text-align:center;">
+                    <span style="color:#fff">Subject + </span>
+                    <span style="color:#f1c40f; font-weight:900;">HAD</span>
+                    <span style="color:#fff"> + </span>
+                    <span style="color:#e74c3c; font-weight:900;">V3 (P.P)</span>
+                </div>
+                <p style="font-size:1.8rem; margin-top:30px; color:#aaa;">Example: I <span style="color:#f1c40f">had finished</span> before it <span style="color:#3498db">rained</span>.</p>
+            ` 
         },
 
-        /* 4: Examples (One by One) */
+        /* 4: Reveal List */
         { 
             type: 'reveal-list', 
+            title: 'Mastering the Order',
             items: [
                 "I had finished my work before the meeting started.",
-                "He had cleaned the car before they traveled.",
-                "She had already cooked lunch when her husband arrived.",
-                "It had stopped raining by the time we left the house.",
-                "We had studied the lesson before the teacher explained it.",
-                "You had seen that movie twice before I bought the DVD.",
+                "She had already cooked lunch when he arrived.",
+                "The train had left by the time we reached the station.",
                 "They had lost their way before they found the map."
             ] 
         },
 
-        /* 5: Focus Examples */
+        /* 5: Negative & Question */
+        { 
+            type: 'transform', 
+            title: 'Changing Forms',
+            pairs: [
+                { pos: "He had cleaned the car...", neg: "He <span style='color:#e74c3c;'>had not</span> (hadn't) cleaned..." },
+                { pos: "They had left the party...", neg: "<span style='color:#f1c40f;'>Had they</span> left the party...?" }
+            ]
+        },
+
+        /* 6: Irregular Focus */
         { 
             type: 'writing', 
-            title: 'Examples Focus', 
-            content: '• He had cleaned the car before they traveled.<br>• It had stopped raining by the time we left.<br>• They had lost their way before they found the map.' 
+            title: 'Irregular V3 Reminder', 
+            content: '<div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; font-size:2.5rem; color:#f1c40f;"><span>Go ➔ Gone</span><span>See ➔ Seen</span><span>Write ➔ Written</span><span>Eat ➔ Eaten</span></div>' 
         },
 
-        /* 6: Negative (Transformation) */
+        /* 7: Spelling Rule 1 */
+        { type: 'writing', title: 'Rule 1: Ends with (e)', content: 'We only add <span style="color:#f1c40f;">(d)</span><br><br><span style="color:#e74c3c;">Complete ➔ Completed</span>' },
+
+        /* 8: Spelling Rule 2 */
+        { type: 'writing', title: 'Rule 2: Consonant + Y', content: 'Change <span style="color:#e74c3c;">y</span> to <span style="color:#f1c40f;">ied</span><br><br><span style="color:#e74c3c;">Try ➔ Tried</span>' },
+
+        /* 9: Keywords */
         { 
-            type: 'transform', 
-            title: 'Negative Form',
-            pairs: [
-                { pos: "He had cleaned the car...", neg: "He <span style='color:#e74c3c;'>had not</span> cleaned the car..." },
-                { pos: "It had stopped raining...", neg: "It <span style='color:#e74c3c;'>had not</span> stopped raining..." },
-                { pos: "They had lost their way...", neg: "They <span style='color:#e74c3c;'>had not</span> lost their way..." }
-            ]
+            type: 'writing', 
+            title: 'Logic Connectors', 
+            content: '<div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; color:#3498db;"><div><small style="color:#fff">Followed by Had+V3:</small><br>After<br>As soon as</div><div><small style="color:#fff">Followed by V2:</small><br>Before<br>By the time</div></div>' 
         },
 
-        /* 7: Question (Transformation) */
-        { 
-            type: 'transform', 
-            title: 'Question Form',
-            pairs: [
-                { pos: "He had cleaned the car...", neg: "<span style='color:#f1c40f;'>Had he</span> cleaned the car...?" },
-                { pos: "It had stopped raining...", neg: "<span style='color:#f1c40f;'>Had it</span> stopped raining...?" },
-                { pos: "They had lost their way...", neg: "<span style='color:#f1c40f;'>Had they</span> lost their way...?" }
-            ]
-        },
-
-        /* 8: Words */
-        { type: 'title', content: 'Hide <br> Hiding', color: '#ffffff' },
-
-        /* 9: Irregular */
-        { type: 'reveal-list', items: ["Go = gone", "Write = written", "Eat = eaten", "See = seen"] },
-
-        /* 10: Complete */
-        { type: 'title', content: 'Complete <br> Completed', color: '#ffffff' },
-
-        /* 11: Rule 1 */
-        { type: 'writing', title: 'Rule 1', content: 'Verbs end with <span style="color:#e74c3c;">e</span> add only <span style="color:#f1c40f;">d</span>' },
-
-        /* 12: Try */
-        { type: 'title', content: 'Try <br> Tried', color: '#ffffff' },
-
-        /* 13: Rule 2 */
-        { type: 'writing', title: 'Rule 2', content: 'Verbs end with <span style="color:#e74c3c;">consonant + y</span><br>Remove <span style="color:#e74c3c;">y</span> and add <span style="color:#f1c40f;">ied</span>' },
-
-        /* 14: Keywords */
-        { type: 'writing', title: 'Keywords', content: '<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;"><span>Before</span><span>After</span><span>By the time</span><span>As soon as</span><span>Until</span></div>' },
-
-        /* 15: Quiz */
+        /* 10: Quiz */
         { 
             type: 'mcq', 
             question: "We _________ the ability to speak English until we _________ grammar.",
-            options: ["A) Hasn’t been spending", "B) Didn’t have / understood", "C) Haven’t had / understood", "D) hadn’t had / understood"],
-            answer: 3 
+            options: ["A) didn't have / understood", "B) hadn't have / understood", "C) hadn't had / understood", "D) haven't had / understood"],
+            answer: 2 
         }
     ];
 
@@ -103,70 +89,60 @@
         container.innerHTML = '';
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = `width:95%; text-align:center; animation: fadeIn 0.4s ease;`;
+        wrapper.style.cssText = `width:90%; text-align:center; animation: fadeIn 0.4s ease;`;
 
         if (s.type === 'title') {
-            wrapper.innerHTML = `<h1 style="font-size:7rem; font-weight:900; color:${s.color}; margin:0; line-height:1.2;">${s.content}</h1>`;
+            wrapper.innerHTML = `
+                <h1 style="font-size:6rem; font-weight:900; color:${s.color}; margin:0;">${s.content}</h1>
+                <p style="font-size:1.8rem; color:#555; letter-spacing:8px; margin-top:20px; text-transform:uppercase;">${s.sub}</p>
+            `;
         } 
         else if (s.type === 'timeline') {
             wrapper.innerHTML = `
-                <div style="text-align:center;">
-                    <h2 style="font-size:3rem; color:#e74c3c; margin-bottom:50px;">${s.title}</h2>
-                    <p style="font-size:2.5rem; margin-bottom:60px;">${s.content}</p>
-                    <div style="position:relative; width:80%; margin:auto; height:10px; background:white; display:flex; align-items:center; justify-content:space-between;">
-                        <div style="position:absolute; left:-20px; border:20px solid transparent; border-right:20px solid white;"></div>
-                        <div style="position:absolute; right:-20px; border:20px solid transparent; border-left:20px solid white;"></div>
-                        <div style="height:40px; width:4px; background:#e74c3c; position:relative;">
-                            <span style="position:absolute; top:50px; left:-30px; font-size:1.5rem;">Present</span>
-                        </div>
-                        <span style="position:absolute; left:10%; top:25px; font-size:1.5rem; color:#888;">Past</span>
-                        <span style="position:absolute; right:10%; top:25px; font-size:1.5rem; color:#888;">Future</span>
-                        <div style="position:absolute; left:25%; height:60px; width:6px; background:#f1c40f; transition:0.5s; opacity:${subStep >= 1 ? 1 : 0};">
-                             <span style="position:absolute; bottom:70px; left:-40px; font-size:1.2rem; width:100px; color:#f1c40f;">Action 1 (Had+V3)</span>
-                        </div>
-                        <div style="position:absolute; left:35%; height:60px; width:6px; background:#3498db; transition:0.5s; opacity:${subStep >= 1 ? 1 : 0};">
-                             <span style="position:absolute; bottom:70px; left:-40px; font-size:1.2rem; width:100px; color:#3498db;">Action 2 (Past Simple)</span>
-                        </div>
+                <h2 style="font-size:3.5rem; color:#e74c3c; margin-bottom:40px;">${s.title}</h2>
+                <p style="font-size:2.2rem; margin-bottom:60px;">${s.content}</p>
+                <div style="position:relative; width:85%; margin:60px auto; height:6px; background:#333; display:flex; align-items:center; justify-content:space-between;">
+                    <div style="height:40px; width:4px; background:#fff; position:relative;"><span style="position:absolute; top:50px; left:-25px; color:#fff;">Present</span></div>
+                    <div style="position:absolute; left:20%; height:80px; width:8px; background:#f1c40f; opacity:${subStep >= 1 ? 1 : 0}; transition:0.5s;">
+                        <span style="position:absolute; bottom:90px; left:-60px; font-size:1.3rem; color:#f1c40f; width:150px;">Action 1<br>(Had + V3)</span>
+                    </div>
+                    <div style="position:absolute; left:50%; height:80px; width:8px; background:#3498db; opacity:${subStep >= 1 ? 1 : 0}; transition:0.8s;">
+                        <span style="position:absolute; bottom:90px; left:-60px; font-size:1.3rem; color:#3498db; width:150px;">Action 2<br>(Past Simple)</span>
                     </div>
                 </div>`;
         }
         else if (s.type === 'writing') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#1e1e1e; padding:50px; border-left:15px solid #e74c3c; border-radius:15px; width:100%;">
-                    <h2 style="font-size:4rem; margin-bottom:15px; color:#e74c3c;">${s.title}</h2>
-                    <div style="font-size:3.5rem; line-height:1.4; color:#fff;">${s.content}</div>
-                </div>`;
+                <h2 style="font-size:4rem; color:#e74c3c; margin-bottom:40px;">${s.title}</h2>
+                <div style="font-size:3.2rem; line-height:1.5;">${s.content}</div>`;
         }
         else if (s.type === 'reveal-list') {
-            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; gap:10px; text-align:left;">
-                ${s.items.map((item, i) => `
-                    <div style="opacity:${i <= subStep ? 1 : 0}; transform:translateX(${i <= subStep ? 0 : -30}px); transition:0.4s; background:#1e1e1e; padding:15px; border-radius:10px; font-size:2rem; font-weight:bold; color:#fff; border-left:5px solid #e74c3c;">
-                        ${item}
-                    </div>
-                `).join('')}
-            </div>`;
+            wrapper.innerHTML = `
+                <h2 style="font-size:3.5rem; color:#e74c3c; margin-bottom:30px;">${s.title}</h2>
+                <div style="display:flex; flex-direction:column; gap:15px; text-align:left;">
+                    ${s.items.map((item, i) => `
+                        <div style="opacity:${i <= subStep ? 1 : 0}; transition:0.3s; background:#111; padding:20px; border-radius:15px; font-size:1.8rem; border-left:10px solid #f1c40f;">${item}</div>
+                    `).join('')}
+                </div>`;
         }
         else if (s.type === 'transform') {
             let pair = s.pairs[Math.floor(subStep/2)] || s.pairs[0];
-            let isNeg = subStep % 2 !== 0;
+            let isAlt = subStep % 2 !== 0;
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#1e1e1e; padding:50px; border-radius:15px; border:2px solid #444;">
-                    <h2 style="font-size:3rem; color:#e74c3c; margin-bottom:30px;">${s.title}</h2>
-                    <div style="font-size:3.5rem; transition:0.3s; color:${isNeg ? '#f1c40f' : '#fff'};">
-                        ${isNeg ? pair.neg : pair.pos}
-                    </div>
-                    <div style="margin-top:20px; color:#666;">Step ${Math.floor(subStep/2) + 1} of ${s.pairs.length}</div>
+                <h2 style="font-size:3.5rem; color:#e74c3c; margin-bottom:40px;">${s.title}</h2>
+                <div style="background:#111; padding:60px; border-radius:30px; font-size:3rem; border:1px solid #333; color:${isAlt ? '#f1c40f' : '#fff'}">
+                    ${isAlt ? pair.neg : pair.pos}
                 </div>`;
         }
         else if (s.type === 'mcq') {
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#1e1e1e; padding:40px; border-radius:20px; border: 2px solid #333;">
-                    <div style="font-size:2.5rem; font-weight:bold; color:#fff; margin-bottom:30px;">${s.question}</div>
-                    <div style="display:grid; grid-template-columns: 1fr; gap:15px; opacity:${subStep >= 1 ? 1 : 0}; transition: 0.5s;">
+                <div style="text-align:left; background:#111; padding:50px; border-radius:30px; border:1px solid #333;">
+                    <div style="font-size:2.5rem; font-weight:bold; margin-bottom:40px;">${s.question}</div>
+                    <div style="display:grid; grid-template-columns: 1fr; gap:20px; opacity:${subStep >= 1 ? 1 : 0}; transition:0.5s;">
                         ${s.options.map((opt, i) => {
-                            let bgColor = "#2c3e50";
-                            if (subStep >= 2 && i === s.answer) bgColor = "#27ae60";
-                            return `<div style="background:${bgColor}; padding:15px; border-radius:10px; font-size:2rem; font-weight:600;">${opt}</div>`;
+                            let color = (subStep >= 2 && i === s.answer) ? '#27ae60' : (subStep >= 2 ? '#555' : '#fff');
+                            let border = (subStep >= 2 && i === s.answer) ? '2px solid #27ae60' : '1px solid #333';
+                            return `<div style="padding:20px; border-radius:15px; font-size:2rem; border:${border}; color:${color}">${opt}</div>`;
                         }).join('')}
                     </div>
                 </div>`;
@@ -177,13 +153,13 @@
 
     document.onkeydown = (e) => {
         const s = slides[currentSlide];
-        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { // Next
+        if (e.keyCode === 39 || e.keyCode === 32 || e.keyCode === 13) { 
             if (s.type === 'timeline' && subStep < 1) subStep++;
             else if (s.type === 'reveal-list' && subStep < s.items.length - 1) subStep++;
             else if (s.type === 'transform' && subStep < (s.pairs.length * 2) - 1) subStep++;
             else if (s.type === 'mcq' && subStep < 2) subStep++;
             else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
-        } else if (e.keyCode === 37) { // Back
+        } else if (e.keyCode === 37) { 
             if (subStep > 0) subStep--;
             else if (currentSlide > 0) { currentSlide--; subStep = 0; }
         }

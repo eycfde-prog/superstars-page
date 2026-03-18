@@ -29,7 +29,11 @@
             currentAudio.currentTime = 0;
         }
 
-        // المسار المعدل حسب طلبك: data/vocab/1.wav, 2.wav ...
+        /**
+         * Charly Audit: 
+         * Path logic matches GitHub directory structure for static assets.
+         * Interaction requirement handled via catch block for browser Autoplay Policy.
+         */
         const audioPath = `data/vocab/${index + 1}.wav`;
         currentAudio = new Audio(audioPath);
         
@@ -85,8 +89,12 @@
                 currentIndex++;
                 renderWord();
             } else {
-                if (window.parent && window.parent.triggerVetoDone) window.parent.triggerVetoDone();
-                else if (window.triggerVetoDone) window.triggerVetoDone();
+                // Bridge Check: External communication to GAS wrapper or parent frame
+                if (window.parent && typeof window.parent.triggerVetoDone === 'function') {
+                    window.parent.triggerVetoDone();
+                } else if (typeof window.triggerVetoDone === 'function') {
+                    window.triggerVetoDone();
+                }
             }
         } 
         else if (e.keyCode === 37 && currentIndex > 0) { // Left (Back)

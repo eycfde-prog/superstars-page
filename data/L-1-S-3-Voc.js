@@ -14,6 +14,7 @@
     let currentAudio = null;
     let isInitialized = false;
 
+    // إعداد المسرح (Stage Setup)
     container.innerHTML = ''; 
     container.style.cssText = `
         height:100%; width:100%; display:flex; align-items:center; justify-content:center; 
@@ -21,12 +22,13 @@
         font-family: 'Inter', 'Segoe UI', sans-serif;
     `;
 
+    // شاشة البداية الاحترافية
     function showStartScreen() {
         container.innerHTML = `
             <div id="startVeto" style="cursor:pointer; text-align:center;">
                 <div style="font-size:12vw; filter: drop-shadow(0 0 30px #c5a059);">🎓</div>
                 <div style="font-size:2.5vw; color:#fff; letter-spacing:8px; margin-top:30px; font-weight:900; text-transform:uppercase;">
-                    Click to Launch Session
+                    Click to Launch Session v2
                 </div>
             </div>
         `;
@@ -36,6 +38,7 @@
         };
     }
 
+    // نظام تشغيل الصوت (تعديل مسار v2)
     function playSound(index) {
         if (!isInitialized) return;
         
@@ -50,11 +53,13 @@
             currentAudio.currentTime = 0;
         }
 
+        // المسار المستهدف v2
         const audioPath = `data/vocab/v2/${index + 1}.wav`;
         currentAudio = new Audio(audioPath);
-        currentAudio.play().catch(e => console.error("Audio Error:", e.message));
+        currentAudio.play().catch(e => console.error("Veto Audio Error:", e.message));
     }
 
+    // عرض الكلمة بوضوح فائق (Veto Sharp View)
     function renderWord() {
         let fontSize = words[currentIndex].length > 8 ? '15vw' : '20vw';
         
@@ -85,6 +90,7 @@
         document.getElementById('vocabWord').onclick = () => playSound(currentIndex);
     }
 
+    // التنقل البرمجي
     window.nextSlide = function() {
         if (currentIndex < words.length - 1) {
             currentIndex++;
@@ -101,20 +107,20 @@
         }
     };
 
-    // نظام التحكم المطور لمنع القفز المزدوج
+    // نظام حماية الكيبورد (The Firewall)
     document.onkeydown = (e) => {
-        // منع انتشار الحدث للصفحة الأم (Prevent Bubbling)
+        // منع "القفزة المزدوجة" عن طريق إيقاف وصول الحدث لملف Index
         e.stopPropagation();
 
         const key = e.keyCode;
 
-        if (key === 13 || key === 39) { // Enter or Right
+        if (key === 13 || key === 39) { // Enter أو سهم يمين
             window.nextSlide();
         } 
-        else if (key === 37 || key === 8) { // Left or Backspace
+        else if (key === 37 || key === 8) { // سهم يسار أو Backspace
             window.prevSlide();
         } 
-        else if (key === 32 || key === 40) { // Space or Down
+        else if (key === 32 || key === 40) { // مسطرة أو سهم أسفل (نطق فقط)
             e.preventDefault();
             playSound(currentIndex);
         }

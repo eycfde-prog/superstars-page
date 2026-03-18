@@ -1,88 +1,76 @@
-/**
- * VETO PROGRAM - Vocabulary Module (Direct GitHub Raw)
- * File: L-1-1-S-2-Voc.js
- */
+// VETO PROGRAM - Vocabulary Module
+// Level: 1 | Session: 2 | Type: Vocab
+// Designed by: Veto Architect
 
 (function() {
-    // الرابط الخام المباشر (Raw) لضمان التشغيل
-    const rawBase = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/vocab/";
-
     const words = [
-        { text: "eat", audio: rawBase + "1.wav" },
-        { text: "drink", audio: rawBase + "2.wav" },
-        { text: "fly", audio: rawBase + "3.wav" },
-        { text: "read", audio: rawBase + "4.wav" } // ضفت لك الرابعة كمان
+        { text: 'eat', audio: '1.wav' },
+        { text: 'drink', audio: '2.wav' },
+        { text: 'fly', audio: '3.wav' }
     ];
 
     let currentIndex = 0;
-    const stage = document.getElementById('stage-content');
+    const audioPath = 'https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/vocab/';
+    const container = document.getElementById('stage-content');
 
-    const initUI = () => {
-        stage.innerHTML = `
-            <style>
-                .vocabulary-viewer {
-                    height: 100%; display: flex; justify-content: center;
-                    align-items: center; background: #000; color: #c5a059;
-                    font-family: 'Segoe UI', sans-serif; position: relative;
-                }
-                .word-display {
-                    font-size: 25vw; font-weight: 900; text-transform: uppercase;
-                    text-shadow: 0 0 50px rgba(197, 160, 89, 0.5);
-                    cursor: pointer; transition: 0.3s;
-                }
-                .word-display:active { transform: scale(0.9); opacity: 0.8; }
-                
-                #audio-unlocker {
-                    position: absolute; inset: 0; z-index: 9999;
-                    background: #000; display: flex;
-                    justify-content: center; align-items: center;
-                }
-                .unlock-btn {
-                    padding: 25px 60px; border: 4px solid #c5a059;
-                    color: #c5a059; font-size: 2.5rem; border-radius: 15px;
-                    background: none; cursor: pointer; font-weight: bold;
-                }
-            </style>
-            
-            <div class="vocabulary-viewer">
-                <audio id="veto-player" crossorigin="anonymous"></audio>
-
-                <div id="audio-unlocker" onclick="unlockAudio()">
-                    <button class="unlock-btn">START LESSON</button>
-                </div>
-                
-                <div id="word-target" class="word-display" onclick="playCurrentAudio()"></div>
+    // تصفير الحاوية وبناء واجهة العرض
+    function initVocab() {
+        container.innerHTML = `
+            <div id="vocab-display" style="
+                height: 100%; 
+                display: flex; 
+                flex-direction: column; 
+                justify-content: center; 
+                align-items: center; 
+                background: #000;
+                cursor: pointer;
+            ">
+                <h1 id="word-text" style="
+                    font-size: 25vw; 
+                    color: #c5a059; 
+                    text-transform: uppercase; 
+                    font-weight: 900;
+                    margin: 0;
+                    text-shadow: 0 0 50px rgba(197, 160, 89, 0.3);
+                "></h1>
+                <div id="slide-indicator" style="
+                    position: absolute; 
+                    bottom: 20px; 
+                    color: rgba(197, 160, 89, 0.5); 
+                    font-size: 1.5rem;
+                "></div>
             </div>
         `;
-    };
-
-    window.unlockAudio = function() {
-        document.getElementById('audio-unlocker').style.display = 'none';
         renderWord();
-    };
+    }
 
-    window.playCurrentAudio = function() {
-        const player = document.getElementById('veto-player');
-        player.src = words[currentIndex].audio;
-        player.load();
+    function renderWord() {
+        const wordObj = words[currentIndex];
+        const textElement = document.getElementById('word-text');
+        const indicator = document.getElementById('slide-indicator');
+
+        // تحديث النص
+        textElement.innerText = wordObj.text;
+        indicator.innerText = `${currentIndex + 1} / ${words.length}`;
+
+        // تشغيل الصوت
+        const audio = new Audio(audioPath + wordObj.audio);
+        audio.play().catch(e => console.log("Audio playback waiting for user interaction"));
         
-        player.play().catch(err => {
-            console.error("Veto Audio Error:", err);
-            // لو فشل، هنجرب نفتح الرابط في تاب جديد للتأكد
-            console.log("Check this link manually:", words[currentIndex].audio);
-        });
-    };
+        // تأثير دخول بسيط
+        textElement.style.animation = 'none';
+        textElement.offsetHeight; // Trigger reflow
+        textElement.style.animation = 'zoomIn 0.4s ease-out';
+    }
 
-    const renderWord = () => {
-        document.getElementById('word-target').innerText = words[currentIndex].text;
-        playCurrentAudio();
-    };
-
-    // التحكم بالـ Next و Prev من الـ Main App
+    // ربط الوظائف بالنافذة ليراها الكود الرئيسي في Veto Board
     window.nextSlide = function() {
         if (currentIndex < words.length - 1) {
             currentIndex++;
             renderWord();
+        } else {
+            // اختيارياً: العودة للبداية أو الخروج
+            console.log("End of list");
         }
     };
 
@@ -93,5 +81,15 @@
         }
     };
 
-    initUI();
+    // إضافة ستايل التحريك
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    initVocab();
 })();

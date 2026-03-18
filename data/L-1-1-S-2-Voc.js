@@ -1,92 +1,107 @@
-/**
- * VETO PROGRAM - Vocabulary Module (Enhanced Audio)
- * Level: 1 | Session: 2 | Type: Vocab
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veto Program - Vocabulary Display</title>
+    <style>
+        :root {
+            --bg-color: #0f172a; /* Dark Navy */
+            --accent-color: #fde047; /* Bright Yellow for contrast */
+            --text-white: #f8fafc;
+        }
 
-(function() {
-    const words = [
-        { text: 'eat', audio: '1.wav' },
-        { text: 'drink', audio: '2.wav' },
-        { text: 'fly', audio: '3.wav' }
-    ];
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Full Screen Focus */
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    let currentIndex = 0;
-    // المسار الخاص بالمستودع الرئيسي
-    const audioBase = 'https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/vocab/';
-    const container = document.getElementById('stage-content');
-    let currentAudio = new Audio();
+        #word-container {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
 
-    function initVocab() {
-        container.innerHTML = `
-            <div id="vocab-display" onclick="playCurrentAudio()" style="
-                height: 100%; display: flex; flex-direction: column; 
-                justify-content: center; align-items: center; 
-                background: #000; cursor: pointer; position: relative;
-            ">
-                <h1 id="word-text" style="
-                    font-size: 30vw; color: #c5a059; 
-                    text-transform: uppercase; font-weight: 900;
-                    margin: 0; text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                "></h1>
-                <div id="slide-indicator" style="
-                    position: absolute; bottom: 30px; 
-                    color: rgba(197, 160, 89, 0.4); font-size: 1.8rem;
-                    font-family: sans-serif;
-                "></div>
-            </div>
-        `;
-        renderWord();
-    }
+        #word-display {
+            font-size: 20rem; /* Massive size for 4-meter rule */
+            font-weight: 900;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: -5px;
+            user-select: none;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
 
-    // وظيفة تشغيل الصوت مع معالجة الـ Promise
-    window.playCurrentAudio = function() {
-        const wordObj = words[currentIndex];
-        currentAudio.src = audioBase + wordObj.audio;
-        currentAudio.play().catch(err => {
-            console.log("Waiting for user interaction to play audio...");
-        });
-    };
+        .instruction-hint {
+            position: fixed;
+            bottom: 20px;
+            color: var(--text-white);
+            opacity: 0.5;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
 
-    function renderWord() {
-        const textElement = document.getElementById('word-text');
-        const indicator = document.getElementById('slide-indicator');
+    <div id="word-container" onclick="playCurrentSound()">
+        <h1 id="word-display">READY</h1>
+    </div>
+
+    <div class="instruction-hint">
+        Use [Arrows] to Navigate | [Enter/Space] to Play Sound
+    </div>
+
+    <script>
+        // --- Veto Architect Logic ---
         
-        textElement.innerText = words[currentIndex].text;
-        indicator.innerText = `${currentIndex + 1} / ${words.length}`;
+        const vocabData = ["eat", "drink", "fly"];
+        let currentIndex = 0;
 
-        // تشغيل الصوت فوراً عند الانتقال
-        playCurrentAudio();
+        const displayElement = document.getElementById('word-display');
+        const audioPath = 'vocab/';
 
-        // Animation Reset
-        textElement.style.animation = 'none';
-        textElement.offsetHeight; 
-        textElement.style.animation = 'vSlideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-    }
+        // Initialize first word
+        updateDisplay();
 
-    // التحكم من خلال Veto Board الرئيسي
-    window.nextSlide = function() {
-        if (currentIndex < words.length - 1) {
-            currentIndex++;
-            renderWord();
+        function updateDisplay() {
+            displayElement.textContent = vocabData[currentIndex];
         }
-    };
 
-    window.prevSlide = function() {
-        if (currentIndex > 0) {
-            currentIndex--;
-            renderWord();
+        function playCurrentSound() {
+            // Audio file naming logic: Index 0 -> 1.wav, Index 1 -> 2.wav
+            const audioFile = `${audioPath}${currentIndex + 1}.wav`;
+            const audio = new Audio(audioFile);
+            
+            // Visual feedback on click
+            displayElement.style.transform = "scale(0.95)";
+            setTimeout(() => displayElement.style.transform = "scale(1)", 100);
+
+            audio.play().catch(e => console.log("Audio play failed: ", e));
         }
-    };
 
-    // إضافة ستايل الحركات (CSS-in-JS)
-    const style = document.createElement('style');
-    style.innerHTML = `
-        @keyframes vSlideIn {
-            from { transform: translateY(50px); opacity: 0; scale: 0.8; }
-            to { transform: translateY(0); opacity: 1; scale: 1; }
-        }
-    `;
-    document.head.appendChild(style);
-
-    initVocab();
-})();
+        // Keyboard Navigation Protocol
+        document.addEventListener('keydown', (event) => {
+            if (event.key === "ArrowRight") {
+                if (currentIndex < vocabData.length - 1) {
+                    currentIndex++;
+                    updateDisplay();
+                }
+            } else if (event.key === "ArrowLeft") {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateDisplay();
+                }
+            } else if (event.key === "Enter" || event.key === " ") {
+                playCurrentSound();
+            }
+        });
+    </script>
+</body>
+</html>

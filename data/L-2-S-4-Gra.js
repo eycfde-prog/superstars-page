@@ -9,8 +9,8 @@
     let subStep = 0;
 
     const slides = [
-        /* 1: Intro */
-        { type: 'big-title', content: 'THE DATE', subtitle: 'Months, Ordinals & Years', color: '#2ecc71' },
+        /* 1: Title */
+        { type: 'title', content: 'TELLING THE DATE', subtitle: 'MONTHS, DAYS & YEARS', color: '#2ecc71', usage: 'Mastering Time Expression' },
 
         /* 2: Months Grid */
         { 
@@ -27,27 +27,28 @@
         { 
             type: 'days-table', 
             title: 'Ordinal Numbers',
-            desc: 'We use these for DAYS of the month',
+            desc: 'We use these for Days of the Month',
             groups: [
-                { suffix: 'st', nums: "1st, 21st, 31st", label: "First" },
-                { suffix: 'nd', nums: "2nd, 22nd", label: "Second" },
-                { suffix: 'rd', nums: "3rd, 23rd", label: "Third" },
-                { suffix: 'th', nums: "4th, 10th, 11th, 20th...", label: "The rest" }
+                { suffix: 'ST', nums: "1st, 21st, 31st", label: "First" },
+                { suffix: 'ND', nums: "2nd, 22nd", label: "Second" },
+                { suffix: 'RD', nums: "3rd, 23rd", label: "Third" },
+                { suffix: 'TH', nums: "4th, 11th, 20th...", label: "All Others" }
             ]
         },
 
-        /* 4: Years Rule */
+        /* 4: Reading Years Rule */
         { 
             type: 'reading-rule', 
-            title: 'Reading Years',
-            example: { part1: "19", part2: "95", full: "Nineteen Ninety-Five" },
-            modern: { full: "2024", text: "Two Thousand Twenty-Four" }
+            title: 'How to Read Years?',
+            desc: 'Split the year into two parts!',
+            example: { part1: "19", part2: "99", text: "Nineteen Ninety-Nine" },
+            modern: { part1: "20", part2: "24", text: "Twenty Twenty-Four" }
         },
 
-        /* 5: Advanced Quiz */
+        /* 5: The Quiz */
         { 
             type: 'date-quiz', 
-            title: 'How do we say it?',
+            title: 'Practice Session',
             questions: [
                 { date: "07 / 11 / 1908", ans: "The seventh of November, nineteen oh-eight" },
                 { date: "24 / 03 / 2023", ans: "The twenty-fourth of March, twenty twenty-three" },
@@ -62,23 +63,24 @@
         container.innerHTML = '';
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = `width:90%; max-width:1200px; text-align:center; animation: vetoFadeIn 0.4s ease-out;`;
+        wrapper.style.cssText = `width:95%; max-width:1400px; text-align:center; animation: vetoFadeIn 0.5s ease;`;
 
-        if (s.type === 'big-title') {
+        if (s.type === 'title') {
             wrapper.innerHTML = `
-                <h1 style="font-size:10vw; font-weight:900; color:${s.color}; margin:0; line-height:1;">${s.content}</h1>
-                <p style="font-size:2.5vw; color:#444; letter-spacing:15px; margin-top:30px; font-weight:bold;">${s.subtitle}</p>
+                <div style="font-size:2.5vw; color:#444; letter-spacing:15px; margin-bottom:20px; text-transform:uppercase; font-weight:bold;">${s.subtitle}</div>
+                <h1 style="font-size:9vw; font-weight:900; color:${s.color}; margin:0; line-height:1; text-shadow: 0 10px 40px rgba(46,204,113,0.3);">${s.content}</h1>
+                <div style="font-size:3.5vw; color:#fff; font-weight:bold; margin-top:50px; border-top:6px solid ${s.color}; display:inline-block; padding-top:20px;">${s.usage}</div>
             `;
         } 
         else if (s.type === 'grid-display') {
             wrapper.innerHTML = `
-                <h2 style="font-size:4rem; color:#2ecc71; margin-bottom:50px; font-weight:900;">${s.title}</h2>
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px;">
+                <h2 style="font-size:5rem; color:#2ecc71; margin-bottom:40px; font-weight:900;">${s.title}</h2>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; max-width:1100px; margin:0 auto;">
                     ${s.items.map((m, i) => {
-                        const active = i <= subStep;
+                        let active = i <= subStep;
                         return `
-                        <div style="background:${active ? '#2ecc71' : '#111'}; padding:30px 10px; border-radius:20px; font-size:2rem; font-weight:bold; border:2px solid ${active ? '#2ecc71' : '#222'}; color:${active ? '#000' : '#444'}; transition:0.3s; transform: scale(${i === subStep ? 1.1 : 1});">
-                            <span style="display:block; font-size:1rem; opacity:0.6; margin-bottom:10px;">${(i+1).toString().padStart(2,'0')}</span>
+                        <div style="background:${active ? '#2ecc71' : '#111'}; padding:35px 10px; border-radius:25px; font-size:2.2rem; font-weight:bold; border:3px solid ${active ? '#fff' : '#222'}; color:${active ? '#000' : '#444'}; transition:0.4s; transform: scale(${i === subStep ? 1.1 : 1});">
+                            <span style="display:block; font-size:1.2rem; opacity:0.6; margin-bottom:10px;">${(i+1).toString().padStart(2,'0')}</span>
                             ${m}
                         </div>`;
                     }).join('')}
@@ -86,33 +88,32 @@
         }
         else if (s.type === 'days-table') {
             wrapper.innerHTML = `
-                <h2 style="font-size:4.5rem; color:#f1c40f; margin-bottom:10px; font-weight:900;">${s.title}</h2>
-                <p style="font-size:2rem; color:#555; margin-bottom:50px; font-weight:bold;">${s.desc}</p>
+                <h2 style="font-size:5.5rem; color:#f1c40f; margin-bottom:10px; font-weight:900;">${s.title}</h2>
+                <p style="font-size:2.5rem; color:#555; margin-bottom:40px; font-weight:bold;">${s.desc}</p>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
                     ${s.groups.map((g, i) => `
-                        <div style="background:#111; padding:40px; border-radius:30px; text-align:left; border-left:12px solid #f1c40f; opacity:${i <= subStep ? 1 : 0.05}; transition:0.5s; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <div style="background:#111; padding:40px; border-radius:35px; text-align:left; border-left:15px solid #f1c40f; opacity:${i <= subStep ? 1 : 0.1}; transition:0.5s; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:4.5rem; font-weight:900; color:#f1c40f;">-${g.suffix}</span>
-                                <span style="background:#f1c40f; color:#000; padding:5px 20px; border-radius:10px; font-size:1.2rem; font-weight:bold;">${g.label}</span>
+                                <span style="font-size:6rem; font-weight:900; color:#f1c40f;">-${g.suffix}</span>
+                                <span style="background:#f1c40f; color:#000; padding:10px 25px; border-radius:15px; font-size:1.8rem; font-weight:900;">${g.label}</span>
                             </div>
-                            <div style="font-size:2.5rem; margin-top:15px; color:#fff; font-weight:bold;">${g.nums}</div>
+                            <div style="font-size:2.8rem; margin-top:20px; color:#fff; font-weight:bold;">${g.nums}</div>
                         </div>
                     `).join('')}
                 </div>`;
         }
         else if (s.type === 'reading-rule') {
             wrapper.innerHTML = `
-                <h2 style="font-size:5rem; color:#fff; margin-bottom:60px; font-weight:900;">Reading Years</h2>
+                <h2 style="font-size:5.5rem; color:#fff; margin-bottom:10px; font-weight:900;">${s.title}</h2>
+                <p style="font-size:2.5rem; color:#2ecc71; margin-bottom:50px; font-weight:bold;">${s.desc}</p>
                 <div style="display:flex; flex-direction:column; gap:40px; align-items:center;">
-                    <div style="background:#111; padding:60px; border-radius:40px; width:100%; border:4px solid #333; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
-                        <div style="display:flex; justify-content:center; gap:40px; font-size:8vw; font-weight:900; letter-spacing:10px;">
-                            <span style="color:#2ecc71;">${s.example.part1}</span>
-                            <span style="color:#444;">|</span>
-                            <span style="color:#f1c40f;">${s.example.part2}</span>
+                    <div style="background:#111; padding:60px; border-radius:40px; width:80%; border:4px dashed #333; position:relative;">
+                        <div style="display:flex; justify-content:center; align-items:center; gap:40px;">
+                            <span style="font-size:8vw; font-weight:900; color:#f1c40f;">${s.example.part1}</span>
+                            <span style="font-size:8vw; font-weight:900; color:#444;">|</span>
+                            <span style="font-size:8vw; font-weight:900; color:#f1c40f;">${s.example.part2}</span>
                         </div>
-                        <div style="font-size:3.5rem; margin-top:40px; color:#fff; font-weight:bold; border-top:2px solid #222; padding-top:30px;">
-                           ${s.example.full}
-                        </div>
+                        <div style="font-size:4rem; margin-top:30px; color:#fff; font-weight:bold; border-top:2px solid #222; padding-top:30px;">${s.example.text}</div>
                     </div>
                 </div>`;
         }
@@ -122,16 +123,17 @@
             let q = s.questions[questionIdx] || s.questions[s.questions.length-1];
             
             wrapper.innerHTML = `
-                <h2 style="font-size:3.5rem; color:#2ecc71; margin-bottom:50px; font-weight:900;">PRACTICE SESSION</h2>
-                <div style="background:#111; padding:80px; border-radius:50px; border:3px solid #222; position:relative; box-shadow: 0 30px 60px rgba(0,0,0,0.8);">
-                    <div style="position:absolute; top:30px; left:40px; color:#444; font-weight:bold; font-size:1.5rem;">DATE #${questionIdx+1}</div>
-                    <div style="font-size:7vw; font-weight:900; margin-bottom:40px; color:#fff; letter-spacing:8px;">${q.date}</div>
-                    <div style="height:4px; background:linear-gradient(90deg, transparent, #2ecc71, transparent); width:70%; margin:40px auto;"></div>
-                    <div style="font-size:3.5rem; color:#f1c40f; transition:0.5s; opacity:${isAnswerVisible ? 1 : 0}; transform: translateY(${isAnswerVisible ? 0 : 30}px); font-weight:bold;">
-                        ${q.ans}
+                <h2 style="font-size:5rem; color:#2ecc71; margin-bottom:40px; font-weight:900;">${s.title}</h2>
+                <div style="background:#111; padding:80px; border-radius:50px; border:3px solid #222; position:relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
+                    <div style="position:absolute; top:30px; left:40px; color:#333; font-size:1.5rem; font-weight:bold; letter-spacing:3px;">DATE CHALLENGE 0${questionIdx+1}</div>
+                    <div style="font-size:8vw; font-weight:900; margin-bottom:30px; color:#fff; letter-spacing:10px; text-shadow: 0 0 30px rgba(255,255,255,0.1);">${q.date}</div>
+                    <div style="height:4px; background:linear-gradient(90deg, transparent, #2ecc71, transparent); width:70%; margin:50px auto;"></div>
+                    <div style="font-size:3.5vw; color:#f1c40f; transition:0.5s; opacity:${isAnswerVisible ? 1 : 0}; transform: translateY(${isAnswerVisible ? 0 : 30}px); font-weight:bold; line-height:1.2;">
+                        <span style="color:#555; display:block; font-size:2rem; margin-bottom:10px;">How to say it:</span> 
+                        "${q.ans}"
                     </div>
                 </div>
-                <p style="margin-top:50px; color:#444; letter-spacing:3px; font-weight:bold;">SPACE: SHOW ANSWER | ARROWS: NEXT DATE</p>`;
+                <p style="margin-top:50px; color:#444; letter-spacing:4px; text-transform:uppercase; font-size:1.2rem; font-weight:bold; animation: pulse 2s infinite;">Press SPACE to reveal / ARROWS to navigate</p>`;
         }
 
         container.appendChild(wrapper);
@@ -139,16 +141,13 @@
 
     document.onkeydown = (e) => {
         const s = slides[currentSlide];
-        // Right or Space or Enter
-        if (e.keyCode === 39 || e.keyCode === 32 || e.keyCode === 13) {
+        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { 
             if (s.type === 'grid-display' && subStep < s.items.length - 1) subStep++;
             else if (s.type === 'days-table' && subStep < s.groups.length - 1) subStep++;
             else if (s.type === 'date-quiz' && subStep < (s.questions.length * 2) - 1) subStep++;
             else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
             else { if(window.triggerVetoDone) window.triggerVetoDone(); }
-        } 
-        // Left
-        else if (e.keyCode === 37) {
+        } else if (e.keyCode === 37) { 
             if (subStep > 0) subStep--;
             else if (currentSlide > 0) { currentSlide--; subStep = 0; }
         }
@@ -156,7 +155,10 @@
     };
 
     const style = document.createElement('style');
-    style.innerHTML = `@keyframes vetoFadeIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }`;
+    style.innerHTML = `
+        @keyframes vetoFadeIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+    `;
     document.head.appendChild(style);
 
     render();

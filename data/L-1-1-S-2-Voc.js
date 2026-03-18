@@ -1,60 +1,88 @@
 /**
- * VETO PROGRAM - Vocabulary Slide Engine
- * Activity: L-1-1-S-2-Voc
- * Developer: Veto Architect
+ * VETO PROGRAM - Vocabulary Module
+ * File: L-1-1-S-2-Voc.js
+ * Purpose: Display words (eat, drink, fly) with high visibility and audio.
  */
 
 (function() {
-    const words = ["eat", "drink", "fly"];
+    const words = [
+        { text: "eat", audio: "data/vocab/1.wav" },
+        { text: "drink", audio: "data/vocab/2.wav" },
+        { text: "fly", audio: "data/vocab/3.wav" }
+    ];
+
     let currentIndex = 0;
     const stage = document.getElementById('stage-content');
 
-    // 1. إنشاء واجهة العرض (The Slide Screen)
-    stage.innerHTML = `
-        <div id="slide-container" style="
-            height: 100%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            background: #000;
-            color: #fff;
-            overflow: hidden;
-            text-transform: uppercase;
-        ">
-            <h1 id="word-display" style="
-                font-size: 25vw; 
-                font-weight: 900; 
-                letter-spacing: -5px;
-                text-shadow: 0 0 50px rgba(197, 160, 89, 0.4);
-                transition: all 0.5s ease;
-                color: #c5a059;
-            "></h1>
-        </div>
-    `;
+    // 1. Create UI Structure with High Contrast Styles
+    const initUI = () => {
+        stage.innerHTML = `
+            <style>
+                .vocabulary-viewer {
+                    height: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background: #000;
+                    color: #c5a059; /* Veto Gold */
+                    font-family: 'Segoe UI', sans-serif;
+                    overflow: hidden;
+                    text-transform: uppercase;
+                }
+                .word-display {
+                    font-size: 22vw; 
+                    font-weight: 900;
+                    letter-spacing: 10px;
+                    text-shadow: 0 0 50px rgba(197, 160, 89, 0.4);
+                    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                }
+                .slide-counter {
+                    position: absolute;
+                    bottom: 30px;
+                    right: 30px;
+                    color: rgba(197, 160, 89, 0.5);
+                    font-size: 1.5rem;
+                }
+            </style>
+            <div class="vocabulary-viewer">
+                <div id="word-target" class="word-display"></div>
+                <div class="slide-counter"><span id="current-num">1</span> / ${words.length}</div>
+            </div>
+        `;
+        renderWord();
+    };
 
-    const display = document.getElementById('word-display');
+    // 2. Rendering & Audio Logic
+    const renderWord = () => {
+        const wordObj = words[currentIndex];
+        const target = document.getElementById('word-target');
+        const numDisplay = document.getElementById('current-num');
 
-    // 2. وظيفة التحديث (Update Function)
-    window.renderWord = function() {
-        display.style.opacity = "0";
-        display.style.transform = "scale(0.8)";
-        
+        // Animation effect
+        target.style.opacity = '0';
+        target.style.transform = 'scale(0.8)';
+
         setTimeout(() => {
-            display.innerText = words[currentIndex];
-            display.style.opacity = "1";
-            display.style.transform = "scale(1)";
+            target.innerText = wordObj.text;
+            numDisplay.innerText = currentIndex + 1;
+            target.style.opacity = '1';
+            target.style.transform = 'scale(1)';
+            
+            // Play Audio
+            const audio = new Audio(wordObj.audio);
+            audio.play().catch(e => console.log("Audio play blocked by browser"));
         }, 200);
     };
 
-    // 3. ربط الدوال مع نظام التنقل في vetoof.html
+    // 3. Navigation Controls (Compatible with Main App)
     window.nextSlide = function() {
         if (currentIndex < words.length - 1) {
             currentIndex++;
             renderWord();
         } else {
-            // تأثير بصري عند الوصول للنهاية
-            display.style.color = "#ff4757"; 
-            setTimeout(() => display.style.color = "#c5a059", 500);
+            // Shake effect if at the end
+            document.getElementById('word-target').style.color = '#ff4757';
+            setTimeout(() => { document.getElementById('word-target').style.color = '#c5a059'; }, 300);
         }
     };
 
@@ -65,6 +93,7 @@
         }
     };
 
-    // التشغيل الأول
-    renderWord();
+    // Start the module
+    initUI();
+
 })();

@@ -1,76 +1,60 @@
+/**
+ * VETO PROGRAM - Vocabulary Slide Engine
+ * Activity: L-1-1-S-2-Voc
+ * Developer: Veto Architect
+ */
+
 (function() {
-    const container = document.getElementById('stage-content');
-    if (!container) return;
-
-    const words = ["Eat", "Drink", "Sleep", "Go", "Come", "Run", "Walk", "Play", "Read", "Write"];
+    const words = ["eat", "drink", "fly"];
     let currentIndex = 0;
-    let currentAudio = null;
-    let isInitialized = false; // لمنع التشغيل التلقائي قبل التفاعل
+    const stage = document.getElementById('stage-content');
 
-    container.innerHTML = ''; 
-    container.style.cssText = `height:100%; width:100%; display:flex; align-items:center; justify-content:center; background:#050505; position:relative; font-family: 'Segoe UI', sans-serif;`;
+    // 1. إنشاء واجهة العرض (The Slide Screen)
+    stage.innerHTML = `
+        <div id="slide-container" style="
+            height: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            text-transform: uppercase;
+        ">
+            <h1 id="word-display" style="
+                font-size: 25vw; 
+                font-weight: 900; 
+                letter-spacing: -5px;
+                text-shadow: 0 0 50px rgba(197, 160, 89, 0.4);
+                transition: all 0.5s ease;
+                color: #c5a059;
+            "></h1>
+        </div>
+    `;
 
-    // 1. شاشة البدء لكسر حماية المتصفح (The Veto Splash)
-    function showStartScreen() {
-        container.innerHTML = `
-            <div id="startVeto" style="cursor:pointer; text-align:center; animation: pulse 1.5s infinite;">
-                <div style="font-size:10vw; color:#c5a059;">🎬</div>
-                <div style="font-size:2vw; color:#fff; letter-spacing:5px; margin-top:20px; font-weight:bold;">CLICK TO START SESSION</div>
-            </div>
-            <style>
-                @keyframes pulse { 0% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.6; transform: scale(1); } }
-            </style>
-        `;
-        document.getElementById('startVeto').onclick = () => {
-            isInitialized = true;
-            renderWord();
-        };
-    }
+    const display = document.getElementById('word-display');
 
-    function playSound(index) {
-        if (!isInitialized) return;
-        if (currentAudio) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-        }
-
-        // استخدام المسار النسبي الصحيح
-        const audioPath = `data/vocab/${index + 1}.wav`;
-        currentAudio = new Audio(audioPath);
+    // 2. وظيفة التحديث (Update Function)
+    window.renderWord = function() {
+        display.style.opacity = "0";
+        display.style.transform = "scale(0.8)";
         
-        currentAudio.play().catch(e => {
-            console.error("Veto Audio Error:", e.message);
-        });
-    }
+        setTimeout(() => {
+            display.innerText = words[currentIndex];
+            display.style.opacity = "1";
+            display.style.transform = "scale(1)";
+        }, 200);
+    };
 
-    function renderWord() {
-        let fontSize = words[currentIndex].length > 8 ? '14vw' : '18vw';
-        container.innerHTML = `
-            <div style="position:absolute; top:0; left:0; height:10px; background:linear-gradient(90deg, #c5a059, #ffd700); width:${((currentIndex + 1) / words.length) * 100}%; transition:0.5s ease-out;"></div>
-            <div style="text-align:center; width:100%;">
-                <div style="font-size:2.8vw; color:rgba(255,255,255,0.2); margin-bottom:2vh; font-weight:900; letter-spacing:10px;">
-                    ${(currentIndex + 1).toString().padStart(2, '0')} <span style="color:#c5a059;">/</span> ${words.length.toString().padStart(2, '0')}
-                </div>
-                <div id="vocabWord" style="font-size:${fontSize}; font-weight:950; color:#ffffff; text-transform:uppercase; letter-spacing:8px; cursor:pointer; text-shadow: 0 15px 60px #000; animation: vetoEntrance 0.4s ease-out;">
-                    ${words[currentIndex]}
-                </div>
-                <div style="margin-top:8vh; color:#c5a059; font-size:1.5vw; letter-spacing:8px; font-weight:bold; opacity:0.5;">VETO PROGRAM</div>
-            </div>
-            <style>
-                @keyframes vetoEntrance { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-            </style>
-        `;
-        playSound(currentIndex);
-        document.getElementById('vocabWord').onclick = () => playSound(currentIndex);
-    }
-
-    // الربط مع الصفحة الأم (Compatibility Bridge)
+    // 3. ربط الدوال مع نظام التنقل في vetoof.html
     window.nextSlide = function() {
         if (currentIndex < words.length - 1) {
             currentIndex++;
             renderWord();
         } else {
-            if (typeof closeStage === 'function') closeStage();
+            // تأثير بصري عند الوصول للنهاية
+            display.style.color = "#ff4757"; 
+            setTimeout(() => display.style.color = "#c5a059", 500);
         }
     };
 
@@ -81,12 +65,6 @@
         }
     };
 
-    // التحكم بالكيبورد
-    document.onkeydown = (e) => {
-        if ([32, 39, 13].includes(e.keyCode)) window.nextSlide();
-        else if (e.keyCode === 37) window.prevSlide();
-        else if (e.keyCode === 40) playSound(currentIndex);
-    };
-
-    showStartScreen(); // نبدأ بشاشة التفاعل أولاً
+    // التشغيل الأول
+    renderWord();
 })();

@@ -2,12 +2,12 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const words = [
-        "Eat", "Drink", "Sleep", "Go", "Come", "Run", "Walk", "Play", "Read", "Write",
-        "Speak", "Listen", "Look", "See", "Watch", "Open", "Close", "Sit", "Stand", "Jump",
-        "Swim", "Drive", "Ride", "Give", "Take", "Buy", "Sell", "Help", "Work", "Study",
-        "Learn", "Teach", "Cook", "Clean", "Wash", "Cut", "Draw", "Paint", "Sing", "Dance",
-        "Smile", "Laugh", "Cry", "Think", "Know", "Make", "Use", "Push", "Pull", "Stop"
+const words = [
+        "Hear", "Touch", "Smell", "Taste", "Feel", "Remember", "Forget", "Believe", "Hope", "Want",
+        "Need", "Love", "Like", "Hate", "Wait", "Meet", "Ask", "Answer", "Tell", "Say",
+        "Call", "Send", "Receive", "Bring", "Carry", "Hold", "Catch", "Throw", "Win", "Lose",
+        "Start", "Finish", "Try", "Change", "Fix", "Break", "Build", "Spend", "Save", "Borrow",
+        "Lend", "Pay", "Cost", "Choose", "Decide", "Explain", "Travel", "Fly", "Stay", "Leave"
     ];
     
     let currentIndex = 0;

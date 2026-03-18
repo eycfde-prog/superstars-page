@@ -42,7 +42,7 @@
         const wordEl = document.getElementById('vocabWord');
         if (wordEl) {
             wordEl.style.color = '#c5a059'; 
-            setTimeout(() => { wordEl.style.color = '#ffffff'; }, 500);
+            setTimeout(() => { if(wordEl) wordEl.style.color = '#ffffff'; }, 500);
         }
 
         if (currentAudio) {
@@ -101,10 +101,20 @@
         }
     };
 
+    // نظام التحكم المطور لمنع القفز المزدوج
     document.onkeydown = (e) => {
-        if (e.keyCode === 13 || e.keyCode === 39) window.nextSlide();
-        else if (e.keyCode === 37) window.prevSlide();
-        else if (e.keyCode === 32 || e.keyCode === 40) {
+        // منع انتشار الحدث للصفحة الأم (Prevent Bubbling)
+        e.stopPropagation();
+
+        const key = e.keyCode;
+
+        if (key === 13 || key === 39) { // Enter or Right
+            window.nextSlide();
+        } 
+        else if (key === 37 || key === 8) { // Left or Backspace
+            window.prevSlide();
+        } 
+        else if (key === 32 || key === 40) { // Space or Down
             e.preventDefault();
             playSound(currentIndex);
         }

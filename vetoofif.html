@@ -309,18 +309,33 @@
         window.addEventListener('touchend', endAction);
 
         window.addEventListener('keydown', (e) => {
+            // 1. الخروج دائماً متاح بـ Escape
             if (e.key === "Escape") {
                 if(document.getElementById('quick-note-container').style.display === 'block') {
                     toggleNote();
                 } else {
                     closeStage();
                 }
+                return;
             }
+
+            // 2. إذا كان الـ Stage مغلقاً، لا تفعل شيئاً
             if (document.getElementById('activity-stage').style.display === 'none') return;
-            if (e.key === "Enter" || e.key === "ArrowRight" || e.key === " ") {
-                if(typeof nextSlide === "function") nextSlide();
-            } else if (e.key === "ArrowLeft" || e.key === "Backspace") {
-                if(typeof prevSlide === "function") prevSlide();
+
+            // 3. منع المتصفح من الحركات الافتراضية (مثل الـ Scroll بالمسطرة)
+            if ([" ", "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"].includes(e.key)) {
+                e.preventDefault();
+            }
+
+            // 4. الحل الذكي: التحقق من وجود نظام تحكم داخلي في النشاط
+            const isInternalControl = (typeof document.onkeydown === 'function');
+
+            if (!isInternalControl) {
+                if (e.key === "Enter" || e.key === "ArrowRight" || e.key === " ") {
+                    if(typeof nextSlide === "function") nextSlide();
+                } else if (e.key === "ArrowLeft" || e.key === "Backspace") {
+                    if(typeof prevSlide === "function") prevSlide();
+                }
             }
         });
 

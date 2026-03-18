@@ -2,40 +2,47 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // 1. الإعدادات الأساسية (تقدر تغير الكلمات والفولدر هنا)
+    // 1. الإعدادات
     const sessionFolder = "v1"; 
     const words = ["Eat", "Drink", "Sleep", "Go", "Come", "Run", "Walk", "Play", "Read", "Write"];
     
     let currentIndex = 0;
-    let currentAudio = null;
+    let audioList = {}; // تخزين الملفات هنا للسرعة
 
-    // تهيئة المسرح
     container.innerHTML = ''; 
     container.style.cssText = `height:100%; width:100%; display:flex; align-items:center; justify-content:center; background:#050505; overflow:hidden; position:relative; font-family: 'Segoe UI', sans-serif;`;
 
+    // 2. وظيفة تشغيل الصوت مع معالجة الخطأ
     function playSound(index) {
-        // إيقاف أي صوت شغال حالياً قبل البدء في الجديد
-        if (currentAudio) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
+        const audioPath = `data/vocab/${sessionFolder}/${index + 1}.wav`;
+        
+        // لو الصوت مش متحمل قبل كده، حمله
+        if (!audioList[index]) {
+            audioList[index] = new Audio(audioPath);
         }
 
-        // المسار: data/vocab/v1/1.wav
-        const audioPath = `data/vocab/${sessionFolder}/${index + 1}.wav`;
-        currentAudio = new Audio(audioPath);
-        
+        const currentAudio = audioList[index];
+        currentAudio.currentTime = 0; // يبدأ من الأول كل مرة
+
         currentAudio.play().catch(e => {
-            console.warn("Audio Context: Interaction needed or File not found at " + audioPath);
+            console.error("Veto Audio Error: Check if file exists at " + audioPath);
+            // إظهار تنبيه بصري بسيط للمستر لو الصوت معلق
+            const notify = document.getElementById('sound-notify');
+            if(notify) {
+                notify.innerText = "🔇 Audio Blocked - Click Screen";
+                notify.style.opacity = "1";
+            }
         });
     }
 
     function renderWord() {
-        // حجم خط ضخم للكلمات القصيرة وذكي للكلمات الطويلة
         let fontSize = words[currentIndex].length > 10 ? '12vw' : '16vw';
 
         container.innerHTML = `
-            <div style="position:absolute; top:0; left:0; height:8px; background:#c5a059; width:${((currentIndex + 1) / words.length) * 100}%; transition:0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 20px #c5a059;"></div>
+            <div style="position:absolute; top:0; left:0; height:8px; background:#c5a059; width:${((currentIndex + 1) / words.length) * 100}%; transition:0.4s; box-shadow: 0 0 20px #c5a059;"></div>
             
+            <div id="sound-notify" style="position:absolute; top:20px; right:20px; color:#e74c3c; font-size:1vw; opacity:0; transition:0.5s; font-weight:bold;"></div>
+
             <div style="text-align:center; width:95%;">
                 <div style="font-size:2.5vw; color:#222; margin-bottom:1vh; font-weight:900; letter-spacing:8px;">
                     ${(currentIndex + 1).toString().padStart(2, '0')} / ${words.length.toString().padStart(2, '0')}
@@ -54,23 +61,24 @@
 
             <style>
                 @keyframes vetoEntrance {
-                    from { opacity: 0; transform: translateY(30px) scale(0.95); filter: blur(10px); }
-                    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+                    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
                 }
-                #vocabWord:active { transform: scale(0.98); opacity: 0.8; transition: 0.1s; }
             </style>
         `;
 
-        // تشغيل الصوت فور عرض الكلمة
         playSound(currentIndex);
-
-        // لو المستر ضغط على الكلمة يعيد الصوت
-        document.getElementById('vocabWord').onclick = () => playSound(currentIndex);
+        
+        // تفعيل الصوت عند الضغط بالماوس (يحل مشكلة الـ Interaction Needed)
+        document.getElementById('vocabWord').onclick = () => {
+            const notify = document.getElementById('sound-notify');
+            if(notify) notify.style.opacity = "0"; // شيل التنبيه لو المستر ضغط
+            playSound(currentIndex);
+        };
     }
 
-    // نظام التحكم بالكيبورد
     document.onkeydown = (e) => {
-        if ([32, 39, 13].includes(e.keyCode)) { // Space, Right, Enter (Next)
+        if ([32, 39, 13].includes(e.keyCode)) { 
             if (currentIndex < words.length - 1) {
                 currentIndex++;
                 renderWord();
@@ -78,11 +86,11 @@
                 if (window.triggerVetoDone) window.triggerVetoDone();
             }
         } 
-        else if (e.keyCode === 37 && currentIndex > 0) { // Left (Back)
+        else if (e.keyCode === 37 && currentIndex > 0) { 
             currentIndex--;
             renderWord();
         }
-        else if (e.keyCode === 40) { // Down Arrow (Repeat Sound)
+        else if (e.keyCode === 40) { 
             playSound(currentIndex);
         }
     };

@@ -1,10 +1,10 @@
 /**
- * VETO PROGRAM - Vocabulary Module (GitHub Direct Link Version)
+ * VETO PROGRAM - Vocabulary Module (Final Audio Fix)
  * File: L-1-1-S-2-Voc.js
  */
 
 (function() {
-    // الرابط الأساسي للملفات الخام على GitHub
+    // استخدام الرابط المباشر الصحيح
     const baseURL = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/vocab/";
 
     const words = [
@@ -27,24 +27,29 @@
                 .word-display {
                     font-size: 25vw; font-weight: 900; text-transform: uppercase;
                     text-shadow: 0 0 40px rgba(197, 160, 89, 0.4);
-                    cursor: pointer;
                 }
                 #audio-unlocker {
                     position: absolute; inset: 0; z-index: 9999;
-                    background: rgba(0,0,0,0.9); display: flex;
+                    background: rgba(0,0,0,0.95); display: flex;
                     justify-content: center; align-items: center;
                 }
                 .unlock-btn {
-                    padding: 25px 50px; border: 3px solid #c5a059;
-                    color: #c5a059; font-size: 2.2rem; border-radius: 15px;
+                    padding: 25px 60px; border: 4px solid #c5a059;
+                    color: #c5a059; font-size: 2.5rem; border-radius: 15px;
                     background: none; cursor: pointer; font-weight: bold;
+                    transition: 0.3s;
                 }
+                .unlock-btn:hover { background: #c5a059; color: #000; }
             </style>
+            
             <div class="vocabulary-viewer">
+                <audio id="veto-audio-player" preload="auto"></audio>
+
                 <div id="audio-unlocker" onclick="unlockAudio()">
-                    <button class="unlock-btn">START LESSON</button>
+                    <button class="unlock-btn">READY TO START</button>
                 </div>
-                <div id="word-target" class="word-display" onclick="playCurrentAudio()"></div>
+                
+                <div id="word-target" class="word-display"></div>
             </div>
         `;
     };
@@ -55,12 +60,17 @@
     };
 
     window.playCurrentAudio = function() {
-        const audio = new Audio(words[currentIndex].audio);
-        // نضبط النوع لضمان أن المتصفح يفهم أنه ملف wav
-        audio.type = 'audio/wav'; 
-        audio.play().catch(err => {
+        const player = document.getElementById('veto-audio-player');
+        // تغيير المصدر
+        player.src = words[currentIndex].audio;
+        player.load(); // إجبار المتصفح على تحميل الملف الجديد
+        
+        player.play().catch(err => {
             console.error("Veto Audio Error:", err);
-            alert("تاكد من اتصال الانترنت أو مسار الملف");
+            // محاولة أخيرة لو الـ wav معصلج: تنبيه المدرس
+            if(err.name === "NotSupportedError") {
+                console.warn("المتصفح مش قادر يشغل صيغة الـ wav دي. جرب تحولها لـ mp3 أو اتأكد من الرابط.");
+            }
         });
     };
 

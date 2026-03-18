@@ -2,106 +2,152 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+const words = [
+    "Big", "Small", "Tall", "Short", "Fast", "Slow",
+    "Hot", "Cold", "Happy", "Sad", "Good", "Bad",
+    "Expensive", "Cheap", "New", "Old", "Rich", "Poor",
+    "Strong", "Weak", "Clean", "Dirty", "Heavy", "Light",
+    "Hard", "Soft", "Long", "Short", "Wide", "Narrow",
+    "Full", "Empty", "Safe", "Dangerous", "Easy", "Difficult",
+    "Useful", "Useless", "Brave", "Coward", "Healthy", "Sick",
+    "Early", "Late", "Beautiful", "Ugly", "Right", "Wrong",
+    "Young", "Old"
+];
+    
+    let currentIndex = 0;
+    let currentAudio = null;
+    let isInitialized = false;
+
     container.innerHTML = ''; 
-    container.style.cssText = `height:100%; width:100%; display:flex; align-items:center; justify-content:center; background:#050505; overflow:hidden; position:relative; font-family: 'Segoe UI', sans-serif;`;
+    container.style.cssText = `
+        height:100%; width:100%; display:flex; align-items:center; justify-content:center; 
+        background:#050505; position:relative; overflow:hidden;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+    `;
 
-    let currentPairIndex = 0;
-    let showOpposite = false;
-    const sessionFolder = "Adjectives1"; 
-
-    const adjectives = [
-        { a: "Big", o: "Small" }, { a: "Tall", o: "Short" }, { a: "Fast", o: "Slow" },
-        { a: "Hot", o: "Cold" }, { a: "Happy", o: "Sad" }, { a: "Good", o: "Bad" },
-        { a: "Expensive", o: "Cheap" }, { a: "New", o: "Old" }, { a: "Rich", o: "Poor" },
-        { a: "Strong", o: "Weak" }, { a: "Clean", o: "Dirty" }, { a: "Heavy", o: "Light" },
-        { a: "Hard", o: "Soft" }, { a: "Long", o: "Short" }, { a: "Wide", o: "Narrow" },
-        { a: "Full", o: "Empty" }, { a: "Safe", o: "Dangerous" }, { a: "Easy", o: "Difficult" },
-        { a: "Useful", o: "Useless" }, { a: "Brave", o: "Coward" }, { a: "Healthy", o: "Sick" },
-        { a: "Early", o: "Late" }, { a: "Beautiful", o: "Ugly" }, { a: "Right", o: "Wrong" },
-        { a: "Young", o: "Old" }
-    ];
-
-    function playSound(wordNum) {
-        const audioPath = `data/vocab/${sessionFolder}/${wordNum}.mp3`;
-        const audio = new Audio(audioPath);
-        audio.play().catch(e => console.log("Audio file missing"));
-    }
-
-    function render() {
-        const pair = adjectives[currentPairIndex];
-        const progress = ((currentPairIndex + 1) / adjectives.length) * 100;
-
+    function showStartScreen() {
         container.innerHTML = `
-            <style>
-                .voc-wrapper { width:100%; display:flex; flex-direction:column; align-items:center; gap:80px; }
-                .voc-progress-container { position:absolute; top:0; left:0; width:100%; height:6px; background:#111; }
-                .voc-progress-bar { width:${progress}%; height:100%; background:#c5a059; transition:0.3s; box-shadow:0 0 15px #c5a059; }
-                
-                .voc-pair-info { font-size:1.2vw; color:#444; font-weight:bold; letter-spacing:5px; text-transform:uppercase; }
-                
-                .voc-main-area { display:flex; justify-content:center; align-items:center; width:100%; gap:5vw; }
-                
-                .word-box { font-size:9vw; font-weight:900; text-transform:uppercase; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-                .word-primary { color:#fff; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-                .word-opposite { color:#c5a059; text-shadow: 0 0 40px rgba(197, 160, 89, 0.3); }
-                
-                .versus-sign { 
-                    font-size:5vw; color:#ef4444; font-style:italic; font-weight:900;
-                    opacity:${showOpposite ? 1 : 0}; 
-                    transform: scale(${showOpposite ? 1 : 0.5}) rotate(${showOpposite ? -10 : 0}deg); 
-                    transition:0.4s;
-                    text-shadow: 0 0 20px #ef4444;
-                }
-
-                .hint { position:absolute; bottom:40px; color:#222; font-size:0.9vw; letter-spacing:2px; text-transform:uppercase; }
-            </style>
-
-            <div class="voc-progress-container"><div class="voc-progress-bar"></div></div>
-            
-            <div class="voc-wrapper">
-                <div class="voc-pair-info">Adjective Pair ${currentPairIndex + 1} / ${adjectives.length}</div>
-                
-                <div class="voc-main-area">
-                    <div class="word-box word-primary">${pair.a || pair.g}</div>
-
-                    <div class="versus-sign">VS</div>
-
-                    <div class="word-box word-opposite" style="opacity:${showOpposite ? 1 : 0}; transform: translateX(${showOpposite ? 0 : 50}px);">
-                        ${pair.o}
-                    </div>
+            <div id="startVeto" style="cursor:pointer; text-align:center;">
+                <div style="font-size:12vw; filter: drop-shadow(0 0 30px #c5a059);">🎓</div>
+                <div style="font-size:2.5vw; color:#fff; letter-spacing:8px; margin-top:30px; font-weight:900; text-transform:uppercase;">
+                    Click to Launch Session
                 </div>
-
-                <div class="hint">Space: Reveal Opposite | Arrows: Navigate</div>
             </div>
         `;
-
-        // تشغيل الصوت تلقائياً عند الرندر
-        const soundNum = showOpposite ? (currentPairIndex * 2) + 2 : (currentPairIndex * 2) + 1;
-        playSound(soundNum);
+        document.getElementById('startVeto').onclick = () => {
+            isInitialized = true;
+            renderWord();
+        };
     }
 
-    document.onkeydown = (e) => {
-        if (e.keyCode === 32) { // SPACE
-            if (!showOpposite) {
-                showOpposite = true;
-                render();
-            }
-        } else if (e.keyCode === 39) { // NEXT
-            if (currentPairIndex < adjectives.length - 1) {
-                currentPairIndex++;
-                showOpposite = false;
-                render();
-            } else {
-                if(window.triggerVetoDone) window.triggerVetoDone();
-            }
-        } else if (e.keyCode === 37) { // PREV
-            if (currentPairIndex > 0) {
-                currentPairIndex--;
-                showOpposite = false;
-                render();
-            }
+    function playSound(index) {
+        if (!isInitialized) return;
+        
+        const wordEl = document.getElementById('vocabWord');
+        if (wordEl) {
+            wordEl.style.color = '#c5a059'; 
+            setTimeout(() => { if(wordEl) wordEl.style.color = '#ffffff'; }, 500);
+        }
+
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+
+        const audioPath = `data/vocab/v3/${index + 1}.wav`;
+        currentAudio = new Audio(audioPath);
+        currentAudio.play().catch(e => console.error("Audio Error:", e.message));
+    }
+
+function renderWord() {
+        const word = words[currentIndex];
+        let fontSize;
+        
+        // منطق Veto الذكي لضبط الخط حسب طول الكلمة
+        if (word.length <= 4) {
+            fontSize = '22vw'; // كلمات قصيرة جداً (Eat, Go)
+        } else if (word.length <= 7) {
+            fontSize = '18vw'; // كلمات متوسطة (Smell, Start)
+        } else if (word.length <= 9) {
+            fontSize = '14vw'; // كلمات طويلة (Believe)
+        } else {
+            fontSize = '11vw'; // كلمات طويلة جداً (Remember)
+        }
+        
+        container.innerHTML = `
+            <div style="position:absolute; top:0; left:0; height:12px; background:linear-gradient(90deg, #c5a059, #ffd700); width:${((currentIndex + 1) / words.length) * 100}%; transition:0.6s ease-out;"></div>
+            
+            <div style="text-align:center; width:95%; max-width: 95vw;">
+                <div style="font-size:3vw; color:rgba(255,255,255,0.15); margin-bottom:1vh; font-weight:900;">
+                    ${(currentIndex + 1).toString().padStart(2, '0')} <span style="color:#c5a059;">/</span> ${words.length}
+                </div>
+                
+                <div id="vocabWord" style="
+                    font-size:${fontSize}; 
+                    font-weight:900; 
+                    color:#ffffff; 
+                    text-transform:uppercase; 
+                    letter-spacing:-2px; 
+                    cursor:pointer; 
+                    animation: vetoSharpIn 0.3s ease-out;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: clip;
+                    display: inline-block;
+                    width: 100%;
+                ">
+                    ${word}
+                </div>
+                
+                <div style="margin-top:10vh; color:#c5a059; font-size:1.8vw; letter-spacing:12px; font-weight:900; opacity:0.4;">VETO</div>
+            </div>
+
+            <style>
+                @keyframes vetoSharpIn { 
+                    from { opacity: 0; transform: translateY(30px); } 
+                    to { opacity: 1; transform: translateY(0); } 
+                }
+            </style>
+        `;
+        
+        playSound(currentIndex);
+        document.getElementById('vocabWord').onclick = () => playSound(currentIndex);
+    }
+
+    window.nextSlide = function() {
+        if (currentIndex < words.length - 1) {
+            currentIndex++;
+            renderWord();
+        } else if (typeof closeStage === 'function') {
+            closeStage();
         }
     };
 
-    render();
+    window.prevSlide = function() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderWord();
+        }
+    };
+
+    // نظام التحكم المطور لمنع القفز المزدوج
+    document.onkeydown = (e) => {
+        // منع انتشار الحدث للصفحة الأم (Prevent Bubbling)
+        e.stopPropagation();
+
+        const key = e.keyCode;
+
+        if (key === 13 || key === 39) { // Enter or Right
+            window.nextSlide();
+        } 
+        else if (key === 37 || key === 8) { // Left or Backspace
+            window.prevSlide();
+        } 
+        else if (key === 32 || key === 40) { // Space or Down
+            e.preventDefault();
+            playSound(currentIndex);
+        }
+    };
+
+    showStartScreen();
 })();

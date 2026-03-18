@@ -83,26 +83,15 @@
         
         /* تحسين شكل أزرار الأدوات */
         .tool-btn { 
-            width: 45px; /* تصغير الحجم */
-            height: 45px; 
-            border-radius: 12px; /* شكل عصري أكثر من الدائري */
-            background: #1a1a1a; 
-            border: 1px solid var(--primary-gold); 
-            color: var(--primary-gold);
-            font-size: 1.2rem; 
-            display: none; 
-            align-items: center; 
-            justify-content: center;
-            transition: all 0.2s ease; /* تأثير ناعم */
+            width: 48px; height: 48px; border-radius: 12px; 
+            background: #1a1a1a; border: 1px solid var(--primary-gold); 
+            color: var(--primary-gold); font-size: 1.2rem; display: none; 
+            align-items: center; justify-content: center; transition: 0.2s;
             cursor: pointer;
         }
 
         /* تأثير عند الضغط */
-        .tool-btn:active {
-            background: var(--primary-gold);
-            color: #000;
-            transform: scale(0.9); /* تأثير الانضغاط */
-        }
+        .tool-btn:active { background: var(--primary-gold); color: #000; transform: scale(0.9); }
 
         .tool-btn.active { 
             background: #ff4757; 
@@ -110,20 +99,27 @@
             color: white; 
         }
 
+        /* منطقة الملاحظات الذكية (Quick Note) */
+        #quick-note-container {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 80%; z-index: 9600; display: none;
+        }
+        #smart-note-input {
+            width: 100%; background: rgba(0, 0, 0, 0.85); 
+            border: 2px solid var(--primary-gold); border-radius: 15px;
+            color: #fff; padding: 15px 25px; text-align: center;
+            font-size: 2.5rem; font-weight: bold; font-family: var(--font-main);
+            box-shadow: 0 0 30px rgba(197, 160, 89, 0.3);
+        }
+
         /* مناطق اللمس الجانبية للموبايل */
         .nav-hotspot {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 15%; /* مساحة 15% من الجوانب للتنقل */
-            z-index: 8500;
-            display: none;
+            position: absolute; top: 0; height: 100%; width: 15%; z-index: 8400;
         }
-        .nav-next { right: 0; }
-        .nav-prev { left: 0; }
+        .nav-next { right: 0; } .nav-prev { left: 0; }
 
         @media screen and (max-width: 900px) {
-            .nav-hotspot { display: block; } /* تظهر فقط في الموبايل */
+            .nav-hotspot { display: block; }
         }
 
         .toolbox-wrapper.open .tool-btn { display: flex; }
@@ -147,6 +143,10 @@
         <div id="stage-content" style="width:100%; height:100%;"></div>
     </div>
 
+    <div id="quick-note-container">
+        <input type="text" id="smart-note-input" placeholder="اكتب ملاحظتك هنا...">
+    </div>
+
     <div id="laser-pointer"></div>
     <canvas id="drawing-canvas"></canvas>
 
@@ -154,6 +154,7 @@
         <button class="tool-btn" style="display:flex; background:#222;" onclick="toggleToolBox()">🛠️</button>
         <button class="tool-btn" id="laserBtn" onclick="handleToolClick('laserBtn', toggleLaser)">🔦</button>
         <button class="tool-btn" id="reloadBtn" onclick="handleToolClick('reloadBtn', () => location.reload())">🔄</button>
+        <button class="tool-btn" id="noteBtn" onclick="toggleNote()">📝</button>
     </div>
 
     <script src="data/levels.js"></script>
@@ -201,16 +202,8 @@
             document.head.appendChild(script);
         }
 
-        function closeStage() {
-            document.getElementById('activity-stage').style.display = 'none';
-            document.getElementById('stage-content').innerHTML = "";
-            if (document.fullscreenElement) document.exitFullscreen();
-        }
-
         function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
 
-        // تم استبدال المنطق القديم بمناطق اللمس (Hotspots) في الـ HTML 
-        // هذا الجزء للتعامل مع ضغطة الزر وتغيير اللون برمجياً
         function handleToolClick(btnId, action) {
             const btn = document.getElementById(btnId);
             action();
@@ -229,6 +222,30 @@
             document.getElementById('laserBtn').classList.toggle('active');
             laser.style.display = (laserActive && !isMobile) ? 'block' : 'none';
         }
+
+        function toggleNote() {
+            const noteContainer = document.getElementById('quick-note-container');
+            const noteInput = document.getElementById('smart-note-input');
+            const noteBtn = document.getElementById('noteBtn');
+            
+            if (noteContainer.style.display === 'none' || noteContainer.style.display === '') {
+                noteContainer.style.display = 'block';
+                noteBtn.classList.add('active');
+                noteInput.focus();
+            } else {
+                noteContainer.style.display = 'none';
+                noteBtn.classList.remove('active');
+                noteInput.value = ""; 
+            }
+        }
+
+        let closeStage = function() {
+            document.getElementById('activity-stage').style.display = 'none';
+            document.getElementById('stage-content').innerHTML = "";
+            document.getElementById('quick-note-container').style.display = 'none';
+            document.getElementById('noteBtn').classList.remove('active');
+            if (document.fullscreenElement) document.exitFullscreen();
+        };
 
         function getCoords(e) {
             const t = e.touches ? e.touches[0] : e;
@@ -278,13 +295,18 @@
         window.addEventListener('touchend', endAction);
 
         window.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                if(document.getElementById('quick-note-container').style.display === 'block') {
+                    toggleNote();
+                } else {
+                    closeStage();
+                }
+            }
             if (document.getElementById('activity-stage').style.display === 'none') return;
             if (e.key === "Enter" || e.key === "ArrowRight" || e.key === " ") {
                 if(typeof nextSlide === "function") nextSlide();
             } else if (e.key === "ArrowLeft" || e.key === "Backspace") {
                 if(typeof prevSlide === "function") prevSlide();
-            } else if (e.key === "Escape") {
-                closeStage();
             }
         });
 

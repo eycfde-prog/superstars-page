@@ -1,16 +1,17 @@
 /**
- * VETO PROGRAM - Vocabulary Module (Final Audio Fix)
+ * VETO PROGRAM - Vocabulary Module (Direct GitHub Raw)
  * File: L-1-1-S-2-Voc.js
  */
 
 (function() {
-    // استخدام الرابط المباشر الصحيح
-    const baseURL = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/vocab/";
+    // الرابط الخام المباشر (Raw) لضمان التشغيل
+    const rawBase = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/vocab/";
 
     const words = [
-        { text: "eat", audio: baseURL + "1.wav" },
-        { text: "drink", audio: baseURL + "2.wav" },
-        { text: "fly", audio: baseURL + "3.wav" }
+        { text: "eat", audio: rawBase + "1.wav" },
+        { text: "drink", audio: rawBase + "2.wav" },
+        { text: "fly", audio: rawBase + "3.wav" },
+        { text: "read", audio: rawBase + "4.wav" } // ضفت لك الرابعة كمان
     ];
 
     let currentIndex = 0;
@@ -26,30 +27,31 @@
                 }
                 .word-display {
                     font-size: 25vw; font-weight: 900; text-transform: uppercase;
-                    text-shadow: 0 0 40px rgba(197, 160, 89, 0.4);
+                    text-shadow: 0 0 50px rgba(197, 160, 89, 0.5);
+                    cursor: pointer; transition: 0.3s;
                 }
+                .word-display:active { transform: scale(0.9); opacity: 0.8; }
+                
                 #audio-unlocker {
                     position: absolute; inset: 0; z-index: 9999;
-                    background: rgba(0,0,0,0.95); display: flex;
+                    background: #000; display: flex;
                     justify-content: center; align-items: center;
                 }
                 .unlock-btn {
                     padding: 25px 60px; border: 4px solid #c5a059;
                     color: #c5a059; font-size: 2.5rem; border-radius: 15px;
                     background: none; cursor: pointer; font-weight: bold;
-                    transition: 0.3s;
                 }
-                .unlock-btn:hover { background: #c5a059; color: #000; }
             </style>
             
             <div class="vocabulary-viewer">
-                <audio id="veto-audio-player" preload="auto"></audio>
+                <audio id="veto-player" crossorigin="anonymous"></audio>
 
                 <div id="audio-unlocker" onclick="unlockAudio()">
-                    <button class="unlock-btn">READY TO START</button>
+                    <button class="unlock-btn">START LESSON</button>
                 </div>
                 
-                <div id="word-target" class="word-display"></div>
+                <div id="word-target" class="word-display" onclick="playCurrentAudio()"></div>
             </div>
         `;
     };
@@ -60,17 +62,14 @@
     };
 
     window.playCurrentAudio = function() {
-        const player = document.getElementById('veto-audio-player');
-        // تغيير المصدر
+        const player = document.getElementById('veto-player');
         player.src = words[currentIndex].audio;
-        player.load(); // إجبار المتصفح على تحميل الملف الجديد
+        player.load();
         
         player.play().catch(err => {
             console.error("Veto Audio Error:", err);
-            // محاولة أخيرة لو الـ wav معصلج: تنبيه المدرس
-            if(err.name === "NotSupportedError") {
-                console.warn("المتصفح مش قادر يشغل صيغة الـ wav دي. جرب تحولها لـ mp3 أو اتأكد من الرابط.");
-            }
+            // لو فشل، هنجرب نفتح الرابط في تاب جديد للتأكد
+            console.log("Check this link manually:", words[currentIndex].audio);
         });
     };
 
@@ -79,6 +78,7 @@
         playCurrentAudio();
     };
 
+    // التحكم بالـ Next و Prev من الـ Main App
     window.nextSlide = function() {
         if (currentIndex < words.length - 1) {
             currentIndex++;

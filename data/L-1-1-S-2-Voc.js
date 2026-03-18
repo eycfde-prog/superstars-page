@@ -2,7 +2,13 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const words = ["Eat", "Drink", "Sleep", "Go", "Come", "Run", "Walk", "Play", "Read", "Write"];
+    const words = [
+        "Eat", "Drink", "Sleep", "Go", "Come", "Run", "Walk", "Play", "Read", "Write",
+        "Speak", "Listen", "Look", "See", "Watch", "Open", "Close", "Sit", "Stand", "Jump",
+        "Swim", "Drive", "Ride", "Give", "Take", "Buy", "Sell", "Help", "Work", "Study",
+        "Learn", "Teach", "Cook", "Clean", "Wash", "Cut", "Draw", "Paint", "Sing", "Dance",
+        "Smile", "Laugh", "Cry", "Think", "Know", "Make", "Use", "Push", "Pull", "Stop"
+    ];;
     let currentIndex = 0;
     let currentAudio = null;
     let isInitialized = false; // لمنع التشغيل التلقائي قبل التفاعل
@@ -35,7 +41,7 @@
         }
 
         // استخدام المسار النسبي الصحيح
-        const audioPath = `data/vocab/${index + 1}.wav`;
+        const audioPath = `data/vocab/v1/${index + 1}.wav`;
         currentAudio = new Audio(audioPath);
         
         currentAudio.play().catch(e => {

@@ -2,90 +2,143 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    container.innerHTML = ''; 
-    container.style.cssText = `height:100%; display:flex; align-items:center; justify-content:center; background:#0a0e14; overflow:hidden; position:relative;`;
+const words = [ "School", "Classroom", "Desk", "Chair", "Institute", "Whiteboard", "Chalk", "Marker", "Eraser", "Pen", "Pencil", "Sharpener", "Ruler", "Notebook", "Book", "Paper", "Backpack", "Pencil case", "Scissors", "Glue", "Tape", "Stapler", "Calculator", "Computer", "Laptop", "Tablet", "Homework", "Lesson", "Exam", "Grade", "Teacher", "Student", "Principal", "Library", "Laboratory", "Map", "Globe", "Dictionary", "Subject", "English", "Math", "Science", "History", "Geography", "Art", "Music", "Campus", "Break", "Schedule", "University" ];
 
+    
     let currentIndex = 0;
-    const sessionFolder = "School"; 
-    const words = [
-        "School", "Classroom", "Desk", "Chair", "Blackboard", "Whiteboard", "Chalk", "Marker", "Eraser", "Pen",
-        "Pencil", "Sharpener", "Ruler", "Notebook", "Book", "Paper", "Backpack", "Pencil case", "Scissors", "Glue",
-        "Tape", "Stapler", "Calculator", "Computer", "Laptop", "Tablet", "Homework", "Lesson", "Exam", "Grade",
-        "Teacher", "Student", "Principal", "Library", "Laboratory", "Map", "Globe", "Dictionary", "Subject", "English",
-        "Math", "Science", "History", "Geography", "Art", "Music", "Sport", "Break", "Schedule", "University"
-    ];
+    let currentAudio = null;
+    let isInitialized = false;
 
-    function playSound(index) {
-        const audioPath = `data/vocab/${sessionFolder}/${index + 1}.mp3`;
-        const audio = new Audio(audioPath);
-        audio.play().catch(e => console.log("Audio Sync needed for:", sessionFolder));
-    }
+    container.innerHTML = ''; 
+    container.style.cssText = `
+        height:100%; width:100%; display:flex; align-items:center; justify-content:center; 
+        background:#050505; position:relative; overflow:hidden;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+    `;
 
-    function renderWord() {
+    function showStartScreen() {
         container.innerHTML = `
-            <style>
-                @keyframes wordEntry {
-                    from { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(10px); }
-                    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-                }
-                .academic-bg {
-                    position: absolute; width: 100%; height: 100%;
-                    background-image: radial-gradient(circle at 2px 2px, rgba(52, 152, 219, 0.05) 1px, transparent 0);
-                    background-size: 40px 40px;
-                }
-                .vocab-wrapper {
-                    text-align: center; z-index: 5;
-                    animation: wordEntry 0.4s ease-out forwards;
-                }
-                .count-indicator {
-                    color: #555; font-size: 1.2rem; font-weight: bold;
-                    margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;
-                }
-                .main-word {
-                    font-size: 11rem; font-weight: 900; color: #fff;
-                    text-transform: uppercase; letter-spacing: -2px;
-                    text-shadow: 0 0 40px rgba(52, 152, 219, 0.4);
-                    margin: 0;
-                }
-                .sub-label {
-                    margin-top: 50px; color: #3498db; font-size: 1.6rem;
-                    letter-spacing: 10px; font-weight: 800; text-transform: uppercase;
-                }
-                .progress-dot {
-                    display: inline-block; width: 8px; height: 8px; 
-                    background: #3498db; border-radius: 50%; margin: 0 5px;
-                    box-shadow: 0 0 10px #3498db;
-                }
-            </style>
-
-            <div class="academic-bg"></div>
-
-            <div class="vocab-wrapper">
-                <div class="count-indicator">Asset ${currentIndex + 1} / 50</div>
-                <h1 class="main-word">${words[currentIndex]}</h1>
-                <div class="sub-label">
-                    <span class="progress-dot"></span>
-                    School & Stationery
-                    <span class="progress-dot"></span>
+            <div id="startVeto" style="cursor:pointer; text-align:center;">
+                <div style="font-size:12vw; filter: drop-shadow(0 0 30px #c5a059);">🎓</div>
+                <div style="font-size:2.5vw; color:#fff; letter-spacing:8px; margin-top:30px; font-weight:900; text-transform:uppercase;">
+                    Click to Launch Session
                 </div>
             </div>
         `;
-        playSound(currentIndex);
+        document.getElementById('startVeto').onclick = () => {
+            isInitialized = true;
+            renderWord();
+        };
     }
 
-    document.onkeydown = (e) => {
-        if (e.keyCode === 39 || e.keyCode === 32) { // Right or Space
-            if (currentIndex < words.length - 1) {
-                currentIndex++;
-                renderWord();
-            }
-        } else if (e.keyCode === 37) { // Left
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderWord();
-            }
+    function playSound(index) {
+        if (!isInitialized) return;
+        
+        const wordEl = document.getElementById('vocabWord');
+        if (wordEl) {
+            wordEl.style.color = '#c5a059'; 
+            setTimeout(() => { if(wordEl) wordEl.style.color = '#ffffff'; }, 500);
+        }
+
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+
+        const audioPath = `data/vocab/v16/${index + 1}.wav`;
+        currentAudio = new Audio(audioPath);
+        currentAudio.play().catch(e => console.error("Audio Error:", e.message));
+    }
+
+function renderWord() {
+        const word = words[currentIndex];
+        let fontSize;
+        
+        // منطق Veto الذكي لضبط الخط حسب طول الكلمة
+        if (word.length <= 4) {
+            fontSize = '22vw'; // كلمات قصيرة جداً (Eat, Go)
+        } else if (word.length <= 7) {
+            fontSize = '18vw'; // كلمات متوسطة (Smell, Start)
+        } else if (word.length <= 9) {
+            fontSize = '14vw'; // كلمات طويلة (Believe)
+        } else {
+            fontSize = '11vw'; // كلمات طويلة جداً (Remember)
+        }
+        
+        container.innerHTML = `
+            <div style="position:absolute; top:0; left:0; height:12px; background:linear-gradient(90deg, #c5a059, #ffd700); width:${((currentIndex + 1) / words.length) * 100}%; transition:0.6s ease-out;"></div>
+            
+            <div style="text-align:center; width:95%; max-width: 95vw;">
+                <div style="font-size:3vw; color:rgba(255,255,255,0.15); margin-bottom:1vh; font-weight:900;">
+                    ${(currentIndex + 1).toString().padStart(2, '0')} <span style="color:#c5a059;">/</span> ${words.length}
+                </div>
+                
+                <div id="vocabWord" style="
+                    font-size:${fontSize}; 
+                    font-weight:900; 
+                    color:#ffffff; 
+                    text-transform:uppercase; 
+                    letter-spacing:-2px; 
+                    cursor:pointer; 
+                    animation: vetoSharpIn 0.3s ease-out;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: clip;
+                    display: inline-block;
+                    width: 100%;
+                ">
+                    ${word}
+                </div>
+                
+                <div style="margin-top:10vh; color:#c5a059; font-size:1.8vw; letter-spacing:12px; font-weight:900; opacity:0.4;">VETO</div>
+            </div>
+
+            <style>
+                @keyframes vetoSharpIn { 
+                    from { opacity: 0; transform: translateY(30px); } 
+                    to { opacity: 1; transform: translateY(0); } 
+                }
+            </style>
+        `;
+        
+        playSound(currentIndex);
+        document.getElementById('vocabWord').onclick = () => playSound(currentIndex);
+    }
+
+    window.nextSlide = function() {
+        if (currentIndex < words.length - 1) {
+            currentIndex++;
+            renderWord();
+        } else if (typeof closeStage === 'function') {
+            closeStage();
         }
     };
 
-    renderWord();
+    window.prevSlide = function() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderWord();
+        }
+    };
+
+    // نظام التحكم المطور لمنع القفز المزدوج
+    document.onkeydown = (e) => {
+        // منع انتشار الحدث للصفحة الأم (Prevent Bubbling)
+        e.stopPropagation();
+
+        const key = e.keyCode;
+
+        if (key === 13 || key === 39) { // Enter or Right
+            window.nextSlide();
+        } 
+        else if (key === 37 || key === 8) { // Left or Backspace
+            window.prevSlide();
+        } 
+        else if (key === 32 || key === 40) { // Space or Down
+            e.preventDefault();
+            playSound(currentIndex);
+        }
+    };
+
+    showStartScreen();
 })();

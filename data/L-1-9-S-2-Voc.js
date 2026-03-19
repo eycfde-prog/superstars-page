@@ -2,7 +2,7 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-const words = [ [ "Breakfast", "Lunch", "Dinner", "Snack", "Bread", "Rice", "Pasta", "Pizza", "Burger", "Sandwich", "Soup", "Salad", "Cheese", "Egg", "Butter", "Yogurt", "Meat", "Chicken", "Fish", "Steak", "Sausage", "Seafood", "Salt", "Pepper", "Sugar", "Honey", "Oil", "Sauce", "Jam", "Cake", "Chocolate", "Ice cream", "Cookie", "Candy", "Water", "Milk", "Juice", "Tea", "Coffee", "Soda", "Lemonade", "chew", "Flour", "Wheat", "Cereal", "Noodles", "Pie", "Vinegar", "Menu", "Bill"];
+const words = [ "Breakfast", "Lunch", "Dinner", "Snack", "Bread", "Rice", "Pasta", "Pizza", "Burger", "Sandwich", "Soup", "Salad", "Cheese", "Egg", "Butter", "Yogurt", "Meat", "Chicken", "Fish", "Steak", "Sausage", "Seafood", "Salt", "Pepper", "Sugar", "Honey", "Oil", "Sauce", "Jam", "Cake", "Chocolate", "Ice cream", "Cookie", "Candy", "Water", "Milk", "Juice", "Tea", "Coffee", "Soda", "Lemonade", "chew", "Flour", "Wheat", "Cereal", "Noodles", "Pie", "Vinegar", "Menu", "Bill"];
 
     
     let currentIndex = 0;

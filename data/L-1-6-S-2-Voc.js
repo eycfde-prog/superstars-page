@@ -2,12 +2,13 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-const words = "Teacher", "Student", "Doctor", "Nurse", "Dentist", "Engineer", "Architect", "Pilot", "Flight attendant", "Lawyer",
+const words = [
+    "Teacher", "Student", "Doctor", "Nurse", "Dentist", "Engineer", "Architect", "Pilot", "Flight attendant", "Lawyer",
         "Judge", "Police officer", "Firefighter", "Soldier", "Sailor", "Chef", "Waiter", "Baker", "Butcher", "Farmer",
         "Fisherman", "Driver", "Mechanic", "Carpenter", "Plumber", "Electrician", "Painter", "Tailor", "Barber", "Hairdresser",
         "Artist", "Photographer", "Actor", "Singer", "Dancer", "Writer", "Journalist", "Scientist", "Astronaut", "Athlete",
         "Banker", "Accountant", "Secretary", "Receptionist", "Shop assistant", "Manager", "Programmer", "Designer", "Guide", "Retired"
-
+];
     
     let currentIndex = 0;
     let currentAudio = null;

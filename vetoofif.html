@@ -62,7 +62,7 @@
             justify-content: center;
             min-height: 120px;
         }
-        
+
         .content-card:hover { border-color: var(--primary-gold); background: rgba(197,160,89,0.05); }
 
         .content-card h2 {
@@ -98,7 +98,7 @@
         }
 
         .toolbox-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 9500; display: flex; flex-direction: column-reverse; gap: 10px; }
-        
+
         .tool-btn { 
             width: 48px; height: 48px; border-radius: 12px; 
             background: #1a1a1a; border: 1px solid var(--primary-gold); 
@@ -177,7 +177,7 @@
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const urlParams = new URLSearchParams(window.location.search);
         const currentSessionId = urlParams.get('session');
-        
+
         let laserActive = false;
         let isDrawing = false;
         const laser = document.getElementById('laser-pointer');
@@ -201,9 +201,53 @@
 
         async function openActivity(activityName) {
             const [lvl, sess] = currentSessionId.split('-');
-            const prefix = activityName.split(' ')[0].substring(0, 3);
-            const filePath = `data/L-1-${lvl}-S-${sess}-${prefix}.js`;
-            
+            let filePath = "";
+            const nameUpper = activityName.toUpperCase();
+
+            // Logic for Routing Files
+            if (nameUpper.includes("GRAMMAR")) {
+                filePath = `data/L-1-${lvl}-S-${sess}-Gra.js`;
+            } 
+            else if (nameUpper.includes("VOCAB")) {
+                const type = nameUpper.includes("TEST") ? "2" : "1";
+                filePath = `data/L-${type}-${lvl}-S-${sess}-Voc.js`;
+            }
+            else if (nameUpper.includes("READING")) {
+                filePath = `data/L-${lvl}-S-${sess}-Rea.js`;
+            }
+            else if (nameUpper.includes("ONE SHOT")) {
+                filePath = `data/L-${lvl}-S-${sess}-One.js`;
+            }
+            else if (nameUpper.includes("TONGUE TWISTER")) {
+                filePath = `data/L-${lvl}-S-${sess}-Ton.js`;
+            }
+            else if (nameUpper.includes("SQUEEZER")) {
+                const type = nameUpper.includes("TEST") ? `L-2-1-S-${sess}` : `L-1-1-S-${sess}`;
+                filePath = `data/${type}-Squ.js`;
+            }
+            else if (nameUpper.includes("DMT")) {
+                filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-1-1-S-${sess}-DMT.js`;
+            }
+            else if (nameUpper.includes("WISH")) {
+                const type = nameUpper.includes("TEST") ? "2" : "1";
+                filePath = `data/L-${type}-1-S-${sess}-Wis.js`;
+            }
+            else if (nameUpper.includes("PROJECT")) {
+                const type = nameUpper.includes("TEST") ? "2" : "1";
+                filePath = `data/L-${type}-1-S-${sess}-Pro.js`;
+            }
+            else if (nameUpper.includes("GP")) {
+                const type = nameUpper.includes("TEST") ? "2" : "1";
+                filePath = `data/L-${type}-1-S-${sess}-GP.js`;
+            }
+            else {
+                // Default fallback logic for any other files
+                const prefix = activityName.split(' ')[0].substring(0, 3);
+                filePath = `data/L-1-${lvl}-S-${sess}-${prefix}.js`;
+            }
+
+            console.log("Opening Path:", filePath); 
+
             const stage = document.getElementById('activity-stage');
             stage.style.display = 'block';
             
@@ -211,6 +255,7 @@
                 stage.requestFullscreen().catch(err => console.log(err));
             }
 
+            document.getElementById('stage-content').innerHTML = "";
             const script = document.createElement('script');
             script.src = filePath;
             document.head.appendChild(script);
@@ -241,7 +286,7 @@
             const noteContainer = document.getElementById('quick-note-container');
             const noteInput = document.getElementById('smart-note-input');
             const noteBtn = document.getElementById('noteBtn');
-            
+
             if (noteContainer.style.display === 'none' || noteContainer.style.display === '') {
                 noteContainer.style.display = 'block';
                 noteBtn.classList.add('active');
@@ -309,7 +354,6 @@
         window.addEventListener('touchend', endAction);
 
         window.addEventListener('keydown', (e) => {
-            // 1. الخروج دائماً متاح بـ Escape
             if (e.key === "Escape") {
                 if(document.getElementById('quick-note-container').style.display === 'block') {
                     toggleNote();
@@ -319,15 +363,12 @@
                 return;
             }
 
-            // 2. إذا كان الـ Stage مغلقاً، لا تفعل شيئاً
             if (document.getElementById('activity-stage').style.display === 'none') return;
 
-            // 3. منع المتصفح من الحركات الافتراضية (مثل الـ Scroll بالمسطرة)
             if ([" ", "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"].includes(e.key)) {
                 e.preventDefault();
             }
 
-            // 4. الحل الذكي: التحقق من وجود نظام تحكم داخلي في النشاط
             const isInternalControl = (typeof document.onkeydown === 'function');
 
             if (!isInternalControl) {

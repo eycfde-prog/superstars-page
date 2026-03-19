@@ -2,77 +2,148 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    container.innerHTML = ''; 
-    container.style.cssText = `height:100%; display:flex; align-items:center; justify-content:center; background:#050505; overflow:hidden; position:relative; font-family: 'Inter', sans-serif;`;
-
+const words = [
+    "Dove", "Fox", "Puppy", "Kitten", "Rabbit", "Hamster", "Parrot", "Clownfish", "Tortoise", "Bird",
+    "Horse", "Cow", "Sheep", "Goat", "Chicken", "Rooster", "Peacock", "Duck", "Goose", "Turkey",
+    "Donkey", "Camel", "Bear", "Bull", "Calf", "Lamb", "Cheetah", "Mouse", "Bee", "Butterfly",
+    "Ant", "Housefly", "Mosquito", "Spider", "Worm", "Snail", "Frog", "Snake", "Pigeon", "Eagle",
+    "Owl", "Crow", "Swan", "Bat", "Squirrel", "Monkey", "Deer", "Lion", "Tiger", "Elephant"
+]; 
+    
     let currentIndex = 0;
-    const sessionFolder = "Animals1"; 
-    const words = [
-        "Dog", "Cat", "Puppy", "Kitten", "Rabbit", "Hamster", "Parrot", "Goldfish", "Turtle", "Bird",
-        "Horse", "Cow", "Sheep", "Goat", "Chicken", "Rooster", "Hen", "Duck", "Goose", "Turkey",
-        "Donkey", "Camel", "Pig", "Ox", "Bull", "Calf", "Lamb", "Pony", "Mouse", "Rat",
-        "Bee", "Butterfly", "Ant", "Fly", "Mosquito", "Spider", "Worm", "Snail", "Frog", "Snake",
-        "Pigeon", "Eagle", "Owl", "Crow", "Peacock", "Swan", "Bat", "Squirrel", "Monkey", "Deer"
-    ];
+    let currentAudio = null;
+    let isInitialized = false;
 
-    function playSound(index) {
-        const audioPath = `data/vocab/${sessionFolder}/${index + 1}.mp3`;
-        const audio = new Audio(audioPath);
-        audio.play().catch(e => console.log("Audio not ready:", audioPath));
-    }
+    container.innerHTML = ''; 
+    container.style.cssText = `
+        height:100%; width:100%; display:flex; align-items:center; justify-content:center; 
+        background:#050505; position:relative; overflow:hidden;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+    `;
 
-    function renderWord() {
-        const progress = ((currentIndex + 1) / words.length) * 100;
-        
+    function showStartScreen() {
         container.innerHTML = `
-            <style>
-                @keyframes wordPop {
-                    0% { transform: scale(0.8); opacity: 0; }
-                    100% { transform: scale(1); opacity: 1; }
-                }
-                .vocab-card { animation: wordPop 0.2s ease-out; text-align: center; }
-                .progress-bar { 
-                    position: absolute; top: 0; left: 0; height: 5px; 
-                    background: #3498db; transition: width 0.3s; width: ${progress}%; 
-                    box-shadow: 0 0 10px #3498db;
-                }
-            </style>
-            
-            <div class="progress-bar"></div>
-            
-            <div class="vocab-card">
-                <div style="font-size:1.2rem; color:#444; margin-bottom:30px; letter-spacing:3px; font-weight:900;">
-                    STEP ${currentIndex + 1} / ${words.length}
-                </div>
-                
-                <div id="vocabWord" style="font-size:11rem; font-weight:900; color:#fff; text-transform:uppercase; letter-spacing:10px; text-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);">
-                    ${words[currentIndex]}
-                </div>
-                
-                <div style="margin-top:60px; color:#3498db; font-size:1.8rem; letter-spacing:8px; font-weight:800; text-transform:uppercase; opacity:0.8;">
-                    Pets & Farm Animals
+            <div id="startVeto" style="cursor:pointer; text-align:center;">
+                <div style="font-size:12vw; filter: drop-shadow(0 0 30px #c5a059);">🎓</div>
+                <div style="font-size:2.5vw; color:#fff; letter-spacing:8px; margin-top:30px; font-weight:900; text-transform:uppercase;">
+                    Click to Launch Session
                 </div>
             </div>
         `;
-        playSound(currentIndex);
+        document.getElementById('startVeto').onclick = () => {
+            isInitialized = true;
+            renderWord();
+        };
     }
 
-    document.onkeydown = (e) => {
-        if (e.keyCode === 39 || e.keyCode === 32) { // Right or Space
-            if (currentIndex < words.length - 1) {
-                currentIndex++;
-                renderWord();
-            } else {
-                // Finish Logic
-                container.innerHTML = `<h1 style="color:#2ecc71; font-size:5rem; font-weight:900; letter-spacing:5px;">ALL WORDS MASTERED!</h1>`;
-            }
-        } else if (e.keyCode === 37) { // Left
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderWord();
-            }
+    function playSound(index) {
+        if (!isInitialized) return;
+        
+        const wordEl = document.getElementById('vocabWord');
+        if (wordEl) {
+            wordEl.style.color = '#c5a059'; 
+            setTimeout(() => { if(wordEl) wordEl.style.color = '#ffffff'; }, 500);
+        }
+
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+
+        const audioPath = `data/vocab/v9/${index + 1}.wav`;
+        currentAudio = new Audio(audioPath);
+        currentAudio.play().catch(e => console.error("Audio Error:", e.message));
+    }
+
+function renderWord() {
+        const word = words[currentIndex];
+        let fontSize;
+        
+        // منطق Veto الذكي لضبط الخط حسب طول الكلمة
+        if (word.length <= 4) {
+            fontSize = '22vw'; // كلمات قصيرة جداً (Eat, Go)
+        } else if (word.length <= 7) {
+            fontSize = '18vw'; // كلمات متوسطة (Smell, Start)
+        } else if (word.length <= 9) {
+            fontSize = '14vw'; // كلمات طويلة (Believe)
+        } else {
+            fontSize = '11vw'; // كلمات طويلة جداً (Remember)
+        }
+        
+        container.innerHTML = `
+            <div style="position:absolute; top:0; left:0; height:12px; background:linear-gradient(90deg, #c5a059, #ffd700); width:${((currentIndex + 1) / words.length) * 100}%; transition:0.6s ease-out;"></div>
+            
+            <div style="text-align:center; width:95%; max-width: 95vw;">
+                <div style="font-size:3vw; color:rgba(255,255,255,0.15); margin-bottom:1vh; font-weight:900;">
+                    ${(currentIndex + 1).toString().padStart(2, '0')} <span style="color:#c5a059;">/</span> ${words.length}
+                </div>
+                
+                <div id="vocabWord" style="
+                    font-size:${fontSize}; 
+                    font-weight:900; 
+                    color:#ffffff; 
+                    text-transform:uppercase; 
+                    letter-spacing:-2px; 
+                    cursor:pointer; 
+                    animation: vetoSharpIn 0.3s ease-out;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: clip;
+                    display: inline-block;
+                    width: 100%;
+                ">
+                    ${word}
+                </div>
+                
+                <div style="margin-top:10vh; color:#c5a059; font-size:1.8vw; letter-spacing:12px; font-weight:900; opacity:0.4;">VETO</div>
+            </div>
+
+            <style>
+                @keyframes vetoSharpIn { 
+                    from { opacity: 0; transform: translateY(30px); } 
+                    to { opacity: 1; transform: translateY(0); } 
+                }
+            </style>
+        `;
+        
+        playSound(currentIndex);
+        document.getElementById('vocabWord').onclick = () => playSound(currentIndex);
+    }
+
+    window.nextSlide = function() {
+        if (currentIndex < words.length - 1) {
+            currentIndex++;
+            renderWord();
+        } else if (typeof closeStage === 'function') {
+            closeStage();
         }
     };
 
-    renderWord();
+    window.prevSlide = function() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderWord();
+        }
+    };
+
+    // نظام التحكم المطور لمنع القفز المزدوج
+    document.onkeydown = (e) => {
+        // منع انتشار الحدث للصفحة الأم (Prevent Bubbling)
+        e.stopPropagation();
+
+        const key = e.keyCode;
+
+        if (key === 13 || key === 39) { // Enter or Right
+            window.nextSlide();
+        } 
+        else if (key === 37 || key === 8) { // Left or Backspace
+            window.prevSlide();
+        } 
+        else if (key === 32 || key === 40) { // Space or Down
+            e.preventDefault();
+            playSound(currentIndex);
+        }
+    };
+
+    showStartScreen();
 })();

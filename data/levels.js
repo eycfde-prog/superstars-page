@@ -12,7 +12,7 @@ const sessionData = {
     "1-4": ["Grammar 4 Study", "Vocab 2 Test", "Reading 1 Review"],
 
     // LEVEL 2
-    "2-1": ["Grammar 5 Study", "Reading 2 Review"], // تم حذف Reading 1
+    "2-1": ["Grammar 5 Study", "Reading 2 Review", "One Shot intro"], // تم حذف Reading 1
     "2-2": ["Listening 1 Review", "Reading 3 Review", "Vocab 3 Review", "One Shot 1 Test"], // تم حذف Reading 2
     "2-3": ["Listening 2 Review", "Reading 4 Review", "Vocab 3 Test", "Vocab 4 Review"], // تم حذف Reading 3
     "2-4": ["Grammar 6 Study", "Listening 3 Review", "Reading 5 Review", "One Shot 2 Test", "Vocab 4 Test", "Tongue Twister 1 Intro"],

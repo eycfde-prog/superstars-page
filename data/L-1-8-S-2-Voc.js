@@ -51,7 +51,7 @@ const words = [
             currentAudio.currentTime = 0;
         }
 
-        const audioPath = `data/vocab/v15/${index + 1}.wav`;
+        const audioPath = `data/vocab/v16/${index + 1}.wav`;
         currentAudio = new Audio(audioPath);
         currentAudio.play().catch(e => console.error("Audio Error:", e.message));
     }

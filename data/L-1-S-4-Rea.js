@@ -28,15 +28,13 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
     container.innerHTML = `
         <style>
-            /* حاوية الكتاب - زيادة سمك الصفحات الجانبية */
             .book-wrapper {
-                position: relative; width: 92%; height: 88vh;
+                position: relative; width: 94%; height: 90vh;
                 background: #f4ecd8; border-radius: 4px;
-                /* تأثير طبقات الورق الكثيفة على الأطراف */
                 box-shadow: 
-                    5px 0 0 -2px #d2b48c, 10px 0 0 -4px #f4ecd8, 15px 0 0 -6px #d2b48c,
-                    -5px 0 0 -2px #d2b48c, -10px 0 0 -4px #f4ecd8, -15px 0 0 -6px #d2b48c,
-                    0 30px 60px rgba(0,0,0,0.8);
+                    8px 0 0 -2px #d2b48c, 16px 0 0 -4px #f4ecd8, 24px 0 0 -6px #d2b48c,
+                    -8px 0 0 -2px #d2b48c, -16px 0 0 -4px #f4ecd8, -24px 0 0 -6px #d2b48c,
+                    0 40px 80px rgba(0,0,0,0.9);
             }
 
             .book-content {
@@ -44,50 +42,46 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
                 overflow: hidden; border: 1px solid rgba(0,0,0,0.2);
             }
 
-            /* الفاصل الأوسط بتأثير الانتفاخ (The Spine Bump) */
             .book-spine-area {
-                position: absolute; left: 50%; top: 0; width: 80px; height: 100%;
+                position: absolute; left: 50%; top: 0; width: 60px; height: 100%;
                 z-index: 10; transform: translateX(-50%);
                 display: flex;
             }
-            /* الظل اليمين واليسار لخلق إيحاء الانتفاخ */
-            .spine-left { flex: 1; background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%); }
-            .spine-right { flex: 1; background: linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%); }
-            .spine-center { width: 4px; background: rgba(0,0,0,0.3); box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+            .spine-left { flex: 1; background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 100%); }
+            .spine-right { flex: 1; background: linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 100%); }
+            .spine-center { width: 2px; background: rgba(0,0,0,0.2); }
 
-            /* الصفحة اليسرى واليمنى مع تأثير الانحناء الخفيف */
-            .page {
-                flex: 1; background: #f4ecd8; position: relative;
-                box-shadow: inset 0 0 100px rgba(0,0,0,0.05);
-            }
+            .page { flex: 1; background: #f4ecd8; position: relative; }
 
+            /* الصفحة اليسرى - تكبير الحاوية */
             .left-page {
-                display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 50px;
-                background: linear-gradient(90deg, #ede3c8 0%, #f4ecd8 20%);
+                display: flex; justify-content: center; align-items: center; padding: 30px;
+                background: linear-gradient(90deg, #ede3c8 0%, #f4ecd8 15%);
             }
 
-            /* حاوية الصورة مع أنيميشن */
+            /* حاوية الصورة - جعلها أكبر وأوضح */
             .image-box {
-                width: 90%; height: 80%; border: 15px solid #fff; outline: 1px solid #d2b48c;
-                box-shadow: 0 15px 35px rgba(0,0,0,0.3); overflow: hidden;
-                transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+                width: 95%; height: 95%; border: 12px solid #fff; outline: 1px solid #d2b48c;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden;
+                transition: transform 0.5s ease-out; background: #fff;
             }
-            .image-box img { width: 100%; height: 100%; object-fit: cover; transition: scale 0.8s; }
+            /* object-fit: contain يضمن ظهور الصورة كاملة دون قص */
+            .image-box img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.6s ease; }
 
             .right-page {
                 padding: 4vw 5vw; overflow-y: auto; color: #2c2c2c;
-                background: linear-gradient(-90deg, #ede3c8 0%, #f4ecd8 20%);
+                background: linear-gradient(-90deg, #ede3c8 0%, #f4ecd8 15%);
                 scrollbar-width: none;
             }
             .right-page::-webkit-scrollbar { display: none; }
 
-            .story-title { font-size: 3.2vw; color: #5d3a1a; text-align: center; margin-bottom: 30px; font-variant: small-caps; border-bottom: 3px double #d2b48c; }
-            .story-content { font-size: 2.4vw; line-height: 1.7; text-align: justify; }
+            .story-title { font-size: 3.5vw; color: #5d3a1a; text-align: center; margin-bottom: 25px; font-variant: small-caps; border-bottom: 3px double #d2b48c; }
+            .story-content { font-size: 2.5vw; line-height: 1.65; text-align: justify; }
             b { color: #b08d57; font-weight: 900; }
-            hr { border: none; height: 1px; background: #d2b48c; margin: 40px 0; opacity: 0.5; }
+            hr { border: none; height: 1px; background: #d2b48c; margin: 35px 0; opacity: 0.4; }
 
-            /* كلاس الأنيميشن عند السكرول */
-            .img-bump { transform: scale(1.03) rotate(1deg); }
+            /* تأثير النبضة عند السكرول */
+            .img-bump { transform: scale(1.02) rotate(0.5deg); }
         </style>
 
         <div class="book-wrapper">
@@ -101,7 +95,7 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/f4ecd8/8b4513?text=Veto+Illustration'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/fff/8b4513?text=Part+${partNumber}'">
                     </div>
                 </div>
 
@@ -115,30 +109,29 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
         </div>
     `;
 
-    // --- منطق التحكم والأنيميشن ---
     const imgBox = document.getElementById('book-img-box');
     const mainImg = document.getElementById('main-img');
     let scrollTimeout;
 
     function triggerImgAnim() {
         imgBox.classList.add('img-bump');
-        mainImg.style.scale = "1.1";
+        mainImg.style.transform = "scale(1.05)";
         
         clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
             imgBox.classList.remove('img-bump');
-            mainImg.style.scale = "1";
+            mainImg.style.transform = "scale(1)";
         }, 400);
     }
 
     document.onkeydown = (e) => {
         const scroller = document.getElementById('story-scroller');
-        const step = 180;
+        const step = 150;
         
-        if (e.keyCode === 32 || e.keyCode === 40 || e.keyCode === 13) { // Space, Down, Enter
+        if (e.keyCode === 32 || e.keyCode === 40 || e.keyCode === 13) {
             scroller.scrollBy({ top: step, behavior: 'smooth' });
             triggerImgAnim();
-        } else if (e.keyCode === 38) { // Up
+        } else if (e.keyCode === 38) {
             scroller.scrollBy({ top: -step, behavior: 'smooth' });
             triggerImgAnim();
         }

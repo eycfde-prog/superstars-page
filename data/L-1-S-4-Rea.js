@@ -41,11 +41,7 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
             <div id="story-scroll" style="flex:1.2; height:100%; overflow-y:auto; padding-right:20px; scrollbar-width: thin; scrollbar-color: #c5a059 #111;">
                 <div style="font-size:2.2vw; line-height:1.6; text-align:left; color:#eee; background: rgba(255,255,255,0.02); padding:40px; border-radius:20px; border-left:8px solid #c5a059;">
                     ${storyText.replace(/Mr. Clay/g, '<b style="color:#c5a059">Mr. Clay</b>')}
-                </div>
-                
-                <div style="margin-top:40px; text-align:center;">
-                   <button onclick="window.triggerVetoDone()" style="padding:15px 40px; background:#c5a059; border:none; border-radius:50px; font-weight:bold; font-size:1.5vw; cursor:pointer;">FINISH READING</button>
-                </div>
+
             </div>
         </div>
 

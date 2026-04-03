@@ -28,80 +28,84 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
     container.innerHTML = `
         <style>
-            /* حاوية الكتاب مع تأثير الصفحات المتراكمة */
+            /* حاوية الكتاب - زيادة سمك الصفحات الجانبية */
             .book-wrapper {
-                position: relative; width: 90%; height: 85vh;
-                background: #e0d5ba; /* لون حواف الصفحات */
-                border-radius: 5px;
-                /* شادو متعدد الطبقات ليعطي إيحاء بوجود صفحات تحت الكتاب */
+                position: relative; width: 92%; height: 88vh;
+                background: #f4ecd8; border-radius: 4px;
+                /* تأثير طبقات الورق الكثيفة على الأطراف */
                 box-shadow: 
-                    0 1px 1px rgba(0,0,0,0.15), 
-                    0 10px 0 -5px #eee, 
-                    0 10px 1px -4px rgba(0,0,0,0.15), 
-                    0 20px 0 -10px #eee, 
-                    0 20px 1px -9px rgba(0,0,0,0.15), 
-                    0 30px 50px rgba(0,0,0,0.7);
+                    5px 0 0 -2px #d2b48c, 10px 0 0 -4px #f4ecd8, 15px 0 0 -6px #d2b48c,
+                    -5px 0 0 -2px #d2b48c, -10px 0 0 -4px #f4ecd8, -15px 0 0 -6px #d2b48c,
+                    0 30px 60px rgba(0,0,0,0.8);
             }
 
             .book-content {
-                display: flex; width: 100%; height: 100%;
-                border-radius: 5px; overflow: hidden; position: relative;
+                display: flex; width: 100%; height: 100%; position: relative;
+                overflow: hidden; border: 1px solid rgba(0,0,0,0.2);
             }
 
-            /* الفاصل الأوسط بتأثير ظل عميق */
-            .book-spine {
-                position: absolute; left: 50%; top: 0; width: 40px; height: 100%;
-                background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 100%);
-                z-index: 5; transform: translateX(-50%);
+            /* الفاصل الأوسط بتأثير الانتفاخ (The Spine Bump) */
+            .book-spine-area {
+                position: absolute; left: 50%; top: 0; width: 80px; height: 100%;
+                z-index: 10; transform: translateX(-50%);
+                display: flex;
+            }
+            /* الظل اليمين واليسار لخلق إيحاء الانتفاخ */
+            .spine-left { flex: 1; background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%); }
+            .spine-right { flex: 1; background: linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%); }
+            .spine-center { width: 4px; background: rgba(0,0,0,0.3); box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+
+            /* الصفحة اليسرى واليمنى مع تأثير الانحناء الخفيف */
+            .page {
+                flex: 1; background: #f4ecd8; position: relative;
+                box-shadow: inset 0 0 100px rgba(0,0,0,0.05);
             }
 
-            /* تنسيق الصفحة اليسرى (ورقة ثابتة وعليها الصورة) */
             .left-page {
-                flex: 1; background: #f4ecd8; /* نفس لون ورق الصفحة اليمنى */
-                display: flex; flex-direction: column; justify-content: center; align-items: center;
-                padding: 40px; border-right: 1px solid rgba(0,0,0,0.1);
-                box-shadow: inset -20px 0 50px rgba(0,0,0,0.05);
+                display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 50px;
+                background: linear-gradient(90deg, #ede3c8 0%, #f4ecd8 20%);
             }
 
-            .image-container {
-                width: 100%; height: 100%; 
-                border: 2px solid #d2b48c; padding: 10px; background: #fff;
-                box-shadow: 2px 2px 15px rgba(0,0,0,0.2); transform: rotate(-0.5deg);
+            /* حاوية الصورة مع أنيميشن */
+            .image-box {
+                width: 90%; height: 80%; border: 15px solid #fff; outline: 1px solid #d2b48c;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.3); overflow: hidden;
+                transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
             }
+            .image-box img { width: 100%; height: 100%; object-fit: cover; transition: scale 0.8s; }
 
-            .image-container img {
-                width: 100%; height: 100%; object-fit: cover; filter: sepia(0.2);
-            }
-
-            /* الصفحة اليمنى (النص الورقي) */
             .right-page {
-                flex: 1; background: #f4ecd8; 
-                padding: 4vw; overflow-y: auto; position: relative; color: #2c2c2c;
-                box-shadow: inset 20px 0 50px rgba(0,0,0,0.05);
-                scrollbar-width: none; /* إخفاء سكرول بار لراحة العين */
+                padding: 4vw 5vw; overflow-y: auto; color: #2c2c2c;
+                background: linear-gradient(-90deg, #ede3c8 0%, #f4ecd8 20%);
+                scrollbar-width: none;
             }
-
             .right-page::-webkit-scrollbar { display: none; }
 
-            .story-title { font-size: 3vw; color: #5d3a1a; margin-bottom: 20px; text-align: center; border-bottom: 2px double #d2b48c; padding-bottom: 10px; }
-            .story-content { font-size: 2.3vw; line-height: 1.8; text-align: justify; }
-            b { color: #a67c00; font-weight: bold; }
-            hr { border: none; height: 2px; background: linear-gradient(to right, transparent, #d2b48c, transparent); margin: 30px 0; }
+            .story-title { font-size: 3.2vw; color: #5d3a1a; text-align: center; margin-bottom: 30px; font-variant: small-caps; border-bottom: 3px double #d2b48c; }
+            .story-content { font-size: 2.4vw; line-height: 1.7; text-align: justify; }
+            b { color: #b08d57; font-weight: 900; }
+            hr { border: none; height: 1px; background: #d2b48c; margin: 40px 0; opacity: 0.5; }
+
+            /* كلاس الأنيميشن عند السكرول */
+            .img-bump { transform: scale(1.03) rotate(1deg); }
         </style>
 
         <div class="book-wrapper">
             <div class="book-content">
-                <div class="book-spine"></div>
+                <div class="book-spine-area">
+                    <div class="spine-left"></div>
+                    <div class="spine-center"></div>
+                    <div class="spine-right"></div>
+                </div>
                 
-                <div class="left-page">
-                    <div style="color:#8b4513; font-size:1.5vw; margin-bottom:10px; font-style:italic;">Illustration - Part ${partNumber}</div>
-                    <div class="image-container">
-                        <img src="data/reading/${partNumber}.png" alt="Scene" 
-                             onerror="this.src='https://via.placeholder.com/800x1000/f4ecd8/8b4513?text=Illustration'">
+                <div class="page left-page">
+                    <div class="image-box" id="book-img-box">
+                        <img src="data/reading/${partNumber}.png" id="main-img"
+                             onerror="this.src='https://via.placeholder.com/800x1000/f4ecd8/8b4513?text=Veto+Illustration'">
                     </div>
                 </div>
 
-                <div class="right-page" id="story-scroller">
+                <div class="page right-page" id="story-scroller">
                     <h1 class="story-title">${storyTitle}</h1>
                     <div class="story-content">
                         ${storyText.replace(/Clay/g, '<b>Clay</b>').replace(/\n/g, '<br>')}
@@ -111,13 +115,32 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
         </div>
     `;
 
+    // --- منطق التحكم والأنيميشن ---
+    const imgBox = document.getElementById('book-img-box');
+    const mainImg = document.getElementById('main-img');
+    let scrollTimeout;
+
+    function triggerImgAnim() {
+        imgBox.classList.add('img-bump');
+        mainImg.style.scale = "1.1";
+        
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            imgBox.classList.remove('img-bump');
+            mainImg.style.scale = "1";
+        }, 400);
+    }
+
     document.onkeydown = (e) => {
         const scroller = document.getElementById('story-scroller');
-        const step = 150;
-        if (e.keyCode === 32 || e.keyCode === 40 || e.keyCode === 13) {
+        const step = 180;
+        
+        if (e.keyCode === 32 || e.keyCode === 40 || e.keyCode === 13) { // Space, Down, Enter
             scroller.scrollBy({ top: step, behavior: 'smooth' });
-        } else if (e.keyCode === 38) {
+            triggerImgAnim();
+        } else if (e.keyCode === 38) { // Up
             scroller.scrollBy({ top: -step, behavior: 'smooth' });
+            triggerImgAnim();
         }
     };
 })();

@@ -59,14 +59,26 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
                 background: linear-gradient(90deg, #ede3c8 0%, #f4ecd8 15%);
             }
 
-            /* حاوية الصورة - جعلها أكبر وأوضح */
-            .image-box {
-                width: 95%; height: 95%; border: 12px solid #fff; outline: 1px solid #d2b48c;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden;
-                transition: transform 0.5s ease-out; background: #fff;
-            }
-            /* object-fit: contain يضمن ظهور الصورة كاملة دون قص */
-            .image-box img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.6s ease; }
+/* حاوية الصورة - تم إزالة الإطار الأبيض لجعلها أكثر انسيابية */
+.image-box {
+    width: 95%; 
+    height: 95%; 
+    border: none; /* شيلنا الإطار الأبيض */
+    outline: none; /* شيلنا التحديد الخارجي */
+    box-shadow: none; /* شيلنا الظل القوي عشان تندمج مع الصفحة */
+    overflow: hidden;
+    transition: transform 0.5s ease-out;
+    background: transparent; /* جعل الخلفية شفافة */
+}
+
+/* object-fit: contain يضمن ظهور الصورة كاملة دون قص */
+.image-box img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain; 
+    transition: transform 0.6s ease; 
+    border-radius: 4px; /* لمسة رقة بسيطة للحواف */
+}
 
             .right-page {
                 padding: 4vw 5vw; overflow-y: auto; color: #2c2c2c;

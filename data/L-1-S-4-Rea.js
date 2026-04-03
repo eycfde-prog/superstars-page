@@ -69,7 +69,7 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: cover; /* جعل الصورة تملأ المساحة بشكل فني */
+                object-fit: contain; /* الحل السحري: الصورة بالكامل تظهر دون قص */
                 mix-blend-mode: multiply; /* دمج الصورة مع لون الورق لمظهر كلاسيكي */
                 opacity: 0.9;
                 transition: transform 0.8s ease;

@@ -2,13 +2,13 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- التعديلات المطلوبة (الجزء السابع) ---
-    const partNumber = 7; 
-    const storyTitle = "The Strange Diagnosis";
-    const storyText = `"Clay" smiled, thinking the Leader was joking. But the thirty people in the tent remained silent. Speaking to people without eyes felt like talking to walls. "I mean your eyes are not open like mine," "Clay" explained nervously.
-The room filled with quiet whispers and soft laughter. Suddenly, the Leader ordered the guards to seize him. With perfect accuracy, they grabbed "Clay", tied his hands, and forced him to his knees. The Leader walked to "Clay" and moved his thumbs just millimeters away from "Clay's" eyes without touching them. He then ordered the guards to release him.
-"You are a sick man, Mr. "Clay"," the Leader said calmly. "You have two strange lumps on your face. My doctors can remove them for you if you want."
-"Clay" was shocked. They thought his eyes were tumors! "No, thank you," he replied quickly. "May I leave now?" The Leader agreed, welcoming him to the valley. "Clay" ran out of the tent in fear. As he left, a strange old man whispered to the Leader, "Sir, we must watch this creature. He has the eyes of an animal."`;
+    // --- التعديلات المطلوبة (الجزء التاسع) ---
+    const partNumber = 9; 
+    const storyTitle = "The Loud Mistake";
+    const storyText = `For three days, "Clay" stayed inside his tent. He was very depressed and did not want to see the eyeless faces. "Malika" visited him every day with food and water. She tried to be kind. She said, "Life in "Lambeth" is good, and my father says everything happens for a reason."
+"Clay" was not happy. He felt his life was over. Then, "Malika" told him that her father wanted doctors to check if his "tumors" (his eyes) were a dangerous disease. This made "Clay" very angry. He lost control and screamed, "I am not sick! You are the crazy ones! You are blind!"
+The scream was like a bomb in the quiet valley. "Malika" covered her ears in pain and collapsed on the ground. Immediately, guards rushed into the tent and pointed sharp spears at "Clay's" chest. They moved with amazing speed and accuracy.
+"Clay" felt terrible. He wondered if his loud voice had hurt her. The guards grabbed him and dragged him back to the large golden tent. This time, he was not a guest. He was a prisoner who had harmed the Leader’s daughter.`;
     // ---------------------------------------
 
     container.innerHTML = ''; 

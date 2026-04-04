@@ -2,15 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء العشرين) ---
     const partNumber = 20; 
-    const storyTitle = "The Doctor’s Maze";
-    const storyText = `Inside a medium-sized tent sat old "Enzo", the "Chief’s" physician. On his table, a small mouse with wide eyes trembled inside a box. This box was connected to a complex maze filled with sharp thorns and deadly traps.
-Although "Enzo" was blind, he treated the mouse as if he could see it perfectly. "Just like that," he hissed, addressing the tiny creature. "It is ready now. A man who cannot control his anger is always easy to lead."
-"Ted" and his brother "Ben" stood behind him. "Ted" touched his ears in pain, remembering "Clay’s" scream in the marketplace. "That anger of his nearly made us all deaf," he said. "But how are we going to rid the valley of his cursed animal limbs this way, Chief Doctor?" "Ben" asked curiously. "Enzo" answered without turning to look at them as he opened the maze door for the mouse. "After you provoked him and he responded, you will go to him in the marketplace and apologize as the leader ordered. Pretend to be friendly, and when he trusts you, take him to the 'warm cave' to collect bones."
-The doctor alerted the brothers and continued outlining the plan: "On your way back, you will pass by the 'Cave of the Maze.' With his animal instincts and his eyes, he will say to you, 'I see a cave over there; let us go and explore it. Perhaps it is the way out.' Then you will feign ignorance and say, 'We know the whole desert; there is no cave here.' He will not be satisfied and will go off on his own to explore. There, he will get lost in the maze... and be eaten by the 'Beawolf'."
-A cold shiver ran through "Ted" at the mere mention of the monster's name, "Beawolf". "Enzo" noticed "Ted’s" racing heart and smiled slyly; he enjoyed the sound of anxious hearts.
-"Ted" tried to gather his courage and asked fearfully, "Sir, I am afraid his eyes might help him get back out of the maze, though I have never heard of anyone returning alive."
-"Enzo" watched the mouse dodging a trap that nearly killed it inside the maze and said coldly, "Even if he does return, I will have the boss execute him myself. Do not worry."`;
+    const storyTitle = "The Secret Path";
+    const storyText = `On the way back, "Clay" felt a new sense of purpose. He believed his sight was a gift meant to save everyone. "Everything happens for a reason," he remembered "Malika" saying. He began searching the high cliffs for a way out. Suddenly, his heart jumped. He saw a massive cave opening on a distant mountain.
+"Clay" told the brothers about the cave, but they stopped their horses. "Ted," "Ben" said, "I do not remember any caves in that direction." "Ted" laughed and told "Clay" he was likely seeing things. "We know every inch of this land," "Ted" added coldly. "There is no cave there. We must return to the valley with our goods."
+The brothers rode away, but "Clay" was determined. "I will go alone," he thought. "They will thank me when I find the exit." After reaching his tent, he packed his climbing gear. Before leaving, he felt a strong need to visit "Malika" one last time.
+He entered her warm, peaceful tent. "Malika" was busy weaving wool on a large wooden machine. Without turning, she said softly, "This is a very strange time for a visit, Mr. "Clay"."`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -100,7 +99,7 @@ A cold shiver ran through "Ted" at the mere mention of the monster's name, "Beaw
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

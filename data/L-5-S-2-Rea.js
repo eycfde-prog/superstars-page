@@ -2,17 +2,12 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 15; 
-    const storyTitle = "The Load Dust";
-    const storyText = `"Clay" entered "Malika’s" tent and was greeted by a stillness unlike any he had experienced in any other corner of the valley. It was a silence so deep that he could hear his own heartbeat. "Malika" was sitting on her bed, surrounded by her maids. As soon as she sensed him, she gestured for him to sit and ordered everyone to leave, except for one old woman who remained quietly beside her. "Clay" whispered, asking how she was feeling. "Malika" smiled gently and reassured him that she had recovered since yesterday, though the doctors had kept her in bed. Then, she asked with concern about his eye and the examination. He replied that he was fine, but he could not hide his strong dislike for Dr. "Enzo".
-
-"Malika" laughed, a sound that charmed him, and said, "You fell into "Enzo’s" hands? No one in the village can stand him except the "Chief" and his soldiers; even his assistants tremble in fear. But you should consider yourself lucky. He is the most skilled doctor the valley has ever known, and any patient would wish to receive his care."
-
-"Malika" sensed a change in "Clay’s" breathing; she realized that the word "patient" had upset him, so she quickly apologized. "Clay" accepted her apology, but suddenly, she asked a question he least expected: "Why did you not use that device that makes such a loud noise, even though it could have saved you from the entire valley?" "Clay’s" heart stopped for a moment. How did she know about the flare gun? How could she understand its function when she did not even know the anatomy of human organs? Did everyone know it was hidden under his shirt while he thought he was invisible thanks to his sight?
-
-Questions swirled in his mind like a whirlwind. He stared, mouth agape, waiting for an explanation from this girl who now seemed like a fortune teller. When his silence stretched on, "Malika" said, "I know questions are swirling in your mind right now, wondering how I can read your thoughts so easily." "Clay" recoiled slightly in alarm.
-
-"Malika" stood up calmly, the old woman moving swiftly before her, while "Clay" remained rooted to the spot as if under a spell. "Come with me, Mr. "Clay"," she said. "I want to show you something." "Clay" followed her as if she were leading him by a string, until they reached a small table in the corner of the tent. On it sat a wooden box decorated with religious inscriptions. The old woman reached out and opened the box, revealing a silvery powder that shimmered with an unusual luster.`;
+    const partNumber = 16; 
+    const storyTitle = "The Secret Powder";
+    const storyText = `"Clay" looked inside a small box. He smelled something strong. "This is gunpowder!" he shouted. "Malika" closed the box. She said this powder is very rare in their mountains. The people of "Lamberth" think it is a holy blessing. "Clay" was surprised because he knew gunpowder usually means war and death.
+"Malika" explained their history. Long ago, their ancestors learned that this powder is very dangerous. If it burns, the loud sound can kill everyone in the village. This is why the tribe keeps it safe. "Malika" told "Clay" she smelled the gunpowder in his bag when he first arrived. She knew his tool was dangerous, so she hid it from the guards to protect him. Later, she gave it back because she trusted him.
+"Clay" asked, "Why did you let me keep a weapon?" "Malika" smiled. She said she hoped the tool might save his life one day. She believed "Clay" was a good man. She was very happy because "Clay" chose to save the village instead of using the weapon to escape.
+The old woman clapped her hands, and two guards led "Clay" out of the tent. "Clay" walked away with many thoughts. He wondered if he was still a prisoner or if he was now a protector of the "Lamberth" people.`;
 
     container.innerHTML = ''; 
     container.style.cssText = `

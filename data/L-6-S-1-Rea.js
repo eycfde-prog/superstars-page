@@ -2,16 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء الثامن عشر) ---
     const partNumber = 18; 
-    const storyTitle = "The Daughter’s Grace";
-    const storyText = `"Clay" spent the entire day confined to his tent, consumed by intense anxiety and regret. He fumbled with his bag and prepared his gear, fully expecting the guards to storm in at any moment and throw him to the wolves. As he rubbed his lame leg, preparing for a suicidal escape, the pain became so sharp that he cried out. His cry coincided perfectly with a quiet, steady knock on his door.
-His blood ran cold, but he resolved to face his fate. He breathed heavily and opened the door, only to see a face he least expected: "Malika"!
-The daughter of the "Valley Chief" stood there with her usual dignity and a serene smile. For a moment, "Clay" feared something was wrong; he thought the princess herself coming to him might mean a punishment far worse than death. "What more could they do to me than the wolves' fangs?" he wondered. But "Malika" broke his dark thoughts, saying with gentle humor, "I did not know you were so stingy, Mr. "Clay", and so unwelcoming to your guests." "Clay" apologized awkwardly and stepped aside. "Malika" walked confidently, her hand reaching through the air above the chair and table without touching them, as if she were mentally mapping their positions. Then, she sat down with a precision that once again astonished "Clay".
-To reassure her, he said calmly, "Do not worry, "Malika". Whatever happens, I will not use the flare in the valley." She smiled and replied wisely, "A person who chooses good does not change their mind easily, Mr. "Clay", and neither does someone who chooses evil."
-"Clay" remained silent, still puzzled by the reason for her visit. "Malika" then explained that the "Chief" had learned the truth of what happened in the market. He had issued a just ruling in "Clay’s" favor after discovering the mockery of the two men. The "Chief" had appeased the victims, and the people—out of respect for "Clay’s" skill—had decided to forgive him. A wave of relief and gratitude washed over "Clay", and he felt ashamed of his earlier outburst.
-" "Malika"," "Clay" suddenly asked, "do you believe, like them, that my eyes are animal organs that bring bad luck?" She answered honestly, "I cannot contradict my people, for I am one of them, but I do not see them as bad luck. I believe your eyes possess power, just as that flare does, and you alone decide how to use them."
-The next morning, "Clay" went to the market with a contented spirit, exchanging smiles with the villagers who greeted him with renewed warmth. He sat practicing his art, feeling a rare sense of belonging. However, his happiness was short-lived; he spotted the two men who had caused his distress the day before approaching him.
-The two men stopped directly in front of "Clay". He stared at their faces in terror; though their sockets were empty of eyes, their expressions held a sinister edge. At that moment, "Clay" realized that sight can sometimes deceive, but a person’s instinct for evil is never wrong. These men harbored ill intentions, and the justice he received yesterday was likely the fuel igniting their vengeance today.`;
+    const storyTitle = "The Doctor’s Trap";
+    const storyText = `Inside a small tent, the old doctor "Enzo" sat with a small mouse in a cage. The cage led to a deadly maze full of spikes. Even though "Enzo" was blind, he watched the mouse with his senses. "Angry men are easy to lead," he whispered.
+The brothers, "Ted" and "Ben," stood behind him. They were still in pain from "Clay’s" loud scream in the market. "How will we get rid of his animal eyes?" "Ben" asked. "Enzo" explained his evil plan. He told the brothers to pretend to be "Clay's" friends and take him to the "Warm Cave" to collect bones.
+On the way back, they would pass the "Maze Cave." "Enzo" predicted that "Clay" would use his sight to find it and think it was an exit. "He will go inside alone to explore," "Enzo" said coldly. "Then, he will get lost in the dark and be eaten by the 'Bear-Wolf'."
+"Ted" trembled at the name of the monster. He was afraid "Clay’s" eyes might help him find the way back. But "Enzo" just smiled. He watched the mouse struggle in his trap and promised, "Even if he survives the beast, I will make sure the Leader executes him ourselves."`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -101,7 +99,7 @@ The two men stopped directly in front of "Clay". He stared at their faces in ter
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

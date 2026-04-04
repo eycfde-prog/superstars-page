@@ -2,15 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء السابع عشر) ---
     const partNumber = 17; 
-    const storyTitle = "The Echo of the Market";
-    const storyText = `The guard did not give "Clay" any time to gather his jumbled thoughts. As soon as they reached his tent, the man ordered him to go straight to the market to find work and earn a living like the rest of the valley's inhabitants. "Clay" walked reluctantly, his sense of being trapped growing with every step. Although the faces around him were eyeless, he felt an intense scrutiny as he moved through the village.
-Because of his limp, which hindered his ability to perform strenuous labor with the men, "Clay" was placed near the women in the market. There, he learned the art of patience: carving bone and wood to create necklaces and bracelets. Despite the hardship of his situation, his eyesight gave him an unexpected advantage. While the women had to grope their way through the crafting process, he completed his tasks with astonishing precision and visual speed.
-The women of the market slowly began to accept "Mr. Sayyah." His handcrafted creations possessed a beauty and harmony they had never seen before, and they were eager to buy his work. However, this success ignited the flames of jealousy in the hearts of the men. For them, this "deformed" creature with his ominous animal-like features did not deserve so much attention.
-One day, as "Clay" was engrossed in crafting a necklace for two women sitting beside him, the whispers of two men standing nearby reached his ears. They deliberately made sure their voices were loud enough for him to hear. "Is this the ill omen who makes jewelry?" one asked. "He thinks he is special with his filthy limbs and his voice that nearly deafens the valley... just because of an engraved piece of bone, he thinks he is better than us!"
-The words were too much for him to bear. He remembered his great sacrifice—how he had buried his dream of freedom for their sake—and he flew into a rage. He lost control of his only remaining safety valve. "Clay" burst out with a forbidden cry: "You are the ignorant ones! You are the deficient ones! I am better than you because I see what you cannot see!"
-In an instant, the market was transformed. The shout echoed like a grenade explosion. Everyone froze in place, covering their ears in panic, while the two women directly behind him collapsed, unconscious from the sonic shock. A terrifying silence fell after the hurricane unleashed by "Clay." This silence made him realize the enormity of what he had done.
-He looked around in disbelief and saw the terror and pain etched on the faces he had pitied just moments before. His heart gnawed with guilt and shame. He quickly gathered his belongings and fled the market toward his tent, escaping their unseen stares and his own voice, which had truly become his mortal enemy.`;
+    const storyTitle = "The Cave of Shadows";
+    const storyText = `The two men surprised "Clay" with a kind apology. They explained that their previous anger was only professional jealousy because "Clay" was a better craftsman. "Clay" felt embarrassed and apologized too. He learned they were brothers, "Ted" and "Ben." Surprisingly, "Ben" was the one who had saved him from the wolf using fire.
+The brothers invited "Clay" to a nearby mountain to collect rare materials like bone and ivory. Although "Clay" was worried about his injured leg, they promised to use horses. "Clay" forgot his earlier fears and agreed. This was a terrible mistake.
+They reached a hidden cave with ancient carvings on the walls. The carvings showed human faces with "real eyes." "Ben" claimed they were just accidental animal scratches, but "Clay" did not believe him. Inside, the cave was warm and filled with old stone furniture.
+Since the brothers were blind, they did not need light, but "Clay" used his flashlight to see. They began picking up bones from the floor. "Ted" said they were old animal bones. However, when "Clay" picked up a long bone to put in his bag, his blood ran cold. His knowledge of history and anatomy told him the truth: these were not animal bones. They were human.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -100,7 +99,7 @@ He looked around in disbelief and saw the terror and pain etched on the faces he
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

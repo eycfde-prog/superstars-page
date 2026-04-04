@@ -2,16 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء السادس) ---
     const partNumber = 6; 
-    const storyTitle = "The Sightless Throne";
-    const storyText = `"Clay" walked among the people, his eyes wide open, unable to believe what he was seeing. It felt like a disturbing dream. Everyone moved about and went through their daily lives as if nothing had happened. They chatted with each other, but their faces were completely devoid of eyes.
-What terrified and astonished "Clay" even more was that these people turned towards him and "Malika" whenever they passed by. It was as if they possessed a hidden vision guiding them. He saw some of them greet the daughter of the "Valley Chief" respectfully as she walked confidently beside him. "How is this possible?" he wondered to himself. He noticed that their movements were calm and slow, and their voices were very low. This gave the entire place a sense of deep silence.
-A thought flashed through his mind: the ruler of this valley must be a sighted man. He believed the leader might be the one guiding the blind villagers.
-His train of thought was interrupted when they arrived at the golden tent. With its size and gleaming color, it resembled a royal palace in the middle of the valley. As he took his first step inside, he froze in astonishment. The leader himself was blind, just like all of his people!
-He was a man in his sixties, dressed in a magnificent royal robe. The colors and gold blended in a breathtaking way. He sat on an expertly crafted metal throne adorned with white geometric patterns that looked like snowflakes. Atop his head sat a massive golden crown studded with precious stones that glittered under the bright lights.
-"Clay" stood at a distance from the leader, while "Malika" left his side to take her place beside her father's throne. "Clay" found himself between two silent guards. He remained speechless for a full minute, taking in every detail. There were soldiers, villagers, and an ugly old man standing beside the leader.
-For a moment, "Clay" felt that what he was seeing was nonsense or a heavy dream. Could all these people be extras wearing masks to mock a history teacher? Where were the cameras? Where was the director? "Clay" gathered the scattered fragments of his mind and began to speak in a trembling voice. He introduced himself as a history teacher and recounted his journey with "John". When he finished, he asked the question burning inside him. The answer was shocking. "What happened to your eyes, sir?"
-The leader remained silent for a few seconds, then replied coldly and firmly, "And do you feel there is something wrong with our eyes, Mr. "Clay"?"`;
+    const storyTitle = "The Blind Leader";
+    const storyText = `"Clay" walked through the village in total shock. Everyone was busy with their daily lives, but no one had eyes. Strangely, they all looked toward him and "Malika" as they passed. They moved quietly and slowly, as if they used a hidden sense to see. "Clay" thought, "Maybe the leader of this valley can see."
+They reached the massive golden tent. It looked like a royal palace. When "Clay" stepped inside, he was stunned again. The Leader was also blind! He was an old man sitting on a beautiful metal throne decorated with snowflake patterns. He wore a heavy gold crown with shining jewels. "Malika" stood next to her father while "Clay" stood between two silent guards.
+"Clay" felt like he was in a bad dream or a movie. He could not believe this was real. He nervously introduced himself as a history teacher and told the story of his climb with "John". Finally, he asked the question that was burning in his mind: "What happened to your eyes, sir?"
+The Leader stayed silent for a moment. Then, he answered coldly, "Do you think there is something wrong with our eyes, Mr. "Clay"?"`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -101,7 +99,7 @@ The leader remained silent for a few seconds, then replied coldly and firmly, "A
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

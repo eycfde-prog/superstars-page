@@ -3,16 +3,11 @@
     if (!container) return;
 
     const partNumber = 14; 
-    const storyTitle = "The Mark of the Beast";
-    const storyText = `The old doctor rubbed his fingers with a thick paste, and before "Clay" could comprehend what was happening, "Enzo" dug his fingers into "Clay’s" eyes with a rough motion, as if trying to gouge them out. "Clay" felt a fire burning inside his sockets. He stifled a scream, preferring the agonizing pain over disturbing the villagers with his voice.
-
-After a few seconds of this excruciating examination, the doctor ordered "Clay’s" restraints to be removed and his eyes cleaned. Within minutes, the medical report was in the "Chief's" hands. As "Clay" rubbed his burning lids, the "Chief" spoke in his usual calm tone, ""Enzo", my royal physician and advisor, tells me that your tumors are not contagious... but he is quite surprised that you possess animal organs." "Clay" stopped wiping away his tears and looked with blurry, shaky vision at the leader. The "Chief" continued, "All the animals we hunt or raise have swollen eyes like yours. These swollen eyes attract demons to the valley, and that is why the animals behave so wildly and erratically."
-
-"Clay" was astonished at himself; how could he have missed this point? Animal skins were everywhere in the village, yet he had not connected their eyes to his own as evidence in their logic. The leader continued in a warning tone, "You have the right to keep them in your body if you wish, Mr. "Clay"... but I hope they do not attract demons to you and harm us."
-
-"Clay" had no answer; the logic here was completely reversed. He wiped away his tears again, whispering to himself, "Call them what they will... animal or demonic, the important thing is that they are my eyes, and they will stay with me." He returned to his tent, burdened by a sense of defeat, even though a voice inside reassured him that he had done the right thing by sacrificing his freedom to save the village from the explosion. He washed his eyes and succumbed to a deep, exhausted sleep.
-
-Suddenly, he was jolted awake by a shaking hand. It was one of "Malika’s" maids, beckoning him to her mistress’s tent. Despite the rage that filled his heart toward the inhabitants who had called him an animal, he did not hesitate. He had to check on the only human being who had treated him kindly, the one most affected by his outburst.`;
+    const storyTitle = "The Truth About Eyes";
+    const storyText = `The doctor "Enzo" put a strange paste on his fingers. Suddenly, he pushed his fingers into the eyes of "Clay". It was very painful, like fire. "Clay" wanted to scream, but he stayed silent because he did not want to scare the villagers.
+After the test, the leader spoke to "Clay". He said that "Enzo" found something strange. The leader said that "Clay" had eyes like an animal. In this valley, people believe that large, swollen eyes attract demons. They think this is why animals act crazy. "Clay" was surprised. He saw animal skins everywhere in the village, but he never thought the people would compare his human eyes to them. The leader warned "Clay" that his eyes might bring danger to the village.
+"Clay" did not argue. He whispered to himself that these were his eyes, and he would keep them. He felt defeated and went back to his tent. He remembered the voice of "Samira", who told him he was a good man for not using his weapon. He washed his eyes and fell into a deep sleep.
+Later, a maid woke him up. She told him to go to the tent of "Malika". Even though "Clay" was angry at the village for calling him an animal, he went quickly. He wanted to see "Malika" because she was the only person who was kind to him in this strange place.`;
 
     container.innerHTML = ''; 
     container.style.cssText = `

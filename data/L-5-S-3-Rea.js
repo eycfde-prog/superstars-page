@@ -2,15 +2,12 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 16; 
-    const storyTitle = "The Guardian’s Burden";
-    const storyText = `"Clay" leaned closer to the box to examine its contents, but a pungent odor reached him first and assaulted his nostrils—a smell he knew all too well. He recoiled in disgust, exclaiming, "This is gunpowder!"
-"Malika" closed the box calmly. "This substance is very rare in our mountains," she explained. "Whoever finds even a single grain of it is considered blessed and receives a special reward from the tribe." "Clay", the history teacher, was astonished. He knew that many nations throughout history had revered precious metals, but gunpowder had always been a symbol of destruction, not peace. As if reading his mind, "Malika" replied, "Our ancestors taught us, after a tragic event in our history, that this substance is a grave danger. If it catches fire, it emits a sound capable of killing everyone in the village. Therefore, the safest course of action was to watch it closely and always know where it was found."
-The old woman gently pulled "Malika" back to her bed to rest, while the princess continued, "There is not a child in "Lamberth" who does not know this smell. I smelled it on that tool in your bag the moment you arrived in the valley. I did not understand what that tool was, but I knew immediately that it held an evil that threatened my people." "Malika" settled herself gently on the bed and went on, "That is why I secretly took it and hid it from the guards who searched your belongings when they rescued you. I only returned it to you when you asked for your things, because by then, I was certain that you meant us no harm."
-"Clay" stood astonished and asked her with unquenchable curiosity, "And how did you know that I would use it today of all days? And why did you not stop me? Were you not afraid that I would?"
-The old woman intervened in a husky voice, "The princess must rest now." "Clay" looked at her, then turned his gaze back to "Malika", awaiting her answer. She spoke reassuringly, "Everything powerful has its advantages and disadvantages, Mr. "Clay". I did not know the purpose of your tool, but I thought perhaps it might save you from some danger on a critical day. Today was a fateful day for you, and I was certain that if you possessed a powerful weapon, this would be the only time you would consider using it."
-A long silence fell as "Clay" was lost in awe of her sharp wit and foresight. She concluded with a poignant note of gratitude: "You cannot imagine how grateful I am to you... for choosing to save the people of "Lamberth" over your own."
-At this, the old woman clapped twice. Two guards entered and gently led "Clay" out of the tent, leaving the princess to her rest. "Clay" walked away with a new question: Was he the prisoner here, or had he now become a guardian of this valley by virtue of his conscience?"`;
+    const partNumber = 17; 
+    const storyTitle = "The Forbidden Voice";
+    const storyText = `The guards told "Clay" he must work. Because of his injured leg, he could not do heavy work with the men. Instead, he sat with the women in the market. He learned to carve bone and wood to make beautiful necklaces. Because "Clay" could see, his work was perfect and very fast.
+The women liked "Mr. Sayyah"—the name they gave "Clay". They bought everything he made. However, the men in the village were jealous. they called "Clay" an animal and a "deformed" creature. They said he was an ill omen because of his strange eyes and loud voice.
+One day, two men insulted "Clay" loudly. "Clay" became very angry. He remembered how he sacrificed his freedom to save them. He lost control and shouted, "I am better than you because I see what you cannot see!"
+In the quiet valley, his human voice was like a loud explosion. The sound was so strong that it hurt everyone. Two women fell to the ground because the noise was too much. The market became silent and terrified. "Clay" looked at the pain on their faces and felt deep shame. He realized his voice was now a dangerous weapon. He quickly gathered his things and ran back to his tent to hide from his own guilt.`;
 
     container.innerHTML = ''; 
     container.style.cssText = `

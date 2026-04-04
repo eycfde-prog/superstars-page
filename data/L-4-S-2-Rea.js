@@ -2,23 +2,15 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء الحادي عشر) ---
     const partNumber = 11; 
-    const storyTitle = "The Silent Signal";
-    const storyText = `The day dragged on like an eternity, a day consumed by deep sorrow. He missed "Malika", whose sleeping, peaceful face he was beginning to grow accustomed to. He felt a cold wall separating him from the rest of this valley. "Clay" remembered his students in "England" who loved his lessons and his neighbors who greeted him every morning. The thought of the doctors examining his eyes made his blood run cold.
-
-Then, a glimmer of hope appeared: his equipment! "Has "John" survived? Is anyone looking for me?" he wondered. He rummaged through his belongings until he found his flare gun. There was only one shot—one single shot separating him from the outside world. He wanted to go out and fire it immediately, but he feared the guards might catch him. He decided to wait for the morning to fire it in front of everyone, hoping it would be his ticket out of this white prison. His thoughts were interrupted when a guard entered. The guard slammed a pot of soup to the ground, spilling half of it, and left without a word. As "Clay" looked at the cold food, he realized the true value of "Malika's" kindness and the hidden hatred the villagers felt for him.
-
-The momentous day arrived. "Clay" was led through a large crowd of villagers. They were all eager to see the stranger with the "animal eyes" and the booming voice. The guards deliberately bumped into his shoulders as they marched him forward. However, he was not as afraid as before; he felt the cold metal of the flare gun hidden in his shirt, and his resolve strengthened.
-
-But terror returned when he reached the end of the road. He saw a line of five men in mysterious cloaks. Before them stood a slanted wooden bench, like a beach chair, prepared for "Clay" to lie down. Behind them, the "Valley Chief" sat on his elevated platform, silently observing the scene.
-
-"Clay" tried to banish his fear and felt for his pistol. He prayed that someone would see his signal in the sky and come to his rescue. Then, he stopped abruptly. If a mere human cry had knocked "Malika" unconscious, what would the boom of a flare gun do? The signal shot was not just a light; it was a deafening explosion that would shatter the stillness of the valley.
-
-"Clay" realized that the shot he saw as a "ticket to freedom" would be a bomb for these people. It would tear their eardrums. They would lose their only sense of survival and their sole means of perceiving the world.
-
-At that moment, "Clay" stood at an existential crossroads. His hand felt the hidden pistol while his mind grappled with two stark choices. Would he buy his freedom over the bodies of the innocent? Would he destroy the lives of an entire people, including "Malika", for a small chance of survival? Or would he accept the inevitable and allow the doctors to approach his eyes with their cold instruments to preserve his humanity?
-
-The silence in the valley grew heavier. The absent eyes surrounded him, awaiting his next move. "Clay" looked up at the sky, then at the guards, then at the flare gun... and the bitterness of his choice choked him.`;
+    const storyTitle = "The Heavy Choice";
+    const storyText = `The day felt like a hundred years. "Clay" missed "Malika" and felt alone in the valley. He thought about his students and friends in England. He was terrified of the doctors examining his eyes. However, he found a small hope: a flare gun in his bag. It had only one shot.
+"If I fire this into the sky, maybe someone will save me," he thought.
+The next morning, the villagers gathered to watch the examination. The guards were mean and pushed "Clay" toward a wooden chair. Five doctors in dark robes waited for him. The Leader watched from his throne. "Clay" kept his hand on the hidden flare gun. He was ready to fight for his freedom.
+Suddenly, he stopped. He remembered how his scream hurt "Malika". A flare gun is not just a light; it is a loud explosion. In this silent valley, the sound would destroy the villagers' hearing. They would lose their only way to sense the world.
+"Clay" faced a terrible choice. Should he save himself but make "Malika" and her people deaf? Or should he let the doctors touch his eyes to keep his conscience clean? He looked at the sky and then at the gun, feeling the bitter weight of his decision.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -108,7 +100,7 @@ The silence in the valley grew heavier. The absent eyes surrounded him, awaiting
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

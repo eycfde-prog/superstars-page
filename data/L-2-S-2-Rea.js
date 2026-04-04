@@ -2,17 +2,13 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء الثالث) ---
     const partNumber = 3; 
-    const storyTitle = "The Wolves of the White Valley";
-    const storyText = `When "Clay" finally regained consciousness, his first realization was that he was still alive. However, sharp pain gnawed at every muscle in his body. He felt an intense, inexplicable heat coursing through his left foot. With great bitterness, he understood that he had lost consciousness during the fall and that his ankle was now completely shattered.
-
-He coughed violently and groaned as he tried to move, but his body refused to obey at first. He lay on his back on the icy snow, calling out the name "John" for several minutes. He hoped for any response to break the heavy silence, but only the lonely echo of his own voice and the endless openness of the mountain answered him. All around him was a blinding whiteness of snow, and as far as his eyes could see, he glimpsed the ghostly outlines of trees in the distance.
-
-He forced himself to stand on one foot, a laborious effort that cost him another moment of extreme agony. He called out again, pleading with all his might, but silence reigned over the valley. He looked up at the sky and saw the approaching night. He realized he had to find shelter and warmth immediately before the frost claimed his life.
-
-Fortunately, his pack was still with him. It contained his tent and enough provisions to last for a while, but he wondered, "for how long?" Thanks to his experience as a seasoned climber, he managed to gather some firewood and light a small fire. He sheltered himself inside a narrow rocky crevice in the mountain, using the stone as a shield against the raging winds. By the dim light of the fire, he examined his injured leg. The wound was severe and required medical intervention beyond the capabilities of his rudimentary first-aid kit. As he planned to crawl south at dawn to find humans, the stillness of the night was shattered by the distant howls of wolves.
-
-His heart sank, and terror crept into his core. He, who feared even small animals, was now wounded and facing the predators of the mountains. Exhausted, he succumbed to a restless sleep, his eyes opening in terror with every gust of wind, anticipating the appearance of fangs in the darkness.`;
+    const storyTitle = "The Sound in the Shadows";
+    const storyText = `When "Clay" woke up, he felt a sharp pain in his body. His left ankle was broken and very hot. He tried to move, but he could not walk. He shouted "John's" name many times, but no one answered. He was completely alone in the white snow.
+The sun was going down, and the cold was becoming dangerous. "Clay" was a professional climber, so he knew what to do. He used his skills to find a small hole in the mountain rocks. Luckily, he still had his bag with a tent and some food. He gathered some wood and started a small fire to stay warm and hide from the wind.
+Inside the cave, "Clay" looked at his injured leg. It looked very bad, and he needed a real doctor. He planned to crawl south in the morning to find help. Suddenly, he heard a scary sound in the dark night. It was the sound of hungry wolves. "Clay" was terrified because he was always afraid of animals. He tried to sleep, but his eyes kept opening in fear. He was waiting for the wolves to appear from the shadows.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -48,13 +44,11 @@ His heart sank, and terror crept into his core. He, who feared even small animal
 
             .page { flex: 1; background: #d9cfb9; position: relative; }
 
-            /* الصفحة اليسرى - مساحة كاملة للصورة */
             .left-page {
                 display: flex; justify-content: center; align-items: center; padding: 10px;
                 background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
             }
 
-            /* حاوية الصورة - شفافة وواسعة */
             .image-box {
                 width: 100%; height: 100%; 
                 display: flex; justify-content: center; align-items: center;
@@ -63,8 +57,8 @@ His heart sank, and terror crept into his core. He, who feared even small animal
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: contain; /* الحل السحري: الصورة بالكامل تظهر دون قص */
-                mix-blend-mode: multiply; /* دمج الصورة مع لون الورق لمظهر كلاسيكي */
+                object-fit: contain;
+                mix-blend-mode: multiply;
                 opacity: 0.9;
                 transition: transform 0.8s ease;
             }
@@ -81,7 +75,6 @@ His heart sank, and terror crept into his core. He, who feared even small animal
             b { color: #8e6d3d; font-weight: 800; }
             hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
 
-            /* تأثير الحركة اللذيذ */
             .img-bump { transform: scale(1.03); }
 
             @media (max-width: 768px) {
@@ -105,7 +98,7 @@ His heart sank, and terror crept into his core. He, who feared even small animal
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=The+Secret+of+the+Peak'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

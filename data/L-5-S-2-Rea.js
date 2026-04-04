@@ -2,12 +2,13 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 16; 
-    const storyTitle = "The Secret Powder";
-    const storyText = `"Clay" looked inside a small box. He smelled something strong. "This is gunpowder!" he shouted. "Malika" closed the box. She said this powder is very rare in their mountains. The people of "Lamberth" think it is a holy blessing. "Clay" was surprised because he knew gunpowder usually means war and death.
-"Malika" explained their history. Long ago, their ancestors learned that this powder is very dangerous. If it burns, the loud sound can kill everyone in the village. This is why the tribe keeps it safe. "Malika" told "Clay" she smelled the gunpowder in his bag when he first arrived. She knew his tool was dangerous, so she hid it from the guards to protect him. Later, she gave it back because she trusted him.
-"Clay" asked, "Why did you let me keep a weapon?" "Malika" smiled. She said she hoped the tool might save his life one day. She believed "Clay" was a good man. She was very happy because "Clay" chose to save the village instead of using the weapon to escape.
-The old woman clapped her hands, and two guards led "Clay" out of the tent. "Clay" walked away with many thoughts. He wondered if he was still a prisoner or if he was now a protector of the "Lamberth" people.`;
+    // --- التعديلات المطلوبة (الجزء الخامس عشر) ---
+    const partNumber = 15; 
+    const storyTitle = "The Sound of Anger";
+    const storyText = `The guards forced "Clay" to work in the market to earn his food. Because of his injured leg, he sat with the women and learned to carve bones into jewelry. "Clay" used his sight to make beautiful patterns. Soon, his work became famous, and everyone wanted his jewelry. However, the men in the village became jealous of his success and his "animal eyes."
+One day, "Clay" heard two men whispering insults nearby. They called him a curse and laughed at his voice. "Clay" could not take it anymore. He forgot his promise of silence and screamed at the top of his lungs, "You are the ones who are limited! I can see what you cannot!"
+The market turned into a nightmare. The loud scream felt like a bomb. People collapsed, and the women near him fainted from the shock. A terrifying silence followed. "Clay" looked at the painful faces around him and felt a deep, burning guilt. He realized that his anger had hurt the very people he tried to protect. He grabbed his tools and ran back to his tent, hiding from the world and the echo of his own voice.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -97,7 +98,7 @@ The old woman clapped her hands, and two guards led "Clay" out of the tent. "Cla
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

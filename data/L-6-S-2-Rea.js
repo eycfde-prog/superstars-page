@@ -2,15 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء التاسع عشر) ---
     const partNumber = 19; 
-    const storyTitle = "The Cave of Ancestors";
-    const storyText = `Contrary to "Clay’s" expectations, one of the men stepped forward and apologized in a soft, heartfelt voice. His companion explained that their earlier remarks were mere "craftsman’s jealousy," since "Clay" had surpassed them in their craft and stolen the spotlight with his precision.
-They collected materials from the caves—bones, ivory, and wood—and gave them to the women in the market to craft jewelry. "Clay" felt deeply embarrassed by their sudden politeness, so much so that he apologized for his own aggressive behavior in the market.
-Days passed, and they began working together; the brothers brought the wood and ivory, and he crafted the jewelry. He learned they were brothers: the older one was "Ted", and the younger was "Ben". Even more surprising, he discovered that "Ben" was the same person who had saved him from the mountain wolf after his first fall. "Clay" could not contain his curiosity and asked how he had been saved. "Ben" explained that he had used fire, as all predators fear the flame.
-One day, the brothers invited "Clay" to accompany them to a nearby mountain to gather rare materials. "Clay" was excited because he had longed to visit the peaks, but he expressed concern about his injured leg. They reassured him that the journey would be on horseback. "Clay" agreed, and this was his biggest mistake; he forgot his initial feeling that these two men harbored ill intentions toward him.
-They arrived at a cave hidden in the mountainside with a narrow entrance. "Clay" froze in astonishment when he saw, at the cave's entrance, very old carvings of human faces with real, distinct eyes. He asked the brothers in amazement, but "Ben" simply replied, "These are just scratches made by the claws of animals that lived here thousands of years ago. It is a coincidence that they resemble faces."
-"Clay" was not convinced that animal claws could accurately depict human faces, but he was captivated by the strange warmth that enveloped him the moment he entered the cave. The place was spacious, and it seemed as though someone had once lived there, judging by the remains of dilapidated stone furniture.
-The brothers did not need light, but "Clay" switched on his flashlight to see more clearly. They began collecting the bones scattered on the ground. When "Clay" asked about them, "Ted" said they were the bones of animals that had once inhabited the cave. "Clay" opened his bag to put away what he had collected, but he picked up a long bone and stopped abruptly. His eyes widened in shock, and his blood ran cold. This bone did not belong to an animal at all; it was a human bone!`;
+    const storyTitle = "The Cave’s Secret";
+    const storyText = `"Clay" felt sick. He realized the "ivory" he had been carving into jewelry was actually human bone. "Ted" and "Ben" had been giving him small pieces to hide the truth. When "Clay" shone his light on "Ted" and shouted, "These are human bones!", "Ted" remained cold. "So what?" he replied. "We are the children of "Lambeth", and this is our inheritance."
+"Clay" looked at the wall carvings again. They were clearly human faces with eyes. He felt like the spirits of the dead were begging for help. He was too terrified to sleep inside the graveyard cave, so he convinced the brothers to camp outside. To his surprise, they agreed.
+Outside, the brothers showed "Clay" how to fish through holes in the deep ice. They moved with amazing skill, catching fish "Clay" couldn't even see. For a moment, the fear vanished, and "Clay" enjoyed the activity. He even apologized again for his earlier anger.
+However, the mood changed quickly. "Ted" began talking about their grandfather, "Enzo", and a mouse he kept in a box. "My grandfather says mice are very curious," "Ted" said, looking toward "Clay". "They discover new places because they can't stop looking." "Ben" wiped his hands and added a dark challenge: "So, Mr. "Clay", use your famous eyes. Show us where the exit to this valley is hidden."`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -100,7 +99,7 @@ The brothers did not need light, but "Clay" switched on his flashlight to see mo
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

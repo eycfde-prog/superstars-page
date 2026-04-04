@@ -2,23 +2,11 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 13; 
-    const storyTitle = "The Doctor's Approach";
-    const storyText = `"Clay" strode forward to stand face to face with the examination bench, his hand tightly gripping the flare gun at his side, ready to pull it out. He knew that the blast would turn their precious silence into agony and their stillness into an endless, painful din.
-
-He considered backing down. Could logic save him now? Could he convince these people to let him send his signal far away from their sensitive ears? But when he looked at the "Chief's" stern face, he realized that if they knew about this sonic weapon, they would rob him of his only hope. His grip on the weapon tightened, and his heart pounded against his chest.
-
-The guards suddenly snapped to attention. Their grips tightened on their own weapons even though "Clay" had not moved an inch. Had they sensed his rapid breathing? had they read the tension in his body, which was betrayed by the surrounding stillness?
-
-His eyes searched the crowd for "Malika", hoping that seeing her would give him strength or resolve, but she was not there. "Even if she is out of my sight, the echo of the explosion will reach her tent and shatter her peace once more," he told himself bitterly.
-
-He turned his gaze toward the crowd. Those who had once terrified him with their absent stares, he now looked at with pity. For the first time, he noticed the children—small, eyeless, yet innocent. Their faces radiated a certain light as they clung to their mothers' dresses. The image of his students flashed before his eyes, those little ones waiting to greet him in the school corridors.
-
-In that moment, "Clay" made up his mind; he would not build his freedom on the ruins of their innocence. He resigned himself to his fate and stretched out calmly in the chair, leaving his weapon where it lay.
-
-"Clay" now found himself face to face with the leader, and before him stood the five doctors. Four of them wore long coats, while their leader stood in the center, dressed in an almost regal style. This was the same man "Clay" had seen beside the "Chief" in the large tent. "Clay" felt uneasy seeing the ugly old man for the second time. He saw the doctor's face up close; he was a man in his seventies with harsh features, a hooked nose like a bird's beak, and revoltingly thick eyebrows.
-
-Two doctors moved slowly and coldly, securing "Clay's" arms to the examination chair. His terror intensified as he saw the old doctor, "Enzo", approaching him, his features growing more hideous with every step he took.`;
+    const partNumber = 13; // يمكنك تعديل الرقم حسب ترتيبك المفضل لهذه النسخة
+    const storyTitle = "The Difficult Choice";
+    const storyText = `"Clay" stood in front of the medical bench. He held a flare in his hand. This weapon could make a loud noise to hurt everyone’s ears. "Clay" wanted to use it to escape, but he stopped to think. He looked at the leader’s hard face. He knew that if the guards saw the weapon, they would take it away.
+The guards looked at "Clay" closely. They saw he was nervous. "Clay" looked for "Malika" in the crowd, but she was not there. He felt sad because the loud noise would scare her too. Then, "Clay" looked at the people. He saw small children holding their mothers' dresses. They looked innocent. He remembered his students back in "England". "Clay" decided he could not hurt these children just to be free.
+He put his weapon away and sat quietly in the chair. He accepted his fate. Five doctors walked toward him. Four wore long coats, but their leader, "Enzo", wore royal clothes. "Enzo" was an old man with an ugly face and a nose like a bird’s beak. "Clay" felt very afraid as he looked at him. Two doctors moved slowly and tied "Clay" to the chair so he could not move. "Enzo" came closer and closer. His face looked more terrifying with every step. "Clay" waited in terror to see what the doctors would do to him next.`;
 
     container.innerHTML = ''; 
     container.style.cssText = `

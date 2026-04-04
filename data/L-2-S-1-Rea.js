@@ -2,23 +2,15 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 1; 
-    const storyTitle = "The Secret of the Peak";
-    const storyText = `Clay" was a history teacher in "England" who loved the past and high mountains. When his friend "John" suggested climbing a remote, snowy peak, "Clay" agreed. He wanted a new challenge to satisfy his curiosity.
-They started in a cloudy town called "Lamberth". "Clay" was careful and prepared all his rescue gear. However, "John" was careless and made fun of "Clay". He called "Clay" a coward because "Clay" was afraid of small animals like cats and dogs. But "Clay" knew he was brave; he just preferred to avoid them.
-The two friends reached the mountain and began their climb. The paths were easy, and they reached the top quickly. "Clay" was happy with their success, but "John" looked upset. He searched the edges of the peak with confusion. When "Clay" asked what was wrong, "John" replied, "Where is the cave?"
-<hr>
-The Hidden Passage
-A heavy silence fell over the mountain until "John" spoke in a soft, apologetic voice. "Please forgive me, 'Clay'," he said. He confessed that he had a secret reason for bringing his friend to this peak. "John" explained that he had met a professional climber at a party who told him a strange story. This specific mountain had regular avalanches that revealed a mysterious cave at the top. This cave stayed open for exactly one year before the next snowstorm sealed it shut again, hiding its secrets inside.
+    const partNumber = 2; 
+    const storyTitle = "The Hidden Passage";
+    const storyText = `A heavy silence fell, broken only by "Clay's" puzzled glance. Then, "John" spoke in a soft, apologetic tone that his friend did not recognize. "Clay", please forgive me," he said. "I did not mean to deceive you, but I brought you here for a reason that is much more than just climbing a mountain."
 
-"Clay" was very surprised and asked what "John" wanted to find. "John" whispered that the cave was actually a passage to a lost village and a hidden paradise. Just as he finished speaking, the ground began to shake violently. A sudden earthquake caused a massive avalanche. The fast, white snow swept both men away. "John" fell back toward the world they knew, but "Clay" plunged deep into the "White Canyon".
-<hr>
-"Clay" woke up and realized he was alive, but his body was in great pain. His ankle was shattered from the fall. He lay on the cold snow and called for "John" many times, but no one answered. The only sounds were his own voice and the wind.
+"Clay" remained silent while he tried to understand these words. "John" continued to look around the summit with anxious eyes. He explained, "I met a very professional climber at a busy party. We had a long talk about mountain peaks and their secrets. He told me that this specific mountain has regular avalanches. After each one, a mysterious cave appears at the top. This cave stays open for a full year. Then, the next avalanche seals it shut again. One year it is open, and the next year it is closed, keeping all its secrets inside."
 
-He struggled to stand on one foot. It was very difficult and painful. As the sun began to set, "Clay" knew he needed to find a warm place quickly. Luckily, he still had his bag with a tent and some food. Using his skills, he found a small rocky space to hide from the wind and started a fire.
+"Clay" showed surprise on his face. He asked, "Even if that is true, what do you want from this cave, "John"?"
 
-He looked at his leg and saw the injury was very bad. He planned to crawl south the next morning to find help. Suddenly, the loud howls of wolves broke the silence. "Clay", who was always afraid of animals, felt pure terror as he tried to sleep.
-`;
+"John" stopped his search and turned to his friend. He whispered in a low voice, "This cave is not just a hole in the rock, "Clay". It is a passage that leads to a lost village. This village hides a paradise that humans cannot even imagine." "John" finished his sentence just as the ground began to shake. A sudden earthquake hit deep inside the mountain. In seconds, the quiet snow became a fast, white beast. The avalanche swept them away and pushed them against the rocks. Both men fell in opposite directions: "John" fell toward the world we know, while "Clay" plunged down into the depths of the "White Canyon"`;
 
     container.innerHTML = ''; 
     container.style.cssText = `

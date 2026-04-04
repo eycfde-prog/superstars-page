@@ -2,23 +2,17 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 1; 
-    const storyTitle = "The Secret of the Peak";
-    const storyText = `Clay" was a history teacher in "England" who loved the past and high mountains. When his friend "John" suggested climbing a remote, snowy peak, "Clay" agreed. He wanted a new challenge to satisfy his curiosity.
-They started in a cloudy town called "Lamberth". "Clay" was careful and prepared all his rescue gear. However, "John" was careless and made fun of "Clay". He called "Clay" a coward because "Clay" was afraid of small animals like cats and dogs. But "Clay" knew he was brave; he just preferred to avoid them.
-The two friends reached the mountain and began their climb. The paths were easy, and they reached the top quickly. "Clay" was happy with their success, but "John" looked upset. He searched the edges of the peak with confusion. When "Clay" asked what was wrong, "John" replied, "Where is the cave?"
-<hr>
-The Hidden Passage
-A heavy silence fell over the mountain until "John" spoke in a soft, apologetic voice. "Please forgive me, 'Clay'," he said. He confessed that he had a secret reason for bringing his friend to this peak. "John" explained that he had met a professional climber at a party who told him a strange story. This specific mountain had regular avalanches that revealed a mysterious cave at the top. This cave stayed open for exactly one year before the next snowstorm sealed it shut again, hiding its secrets inside.
+    const partNumber = 10; 
+    const storyTitle = "The Trial of the Voice";
+    const storyText = `"Clay" resigned himself to his fate and walked slowly between the guards. The people of the valley stood before their tents, and although their eyes were not visible, "Clay" felt their unseen gazes. This filled him with a deep sense of dread. He thought of running, but his limp prevented any escape. He thought of screaming, but he feared that his voice would only be seen as another crime.
 
-"Clay" was very surprised and asked what "John" wanted to find. "John" whispered that the cave was actually a passage to a lost village and a hidden paradise. Just as he finished speaking, the ground began to shake violently. A sudden earthquake caused a massive avalanche. The fast, white snow swept both men away. "John" fell back toward the world they knew, but "Clay" plunged deep into the "White Canyon".
-<hr>
-"Clay" woke up and realized he was alive, but his body was in great pain. His ankle was shattered from the fall. He lay on the cold snow and called for "John" many times, but no one answered. The only sounds were his own voice and the wind.
+He believed the "Valley Chief" would order his immediate execution without giving him a chance to defend himself. However, the atmosphere of the trial was not one of anger. The "Chief" sat on his ornate throne, wearing his golden crown studded with colored stones. His face reflected deep thought rather than vengeance. A profound silence reigned, despite the presence of many guards and courtiers.
 
-He struggled to stand on one foot. It was very difficult and painful. As the sun began to set, "Clay" knew he needed to find a warm place quickly. Luckily, he still had his bag with a tent and some food. Using his skills, he found a small rocky space to hide from the wind and started a fire.
+"Clay" was given the opportunity to speak, and he did so in a very low voice. He explained that he had not meant to harm anyone and felt deep sorrow for what had happened to "Malika". A long silence followed while the "Chief" weighed his words. Then he said calmly, "You have spoken the truth in everything you have said. I know for certain that you meant no harm." "Clay" breathed a sigh of relief, but the "Chief" continued, "But you overlooked something; we speak in low voices so we can hear everything around us. Since your arrival, people have been calling you 'Mr. Shout' because of your normal tone. Imagine what your shouting does to our ears?"
 
-He looked at his leg and saw the injury was very bad. He planned to crawl south the next morning to find help. Suddenly, the loud howls of wolves broke the silence. "Clay", who was always afraid of animals, felt pure terror as he tried to sleep.
-`;
+"Clay" felt a pang of regret as he remembered how close "Malika" had been when he erupted in anger, and he offered a sincere apology.
+
+The "Chief" reassured him that his daughter had regained consciousness and would be fine with rest. However, he added, "Mr. "Clay", just as you unintentionally hurt us with your voice, we fear you might hurt us with your eyes. Therefore, it is essential that these two 'tumors' be examined. Since the whole village heard your shouting and was terrified, everyone must be present for this examination to ensure you are not a source of evil." The words froze in "Clay's" throat. The leader ordered the guards to return him to his tent and forbade him from leaving until the following morning for the public examination in front of the golden tent.`;
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -54,13 +48,11 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
             .page { flex: 1; background: #d9cfb9; position: relative; }
 
-            /* الصفحة اليسرى - مساحة كاملة للصورة */
             .left-page {
                 display: flex; justify-content: center; align-items: center; padding: 10px;
                 background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
             }
 
-            /* حاوية الصورة - شفافة وواسعة */
             .image-box {
                 width: 100%; height: 100%; 
                 display: flex; justify-content: center; align-items: center;
@@ -69,8 +61,8 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: contain; /* الحل السحري: الصورة بالكامل تظهر دون قص */
-                mix-blend-mode: multiply; /* دمج الصورة مع لون الورق لمظهر كلاسيكي */
+                object-fit: contain;
+                mix-blend-mode: multiply;
                 opacity: 0.9;
                 transition: transform 0.8s ease;
             }
@@ -87,7 +79,6 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
             b { color: #8e6d3d; font-weight: 800; }
             hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
 
-            /* تأثير الحركة اللذيذ */
             .img-bump { transform: scale(1.03); }
 
             @media (max-width: 768px) {
@@ -111,7 +102,7 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=The+Secret+of+the+Peak'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
                     </div>
                 </div>
 

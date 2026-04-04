@@ -2,19 +2,13 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء الرابع) ---
     const partNumber = 4; 
-    const storyTitle = "The Girl Without Eyes";
-    const storyText = `"Clay" did not get a good night's sleep; he awoke suddenly to a muffled growl that shook the walls of his tent. Opening his eyes, he found himself face to face with a living nightmare: a massive wolf was standing at the entrance of his narrow tent, its large head facing inwards.
-
-Terror paralyzed "Clay" completely. He, who trembled at the mere sight of a pet dog, now found himself at the mercy of a wolf whose fangs gleamed in the darkness. The beast advanced, then suddenly lunged for his neck in a swift motion. Instinctively, "Clay" raised his arm to protect his face, but the wolf sank its teeth into his flesh. "Clay's" mind could not bear this combination of physical pain and psychological terror, and the world went dark before his eyes as he succumbed to a deep coma.
-
-The next day, "Clay" opened his eyes, hardly believing he had survived for the second time. His body still trembled from the shock, but he began to calm down as he took in his surroundings. He was not in his cramped tent, but in a luxurious, meticulously maintained one; its roof was intricately carved, and its walls were adorned with animal hides.
-
-A young woman in her twenties stood with her back to him, intently engaged in some task. She wore a dress resembling an Indian robe, its color a captivating gold, and a long black braid cascaded down her back.
-
-The woman turned, carrying a bowl of hot soup, and walked steadily toward him. The tent was lit by oil lamps, and as she drew closer, "Clay" saw a beautiful girl with fair skin, fine eyebrows, and long eyelashes. But as she drew nearer, he saw the girl had no eyes. Her eyelids were deeply closed, and her sockets were empty.
-
-"Clay" felt a pang in his heart; beauty, as they say, is never perfect. He felt sorry for her, and as he tried to sit up, he felt a prickling sensation in his arm. He found that the wolf bite had been carefully bandaged. "Clay" froze in place as the girl approached him with a confident, unwavering gait and placed the pot of soup directly into his lap without spilling a single drop. His heart leapt in terror at the sheer precision; how could a blind woman locate him and his lap so easily, as if she could see him clearly? Even more astonishing, she took two steps back and sat on a chair directly behind her without feeling for it, then the most beautiful smile spread across her face.`;
+    const storyTitle = "The Blind Rescuer";
+    const storyText = `"Clay" woke up to a terrible sound. A huge wolf was at the door of his tent. "Clay" was frozen with fear. The wolf jumped and bit his arm. The pain was too much, and "Clay" fainted again.
+The next day, "Clay" opened his eyes in a beautiful, large tent. It was filled with animal skins and nice decorations. He saw a young woman with long black hair wearing a golden dress. When she turned around to give him hot soup, "Clay" saw something shocking. The girl was very beautiful, but she had no eyes. Her eyelids were closed deeply into her face.
+"Clay" felt sad for her. Then, he noticed his arm was carefully bandaged. The girl walked toward him with perfect confidence. She placed the soup exactly on his lap without spilling a drop. "Clay" was terrified. How could a blind person move so accurately? She then walked back and sat on a chair without feeling for it. She looked directly at him and gave him a beautiful smile. "Clay" realized that in this strange place, things were not what they seemed.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -50,13 +44,11 @@ The woman turned, carrying a bowl of hot soup, and walked steadily toward him. T
 
             .page { flex: 1; background: #d9cfb9; position: relative; }
 
-            /* الصفحة اليسرى - مساحة كاملة للصورة */
             .left-page {
                 display: flex; justify-content: center; align-items: center; padding: 10px;
                 background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
             }
 
-            /* حاوية الصورة - شفافة وواسعة */
             .image-box {
                 width: 100%; height: 100%; 
                 display: flex; justify-content: center; align-items: center;
@@ -65,8 +57,8 @@ The woman turned, carrying a bowl of hot soup, and walked steadily toward him. T
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: contain; /* الحل السحري: الصورة بالكامل تظهر دون قص */
-                mix-blend-mode: multiply; /* دمج الصورة مع لون الورق لمظهر كلاسيكي */
+                object-fit: contain;
+                mix-blend-mode: multiply;
                 opacity: 0.9;
                 transition: transform 0.8s ease;
             }
@@ -83,7 +75,6 @@ The woman turned, carrying a bowl of hot soup, and walked steadily toward him. T
             b { color: #8e6d3d; font-weight: 800; }
             hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
 
-            /* تأثير الحركة اللذيذ */
             .img-bump { transform: scale(1.03); }
 
             @media (max-width: 768px) {
@@ -107,7 +98,7 @@ The woman turned, carrying a bowl of hot soup, and walked steadily toward him. T
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=The+Secret+of+the+Peak'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

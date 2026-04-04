@@ -2,23 +2,15 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 1; 
-    const storyTitle = "The Secret of the Peak";
-    const storyText = `Clay" was a history teacher in "England" who loved the past and high mountains. When his friend "John" suggested climbing a remote, snowy peak, "Clay" agreed. He wanted a new challenge to satisfy his curiosity.
-They started in a cloudy town called "Lamberth". "Clay" was careful and prepared all his rescue gear. However, "John" was careless and made fun of "Clay". He called "Clay" a coward because "Clay" was afraid of small animals like cats and dogs. But "Clay" knew he was brave; he just preferred to avoid them.
-The two friends reached the mountain and began their climb. The paths were easy, and they reached the top quickly. "Clay" was happy with their success, but "John" looked upset. He searched the edges of the peak with confusion. When "Clay" asked what was wrong, "John" replied, "Where is the cave?"
-<hr>
-The Hidden Passage
-A heavy silence fell over the mountain until "John" spoke in a soft, apologetic voice. "Please forgive me, 'Clay'," he said. He confessed that he had a secret reason for bringing his friend to this peak. "John" explained that he had met a professional climber at a party who told him a strange story. This specific mountain had regular avalanches that revealed a mysterious cave at the top. This cave stayed open for exactly one year before the next snowstorm sealed it shut again, hiding its secrets inside.
-
-"Clay" was very surprised and asked what "John" wanted to find. "John" whispered that the cave was actually a passage to a lost village and a hidden paradise. Just as he finished speaking, the ground began to shake violently. A sudden earthquake caused a massive avalanche. The fast, white snow swept both men away. "John" fell back toward the world they knew, but "Clay" plunged deep into the "White Canyon".
-<hr>
-"Clay" woke up and realized he was alive, but his body was in great pain. His ankle was shattered from the fall. He lay on the cold snow and called for "John" many times, but no one answered. The only sounds were his own voice and the wind.
-
-He struggled to stand on one foot. It was very difficult and painful. As the sun began to set, "Clay" knew he needed to find a warm place quickly. Luckily, he still had his bag with a tent and some food. Using his skills, he found a small rocky space to hide from the wind and started a fire.
-
-He looked at his leg and saw the injury was very bad. He planned to crawl south the next morning to find help. Suddenly, the loud howls of wolves broke the silence. "Clay", who was always afraid of animals, felt pure terror as he tried to sleep.
-`;
+    const partNumber = 17; 
+    const storyTitle = "The Echo of the Market";
+    const storyText = `The guard did not give "Clay" any time to gather his jumbled thoughts. As soon as they reached his tent, the man ordered him to go straight to the market to find work and earn a living like the rest of the valley's inhabitants. "Clay" walked reluctantly, his sense of being trapped growing with every step. Although the faces around him were eyeless, he felt an intense scrutiny as he moved through the village.
+Because of his limp, which hindered his ability to perform strenuous labor with the men, "Clay" was placed near the women in the market. There, he learned the art of patience: carving bone and wood to create necklaces and bracelets. Despite the hardship of his situation, his eyesight gave him an unexpected advantage. While the women had to grope their way through the crafting process, he completed his tasks with astonishing precision and visual speed.
+The women of the market slowly began to accept "Mr. Sayyah." His handcrafted creations possessed a beauty and harmony they had never seen before, and they were eager to buy his work. However, this success ignited the flames of jealousy in the hearts of the men. For them, this "deformed" creature with his ominous animal-like features did not deserve so much attention.
+One day, as "Clay" was engrossed in crafting a necklace for two women sitting beside him, the whispers of two men standing nearby reached his ears. They deliberately made sure their voices were loud enough for him to hear. "Is this the ill omen who makes jewelry?" one asked. "He thinks he is special with his filthy limbs and his voice that nearly deafens the valley... just because of an engraved piece of bone, he thinks he is better than us!"
+The words were too much for him to bear. He remembered his great sacrifice—how he had buried his dream of freedom for their sake—and he flew into a rage. He lost control of his only remaining safety valve. "Clay" burst out with a forbidden cry: "You are the ignorant ones! You are the deficient ones! I am better than you because I see what you cannot see!"
+In an instant, the market was transformed. The shout echoed like a grenade explosion. Everyone froze in place, covering their ears in panic, while the two women directly behind him collapsed, unconscious from the sonic shock. A terrifying silence fell after the hurricane unleashed by "Clay." This silence made him realize the enormity of what he had done.
+He looked around in disbelief and saw the terror and pain etched on the faces he had pitied just moments before. His heart gnawed with guilt and shame. He quickly gathered his belongings and fled the market toward his tent, escaping their unseen stares and his own voice, which had truly become his mortal enemy.`;
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -54,13 +46,11 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
             .page { flex: 1; background: #d9cfb9; position: relative; }
 
-            /* الصفحة اليسرى - مساحة كاملة للصورة */
             .left-page {
                 display: flex; justify-content: center; align-items: center; padding: 10px;
                 background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
             }
 
-            /* حاوية الصورة - شفافة وواسعة */
             .image-box {
                 width: 100%; height: 100%; 
                 display: flex; justify-content: center; align-items: center;
@@ -69,8 +59,8 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: contain; /* الحل السحري: الصورة بالكامل تظهر دون قص */
-                mix-blend-mode: multiply; /* دمج الصورة مع لون الورق لمظهر كلاسيكي */
+                object-fit: contain;
+                mix-blend-mode: multiply;
                 opacity: 0.9;
                 transition: transform 0.8s ease;
             }
@@ -87,7 +77,6 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
             b { color: #8e6d3d; font-weight: 800; }
             hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
 
-            /* تأثير الحركة اللذيذ */
             .img-bump { transform: scale(1.03); }
 
             @media (max-width: 768px) {
@@ -111,7 +100,7 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=The+Secret+of+the+Peak'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
                     </div>
                 </div>
 

@@ -2,23 +2,23 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 1; 
-    const storyTitle = "The Secret of the Peak";
-    const storyText = `Clay" was a history teacher in "England" who loved the past and high mountains. When his friend "John" suggested climbing a remote, snowy peak, "Clay" agreed. He wanted a new challenge to satisfy his curiosity.
-They started in a cloudy town called "Lamberth". "Clay" was careful and prepared all his rescue gear. However, "John" was careless and made fun of "Clay". He called "Clay" a coward because "Clay" was afraid of small animals like cats and dogs. But "Clay" knew he was brave; he just preferred to avoid them.
-The two friends reached the mountain and began their climb. The paths were easy, and they reached the top quickly. "Clay" was happy with their success, but "John" looked upset. He searched the edges of the peak with confusion. When "Clay" asked what was wrong, "John" replied, "Where is the cave?"
-<hr>
-The Hidden Passage
-A heavy silence fell over the mountain until "John" spoke in a soft, apologetic voice. "Please forgive me, 'Clay'," he said. He confessed that he had a secret reason for bringing his friend to this peak. "John" explained that he had met a professional climber at a party who told him a strange story. This specific mountain had regular avalanches that revealed a mysterious cave at the top. This cave stayed open for exactly one year before the next snowstorm sealed it shut again, hiding its secrets inside.
+    const partNumber = 13; 
+    const storyTitle = "The Doctor's Approach";
+    const storyText = `"Clay" strode forward to stand face to face with the examination bench, his hand tightly gripping the flare gun at his side, ready to pull it out. He knew that the blast would turn their precious silence into agony and their stillness into an endless, painful din.
 
-"Clay" was very surprised and asked what "John" wanted to find. "John" whispered that the cave was actually a passage to a lost village and a hidden paradise. Just as he finished speaking, the ground began to shake violently. A sudden earthquake caused a massive avalanche. The fast, white snow swept both men away. "John" fell back toward the world they knew, but "Clay" plunged deep into the "White Canyon".
-<hr>
-"Clay" woke up and realized he was alive, but his body was in great pain. His ankle was shattered from the fall. He lay on the cold snow and called for "John" many times, but no one answered. The only sounds were his own voice and the wind.
+He considered backing down. Could logic save him now? Could he convince these people to let him send his signal far away from their sensitive ears? But when he looked at the "Chief's" stern face, he realized that if they knew about this sonic weapon, they would rob him of his only hope. His grip on the weapon tightened, and his heart pounded against his chest.
 
-He struggled to stand on one foot. It was very difficult and painful. As the sun began to set, "Clay" knew he needed to find a warm place quickly. Luckily, he still had his bag with a tent and some food. Using his skills, he found a small rocky space to hide from the wind and started a fire.
+The guards suddenly snapped to attention. Their grips tightened on their own weapons even though "Clay" had not moved an inch. Had they sensed his rapid breathing? had they read the tension in his body, which was betrayed by the surrounding stillness?
 
-He looked at his leg and saw the injury was very bad. He planned to crawl south the next morning to find help. Suddenly, the loud howls of wolves broke the silence. "Clay", who was always afraid of animals, felt pure terror as he tried to sleep.
-`;
+His eyes searched the crowd for "Malika", hoping that seeing her would give him strength or resolve, but she was not there. "Even if she is out of my sight, the echo of the explosion will reach her tent and shatter her peace once more," he told himself bitterly.
+
+He turned his gaze toward the crowd. Those who had once terrified him with their absent stares, he now looked at with pity. For the first time, he noticed the children—small, eyeless, yet innocent. Their faces radiated a certain light as they clung to their mothers' dresses. The image of his students flashed before his eyes, those little ones waiting to greet him in the school corridors.
+
+In that moment, "Clay" made up his mind; he would not build his freedom on the ruins of their innocence. He resigned himself to his fate and stretched out calmly in the chair, leaving his weapon where it lay.
+
+"Clay" now found himself face to face with the leader, and before him stood the five doctors. Four of them wore long coats, while their leader stood in the center, dressed in an almost regal style. This was the same man "Clay" had seen beside the "Chief" in the large tent. "Clay" felt uneasy seeing the ugly old man for the second time. He saw the doctor's face up close; he was a man in his seventies with harsh features, a hooked nose like a bird's beak, and revoltingly thick eyebrows.
+
+Two doctors moved slowly and coldly, securing "Clay's" arms to the examination chair. His terror intensified as he saw the old doctor, "Enzo", approaching him, his features growing more hideous with every step he took.`;
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -54,13 +54,11 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
             .page { flex: 1; background: #d9cfb9; position: relative; }
 
-            /* الصفحة اليسرى - مساحة كاملة للصورة */
             .left-page {
                 display: flex; justify-content: center; align-items: center; padding: 10px;
                 background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
             }
 
-            /* حاوية الصورة - شفافة وواسعة */
             .image-box {
                 width: 100%; height: 100%; 
                 display: flex; justify-content: center; align-items: center;
@@ -69,8 +67,8 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: contain; /* الحل السحري: الصورة بالكامل تظهر دون قص */
-                mix-blend-mode: multiply; /* دمج الصورة مع لون الورق لمظهر كلاسيكي */
+                object-fit: contain;
+                mix-blend-mode: multiply;
                 opacity: 0.9;
                 transition: transform 0.8s ease;
             }
@@ -87,7 +85,6 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
             b { color: #8e6d3d; font-weight: 800; }
             hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
 
-            /* تأثير الحركة اللذيذ */
             .img-bump { transform: scale(1.03); }
 
             @media (max-width: 768px) {
@@ -111,7 +108,7 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=The+Secret+of+the+Peak'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
                     </div>
                 </div>
 

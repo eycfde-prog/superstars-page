@@ -72,8 +72,8 @@ const sessionData = {
     "11-4": ["Reading 40 Review", "Tongue Twister 36 Review", "Squeezer 6 Test", "GP Review", "One Shot 20 Test"],
 
     // LEVEL 12
-    "12-1": ["GP Review"],
-    "12-2": ["GP Review"],
+    "12-1": ["GP Review", "Reading 41 Review"],
+    "12-2": ["GP Review", "Reading 42 Review"],
     "12-3": ["GP Review"],
     "12-4": ["GP Viewing"]
 };

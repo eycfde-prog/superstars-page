@@ -2,12 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء الرابع عشر) ---
     const partNumber = 14; 
-    const storyTitle = "The Truth About Eyes";
-    const storyText = `The doctor "Enzo" put a strange paste on his fingers. Suddenly, he pushed his fingers into the eyes of "Clay". It was very painful, like fire. "Clay" wanted to scream, but he stayed silent because he did not want to scare the villagers.
-After the test, the leader spoke to "Clay". He said that "Enzo" found something strange. The leader said that "Clay" had eyes like an animal. In this valley, people believe that large, swollen eyes attract demons. They think this is why animals act crazy. "Clay" was surprised. He saw animal skins everywhere in the village, but he never thought the people would compare his human eyes to them. The leader warned "Clay" that his eyes might bring danger to the village.
-"Clay" did not argue. He whispered to himself that these were his eyes, and he would keep them. He felt defeated and went back to his tent. He remembered the voice of "Samira", who told him he was a good man for not using his weapon. He washed his eyes and fell into a deep sleep.
-Later, a maid woke him up. She told him to go to the tent of "Malika". Even though "Clay" was angry at the village for calling him an animal, he went quickly. He wanted to see "Malika" because she was the only person who was kind to him in this strange place.`;
+    const storyTitle = "The Secret of the Powder";
+    const storyText = `"Clay" looked into the box and immediately recognized the sharp smell. "This is gunpowder!" he exclaimed. "Malika" closed the box and explained that this material is very rare and sacred in "Lambeth". Her ancestors taught them that gunpowder is a great danger because its sound could kill everyone in the silent valley.
+"Malika" revealed a shocking secret. She had smelled the gunpowder in "Clay’s" bag the moment he arrived. She secretly hid the flare gun from the guards to protect him, then gave it back later because she trusted his heart. "I knew it was a powerful tool," she said softly. "I knew today was a difficult day for you, and you might use it to save yourself."
+"Clay" was amazed by her wisdom. She had risked her people's safety to give him a choice. "I am so grateful to you," she added, "because you chose to save my people instead of escaping."
+Suddenly, the old woman clapped her hands, and two guards led "Clay" out of the tent. As he walked away, "Clay" realized he was no longer just a prisoner. By choosing mercy over the flare gun, he had become a silent protector of the valley. He wondered if his conscience was now the strongest wall keeping him in "Lambeth".`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -71,8 +73,8 @@ Later, a maid woke him up. She told him to go to the tent of "Malika". Even thou
 
             .story-title { font-size: 3vw; color: #4a2e15; text-align: center; margin-bottom: 20px; font-variant: small-caps; border-bottom: 2px solid #b8a689; padding-bottom: 10px; }
             .story-content { font-size: 2.2vw; line-height: 1.6; text-align: justify; }
-            b { color: #8e6d3d; font-weight: 800; }
-            hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
+            <b> { color: #8e6d3d; font-weight: 800; }
+            <hr> { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
 
             .img-bump { transform: scale(1.03); }
 
@@ -97,7 +99,7 @@ Later, a maid woke him up. She told him to go to the tent of "Malika". Even thou
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

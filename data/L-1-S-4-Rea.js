@@ -2,13 +2,13 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- التعديلات المطلوبة من مستر عز ---
+    // --- التعديلات المطلوبة ---
     const partNumber = 1; 
     const storyTitle = "The Missing Cave";
     const storyText = `"Clay" was a history teacher in England. He loved old stories and climbing high mountains. One day, his friend "John" invited him to climb a very cold, snowy mountain. "Clay" was excited and agreed immediately.
 They went to a mountain town called "Lambeth". "Clay" was a very careful man. He checked all his safety tools many times. However, "John" was not careful at all. "Clay" gave him a lot of advice, but "John" got angry. "John" laughed at him and said, "You are afraid of small dogs, "Clay"! You do not understand real adventure." It was true that "Clay" was afraid of animals like cats and dogs, but he was not a coward. He was brave enough to climb the highest peaks.
 On the day of the climb, they started moving up. The path was surprisingly easy, and they reached the top very quickly. "Clay" was very happy, but "John" looked upset. "John" started walking around the edges, looking for something. "Clay" was confused and asked him what was wrong. "John" looked at him with a worried face and said, "My calculations were correct, "Clay". But where is the cave?"`;
-    // -------------------------------------
+    // ------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -57,8 +57,8 @@ On the day of the climb, they started moving up. The path was surprisingly easy,
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: contain; 
-                mix-blend-mode: multiply; 
+                object-fit: contain;
+                mix-blend-mode: multiply;
                 opacity: 0.9;
                 transition: transform 0.8s ease;
             }
@@ -98,7 +98,7 @@ On the day of the climb, they started moving up. The path was surprisingly easy,
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}支撑'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

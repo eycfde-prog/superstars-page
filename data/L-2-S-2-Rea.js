@@ -2,23 +2,17 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 1; 
-    const storyTitle = "The Secret of the Peak";
-    const storyText = `Clay" was a history teacher in "England" who loved the past and high mountains. When his friend "John" suggested climbing a remote, snowy peak, "Clay" agreed. He wanted a new challenge to satisfy his curiosity.
-They started in a cloudy town called "Lamberth". "Clay" was careful and prepared all his rescue gear. However, "John" was careless and made fun of "Clay". He called "Clay" a coward because "Clay" was afraid of small animals like cats and dogs. But "Clay" knew he was brave; he just preferred to avoid them.
-The two friends reached the mountain and began their climb. The paths were easy, and they reached the top quickly. "Clay" was happy with their success, but "John" looked upset. He searched the edges of the peak with confusion. When "Clay" asked what was wrong, "John" replied, "Where is the cave?"
-<hr>
-The Hidden Passage
-A heavy silence fell over the mountain until "John" spoke in a soft, apologetic voice. "Please forgive me, 'Clay'," he said. He confessed that he had a secret reason for bringing his friend to this peak. "John" explained that he had met a professional climber at a party who told him a strange story. This specific mountain had regular avalanches that revealed a mysterious cave at the top. This cave stayed open for exactly one year before the next snowstorm sealed it shut again, hiding its secrets inside.
+    const partNumber = 3; 
+    const storyTitle = "The Wolves of the White Valley";
+    const storyText = `When "Clay" finally regained consciousness, his first realization was that he was still alive. However, sharp pain gnawed at every muscle in his body. He felt an intense, inexplicable heat coursing through his left foot. With great bitterness, he understood that he had lost consciousness during the fall and that his ankle was now completely shattered.
 
-"Clay" was very surprised and asked what "John" wanted to find. "John" whispered that the cave was actually a passage to a lost village and a hidden paradise. Just as he finished speaking, the ground began to shake violently. A sudden earthquake caused a massive avalanche. The fast, white snow swept both men away. "John" fell back toward the world they knew, but "Clay" plunged deep into the "White Canyon".
-<hr>
-"Clay" woke up and realized he was alive, but his body was in great pain. His ankle was shattered from the fall. He lay on the cold snow and called for "John" many times, but no one answered. The only sounds were his own voice and the wind.
+He coughed violently and groaned as he tried to move, but his body refused to obey at first. He lay on his back on the icy snow, calling out the name "John" for several minutes. He hoped for any response to break the heavy silence, but only the lonely echo of his own voice and the endless openness of the mountain answered him. All around him was a blinding whiteness of snow, and as far as his eyes could see, he glimpsed the ghostly outlines of trees in the distance.
 
-He struggled to stand on one foot. It was very difficult and painful. As the sun began to set, "Clay" knew he needed to find a warm place quickly. Luckily, he still had his bag with a tent and some food. Using his skills, he found a small rocky space to hide from the wind and started a fire.
+He forced himself to stand on one foot, a laborious effort that cost him another moment of extreme agony. He called out again, pleading with all his might, but silence reigned over the valley. He looked up at the sky and saw the approaching night. He realized he had to find shelter and warmth immediately before the frost claimed his life.
 
-He looked at his leg and saw the injury was very bad. He planned to crawl south the next morning to find help. Suddenly, the loud howls of wolves broke the silence. "Clay", who was always afraid of animals, felt pure terror as he tried to sleep.
-`;
+Fortunately, his pack was still with him. It contained his tent and enough provisions to last for a while, but he wondered, "for how long?" Thanks to his experience as a seasoned climber, he managed to gather some firewood and light a small fire. He sheltered himself inside a narrow rocky crevice in the mountain, using the stone as a shield against the raging winds. By the dim light of the fire, he examined his injured leg. The wound was severe and required medical intervention beyond the capabilities of his rudimentary first-aid kit. As he planned to crawl south at dawn to find humans, the stillness of the night was shattered by the distant howls of wolves.
+
+His heart sank, and terror crept into his core. He, who feared even small animals, was now wounded and facing the predators of the mountains. Exhausted, he succumbed to a restless sleep, his eyes opening in terror with every gust of wind, anticipating the appearance of fangs in the darkness.`;
 
     container.innerHTML = ''; 
     container.style.cssText = `

@@ -2,15 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء الثاني) ---
     const partNumber = 2; 
-    const storyTitle = "The Hidden Passage";
-    const storyText = `A heavy silence fell, broken only by "Clay's" puzzled glance. Then, "John" spoke in a soft, apologetic tone that his friend did not recognize. "Clay", please forgive me," he said. "I did not mean to deceive you, but I brought you here for a reason that is much more than just climbing a mountain."
-
-"Clay" remained silent while he tried to understand these words. "John" continued to look around the summit with anxious eyes. He explained, "I met a very professional climber at a busy party. We had a long talk about mountain peaks and their secrets. He told me that this specific mountain has regular avalanches. After each one, a mysterious cave appears at the top. This cave stays open for a full year. Then, the next avalanche seals it shut again. One year it is open, and the next year it is closed, keeping all its secrets inside."
-
-"Clay" showed surprise on his face. He asked, "Even if that is true, what do you want from this cave, "John"?"
-
-"John" stopped his search and turned to his friend. He whispered in a low voice, "This cave is not just a hole in the rock, "Clay". It is a passage that leads to a lost village. This village hides a paradise that humans cannot even imagine." "John" finished his sentence just as the ground began to shake. A sudden earthquake hit deep inside the mountain. In seconds, the quiet snow became a fast, white beast. The avalanche swept them away and pushed them against the rocks. Both men fell in opposite directions: "John" fell toward the world we know, while "Clay" plunged down into the depths of the "White Canyon"`;
+    const storyTitle = "The White Valley";
+    const storyText = `"Clay" looked at "John" with confusion. Suddenly, "John" spoke in a soft, sad voice. "I am sorry, "Clay". I lied to you," he said. "We are not here just to climb. I heard a secret from a famous climber."
+"John" explained that this mountain has a mysterious cave at the top. This cave opens only once every year after a big snowstorm. "John" believed the cave was a secret door to a lost village. He said this village was like a beautiful paradise hidden inside the mountain.
+"Clay" was shocked. He asked, "What do you want from this cave?" Before "John" could answer, the ground started to shake. It was a big earthquake. The snow became like a white monster and pushed both men down the mountain.
+The snow was very strong. The two friends were separated and fell in different directions. "John" fell back toward the world they knew. However, "Clay" fell deep into a dark opening. He was no longer on the mountain top. He had landed in a strange place called the "White Valley."`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -46,13 +45,11 @@
 
             .page { flex: 1; background: #d9cfb9; position: relative; }
 
-            /* الصفحة اليسرى - مساحة كاملة للصورة */
             .left-page {
                 display: flex; justify-content: center; align-items: center; padding: 10px;
                 background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
             }
 
-            /* حاوية الصورة - شفافة وواسعة */
             .image-box {
                 width: 100%; height: 100%; 
                 display: flex; justify-content: center; align-items: center;
@@ -61,8 +58,8 @@
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: contain; /* الحل السحري: الصورة بالكامل تظهر دون قص */
-                mix-blend-mode: multiply; /* دمج الصورة مع لون الورق لمظهر كلاسيكي */
+                object-fit: contain;
+                mix-blend-mode: multiply;
                 opacity: 0.9;
                 transition: transform 0.8s ease;
             }
@@ -79,7 +76,6 @@
             b { color: #8e6d3d; font-weight: 800; }
             hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
 
-            /* تأثير الحركة اللذيذ */
             .img-bump { transform: scale(1.03); }
 
             @media (max-width: 768px) {
@@ -103,7 +99,7 @@
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=The+Secret+of+the+Peak'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

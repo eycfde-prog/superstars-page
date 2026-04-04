@@ -2,12 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 17; 
-    const storyTitle = "The Forbidden Voice";
-    const storyText = `The guards told "Clay" he must work. Because of his injured leg, he could not do heavy work with the men. Instead, he sat with the women in the market. He learned to carve bone and wood to make beautiful necklaces. Because "Clay" could see, his work was perfect and very fast.
-The women liked "Mr. Sayyah"—the name they gave "Clay". They bought everything he made. However, the men in the village were jealous. they called "Clay" an animal and a "deformed" creature. They said he was an ill omen because of his strange eyes and loud voice.
-One day, two men insulted "Clay" loudly. "Clay" became very angry. He remembered how he sacrificed his freedom to save them. He lost control and shouted, "I am better than you because I see what you cannot see!"
-In the quiet valley, his human voice was like a loud explosion. The sound was so strong that it hurt everyone. Two women fell to the ground because the noise was too much. The market became silent and terrified. "Clay" looked at the pain on their faces and felt deep shame. He realized his voice was now a dangerous weapon. He quickly gathered his things and ran back to his tent to hide from his own guilt.`;
+    // --- التعديلات المطلوبة (الجزء السادس عشر) ---
+    const partNumber = 16; 
+    const storyTitle = "The Unseen Threat";
+    const storyText = `"Clay" waited in his tent, expecting a death sentence. When a knock came, he opened the door to find "Malika". She smiled and joked about his lack of hospitality. "Clay" promised her he would never use the flare gun. She replied wisely, "A person who chooses good does not change their mind easily."
+"Malika" brought good news. The Leader had learned about the men who insulted "Clay" in the market. He ruled in "Clay’s" favor, and the villagers, who loved his jewelry, forgave him. "Clay" felt a wave of relief. He asked "Malika" if she truly believed his eyes were animal curses. She answered, "I cannot disagree with my people, but I see your eyes as a power. Only you decide how to use it."
+The next morning, "Clay" returned to the market with a happy heart. He felt like he finally belonged. However, his happiness vanished when he saw the two men from yesterday walking toward him.
+Even without eyes, their faces showed deep hatred. "Clay" realized that although the Leader was fair, these men wanted revenge. His "sight" told him a dark truth: the justice he received yesterday had only made his enemies more dangerous today.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -97,7 +99,7 @@ In the quiet valley, his human voice was like a loud explosion. The sound was so
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

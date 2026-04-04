@@ -2,17 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء الثاني عشر) ---
     const partNumber = 12; 
-    const storyTitle = "The Legend of the Lost Sight";
-    const storyText = `When "Lamberth Valley" was just a small dream of survival, the story began with two families. These people, no more than thirty in total, were fleeing injustice after their village fell to their enemies. They wandered through the snowy wastelands, carrying the remnants of their provisions and spirits that were weary from their long journey. Eventually, they reached a valley nestled between two mountains.
-
-They decided to camp there for a few days. However, a violent earthquake struck, unleashing a torrent of rocks and snow. This disaster sealed off the gaps and turned the mountains around them into giant walls. The first generation of survivors tried to climb the peaks, but the instability meant either a fall that would end their lives or the waiting jaws of wolves.
-
-As they resigned themselves to their fate and decided to settle permanently, a mysterious virus infected their eyes. They tried to isolate themselves to find a cure, but they failed.
-
-Their history then took a new turn; instead of mourning their lost light, they decided to develop an alternative "vision." Over the years and through many generations, they became much quieter. Their ears became like radars, picking up the tiniest details, and their movements slowed down to avoid tripping. As the sense of sight diminished, human nature began to adapt. With each new birth, the eyebrows became more prominent and the sockets receded inward. Generation after generation, the eyes themselves disappeared, leaving only thin lines and eyelashes.
-
-For the descendants of these migrants, the concept of "sight" became a mere myth, a relic of their ancestors' legends. They considered protruding, open eyes a characteristic reserved only for animals and predatory beasts.`;
+    const storyTitle = "The Sacrifice of Mercy";
+    const storyText = `Long ago, two families escaped to this valley to hide from enemies. A massive earthquake trapped them behind walls of snow and rock. Soon, a strange virus attacked their eyes. Over many generations, the people changed. Their bodies adapted to the darkness, and their ears became very sharp. For these people, "sight" became a fairy tale, and open eyes were seen as a sign of wild animals.
+"Clay" stood before the doctors, his hand gripping the flare gun. He knew the loud noise would destroy the villagers' hearing forever. He looked for "Malika," but she was not there. Then, he looked at the crowd. He saw innocent children holding their mothers' hands. They reminded him of his students back in England.
+"Clay" made a difficult choice. He could not destroy the lives of these people and children just to save himself. He let go of the gun and lay down on the wooden chair. He decided to keep his conscience clean, even if it meant losing his sight.
+Two doctors tied "Clay’s" arms to the chair. Then, the head doctor, an ugly old man named "Enzo," walked toward him. "Enzo" had a mean face and a large, hooked nose. As the scary doctor got closer, "Clay" felt a wave of pure terror. He was now completely at the mercy of the blind men.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -102,7 +99,7 @@ For the descendants of these migrants, the concept of "sight" became a mere myth
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

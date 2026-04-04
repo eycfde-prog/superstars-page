@@ -2,12 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء الثامن) ---
     const partNumber = 8; 
-    const storyTitle = "The Invisible Walls";
-    const storyText = `"Clay" sat on the cold ground, panting with exhaustion, his injured leg aching from every step. He thought to himself, "How is this possible? Do they not know the meaning of an eye? Were they all born this way?" He spoke aloud, gazing defiantly at the mountain peak, "I must get out of here. Tomorrow, I will leave this paradise."
-"Clay" returned to the center of the valley, searching for "Malika" until he finally found her. He asked her about his backpack and the climbing gear that had been lost during the avalanche. When she brought his belongings to him, he told her that he intended to leave the very next day. However, "Malika's" response quickly shattered his plans. She explained that "Lamberth Valley" was a closed circle, surrounded by high mountains on all sides. She said, "Our ancestors settled here long ago. Many generations have tried to climb these peaks, but it was to no avail. Everyone who tries to climb up falls because of the snow—just like you did—and even if they survive the fall, the wolves will eat them if we do not rescue them."
-"Clay" was both astonished and frightened; his recent experience with the earthquake and the wolf confirmed everything she said. Nevertheless, he decided to see the truth for himself. He believed that these blind people might not see a passage or a small gap that he could spot with his own eyes. He set off, circling the entire edge of the valley and searching for any hope of escape. Eventually, physical and mental exhaustion overcame him, and he collapsed to the ground.
-"Malika" had ordered the guards to watch him, and when they found him fallen, they carried him back to his tent. "Clay" lay in his tent, and although his eyes were wide open, his body was frozen and his tongue was unable to speak. He truly wished they had let him die in the snow, rather than be imprisoned in an unknown valley. He was trapped in a village of blind people who could only see his sight as a terrible disease.`;
+    const storyTitle = "No Way Out";
+    const storyText = `"Clay" sat on the cold ground, his injured leg hurting badly. He could not understand how these people did not know what eyes were. "I must leave this place tomorrow," he promised himself while looking at the high mountain peaks.
+He found "Malika" and asked for his climbing gear. She brought his bag but gave him terrible news. "The "Lambeth" Valley is a closed circle," she explained. "Our ancestors lived here for a long time. Many people tried to climb out, but they all fell or were eaten by wolves."
+"Clay" was terrified, but he did not believe her completely. He thought that because he could see, he might find a path that the blind villagers missed. He spent hours walking around the edges of the valley, searching for a way to escape. However, his body was too weak. He finally collapsed from pain and tiredness.
+"Malika's" guards were watching him. They picked him up and carried him back to his tent. "Clay" lay there with his eyes open, but he could not move or speak. He felt like a prisoner. He wished the snow had killed him instead of being trapped in a world where his sight was considered a disease.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -97,7 +99,7 @@
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

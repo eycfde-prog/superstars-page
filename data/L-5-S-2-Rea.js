@@ -2,23 +2,17 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 1; 
-    const storyTitle = "The Secret of the Peak";
-    const storyText = `Clay" was a history teacher in "England" who loved the past and high mountains. When his friend "John" suggested climbing a remote, snowy peak, "Clay" agreed. He wanted a new challenge to satisfy his curiosity.
-They started in a cloudy town called "Lamberth". "Clay" was careful and prepared all his rescue gear. However, "John" was careless and made fun of "Clay". He called "Clay" a coward because "Clay" was afraid of small animals like cats and dogs. But "Clay" knew he was brave; he just preferred to avoid them.
-The two friends reached the mountain and began their climb. The paths were easy, and they reached the top quickly. "Clay" was happy with their success, but "John" looked upset. He searched the edges of the peak with confusion. When "Clay" asked what was wrong, "John" replied, "Where is the cave?"
-<hr>
-The Hidden Passage
-A heavy silence fell over the mountain until "John" spoke in a soft, apologetic voice. "Please forgive me, 'Clay'," he said. He confessed that he had a secret reason for bringing his friend to this peak. "John" explained that he had met a professional climber at a party who told him a strange story. This specific mountain had regular avalanches that revealed a mysterious cave at the top. This cave stayed open for exactly one year before the next snowstorm sealed it shut again, hiding its secrets inside.
+    const partNumber = 15; 
+    const storyTitle = "The Load Dust";
+    const storyText = `"Clay" entered "Malika’s" tent and was greeted by a stillness unlike any he had experienced in any other corner of the valley. It was a silence so deep that he could hear his own heartbeat. "Malika" was sitting on her bed, surrounded by her maids. As soon as she sensed him, she gestured for him to sit and ordered everyone to leave, except for one old woman who remained quietly beside her. "Clay" whispered, asking how she was feeling. "Malika" smiled gently and reassured him that she had recovered since yesterday, though the doctors had kept her in bed. Then, she asked with concern about his eye and the examination. He replied that he was fine, but he could not hide his strong dislike for Dr. "Enzo".
 
-"Clay" was very surprised and asked what "John" wanted to find. "John" whispered that the cave was actually a passage to a lost village and a hidden paradise. Just as he finished speaking, the ground began to shake violently. A sudden earthquake caused a massive avalanche. The fast, white snow swept both men away. "John" fell back toward the world they knew, but "Clay" plunged deep into the "White Canyon".
-<hr>
-"Clay" woke up and realized he was alive, but his body was in great pain. His ankle was shattered from the fall. He lay on the cold snow and called for "John" many times, but no one answered. The only sounds were his own voice and the wind.
+"Malika" laughed, a sound that charmed him, and said, "You fell into "Enzo’s" hands? No one in the village can stand him except the "Chief" and his soldiers; even his assistants tremble in fear. But you should consider yourself lucky. He is the most skilled doctor the valley has ever known, and any patient would wish to receive his care."
 
-He struggled to stand on one foot. It was very difficult and painful. As the sun began to set, "Clay" knew he needed to find a warm place quickly. Luckily, he still had his bag with a tent and some food. Using his skills, he found a small rocky space to hide from the wind and started a fire.
+"Malika" sensed a change in "Clay’s" breathing; she realized that the word "patient" had upset him, so she quickly apologized. "Clay" accepted her apology, but suddenly, she asked a question he least expected: "Why did you not use that device that makes such a loud noise, even though it could have saved you from the entire valley?" "Clay’s" heart stopped for a moment. How did she know about the flare gun? How could she understand its function when she did not even know the anatomy of human organs? Did everyone know it was hidden under his shirt while he thought he was invisible thanks to his sight?
 
-He looked at his leg and saw the injury was very bad. He planned to crawl south the next morning to find help. Suddenly, the loud howls of wolves broke the silence. "Clay", who was always afraid of animals, felt pure terror as he tried to sleep.
-`;
+Questions swirled in his mind like a whirlwind. He stared, mouth agape, waiting for an explanation from this girl who now seemed like a fortune teller. When his silence stretched on, "Malika" said, "I know questions are swirling in your mind right now, wondering how I can read your thoughts so easily." "Clay" recoiled slightly in alarm.
+
+"Malika" stood up calmly, the old woman moving swiftly before her, while "Clay" remained rooted to the spot as if under a spell. "Come with me, Mr. "Clay"," she said. "I want to show you something." "Clay" followed her as if she were leading him by a string, until they reached a small table in the corner of the tent. On it sat a wooden box decorated with religious inscriptions. The old woman reached out and opened the box, revealing a silvery powder that shimmered with an unusual luster.`;
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -54,13 +48,11 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
             .page { flex: 1; background: #d9cfb9; position: relative; }
 
-            /* الصفحة اليسرى - مساحة كاملة للصورة */
             .left-page {
                 display: flex; justify-content: center; align-items: center; padding: 10px;
                 background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
             }
 
-            /* حاوية الصورة - شفافة وواسعة */
             .image-box {
                 width: 100%; height: 100%; 
                 display: flex; justify-content: center; align-items: center;
@@ -69,8 +61,8 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: contain; /* الحل السحري: الصورة بالكامل تظهر دون قص */
-                mix-blend-mode: multiply; /* دمج الصورة مع لون الورق لمظهر كلاسيكي */
+                object-fit: contain;
+                mix-blend-mode: multiply;
                 opacity: 0.9;
                 transition: transform 0.8s ease;
             }
@@ -87,7 +79,6 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
             b { color: #8e6d3d; font-weight: 800; }
             hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
 
-            /* تأثير الحركة اللذيذ */
             .img-bump { transform: scale(1.03); }
 
             @media (max-width: 768px) {
@@ -111,7 +102,7 @@ He looked at his leg and saw the injury was very bad. He planned to crawl south 
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=The+Secret+of+the+Peak'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
                     </div>
                 </div>
 

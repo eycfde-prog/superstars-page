@@ -2,17 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء العاشر) ---
     const partNumber = 10; 
-    const storyTitle = "The Trial of the Voice";
-    const storyText = `"Clay" resigned himself to his fate and walked slowly between the guards. The people of the valley stood before their tents, and although their eyes were not visible, "Clay" felt their unseen gazes. This filled him with a deep sense of dread. He thought of running, but his limp prevented any escape. He thought of screaming, but he feared that his voice would only be seen as another crime.
-
-He believed the "Valley Chief" would order his immediate execution without giving him a chance to defend himself. However, the atmosphere of the trial was not one of anger. The "Chief" sat on his ornate throne, wearing his golden crown studded with colored stones. His face reflected deep thought rather than vengeance. A profound silence reigned, despite the presence of many guards and courtiers.
-
-"Clay" was given the opportunity to speak, and he did so in a very low voice. He explained that he had not meant to harm anyone and felt deep sorrow for what had happened to "Malika". A long silence followed while the "Chief" weighed his words. Then he said calmly, "You have spoken the truth in everything you have said. I know for certain that you meant no harm." "Clay" breathed a sigh of relief, but the "Chief" continued, "But you overlooked something; we speak in low voices so we can hear everything around us. Since your arrival, people have been calling you 'Mr. Shout' because of your normal tone. Imagine what your shouting does to our ears?"
-
-"Clay" felt a pang of regret as he remembered how close "Malika" had been when he erupted in anger, and he offered a sincere apology.
-
-The "Chief" reassured him that his daughter had regained consciousness and would be fine with rest. However, he added, "Mr. "Clay", just as you unintentionally hurt us with your voice, we fear you might hurt us with your eyes. Therefore, it is essential that these two 'tumors' be examined. Since the whole village heard your shouting and was terrified, everyone must be present for this examination to ensure you are not a source of evil." The words froze in "Clay's" throat. The leader ordered the guards to return him to his tent and forbade him from leaving until the following morning for the public examination in front of the golden tent.`;
+    const storyTitle = "The Trial of Silence";
+    const storyText = `"Clay" walked with the guards, feeling the invisible stares of the eyeless villagers. He thought the Leader would kill him, but the trial was quiet and calm. The Leader sat on his golden throne, looking thoughtful rather than angry.
+"Clay" spoke in a very soft voice. He said he was truly sorry and did not mean to hurt "Malika". The Leader listened carefully and said, "I believe you. You did not want to cause pain. But you must understand. We speak quietly so we can hear everything around us. To us, your normal voice is like shouting. Your scream was like a physical blow to our ears."
+"Clay" felt terrible. He realized his loud voice was painful to these people. The Leader told him "Malika" was feeling better, but then he added a scary condition. "You hurt us with your voice, and we fear your eyes might hurt us too. Our doctors must examine these 'tumors' tomorrow."
+The Leader ordered the guards to take "Clay" back to his tent. He had to stay there until morning. The whole village would gather in front of the golden tent to watch the examination. They wanted to make sure the stranger was not a source of evil.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -102,7 +99,7 @@ The "Chief" reassured him that his daughter had regained consciousness and would
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

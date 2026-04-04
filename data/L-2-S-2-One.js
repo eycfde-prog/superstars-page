@@ -2,125 +2,140 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const storyTitle = "The Squirrel Who Forgot Everything";
-    
-    const storyContent = `
-        Once upon a time, in a forest where the trees were so tall they tickled the clouds, lived a squirrel named Sammy. 
-        Sammy was not an ordinary squirrel; he was the most <span class="target-word">forgetful</span> creature in nature. 
-        While other squirrels were busy organizing their nuts by size and color, Sammy often found himself staring at a rock, wondering if he had already eaten breakfast. 
-        <br><br>
-        One chilly autumn morning, the Great Owl announced the annual <span class="target-word">competition</span> for the Winter Feast. 
-        The goal was simple: find the "Golden Acorn" hidden deep within the Whispering Woods. The winner would get a lifetime <span class="target-word">supply</span> of peanut butter. 
-        Sammy’s stomach growled at the thought. "I must win!" he declared, right before tripping over his own <span class="target-word">tail</span>.
-        <br><br>
-        Sammy started his <span class="target-word">journey</span> with a small backpack and a very confused map he had drawn himself. 
-        As he walked, he met a <span class="target-word">grumpy</span> rabbit named Roger. "You’re going the wrong way, Sammy," Roger sighed, munching on a <span class="target-word">carrot</span>. 
-        Sammy looked at his map, which was actually just a collection of coffee stains. "I am following my <span class="target-word">intuition</span>!" Sammy claimed heroically, while accidentally walking into a <span class="target-word">beehive</span>.
-        <br><br>
-        After escaping the bees with a very <span class="target-word">clumsy</span> dance, Sammy reached a fork in the road. 
-        He had to choose between the Path of Darkness or the Path of Shiny Things. Naturally, Sammy chose the shiny one. 
-        It led him to a <span class="target-word">mysterious</span> pond where a frog was wearing sunglasses. "To pass," the frog croaked, "you must solve my <span class="target-word">riddle</span>." 
-        Sammy panicked. He couldn't even remember his own <span class="target-word">address</span>.
-        <br><br>
-        The frog asked, "What has keys but can't open locks?" Sammy thought hard. "A very <span class="target-word">frustrated</span> locksmith?" he guessed. 
-        The frog laughed so hard he fell into the water. "It’s a piano, you <span class="target-word">silly</span> squirrel! But I like your spirit. Pass through."
-        <br><br>
-        Finally, Sammy saw it—the Golden Acorn! It was sitting on a <span class="target-word">pedestal</span> made of old soda cans. 
-        But there was a <span class="target-word">challenge</span>. A giant cat was sleeping right next to it. Sammy knew he had to be <span class="target-word">silent</span>. 
-        He crawled on his belly, holding his breath. Just as his <span class="target-word">paws</span> touched the gold, he felt a sneeze coming on. "A-choo!"
-        <br><br>
-        The cat woke up, looked at Sammy, and realized the squirrel was wearing a <span class="target-word">ridiculous</span> hat made of leaves. 
-        The cat started laughing uncontrollably. "You look so <span class="target-word">absurd</span> that I can't even be mad," the cat giggled. He let Sammy take the acorn.
-        <br><br>
-        Sammy returned to the village a hero. The <span class="target-word">moral</span> of the story? You don't need a perfect memory if you have a good sense of humor and a bit of luck.
-    `;
+    // --- التعديلات المطلوبة (الجزء الثالث) ---
+    const partNumber = 3; 
+    const storyTitle = "The Sound in the Shadows";
+    const storyText = `When "Clay" woke up, he felt a sharp pain in his body. His left ankle was broken and very hot. He tried to move, but he could not walk. He shouted "John's" name many times, but no one answered. He was completely alone in the white snow.
+The sun was going down, and the cold was becoming dangerous. "Clay" was a professional climber, so he knew what to do. He used his skills to find a small hole in the mountain rocks. Luckily, he still had his bag with a tent and some food. He gathered some wood and started a small fire to stay warm and hide from the wind.
+Inside the cave, "Clay" looked at his injured leg. It looked very bad, and he needed a real doctor. He planned to crawl south in the morning to find help. Suddenly, he heard a scary sound in the dark night. It was the sound of hungry wolves. "Clay" was terrified because he was always afraid of animals. He tried to sleep, but his eyes kept opening in fear. He was waiting for the wolves to appear from the shadows.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:100%; width:100%; display:block; background:#0a0a0a; color:#ccc; overflow-y:auto; padding:60px 0; font-family: 'Georgia', serif; scroll-behavior: smooth;`;
+    container.style.cssText = `
+        height:100%; width:100%; display:flex; justify-content:center; align-items:center; 
+        background: radial-gradient(circle, #1a1a1a 0%, #000 100%); overflow:hidden; font-family: 'Georgia', serif;
+    `;
 
     container.innerHTML = `
         <style>
-            /* تخصيص شريط التمرير */
-            #stage-content::-webkit-scrollbar { width: 8px; }
-            #stage-content::-webkit-scrollbar-track { background: #050505; }
-            #stage-content::-webkit-scrollbar-thumb { background: #c5a059; border-radius: 10px; }
-
-            .story-wrapper {
-                max-width: 900px;
-                margin: 0 auto;
-                background: #111;
-                padding: 80px;
-                border-radius: 20px;
-                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-                border: 1px solid #222;
-                position: relative;
+            .book-wrapper {
+                position: relative; width: 96%; height: 94vh;
+                background: #d9cfb9; border-radius: 4px;
+                box-shadow: 
+                    8px 0 0 -2px #b8a689, 16px 0 0 -4px #d9cfb9, 24px 0 0 -6px #b8a689,
+                    -8px 0 0 -2px #b8a689, -16px 0 0 -4px #d9cfb9, -24px 0 0 -6px #b8a689,
+                    0 40px 80px rgba(0,0,0,0.9);
+                transition: all 0.3s ease;
             }
 
-            .story-title {
-                color: #c5a059;
-                text-align: center;
-                font-size: 3.5vw;
-                font-weight: 900;
-                margin-bottom: 50px;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                font-family: 'Segoe UI', sans-serif;
+            .book-content {
+                display: flex; width: 100%; height: 100%; position: relative;
+                overflow: hidden; border: 1px solid rgba(0,0,0,0.1);
             }
 
-            .story-body {
-                line-height: 1.8;
-                font-size: 1.8vw;
-                color: #ddd;
-                text-align: justify;
+            .book-spine-area {
+                position: absolute; left: 50%; top: 0; width: 40px; height: 100%;
+                z-index: 10; transform: translateX(-50%);
+                display: flex; pointer-events: none;
+            }
+            .spine-left { flex: 1; background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%); }
+            .spine-right { flex: 1; background: linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%); }
+            .spine-center { width: 1px; background: rgba(0,0,0,0.1); }
+
+            .page { flex: 1; background: #d9cfb9; position: relative; }
+
+            .left-page {
+                display: flex; justify-content: center; align-items: center; padding: 10px;
+                background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
             }
 
-            .target-word {
-                color: #c5a059; 
-                font-weight: bold;
-                background: rgba(197, 160, 89, 0.1);
-                padding: 2px 8px;
-                border-radius: 6px;
-                border-bottom: 2px solid #c5a059;
-                transition: 0.3s;
-                cursor: help;
+            .image-box {
+                width: 100%; height: 100%; 
+                display: flex; justify-content: center; align-items: center;
+                overflow: hidden; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
             }
 
-            .target-word:hover {
-                background: #c5a059;
-                color: #000;
-                box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+            .image-box img { 
+                width: 100%; height: 100%; 
+                object-fit: contain;
+                mix-blend-mode: multiply;
+                opacity: 0.9;
+                transition: transform 0.8s ease;
             }
 
-            .one-shot-badge {
-                position: absolute;
-                top: -20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #c5a059;
-                color: #000;
-                padding: 5px 30px;
-                border-radius: 50px;
-                font-family: sans-serif;
-                font-weight: 900;
-                font-size: 1rem;
-                letter-spacing: 3px;
+            .right-page {
+                padding: 3vw 4vw; overflow-y: auto; color: #3a352a;
+                background: linear-gradient(-90deg, #c9beaa 0%, #d9cfb9 15%);
+                scrollbar-width: none;
+            }
+            .right-page::-webkit-scrollbar { display: none; }
+
+            .story-title { font-size: 3vw; color: #4a2e15; text-align: center; margin-bottom: 20px; font-variant: small-caps; border-bottom: 2px solid #b8a689; padding-bottom: 10px; }
+            .story-content { font-size: 2.2vw; line-height: 1.6; text-align: justify; }
+            b { color: #8e6d3d; font-weight: 800; }
+            hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
+
+            .img-bump { transform: scale(1.03); }
+
+            @media (max-width: 768px) {
+                .book-content { flex-direction: column; }
+                .book-spine-area { width: 100%; height: 20px; left: 0; top: 50%; transform: translateY(-50%); flex-direction: column; }
+                .spine-left { background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.15)); }
+                .spine-right { background: linear-gradient(to top, rgba(0,0,0,0), rgba(0,0,0,0.15)); }
+                .story-title { font-size: 6vw; }
+                .story-content { font-size: 5vw; }
             }
         </style>
 
-        <div class="story-wrapper">
-            <div class="one-shot-badge">ONE SHOT</div>
-            <h1 class="story-title">${storyTitle}</h1>
-            <div class="story-body">
-                ${storyContent}
+        <div class="book-wrapper">
+            <div class="book-content">
+                <div class="book-spine-area">
+                    <div class="spine-left"></div>
+                    <div class="spine-center"></div>
+                    <div class="spine-right"></div>
+                </div>
+                
+                <div class="page left-page">
+                    <div class="image-box" id="book-img-box">
+                        <img src="data/reading/${partNumber}.png" id="main-img"
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
+                    </div>
+                </div>
+
+                <div class="page right-page" id="story-scroller">
+                    <h1 class="story-title">${storyTitle}</h1>
+                    <div class="story-content">
+                        ${storyText.replace(/Clay/g, '<b>Clay</b>').replace(/\n/g, '<br>')}
+                    </div>
+                </div>
             </div>
         </div>
+    `;
 
-        <div style="height: 100px;"></div> `;
+    const imgBox = document.getElementById('book-img-box');
+    const mainImg = document.getElementById('main-img');
+    let scrollTimeout;
 
-    // إضافة زر إنهاء النشاط
+    function triggerImgAnim() {
+        imgBox.classList.add('img-bump');
+        mainImg.style.transform = "scale(1.08)";
+        
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            imgBox.classList.remove('img-bump');
+            mainImg.style.transform = "scale(1)";
+        }, 500);
+    }
+
+    const scroller = document.getElementById('story-scroller');
+    scroller.onscroll = () => triggerImgAnim();
+
     document.onkeydown = (e) => {
-        if (e.keyCode === 32) { // مفتاح المسافة
-            if (window.triggerVetoDone) window.triggerVetoDone();
+        const step = 150;
+        if (e.keyCode === 32 || e.keyCode === 40 || e.keyCode === 13) {
+            scroller.scrollBy({ top: step, behavior: 'smooth' });
+        } else if (e.keyCode === 38) {
+            scroller.scrollBy({ top: -step, behavior: 'smooth' });
         }
     };
 })();

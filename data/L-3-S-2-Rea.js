@@ -2,16 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء السابع) ---
     const partNumber = 7; 
-    const storyTitle = "The Valley's Diagnosis";
-    const storyText = `"Clay" smiled involuntarily and glanced around, hoping someone would join in the joke. He honestly thought the leader was telling a story. However, the faces surrounding him remained impassive and silent. Talking to people without eyes felt like talking to a stone wall; it was even more terrifying when the walls understood and replied.
-There were more than thirty people inside the tent, and all of them were without eyes. "Clay" tried to explain his point nervously. "I mean... your eyes are not there," he said. "They are not open like mine."
-A few murmurs rippled through the crowd, and "Clay" heard two muffled laughs, which only increased his anxiety. The leader thought for a few seconds, then ordered the two guards to bring "Clay" forward. With uncanny precision, as if they could see everything, the guards pulled him by the arms and handcuffed him behind his back with metal cuffs. When they reached the leader, one guard forced "Clay" to kneel with a sudden kick behind his knees.
-Despite the humiliation, "Clay's" astonishment was even greater. The leader’s face appeared angry, and he raised his hand firmly toward "Clay". "Clay's" heart clenched, thinking he was about to be executed. He turned around, searching for an executioner, but he was surprised to see the guard who had struck him bowing his head in sorrow. The guard apologized humbly to the leader before turning away.
-At that moment, "Clay" realized two truths: first, these people see everything without eyes, and second, a deadly calm pervades their lives.
-The leader took two steps until he was directly in front of "Clay". With great precision, he raised his thumbs and passed them just millimeters above "Clay's" eyes without touching them. He then stepped back and ordered the restraints removed.
-The leader said calmly, "You are a sick man, Mr. "Clay". You have two prominent tumors on your face. If you seek treatment, I will have my personal physicians remove them for you." "Clay" could not believe what he was hearing. instead of admitting their blindness, they were accusing him of being ill! He gathered his strength and replied, "No, sir... thank you very much, but I am not seeking a cure for my tumors. May I leave now?" The "Chief" replied, "Of course you may leave... and welcome, stranger, to "Lamberth Valley"."
-"Clay" hurried out of the tent, almost running in fear. As soon as he was gone, the ugly old man leaned close to the "Chief's" ear. He whispered in a low voice, ""Chief", I advise you to send someone to observe this creature... the one with the animal eyes."`;
+    const storyTitle = "The Strange Diagnosis";
+    const storyText = `"Clay" smiled, thinking the Leader was joking. But the thirty people in the tent remained silent. Speaking to people without eyes felt like talking to walls. "I mean your eyes are not open like mine," "Clay" explained nervously.
+The room filled with quiet whispers and soft laughter. Suddenly, the Leader ordered the guards to seize him. With perfect accuracy, they grabbed "Clay", tied his hands, and forced him to his knees. The Leader walked to "Clay" and moved his thumbs just millimeters away from "Clay's" eyes without touching them. He then ordered the guards to release him.
+"You are a sick man, Mr. "Clay"," the Leader said calmly. "You have two strange lumps on your face. My doctors can remove them for you if you want."
+"Clay" was shocked. They thought his eyes were tumors! "No, thank you," he replied quickly. "May I leave now?" The Leader agreed, welcoming him to the valley. "Clay" ran out of the tent in fear. As he left, a strange old man whispered to the Leader, "Sir, we must watch this creature. He has the eyes of an animal."`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -101,7 +99,7 @@ The leader said calmly, "You are a sick man, Mr. "Clay". You have two prominent 
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

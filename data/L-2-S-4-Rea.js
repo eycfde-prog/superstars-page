@@ -2,19 +2,13 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // --- التعديلات المطلوبة (الجزء الخامس) ---
     const partNumber = 5; 
-    const storyTitle = "The Village of the Sightless";
-    const storyText = `His mind raced with confusion; were her eyes simply closed, or was darkness her inevitable fate? Unable to contain himself, he leaned closer, his gaze lingering on her. She sat directly beneath the lamp's glow, yet all he could see were two thin lines framed by eyelashes, behind which lay sunken, eyeless sockets.
-
-"Malika" seemed to sense his movement despite the distance between them. Her smile gradually faded, and she crossed her arms shyly over her knees, as if she had felt his close stare. "Clay's" eyes widened in surprise, and before he could speak, she spoke in a sweet voice, "Hello... My name is "Malika", and I live here in "Lamberth Valley". Are you alright now?"
-
-"Clay" was struck by her flawless "English" and clear accent. He paused for a moment to compose himself, then replied, "Thank you. I am fine now. And thank you for saving my life from that wolf. I owe you."
-
-A soft laugh escaped her lips as she said, "If anyone truly deserves thanks, it is "Ben". He is the one who freed you from the clutches of that enormous wolf." Her laughter charmed him, and he asked who "Ben" was. She calmly explained that he was one of the men under the command of the valley's chief physician. He showered her with words of gratitude and politely avoided asking about her eyes, but he was surprised when she told him she was the daughter of the "Valley Chief". He asked her to arrange a meeting with the "Chief" to express his gratitude for the help.
-
-"Malika" readily agreed and helped him to his feet. As he stood, he noticed that his leg had been bandaged with a skill that went far beyond mere first aid. But as soon as he took his first step outside the tent, his chest tightened with fear. It was daytime, and the sun cast warm rays upon the surrounding snow. "Clay" saw many tents arranged neatly around him, with a large golden tent at the center that was a sight to behold from any angle in the valley. But the shock was not in the tents; it was in the people.
-
-"Clay" stood frozen, watching the villagers moving around him. They were all, without exception, blind. Every face he passed bore the same mark: long eyelashes that traced two lines on closed, sunken eyelids. They moved through the valley with confidence, acting as if they could see everything clearly.`;
+    const storyTitle = "The Valley of the Blind";
+    const storyText = `"Clay" looked closely at the girl. Under the lamp, he confirmed she had no eyes at all. She felt him moving closer and stopped smiling. She shyly said, "Welcome. My name is "Malika", and this is the "Lambeth" Valley. Are you okay?"
+"Clay" was surprised that she spoke perfect English. He thanked her for saving him from the wolf. "Malika" laughed softly and said, "You should thank "Ben". He is a guard for the Valley’s chief doctor." She explained that she was the daughter of the Valley Leader. "Clay" asked to meet him to show his gratitude.
+"Malika" helped "Clay" stand up. He noticed his leg was bandaged perfectly. However, when he stepped outside the tent, he froze in terror. It was daytime, and the sun was shining on many organized tents. In the center, there was a beautiful golden tent. But the people were the biggest shock. Everyone in the village was blind. Every person he saw had the same closed, empty eyelids. Yet, they all moved around the valley with total confidence, as if they could see everything perfectly.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -50,13 +44,11 @@ A soft laugh escaped her lips as she said, "If anyone truly deserves thanks, it 
 
             .page { flex: 1; background: #d9cfb9; position: relative; }
 
-            /* الصفحة اليسرى - مساحة كاملة للصورة */
             .left-page {
                 display: flex; justify-content: center; align-items: center; padding: 10px;
                 background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
             }
 
-            /* حاوية الصورة - شفافة وواسعة */
             .image-box {
                 width: 100%; height: 100%; 
                 display: flex; justify-content: center; align-items: center;
@@ -65,8 +57,8 @@ A soft laugh escaped her lips as she said, "If anyone truly deserves thanks, it 
 
             .image-box img { 
                 width: 100%; height: 100%; 
-                object-fit: contain; /* الحل السحري: الصورة بالكامل تظهر دون قص */
-                mix-blend-mode: multiply; /* دمج الصورة مع لون الورق لمظهر كلاسيكي */
+                object-fit: contain;
+                mix-blend-mode: multiply;
                 opacity: 0.9;
                 transition: transform 0.8s ease;
             }
@@ -83,7 +75,6 @@ A soft laugh escaped her lips as she said, "If anyone truly deserves thanks, it 
             b { color: #8e6d3d; font-weight: 800; }
             hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
 
-            /* تأثير الحركة اللذيذ */
             .img-bump { transform: scale(1.03); }
 
             @media (max-width: 768px) {
@@ -107,7 +98,7 @@ A soft laugh escaped her lips as she said, "If anyone truly deserves thanks, it 
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=The+Secret+of+the+Peak'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

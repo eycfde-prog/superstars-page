@@ -2,11 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const partNumber = 13; // يمكنك تعديل الرقم حسب ترتيبك المفضل لهذه النسخة
-    const storyTitle = "The Difficult Choice";
-    const storyText = `"Clay" stood in front of the medical bench. He held a flare in his hand. This weapon could make a loud noise to hurt everyone’s ears. "Clay" wanted to use it to escape, but he stopped to think. He looked at the leader’s hard face. He knew that if the guards saw the weapon, they would take it away.
-The guards looked at "Clay" closely. They saw he was nervous. "Clay" looked for "Malika" in the crowd, but she was not there. He felt sad because the loud noise would scare her too. Then, "Clay" looked at the people. He saw small children holding their mothers' dresses. They looked innocent. He remembered his students back in "England". "Clay" decided he could not hurt these children just to be free.
-He put his weapon away and sat quietly in the chair. He accepted his fate. Five doctors walked toward him. Four wore long coats, but their leader, "Enzo", wore royal clothes. "Enzo" was an old man with an ugly face and a nose like a bird’s beak. "Clay" felt very afraid as he looked at him. Two doctors moved slowly and tied "Clay" to the chair so he could not move. "Enzo" came closer and closer. His face looked more terrifying with every step. "Clay" waited in terror to see what the doctors would do to him next.`;
+    // --- التعديلات المطلوبة (الجزء الثالث عشر) ---
+    const partNumber = 13; 
+    const storyTitle = "The Animal Eyes";
+    const storyText = `The doctor, "Enzo", rubbed a strange paste on his fingers and pressed them hard into "Clay’s" eyes. It burned like fire, but "Clay" stayed silent to protect the villagers' ears. Later, the Leader told him, "Your tumors are not a disease, but you have the eyes of an animal. These eyes attract demons." "Clay" realized that because the villagers saw eyes only on the animals they hunted, they thought he was like a beast.
+"Clay" returned to his tent, feeling defeated but proud that he chose mercy over the flare gun. Later, a servant took him to see "Malika". She was resting in her quiet tent. She thanked him for his kindness and laughed when he complained about "Enzo". "No one likes him," she said, "but he is the best doctor here."
+Then, "Malika" shocked him. "Why didn't you use that loud tool to escape?" she asked. "Clay" froze. How did she know about the flare gun under his shirt? How did she know what it could do? He felt like she was a witch who could read his mind.
+"Malika" stood up and led him to a small table. An old woman opened a wooden box decorated with religious symbols. Inside was a shining silver powder. "Do you know what this is, Mr. "Clay"?" "Malika" asked. "Clay" stared at the glowing dust, waiting for an answer to the valley’s deepest mystery.`;
+    // ---------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -96,7 +99,7 @@ He put his weapon away and sat quietly in the chair. He accepted his fate. Five 
                 <div class="page left-page">
                     <div class="image-box" id="book-img-box">
                         <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}控制'">
+                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
                     </div>
                 </div>
 

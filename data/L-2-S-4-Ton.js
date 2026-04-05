@@ -8,7 +8,7 @@
     const ttSentence = "Special selection.";
     
     // WOLF Fix: إنشاء الرابط المباشر (Raw) للصورة تلقائياً بناءً على ttNumber
-    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/eed8fe3da193266cc21f1dc2f5264e4079306001/data/tt/1.png`;
+    const imageUrl = `https://github.com/eycfde-prog/EYCVetoProgram/blob/4ae3a8b660f84bebaa8a391420b314c8e1ca93eb/data/tt/1.png`;
     // ----------------------------------------------
 
     container.innerHTML = ''; 

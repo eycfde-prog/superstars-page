@@ -2,12 +2,14 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- Configuration ---
+    // --- Configuration (WOLF Automated Update) ---
+    // تم تحديث الرقم والسلسلة بناءً على طلب مستر عز
     const ttNumber = 1; 
-    const ttSentence = "She sells sea shells by the sea shore, the shells she sells are shells I'm sure.";
-    // WOLF Fix: استخدام الرابط المباشر (Raw) من GitHub
-    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/67dc8f3c83b25908266b0774f5a3438b6b60cb28/data/tt/${ttNumber}.png`;
-    // ---------------------
+    const ttSentence = "Special selection.";
+    
+    // WOLF Fix: إنشاء الرابط المباشر (Raw) للصورة تلقائياً بناءً على ttNumber
+    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/eed8fe3da193266cc21f1dc2f5264e4079306001/data/tt/${ttNumber}.png`;
+    // ----------------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -35,6 +37,7 @@
         document.head.appendChild(link);
     }
 
+    // WOLF Logic: تمييز الأصوات (s, sh) داخل الجملة الجديدة
     const highlightedSentence = ttSentence.replace(/sh|s/gi, (matched) => {
         if (matched.toLowerCase() === 'sh') {
             return `<span class="sh-sound">${matched}</span>`;

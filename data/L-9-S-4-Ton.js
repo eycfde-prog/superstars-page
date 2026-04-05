@@ -7,8 +7,7 @@
     const ttSentence = "If you want to buy buy, if you don’t want to buy, bye-bye.";
     
     // WOLF Fix: سحب الصورة رقم 29 من مسار GitHub المعتمد
-    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/eed8fe3da193266cc21f1dc2f5264e4079306001/data/tt/${ttNumber}.png`;
-    // ----------------------------------------------
+const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/271fa92ff48f501cfa46f4ee87b9cae57aef453f/data/tt/${ttNumber}.png`;    // ----------------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `

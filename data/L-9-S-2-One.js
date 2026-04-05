@@ -2,100 +2,230 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // كلمات مدينة الصمت والتكنولوجيا
+    const words = [
+        "breath", "electronic", "innovation", "isolated", "engineer", 
+        "longing", "abandoned", "bookshelf", "mechanical", "discs", 
+        "intrigued", "vibrant", "overwhelming", "emotion", "discovery", 
+        "plaza", "threatened", "accustomed", "invasion", "miraculous", 
+        "decades", "hum", "authorities", "echoing", "efficiency", "soul"
+    ];
+
+    let remainingWords = [...words];
+    let currentTargetId = null;
+
     const storyTitle = "The City of Silence";
     
-    const storyContent = `
-        In a future where technology controlled every <span class="target-word">breath</span>, there was a place called the City of Silence. 
-        Here, people didn't speak with their voices; they used <span class="target-word">electronic</span> chips to send thoughts directly to each other's brains. 
-        This <span class="target-word">innovation</span> was supposed to make life easier, but it made the world feel <span class="target-word">isolated</span> and cold.
+    let storyContent = `
+        In a future where technology controlled every <span class="word-gap" data-word="breath">?</span>, there was a place called the City of Silence. 
+        Here, people didn't speak; they used <span class="word-gap" data-word="electronic">?</span> chips to send thoughts. 
+        This <span class="word-gap" data-word="innovation">?</span> was supposed to make life easier, but it made the world feel <span class="word-gap" data-word="isolated">?</span> and cold.
         <br><br>
-        Elias was a young <span class="target-word">engineer</span> who felt a strange <span class="target-word">longing</span> for the past. 
-        He spent his weekends exploring the <span class="target-word">abandoned</span> library at the edge of the city. 
-        One day, while moving a heavy <span class="target-word">bookshelf</span>, he discovered an old, <span class="target-word">mechanical</span> object. 
-        It was a gramophone—a machine that played music from large black <span class="target-word">discs</span>.
+        Elias was a young <span class="word-gap" data-word="engineer">?</span> who felt a strange <span class="word-gap" data-word="longing">?</span> for the past. 
+        He spent his weekends exploring the <span class="word-gap" data-word="abandoned">?</span> library. 
+        While moving a heavy <span class="word-gap" data-word="bookshelf">?</span>, he discovered an old, <span class="word-gap" data-word="mechanical">?</span> object. 
+        It was a gramophone—a machine that played music from large black <span class="word-gap" data-word="discs">?</span>.
         <br><br>
-        Elias was <span class="target-word">intrigued</span>. He managed to repair the device, and when the needle touched the surface, a <span class="target-word">vibrant</span> melody filled the room. 
-        It was the first time he had ever heard a sound that didn't come from a computer. 
-        The music was <span class="target-word">overwhelming</span>, full of passion and <span class="target-word">emotion</span>.
+        Elias was <span class="word-gap" data-word="intrigued">?</span>. He repaired the device, and when the needle touched the surface, a <span class="word-gap" data-word="vibrant">?</span> melody filled the room. 
+        The music was <span class="word-gap" data-word="overwhelming">?</span>, full of passion and <span class="word-gap" data-word="emotion">?</span>. 
+        He decided to share this <span class="word-gap" data-word="discovery">?</span> with his fellow citizens in the central <span class="word-gap" data-word="plaza">?</span>.
         <br><br>
-        He decided to share this <span class="target-word">discovery</span> with his fellow citizens. He carried the machine to the central <span class="target-word">plaza</span> and turned it on. 
-        At first, the people looked confused and even <span class="target-word">threatened</span> by the noise. 
-        They were so <span class="target-word">accustomed</span> to silence that the music felt like an <span class="target-word">invasion</span>.
+        At first, the people looked <span class="word-gap" data-word="threatened">?</span> by the noise. They were so <span class="word-gap" data-word="accustomed">?</span> to silence that the music felt like an <span class="word-gap" data-word="invasion">?</span>. 
+        However, something <span class="word-gap" data-word="miraculous">?</span> happened. For the first time in <span class="word-gap" data-word="decades">?</span>, a girl began to <span class="word-gap" data-word="hum">?</span> along with the tune.
         <br><br>
-        However, as the rhythm continued, something <span class="target-word">miraculous</span> happened. People stopped looking at their screens. 
-        They began to tap their feet and smile at each other. For the first time in <span class="target-word">decades</span>, a girl opened her mouth and began to <span class="target-word">hum</span> along with the tune.
-        <br><br>
-        The <span class="target-word">authorities</span> tried to stop Elias, but it was too late. The "virus" of music had already spread. 
-        The city wasn't silent anymore; it was <span class="target-word">echoing</span> with laughter and song. 
-        Elias realized that while technology can give us <span class="target-word">efficiency</span>, only art can give us a <span class="target-word">soul</span>.
+        The <span class="word-gap" data-word="authorities">?</span> tried to stop Elias, but the city was <span class="word-gap" data-word="echoing">?</span> with song. 
+        Elias realized that while technology can give us <span class="word-gap" data-word="efficiency">?</span>, only art can give us a <span class="word-gap" data-word="soul">?</span>.
     `;
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:100%; display:block; background:#0a0a0c; color:#cfcfcf; overflow-y:auto; padding:60px 20px; font-family: 'Inter', 'Georgia', serif; scroll-behavior: smooth;`;
+    container.style.cssText = `height:100%; width:100%; display:block; background:#0b0f19; color:#94a3b8; overflow-y:auto; padding:0; font-family: 'Space Grotesk', sans-serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
-            @keyframes wordGlow {
-                0%, 100% { text-shadow: 0 0 5px rgba(241, 196, 15, 0.3); color: #f1c40f; }
-                50% { text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); color: #fff; }
-            }
-            .story-card {
-                max-width: 900px;
-                margin: 0 auto;
-                background: rgba(20, 20, 25, 0.8);
-                padding: 60px;
-                border-radius: 40px;
-                box-shadow: 0 40px 100px rgba(0,0,0,0.6);
-                border: 1px solid #1f1f2a;
-            }
-            .title-section {
-                text-align: center;
-                margin-bottom: 60px;
-            }
-            .title-section h1 {
-                font-size: 3.5rem;
-                color: #9b59b6;
-                text-transform: uppercase;
-                letter-spacing: 8px;
-                margin: 0;
-                font-weight: 900;
-                text-shadow: 0 0 30px rgba(155, 89, 182, 0.3);
-            }
-            .subtitle {
-                color: #666;
-                font-size: 1rem;
-                letter-spacing: 4px;
-                text-transform: uppercase;
-            }
-            .target-word {
-                color: #f1c40f;
-                font-weight: bold;
-                border-bottom: 2px solid rgba(241, 196, 15, 0.3);
-                cursor: help;
-                padding: 0 4px;
-                animation: wordGlow 3s infinite ease-in-out;
-                display: inline-block;
-            }
-            .text-content {
-                line-height: 2.3;
-                font-size: 1.9rem;
-                text-align: justify;
-                color: #b0b0b0;
-            }
+            @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Syncopate:wght@400;700&display=swap');
+            
             #stage-content::-webkit-scrollbar { width: 10px; }
-            #stage-content::-webkit-scrollbar-track { background: #0a0a0c; }
-            #stage-content::-webkit-scrollbar-thumb { background: #9b59b6; border-radius: 10px; }
+            #stage-content::-webkit-scrollbar-track { background: #0b0f19; }
+            #stage-content::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+
+            .story-wrapper {
+                max-width: 90%;
+                margin: 40px auto;
+                background: linear-gradient(180deg, #111827, #0b0f19);
+                padding: 60px 45px;
+                border-radius: 20px;
+                box-shadow: 0 0 50px rgba(59, 130, 246, 0.1);
+                border: 1px solid #1e293b;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .story-wrapper::before {
+                content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+                background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+                animation: scanline 3s linear infinite;
+            }
+
+            @keyframes scanline { 0% { top: 0; } 100% { top: 100%; } }
+
+            .story-title {
+                color: #3b82f6;
+                text-align: center;
+                font-size: 4rem;
+                font-weight: 700;
+                margin-bottom: 50px;
+                font-family: 'Syncopate', sans-serif;
+                text-transform: uppercase;
+                letter-spacing: 5px;
+                text-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            }
+
+            .story-body {
+                line-height: 2.2;
+                font-size: 2.6rem;
+                color: #cbd5e1;
+                text-align: left;
+                font-family: 'Space Grotesk', sans-serif;
+            }
+
+            .word-gap {
+                display: inline-block;
+                min-width: 130px;
+                border: 1px solid #334155;
+                background: rgba(30, 41, 59, 0.5);
+                text-align: center;
+                color: #60a5fa;
+                cursor: pointer;
+                transition: 0.3s;
+                border-radius: 5px;
+                padding: 0 10px;
+                margin: 0 5px;
+            }
+
+            .word-gap:hover {
+                background: #3b82f6;
+                color: #fff;
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+            }
+
+            .word-gap.filled {
+                border: none;
+                color: #fcd34d;
+                font-weight: bold;
+                background: transparent;
+                animation: soundWave 0.8s ease-out;
+            }
+
+            @keyframes soundWave {
+                0% { transform: scale(1); text-shadow: 0 0 0px #fff; }
+                50% { transform: scale(1.2); text-shadow: 0 0 20px #fcd34d; }
+                100% { transform: scale(1); text-shadow: 0 0 10px #fcd34d; }
+            }
+
+            #word-overlay {
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(2, 6, 23, 0.98);
+                display: none;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-content: center;
+                gap: 15px;
+                padding: 40px;
+                z-index: 10000;
+            }
+
+            .choice-btn {
+                background: #1e293b;
+                color: #94a3b8;
+                padding: 15px 30px;
+                font-size: 2.2rem;
+                font-weight: 600;
+                border-radius: 10px;
+                cursor: pointer;
+                border: 1px solid #334155;
+                font-family: 'Space Grotesk', sans-serif;
+                transition: 0.2s;
+            }
+
+            .choice-btn:hover {
+                background: #3b82f6;
+                color: #fff;
+                transform: scale(1.1);
+            }
+
+            .choice-btn.wrong {
+                animation: glitch 0.3s infinite;
+                background: #7f1d1d !important;
+                border-color: #ef4444;
+            }
+
+            @keyframes glitch {
+                0% { transform: translate(3px, 0); }
+                50% { transform: translate(-3px, 0); }
+                100% { transform: translate(0, 0); }
+            }
+
+            .one-shot-badge {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                border: 1px solid #3b82f6;
+                color: #3b82f6;
+                padding: 5px 15px;
+                font-size: 1.2rem;
+                font-family: 'Syncopate', sans-serif;
+                border-radius: 4px;
+                text-shadow: 0 0 5px #3b82f6;
+            }
         </style>
-        
-        <div class="story-card">
-            <div class="title-section">
-                <span class="subtitle">Advanced One-Shot • Session 2</span>
-                <h1>${storyTitle}</h1>
-            </div>
-            <div class="text-content">
+
+        <div id="word-overlay"></div>
+
+        <div class="story-wrapper">
+            <div class="one-shot-badge">SYSTEM: REBOOTING_ART</div>
+            <h1 class="story-title">${storyTitle}</h1>
+            <div class="story-body">
                 ${storyContent}
             </div>
         </div>
+        <div style="height: 100px;"></div>
     `;
 
+    const overlay = document.getElementById('word-overlay');
+
+    const openOverlay = (target) => {
+        currentTargetId = target;
+        overlay.innerHTML = '';
+        const shuffled = [...remainingWords].sort(() => Math.random() - 0.5);
+        shuffled.forEach(word => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerText = word;
+            btn.onclick = () => checkWord(word, btn);
+            overlay.appendChild(btn);
+        });
+        overlay.style.display = 'flex';
+    };
+
+    const checkWord = (selectedWord, btnElement) => {
+        const correctWord = currentTargetId.getAttribute('data-word');
+        if (selectedWord.toLowerCase() === correctWord.toLowerCase()) {
+            currentTargetId.innerText = correctWord;
+            currentTargetId.classList.add('filled');
+            overlay.style.display = 'none';
+            remainingWords = remainingWords.filter(w => w !== selectedWord);
+        } else {
+            btnElement.classList.add('wrong');
+            setTimeout(() => btnElement.classList.remove('wrong'), 400);
+        }
+    };
+
+    document.querySelectorAll('.word-gap').forEach(gap => {
+        gap.onclick = () => openOverlay(gap);
+    });
+
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) if (window.triggerVetoDone) window.triggerVetoDone();
+    };
 })();

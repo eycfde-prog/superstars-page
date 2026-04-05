@@ -20,6 +20,7 @@
     const folderNumber = 6;
 
     container.innerHTML = '';
+    // ستايل الحاوية الرئيسي - خلفية داكنة وتصميم عصري
     container.style.cssText = `height:100%; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#021a11; color:#fff; font-family: 'Segoe UI', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
@@ -30,23 +31,25 @@
             
             .sq-question-container { text-align:center; width:85%; min-height:300px; display:flex; align-items:center; justify-content:center; }
             .sq-question { 
-                font-size:7.5vw; 
-                line-height:1.1; 
+                font-size:6.5vw; 
+                line-height:1.2; 
                 font-weight:900; 
                 color:#ffffff; 
                 text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             }
             
             .sq-controls { position:absolute; bottom:60px; display:flex; gap:30px; z-index:10; }
             .sq-btn { 
-                background:#2ecc71; color:#000; border:none; padding:20px 60px; 
-                font-size:1.5vw; cursor:pointer; border-radius:100px; font-weight:900; 
+                background:#2ecc71; color:#000; border:none; padding:15px 50px; 
+                font-size:1.2vw; cursor:pointer; border-radius:100px; font-weight:900; 
                 transition:0.3s; text-transform:uppercase; box-shadow: 0 10px 20px rgba(46,204,113,0.2);
+                display: flex; align-items: center; justify-content: center;
             }
             .sq-btn:hover { transform: translateY(-5px); filter: brightness(1.2); box-shadow: 0 15px 30px rgba(46,204,113,0.4); }
             .sq-btn:active { transform: translateY(0); }
             .sq-btn-prev { background:transparent; color:#2ecc71; border: 2px solid #2ecc71; }
+            .sq-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
 
             .progress-dots { position:absolute; bottom:20px; display:flex; gap:8px; }
             .dot { width:8px; height:8px; background:rgba(46,204,113,0.2); border-radius:50%; transition:0.3s; }
@@ -54,8 +57,8 @@
         </style>
         
         <div class="sq-header">
-            <div class="sq-title">Squeezer #6 • Level 11</div>
-            <div class="sq-indicator">Target: <span style="color:#2ecc71">Can & Could</span></div>
+            <div class="sq-title">Review Mode • Squeezer #${folderNumber}</div>
+            <div class="sq-indicator">Topic: <span style="color:#2ecc71">Can & Could</span></div>
         </div>
 
         <div class="sq-question-container">
@@ -63,8 +66,8 @@
         </div>
         
         <div class="sq-controls">
-            <button class="sq-btn sq-btn-prev" id="sqPrev">Back</button>
-            <button class="sq-btn" id="sqNext">Next Question</button>
+            <button class="sq-btn sq-btn-prev" id="sqPrev">⬅ Back</button>
+            <button class="sq-btn" id="sqNext">Next Question ➡</button>
         </div>
 
         <div class="progress-dots" id="dotContainer"></div>
@@ -77,7 +80,7 @@
     const btnPrev = document.getElementById('sqPrev');
     const dotContainer = document.getElementById('dotContainer');
 
-    // إنشاء نقاط التقدم
+    // إنشاء نقاط التقدم (Dots)
     questions.forEach((_, i) => {
         const d = document.createElement('div');
         d.className = 'dot';
@@ -85,46 +88,64 @@
     });
 
     function updateSlide(index) {
-        // تحديث النقاط
+        // 1. تحديث حالة النقاط
         document.querySelectorAll('.dot').forEach((d, i) => {
             d.className = i === index ? 'dot active' : 'dot';
         });
 
+        // 2. تحديث حالة الأزرار
+        btnPrev.disabled = (index === 0);
+        
+        // 3. حركة الأنميشن للسؤال
         display.style.opacity = '0';
-        display.style.transform = 'scale(0.8) translateY(20px)';
+        display.style.transform = 'translateY(20px)';
         
         setTimeout(() => {
             display.innerText = questions[index];
             display.style.opacity = '1';
-            display.style.transform = 'scale(1) translateY(0)';
-        }, 150);
-
-        const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
-        audioPlayer.src = audioPath;
-        audioPlayer.play().catch(e => {});
+            display.style.transform = 'translateY(0)';
+            
+            // 4. تشغيل الصوت الخاص بكل سؤال (اختياري حسب المسار)
+            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+            audioPlayer.src = audioPath;
+            audioPlayer.play().catch(e => console.log("Audio play deferred or file missing"));
+        }, 200);
     }
 
+    // وظيفة الزر "التالي"
     btnNext.onclick = () => {
         if (currentIdx < questions.length - 1) {
             currentIdx++;
             updateSlide(currentIdx);
         } else {
-            display.innerHTML = "<span style='color:#2ecc71; font-size:6vw;'>SQUEEZER MASTERED!</span>";
+            // عند الوصول للنهاية
+            display.innerHTML = "<span style='color:#2ecc71; font-size:5vw;'>READY FOR THE TEST?</span>";
+            btnNext.style.display = 'none';
             if (window.triggerVetoDone) window.triggerVetoDone();
         }
     };
 
+    // وظيفة الزر "السابق"
     btnPrev.onclick = () => {
         if (currentIdx > 0) {
+            btnNext.style.display = 'flex'; // إظهار زر التالي لو كان مخفياً
             currentIdx--;
             updateSlide(currentIdx);
         }
     };
 
+    // التحكم عن طريق الكيبورد (أسهم ومسطرة)
     document.onkeydown = (e) => {
-        if (e.key === "ArrowRight" || e.key === " ") btnNext.click();
-        if (e.key === "ArrowLeft") btnPrev.click();
+        if (e.key === "ArrowRight" || e.key === " ") {
+            e.preventDefault();
+            btnNext.click();
+        }
+        if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            btnPrev.click();
+        }
     };
 
+    // تشغيل الشريحة الأولى عند البداية
     updateSlide(0);
 })();

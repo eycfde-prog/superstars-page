@@ -8,8 +8,8 @@
     const ttSentence = "I wish to wish the wish you wish to wish, but if you wish the wish the witch wishes, I won’t wish the wish you wish to wish.";
     
     // WOLF Fix: سحب الصورة رقم 36 من مسار GitHub المعتمد
-const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/271fa92ff48f501cfa46f4ee87b9cae57aef453f/data/tt/${ttNumber}.png`;    // ----------------------------------------------
-
+ const cacheBuster = new Date().getTime();
+    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/tt/${ttNumber}.png?v=${cacheBuster}`; 
     container.innerHTML = ''; 
     container.style.cssText = `
         height:100%; 

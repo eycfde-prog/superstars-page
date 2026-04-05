@@ -3,7 +3,7 @@
     if (!container) return;
 
     // --- Configuration (WOLF Automated Update) ---
-    const ttNumber = 2; 
+    const ttNumber = 20; 
     const ttSentence = "Each Easter Eddie eats eighty Easter eggs.";
     
     // WOLF Fix: سحب الصورة رقم 20 من مسار GitHub المعتمد

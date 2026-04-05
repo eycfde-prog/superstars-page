@@ -7,8 +7,7 @@
     const ttSentence = "Red lorry, Yellow lorry";
     
     // WOLF Fix: سحب الصورة رقم 6 تلقائياً من المسار المحدد
-    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/data/tt/${ttNumber}.png`;
-    // ----------------------------------------------
+const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/271fa92ff48f501cfa46f4ee87b9cae57aef453f/data/tt/${ttNumber}.png`;    // ----------------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `

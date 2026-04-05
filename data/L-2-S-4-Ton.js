@@ -15,17 +15,13 @@
         flex-direction:column; 
         align-items:center; 
         justify-content:center; 
-        background:#050505; 
+        background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%); 
         color:#fff; 
         overflow:hidden; 
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Poppins', 'Segoe UI', sans-serif;
         padding: 20px;
     `;
 
-    /**
-     * WOLF Fix: معالجة النصوص باستخدام Regex موحد 
-     * لضمان عدم تداخل وسوم الـ HTML أثناء الاستبدال
-     */
     const highlightedSentence = ttSentence.replace(/sh|s/gi, (matched) => {
         if (matched.toLowerCase() === 'sh') {
             return `<span class="sh-sound">${matched}</span>`;
@@ -35,80 +31,106 @@
 
     container.innerHTML = `
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+
             .tt-wrapper { 
                 width:95%; 
-                max-width:900px; 
+                max-width:800px; 
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+                animation: slideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1); 
             }
             
             .tt-badge { 
-                background:#c5a059; color:#000; display:inline-block; 
-                padding:5px 25px; font-weight:900; border-radius:4px; 
-                margin-bottom:20px; font-size:1rem; 
-                letter-spacing:3px; text-transform:uppercase; 
+                background: linear-gradient(90deg, #ff0080, #7928ca);
+                color:#fff; 
+                display:inline-block; 
+                padding:8px 30px; 
+                font-weight:900; 
+                border-radius:50px; 
+                margin-bottom:30px; 
+                font-size:0.9rem; 
+                letter-spacing:2px; 
+                text-transform:uppercase; 
+                box-shadow: 0 10px 20px rgba(121, 40, 202, 0.3);
             }
 
             .tt-image-container { 
-                width: 200px; height: 200px; 
-                margin: 0 auto 25px; border-radius:25px; 
-                border:3px solid #222; overflow:hidden; position:relative;
-                box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-                transform: rotate(-2deg);
+                width: 180px; height: 180px; 
+                margin: 0 auto 30px; 
+                border-radius:50%; 
+                padding: 10px;
+                background: rgba(255,255,255,0.05);
+                border: 2px dashed rgba(255,255,255,0.2);
+                position:relative;
+                transition: transform 0.3s ease;
+            }
+            .tt-image-container:hover { transform: rotate(5deg) scale(1.05); }
+
+            .tt-image-container img {
+                width:100%; height:100%; object-fit:cover; border-radius:50%;
             }
 
             .tt-text-card { 
-                background: #111; 
-                padding: 40px; 
-                border-radius:25px; 
-                border: 1px solid #222; 
+                background: rgba(255, 255, 255, 0.03); 
+                backdrop-filter: blur(15px);
+                padding: 50px 40px; 
+                border-radius:30px; 
+                border: 1px solid rgba(255, 255, 255, 0.1); 
                 position:relative; 
-                box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+                box-shadow: 0 25px 50px rgba(0,0,0,0.3);
                 width: 100%;
                 text-align: center;
             }
 
             .tt-quote { 
-                font-size: 2.8rem; 
-                line-height: 1.4; 
-                font-weight: 900; 
-                color:#fff; 
+                font-size: 2.5rem; 
+                line-height: 1.3; 
+                font-weight: 700; 
+                color:#ffffff; 
                 margin:0; 
+                text-shadow: 0 5px 15px rgba(0,0,0,0.5);
             }
             
-            /* ألوان التمييز */
-            .sh-sound { color: #e74c3c; text-decoration: underline; text-underline-offset: 5px; }
-            .s-sound { color: #c5a059; }
+            .sh-sound { color: #00f2fe; text-shadow: 0 0 10px rgba(0, 242, 254, 0.5); }
+            .s-sound { color: #f9d423; text-shadow: 0 0 10px rgba(249, 212, 35, 0.5); }
 
             .tt-instruction { 
-                margin-top:25px; 
-                color:#555; 
-                font-size:1rem; 
-                letter-spacing:3px; 
+                margin-top:35px; 
+                color: rgba(255,255,255,0.5); 
+                font-size:0.85rem; 
+                letter-spacing:4px; 
                 font-weight:bold; 
                 text-transform: uppercase;
+                animation: pulse 2s infinite;
             }
             
-            /* تصغير الأحجام في حالة الشاشات الصغيرة لتناسب الفريم */
-            @media (max-height: 750px) {
-                .tt-quote { font-size: 2.2rem; }
-                .tt-image-container { width: 150px; height: 150px; }
-                .tt-text-card { padding: 25px; }
+            /* Mobile Optimization */
+            @media (max-width: 600px) {
+                .tt-quote { font-size: 1.8rem; }
+                .tt-image-container { width: 130px; height: 130px; }
+                .tt-text-card { padding: 30px 20px; }
+                .tt-badge { font-size: 0.7rem; padding: 6px 20px; }
             }
 
-            @keyframes bounceIn {
-                from { opacity:0; transform: scale(0.9) translateY(30px); }
-                to { opacity:1; transform: scale(1) translateY(0); }
+            @keyframes slideUp {
+                from { opacity:0; transform: translateY(40px); }
+                to { opacity:1; transform: translateY(0); }
+            }
+
+            @keyframes pulse {
+                0% { opacity: 0.4; }
+                50% { opacity: 1; }
+                100% { opacity: 0.4; }
             }
         </style>
 
         <div class="tt-wrapper">
-            <div class="tt-badge">Tongue Twister #${ttNumber}</div>
+            <div class="tt-badge">Level #${ttNumber} ✨</div>
             
             <div class="tt-image-container">
-                <img src="data/t-t/${ttNumber}.png" onerror="this.src='https://via.placeholder.com/400?text=VETO+TWISTER'" style="width:100%; height:100%; object-fit:cover;">
+                <img src="data/t-t/${ttNumber}.png" onerror="this.src='https://via.placeholder.com/400?text=FUN+TIME'" alt="Twister Image">
             </div>
 
             <div class="tt-text-card">
@@ -116,7 +138,7 @@
             </div>
 
             <div class="tt-instruction">
-                ⚡ Repeat 3 times as fast as you can ⚡
+                ⚡ Repeat 3 times • Speak Fast ⚡
             </div>
         </div>
     `;

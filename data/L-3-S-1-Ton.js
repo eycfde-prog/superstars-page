@@ -1,14 +1,14 @@
-
 (function() {
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- Configuration ---
+    // --- Configuration (WOLF Automated Update) ---
     const ttNumber = 2; 
     const ttSentence = "Two toads totally tired.";
-    // WOLF Fix: استخدام الرابط المباشر (Raw) من GitHub
-    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/67dc8f3c83b25908266b0774f5a3438b6b60cb28/data/tt/${ttNumber}.png`;
-    // ---------------------
+    
+    // WOLF Fix: سحب الصورة رقم 2 تلقائياً من GitHub
+    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/eed8fe3da193266cc21f1dc2f5264e4079306001/data/tt/${ttNumber}.png`;
+    // ----------------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -36,11 +36,12 @@
         document.head.appendChild(link);
     }
 
-    const highlightedSentence = ttSentence.replace(/sh|s/gi, (matched) => {
-        if (matched.toLowerCase() === 'sh') {
-            return `<span class="sh-sound">${matched}</span>`;
+    // WOLF Logic: تلوين الحروف المهمة (T و D) لهذه الجملة خصيصاً
+    const highlightedSentence = ttSentence.replace(/t|d/gi, (matched) => {
+        if (matched.toLowerCase() === 't') {
+            return `<span class="t-sound">${matched}</span>`;
         }
-        return `<span class="s-sound">${matched}</span>`;
+        return `<span class="d-sound">${matched}</span>`;
     });
 
     container.innerHTML = `
@@ -55,7 +56,7 @@
             }
             
             .tt-badge { 
-                background: linear-gradient(45deg, #ff00cc, #3333ff);
+                background: linear-gradient(45deg, #00fff2, #3333ff);
                 color:#fff;
                 display:inline-block; 
                 padding:8px 30px;
@@ -65,7 +66,7 @@
                 font-size:1.1rem; 
                 letter-spacing:2px;
                 text-transform:uppercase; 
-                box-shadow: 0 5px 15px rgba(255, 0, 204, 0.3);
+                box-shadow: 0 5px 15px rgba(0, 255, 242, 0.3);
             }
 
             .tt-main-card {
@@ -87,63 +88,40 @@
             .tt-text-section { 
                 flex: 1;
                 text-align: left;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
             }
 
             .tt-quote { 
-                font-size: 3rem; 
-                line-height: 1.3; 
+                font-size: 3.5rem; 
+                line-height: 1.2; 
                 font-weight: 900; 
                 color:#fff; 
                 margin:0 0 20px 0;
-                text-shadow: 0 2px 10px rgba(0,0,0,0.2);
             }
             
-            .sh-sound { color: #00fff2; text-shadow: 0 0 10px rgba(0, 255, 242, 0.5); }
-            .s-sound { color: #ff00cc; text-shadow: 0 0 10px rgba(255, 0, 204, 0.5); }
+            /* ألوان الحروف المهمة */
+            .t-sound { color: #ff00cc; text-shadow: 0 0 15px rgba(255, 0, 204, 0.6); }
+            .d-sound { color: #00fff2; text-shadow: 0 0 15px rgba(0, 255, 242, 0.6); }
 
             .tt-instruction { 
-                color:#888; 
-                font-size:1rem; 
-                letter-spacing:1px; 
+                color:#aaa; 
+                font-size:1.1rem; 
                 font-weight:600; 
-                margin: 0;
+                border-left: 4px solid #ff00cc;
+                padding-left: 15px;
             }
 
             .tt-image-container { 
-                width: 300px;
-                height: 300px; 
-                border-radius: 20px; 
+                width: 320px;
+                height: 320px; 
+                border-radius: 25px; 
                 border: 2px solid rgba(255,255,255,0.1);
                 overflow: hidden;
-                position: relative;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                flex-shrink: 0;
-            }
-
-            @media (max-width: 900px) {
-                .tt-main-card { padding: 30px; gap: 30px; }
-                .tt-quote { font-size: 2.2rem; }
-                .tt-image-container { width: 220px; height: 220px; }
-            }
-
-            @media (max-width: 600px) {
-                .tt-main-card { 
-                    flex-direction: column-reverse; 
-                    text-align: center;
-                    padding: 25px;
-                    gap: 20px;
-                }
-                .tt-text-section { text-align: center; }
-                .tt-quote { font-size: 1.8rem; }
-                .tt-image-container { width: 180px; height: 180px; }
+                box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             }
 
             @keyframes glassIn {
-                from { opacity:0; transform: translateY(20px) scale(0.95); filter: blur(10px); }
-                to { opacity:1; transform: translateY(0) scale(1); filter: blur(0); }
+                from { opacity:0; transform: scale(0.9); }
+                to { opacity:1; transform: scale(1); }
             }
         </style>
 
@@ -154,12 +132,12 @@
                 <div class="tt-text-section">
                     <p class="tt-quote">${highlightedSentence}</p>
                     <p class="tt-instruction">
-                        ⚡ Repeat 3 times as fast as you can ⚡
+                        ⚡ Say it fast 3 times! ⚡
                     </p>
                 </div>
 
                 <div class="tt-image-container">
-                    <img src="${imageUrl}" onerror="this.src='https://via.placeholder.com/400/160033/ffffff?text=VETO+TWISTER'" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="${imageUrl}" onerror="this.src='https://via.placeholder.com/400/160033/ffffff?text=TOADS'" style="width:100%; height:100%; object-fit:cover;">
                 </div>
             </div>
         </div>

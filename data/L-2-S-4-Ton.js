@@ -5,6 +5,8 @@
     // --- Configuration ---
     const ttNumber = 1; 
     const ttSentence = "She sells sea shells by the sea shore, the shells she sells are shells I'm sure.";
+    // WOLF Fix: استخدام الرابط المباشر (Raw) من GitHub
+    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/67dc8f3c83b25908266b0774f5a3438b6b60cb28/data/tt/${ttNumber}.png`;
     // ---------------------
 
     container.innerHTML = ''; 
@@ -25,7 +27,6 @@
         padding: 20px;
     `;
 
-    // إضافة خطوط Poppins من Google Fonts لمظهر عصري
     if (!document.getElementById('glassy-fonts')) {
         const link = document.createElement('link');
         link.id = 'glassy-fonts';
@@ -34,10 +35,6 @@
         document.head.appendChild(link);
     }
 
-    /**
-     * WOLF Fix: معالجة النصوص باستخدام Regex موحد 
-     * لضمان عدم تداخل وسوم الـ HTML أثناء الاستبدال
-     */
     const highlightedSentence = ttSentence.replace(/sh|s/gi, (matched) => {
         if (matched.toLowerCase() === 'sh') {
             return `<span class="sh-sound">${matched}</span>`;
@@ -70,7 +67,6 @@
                 box-shadow: 0 5px 15px rgba(255, 0, 204, 0.3);
             }
 
-            /* تصميم الكارت الزجاجي الجديد (Row Layout) */
             .tt-main-card {
                 display: flex;
                 flex-direction: row;
@@ -87,20 +83,6 @@
                 overflow: hidden;
             }
 
-            /* تأثير لمعان زجاجي خلفي */
-            .tt-main-card::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                left: -50%;
-                width: 100%;
-                height: 100%;
-                background: rgba(255, 255, 255, 0.02);
-                transform: rotate(45deg);
-                pointer-events: none;
-            }
-
-            /* قسم النص على الشمال */
             .tt-text-section { 
                 flex: 1;
                 text-align: left;
@@ -118,15 +100,8 @@
                 text-shadow: 0 2px 10px rgba(0,0,0,0.2);
             }
             
-            /* ألوان التمييز الروش */
-            .sh-sound { 
-                color: #00fff2;
-                text-shadow: 0 0 10px rgba(0, 255, 242, 0.5);
-            }
-            .s-sound { 
-                color: #ff00cc;
-                text-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
-            }
+            .sh-sound { color: #00fff2; text-shadow: 0 0 10px rgba(0, 255, 242, 0.5); }
+            .s-sound { color: #ff00cc; text-shadow: 0 0 10px rgba(255, 0, 204, 0.5); }
 
             .tt-instruction { 
                 color:#888; 
@@ -136,7 +111,6 @@
                 margin: 0;
             }
 
-            /* قسم الصورة على اليمين */
             .tt-image-container { 
                 width: 300px;
                 height: 300px; 
@@ -145,32 +119,25 @@
                 overflow: hidden;
                 position: relative;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                flex-shrink: 0; /* منع الصورة من الانضغاط */
+                flex-shrink: 0;
             }
 
-            
-            /* -- Mobile First & Responsiveness -- */
-            
-            /* تابلت وشاشات متوسطة */
             @media (max-width: 900px) {
                 .tt-main-card { padding: 30px; gap: 30px; }
                 .tt-quote { font-size: 2.2rem; }
                 .tt-image-container { width: 220px; height: 220px; }
             }
 
-            /* موبايل فيو (تحويل الصف لعمود لراحة العين) */
             @media (max-width: 600px) {
-                container { padding: 10px; }
                 .tt-main-card { 
-                    flex-direction: column-reverse; /* الصورة فوق الكلام في الموبايل */
+                    flex-direction: column-reverse; 
                     text-align: center;
                     padding: 25px;
                     gap: 20px;
                 }
                 .tt-text-section { text-align: center; }
-                .tt-quote { font-size: 1.8rem; margin-bottom: 15px; }
+                .tt-quote { font-size: 1.8rem; }
                 .tt-image-container { width: 180px; height: 180px; }
-                .tt-badge { font-size: 0.9rem; padding: 6px 20px; margin-bottom: 20px;}
             }
 
             @keyframes glassIn {
@@ -191,13 +158,12 @@
                 </div>
 
                 <div class="tt-image-container">
-                    <img src="data/t-t/${ttNumber}.png" onerror="this.src='https://via.placeholder.com/400/160033/ffffff?text=VETO+TWISTER'" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="${imageUrl}" onerror="this.src='https://via.placeholder.com/400/160033/ffffff?text=VETO+TWISTER'" style="width:100%; height:100%; object-fit:cover;">
                 </div>
             </div>
         </div>
     `;
 
-    // نظام التحكم (Space Bar)
     document.onkeydown = (e) => {
         if (e.code === "Space") { 
             e.preventDefault();

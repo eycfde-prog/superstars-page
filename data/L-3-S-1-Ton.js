@@ -4,8 +4,8 @@
     if (!container) return;
 
     // --- Configuration ---
-    const ttNumber = 1; 
-    const ttSentence = "She sells sea shells by the sea shore, the shells she sells are shells I'm sure.";
+    const ttNumber = 2; 
+    const ttSentence = "Two toads totally tired.";
     // WOLF Fix: استخدام الرابط المباشر (Raw) من GitHub
     const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/67dc8f3c83b25908266b0774f5a3438b6b60cb28/data/tt/${ttNumber}.png`;
     // ---------------------

@@ -7,8 +7,8 @@
     const ttSentence = "She sells sea shells, by the seashore, the shells she sells are shells I’m sure.";
     
     // WOLF Fix: سحب الصورة رقم 35 من مسار GitHub المعتمد
-const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/271fa92ff48f501cfa46f4ee87b9cae57aef453f/data/tt/${ttNumber}.png`;    // ----------------------------------------------
-
+ const cacheBuster = new Date().getTime();
+    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/tt/${ttNumber}.png?v=${cacheBuster}`; 
     container.innerHTML = ''; 
     container.style.cssText = `
         height:100%; 

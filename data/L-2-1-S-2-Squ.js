@@ -3,88 +3,74 @@
     if (!container) return;
 
     const questions = [
-        "Do you speak English every day?", "Does your father work in an office?", "Do lions eat grass?",
-        "Does it rain in the desert?", "Do we have a lesson tomorrow?", "Does your mother cook delicious food?",
-        "Do cats like swimming?", "Does the sun rise in the morning?", "Do you live in a big house?",
-        "Does a supermarket sell shoes?", "Do your friends play video games?", "Does fish breathe underwater?",
-        "Do you want to be a doctor?", "Does your phone have a camera?", "Do birds fly in the sky?",
-        "Does 2 + 2 equal 5?", "Do cows produce milk?", "Does a pilot fly a plane?",
-        "Do you drink coffee in the morning?", "Does your best friend speak French?", "Do children like chocolate?",
-        "Does the moon shine during the day?", "Do you understand the lesson?", "Does a spider have six legs?",
-        "Do people wear coats in summer?", "Does a mechanic fix cars?", "Do you sleep early?",
-        "Does water boil at 100°C?", "Do we need oxygen to breathe?", "Does a clock tell the time?"
+        "Will you travel abroad next year?", "Would you like a cup of coffee?", "Will it rain tomorrow?",
+        "Would you live on the moon if you could?", "Will robots replace teachers in the future?", "Would you help a stranger in need?",
+        "Will you be famous one day?", "Would you buy a Ferrari if you were rich?", "Will your friends come to the party?",
+        "Would you eat insects for a million dollars?", "Will you finish your homework tonight?", "Would you prefer to be invisible?",
+        "Will the sun rise at 6 AM tomorrow?", "Would you like to meet a famous person?", "Will people live on Mars in 2050?",
+        "Would you go to the party if I invited you?", "Will you study English next weekend?", "Would you stay up late for a movie?",
+        "Will the prices go down next month?", "Would you travel back in time if possible?", "Will you open the door for me, please?",
+        "Would you rather have tea than juice?", "Will your father be at work tomorrow?", "Would you change your name if you could?",
+        "Will you be 30 years old next year?", "Would you like to be a millionaire?", "Will the movie start on time?",
+        "Would you mind helping me with this?", "Will we use flying cars soon?", "Would you forgive a friend who lied?"
     ];
 
     let currentIdx = 0;
     let countdownInterval = null;
-    const folderNumber = 2; 
+    const folderNumber = 4;
 
     container.innerHTML = '';
-    container.style.cssText = `height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#050505; color:#fff; font-family: 'Inter', sans-serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#010409; color:#00f2ff; font-family: 'Courier New', monospace; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            .sq-counter { position:absolute; top:40px; left:60px; font-size:1.2rem; color:#444; font-weight:900; letter-spacing:3px; }
-            .sq-indicator { position:absolute; top:40px; right:60px; font-size:1.1rem; border: 2px solid #e74c3c; padding:8px 25px; border-radius:30px; font-weight:bold; color: #e74c3c; }
-            
-            .sq-question { 
-                font-size:5rem; text-align:center; max-width:85%; line-height:1.1; font-weight:900; 
-                display:none; transition: 0.2s; text-transform: uppercase;
+            @keyframes pulseBorder {
+                0% { box-shadow: 0 0 10px #ff00ea; border-color: #ff00ea; }
+                50% { box-shadow: 0 0 30px #ff00ea; border-color: #fff; }
+                100% { box-shadow: 0 0 10px #ff00ea; border-color: #ff00ea; }
             }
-
-            .test-timer-wrap {
-                position: relative; width: 140px; height: 140px; margin-top: 50px; display: none;
-                justify-content: center; align-items: center;
+            .sq-counter { position:absolute; top:40px; left:50px; font-size:1.2rem; color:#ff00ea; font-weight:bold; letter-spacing:3px; }
+            .sq-indicator { position:absolute; top:40px; right:50px; font-size:1.1rem; color:#00f2ff; border: 1px solid #00f2ff; padding:8px 20px; }
+            .sq-question { font-size:5rem; text-align:center; max-width:85%; line-height:1.2; font-weight:900; display:none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+            .test-timer { 
+                font-size:4.5rem; color:#ff00ea; font-weight:900; margin-top:40px; 
+                width:120px; height:120px; border: 4px solid #ff00ea; border-radius:15px; 
+                display:none; align-items:center; justify-content:center; 
+                animation: pulseBorder 1s infinite;
             }
-
-            #sqTimerDisplay { font-size: 5rem; font-weight: 900; color: #f1c40f; z-index: 5; }
-
-            .go-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.98); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; }
+            .go-overlay { position:absolute; inset:0; background:#010409; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; }
             .go-btn { 
-                background:#e74c3c; color:white; border:none; padding:40px 120px; font-size:5rem; 
-                cursor:pointer; border-radius:25px; font-weight:900; box-shadow: 0 15px 0 #962d22; 
-                transition:0.1s; letter-spacing: -2px;
+                background:transparent; color:#ff00ea; border:3px solid #ff00ea; padding:30px 100px; 
+                font-size:3.5rem; cursor:pointer; font-weight:900; letter-spacing:10px;
+                transition:0.3s; box-shadow: 0 0 20px rgba(255, 0, 234, 0.3);
             }
-            .go-btn:active { transform:translateY(8px); box-shadow: 0 7px 0 #962d22; }
-            .highlight { color: #f1c40f; }
-            
-            @keyframes shake {
-                0% { transform: translate(1px, 1px) rotate(0deg); }
-                20% { transform: translate(-3px, 0px) rotate(-1deg); }
-                40% { transform: translate(3px, 2px) rotate(1deg); }
-                100% { transform: translate(1px, -1px) rotate(0deg); }
-            }
-            .urgent { color: #e74c3c !important; animation: shake 0.2s infinite; }
+            .go-btn:hover { background:#ff00ea; color:#000; box-shadow: 0 0 50px #ff00ea; }
+            .status-text { color:#444; margin-top:20px; letter-spacing:5px; font-size:0.9rem; }
         </style>
         
         <div class="go-overlay" id="goOverlay">
-            <h1 style="margin-bottom:50px; font-size:4rem; font-weight:900; letter-spacing:-2px;">SPEED TEST: <span class="highlight">DO / DOES</span></h1>
-            <button class="go-btn" id="startTestBtn">GO!</button>
+            <h1 style="margin-bottom:10px; font-size:1.5rem; letter-spacing:10px; color:#00f2ff;">PROTOCOL: SQUEEZER_04</h1>
+            <button class="go-btn" id="startBtn">RUN TEST</button>
+            <div class="status-text">WARNING: 2.0s AUTO-LIMIT ENABLED</div>
         </div>
 
-        <div class="sq-counter">SQUEEZER LEVEL 5 [ULTRA]</div>
-        <div class="sq-indicator">TIME LIMIT: <span class="highlight">2 SEC</span></div>
-        
-        <div id="sqQuestionDisplay" class="sq-question"></div>
-        
-        <div class="test-timer-wrap" id="timerWrap">
-            <div id="sqTimerDisplay">2</div>
-        </div>
-
-        <audio id="sqAudioPlayer"></audio>
+        <div class="sq-counter">SYSTEM: AUTO-SQUEEZER</div>
+        <div class="sq-indicator">MODE: WILL / WOULD</div>
+        <div id="sqDisplay" class="sq-question"></div>
+        <div id="sqTimer" class="test-timer">2</div>
+        <audio id="sqAudio"></audio>
     `;
 
-    const display = document.getElementById('sqQuestionDisplay');
-    const timerDisplay = document.getElementById('sqTimerDisplay');
-    const timerWrap = document.getElementById('timerWrap');
-    const audioPlayer = document.getElementById('sqAudioPlayer');
+    const display = document.getElementById('sqDisplay');
+    const timerDisplay = document.getElementById('sqTimer');
+    const audioPlayer = document.getElementById('sqAudio');
     const goOverlay = document.getElementById('goOverlay');
-    const startBtn = document.getElementById('startTestBtn');
+    const startBtn = document.getElementById('startBtn');
 
     function startTimer() {
         let timeLeft = 2;
         timerDisplay.innerText = timeLeft;
-        timerDisplay.classList.remove('urgent');
+        timerDisplay.style.color = "#ff00ea";
         
         if (countdownInterval) clearInterval(countdownInterval);
         
@@ -92,7 +78,7 @@
             timeLeft--;
             if (timeLeft >= 0) {
                 timerDisplay.innerText = timeLeft;
-                if (timeLeft === 0) timerDisplay.classList.add('urgent');
+                if (timeLeft === 0) timerDisplay.style.color = "#fff";
             } else {
                 clearInterval(countdownInterval);
                 nextQuestion();
@@ -106,16 +92,19 @@
             updateSlide(currentIdx);
         } else {
             clearInterval(countdownInterval);
-            display.innerText = "CHALLENGE COMPLETE!";
-            display.style.color = "#2ecc71";
-            timerWrap.style.display = "none";
+            display.innerText = "FUTURE MASTERED!";
+            display.style.color = "#ff00ea";
+            timerDisplay.style.display = "none";
         }
     }
 
     function updateSlide(index) {
+        display.style.filter = 'blur(15px)';
         display.style.opacity = '0';
+        
         setTimeout(() => {
             display.innerText = questions[index];
+            display.style.filter = 'blur(0)';
             display.style.opacity = '1';
             
             const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
@@ -123,7 +112,7 @@
             audioPlayer.play().catch(() => {});
             
             startTimer();
-        }, 50);
+        }, 200);
     }
 
     startBtn.onclick = () => {
@@ -131,9 +120,9 @@
         setTimeout(() => {
             goOverlay.style.display = 'none';
             display.style.display = 'block';
-            timerWrap.style.display = 'flex';
+            timerDisplay.style.display = 'flex';
             updateSlide(0);
-        }, 300);
+        }, 500);
     };
 
 })();

@@ -15,13 +15,29 @@
         flex-direction:column; 
         align-items:center; 
         justify-content:center; 
-        background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%); 
+        background-color: #0c001c;
+        background-image: 
+            radial-gradient(at 10% 10%, rgba(122, 69, 212, 0.2) 0px, transparent 50%),
+            radial-gradient(at 90% 90%, rgba(210, 69, 166, 0.15) 0px, transparent 50%);
         color:#fff; 
         overflow:hidden; 
         font-family: 'Poppins', 'Segoe UI', sans-serif;
         padding: 20px;
     `;
 
+    // إضافة خطوط Poppins من Google Fonts لمظهر عصري
+    if (!document.getElementById('glassy-fonts')) {
+        const link = document.createElement('link');
+        link.id = 'glassy-fonts';
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap';
+        document.head.appendChild(link);
+    }
+
+    /**
+     * WOLF Fix: معالجة النصوص باستخدام Regex موحد 
+     * لضمان عدم تداخل وسوم الـ HTML أثناء الاستبدال
+     */
     const highlightedSentence = ttSentence.replace(/sh|s/gi, (matched) => {
         if (matched.toLowerCase() === 'sh') {
             return `<span class="sh-sound">${matched}</span>`;
@@ -31,114 +47,152 @@
 
     container.innerHTML = `
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
-
             .tt-wrapper { 
                 width:95%; 
-                max-width:800px; 
+                max-width:1000px; 
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                animation: slideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1); 
+                animation: glassIn 1s ease-out; 
             }
             
             .tt-badge { 
-                background: linear-gradient(90deg, #ff0080, #7928ca);
-                color:#fff; 
+                background: linear-gradient(45deg, #ff00cc, #3333ff);
+                color:#fff;
                 display:inline-block; 
-                padding:8px 30px; 
-                font-weight:900; 
+                padding:8px 30px;
+                font-weight:800;
                 border-radius:50px; 
-                margin-bottom:30px; 
-                font-size:0.9rem; 
-                letter-spacing:2px; 
+                margin-bottom:30px;
+                font-size:1.1rem; 
+                letter-spacing:2px;
                 text-transform:uppercase; 
-                box-shadow: 0 10px 20px rgba(121, 40, 202, 0.3);
+                box-shadow: 0 5px 15px rgba(255, 0, 204, 0.3);
             }
 
-            .tt-image-container { 
-                width: 180px; height: 180px; 
-                margin: 0 auto 30px; 
-                border-radius:50%; 
-                padding: 10px;
-                background: rgba(255,255,255,0.05);
-                border: 2px dashed rgba(255,255,255,0.2);
-                position:relative;
-                transition: transform 0.3s ease;
-            }
-            .tt-image-container:hover { transform: rotate(5deg) scale(1.05); }
-
-            .tt-image-container img {
-                width:100%; height:100%; object-fit:cover; border-radius:50%;
-            }
-
-            .tt-text-card { 
-                background: rgba(255, 255, 255, 0.03); 
-                backdrop-filter: blur(15px);
-                padding: 50px 40px; 
-                border-radius:30px; 
-                border: 1px solid rgba(255, 255, 255, 0.1); 
-                position:relative; 
-                box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            /* تصميم الكارت الزجاجي الجديد (Row Layout) */
+            .tt-main-card {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                background: rgba(255, 255, 255, 0.03);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 30px;
+                padding: 40px;
                 width: 100%;
-                text-align: center;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+                gap: 40px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            /* تأثير لمعان زجاجي خلفي */
+            .tt-main-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.02);
+                transform: rotate(45deg);
+                pointer-events: none;
+            }
+
+            /* قسم النص على الشمال */
+            .tt-text-section { 
+                flex: 1;
+                text-align: left;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
             }
 
             .tt-quote { 
-                font-size: 2.5rem; 
+                font-size: 3rem; 
                 line-height: 1.3; 
-                font-weight: 700; 
-                color:#ffffff; 
-                margin:0; 
-                text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+                font-weight: 900; 
+                color:#fff; 
+                margin:0 0 20px 0;
+                text-shadow: 0 2px 10px rgba(0,0,0,0.2);
             }
             
-            .sh-sound { color: #00f2fe; text-shadow: 0 0 10px rgba(0, 242, 254, 0.5); }
-            .s-sound { color: #f9d423; text-shadow: 0 0 10px rgba(249, 212, 35, 0.5); }
+            /* ألوان التمييز الروش */
+            .sh-sound { 
+                color: #00fff2;
+                text-shadow: 0 0 10px rgba(0, 255, 242, 0.5);
+            }
+            .s-sound { 
+                color: #ff00cc;
+                text-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
+            }
 
             .tt-instruction { 
-                margin-top:35px; 
-                color: rgba(255,255,255,0.5); 
-                font-size:0.85rem; 
-                letter-spacing:4px; 
-                font-weight:bold; 
-                text-transform: uppercase;
-                animation: pulse 2s infinite;
+                color:#888; 
+                font-size:1rem; 
+                letter-spacing:1px; 
+                font-weight:600; 
+                margin: 0;
             }
+
+            /* قسم الصورة على اليمين */
+            .tt-image-container { 
+                width: 300px;
+                height: 300px; 
+                border-radius: 20px; 
+                border: 2px solid rgba(255,255,255,0.1);
+                overflow: hidden;
+                position: relative;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                flex-shrink: 0; /* منع الصورة من الانضغاط */
+            }
+
             
-            /* Mobile Optimization */
+            /* -- Mobile First & Responsiveness -- */
+            
+            /* تابلت وشاشات متوسطة */
+            @media (max-width: 900px) {
+                .tt-main-card { padding: 30px; gap: 30px; }
+                .tt-quote { font-size: 2.2rem; }
+                .tt-image-container { width: 220px; height: 220px; }
+            }
+
+            /* موبايل فيو (تحويل الصف لعمود لراحة العين) */
             @media (max-width: 600px) {
-                .tt-quote { font-size: 1.8rem; }
-                .tt-image-container { width: 130px; height: 130px; }
-                .tt-text-card { padding: 30px 20px; }
-                .tt-badge { font-size: 0.7rem; padding: 6px 20px; }
+                container { padding: 10px; }
+                .tt-main-card { 
+                    flex-direction: column-reverse; /* الصورة فوق الكلام في الموبايل */
+                    text-align: center;
+                    padding: 25px;
+                    gap: 20px;
+                }
+                .tt-text-section { text-align: center; }
+                .tt-quote { font-size: 1.8rem; margin-bottom: 15px; }
+                .tt-image-container { width: 180px; height: 180px; }
+                .tt-badge { font-size: 0.9rem; padding: 6px 20px; margin-bottom: 20px;}
             }
 
-            @keyframes slideUp {
-                from { opacity:0; transform: translateY(40px); }
-                to { opacity:1; transform: translateY(0); }
-            }
-
-            @keyframes pulse {
-                0% { opacity: 0.4; }
-                50% { opacity: 1; }
-                100% { opacity: 0.4; }
+            @keyframes glassIn {
+                from { opacity:0; transform: translateY(20px) scale(0.95); filter: blur(10px); }
+                to { opacity:1; transform: translateY(0) scale(1); filter: blur(0); }
             }
         </style>
 
         <div class="tt-wrapper">
-            <div class="tt-badge">Level #${ttNumber} ✨</div>
+            <div class="tt-badge">Tongue Twister #${ttNumber}</div>
             
-            <div class="tt-image-container">
-                <img src="data/t-t/${ttNumber}.png" onerror="this.src='https://via.placeholder.com/400?text=FUN+TIME'" alt="Twister Image">
-            </div>
+            <div class="tt-main-card">
+                <div class="tt-text-section">
+                    <p class="tt-quote">${highlightedSentence}</p>
+                    <p class="tt-instruction">
+                        ⚡ Repeat 3 times as fast as you can ⚡
+                    </p>
+                </div>
 
-            <div class="tt-text-card">
-                <p class="tt-quote">${highlightedSentence}</p>
-            </div>
-
-            <div class="tt-instruction">
-                ⚡ Repeat 3 times • Speak Fast ⚡
+                <div class="tt-image-container">
+                    <img src="data/t-t/${ttNumber}.png" onerror="this.src='https://via.placeholder.com/400/160033/ffffff?text=VETO+TWISTER'" style="width:100%; height:100%; object-fit:cover;">
+                </div>
             </div>
         </div>
     `;

@@ -8,7 +8,6 @@
     // ---------------------
 
     container.innerHTML = ''; 
-    // تحسين الحاوية الأساسية لتجنب التمرير
     container.style.cssText = `
         height:100%; 
         width:100%; 
@@ -23,10 +22,16 @@
         padding: 20px;
     `;
 
-    // معالجة النص لتمييز حروف S و SH بصرياً
-    const highlightedSentence = ttSentence
-        .replace(/sh/gi, '<span class="sh-sound">sh</span>')
-        .replace(/s/gi, '<span class="s-sound">s</span>');
+    /**
+     * WOLF Fix: معالجة النصوص باستخدام Regex موحد 
+     * لضمان عدم تداخل وسوم الـ HTML أثناء الاستبدال
+     */
+    const highlightedSentence = ttSentence.replace(/sh|s/gi, (matched) => {
+        if (matched.toLowerCase() === 'sh') {
+            return `<span class="sh-sound">${matched}</span>`;
+        }
+        return `<span class="s-sound">${matched}</span>`;
+    });
 
     container.innerHTML = `
         <style>
@@ -41,68 +46,69 @@
             
             .tt-badge { 
                 background:#c5a059; color:#000; display:inline-block; 
-                padding:5px 20px; font-weight:900; border-radius:4px; 
-                margin-bottom:15px; font-size:1rem; 
-                letter-spacing:2px; text-transform:uppercase; 
+                padding:5px 25px; font-weight:900; border-radius:4px; 
+                margin-bottom:20px; font-size:1rem; 
+                letter-spacing:3px; text-transform:uppercase; 
             }
 
             .tt-image-container { 
-                width: 180px; height: 180px; /* حجم ثابت ومناسب للمساحة */
-                margin: 0 auto 20px; border-radius:20px; 
+                width: 200px; height: 200px; 
+                margin: 0 auto 25px; border-radius:25px; 
                 border:3px solid #222; overflow:hidden; position:relative;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.6);
                 transform: rotate(-2deg);
             }
 
             .tt-text-card { 
                 background: #111; 
-                padding: 30px 40px; 
-                border-radius:20px; 
+                padding: 40px; 
+                border-radius:25px; 
                 border: 1px solid #222; 
                 position:relative; 
-                box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+                box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
                 width: 100%;
+                text-align: center;
             }
 
             .tt-quote { 
-                font-size: 2.5rem; /* تم تصغير الخط ليناسب الفريم */
-                line-height: 1.3; 
+                font-size: 2.8rem; 
+                line-height: 1.4; 
                 font-weight: 900; 
                 color:#fff; 
                 margin:0; 
-                text-align:center;
             }
             
-            .sh-sound { color: #e74c3c; text-decoration: underline; }
+            /* ألوان التمييز */
+            .sh-sound { color: #e74c3c; text-decoration: underline; text-underline-offset: 5px; }
             .s-sound { color: #c5a059; }
 
             .tt-instruction { 
-                margin-top:20px; 
-                color:#666; 
-                font-size:0.9rem; 
-                letter-spacing:2px; 
+                margin-top:25px; 
+                color:#555; 
+                font-size:1rem; 
+                letter-spacing:3px; 
                 font-weight:bold; 
-                text-align:center;
+                text-transform: uppercase;
             }
             
-            /* تحسينات للشاشات الصغيرة أو الفريمات الضيقة */
-            @media (max-height: 600px) {
-                .tt-quote { font-size: 1.8rem; }
-                .tt-image-container { width: 120px; height: 120px; margin-bottom: 10px; }
-                .tt-text-card { padding: 20px; }
+            /* تصغير الأحجام في حالة الشاشات الصغيرة لتناسب الفريم */
+            @media (max-height: 750px) {
+                .tt-quote { font-size: 2.2rem; }
+                .tt-image-container { width: 150px; height: 150px; }
+                .tt-text-card { padding: 25px; }
             }
 
             @keyframes bounceIn {
-                from { opacity:0; transform: scale(0.9) translateY(20px); }
+                from { opacity:0; transform: scale(0.9) translateY(30px); }
                 to { opacity:1; transform: scale(1) translateY(0); }
             }
         </style>
 
         <div class="tt-wrapper">
-            <div class="tt-badge">Challenger #${ttNumber}</div>
+            <div class="tt-badge">Tongue Twister #${ttNumber}</div>
             
             <div class="tt-image-container">
-                <img src="data/t-t/${ttNumber}.png" onerror="this.src='https://via.placeholder.com/400?text=Twister'" style="width:100%; height:100%; object-fit:cover;">
+                <img src="data/t-t/${ttNumber}.png" onerror="this.src='https://via.placeholder.com/400?text=VETO+TWISTER'" style="width:100%; height:100%; object-fit:cover;">
             </div>
 
             <div class="tt-text-card">
@@ -110,14 +116,15 @@
             </div>
 
             <div class="tt-instruction">
-                ⚡ REPEAT 3 TIMES AS FAST AS YOU CAN ⚡
+                ⚡ Repeat 3 times as fast as you can ⚡
             </div>
         </div>
     `;
 
-    // إضافة تفاعل عند الضغط
+    // نظام التحكم (Space Bar)
     document.onkeydown = (e) => {
-        if (e.keyCode === 32) { // Space
+        if (e.code === "Space") { 
+            e.preventDefault();
             if(window.triggerVetoDone) window.triggerVetoDone();
         }
     };

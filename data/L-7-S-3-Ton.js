@@ -6,8 +6,10 @@
     const ttNumber = 20; 
     const ttSentence = "Each Easter Eddie eats eighty Easter eggs.";
     
-    // WOLF Fix: سحب الصورة رقم 20 من مسار GitHub المعتمد
-const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/271fa92ff48f501cfa46f4ee87b9cae57aef453f/data/tt/${ttNumber}.png`;    // ----------------------------------------------
+    // WOLF Fix: إضافة مفتاح عشوائي لمنع المتصفح من قراءة صور قديمة من الكاش
+    const cacheBuster = new Date().getTime();
+    const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/tt/${ttNumber}.png?v=${cacheBuster}`; 
+    // ----------------------------------------------
 
     container.innerHTML = ''; 
     container.style.cssText = `
@@ -35,7 +37,7 @@ const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/2
         document.head.appendChild(link);
     }
 
-    // WOLF Logic: تلوين حرف الـ E المهيمن في هذه الجملة "البيضاوية"
+    // WOLF Logic: تلوين حرف الـ E
     const highlightedSentence = ttSentence.replace(/e/gi, (matched) => {
         return `<span class="e-sound">${matched}</span>`;
     });
@@ -94,7 +96,6 @@ const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/2
                 margin:0 0 25px 0;
             }
             
-            /* اللون المتوهج لحرف الـ E */
             .e-sound { color: #bf00ff; text-shadow: 0 0 25px rgba(191, 0, 255, 0.9); }
 
             .tt-instruction { 
@@ -111,7 +112,7 @@ const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/2
             .tt-image-container { 
                 width: 380px;
                 height: 380px; 
-                border-radius: 50% 50% 40% 40%; /* شكل بيضاوي تقريبي */
+                border-radius: 50% 50% 40% 40%; 
                 border: 3px solid #bf00ff;
                 overflow: hidden;
                 box-shadow: 0 20px 50px rgba(191, 0, 255, 0.2);
@@ -135,7 +136,7 @@ const imageUrl = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/2
                 </div>
 
                 <div class="tt-image-container">
-                    <img src="${imageUrl}" onerror="this.src='https://via.placeholder.com/400/160033/ffffff?text=EASTER+EGGS'" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="${imageUrl}" onerror="this.src='https://via.placeholder.com/400/160033/ffffff?text=RELOADING...'" style="width:100%; height:100%; object-fit:cover;">
                 </div>
             </div>
         </div>

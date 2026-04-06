@@ -53,7 +53,7 @@
     let currentWish = 0;
 
     container.innerHTML = '';
-    container.style.cssText = `height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#020617; color:#fff; font-family: 'Inter', sans-serif; position:relative; overflow:hidden; transition: background 0.8s ease;`;
+    container.style.cssText = `height:100%; display:flex; flex-direction:column; align-items:center; background:#020617; color:#fff; font-family: 'Inter', sans-serif; position:relative; overflow:hidden; transition: background 0.8s ease; padding-top: 60px;`; // Padding top added for Exit button safety
 
     container.innerHTML = `
         <style>
@@ -62,10 +62,13 @@
             .wish-wrapper {
                 width: 90%;
                 max-width: 1000px;
+                height: 85%;
                 display: flex;
                 flex-direction: column;
+                justify-content: center;
                 align-items: center;
                 z-index: 10;
+                margin-top: 20px;
             }
 
             .main-card {
@@ -73,69 +76,75 @@
                 background: rgba(255, 255, 255, 0.03);
                 backdrop-filter: blur(15px);
                 border-radius: 40px;
-                padding: 50px;
+                padding: 40px;
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
                 position: relative;
                 transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
 
             .icon-circle {
-                width: 100px;
-                height: 100px;
+                width: 85px; /* Reduced for full screen safety */
+                height: 85px;
                 background: rgba(255,255,255,0.1);
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 3.5rem;
-                margin-bottom: 20px;
+                font-size: 3rem;
+                margin-bottom: 15px;
                 border: 2px solid transparent;
                 transition: 0.5s;
             }
 
             .wish-title {
                 font-family: 'Space Grotesk', sans-serif;
-                font-size: 4rem;
+                font-size: 3.5rem;
                 font-weight: 700;
-                margin-bottom: 20px;
+                margin-bottom: 15px;
                 letter-spacing: -1px;
+                text-align: center;
             }
 
             .wish-scenario {
-                font-size: 2.2rem;
-                line-height: 1.4;
+                font-size: 2rem;
+                line-height: 1.3;
                 color: #e2e8f0;
-                margin-bottom: 40px;
+                margin-bottom: 30px;
                 font-weight: 300;
-                max-width: 800px;
+                max-width: 850px;
                 opacity: 0.9;
+                text-align: center;
             }
 
             .points-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 20px;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 15px;
                 text-align: left;
                 width: 100%;
             }
 
             .point-item {
                 background: rgba(0, 0, 0, 0.2);
-                padding: 20px;
-                border-radius: 20px;
-                font-size: 1.6rem;
+                padding: 15px 20px;
+                border-radius: 15px;
+                font-size: 1.4rem;
                 border-left: 5px solid transparent;
                 transition: 0.3s;
+                color: #f1f5f9;
             }
 
             .point-item:hover {
-                transform: translateX(10px);
+                transform: translateX(8px);
                 background: rgba(255, 255, 255, 0.05);
             }
 
             .nav-container {
-                margin-top: 50px;
+                margin-top: 30px;
                 display: flex;
                 gap: 20px;
             }
@@ -144,19 +153,20 @@
                 background: rgba(255,255,255,0.1);
                 border: 1px solid rgba(255,255,255,0.2);
                 color: white;
-                padding: 15px 40px;
-                border-radius: 20px;
+                padding: 12px 35px;
+                border-radius: 15px;
                 cursor: pointer;
-                font-size: 1.4rem;
+                font-size: 1.2rem;
                 font-weight: 600;
                 transition: 0.3s;
                 text-transform: uppercase;
+                z-index: 9000; /* Above nav hotspots */
             }
 
             .nav-btn:hover:not(:disabled) {
                 background: white;
                 color: black;
-                transform: translateY(-5px);
+                transform: translateY(-3px);
             }
 
             .nav-btn:disabled {
@@ -166,12 +176,12 @@
 
             .floating-bg {
                 position: absolute;
-                width: 400px;
-                height: 400px;
+                width: 350px;
+                height: 350px;
                 border-radius: 50%;
                 filter: blur(80px);
                 z-index: 1;
-                opacity: 0.4;
+                opacity: 0.3;
                 transition: all 1s ease;
             }
         </style>
@@ -188,7 +198,7 @@
 
             <div class="nav-container">
                 <button class="nav-btn" id="prevBtn">Previous</button>
-                <button class="nav-btn" id="nextBtn">Next Mission</button>
+                <button class="nav-btn" id="nextBtn">Next Wish</button>
             </div>
         </div>
     `;
@@ -205,23 +215,22 @@
     function updateDisplay(index) {
         const data = wishes[index];
         
-        // Phase 1: Fade Out
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px) scale(0.98)';
         
         setTimeout(() => {
-            // Update Content
             title.innerText = data.title;
             icon.innerText = data.icon;
             scenario.innerText = data.scenario;
             
-            // Update Theme Colors
             container.style.background = data.theme;
             icon.style.borderColor = data.accent;
-            icon.style.boxShadow = `0 0 30px ${data.accent}44`;
+            icon.style.boxShadow = `0 0 25px ${data.accent}44`;
+            
             blob.style.background = data.accent;
-            blob.style.top = Math.random() * 50 + '%';
-            blob.style.left = Math.random() * 50 + '%';
+            blob.style.top = '30%';
+            blob.style.left = '50%';
+            blob.style.transform = 'translate(-50%, -50%)';
 
             pointsGrid.innerHTML = data.points.map(p => `
                 <div class="point-item" style="border-left-color: ${data.accent}">
@@ -229,7 +238,6 @@
                 </div>
             `).join('');
 
-            // Phase 2: Fade In
             card.style.opacity = '1';
             card.style.transform = 'translateY(0) scale(1)';
             
@@ -238,8 +246,12 @@
         }, 400);
     }
 
-    btnNext.onclick = () => { if (currentWish < wishes.length - 1) { currentWish++; updateDisplay(currentWish); } };
-    btnPrev.onclick = () => { if (currentWish > 0) { currentWish--; updateDisplay(currentWish); } };
+    // Connect global navigation functions for the hotspots
+    window.nextSlide = () => { if (currentWish < wishes.length - 1) { currentWish++; updateDisplay(currentWish); } };
+    window.prevSlide = () => { if (currentWish > 0) { currentWish--; updateDisplay(currentWish); } };
+
+    btnNext.onclick = window.nextSlide;
+    btnPrev.onclick = window.prevSlide;
 
     updateDisplay(0);
 })();

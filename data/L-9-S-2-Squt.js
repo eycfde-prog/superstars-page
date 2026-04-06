@@ -18,67 +18,85 @@
     let currentIdx = 0;
     let countdownInterval = null;
     const folderNumber = 4;
+    const timeLimit = 2; // ثانيتين لكل سؤال
 
     container.innerHTML = '';
-    container.style.cssText = `height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#010409; color:#00f2ff; font-family: 'Courier New', monospace; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:radial-gradient(circle, #0a192f 0%, #020c1b 100%); color:#e6f1ff; font-family: 'Segoe UI', sans-serif; position:relative; overflow:hidden;`;
 
     container.innerHTML = `
         <style>
-            @keyframes pulseBorder {
-                0% { box-shadow: 0 0 10px #ff00ea; border-color: #ff00ea; }
-                50% { box-shadow: 0 0 30px #ff00ea; border-color: #fff; }
-                100% { box-shadow: 0 0 10px #ff00ea; border-color: #ff00ea; }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            
+            .go-overlay { 
+                position:absolute; inset:0; background:rgba(2, 12, 27, 0.95); 
+                display:flex; flex-direction:column; justify-content:center; align-items:center; 
+                z-index:100; backdrop-filter: blur(10px); transition: 0.8s ease;
             }
-            .sq-counter { position:absolute; top:40px; left:50px; font-size:1.2rem; color:#ff00ea; font-weight:bold; letter-spacing:3px; }
-            .sq-indicator { position:absolute; top:40px; right:50px; font-size:1.1rem; color:#00f2ff; border: 1px solid #00f2ff; padding:8px 20px; }
-            .sq-question { font-size:5rem; text-align:center; max-width:85%; line-height:1.2; font-weight:900; display:none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-            .test-timer { 
-                font-size:4.5rem; color:#ff00ea; font-weight:900; margin-top:40px; 
-                width:120px; height:120px; border: 4px solid #ff00ea; border-radius:15px; 
-                display:none; align-items:center; justify-content:center; 
-                animation: pulseBorder 1s infinite;
-            }
-            .go-overlay { position:absolute; inset:0; background:#010409; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; }
             .go-btn { 
-                background:transparent; color:#ff00ea; border:3px solid #ff00ea; padding:30px 100px; 
-                font-size:3.5rem; cursor:pointer; font-weight:900; letter-spacing:10px;
-                transition:0.3s; box-shadow: 0 0 20px rgba(255, 0, 234, 0.3);
+                background:#64ffda; color:#0a192f; border:none; padding:25px 80px; 
+                font-size:2.5rem; cursor:pointer; border-radius:4px; font-weight:800; 
+                letter-spacing:5px; transition:0.3s; box-shadow: 0 10px 30px rgba(100, 255, 218, 0.2);
             }
-            .go-btn:hover { background:#ff00ea; color:#000; box-shadow: 0 0 50px #ff00ea; }
-            .status-text { color:#444; margin-top:20px; letter-spacing:5px; font-size:0.9rem; }
+            .go-btn:hover { background:#7fffdf; transform: scale(1.05); }
+
+            .sq-header-exam { position:absolute; top:50px; width:90%; display:flex; justify-content:space-between; align-items:center; }
+            .sq-badge { background:rgba(100, 255, 218, 0.1); color:#64ffda; padding:8px 20px; border-radius:4px; border:1px solid #64ffda; font-weight:bold; font-size:0.9rem; letter-spacing:2px; }
+
+            .sq-question { 
+                font-size:5.5rem; text-align:center; max-width:85%; line-height:1.2; 
+                font-weight:800; display:none; color:#ccd6f6;
+                animation: fadeIn 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            }
+            
+            .sq-timer-circle { 
+                width: 100px; height: 100px; border-radius: 50%; 
+                border: 4px solid rgba(100, 255, 218, 0.1); 
+                display: none; align-items: center; justify-content: center; 
+                font-size: 3rem; font-weight: 800; color: #64ffda; margin-top: 50px;
+                position: relative;
+            }
+            .sq-timer-circle::after {
+                content: ''; position: absolute; inset: -4px; border-radius: 50%;
+                border: 4px solid #64ffda; clip-path: polygon(50% 50%, -50% -50%, 150% -50%);
+                animation: timerRotate 2s linear infinite;
+            }
+            @keyframes timerRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         </style>
         
         <div class="go-overlay" id="goOverlay">
-            <h1 style="margin-bottom:10px; font-size:1.5rem; letter-spacing:10px; color:#00f2ff;">PROTOCOL: SQUEEZER_04</h1>
-            <button class="go-btn" id="startBtn">RUN TEST</button>
-            <div class="status-text">WARNING: 2.0s AUTO-LIMIT ENABLED</div>
+            <div style="color:#8892b0; letter-spacing:10px; margin-bottom:20px; font-size:1.2rem;">AUTO-PROTOCOL 04</div>
+            <button class="go-btn" id="startBtn">START TEST</button>
+            <div style="color:#64ffda; margin-top:25px; opacity:0.6;">SPEED LIMIT: 2.0s / Q</div>
         </div>
 
-        <div class="sq-counter">SYSTEM: AUTO-SQUEEZER</div>
-        <div class="sq-indicator">MODE: WILL / WOULD</div>
+        <div class="sq-header-exam">
+            <div class="sq-badge">EXAM MODE</div>
+            <div id="sqProgress" style="color:#8892b0; font-size:1.2rem; font-weight:bold;">01 / ${questions.length}</div>
+        </div>
+
         <div id="sqDisplay" class="sq-question"></div>
-        <div id="sqTimer" class="test-timer">2</div>
+        <div id="sqTimer" class="sq-timer-circle">${timeLimit}</div>
+        
         <audio id="sqAudio"></audio>
     `;
 
     const display = document.getElementById('sqDisplay');
-    const timerDisplay = document.getElementById('sqTimer');
-    const audioPlayer = document.getElementById('sqAudio');
+    const timerBox = document.getElementById('sqTimer');
+    const audio = document.getElementById('sqAudio');
     const goOverlay = document.getElementById('goOverlay');
     const startBtn = document.getElementById('startBtn');
+    const progressText = document.getElementById('sqProgress');
 
     function startTimer() {
-        let timeLeft = 2;
-        timerDisplay.innerText = timeLeft;
-        timerDisplay.style.color = "#ff00ea";
+        let timeLeft = timeLimit;
+        timerBox.innerText = timeLeft;
         
         if (countdownInterval) clearInterval(countdownInterval);
         
         countdownInterval = setInterval(() => {
             timeLeft--;
             if (timeLeft >= 0) {
-                timerDisplay.innerText = timeLeft;
-                if (timeLeft === 0) timerDisplay.style.color = "#fff";
+                timerBox.innerText = timeLeft;
             } else {
                 clearInterval(countdownInterval);
                 nextQuestion();
@@ -92,27 +110,27 @@
             updateSlide(currentIdx);
         } else {
             clearInterval(countdownInterval);
-            display.innerText = "FUTURE MASTERED!";
-            display.style.color = "#ff00ea";
-            timerDisplay.style.display = "none";
+            display.innerHTML = "TEST COMPLETE<br><span style='font-size:2.5rem; color:#64ffda; opacity:0.7;'>CORE MASTERED</span>";
+            timerBox.style.display = "none";
+            if(window.triggerVetoDone) window.triggerVetoDone();
         }
     }
 
     function updateSlide(index) {
-        display.style.filter = 'blur(15px)';
+        progressText.innerText = `${(index + 1).toString().padStart(2, '0')} / ${questions.length}`;
+        
         display.style.opacity = '0';
         
         setTimeout(() => {
             display.innerText = questions[index];
-            display.style.filter = 'blur(0)';
             display.style.opacity = '1';
             
             const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
-            audioPlayer.src = audioPath;
-            audioPlayer.play().catch(() => {});
+            audio.src = audioPath;
+            audio.play().catch(e => {});
             
             startTimer();
-        }, 200);
+        }, 100);
     }
 
     startBtn.onclick = () => {
@@ -120,9 +138,9 @@
         setTimeout(() => {
             goOverlay.style.display = 'none';
             display.style.display = 'block';
-            timerDisplay.style.display = 'flex';
+            timerBox.style.display = 'flex';
             updateSlide(0);
-        }, 500);
+        }, 600);
     };
 
 })();

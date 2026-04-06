@@ -2,12 +2,18 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // "Charly" Audit: Fixed Dropbox URL logic to point to the direct content stream.
-    // The previous '?raw=1' or '?dl=0' can sometimes be blocked or redirected by CORS policy in Web Apps.
-    // Switching to 'dl.dropboxusercontent.com' is the reliable "Bridge" for direct video streaming.
+    // "Charly" Audit: Fixed the connection bridge.
+    // New Dropbox 'scl/fi' links require 'rlkey' and 'st' to avoid 403 Forbidden.
+    // Changing 'dl=0' to 'raw=1' keeps the security tokens intact while forcing a direct stream.
     function fixDropboxLink(url) {
         if (url.includes('dropbox.com')) {
-            return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0];
+            let directUrl = url.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+            if (directUrl.includes('dl=0')) {
+                directUrl = directUrl.replace('dl=0', 'raw=1');
+            } else if (!directUrl.includes('raw=1')) {
+                directUrl += (directUrl.includes('?') ? '&' : '?') + 'raw=1';
+            }
+            return directUrl;
         }
         return url;
     }
@@ -111,7 +117,7 @@
         <div class="scanline"></div>
         <div class="grid-header">
             <h1>VIDEO GALLERY</h1>
-            <div style="color:#ff0000; font-weight:bold; letter-spacing:4px; animation: blink 1.2s infinite; font-size:1vw;">● SYSTEM ONLINE | DROPBOX STREAMING</div>
+            <div style="color:#ff0000; font-weight:bold; letter-spacing:4px; animation: blink 1.2s infinite; font-size:1vw;">● SYSTEM ONLINE | DROPBOX SECURE STREAM</div>
         </div>
         <div class="video-grid" id="videoGrid"></div>
     `;
@@ -129,16 +135,11 @@
         `;
 
         const vid = card.querySelector('video');
-        let isPlaying = false;
 
         card.onmouseenter = () => {
             const playPromise = vid.play();
             if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    isPlaying = true;
-                }).catch(() => {
-                    isPlaying = false;
-                });
+                playPromise.catch(() => {}); // Ignore abort errors
             }
         };
 
@@ -146,7 +147,6 @@
             const stopVideo = () => {
                 vid.pause();
                 vid.currentTime = 0;
-                isPlaying = false;
             };
 
             if (vid.readyState >= 2) { 

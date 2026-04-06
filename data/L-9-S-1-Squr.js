@@ -107,7 +107,7 @@
             progress.style.width = `${((index + 1) / questions.length) * 100}%`;
             
             // تشغيل الصوت
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
             audioPlayer.src = audioPath;
             audioPlayer.play().catch(() => {});
         }, 300);

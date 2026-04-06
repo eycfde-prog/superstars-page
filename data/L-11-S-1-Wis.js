@@ -53,19 +53,21 @@
     let currentWish = 0;
 
     container.innerHTML = '';
-    container.style.cssText = `height:100%; width:100%; display:flex; flex-direction:column; align-items:center; background:#050505; color:#fff; font-family: 'Segoe UI', sans-serif; position:relative; overflow:hidden; transition: background 1s ease; padding-top: 60px;`;
+    // WOLF FIX: تم إزالة padding-top واستخدام justify-content: center للتوسيط الرأسي المثالي
+    container.style.cssText = `height:100%; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#050505; color:#fff; font-family: 'Segoe UI', sans-serif; position:relative; overflow:hidden; transition: background 1s ease;`;
 
     container.innerHTML = `
         <style>
             .wish-wrapper {
-                width: 90%; max-width: 1050px; height: 85%;
+                width: 95%; max-width: 1000px; 
                 display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10;
+                padding: 20px;
             }
 
             .wish-box {
                 background: rgba(0, 0, 0, 0.7);
                 backdrop-filter: blur(15px);
-                width: 100%; padding: 50px; border-radius: 40px; 
+                width: 100%; padding: 40px; border-radius: 40px; 
                 border: 2px solid var(--accent-color);
                 box-shadow: 0 0 80px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,255,255,0.05);
                 text-align: center; position: relative;
@@ -74,51 +76,53 @@
 
             .wish-banner { 
                 background: var(--accent-color); color: #000; 
-                padding: 10px 45px; font-size: 1.6rem; font-weight: 900; 
-                text-transform: uppercase; position: absolute; top: -28px; 
+                padding: 8px 35px; font-size: 1.4rem; font-weight: 900; 
+                text-transform: uppercase; position: absolute; top: -25px; 
                 left: 50%; transform: translateX(-50%); border-radius: 50px; 
                 box-shadow: 0 10px 25px rgba(0,0,0,0.5); letter-spacing: 2px;
+                white-space: nowrap;
             }
 
-            .wish-icon { font-size: 4.5rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px var(--accent-color)); }
+            .wish-icon { font-size: 3.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px var(--accent-color)); }
 
             .wish-text { 
-                font-size: 2.3rem; line-height: 1.4; color: #fff; 
-                margin: 15px 0 35px 0; font-weight: 800;
+                font-size: 1.8rem; line-height: 1.3; color: #fff; 
+                margin: 10px 0 25px 0; font-weight: 800;
                 text-shadow: 0 4px 10px rgba(0,0,0,0.5);
             }
             
             .wish-grid { 
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 15px; width: 100%; text-align: left;
+                display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 12px; width: 100%; text-align: left;
             }
             
             .wish-item { 
-                background: rgba(255,255,255,0.03); padding: 18px 25px; border-radius: 20px;
-                font-size: 1.4rem; color: #eee; display: flex; align-items: center;
+                background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 15px;
+                font-size: 1.2rem; color: #eee; display: flex; align-items: center;
                 border-left: 4px solid var(--accent-color); transition: 0.3s;
             }
 
             .wish-item:hover { background: rgba(255,255,255,0.08); transform: translateX(10px); }
 
-            .magic-smoke { 
-                position: absolute; bottom: -10%; width: 100%; height: 40%;
-                background: radial-gradient(ellipse at center, var(--accent-color-alpha) 0%, transparent 70%); 
-                filter: blur(60px); z-index: 1; pointer-events: none;
-            }
-
-            .nav-ui { margin-top: 35px; display: flex; gap: 20px; z-index: 100; }
+            .nav-ui { margin-top: 25px; display: flex; gap: 20px; z-index: 100; }
             .v-btn {
                 background: transparent; color: var(--accent-color); border: 2px solid var(--accent-color);
-                padding: 12px 35px; border-radius: 12px; cursor: pointer;
-                font-weight: 900; font-size: 1.1rem; text-transform: uppercase; transition: 0.3s;
+                padding: 10px 30px; border-radius: 12px; cursor: pointer;
+                font-weight: 900; font-size: 1rem; text-transform: uppercase; transition: 0.3s;
             }
             .v-btn:hover:not(:disabled) { background: var(--accent-color); color: #000; }
             .v-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+            /* WOLF: Responsive Fix for Small Heights */
+            @media (max-height: 700px) {
+                .wish-box { padding: 25px; }
+                .wish-text { font-size: 1.4rem; margin-bottom: 15px; }
+                .wish-item { font-size: 1rem; padding: 10px 15px; }
+                .wish-icon { font-size: 2.5rem; }
+                .wish-banner { font-size: 1.1rem; top: -20px; }
+            }
         </style>
 
-        <div class="magic-smoke" id="smoke"></div>
-        
         <div class="wish-wrapper">
             <div class="wish-box" id="wishBox">
                 <div class="wish-banner" id="wishTitle"></div>
@@ -139,36 +143,32 @@
     const icon = document.getElementById('wishIcon');
     const scenario = document.getElementById('wishScenario');
     const grid = document.getElementById('wishGrid');
-    const smoke = document.getElementById('smoke');
     const btnN = document.getElementById('nBtn');
     const btnP = document.getElementById('pBtn');
 
     function updateWish(idx) {
         const d = wishes[idx];
         box.style.opacity = '0';
-        box.style.transform = 'scale(0.95)';
+        box.style.transform = 'translateY(20px)';
         
         setTimeout(() => {
             title.innerText = d.title;
             icon.innerText = d.icon;
             scenario.innerText = d.scenario;
             
-            // Set CSS Variables for Theme
             container.style.background = d.theme;
             box.style.setProperty('--accent-color', d.accent);
-            box.style.setProperty('--accent-color-alpha', d.accent + '33');
             
             grid.innerHTML = d.points.map(p => `<div class="wish-item">${p}</div>`).join('');
 
             box.style.opacity = '1';
-            box.style.transform = 'scale(1)';
+            box.style.transform = 'translateY(0)';
             
             btnP.disabled = idx === 0;
             btnN.disabled = idx === wishes.length - 1;
         }, 400);
     }
 
-    // Global navigation for VETO Frame hotspots
     window.nextSlide = () => { if (currentWish < wishes.length - 1) { currentWish++; updateWish(currentWish); } };
     window.prevSlide = () => { if (currentWish > 0) { currentWish--; updateWish(currentWish); } };
 
@@ -177,7 +177,6 @@
 
     updateWish(0);
 
-    // Support for Spacebar to finish activity
     document.onkeydown = (e) => {
         if (e.keyCode === 32) {
             if (window.triggerVetoDone) window.triggerVetoDone();

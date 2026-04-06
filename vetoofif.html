@@ -170,22 +170,37 @@
             let filePath = "";
             const nameUpper = activityName.toUpperCase();
 
-            // --- Logic for Routing Files ---
-            if (nameUpper.includes("WISH")) {
+            // --- Logic for Routing Files (UPDATED) ---
+            
+            // 1. PROJECT Logic
+            if (nameUpper.includes("PROJECT")) {
+                if (nameUpper.includes("TEST")) {
+                    console.log("Project Test is disabled.");
+                    alert("This Project Test is not available yet.");
+                    return; 
+                } else {
+                    filePath = `data/L-${lvl}-S-${sess}-Pro.js`;
+                }
+            }
+            // 2. WISH Logic
+            else if (nameUpper.includes("WISH")) {
                 if (nameUpper.includes("TEST")) {
                     alert("This Wish Test is not available yet.");
-                    return; // إيقاف الدالة تماماً
+                    return; 
                 } else {
                     filePath = `data/L-${lvl}-S-${sess}-Wis.js`;
                 }
             }
+            // 3. SQUEEZER Logic
             else if (nameUpper.includes("SQUEEZER")) {
                 const suffix = nameUpper.includes("TEST") ? "Squt" : "Squr";
                 filePath = `data/L-${lvl}-S-${sess}-${suffix}.js`;
             }
+            // 4. DMT Logic
             else if (nameUpper.includes("DMT")) {
                 filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-${lvl}-S-${sess}-DMT.js`;
             }
+            // 5. Other Handlers (Grammar, Vocab, etc.)
             else if (nameUpper.includes("GRAMMAR")) {
                 filePath = `data/L-1-${lvl}-S-${sess}-Gra.js`;
             } 
@@ -195,10 +210,6 @@
             }
             else if (nameUpper.includes("READING")) {
                 filePath = `data/L-${lvl}-S-${sess}-Rea.js`;
-            }
-            else if (nameUpper.includes("PROJECT")) {
-                const type = nameUpper.includes("TEST") ? "2" : "1";
-                filePath = `data/L-${type}-1-S-${sess}-Pro.js`;
             }
             else {
                 const prefix = activityName.split(' ')[0].substring(0, 3);
@@ -220,7 +231,7 @@
             document.head.appendChild(script);
         }
 
-        // --- UI Tools Logic ---
+        // --- UI & Interaction Tools ---
         function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
 
         function handleToolClick(btnId, action) {
@@ -266,7 +277,6 @@
             if (document.fullscreenElement) document.exitFullscreen();
         };
 
-        // --- Interaction Handlers ---
         function getCoords(e) {
             const t = e.touches ? e.touches[0] : e;
             return { x: t.clientX, y: t.clientY };
@@ -276,11 +286,8 @@
             if (!laserActive) return;
             isDrawing = true;
             const pos = getCoords(e);
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-            ctx.strokeStyle = '#ff0000';
-            ctx.lineWidth = 6;
-            ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(pos.x, pos.y);
+            ctx.strokeStyle = '#ff0000'; ctx.lineWidth = 6; ctx.lineCap = 'round';
             if (isMobile) laser.style.display = 'block';
             updateLaserPos(e);
         }
@@ -289,10 +296,7 @@
             if (!laserActive) return;
             const pos = getCoords(e);
             updateLaserPos(e);
-            if (isDrawing) {
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-            }
+            if (isDrawing) { ctx.lineTo(pos.x, pos.y); ctx.stroke(); }
         }
 
         function endAction() {

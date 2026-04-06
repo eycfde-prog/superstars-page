@@ -2,6 +2,9 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // "Charly" Audit: Fixed the connection bridge.
+    // New Dropbox 'scl/fi' links require 'rlkey' and 'st' to avoid 403 Forbidden.
+    // Changing 'dl=0' to 'raw=1' keeps the security tokens intact while forcing a direct stream.
     function fixDropboxLink(url) {
         if (url.includes('dropbox.com')) {
             let directUrl = url.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
@@ -134,39 +137,36 @@
         const vid = card.querySelector('video');
 
         card.onmouseenter = () => {
-            vid.play().catch(() => {}); 
+            const playPromise = vid.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {}); // Ignore abort errors
+            }
         };
 
         card.onmouseleave = () => {
-            if (vid.readyState >= 2) { 
+            const stopVideo = () => {
                 vid.pause();
                 vid.currentTime = 0;
+            };
+
+            if (vid.readyState >= 2) { 
+                stopVideo();
             } else {
                 vid.oncanplay = () => {
-                    vid.pause();
-                    vid.currentTime = 0;
+                    stopVideo();
                     vid.oncanplay = null;
                 };
             }
         };
 
-        // الإصلاح هنا: ترتيب العمليات لضمان عدم التجمد
-        card.onclick = async () => {
-            try {
-                vid.muted = false; // تفعيل الصوت أولاً
-                
-                // طلب الفول سكرين
-                if (vid.requestFullscreen) {
-                    await vid.requestFullscreen();
-                } else if (vid.webkitRequestFullscreen) {
-                    await vid.webkitRequestFullscreen();
-                }
-
-                // التأكد من التشغيل بعد دخول وضع الفول سكرين
-                vid.play();
-            } catch (err) {
-                console.error("Playback error:", err);
+        card.onclick = () => {
+            vid.muted = false; 
+            if (vid.requestFullscreen) {
+                vid.requestFullscreen();
+            } else if (vid.webkitRequestFullscreen) {
+                vid.webkitRequestFullscreen();
             }
+            vid.play();
         };
 
         grid.appendChild(card);
@@ -178,7 +178,6 @@
             allVideos.forEach(v => {
                 v.muted = true;
                 v.pause();
-                v.currentTime = 0;
             });
         }
     });

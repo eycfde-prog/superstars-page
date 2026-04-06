@@ -2,7 +2,15 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // مصفوفة الفيديوهات - ضيف روابط الفيديوهات هنا (mp4)
+    // دالة لتحويل روابط جوجل درايف لروابط مباشرة
+    function getDirectLink(url) {
+        if (url.includes('drive.google.com')) {
+            const fileId = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1]?.split('&')[0];
+            return `https://docs.google.com/uc?export=download&id=${fileId}`;
+        }
+        return url;
+    }
+
     const videos = [
         { id: 1, src: "https://drive.google.com/file/d/1EcME8uHrmHe57p3XQNuj0mxNV3q03cqh/view?usp=drive_link", title: "SCENE 01" },
         { id: 2, src: "LINK_2.mp4", title: "SCENE 02" },
@@ -18,7 +26,7 @@
 
     container.innerHTML = '';
     container.style.cssText = `
-        height:100%; width:100%; background:#000; 
+        height:100%; width:100%; background:#050505; 
         display:flex; flex-direction:column; align-items:center; justify-content:center;
         font-family: 'Inter', sans-serif; overflow:hidden; position:relative;
     `;
@@ -36,7 +44,7 @@
             }
             .video-card {
                 position: relative;
-                background: #111;
+                background: #000;
                 border: 2px solid #222;
                 border-radius: 8px;
                 overflow: hidden;
@@ -53,8 +61,9 @@
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-                opacity: 0.6;
+                opacity: 0.5;
                 transition: 0.3s;
+                pointer-events: none; /* عشان الضغط يروح للكارد نفسه */
             }
             .video-card:hover video {
                 opacity: 1;
@@ -69,7 +78,7 @@
                 font-size: 0.8vw;
                 font-weight: 900;
                 border-radius: 4px;
-                pointer-events: none;
+                z-index: 5;
             }
             .grid-header {
                 margin-bottom: 20px;
@@ -84,21 +93,20 @@
                 text-transform: uppercase;
                 font-weight: 900;
             }
-            /* Scanline Effect */
             .scanline {
                 position: absolute; inset: 0;
                 background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3) 51%);
                 background-size: 100% 4px;
                 pointer-events: none;
                 z-index: 30;
-                opacity: 0.2;
+                opacity: 0.1;
             }
         </style>
         
         <div class="scanline"></div>
         <div class="grid-header">
             <h1>CINEMATIC GALLERY</h1>
-            <div style="color:#ff0000; font-weight:bold; letter-spacing:3px; animation: blink 1s infinite;">● VIDEO MONITORING ACTIVE</div>
+            <div style="color:#ff0000; font-weight:bold; letter-spacing:3px; animation: blink 1s infinite;">● MONITORING SYSTEM ACTIVE</div>
         </div>
         <div class="video-grid" id="videoGrid"></div>
 
@@ -108,41 +116,41 @@
     const grid = document.getElementById('videoGrid');
 
     videos.forEach(v => {
+        const directSrc = getDirectLink(v.src);
         const card = document.createElement('div');
         card.className = 'video-card';
         card.innerHTML = `
-            <video muted loop playsinline src="${v.src}"></video>
+            <video muted loop playsinline crossorigin="anonymous" src="${directSrc}"></video>
             <div class="video-label">${v.title}</div>
         `;
 
-        // تشغيل الفيديو عند الوقوف عليه (Preview)
-        card.onmouseenter = () => card.querySelector('video').play();
+        const vid = card.querySelector('video');
+
+        // Preview عند الحوم بالماوس
+        card.onmouseenter = () => {
+            vid.play().catch(e => console.warn("Preview blocked"));
+        };
+        
         card.onmouseleave = () => {
-            const vid = card.querySelector('video');
             vid.pause();
             vid.currentTime = 0;
         };
 
-        // عند الضغط يشتغل فول سكرين بصوت
+        // Fullscreen عند الضغط
         card.onclick = () => {
-            const vid = card.querySelector('video');
-            vid.muted = false; // تشغيل الصوت عند التكبير
-            
+            vid.muted = false; 
             if (vid.requestFullscreen) {
                 vid.requestFullscreen();
             } else if (vid.webkitRequestFullscreen) {
-                vid.webkitRequestFullscreen(); // Safari
-            } else if (vid.msRequestFullscreen) {
-                vid.msRequestFullscreen(); // IE11
+                vid.webkitRequestFullscreen();
             }
-            
             vid.play();
         };
 
         grid.appendChild(card);
     });
 
-    // إعادة كتم الصوت عند الخروج من الفول سكرين تلقائياً
+    // كتم الصوت وإيقاف الفيديو عند الخروج من الفول سكرين
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
             const allVideos = container.querySelectorAll('video');

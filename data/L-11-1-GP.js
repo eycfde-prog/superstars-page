@@ -121,42 +121,50 @@
         const card = document.createElement('div');
         card.className = 'video-card';
         card.innerHTML = `
-            <video muted loop playsinline preload="metadata">
+            <video muted loop playsinline preload="metadata" style="pointer-events: none;">
                 <source src="${v.src}" type="video/mp4">
             </video>
             <div class="video-label">${v.title}</div>
         `;
 
         const vid = card.querySelector('video');
-        let playPromise; // متغير لمراقبة حالة التشغيل
+        let isPlaying = false; // مؤشر لحالة التشغيل الفعلي
 
-        // Preview عند التمرير بالماوس
         card.onmouseenter = () => {
-            playPromise = vid.play();
+            // محاولة التشغيل وإمساك أي خطأ بصمت
+            const playPromise = vid.play();
             if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    // هنا بنمتص التحذير عشان ميظهرش في الـ Console
-                    console.log("Hover play prevented: ", error.message);
+                playPromise.then(() => {
+                    isPlaying = true;
+                }).catch(() => {
+                    isPlaying = false;
                 });
             }
         };
 
         card.onmouseleave = () => {
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // مش هيعمل pause إلا لما يتأكد إن الـ play بدأ فعلاً
-                    vid.pause();
-                    vid.currentTime = 0;
-                }).catch(() => {
-                    // لو الـ play أصلاً فشل، بنعمل pause عادي
-                    vid.pause();
-                });
+            // الحل العبقري: استقصاء الحالة قبل الوقف
+            const stopVideo = () => {
+                vid.pause();
+                vid.currentTime = 0;
+                isPlaying = false;
+            };
+
+            // لو الفيديو لسه بيحمل (Pending)، هنستنى تكة ونوقفه
+            if (vid.readyState >= 2) { 
+                stopVideo();
+            } else {
+                // ننتظر حتى يصبح جاهزاً ثم نوقفه فوراً لتجنب الـ Abort
+                vid.oncanplay = () => {
+                    stopVideo();
+                    vid.oncanplay = null; // تنظيف الحدث
+                };
             }
         };
 
-        // تشغيل كامل عند الضغط (Fullscreen)
         card.onclick = () => {
             vid.muted = false; 
+            // تأكيد التشغيل عند الضغط بغض النظر عن حالة الـ Hover
             if (vid.requestFullscreen) {
                 vid.requestFullscreen();
             } else if (vid.webkitRequestFullscreen) {

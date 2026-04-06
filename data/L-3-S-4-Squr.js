@@ -79,7 +79,7 @@
             bar.style.width = prog + "%";
 
             // Audio Logic
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
             audio.src = audioPath;
             audio.play().catch(e => console.warn("Audio interaction required"));
 

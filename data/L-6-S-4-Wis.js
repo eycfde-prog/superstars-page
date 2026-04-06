@@ -6,9 +6,11 @@
         {
             id: 1,
             title: "The Dream Vacation",
+            icon: "✈️",
+            color: "#0ea5e9", // Blue
             scenario: "You have a vacation for one week with just one person you choose in any country you like.",
             points: [
-                "The name of the person and the name of the country.",
+                "The name of the person and the country.",
                 "The places you are going to visit!",
                 "The activities you are both going to do!",
                 "The food you are going to eat in details!",
@@ -18,6 +20,8 @@
         {
             id: 2,
             title: "The Business Success",
+            icon: "💼",
+            color: "#10b981", // Green
             scenario: "You are granted a huge fund to start your dream business anywhere in the world.",
             points: [
                 "What is the business and where is it located?",
@@ -30,13 +34,15 @@
         {
             id: 3,
             title: "The Time Machine",
+            icon: "⏳",
+            color: "#f59e0b", // Gold
             scenario: "You found a time machine that can take you to any year in the past or future.",
             points: [
                 "What year are you going to visit and why?",
                 "Who is the famous person you want to meet there?",
                 "What important event are you going to witness?",
                 "What clothes are you going to wear to fit in?",
-                "What souvenir are you going to bring back with you?"
+                "What souvenir are you going to bring back?"
             ]
         }
     ];
@@ -44,104 +50,192 @@
     let currentWish = 0;
 
     container.innerHTML = '';
-    container.style.cssText = `height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#020617; color:#fff; font-family: 'Inter', serif; position:relative; overflow:hidden;`;
+    container.style.cssText = `height:100%; width:100%; display:flex; align-items:center; justify-content:center; background:#020617; color:#fff; font-family: 'Poppins', sans-serif; overflow:hidden; position:relative;`;
 
     container.innerHTML = `
         <style>
-            @keyframes smokeFloat {
-                0% { transform: translateY(0) scale(1); opacity: 0.2; }
-                50% { transform: translateY(-10px) scale(1.05); opacity: 0.4; }
-                100% { transform: translateY(0) scale(1); opacity: 0.2; }
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;900&family=Bangers&display=swap');
+
+            /* خلفية متحركة تشبه الفضاء */
+            .star-field {
+                position: absolute; width: 100%; height: 100%;
+                background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+                z-index: 1;
             }
-            .genie-container { position:relative; z-index:5; margin-bottom: -40px; }
-            .genie-img { width:180px; filter: drop-shadow(0 0 25px #38bdf8); }
-            
-            .wish-card {
-                background: linear-gradient(135deg, #0f172a, #1e293b);
-                width: 85%; max-width: 850px;
-                padding: 50px; border-radius: 40px; border: 3px solid #f97316;
-                box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 30px rgba(249, 115, 22, 0.2);
-                text-align: center; position: relative; z-index: 2;
-                transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            .wish-portal {
+                width: 90%; max-width: 1000px; height: 600px;
+                position: relative; z-index: 5;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                perspective: 1000px;
             }
-            .wish-header { 
-                background: #f97316; color: white; padding: 12px 40px; 
-                border-radius: 15px; display: inline-block; margin-bottom: 30px; 
-                font-weight: 900; text-transform: uppercase; letter-spacing: 3px;
-                box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3);
+
+            .main-display {
+                width: 100%; height: 100%;
+                background: rgba(15, 23, 42, 0.8);
+                border-radius: 40px;
+                border: 4px solid var(--theme-color);
+                box-shadow: 0 0 50px var(--theme-color), inset 0 0 30px var(--theme-color);
+                padding: 40px;
+                display: flex; gap: 30px;
+                transform-style: preserve-3d;
+                transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                backdrop-filter: blur(15px);
             }
-            .wish-scenario { font-size: 2.2rem; line-height: 1.3; color: #f8fafc; margin-bottom: 40px; font-weight: 300; }
-            .wish-list { 
-                text-align: left; background: rgba(0,0,0,0.3); 
-                padding: 35px; border-radius: 25px; border: 1px solid #334155; 
-                list-style: none;
+
+            .icon-section {
+                flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+                border-right: 2px solid rgba(255,255,255,0.1);
             }
-            .wish-list li { 
-                font-size: 1.5rem; margin-bottom: 15px; color: #cbd5e1; 
+
+            .wish-icon {
+                font-size: 10rem; margin-bottom: 20px;
+                filter: drop-shadow(0 0 20px var(--theme-color));
+                animation: floatIcon 3s infinite ease-in-out;
+            }
+
+            .wish-title-text {
+                font-family: 'Bangers', cursive;
+                font-size: 3.5rem; color: var(--theme-color);
+                letter-spacing: 2px; text-align: center;
+            }
+
+            .content-section {
+                flex: 1.5; display: flex; flex-direction: column; justify-content: center;
+                padding-left: 20px;
+            }
+
+            .scenario-text {
+                font-size: 2.2rem; font-weight: 300; line-height: 1.3;
+                color: #f8fafc; margin-bottom: 30px;
+                border-left: 5px solid var(--theme-color); padding-left: 20px;
+            }
+
+            .points-grid {
+                display: grid; grid-template-columns: 1fr; gap: 12px;
+            }
+
+            .point-item {
+                background: rgba(255,255,255,0.05);
+                padding: 15px 20px; border-radius: 15px;
+                font-size: 1.4rem; color: #cbd5e1;
                 display: flex; align-items: center;
+                transition: 0.3s;
+                border: 1px solid transparent;
             }
-            .wish-list li::before { content: "✦"; color: #f97316; margin-right: 15px; font-size: 1.8rem; }
-            
-            .wish-nav { margin-top: 40px; display: flex; gap: 30px; z-index: 10; }
-            .nav-btn { 
-                background: #1e293b; color: #f97316; border: 2px solid #f97316; 
-                padding: 15px 40px; border-radius: 50px; cursor: pointer; 
-                font-weight: 800; transition: 0.3s; text-transform: uppercase;
+
+            .point-item:hover {
+                background: rgba(255,255,255,0.1);
+                border-color: var(--theme-color);
+                transform: translateX(10px);
             }
-            .nav-btn:hover:not(:disabled) { background: #f97316; color: white; transform: scale(1.05); }
-            .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: #475569; color: #475569; }
-            
-            .smoke-effect { 
-                position:absolute; bottom:0; width:100%; height:300px; 
-                background: radial-gradient(circle at bottom, rgba(56, 189, 248, 0.15) 0%, transparent 70%); 
-                animation: smokeFloat 4s infinite ease-in-out;
+
+            .point-item::before {
+                content: "⚡"; margin-right: 15px; color: var(--theme-color);
+            }
+
+            /* أزرار التحكم */
+            .nav-controls {
+                position: absolute; bottom: -80px; display: flex; gap: 40px;
+            }
+
+            .nav-circle-btn {
+                width: 70px; height: 70px; border-radius: 50%;
+                border: 3px solid var(--theme-color);
+                background: #020617; color: var(--theme-color);
+                font-size: 2rem; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                transition: 0.4s;
+            }
+
+            .nav-circle-btn:hover:not(:disabled) {
+                background: var(--theme-color); color: #fff;
+                box-shadow: 0 0 25px var(--theme-color);
+            }
+
+            .nav-circle-btn:disabled {
+                opacity: 0.2; cursor: not-allowed;
+            }
+
+            @keyframes floatIcon {
+                0%, 100% { transform: translateY(0) rotate(0deg); }
+                50% { transform: translateY(-20px) rotate(5deg); }
+            }
+
+            .portal-flash {
+                position: absolute; width: 100%; height: 100%;
+                background: white; border-radius: 40px;
+                z-index: 10; opacity: 0; pointer-events: none;
             }
         </style>
 
-        <div class="genie-container">
-            <img src="https://i.ibb.co/L9m8fCc/genie-bot.png" class="genie-img">
-        </div>
-
-        <div class="wish-card" id="wishCard">
-            <div class="wish-header" id="wishTitle"></div>
-            <div class="wish-scenario" id="wishScenario"></div>
-            <ul class="wish-list" id="wishList"></ul>
-        </div>
-
-        <div class="wish-nav">
-            <button class="nav-btn" id="prevWish">Back</button>
-            <button class="nav-btn" id="nextWish">Next Wish</button>
-        </div>
+        <div class="star-field"></div>
         
-        <div class="smoke-effect"></div>
+        <div class="wish-portal">
+            <div class="portal-flash" id="flash"></div>
+            <div class="main-display" id="displayBox" style="--theme-color: ${wishes[0].color}">
+                <div class="icon-section">
+                    <div class="wish-icon" id="wishIcon">${wishes[0].icon}</div>
+                    <div class="wish-title-text" id="wishTitle">${wishes[0].title}</div>
+                </div>
+                <div class="content-section">
+                    <div class="scenario-text" id="wishScenario">${wishes[0].scenario}</div>
+                    <div class="points-grid" id="wishPoints">
+                        ${wishes[0].points.map(p => `<div class="point-item">${p}</div>`).join('')}
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-controls">
+                <button class="nav-circle-btn" id="prevBtn" style="--theme-color: ${wishes[0].color}">◀</button>
+                <button class="nav-circle-btn" id="nextBtn" style="--theme-color: ${wishes[0].color}">▶</button>
+            </div>
+        </div>
     `;
 
-    const card = document.getElementById('wishCard');
-    const title = document.getElementById('wishTitle');
-    const scenario = document.getElementById('wishScenario');
-    const list = document.getElementById('wishList');
-    const btnNext = document.getElementById('nextWish');
-    const btnPrev = document.getElementById('prevWish');
+    const displayBox = document.getElementById('displayBox');
+    const wishIcon = document.getElementById('wishIcon');
+    const wishTitle = document.getElementById('wishTitle');
+    const wishScenario = document.getElementById('wishScenario');
+    const wishPoints = document.getElementById('wishPoints');
+    const flash = document.getElementById('flash');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
 
-    function updateWish(index) {
-        card.style.opacity = '0';
-        card.style.transform = 'scale(0.9) translateY(30px)';
+    function changeWish(index) {
+        // أنيميشن الفلاش والنقلة
+        flash.style.transition = 'none';
+        flash.style.opacity = '1';
+        displayBox.style.transform = 'scale(0.8) rotateX(20deg)';
         
         setTimeout(() => {
-            title.innerText = wishes[index].title;
-            scenario.innerText = wishes[index].scenario;
-            list.innerHTML = wishes[index].points.map(p => `<li>${p}</li>`).join('');
+            const data = wishes[index];
             
-            card.style.opacity = '1';
-            card.style.transform = 'scale(1) translateY(0)';
+            // تحديث الألوان والثيم
+            displayBox.style.setProperty('--theme-color', data.color);
+            prevBtn.style.setProperty('--theme-color', data.color);
+            nextBtn.style.setProperty('--theme-color', data.color);
             
-            btnPrev.disabled = index === 0;
-            btnNext.disabled = index === wishes.length - 1;
-        }, 400);
+            // تحديث المحتوى
+            wishIcon.innerText = data.icon;
+            wishTitle.innerText = data.title;
+            wishScenario.innerText = data.scenario;
+            wishPoints.innerHTML = data.points.map(p => `<div class="point-item">${p}</div>`).join('');
+            
+            // استعادة الشكل
+            flash.style.transition = 'opacity 0.6s';
+            flash.style.opacity = '0';
+            displayBox.style.transform = 'scale(1) rotateX(0deg)';
+            
+            // حالة الأزرار
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === wishes.length - 1;
+        }, 300);
     }
 
-    btnNext.onclick = () => { if (currentWish < wishes.length - 1) { currentWish++; updateWish(currentWish); } };
-    btnPrev.onclick = () => { if (currentWish > 0) { currentWish--; updateWish(currentWish); } };
+    nextBtn.onclick = () => { if (currentWish < wishes.length - 1) { currentWish++; changeWish(currentWish); } };
+    prevBtn.onclick = () => { if (currentWish > 0) { currentWish--; changeWish(currentWish); } };
 
-    updateWish(0);
+    // تهيئة البداية
+    changeWish(0);
 })();

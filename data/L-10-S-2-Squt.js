@@ -2,7 +2,7 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const questions = [
+    const rawQuestions = [
         "Have you got a car?", "Has your father got a laptop?", "Have we finished the lesson yet?",
         "Has it rained today?", "Have your friends arrived yet?", "Has a spider got eight legs?",
         "Have you ever eaten sushi?", "Has your mother cooked lunch?", "Have you seen my keys?",
@@ -14,6 +14,21 @@
         "Have you ever seen a ghost?", "Has your phone got a full battery?", "Have we met before?",
         "Has the rain stopped?", "Have you done your best today?", "Has the winter arrived?"
     ];
+
+    // --- نظام اللخبطة الذكي من WOLF لربط النص بالصوت ---
+    let shuffledData = rawQuestions.map((q, i) => ({
+        text: q,
+        audioId: i + 1
+    }));
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    shuffle(shuffledData);
+    // --------------------------------------------------
 
     let currentIdx = 0;
     let countdownInterval = null;
@@ -45,7 +60,7 @@
                 font-size: 4vw; font-weight: 900; color: #c5a059;
             }
 
-            .go-overlay { position:absolute; inset:0; background:#050505; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; }
+            .go-overlay { position:absolute; inset:0; background:#050505; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; transition: 0.5s; }
             .go-btn { 
                 background:#c5a059; color:#000; border:none; padding:30px 100px; font-size:4vw; 
                 cursor:pointer; border-radius:100px; font-weight:900; 
@@ -63,6 +78,7 @@
                 HAVE / HAS<br><span style="color:#c5a059; font-size:5vw;">POSSESSION TEST</span>
             </h1>
             <button class="go-btn" id="startTestBtn">START TEST</button>
+            <p style="color:#444; margin-top:20px; letter-spacing:4px; font-weight:bold;">RANDOMIZED PROTOCOL V5</p>
         </div>
 
         <div class="sq-counter">SQUEEZER TEST #${folderNumber}</div>
@@ -97,7 +113,7 @@
         
         countdownInterval = setInterval(() => {
             timeLeft--;
-            // تحريك حلقة الوقت
+            // تحريك حلقة الوقت بشكل انسيابي
             const offset = 440 - (timeLeft * 220); 
             timerBar.style.strokeDashoffset = offset;
 
@@ -117,7 +133,7 @@
     }
 
     function nextQuestion() {
-        if (currentIdx < questions.length - 1) {
+        if (currentIdx < shuffledData.length - 1) {
             currentIdx++;
             updateSlide(currentIdx);
         } else {
@@ -130,10 +146,11 @@
     }
 
     function updateSlide(index) {
-        display.innerHTML = formatQuestion(questions[index]);
+        const currentItem = shuffledData[index];
+        display.innerHTML = formatQuestion(currentItem.text);
         
-        // تشغيل الصوت
-        const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
+        // استدعاء الصوت الأصلي المحفوظ مع السؤال
+        const audioPath = `data/Squeezer/${folderNumber}/${currentItem.audioId}.wav`;
         audioPlayer.src = audioPath;
         audioPlayer.play().catch(e => {});
         
@@ -141,10 +158,13 @@
     }
 
     startBtn.onclick = () => {
-        goOverlay.style.display = 'none';
-        display.style.display = 'block';
-        timerContainer.style.display = 'block';
-        updateSlide(0);
+        goOverlay.style.opacity = '0';
+        setTimeout(() => {
+            goOverlay.style.display = 'none';
+            display.style.display = 'block';
+            timerContainer.style.display = 'block';
+            updateSlide(0);
+        }, 500);
     };
 
 })();

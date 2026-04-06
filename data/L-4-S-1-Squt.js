@@ -2,8 +2,7 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- قاعدة بيانات الأسئلة (Is - Are) ---
-    const questions = [
+    const rawQuestions = [
         "Are you ready for the challenge?", "Is Cairo the capital of Egypt?", "Are your parents at home now?",
         "Is it cold today?", "Am I your teacher for today?", "Is English an easy language?",
         "Are lions dangerous animals?", "Is your best friend a tall person?", "Are we in the classroom now?",
@@ -16,10 +15,25 @@
         "Is it 10 o'clock now?", "Are children afraid of ghosts?", "Is this your first English course?"
     ];
 
+    // --- نظام اللخبطة الذكي من WOLF ---
+    let shuffledQuestions = rawQuestions.map((q, i) => ({
+        text: q,
+        audioId: i + 1
+    }));
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    shuffle(shuffledQuestions);
+    // --------------------------------
+
     let currentIdx = 0;
     let countdownInterval = null;
     const folderNumber = 1;
-    const timeLimit = 2; // الوقت المتاح لكل سؤال بالثواني
+    const timeLimit = 2;
 
     container.innerHTML = '';
     container.style.cssText = `height:100%; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#020202; color:#fff; font-family:'Segoe UI', sans-serif; position:relative; overflow:hidden;`;
@@ -28,23 +42,12 @@
         <style>
             @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
             @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-            
             .sq-header { position:absolute; top:40px; width:90%; display:flex; justify-content:space-between; align-items:center; z-index:10; }
             .sq-mode-tag { background:#e74c3c; color:white; padding:5px 15px; border-radius:5px; font-weight:900; letter-spacing:2px; font-size:0.8rem; }
-            
             .go-overlay { position:absolute; inset:0; background:#000; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; transition: 0.5s; }
             .go-btn { background:#27ae60; color:white; border:none; padding:35px 100px; font-size:4rem; cursor:pointer; border-radius:15px; font-weight:900; box-shadow: 0 10px 0 #1e8449; transition:0.2s; animation: pulse 1.5s infinite; }
-            .go-btn:hover { background:#2ecc71; }
-            .go-btn:active { transform:translateY(8px); box-shadow: 0 2px 0 #1e8449; }
-
-            .sq-question { font-size:5vw; text-align:center; max-width:85%; line-height:1.1; font-weight:900; display:none; animation: slideUp 0.3s ease-out; transition: 0.2s; }
-            
-            .timer-ring { 
-                width: 140px; height: 140px; border-radius: 50%; border: 8px solid #222; 
-                display: none; align-items: center; justify-content: center; 
-                font-size: 4rem; font-weight: 900; color: #e74c3c; margin-top: 40px;
-                box-shadow: 0 0 30px rgba(231, 76, 60, 0.1);
-            }
+            .sq-question { font-size:5vw; text-align:center; max-width:85%; line-height:1.1; font-weight:900; display:none; animation: slideUp 0.3s ease-out; }
+            .timer-ring { width: 140px; height: 140px; border-radius: 50%; border: 8px solid #222; display: none; align-items: center; justify-content: center; font-size: 4rem; font-weight: 900; color: #e74c3c; margin-top: 40px; }
             .timer-pulse { animation: pulse 0.5s infinite !important; color: #ff0000 !important; border-color: #ff0000 !important; }
         </style>
         
@@ -56,12 +59,11 @@
 
         <div class="sq-header">
             <div class="sq-mode-tag">EXAM MODE</div>
-            <div id="sqProgress" style="color:#555; font-weight:bold; font-size:1.5vw;">0 / ${questions.length}</div>
+            <div id="sqProgress" style="color:#555; font-weight:bold; font-size:1.5vw;">0 / ${shuffledQuestions.length}</div>
         </div>
 
         <div id="sqDisplay" class="sq-question"></div>
         <div id="sqTimer" class="timer-ring">${timeLimit}</div>
-        
         <audio id="sqAudio"></audio>
     `;
 
@@ -76,9 +78,7 @@
         let timeLeft = timeLimit;
         timerBox.innerText = timeLeft;
         timerBox.classList.remove('timer-pulse');
-        
         if (countdownInterval) clearInterval(countdownInterval);
-        
         countdownInterval = setInterval(() => {
             timeLeft--;
             if (timeLeft >= 0) {
@@ -92,11 +92,10 @@
     }
 
     function nextQuestion() {
-        if (currentIdx < questions.length - 1) {
+        if (currentIdx < shuffledQuestions.length - 1) {
             currentIdx++;
             updateSlide(currentIdx);
         } else {
-            // نهاية الاختبار
             clearInterval(countdownInterval);
             display.innerHTML = "TEST COMPLETE!<br><span style='font-size:2.5rem; color:#555;'>PERFECT SPEED</span>";
             display.style.color = "#2ecc71";
@@ -106,19 +105,18 @@
     }
 
     function updateSlide(index) {
-        progressText.innerText = `${index + 1} / ${questions.length}`;
-        
-        // أنيميشن بسيط عند تغيير السؤال
+        const currentData = shuffledQuestions[index]; // جلب الكائن الملوخبط
+        progressText.innerText = `${index + 1} / ${shuffledQuestions.length}`;
         display.style.opacity = '0';
         
         setTimeout(() => {
-            display.innerText = questions[index];
+            display.innerText = currentData.text; // عرض النص العشوائي
             display.style.opacity = '1';
             
-            // تشغيل الصوت
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
+            // استدعاء الصوت الأصلي الخاص بهذا السؤال تحديداً
+            const audioPath = `data/Squeezer/${folderNumber}/${currentData.audioId}.wav`;
             audio.src = audioPath;
-            audio.play().catch(e => console.log("Audio skipped"));
+            audio.play().catch(e => {});
             
             startTimer();
         }, 150);
@@ -133,5 +131,4 @@
             updateSlide(0);
         }, 500);
     };
-
 })();

@@ -2,10 +2,8 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // وظيفة عبقرية لتحويل روابط Dropbox لروابط مباشرة بلمحة بصر
     function fixDropboxLink(url) {
         if (url.includes('dropbox.com')) {
-            // بنشيل أي باراميترز قديمة ونحط raw=1 عشان يسحب الفيديو مباشرة
             return url.split('?')[0] + '?raw=1';
         }
         return url;
@@ -128,43 +126,25 @@
         `;
 
         const vid = card.querySelector('video');
-        let isPlaying = false; // مؤشر لحالة التشغيل الفعلي
+        let playPromise = null;
 
         card.onmouseenter = () => {
-            // محاولة التشغيل وإمساك أي خطأ بصمت
-            const playPromise = vid.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    isPlaying = true;
-                }).catch(() => {
-                    isPlaying = false;
-                });
-            }
+            playPromise = vid.play();
         };
 
         card.onmouseleave = () => {
-            // الحل العبقري: استقصاء الحالة قبل الوقف
-            const stopVideo = () => {
-                vid.pause();
-                vid.currentTime = 0;
-                isPlaying = false;
-            };
-
-            // لو الفيديو لسه بيحمل (Pending)، هنستنى تكة ونوقفه
-            if (vid.readyState >= 2) { 
-                stopVideo();
-            } else {
-                // ننتظر حتى يصبح جاهزاً ثم نوقفه فوراً لتجنب الـ Abort
-                vid.oncanplay = () => {
-                    stopVideo();
-                    vid.oncanplay = null; // تنظيف الحدث
-                };
+            if (playPromise !== null) {
+                playPromise.then(() => {
+                    vid.pause();
+                    vid.currentTime = 0;
+                }).catch(() => {
+                    // Ignore abort errors
+                });
             }
         };
 
         card.onclick = () => {
             vid.muted = false; 
-            // تأكيد التشغيل عند الضغط بغض النظر عن حالة الـ Hover
             if (vid.requestFullscreen) {
                 vid.requestFullscreen();
             } else if (vid.webkitRequestFullscreen) {
@@ -176,7 +156,6 @@
         grid.appendChild(card);
     });
 
-    // عند الخروج من الفول سكرين نرجع كل حاجة صامتة
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
             const allVideos = container.querySelectorAll('video');

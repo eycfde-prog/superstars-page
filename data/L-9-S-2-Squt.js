@@ -2,7 +2,7 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const questions = [
+    const rawQuestions = [
         "Will you travel abroad next year?", "Would you like a cup of coffee?", "Will it rain tomorrow?",
         "Would you live on the moon if you could?", "Will robots replace teachers in the future?", "Would you help a stranger in need?",
         "Will you be famous one day?", "Would you buy a Ferrari if you were rich?", "Will your friends come to the party?",
@@ -15,10 +15,25 @@
         "Would you mind helping me with this?", "Will we use flying cars soon?", "Would you forgive a friend who lied?"
     ];
 
+    // --- نظام اللخبطة العشوائي من WOLF ---
+    let shuffledData = rawQuestions.map((q, i) => ({
+        text: q,
+        audioId: i + 1
+    }));
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    shuffle(shuffledData);
+    // ------------------------------------
+
     let currentIdx = 0;
     let countdownInterval = null;
     const folderNumber = 4;
-    const timeLimit = 2; // ثانيتين لكل سؤال
+    const timeLimit = 2; 
 
     container.innerHTML = '';
     container.style.cssText = `height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:radial-gradient(circle, #0a192f 0%, #020c1b 100%); color:#e6f1ff; font-family: 'Segoe UI', sans-serif; position:relative; overflow:hidden;`;
@@ -66,12 +81,12 @@
         <div class="go-overlay" id="goOverlay">
             <div style="color:#8892b0; letter-spacing:10px; margin-bottom:20px; font-size:1.2rem;">AUTO-PROTOCOL 04</div>
             <button class="go-btn" id="startBtn">START TEST</button>
-            <div style="color:#64ffda; margin-top:25px; opacity:0.6;">SPEED LIMIT: 2.0s / Q</div>
+            <div style="color:#64ffda; margin-top:25px; opacity:0.6; letter-spacing:2px;">SHUFFLE & SPEED: 2.0s</div>
         </div>
 
         <div class="sq-header-exam">
             <div class="sq-badge">EXAM MODE</div>
-            <div id="sqProgress" style="color:#8892b0; font-size:1.2rem; font-weight:bold;">01 / ${questions.length}</div>
+            <div id="sqProgress" style="color:#8892b0; font-size:1.2rem; font-weight:bold;">01 / ${shuffledData.length}</div>
         </div>
 
         <div id="sqDisplay" class="sq-question"></div>
@@ -105,27 +120,29 @@
     }
 
     function nextQuestion() {
-        if (currentIdx < questions.length - 1) {
+        if (currentIdx < shuffledData.length - 1) {
             currentIdx++;
             updateSlide(currentIdx);
         } else {
             clearInterval(countdownInterval);
-            display.innerHTML = "TEST COMPLETE<br><span style='font-size:2.5rem; color:#64ffda; opacity:0.7;'>CORE MASTERED</span>";
+            display.innerHTML = "TEST COMPLETE<br><span style='font-size:2.5rem; color:#64ffda; opacity:0.7;'>FUTURE MASTERED</span>";
             timerBox.style.display = "none";
             if(window.triggerVetoDone) window.triggerVetoDone();
         }
     }
 
     function updateSlide(index) {
-        progressText.innerText = `${(index + 1).toString().padStart(2, '0')} / ${questions.length}`;
+        const currentItem = shuffledData[index];
+        progressText.innerText = `${(index + 1).toString().padStart(2, '0')} / ${shuffledData.length}`;
         
         display.style.opacity = '0';
         
         setTimeout(() => {
-            display.innerText = questions[index];
+            display.innerText = currentItem.text;
             display.style.opacity = '1';
             
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
+            // سحب الصوت بناءً على الـ audioId الأصلي المحفوظ
+            const audioPath = `data/Squeezer/${folderNumber}/${currentItem.audioId}.wav`;
             audio.src = audioPath;
             audio.play().catch(e => {});
             

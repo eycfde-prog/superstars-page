@@ -90,7 +90,7 @@
             display.style.transform = 'scale(1)';
         }, 200);
 
-        const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+        const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
         audioPlayer.src = audioPath;
         audioPlayer.play().catch(e => console.log("Audio not ready"));
     }

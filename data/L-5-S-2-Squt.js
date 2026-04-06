@@ -2,7 +2,7 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const questions = [
+    const rawQuestions = [
         "Do you speak English every day?", "Does your father work in an office?", "Do lions eat grass?",
         "Does it rain in the desert?", "Do we have a lesson tomorrow?", "Does your mother cook delicious food?",
         "Do cats like swimming?", "Does the sun rise in the morning?", "Do you live in a big house?",
@@ -14,6 +14,21 @@
         "Do people wear coats in summer?", "Does a mechanic fix cars?", "Do you sleep early?",
         "Does water boil at 100°C?", "Do we need oxygen to breathe?", "Does a clock tell the time?"
     ];
+
+    // --- نظام اللخبطة العشوائي من WOLF ---
+    let shuffledData = rawQuestions.map((q, i) => ({
+        text: q,
+        audioId: i + 1
+    }));
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    shuffleArray(shuffledData);
+    // ------------------------------------
 
     let currentIdx = 0;
     let countdownInterval = null;
@@ -60,6 +75,7 @@
         <div class="go-overlay" id="goOverlay">
             <h1 style="margin-bottom:50px; font-size:4rem; font-weight:900; letter-spacing:-2px;">SPEED TEST: <span class="highlight">DO / DOES</span></h1>
             <button class="go-btn" id="startTestBtn">GO!</button>
+            <p style="color:#666; margin-top:20px; letter-spacing:2px;">SHUFFLE MODE ENABLED</p>
         </div>
 
         <div class="sq-counter">SQUEEZER LEVEL 5 [ULTRA]</div>
@@ -101,7 +117,7 @@
     }
 
     function nextQuestion() {
-        if (currentIdx < questions.length - 1) {
+        if (currentIdx < shuffledData.length - 1) {
             currentIdx++;
             updateSlide(currentIdx);
         } else {
@@ -109,16 +125,20 @@
             display.innerText = "CHALLENGE COMPLETE!";
             display.style.color = "#2ecc71";
             timerWrap.style.display = "none";
+            if (window.triggerVetoDone) window.triggerVetoDone();
         }
     }
 
     function updateSlide(index) {
+        const currentQuestion = shuffledData[index];
         display.style.opacity = '0';
+        
         setTimeout(() => {
-            display.innerText = questions[index];
+            display.innerText = currentQuestion.text;
             display.style.opacity = '1';
             
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
+            // سحب ملف الصوت بناءً على المعرف الأصلي المخزن
+            const audioPath = `data/Squeezer/${folderNumber}/${currentQuestion.audioId}.wav`;
             audioPlayer.src = audioPath;
             audioPlayer.play().catch(() => {});
             

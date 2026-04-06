@@ -92,7 +92,7 @@
             progress.style.width = `${((idx + 1) / totalQuestions) * 100}%`;
         }, 300);
 
-        const path = `data/Squeezer/${folderNumber}/${idx + 1}.mp3`;
+        const path = `data/Squeezer/${folderNumber}/${idx + 1}.wav`;
         audio.src = path;
         audio.play().catch(() => console.log("Audio Syncing..."));
     }

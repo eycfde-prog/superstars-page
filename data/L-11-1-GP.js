@@ -2,9 +2,12 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // "Charly" Audit: Fixed Dropbox URL logic to point to the direct content stream.
+    // The previous '?raw=1' or '?dl=0' can sometimes be blocked or redirected by CORS policy in Web Apps.
+    // Switching to 'dl.dropboxusercontent.com' is the reliable "Bridge" for direct video streaming.
     function fixDropboxLink(url) {
         if (url.includes('dropbox.com')) {
-            return url.split('?')[0] + '?raw=1';
+            return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0];
         }
         return url;
     }
@@ -119,27 +122,40 @@
         const card = document.createElement('div');
         card.className = 'video-card';
         card.innerHTML = `
-            <video muted loop playsinline preload="metadata" style="pointer-events: none;">
+            <video muted loop playsinline crossorigin="anonymous" preload="metadata" style="pointer-events: none;">
                 <source src="${v.src}" type="video/mp4">
             </video>
             <div class="video-label">${v.title}</div>
         `;
 
         const vid = card.querySelector('video');
-        let playPromise = null;
+        let isPlaying = false;
 
         card.onmouseenter = () => {
-            playPromise = vid.play();
+            const playPromise = vid.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isPlaying = true;
+                }).catch(() => {
+                    isPlaying = false;
+                });
+            }
         };
 
         card.onmouseleave = () => {
-            if (playPromise !== null) {
-                playPromise.then(() => {
-                    vid.pause();
-                    vid.currentTime = 0;
-                }).catch(() => {
-                    // Ignore abort errors
-                });
+            const stopVideo = () => {
+                vid.pause();
+                vid.currentTime = 0;
+                isPlaying = false;
+            };
+
+            if (vid.readyState >= 2) { 
+                stopVideo();
+            } else {
+                vid.oncanplay = () => {
+                    stopVideo();
+                    vid.oncanplay = null;
+                };
             }
         };
 

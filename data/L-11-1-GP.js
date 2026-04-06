@@ -2,17 +2,17 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // وظيفة لتحويل روابط جوجل درايف العادية إلى روابط مباشرة قابلة للتشغيل
-    function getDirectLink(url) {
-        if (url.includes('drive.google.com')) {
-            const id = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1]?.split('&')[0];
-            return `https://drive.google.com/uc?export=download&id=${id}`;
+    // وظيفة عبقرية لتحويل روابط Dropbox لروابط مباشرة بلمحة بصر
+    function fixDropboxLink(url) {
+        if (url.includes('dropbox.com')) {
+            // بنشيل أي باراميترز قديمة ونحط raw=1 عشان يسحب الفيديو مباشرة
+            return url.split('?')[0] + '?raw=1';
         }
         return url;
     }
 
     const videos = [
-        { id: 1, src: getDirectLink("https://drive.google.com/file/d/1EcME8uHrmHe57p3XQNuj0mxNV3q03cqh/view?usp=drive_link"), title: "SCENE 01" },
+        { id: 1, src: fixDropboxLink("https://www.dropbox.com/scl/fi/lsztd3y0qf6a7lgbk3wqc/Sohila.mp4?rlkey=kv8tb28d16zk50tufntvz8gaw&st=yuoz3j2l&dl=0"), title: "SOHILA SCENE" },
         { id: 2, src: "LINK_2.mp4", title: "SCENE 02" },
         { id: 3, src: "LINK_3.mp4", title: "SCENE 03" },
         { id: 4, src: "LINK_4.mp4", title: "SCENE 04" },
@@ -46,67 +46,71 @@
                 position: relative;
                 background: #111;
                 border: 2px solid #222;
-                border-radius: 8px;
+                border-radius: 12px;
                 overflow: hidden;
                 cursor: pointer;
                 transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             }
             .video-card:hover {
                 border-color: #ff0000;
                 transform: scale(1.05);
                 z-index: 20;
-                box-shadow: 0 0 30px rgba(255,0,0,0.4);
+                box-shadow: 0 0 40px rgba(255,0,0,0.5);
             }
             .video-card video {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-                opacity: 0.6;
-                transition: 0.3s;
+                opacity: 0.5;
+                transition: 0.4s;
             }
             .video-card:hover video {
                 opacity: 1;
             }
             .video-label {
                 position: absolute;
-                bottom: 10px;
-                left: 10px;
-                background: rgba(255,0,0,0.8);
+                bottom: 15px;
+                left: 15px;
+                background: linear-gradient(90deg, #ff0000, #990000);
                 color: #fff;
-                padding: 2px 10px;
-                font-size: 0.8vw;
+                padding: 4px 12px;
+                font-size: 0.9vw;
                 font-weight: 900;
-                border-radius: 4px;
+                border-radius: 6px;
                 pointer-events: none;
+                letter-spacing: 1px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.5);
             }
             .grid-header {
-                margin-bottom: 20px;
+                margin-bottom: 30px;
                 text-align: center;
                 z-index: 10;
             }
             .grid-header h1 {
                 color: #fff;
-                font-size: 3vw;
-                letter-spacing: 10px;
+                font-size: 3.5vw;
+                letter-spacing: 15px;
                 margin: 0;
                 text-transform: uppercase;
                 font-weight: 900;
+                text-shadow: 0 0 20px rgba(255,255,255,0.3);
             }
             .scanline {
                 position: absolute; inset: 0;
-                background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3) 51%);
+                background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.4) 51%);
                 background-size: 100% 4px;
                 pointer-events: none;
                 z-index: 30;
-                opacity: 0.2;
+                opacity: 0.15;
             }
             @keyframes blink { 50% { opacity: 0.2; } }
         </style>
         
         <div class="scanline"></div>
         <div class="grid-header">
-            <h1>CINEMATIC GALLERY</h1>
-            <div style="color:#ff0000; font-weight:bold; letter-spacing:3px; animation: blink 1s infinite;">● VIDEO MONITORING ACTIVE</div>
+            <h1>VIDEO GALLERY</h1>
+            <div style="color:#ff0000; font-weight:bold; letter-spacing:4px; animation: blink 1.2s infinite; font-size:1vw;">● SYSTEM ONLINE | DROPBOX STREAMING</div>
         </div>
         <div class="video-grid" id="videoGrid"></div>
     `;
@@ -117,39 +121,38 @@
         const card = document.createElement('div');
         card.className = 'video-card';
         card.innerHTML = `
-            <video muted loop playsinline src="${v.src}"></video>
+            <video muted loop playsinline preload="metadata">
+                <source src="${v.src}" type="video/mp4">
+            </video>
             <div class="video-label">${v.title}</div>
         `;
 
-        // Preview on hover
+        const vid = card.querySelector('video');
+
+        // Preview عند التمرير بالماوس
         card.onmouseenter = () => {
-            const vid = card.querySelector('video');
-            vid.play().catch(e => console.warn("Autoplay blocked or link invalid"));
+            vid.play().catch(e => console.warn("Stream pending interaction"));
         };
         card.onmouseleave = () => {
-            const vid = card.querySelector('video');
             vid.pause();
             vid.currentTime = 0;
         };
 
-        // Fullscreen on click
+        // تشغيل كامل عند الضغط
         card.onclick = () => {
-            const vid = card.querySelector('video');
             vid.muted = false; 
-            
             if (vid.requestFullscreen) {
                 vid.requestFullscreen();
             } else if (vid.webkitRequestFullscreen) {
                 vid.webkitRequestFullscreen();
             }
-            
             vid.play();
         };
 
         grid.appendChild(card);
     });
 
-    // Reset videos when exiting fullscreen
+    // عند الخروج من الفول سكرين نرجع كل حاجة صامتة
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
             const allVideos = container.querySelectorAll('video');

@@ -148,7 +148,7 @@
         
         display.innerText = questions[index];
 
-        const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+        const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
         audioPlayer.src = audioPath;
         audioPlayer.play().catch(e => {});
         

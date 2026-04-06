@@ -106,7 +106,7 @@
             display.style.transform = 'translateY(0)';
             
             // 4. تشغيل الصوت الخاص بكل سؤال (اختياري حسب المسار)
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
             audioPlayer.src = audioPath;
             audioPlayer.play().catch(e => console.log("Audio play deferred or file missing"));
         }, 200);

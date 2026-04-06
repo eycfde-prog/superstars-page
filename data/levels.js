@@ -21,7 +21,7 @@ const sessionData = {
     "3-1": ["Grammar 7 Study", "Listening 4 Review", "Reading 6 Review", "Tongue Twister 2 Review"],
     "3-2": ["Listening 5 Review", "Reading 7 Review", "Tongue Twister 3 Review", "Vocab 5 Review", "One Shot 3 Test"],
     "3-3": ["Listening 6 Review", "Reading 8 Review", "Tongue Twister 4 Review", "Vocab 5 Test", "Vocab 6 Review"],
-    "3-4": ["Grammar 8 Study", "Listening 7 Review", "Reading 9 Review", "Tongue Twister 5 Review", "One Shot 4 Test", "Vocab 6 Test", "Squeezer 1 Intro", "Squeezer 1 Rev"],
+    "3-4": ["Grammar 8 Study", "Listening 7 Review", "Reading 9 Review", "Tongue Twister 5 Review", "One Shot 4 Test", "Vocab 6 Test", "Squeezer 1 Rev"],
 
     // LEVEL 4
     "4-1": ["Grammar 9 Study", "Listening 8 Review", "Reading 10 Review", "Squeezer 1 test", "Tongue Twister 6 Review"],

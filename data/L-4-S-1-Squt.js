@@ -116,7 +116,7 @@
             display.style.opacity = '1';
             
             // تشغيل الصوت
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
             audio.src = audioPath;
             audio.play().catch(e => console.log("Audio skipped"));
             

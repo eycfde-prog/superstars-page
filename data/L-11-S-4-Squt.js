@@ -2,8 +2,8 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- قاعدة بيانات الأسئلة (Can - Could) ---
-    const questions = [
+    // --- قاعدة بيانات الأسئلة الأصلية ---
+    const rawQuestions = [
         "Can you swim?", "Could you walk when you were one year old?", "Can birds fly?",
         "Could you speak English five years ago?", "Can cats climb trees?", "Could you open the window for me, please?",
         "Can you play the piano?", "Could dinosaurs fly?", "Can an elephant jump?",
@@ -15,6 +15,21 @@
         "Can you lend me your pen?", "Could you see the moon yesterday?", "Can tigers swim?",
         "Could you finish the work on time?", "Can we live without water?", "Could you understand me?"
     ];
+
+    // --- نظام اللخبطة من WOLF (ربط النص بالصوت) ---
+    let shuffledData = rawQuestions.map((q, i) => ({
+        text: q,
+        audioId: i + 1
+    }));
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    shuffle(shuffledData);
+    // ---------------------------------------------
 
     let currentIdx = 0;
     let countdownInterval = null;
@@ -68,6 +83,7 @@
                 position:absolute; inset:0; 
                 background: radial-gradient(circle, #0a1f16 0%, #050505 100%); 
                 display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; 
+                transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             }
             .go-btn { 
                 background:#2ecc71; color:#000; border:none; padding:30px 100px; 
@@ -85,6 +101,7 @@
             <p style="color:#2ecc71; font-weight:900; letter-spacing:10px; margin-bottom:10px;">FINAL LEVEL TEST</p>
             <h1 style="margin-bottom:50px; font-size:5vw; color:#fff; text-align:center; line-height:1;">CAN / COULD<br><span style="color:#fff; opacity:0.5">SPEED CHALLENGE</span></h1>
             <button class="go-btn" id="startTestBtn">START</button>
+            <p style="color:#1b5e20; margin-top:20px; font-weight:bold; letter-spacing:3px;">SHUFFLE SYSTEM ENABLED</p>
         </div>
 
         <div class="sq-header">
@@ -128,7 +145,7 @@
     }
 
     function nextQuestion() {
-        if (currentIdx < questions.length - 1) {
+        if (currentIdx < shuffledData.length - 1) {
             currentIdx++;
             updateSlide(currentIdx);
         } else {
@@ -140,15 +157,17 @@
     }
 
     function updateSlide(index) {
-        progressText.innerText = `Question ${index + 1} / ${questions.length}`;
+        const item = shuffledData[index];
+        progressText.innerText = `Question ${index + 1} / ${shuffledData.length}`;
         
         display.style.display = 'none';
-        void display.offsetWidth; // Trigger reflow
+        void display.offsetWidth; // Reflow
         display.style.display = 'block';
         
-        display.innerText = questions[index];
+        display.innerText = item.text;
 
-        const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
+        // استدعاء الصوت بناءً على المعرف الأصلي المخزن
+        const audioPath = `data/Squeezer/${folderNumber}/${item.audioId}.wav`;
         audioPlayer.src = audioPath;
         audioPlayer.play().catch(e => {});
         
@@ -156,13 +175,13 @@
     }
 
     startBtn.onclick = () => {
-        goOverlay.style.animation = "vetoPop 0.3s reverse forwards";
+        goOverlay.style.opacity = '0';
         setTimeout(() => {
             goOverlay.style.display = 'none';
             display.style.display = 'block';
             timerWrapper.style.display = 'flex';
             updateSlide(0);
-        }, 300);
+        }, 500);
     };
 
 })();

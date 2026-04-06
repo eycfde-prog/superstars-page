@@ -2,141 +2,239 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- التعديلات المطلوبة (الجزء التاسع) ---
-    const partNumber = 9; 
-    const storyTitle = "The Loud Mistake";
-    const storyText = `For three days, "Clay" stayed inside his tent. He was very depressed and did not want to see the eyeless faces. "Malika" visited him every day with food and water. She tried to be kind. She said, "Life in "Lambeth" is good, and my father says everything happens for a reason."
-"Clay" was not happy. He felt his life was over. Then, "Malika" told him that her father wanted doctors to check if his "tumors" (his eyes) were a dangerous disease. This made "Clay" very angry. He lost control and screamed, "I am not sick! You are the crazy ones! You are blind!"
-The scream was like a bomb in the quiet valley. "Malika" covered her ears in pain and collapsed on the ground. Immediately, guards rushed into the tent and pointed sharp spears at "Clay's" chest. They moved with amazing speed and accuracy.
-"Clay" felt terrible. He wondered if his loud voice had hurt her. The guards grabbed him and dragged him back to the large golden tent. This time, he was not a guest. He was a prisoner who had harmed the Leader’s daughter.`;
-    // ---------------------------------------
-
     container.innerHTML = ''; 
-    container.style.cssText = `
-        height:100%; width:100%; display:flex; justify-content:center; align-items:center; 
-        background: radial-gradient(circle, #1a1a1a 0%, #000 100%); overflow:hidden; font-family: 'Georgia', serif;
-    `;
+    container.style.cssText = `height:100%; width:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#050505; font-family:'Segoe UI', sans-serif; direction:ltr; color:white;`;
 
-    container.innerHTML = `
-        <style>
-            .book-wrapper {
-                position: relative; width: 96%; height: 94vh;
-                background: #d9cfb9; border-radius: 4px;
-                box-shadow: 
-                    8px 0 0 -2px #b8a689, 16px 0 0 -4px #d9cfb9, 24px 0 0 -6px #b8a689,
-                    -8px 0 0 -2px #b8a689, -16px 0 0 -4px #d9cfb9, -24px 0 0 -6px #b8a689,
-                    0 40px 80px rgba(0,0,0,0.9);
-                transition: all 0.3s ease;
-            }
+    let currentSlide = 0;
+    let subStep = 0;
 
-            .book-content {
-                display: flex; width: 100%; height: 100%; position: relative;
-                overflow: hidden; border: 1px solid rgba(0,0,0,0.1);
-            }
-
-            .book-spine-area {
-                position: absolute; left: 50%; top: 0; width: 40px; height: 100%;
-                z-index: 10; transform: translateX(-50%);
-                display: flex; pointer-events: none;
-            }
-            .spine-left { flex: 1; background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%); }
-            .spine-right { flex: 1; background: linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%); }
-            .spine-center { width: 1px; background: rgba(0,0,0,0.1); }
-
-            .page { flex: 1; background: #d9cfb9; position: relative; }
-
-            .left-page {
-                display: flex; justify-content: center; align-items: center; padding: 10px;
-                background: linear-gradient(90deg, #c9beaa 0%, #d9cfb9 15%);
-            }
-
-            .image-box {
-                width: 100%; height: 100%; 
-                display: flex; justify-content: center; align-items: center;
-                overflow: hidden; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-            }
-
-            .image-box img { 
-                width: 100%; height: 100%; 
-                object-fit: contain;
-                mix-blend-mode: multiply;
-                opacity: 0.9;
-                transition: transform 0.8s ease;
-            }
-
-            .right-page {
-                padding: 3vw 4vw; overflow-y: auto; color: #3a352a;
-                background: linear-gradient(-90deg, #c9beaa 0%, #d9cfb9 15%);
-                scrollbar-width: none;
-            }
-            .right-page::-webkit-scrollbar { display: none; }
-
-            .story-title { font-size: 3vw; color: #4a2e15; text-align: center; margin-bottom: 20px; font-variant: small-caps; border-bottom: 2px solid #b8a689; padding-bottom: 10px; }
-            .story-content { font-size: 2.2vw; line-height: 1.6; text-align: justify; }
-            b { color: #8e6d3d; font-weight: 800; }
-            hr { border: none; height: 1px; background: #b8a689; margin: 30px 0; opacity: 0.5; }
-
-            .img-bump { transform: scale(1.03); }
-
-            @media (max-width: 768px) {
-                .book-content { flex-direction: column; }
-                .book-spine-area { width: 100%; height: 20px; left: 0; top: 50%; transform: translateY(-50%); flex-direction: column; }
-                .spine-left { background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.15)); }
-                .spine-right { background: linear-gradient(to top, rgba(0,0,0,0), rgba(0,0,0,0.15)); }
-                .story-title { font-size: 6vw; }
-                .story-content { font-size: 5vw; }
-            }
-        </style>
-
-        <div class="book-wrapper">
-            <div class="book-content">
-                <div class="book-spine-area">
-                    <div class="spine-left"></div>
-                    <div class="spine-center"></div>
-                    <div class="spine-right"></div>
-                </div>
-                
-                <div class="page left-page">
-                    <div class="image-box" id="book-img-box">
-                        <img src="data/reading/${partNumber}.png" id="main-img"
-                             onerror="this.src='https://via.placeholder.com/800x1000/d9cfb9/4a2e15?text=${storyTitle.replace(/ /g, '+')}Text'">
-                    </div>
-                </div>
-
-                <div class="page right-page" id="story-scroller">
-                    <h1 class="story-title">${storyTitle}</h1>
-                    <div class="story-content">
-                        ${storyText.replace(/Clay/g, '<b>Clay</b>').replace(/\n/g, '<br>')}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    const imgBox = document.getElementById('book-img-box');
-    const mainImg = document.getElementById('main-img');
-    let scrollTimeout;
-
-    function triggerImgAnim() {
-        imgBox.classList.add('img-bump');
-        mainImg.style.transform = "scale(1.08)";
+    const slides = [
+        /* 1: Title */
+        { type: 'title', content: 'PRESENT SIMPLE', subtitle: 'FACTS & ROUTINE', color: '#e74c3c', usage: 'Habits - Facts - Daily Routine' },
         
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            imgBox.classList.remove('img-bump');
-            mainImg.style.transform = "scale(1)";
-        }, 500);
+        /* 2: Timeline */
+        { 
+            type: 'timeline', 
+            title: 'The Routine', 
+            content: 'Actions that happen <span style="color:#2ecc71">generally</span> or <span style="color:#2ecc71">repeatedly</span>.' 
+        },
+
+        /* 3: Formulation */
+        { 
+            type: 'formulation', 
+            title: 'The Two Teams', 
+            groups: [
+                { sub: "I - We - You - They", verb: "Infinitive (Base Form)", color: "#3498db", desc: "Keep it simple!" },
+                { sub: "He - She - It", verb: "Infinitive + <span style='color:#f1c40f;'>S / ES / IES</span>", color: "#f1c40f", desc: "The S-Team!" }
+            ]
+        },
+
+        /* 4: Reveal List */
+        { 
+            type: 'reveal-list', 
+            title: 'Daily Life Examples',
+            items: [
+                "1. I sleep well every night.",
+                "2. He explains grammar smartly.",
+                "3. She cooks lunch every day.",
+                "4. We take a class every week.",
+                "5. They feel happy at the park."
+            ] 
+        },
+
+        /* 5: Negative Transform */
+        { 
+            type: 'transform', 
+            title: 'The Negative',
+            desc: 'Use DON\'T or DOESN\'T (+ Base Form)',
+            pairs: [
+                { pos: "I sleep well.", neg: "I <span style='color:#e74c3c;'>DON'T</span> sleep well." },
+                { pos: "He works hard.", neg: "He <span style='color:#e74c3c;'>DOESN'T WORK</span> hard." },
+                { pos: "She plays tennis.", neg: "She <span style='color:#e74c3c;'>DOESN'T PLAY</span> tennis." }
+            ]
+        },
+
+        /* 6: Question Transform */
+        { 
+            type: 'transform', 
+            title: 'The Question',
+            desc: 'Start with DO or DOES',
+            pairs: [
+                { pos: "You practice English.", neg: "<span style='color:#f1c40f;'>DO</span> you practice English?" },
+                { pos: "He works here.", neg: "<span style='color:#f1c40f;'>DOES</span> he work here?" },
+                { pos: "It rains a lot.", neg: "<span style='color:#f1c40f;'>DOES</span> it rain a lot?" }
+            ]
+        },
+
+        /* 7: Spelling Rules */
+        { 
+            type: 'spelling-grid', 
+            title: 'Spelling Mastery',
+            rules: [
+                { end: "ss, o, x, ch, sh", add: "+ES", examples: "Goes, Watches, Fixes" },
+                { end: "Consonant + y", add: "(-y) + IES", examples: "Cries, Flies, Studies" }
+            ]
+        },
+
+        /* 8: Keywords */
+        { 
+            type: 'reveal-list', 
+            title: 'Frequency Keywords',
+            items: [
+                "✦ Always / Usually",
+                "✦ Often / Sometimes",
+                "✦ Hardly ever / Never",
+                "✦ Every day / Every week",
+                "✦ Once a month / Twice a year"
+            ] 
+        },
+
+        /* --- Quiz Section (5 Questions) --- */
+        { 
+            type: 'mcq', 
+            question: "1. The cat _________ peacefully next to me every day.",
+            options: ["A) Sleep", "B) Sleeps", "C) Sleeping", "D) Slept"],
+            answer: 1 
+        },
+        { 
+            type: 'mcq', 
+            question: "2. We _________ (not) like coffee in the morning.",
+            options: ["A) doesn't", "B) isn't", "C) don't", "D) haven't"],
+            answer: 2 
+        },
+        { 
+            type: 'mcq', 
+            question: "3. _________ your brother play the guitar?",
+            options: ["A) Do", "B) Does", "C) Is", "D) Are"],
+            answer: 1 
+        },
+        { 
+            type: 'mcq', 
+            question: "4. She _________ her homework early.",
+            options: ["A) do", "B) does", "C) doing", "D) did"],
+            answer: 1 
+        },
+        { 
+            type: 'mcq', 
+            question: "5. They always _________ to the gym on Fridays.",
+            options: ["A) goes", "B) go", "C) going", "D) gone"],
+            answer: 1 
+        },
+        
+        { type: 'title', content: 'FANTASTIC!', subtitle: 'PRESENT PERFECTED', color: '#3498db', usage: 'READY FOR THE CHALLENGE!' }
+    ];
+
+    function render() {
+        container.innerHTML = '';
+        const s = slides[currentSlide];
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = `width:95%; max-width:1400px; text-align:center; animation: vetoFadeIn 0.5s ease;`;
+
+        if (s.type === 'title') {
+            wrapper.innerHTML = `
+                <div style="font-size:2.5vw; color:#444; letter-spacing:15px; margin-bottom:20px; text-transform:uppercase; font-weight:bold;">${s.subtitle}</div>
+                <h1 style="font-size:9vw; font-weight:900; color:${s.color}; margin:0; line-height:1; text-shadow: 0 10px 40px rgba(231,76,60,0.3);">${s.content}</h1>
+                <div style="font-size:3.5vw; color:#fff; font-weight:bold; margin-top:50px; border-top:6px solid ${s.color}; display:inline-block; padding-top:20px;">${s.usage}</div>
+            `;
+        } 
+        else if (s.type === 'timeline') {
+            wrapper.innerHTML = `
+                <h2 style="font-size:5rem; color:#e74c3c; margin-bottom:50px; font-weight:900;">${s.title}</h2>
+                <p style="font-size:3.5rem; margin-bottom:100px; color:#ddd;">${s.content}</p>
+                <div style="position:relative; width:85%; margin:100px auto; height:12px; background:#222; border-radius:10px;">
+                    <div style="position:absolute; left:20%; width:60%; height:100%; background:linear-gradient(90deg, transparent, #2ecc71, transparent); opacity:${subStep >= 1 ? 1 : 0}; transition:0.8s; border-radius:10px;"></div>
+                    <div style="position:absolute; left:50%; top:-25px; height:60px; width:6px; background:#fff; box-shadow: 0 0 20px #fff;"></div>
+                    <div style="position:absolute; width:100%; top:50px; display:flex; justify-content:space-between; color:#444; font-size:2rem; font-weight:bold; letter-spacing:5px;">
+                        <span>PAST</span><span>PRESENT (HABIT)</span><span>FUTURE</span>
+                    </div>
+                </div>`;
+        }
+        else if (s.type === 'formulation') {
+            wrapper.innerHTML = `
+                <h2 style="font-size:5.5rem; color:#e74c3c; margin-bottom:50px; font-weight:900;">THE STRUCTURE</h2>
+                <div style="display:flex; flex-direction:column; gap:30px; align-items:center;">
+                    ${s.groups.map(g => `
+                        <div style="background:#111; padding:45px; border-radius:30px; width:90%; border:3px solid ${g.color}; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                            <div style="text-align:left;">
+                                <div style="font-size:4rem; color:${g.color}; font-weight:900;">${g.sub}</div>
+                                <div style="font-size:1.8rem; color:#666; font-weight:bold;">${g.desc}</div>
+                            </div>
+                            <div style="font-size:4.5rem; color:#fff; font-weight:bold;">➔ ${g.verb}</div>
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
+        else if (s.type === 'reveal-list') {
+            wrapper.innerHTML = `
+                <h2 style="font-size:5.5rem; color:#e74c3c; margin-bottom:40px; font-weight:900;">EXAMPLES</h2>
+                <div style="display:flex; flex-direction:column; gap:15px; text-align:left; max-width:1000px; margin: 0 auto;">
+                    ${s.items.map((item, i) => `
+                        <div style="opacity:${i <= subStep ? 1 : 0.05}; transform:translateX(${i <= subStep ? 0 : -50}px); transition:0.3s; background:#111; padding:25px; border-radius:20px; font-size:2.8rem; font-weight:bold; border-left:15px solid #e74c3c;">
+                            ${item}
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
+        else if (s.type === 'transform') {
+            let pair = s.pairs[Math.floor(subStep/2)] || s.pairs[0];
+            let isChanged = subStep % 2 !== 0;
+            wrapper.innerHTML = `
+                <h2 style="font-size:5.5rem; color:#e74c3c; margin:0; font-weight:900;">${s.title}</h2>
+                <p style="font-size:2.5rem; color:#555; margin-bottom:40px; font-weight:bold;">${s.desc}</p>
+                <div style="background:#111; padding:80px; border-radius:50px; font-size:5.5rem; border:4px solid #333; color:${isChanged ? '#f1c40f' : '#fff'}; transition: 0.3s; font-weight:bold; box-shadow: inset 0 0 50px rgba(0,0,0,0.8);">
+                    ${isChanged ? pair.neg : pair.pos}
+                </div>`;
+        }
+        else if (s.type === 'spelling-grid') {
+            wrapper.innerHTML = `
+                <h2 style="font-size:5.5rem; color:#e74c3c; margin-bottom:50px; font-weight:900;">SPELLING RULES</h2>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:40px;">
+                    ${s.rules.map(r => `
+                        <div style="background:#111; padding:50px; border-radius:40px; border:2px solid #333; text-align:left; box-shadow: 0 15px 40px rgba(0,0,0,0.5);">
+                            <div style="color:#e74c3c; font-size:2.2rem; font-weight:bold; margin-bottom:15px; text-transform:uppercase;">Ends in: ${r.end}</div>
+                            <div style="color:#f1c40f; font-size:5rem; font-weight:900; margin-bottom:25px;">${r.add}</div>
+                            <div style="color:#666; font-size:2.2rem; font-style:italic; font-weight:bold; border-top:1px solid #222; padding-top:20px;">Ex: ${r.examples}</div>
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
+        else if (s.type === 'mcq') {
+            wrapper.innerHTML = `
+                <div style="text-align:left; background:#111; padding:70px; border-radius:50px; border:3px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
+                    <div style="font-size:4rem; font-weight:900; margin-bottom:50px; color:#fff; line-height:1.2;">${s.question}</div>
+                    <div style="display:grid; grid-template-columns: 1fr; gap:25px;">
+                        ${s.options.map((opt, i) => {
+                            let isCorrect = subStep >= 2 && i === s.answer;
+                            let border = isCorrect ? '8px solid #2ecc71' : '2px solid #333';
+                            let bg = isCorrect ? 'rgba(46,204,113,0.1)' : 'transparent';
+                            let color = isCorrect ? '#2ecc71' : (subStep >= 2 ? '#444' : '#fff');
+                            return `<div style="background:${bg}; border:${border}; padding:30px; border-radius:25px; font-size:3.2rem; font-weight:bold; color:${color}; transition:0.3s;">${opt}</div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+        }
+
+        container.appendChild(wrapper);
     }
 
-    const scroller = document.getElementById('story-scroller');
-    scroller.onscroll = () => triggerImgAnim();
-
     document.onkeydown = (e) => {
-        const step = 150;
-        if (e.keyCode === 32 || e.keyCode === 40 || e.keyCode === 13) {
-            scroller.scrollBy({ top: step, behavior: 'smooth' });
-        } else if (e.keyCode === 38) {
-            scroller.scrollBy({ top: -step, behavior: 'smooth' });
+        const s = slides[currentSlide];
+        if (e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 32) { 
+            if ((s.type === 'timeline' || s.type === 'reveal-list') && subStep < (s.items ? s.items.length - 1 : 1)) subStep++;
+            else if (s.type === 'transform' && subStep < (s.pairs.length * 2) - 1) subStep++;
+            else if (s.type === 'mcq' && subStep < 2) subStep++;
+            else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
+            else { if(window.triggerVetoDone) window.triggerVetoDone(); }
+        } else if (e.keyCode === 37) { 
+            if (subStep > 0) subStep--;
+            else if (currentSlide > 0) { currentSlide--; subStep = 0; }
         }
+        render();
     };
+
+    const style = document.createElement('style');
+    style.innerHTML = `@keyframes vetoFadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }`;
+    document.head.appendChild(style);
+
+    render();
 })();

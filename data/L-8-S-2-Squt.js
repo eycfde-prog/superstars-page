@@ -104,7 +104,7 @@
             display.style.transform = 'translateY(0) scale(1)';
             progressBar.style.width = `${(index / questions.length) * 100}%`;
             
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
             audioPlayer.src = audioPath;
             audioPlayer.play().catch(() => {});
             

@@ -99,7 +99,7 @@
             display.style.transform = 'scale(1) translateY(0)';
             
             // Audio Path logic
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.mp3`;
+            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
             audioPlayer.src = audioPath;
             audioPlayer.play().catch(() => console.log("Waiting for interaction..."));
         }, 150);

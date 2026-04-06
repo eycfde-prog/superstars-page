@@ -2,7 +2,7 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    const questions = [
+    const rawQuestions = [
         "Did you sleep well last night?", "Was it sunny yesterday?", "Were you at the cinema on Friday?",
         "Did you have breakfast this morning?", "Was the exam difficult?", "Were your friends with you at the park?",
         "Did you do your homework yesterday?", "Was Albert Einstein a famous scientist?", "Were the shops open yesterday?",
@@ -14,6 +14,21 @@
         "Was your father angry with you?", "Did you eat pizza for lunch?", "Were we late for the lesson?",
         "Did you finish the task on time?", "Was Titanic a real ship?", "Did you like the story?"
     ];
+
+    // --- نظام اللخبطة من WOLF (ربط النص بالصوت الأصلي) ---
+    let shuffledData = rawQuestions.map((q, i) => ({
+        text: q,
+        audioId: i + 1
+    }));
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    shuffle(shuffledData);
+    // --------------------------------------------------
 
     let currentIdx = 0;
     let countdownInterval = null;
@@ -34,7 +49,7 @@
             .sq-question { font-size:5.5rem; text-align:center; max-width:85%; line-height:1.1; font-weight:900; display:none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
             .test-timer { font-size:4.5rem; color:#f1c40f; font-weight:900; margin-top:50px; width:130px; height:130px; border: 8px solid #f1c40f; border-radius:50%; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.3); }
             .timer-active { animation: pulseTimer 1s infinite; }
-            .go-overlay { position:absolute; inset:0; background:#020a10; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; }
+            .go-overlay { position:absolute; inset:0; background:#020a10; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:100; transition: 0.5s; }
             .go-btn { background:#f1c40f; color:#000; border:none; padding:35px 110px; font-size:4rem; cursor:pointer; border-radius:20px; font-weight:900; transition:0.3s; box-shadow: 0 0 50px rgba(241, 196, 15, 0.2); }
             .go-btn:hover { background:#fff; transform: scale(1.05); }
             .past-tag { color: #f1c40f; }
@@ -45,6 +60,7 @@
             <h1 style="margin-bottom:10px; font-size:1.5rem; letter-spacing:10px; color:#f1c40f;">SQUEEZER #3</h1>
             <h2 style="margin-bottom:40px; font-size:3.5rem; font-weight:900; color:#fff;">PAST TENSE <span class="past-tag">SPEED TEST</span></h2>
             <button class="go-btn" id="startBtn">READY?</button>
+            <p style="margin-top:20px; color:#444; letter-spacing:3px;">SHUFFLE PROTOCOL ACTIVE</p>
         </div>
 
         <div class="sq-counter">Test Mode: 2s Interval</div>
@@ -83,7 +99,7 @@
     }
 
     function nextQuestion() {
-        if (currentIdx < questions.length - 1) {
+        if (currentIdx < shuffledData.length - 1) {
             currentIdx++;
             updateSlide(currentIdx);
         } else {
@@ -91,20 +107,23 @@
             display.innerHTML = "<span style='color:#f1c40f'>MISSION ACCOMPLISHED!</span>";
             timerDisplay.style.display = "none";
             progressBar.style.width = "100%";
+            if(window.triggerVetoDone) window.triggerVetoDone();
         }
     }
 
     function updateSlide(index) {
+        const item = shuffledData[index];
         display.style.opacity = '0';
         display.style.transform = 'translateY(30px) scale(0.9)';
         
         setTimeout(() => {
-            display.innerText = questions[index];
+            display.innerText = item.text;
             display.style.opacity = '1';
             display.style.transform = 'translateY(0) scale(1)';
-            progressBar.style.width = `${(index / questions.length) * 100}%`;
+            progressBar.style.width = `${(index / shuffledData.length) * 100}%`;
             
-            const audioPath = `data/Squeezer/${folderNumber}/${index + 1}.wav`;
+            // استدعاء الصوت بناء على المعرف الأصلي المخزن
+            const audioPath = `data/Squeezer/${folderNumber}/${item.audioId}.wav`;
             audioPlayer.src = audioPath;
             audioPlayer.play().catch(() => {});
             

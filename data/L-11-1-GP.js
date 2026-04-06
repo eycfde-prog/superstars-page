@@ -128,17 +128,33 @@
         `;
 
         const vid = card.querySelector('video');
+        let playPromise; // متغير لمراقبة حالة التشغيل
 
         // Preview عند التمرير بالماوس
         card.onmouseenter = () => {
-            vid.play().catch(e => console.warn("Stream pending interaction"));
-        };
-        card.onmouseleave = () => {
-            vid.pause();
-            vid.currentTime = 0;
+            playPromise = vid.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // هنا بنمتص التحذير عشان ميظهرش في الـ Console
+                    console.log("Hover play prevented: ", error.message);
+                });
+            }
         };
 
-        // تشغيل كامل عند الضغط
+        card.onmouseleave = () => {
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // مش هيعمل pause إلا لما يتأكد إن الـ play بدأ فعلاً
+                    vid.pause();
+                    vid.currentTime = 0;
+                }).catch(() => {
+                    // لو الـ play أصلاً فشل، بنعمل pause عادي
+                    vid.pause();
+                });
+            }
+        };
+
+        // تشغيل كامل عند الضغط (Fullscreen)
         card.onclick = () => {
             vid.muted = false; 
             if (vid.requestFullscreen) {

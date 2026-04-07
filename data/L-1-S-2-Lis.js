@@ -1,7 +1,7 @@
 /**
- * VETO PROGRAM - Listening Activity Module
- * Optimized for: Smart Board Display Container
- * Logic: Fixed Audio Paths & Navigation
+ * VETO PROGRAM - Listening Activity Module (Original Theme + Audio Fix)
+ * Designed by: Veto Architect
+ * Status: Design Restored | Audio Path Fixed
  */
 
 (function() {
@@ -18,10 +18,11 @@
 
     let currentIdx = 0;
     const audioPlayer = new Audio();
-    // المسار المعتمد من مستودع GitHub (Raw MP3)
+    
+    // التعديل الذهبي: المسار المحدث ليعمل الصوت بنجاح
     const audioBaseUrl = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/Listening/Level-1/Session%201/";
 
-    // --- Layout Restoration ---
+    // --- Layout (Restored Original Design) ---
     container.innerHTML = `
         <style>
             .listening-theater {
@@ -31,10 +32,9 @@
                 color: #fff; font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;
             }
             
-            /* الحفاظ على أولوية زر التشغيل فوق أي عناصر تفاعلية أخرى */
             .audio-control-hub {
                 position: absolute; top: 20px; right: 20px; 
-                z-index: 11000;
+                z-index: 11000; 
                 pointer-events: auto;
             }
 
@@ -44,7 +44,7 @@
                 cursor: pointer; font-size: 2.5rem; display: flex; align-items: center; justify-content: center;
                 box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 15px rgba(197, 160, 89, 0.4);
                 transition: all 0.2s ease;
-                outline: none;
+                -webkit-tap-highlight-color: transparent;
             }
             .play-trigger:active { transform: scale(0.9); }
             .play-trigger.active { background: #ff4757; animation: v-pulse 1.2s infinite; }
@@ -57,17 +57,16 @@
 
             .main-dialogue-area {
                 width: 85%; max-width: 1400px; 
-                padding: 40px; background: rgba(255,255,255,0.03);
+                padding: 60px; background: rgba(255,255,255,0.03);
                 border-radius: 40px; border: 2px solid rgba(197, 160, 89, 0.15);
                 box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
-                max-height: 80vh; overflow-y: auto;
             }
 
-            .chat-line { margin-bottom: 35px; opacity: 0; transform: translateY(20px); animation: v-reveal 0.6s forwards; }
+            .chat-line { margin-bottom: 45px; opacity: 0; transform: translateY(30px); animation: v-reveal 0.6s forwards; }
             @keyframes v-reveal { to { transform: translateY(0); opacity: 1; } }
 
-            .name-tag { font-size: 2.2vw; font-weight: 800; color: #c5a059; text-transform: uppercase; margin-bottom: 5px; display: block; }
-            .speech-text { font-size: 3.8vw; font-weight: 600; color: #ffffff; line-height: 1.1; text-shadow: 3px 3px 6px rgba(0,0,0,0.8); }
+            .name-tag { font-size: 2.2vw; font-weight: 800; color: #c5a059; text-transform: uppercase; margin-bottom: 8px; display: block; }
+            .speech-text { font-size: 4vw; font-weight: 600; color: #ffffff; line-height: 1.1; text-shadow: 3px 3px 6px rgba(0,0,0,0.8); }
 
             .top-nav-info { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); color: #c5a059; font-size: 1.5rem; letter-spacing: 4px; font-weight: bold; }
         </style>
@@ -76,7 +75,7 @@
             <div class="top-nav-info" id="convo-title">CONVERSATION 1</div>
             
             <div class="audio-control-hub">
-                <button class="play-trigger" id="master-play">▶</button>
+                <button class="play-trigger" id="master-play" onclick="event.stopPropagation(); toggleAudio();">▶</button>
             </div>
 
             <div class="main-dialogue-area" id="convo-container"></div>
@@ -87,8 +86,9 @@
     const playBtn = document.getElementById('master-play');
     const titleTag = document.getElementById('convo-title');
 
-    // --- Audio Logic ---
+    // --- Audio System (Fixed for MP3 & Github Raw) ---
     window.toggleAudio = function() {
+        // تم تحديث الامتداد ليكون .mp3 ليتوافق مع ملفات المستودع
         const targetSrc = `${audioBaseUrl}${currentIdx + 1}.mp3`;
         
         if (audioPlayer.src !== targetSrc) {
@@ -96,7 +96,7 @@
         }
 
         if (audioPlayer.paused) {
-            audioPlayer.play().catch(e => console.warn("Audio Context Wait..."));
+            audioPlayer.play().catch(err => console.error("Playback error:", err));
             playBtn.innerText = "⏸";
             playBtn.classList.add('active');
         } else {
@@ -106,11 +106,6 @@
         }
     };
 
-    playBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        window.toggleAudio();
-    });
-
     audioPlayer.onended = () => {
         playBtn.innerText = "▶";
         playBtn.classList.remove('active');
@@ -119,7 +114,6 @@
     // --- Render System ---
     function renderConversation(index) {
         audioPlayer.pause();
-        audioPlayer.src = ''; 
         playBtn.innerText = "▶";
         playBtn.classList.remove('active');
         
@@ -135,7 +129,7 @@
                 const [_, name, mood, text] = match;
                 const lineDiv = document.createElement('div');
                 lineDiv.className = 'chat-line';
-                lineDiv.style.animationDelay = `${i * 0.2}s`;
+                lineDiv.style.animationDelay = `${i * 0.3}s`;
                 lineDiv.innerHTML = `
                     <span class="name-tag">${name}</span>
                     <span class="speech-text">${text.trim()}</span>

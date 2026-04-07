@@ -1,119 +1,147 @@
-/**
- * VETO PROGRAM - Listening Activity Module
- * Designed by: Veto Architect
- * Target: High-visibility Smart Boards (4-Meter Rule)
- */
-
 (function() {
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- Data Storage (The 4 Conversations) ---
+    // 1. بيانات المحادثات (مقسمة لسهولة العرض)
     const conversations = [
-        `[Ahmed - Friendly]: I am very happy today. <break time="1.0s" /> Veto is a great place for us. <break time="1.5s" /> [Amy - Enthusiastic]: You are right. <break time="1.0s" /> Look! Julia is there. <break time="1.5s" /> [Ahmed - Curious]: Is she a teacher? <break time="1.5s" /> [Amy - Normal]: No, she is a student like us.`,
-        `[Chris - Slightly rushed]: Julia, where is my English book? <break time="1.0s" /> I need it now. <break time="1.5s" /> [Julia - Calm]: It is on the table. <break time="1.0s" /> Is this your blue pen? <break time="1.5s" /> [Chris - Relieved]: Yes, it is mine. <break time="1.5s" /> We are ready for the Veto lesson.`,
-        `[Amy - Friendly]: Ahmed, I have an orange in my bag. <break time="1.5s" /> [Ahmed - Simple]: I have two apples and a banana. <break time="1.5s" /> [Amy - Questioning]: Are they for lunch? <break time="1.5s" /> [Ahmed - Cheerful]: Yes, they are. <break time="1.0s" /> We can eat them at school.`,
-        `[Julia - Pointing]: Chris, look at him. <break time="1.0s" /> That is our teacher. <break time="1.5s" /> [Chris - Appreciative]: He is very kind. <break time="1.0s" /> He helps us every day. <break time="1.5s" /> [Julia - Positive]: I like his way of teaching. <break time="1.5s" /> [Chris - Proud]: Veto has the best teachers.`
+        {
+            id: "L1-C1",
+            lines: [
+                { name: "Ahmed", mood: "Friendly", text: "I am very happy today. Veto is a great place for us." },
+                { name: "Amy", mood: "Enthusiastic", text: "You are right. Look! Julia is there." },
+                { name: "Ahmed", mood: "Curious", text: "Is she a teacher?" },
+                { name: "Amy", mood: "Normal", text: "No, she is a student like us." }
+            ]
+        },
+        {
+            id: "L1-C2",
+            lines: [
+                { name: "Chris", mood: "Slightly rushed", text: "Julia, where is my English book? I need it now." },
+                { name: "Julia", mood: "Calm", text: "It is on the table. Is this your blue pen?" },
+                { name: "Chris", mood: "Relieved", text: "Yes, it is mine. We are ready for the Veto lesson." }
+            ]
+        },
+        {
+            id: "L1-C3",
+            lines: [
+                { name: "Amy", mood: "Friendly", text: "Ahmed, I have an orange in my bag." },
+                { name: "Ahmed", mood: "Simple", text: "I have two apples and a banana." },
+                { name: "Amy", mood: "Questioning", text: "Are they for lunch?" },
+                { name: "Ahmed", mood: "Cheerful", text: "Yes, they are. We can eat them at school." }
+            ]
+        },
+        {
+            id: "L1-C4",
+            lines: [
+                { name: "Julia", mood: "Pointing", text: "Chris, look at him. That is our teacher." },
+                { name: "Chris", mood: "Appreciative", text: "He is very kind. He helps us every day." },
+                { name: "Julia", mood: "Positive", text: "I like his way of teaching." },
+                { name: "Chris", mood: "Proud", text: "Veto has the best teachers." }
+            ]
+        }
     ];
 
     let currentIdx = 0;
 
-    // --- UI Construction ---
-    container.innerHTML = `
+    // 2. التنسيق البصري (Veto Listening Theme)
+    const style = `
         <style>
-            .listening-engine {
+            .listening-wrapper {
                 height: 100%; width: 100%; 
-                background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+                background: radial-gradient(circle, #0a0a0a 0%, #000 100%);
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
-                color: #fff; font-family: 'Segoe UI', sans-serif; position: relative;
-                overflow: hidden;
+                color: #fff; font-family: 'Segoe UI', Roboto, sans-serif;
+                padding: 40px; position: relative;
             }
-            .convo-header {
-                position: absolute; top: 40px; font-size: 1.5rem;
-                color: #c5a059; letter-spacing: 5px; text-transform: uppercase;
-                border-bottom: 2px solid #c5a059; padding-bottom: 5px;
+            .conv-header {
+                position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+                color: var(--primary-gold, #c5a059); font-size: 2vw; font-weight: bold;
+                letter-spacing: 5px; border-bottom: 2px solid #c5a059; padding-bottom: 5px;
             }
-            .dialogue-box {
-                width: 85%; max-width: 1200px; padding: 40px;
-                background: rgba(255,255,255,0.03); border-radius: 20px;
-                border-left: 8px solid #c5a059; transition: all 0.5s ease;
+            .chat-container {
+                width: 90%; max-width: 1200px; display: flex; flex-direction: column; gap: 30px;
             }
-            .line-item { margin-bottom: 30px; animation: slideIn 0.5s forwards; opacity: 0; }
-            @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+            .bubble {
+                display: flex; flex-direction: column;
+                animation: slideIn 0.5s ease forwards; opacity: 0;
+            }
+            .speaker-name {
+                font-size: 1.8vw; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;
+                display: flex; align-items: center; gap: 15px;
+            }
+            .speaker-name span { font-size: 1.1vw; font-weight: normal; color: #888; text-transform: none; }
+            .speaker-text {
+                font-size: 3.5vw; line-height: 1.2; font-weight: 600;
+                padding-left: 20px; border-left: 5px solid;
+            }
+            /* Colors for distinct speakers */
+            .Ahmed { color: #4facfe; } .Amy { color: #f093fb; }
+            .Chris { color: #43e97b; } .Julia { color: #fa709a; }
             
-            .speaker-name { 
-                display: inline-block; font-weight: 900; font-size: 2.2vw; 
-                color: #c5a059; margin-bottom: 10px; text-transform: uppercase;
+            .text-white { color: #f5f5f5; border-color: currentColor; }
+
+            @keyframes slideIn {
+                from { transform: translateX(30px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
             }
-            .speaker-text { 
-                display: block; font-size: 3.8vw; line-height: 1.3; font-weight: 500;
-                color: #e0e0e0; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            .progress-dots {
+                position: absolute; bottom: 30px; display: flex; gap: 15px;
             }
-            .controls-hint {
-                position: absolute; bottom: 30px; color: rgba(197, 160, 89, 0.4);
-                font-size: 1.2rem;
-            }
+            .dot { width: 12px; height: 12px; border-radius: 50%; background: #333; transition: 0.3s; }
+            .dot.active { background: var(--primary-gold, #c5a059); transform: scale(1.5); }
         </style>
-        <div class="listening-engine" id="engine-main">
-            <div class="convo-header" id="convo-num">Conversation 1 / 4</div>
-            <div class="dialogue-box" id="dialogue-display"></div>
-            <div class="controls-hint">Press ENTER or Click Right Side for NEXT</div>
-        </div>
     `;
 
-    const display = document.getElementById('dialogue-display');
-    const header = document.getElementById('convo-num');
+    // 3. وظيفة الرسم
+    function render() {
+        const conv = conversations[currentIdx];
+        let contentHtml = `
+            <div class="listening-wrapper">
+                <div class="conv-header">${conv.id}</div>
+                <div class="chat-container">
+        `;
 
-    // --- Core Logic ---
-    function parseAndRender(idx) {
-        const rawText = conversations[idx];
-        header.innerText = `Conversation ${idx + 1} / ${conversations.length}`;
-        display.innerHTML = '';
-
-        // Clean & Split: Removing <break...> tags and splitting by [Name]
-        const cleaned = rawText.replace(/<break[^>]*>/g, '');
-        const parts = cleaned.split(/(?=\[.*?\])/);
-
-        parts.forEach((part, i) => {
-            const match = part.match(/\[(.*?)\s-\s(.*?)\]:\s(.*)/);
-            if (match) {
-                const [_, name, mood, text] = match;
-                const div = document.createElement('div');
-                div.className = 'line-item';
-                div.style.animationDelay = `${i * 0.3}s`;
-                div.innerHTML = `
-                    <span class="speaker-name">${name} <small style="font-size:1rem; color:#888; font-weight:normal;">(${mood})</small></span>
-                    <span class="speaker-text">${text.trim()}</span>
-                `;
-                display.appendChild(div);
-            }
+        conv.lines.forEach((line, i) => {
+            contentHtml += `
+                <div class="bubble" style="animation-delay: ${i * 0.3}s">
+                    <div class="speaker-name ${line.name}">
+                        ${line.name} <span>(${line.mood})</span>
+                    </div>
+                    <div class="speaker-text text-white">
+                        ${line.text}
+                    </div>
+                </div>
+            `;
         });
+
+        contentHtml += `</div><div class="progress-dots">`;
+        conversations.forEach((_, i) => {
+            contentHtml += `<div class="dot ${i === currentIdx ? 'active' : ''}"></div>`;
+        });
+        contentHtml += `</div></div>`;
+
+        container.innerHTML = style + contentHtml;
     }
 
+    // 4. التحكم (مدمج مع نظام smart-board)
     window.nextSlide = function() {
         if (currentIdx < conversations.length - 1) {
             currentIdx++;
-            parseAndRender(currentIdx);
+            render();
         } else {
-            // Shake effect or feedback that it's the end
-            display.style.transform = "translateX(10px)";
-            setTimeout(() => display.style.transform = "translateX(0)", 100);
+            // وميض بسيط للإشارة للنهاية
+            container.style.opacity = "0.5";
+            setTimeout(() => container.style.opacity = "1", 100);
         }
     };
 
     window.prevSlide = function() {
         if (currentIdx > 0) {
             currentIdx--;
-            parseAndRender(currentIdx);
+            render();
         }
     };
 
-    // Keyboard Integration (Direct from the system instructions)
-    document.onkeydown = (e) => {
-        if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") nextSlide();
-        if (e.key === "ArrowLeft") prevSlide();
-    };
-
-    // Start First Slide
-    parseAndRender(currentIdx);
+    // تشغيل العرض الأول
+    render();
 })();

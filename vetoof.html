@@ -1,234 +1,221 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VETO PROGRAM | Hub v2.0</title>
+    <title>VETO PROGRAM | Main Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        /* Veto Architect Standars: 
-           1. Target: Large Screens / Smart Boards
-           2. Reading Distance: 4 Meters
-           3. Theme: Cinematic Dark Tech
-        */
-        
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto+Condensed:wght@400;700&display=swap');
-
         :root {
             --primary-gold: #c5a059;
-            --bright-gold: #f5d18f; /* لون ذهبي أسطع للتفاعل */
             --gold-glow: rgba(197, 160, 89, 0.4);
-            --bg-dark: #020202; /* أسود أعمق */
-            --card-bg: #111;
+            --bg-dark: #020202;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-color: #f0f0f0;
             --banner-height: 120px;
-            
-            /* أبعاد مخزن المسدس (The Revolver Cylinder) */
-            --rev-size: 220px; 
-            --node-size: 55px;
+            --transition-speed: 0.4s;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
 
         body {
             background-color: var(--bg-dark);
-            /* خلفية بتأثير شبكي تقني خفيف جداً */
+            /* Futuristic Technology & Robotics Background */
             background-image: 
-                linear-gradient(rgba(20, 20, 20, 0.8) 1px, transparent 1px),
-                linear-gradient(90px, rgba(20, 20, 20, 0.8) 1px, transparent 1px);
-            background-size: 50px 50px;
-            color: white;
-            font-family: 'Roboto Condensed', sans-serif; /* خط القراءة الأساسي */
+                linear-gradient(rgba(2, 2, 2, 0.8), rgba(2, 2, 2, 0.9)),
+                url('https://img.freepik.com/free-vector/digital-technology-background-with-abstract-geometric-shapes_1017-26801.jpg?t=st=1721245000~exp=1721248600~hmac=6b9319e59f40e70402b85a3a79d30c5e1c8d06d4e1723a1a63c8f2b7f0e0c0f0&w=1800');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color);
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
             overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* --- Header: Optimized for 4 Meters --- */
+        /* --- Optimized Banner --- */
         .top-banner {
             height: var(--banner-height);
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 60px;
-            background: rgba(0,0,0,0.9);
+            padding: 0 5%;
+            background: rgba(5, 5, 5, 0.7);
             backdrop-filter: blur(15px);
-            border-bottom: 2px solid var(--primary-gold);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 2px solid var(--glass-border);
             position: sticky;
             top: 0;
             z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .logo-img { height: 70px; width: auto; filter: drop-shadow(0 0 5px var(--gold-glow)); }
-        .mr-ezz-img { height: 100px; width: auto; border-radius: 8px; border: 1px solid var(--primary-gold); }
+        .logo-img { height: 70px; width: auto; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
+        .mr-ezz-img { height: 90px; width: auto; border-radius: 15px; border: 2px solid var(--primary-gold); box-shadow: 0 0 15px var(--gold-glow); }
         
         .top-banner h1 {
-            font-family: 'Oswald', sans-serif; /* خط عريض للعناوين */
-            font-size: 3.5rem; /* ضخم ومقروء */
-            font-weight: 700;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            background: linear-gradient(180deg, #fff 30%, var(--primary-gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px var(--gold-glow);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--primary-gold);
+            text-shadow: 0 0 15px var(--gold-glow);
+            text-align: center;
+            flex-grow: 1;
+            margin: 0 20px;
         }
 
-        /* --- Main Grid --- */
+        /* Mobile banner overrides */
+        @media (max-width: 767px) {
+            .top-banner { padding: 0 15px; height: 90px; }
+            .top-banner h1 { font-size: 1.3rem; letter-spacing: 1px; margin: 0 10px; }
+            .logo-img { height: 45px; }
+            .mr-ezz-img { height: 65px; border-radius: 10px; }
+        }
+
+        /* --- Levels Grid --- */
         .levels-container {
             display: grid;
-            /* 4 أعمدة ثابتة للشاشات الكبيرة */
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 60px;
-            padding: 80px 60px;
-            max-width: 1800px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 40px 5%;
+            max-width: 1400px;
             margin: 0 auto;
+            align-items: start;
         }
 
-        /* --- Veto Card (The Container) --- */
-        .level-card-wrapper {
-            position: relative;
-            background: var(--card-bg);
-            height: 280px;
-            border-radius: 12px;
-            border: 1px solid #222;
-            overflow: visible; /* ليسمح لمخزن المسدس بالخروج */
-            transition: all 0.4s ease;
+        @media (max-width: 480px) {
+            .levels-container {
+                grid-template-columns: 1fr; /* Single column on very small screens */
+                padding: 20px 15px;
+            }
+        }
+
+        /* --- Level Card & Drawer --- */
+        .level-block {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden; /* Crucial for drawer effect */
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .level-block:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold-glow);
+            box-shadow: 0 12px 40px rgba(197, 160, 89, 0.2);
+        }
+
+        /* Main Card Area */
+        .level-card {
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             cursor: pointer;
+            position: relative;
+            z-index: 10;
+            background: transparent;
+        }
+
+        .level-info {
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* ليكون العنوان بالأسفل */
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            gap: 5px;
         }
 
-        /* تأثير الـ Hover على الكارت */
-        .level-card-wrapper:hover {
-            border-color: var(--primary-gold);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(197, 160, 89, 0.2);
-        }
-
-        /* عنوان المستوى داخل الكارت */
-        .card-title {
-            text-align: center;
-            z-index: 10;
-        }
-        
-        .card-title .level-label {
-            font-size: 1rem;
+        .level-label {
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #888;
-            display: block;
-        }
-
-        .card-title .level-num {
-            font-family: 'Oswald', sans-serif;
-            font-size: 4rem;
-            font-weight: 700;
-            color: white;
-            line-height: 1;
-            margin-top: 5px;
-            transition: color 0.3s ease;
-        }
-
-        .level-card-wrapper:hover .level-num {
-            color: var(--primary-gold);
-        }
-
-        /* --- The Revolver System (الاختراع الجديد هنا) --- */
-        
-        /* الحاوية الأساسية للمخزن - تكون مخفية خلف الكارت */
-        .revolver-cylinder {
-            position: absolute;
-            width: var(--rev-size);
-            height: var(--rev-size);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0) rotate(-180deg); /* بداية الحركة: مخفي، مصغر، ومقلوب */
-            border-radius: 50%;
-            background: rgba(10, 10, 10, 0.95);
-            border: 4px solid #333;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            z-index: 5;
-            opacity: 0;
-            pointer-events: none; /* لا يتفاعل وهي مخفي */
-            
-            /* أنيميشن الفتح: سريع وميكانيكي */
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
-        }
-
-        /* الحالة النشطة عند الضغط على الكارت */
-        .level-card-wrapper.active {
-            border-color: var(--bright-gold);
-            background: #000;
-        }
-
-        /* إظهار المخزن بحركة دوراينة تفتح للخارج */
-        .level-card-wrapper.active .revolver-cylinder {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translate(-50%, -50%) scale(1) rotate(0deg); /* النهاية: مكبر ودوران صحيح */
-            border-color: var(--primary-gold);
-        }
-
-        /* النقطة المركزية في المخزن (Metal Center) */
-        .revolver-center {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: #222;
-            border: 3px solid #444;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: inset 0 0 10px #000;
-        }
-
-        /* الـ Sessions كطلقات داخل المخزن */
-        .session-bullet {
-            position: absolute;
-            width: var(--node-size);
-            height: var(--node-size);
-            background: linear-gradient(135deg, #333 0%, #111 100%);
-            border: 2px solid #444;
+            letter-spacing: 2px;
             color: #aaa;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Oswald', sans-serif;
-            font-weight: 700;
-            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .level-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary-gold);
+            line-height: 1;
+            text-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .level-icon {
+            font-size: 1.5rem;
+            color: var(--primary-gold);
+            transition: transform var(--transition-speed) ease;
+            opacity: 0.7;
+        }
+
+        /* Rotate icon when active */
+        .level-block.active .level-icon {
+            transform: rotate(-180deg);
+            opacity: 1;
+        }
+
+        /* --- Lectures Drawer (الدَّرَج) --- */
+        .lectures-drawer {
+            max-height: 0; /* Hidden state */
+            overflow: hidden;
+            transition: max-height var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 0 solid var(--glass-border);
+        }
+
+        /* Active state for drawer */
+        .level-block.active .lectures-drawer {
+            max-height: 500px; /* Approximate max height when open */
+            border-top-width: 1px;
+            padding: 20px;
+        }
+
+        .lectures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .lecture-node {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
         }
 
-        /* تأثير الـ Hover على المحاضرة */
-        .session-bullet:hover {
+        .lecture-node:hover {
             background: var(--primary-gold);
-            border-color: white;
-            color: black;
-            transform: scale(1.1);
-            box-shadow: 0 0 20px var(--gold-glow);
+            color: #000;
+            border-color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
-        /* تحديد مواقع الطلقات (Positioning 4 bullets) */
-        /* الحسابات: (CylinderSize / 2) - (BulletSize / 2) */
-        .b1 { top: 10px; left: calc(50% - (var(--node-size)/2)); } /* Top */
-        .b2 { bottom: 10px; left: calc(50% - (var(--node-size)/2)); } /* Bottom */
-        .b3 { left: 10px; top: calc(50% - (var(--node-size)/2)); } /* Left */
-        .b4 { right: 10px; top: calc(50% - (var(--node-size)/2)); } /* Right */
-
-
-        /* --- RESPONSIVE: Tablet & Below (Keep functionality) --- */
-        @media (max-width: 1200px) {
-            .levels-container { grid-template-columns: repeat(2, 1fr); padding: 40px; }
-            .top-banner { padding: 0 30px; height: 100px; }
-            .top-banner h1 { font-size: 2.2rem; letter-spacing: 4px; }
-            :root { --rev-size: 180px; --node-size: 45px; }
+        .lecture-node .node-prefix {
+            font-size: 0.7rem;
+            font-weight: 600;
+            opacity: 0.8;
+            text-transform: uppercase;
         }
+
+        .lecture-node .node-number {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+        
+        /* Pulse for active node */
+        .lecture-node:active { transform: scale(0.95); }
 
     </style>
 </head>
@@ -240,72 +227,76 @@
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" alt="Mr Ezz" class="mr-ezz-img">
     </header>
 
-    <main class="levels-container" id="grid">
+    <main class="levels-container" id="levelsGrid">
         </main>
 
     <script>
-        const grid = document.getElementById('grid');
+        const levelsGrid = document.getElementById('levelsGrid');
+        const totalLevels = 12;
+        const lecturesPerLevel = 4; // Assuming 4 lectures based on original S1-S4
 
-        // Create 12 Level Cards
-        for (let i = 1; i <= 12; i++) {
-            const card = document.createElement('div');
-            card.className = 'level-card-wrapper';
-            card.id = `lvl-${i}`;
-            
-            // إضافة EventListener للكارت بالكامل للفتح والغلق
-            card.addEventListener('click', function(e) {
-                // نمنع انتشار الحدث إذا تم الضغط على "طلقة" داخلية
-                if (e.target.classList.contains('session-bullet')) return;
-                toggleLevel(i);
-            });
-            
-            // بناء هيكل الكارت + المخزن (Revolver)
-            card.innerHTML = `
-                <div class="revolver-cylinder">
-                    <div class="revolver-center"></div>
-                    <div class="session-bullet b1" onclick="navigateToContent('${i}-1')">S1</div>
-                    <div class="session-bullet b2" onclick="navigateToContent('${i}-2')">S2</div>
-                    <div class="session-bullet b3" onclick="navigateToContent('${i}-3')">S3</div>
-                    <div class="session-bullet b4" onclick="navigateToContent('${i}-4')">S4</div>
-                </div>
+        // --- Generate Level Blocks ---
+        for (let i = 1; i <= totalLevels; i++) {
+            // 1. Create the main block
+            const levelBlock = document.createElement('div');
+            levelBlock.className = 'level-block';
+            levelBlock.id = `block-lvl-${i}`;
 
-                <div class="card-title">
-                    <span class="level-label">Level</span>
-                    <div class="level-num">${i}</div>
+            // 2. Create the clickable card area
+            const levelCardHTML = `
+                <div class="level-card" onclick="toggleLevelDrawer(${i})">
+                    <div class="level-info">
+                        <span class="level-label">المستوى</span>
+                        <div class="level-number">${String(i).padStart(2, '0')}</div>
+                    </div>
+                    <div class="level-icon">▼</div> </div>
+            `;
+
+            // 3. Create the Lectures Drawer (الدَّرَج)
+            let lecturesHTML = '';
+            for (let j = 1; j <= lecturesPerLevel; j++) {
+                lecturesHTML += `
+                    <div class="lecture-node" onclick="navigateToContent('${i}-${j}')">
+                        <span class="node-prefix">محاضرة</span>
+                        <div class="node-number">${j}</div>
+                    </div>
+                `;
+            }
+
+            const drawerHTML = `
+                <div class="lectures-drawer">
+                    <div class="lectures-grid">
+                        ${lecturesHTML}
+                    </div>
                 </div>
             `;
-            grid.appendChild(card);
+
+            // 4. Combine and append
+            levelBlock.innerHTML = levelCardHTML + drawerHTML;
+            levelsGrid.appendChild(levelBlock);
         }
 
-        // دالة فتح/غلق المستوى (تعمل كـ Toggle)
-        function toggleLevel(levelNum) {
-            const allCards = document.querySelectorAll('.level-card-wrapper');
-            const targetCard = document.getElementById(`lvl-${levelNum}`);
-            
-            // إذا كان الكارت مضغوطاً بالفعل، نقوم بغلقه
-            if (targetCard.classList.contains('active')) {
-                targetCard.classList.remove('active');
-            } else {
-                // غلق أي كارت آخر مفتوح أولاً (Single view)
-                allCards.forEach(card => card.classList.remove('active'));
-                // فتح الكارت المستهدف
-                targetCard.classList.add('active');
-            }
+        // --- Function to toggle drawer open/close ---
+        function toggleLevelDrawer(levelNum) {
+            const clickedBlock = document.getElementById(`block-lvl-${levelNum}`);
+            const allBlocks = document.querySelectorAll('.level-block');
+
+            allBlocks.forEach((block) => {
+                if (block === clickedBlock) {
+                    // Toggle active class on the clicked block
+                    block.classList.toggle('active');
+                } else {
+                    // Close all other blocks
+                    block.classList.remove('active');
+                }
+            });
         }
 
+        // --- Navigation Function ---
         function navigateToContent(sessionId) {
-            // إضافة صوت "تعمير مسدس" هنا مستقبلاً إذا أردت يا مستر عز
-            console.log(`Navigating to Session: ${sessionId}`);
+            // Keep original navigation logic
             window.location.href = `vetoofif.html?session=${sessionId}`;
         }
-
-        // Veto Tip: إضافة دعم لغلق القائمة بـ Press ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.level-card-wrapper').forEach(card => card.classList.remove('active'));
-            }
-        });
-
     </script>
 </body>
 </html>

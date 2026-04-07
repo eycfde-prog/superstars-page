@@ -1,15 +1,14 @@
-
 /**
- * VETO PROGRAM - Listening Activity Module (Level 2 - Session 1)
+ * VETO PROGRAM - Listening Activity Module (Session 2)
  * Designed by: Veto Architect
- * Status: Content Updated | Original Theme Maintained
+ * Content: Level 1 - Session 2
  */
 
 (function() {
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- Data Storage (Level 2 - Session 1) ---
+    // --- Data Storage (Session 2 Content) ---
     const conversations = [
         `[Ahmed - Informative]: This is my sister, Amy. <break time="1.0s" /> She is a student at Veto. <break time="1.5s" /> [Chris - Friendly]: Nice to meet her. <break time="1.5s" /> [Ahmed - Friendly]: And these are my parents. <break time="1.0s" /> They are very happy with our progress.`,
         `[Amy - Curious]: Julia, is that an eraser or a ruler? <break time="1.5s" /> [Julia - Helpful]: It is a long ruler. <break time="1.0s" /> It is on the desk. <break time="1.5s" /> [Amy - Normal]: Great. <break time="1.0s" /> Our Veto classroom is very clean. <break time="1.5s" /> [Julia - Agreeing]: Yes, it is.`,
@@ -20,10 +19,10 @@
     let currentIdx = 0;
     const audioPlayer = new Audio();
     
-    // المسار الصوتي المحدث لـ Level 2
-    const audioBaseUrl = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/Listening/Level-2/Session%201/";
+    // تحديث المسار إلى Session 2
+    const audioBaseUrl = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/Listening/Level-1/Session%202/";
 
-    // --- Layout (Restored Original Design) ---
+    // --- Layout (The Veto Original Theme) ---
     container.innerHTML = `
         <style>
             .listening-theater {
@@ -45,7 +44,6 @@
                 cursor: pointer; font-size: 2.5rem; display: flex; align-items: center; justify-content: center;
                 box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 15px rgba(197, 160, 89, 0.4);
                 transition: all 0.2s ease;
-                -webkit-tap-highlight-color: transparent;
             }
             .play-trigger:active { transform: scale(0.9); }
             .play-trigger.active { background: #ff4757; animation: v-pulse 1.2s infinite; }

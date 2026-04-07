@@ -1,7 +1,7 @@
 /**
- * VETO PROGRAM - Listening Activity Module (Final Audio Version)
+ * VETO PROGRAM - Listening Activity Module (Touch & Layer Fix)
  * Designed by: Veto Architect
- * Target: Smart Boards / High Visibility (4-Meter Rule)
+ * Fix: High Z-Index for Audio Button to bypass Smart Board overlays
  */
 
 (function() {
@@ -18,10 +18,9 @@
 
     let currentIdx = 0;
     const audioPlayer = new Audio();
-    // المسار الخام للمفات الصوتية على GitHub
     const audioBaseUrl = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/Listening/1/1/";
 
-    // --- Interface Setup ---
+    // --- Layout with Layer Fix ---
     container.innerHTML = `
         <style>
             .listening-theater {
@@ -30,64 +29,55 @@
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 color: #fff; font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;
             }
-            .top-nav-info {
-                position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
-                font-size: 1.4rem; color: #c5a059; letter-spacing: 3px; font-weight: bold;
-                text-shadow: 0 0 10px rgba(197, 160, 89, 0.5);
-            }
+            
+            /* حلا لمشكلة الطبقات: جعل زر الصوت فوق الـ hotspots والـ canvas */
             .audio-control-hub {
-                position: absolute; top: 30px; right: 50px; z-index: 100;
+                position: absolute; top: 20px; right: 20px; 
+                z-index: 11000; /* أعلى من الـ z-index الخاص بالـ laser والـ nav-hotspot */
+                pointer-events: auto;
             }
-            .play-trigger {
-                width: 80px; height: 80px; border-radius: 50%;
-                background: #c5a059; border: 4px solid rgba(255,255,255,0.2); 
-                cursor: pointer; font-size: 2.2rem; display: flex; align-items: center; justify-content: center;
-                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            }
-            .play-trigger:hover { transform: scale(1.15); background: #dbc08a; }
-            .play-trigger.active { background: #ff4757; animation: pulseGlow 1.2s infinite; }
 
-            @keyframes pulseGlow {
+            .play-trigger {
+                width: 90px; height: 90px; border-radius: 50%;
+                background: #c5a059; border: 5px solid rgba(255,255,255,0.3); 
+                cursor: pointer; font-size: 2.5rem; display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 15px rgba(197, 160, 89, 0.4);
+                transition: all 0.2s ease;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .play-trigger:active { transform: scale(0.9); }
+            .play-trigger.active { background: #ff4757; animation: v-pulse 1.2s infinite; }
+
+            @keyframes v-pulse {
                 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
-                70% { box-shadow: 0 0 0 25px rgba(255, 71, 87, 0); }
+                70% { box-shadow: 0 0 0 30px rgba(255, 71, 87, 0); }
                 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
             }
 
             .main-dialogue-area {
-                width: 80%; max-width: 1300px; 
-                padding: 50px; background: rgba(255,255,255,0.02);
-                border-radius: 30px; border: 1px solid rgba(197, 160, 89, 0.1);
-                box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+                width: 85%; max-width: 1400px; 
+                padding: 60px; background: rgba(255,255,255,0.03);
+                border-radius: 40px; border: 2px solid rgba(197, 160, 89, 0.15);
+                box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
             }
 
-            .chat-line { margin-bottom: 40px; transform: translateY(20px); opacity: 0; animation: reveal 0.6s forwards; }
-            @keyframes reveal { to { transform: translateY(0); opacity: 1; } }
+            .chat-line { margin-bottom: 45px; opacity: 0; transform: translateY(30px); animation: v-reveal 0.6s forwards; }
+            @keyframes v-reveal { to { transform: translateY(0); opacity: 1; } }
 
-            .name-tag { 
-                font-size: 2vw; font-weight: 800; color: #c5a059; 
-                display: block; margin-bottom: 5px; text-transform: uppercase;
-            }
-            .speech-text { 
-                font-size: 3.8vw; font-weight: 500; color: #f0f0f0; 
-                line-height: 1.2; letter-spacing: 0.5px;
-            }
+            .name-tag { font-size: 2.2vw; font-weight: 800; color: #c5a059; text-transform: uppercase; margin-bottom: 8px; display: block; }
+            .speech-text { font-size: 4vw; font-weight: 600; color: #ffffff; line-height: 1.1; text-shadow: 3px 3px 6px rgba(0,0,0,0.8); }
 
-            .footer-nav {
-                position: absolute; bottom: 30px; font-size: 1.1rem; color: rgba(255,255,255,0.3);
-            }
+            .top-nav-info { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); color: #c5a059; font-size: 1.5rem; letter-spacing: 4px; font-weight: bold; }
         </style>
 
         <div class="listening-theater">
             <div class="top-nav-info" id="convo-title">CONVERSATION 1</div>
             
             <div class="audio-control-hub">
-                <button class="play-trigger" id="master-play" onclick="toggleAudio()">▶</button>
+                <button class="play-trigger" id="master-play" onclick="event.stopPropagation(); toggleAudio();">▶</button>
             </div>
 
             <div class="main-dialogue-area" id="convo-container"></div>
-
-            <div class="footer-nav">Use ENTER for Next • SPACE for Audio</div>
         </div>
     `;
 
@@ -95,7 +85,7 @@
     const playBtn = document.getElementById('master-play');
     const titleTag = document.getElementById('convo-title');
 
-    // --- Audio Functions ---
+    // --- Audio System ---
     window.toggleAudio = function() {
         const targetSrc = `${audioBaseUrl}${currentIdx + 1}.mp3`;
         
@@ -104,7 +94,7 @@
         }
 
         if (audioPlayer.paused) {
-            audioPlayer.play().catch(e => console.error("Audio Load Error:", e));
+            audioPlayer.play();
             playBtn.innerText = "⏸";
             playBtn.classList.add('active');
         } else {
@@ -119,9 +109,8 @@
         playBtn.classList.remove('active');
     };
 
-    // --- Display Functions ---
+    // --- Render System ---
     function renderConversation(index) {
-        // Reset state
         audioPlayer.pause();
         playBtn.innerText = "▶";
         playBtn.classList.remove('active');
@@ -129,9 +118,7 @@
         titleTag.innerText = `CONVERSATION ${index + 1} / ${conversations.length}`;
         convoContainer.innerHTML = '';
 
-        const rawData = conversations[index];
-        // Remove voice codes and split
-        const cleanText = rawData.replace(/<break[^>]*>/g, '');
+        const cleanText = conversations[index].replace(/<break[^>]*>/g, '');
         const lines = cleanText.split(/(?=\[.*?\])/);
 
         lines.forEach((line, i) => {
@@ -140,9 +127,9 @@
                 const [_, name, mood, text] = match;
                 const lineDiv = document.createElement('div');
                 lineDiv.className = 'chat-line';
-                lineDiv.style.animationDelay = `${i * 0.4}s`;
+                lineDiv.style.animationDelay = `${i * 0.3}s`;
                 lineDiv.innerHTML = `
-                    <span class="name-tag">${name} <small style="font-size:0.9rem; opacity:0.6;">(${mood})</small></span>
+                    <span class="name-tag">${name}</span>
                     <span class="speech-text">${text.trim()}</span>
                 `;
                 convoContainer.appendChild(lineDiv);
@@ -151,6 +138,7 @@
     }
 
     // --- Navigation Logic ---
+    // ربط الدوال بالـ window لتتمكن الـ nav-hotspots في الصفحة الرئيسية من الوصول إليها
     window.nextSlide = function() {
         if (currentIdx < conversations.length - 1) {
             currentIdx++;
@@ -165,16 +153,6 @@
         }
     };
 
-    // Keyboard Shortcuts
-    document.onkeydown = (e) => {
-        if (e.key === "Enter" || e.key === "ArrowRight") nextSlide();
-        if (e.key === "ArrowLeft") prevSlide();
-        if (e.key === " ") { 
-            e.preventDefault(); 
-            toggleAudio(); 
-        }
-    };
-
-    // Initialize the show
+    // Initialize
     renderConversation(currentIdx);
 })();

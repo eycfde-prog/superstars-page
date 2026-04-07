@@ -87,7 +87,7 @@
 
     // --- Audio System ---
     window.toggleAudio = function() {
-        const targetSrc = `${audioBaseUrl}${currentIdx + 1}.mp3`;
+        const targetSrc = `${audioBaseUrl}${currentIdx + 1}.wav`;
         
         if (audioPlayer.src !== targetSrc) {
             audioPlayer.src = targetSrc;

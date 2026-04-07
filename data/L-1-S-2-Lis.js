@@ -1,7 +1,7 @@
 /**
- * VETO PROGRAM - Listening Activity Module (V.2.0)
- * Updated: Audio Path Fix & Keyboard Support
- * Designed by: Veto Architect
+ * VETO PROGRAM - Listening Activity Module
+ * Optimized for: Smart Board Display Container
+ * Logic: Fixed Audio Paths & Navigation
  */
 
 (function() {
@@ -18,59 +18,62 @@
 
     let currentIdx = 0;
     const audioPlayer = new Audio();
-    // تم تعديل المسار ليكون Raw وتعديل المجلدات حسب طلبك
+    // المسار المعتمد من مستودع GitHub (Raw MP3)
     const audioBaseUrl = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/Listening/Level-1/Session%201/";
 
-    // --- UI Layout (The 4-Meter Rule) ---
+    // --- Layout Restoration ---
     container.innerHTML = `
         <style>
             .listening-theater {
                 height: 100%; width: 100%; 
-                background: radial-gradient(circle at center, #1e1e1e 0%, #000 100%);
+                background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
-                color: #fff; font-family: 'Segoe UI', Roboto, sans-serif; position: relative; overflow: hidden;
+                color: #fff; font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;
             }
             
+            /* الحفاظ على أولوية زر التشغيل فوق أي عناصر تفاعلية أخرى */
             .audio-control-hub {
-                position: absolute; top: 30px; right: 40px; 
-                z-index: 12000;
+                position: absolute; top: 20px; right: 20px; 
+                z-index: 11000;
+                pointer-events: auto;
             }
 
             .play-trigger {
-                width: 100px; height: 100px; border-radius: 50%;
-                background: #c5a059; border: 6px solid rgba(255,255,255,0.2); 
-                cursor: pointer; font-size: 3rem; display: flex; align-items: center; justify-content: center;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                width: 90px; height: 90px; border-radius: 50%;
+                background: #c5a059; border: 5px solid rgba(255,255,255,0.3); 
+                cursor: pointer; font-size: 2.5rem; display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 15px rgba(197, 160, 89, 0.4);
+                transition: all 0.2s ease;
                 outline: none;
             }
             .play-trigger:active { transform: scale(0.9); }
-            .play-trigger.active { background: #e74c3c; animation: v-pulse 1.5s infinite; }
+            .play-trigger.active { background: #ff4757; animation: v-pulse 1.2s infinite; }
 
             @keyframes v-pulse {
-                0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
-                70% { box-shadow: 0 0 0 40px rgba(231, 76, 60, 0); }
-                100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+                0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+                70% { box-shadow: 0 0 0 30px rgba(255, 71, 87, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
             }
 
             .main-dialogue-area {
-                width: 90%; max-width: 1500px; 
-                padding: 50px; background: rgba(255,255,255,0.02);
-                border-radius: 50px; border: 1px solid rgba(197, 160, 89, 0.2);
-                box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
+                width: 85%; max-width: 1400px; 
+                padding: 40px; background: rgba(255,255,255,0.03);
+                border-radius: 40px; border: 2px solid rgba(197, 160, 89, 0.15);
+                box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
+                max-height: 80vh; overflow-y: auto;
             }
 
-            .chat-line { margin-bottom: 50px; opacity: 0; transform: translateX(-20px); animation: v-slideIn 0.5s forwards; }
-            @keyframes v-slideIn { to { transform: translateX(0); opacity: 1; } }
+            .chat-line { margin-bottom: 35px; opacity: 0; transform: translateY(20px); animation: v-reveal 0.6s forwards; }
+            @keyframes v-reveal { to { transform: translateY(0); opacity: 1; } }
 
-            .name-tag { font-size: 1.8rem; font-weight: 900; color: #c5a059; letter-spacing: 2px; margin-bottom: 10px; display: block; }
-            .speech-text { font-size: 3.5rem; font-weight: 700; color: #f0f0f0; line-height: 1.2; text-shadow: 4px 4px 8px rgba(0,0,0,0.9); }
+            .name-tag { font-size: 2.2vw; font-weight: 800; color: #c5a059; text-transform: uppercase; margin-bottom: 5px; display: block; }
+            .speech-text { font-size: 3.8vw; font-weight: 600; color: #ffffff; line-height: 1.1; text-shadow: 3px 3px 6px rgba(0,0,0,0.8); }
 
-            .top-nav-info { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); color: #c5a059; font-size: 1.8rem; font-weight: bold; opacity: 0.7; }
+            .top-nav-info { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); color: #c5a059; font-size: 1.5rem; letter-spacing: 4px; font-weight: bold; }
         </style>
 
         <div class="listening-theater">
-            <div class="top-nav-info" id="convo-title">LOADING...</div>
+            <div class="top-nav-info" id="convo-title">CONVERSATION 1</div>
             
             <div class="audio-control-hub">
                 <button class="play-trigger" id="master-play">▶</button>
@@ -93,7 +96,7 @@
         }
 
         if (audioPlayer.paused) {
-            audioPlayer.play().catch(e => console.log("Audio play blocked: ", e));
+            audioPlayer.play().catch(e => console.warn("Audio Context Wait..."));
             playBtn.innerText = "⏸";
             playBtn.classList.add('active');
         } else {
@@ -116,7 +119,7 @@
     // --- Render System ---
     function renderConversation(index) {
         audioPlayer.pause();
-        audioPlayer.src = ''; // Reset source
+        audioPlayer.src = ''; 
         playBtn.innerText = "▶";
         playBtn.classList.remove('active');
         
@@ -142,7 +145,7 @@
         });
     }
 
-    // --- Navigation & Keyboard ---
+    // --- Navigation Logic ---
     window.nextSlide = function() {
         if (currentIdx < conversations.length - 1) {
             currentIdx++;
@@ -156,18 +159,6 @@
             renderConversation(currentIdx);
         }
     };
-
-    // إضافة اختصارات الكيبورد (Space للتشغيل - الأسهم للتنقل)
-    document.addEventListener('keydown', (e) => {
-        if (e.code === "Space") {
-            e.preventDefault();
-            window.toggleAudio();
-        } else if (e.code === "ArrowRight" || e.code === "Enter") {
-            window.nextSlide();
-        } else if (e.code === "ArrowLeft") {
-            window.prevSlide();
-        }
-    });
 
     // Initialize
     renderConversation(currentIdx);

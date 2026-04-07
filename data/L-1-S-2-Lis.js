@@ -1,14 +1,14 @@
 /**
- * VETO PROGRAM - Listening Activity Module (Audio Enhanced)
+ * VETO PROGRAM - Listening Activity Module (Final Audio Version)
  * Designed by: Veto Architect
- * Feature: Auto-path Audio Integration
+ * Target: Smart Boards / High Visibility (4-Meter Rule)
  */
 
 (function() {
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- Data & Configuration ---
+    // --- Data Storage ---
     const conversations = [
         `[Ahmed - Friendly]: I am very happy today. <break time="1.0s" /> Veto is a great place for us. <break time="1.5s" /> [Amy - Enthusiastic]: You are right. <break time="1.0s" /> Look! Julia is there. <break time="1.5s" /> [Ahmed - Curious]: Is she a teacher? <break time="1.5s" /> [Amy - Normal]: No, she is a student like us.`,
         `[Chris - Slightly rushed]: Julia, where is my English book? <break time="1.0s" /> I need it now. <break time="1.5s" /> [Julia - Calm]: It is on the table. <break time="1.0s" /> Is this your blue pen? <break time="1.5s" /> [Chris - Relieved]: Yes, it is mine. <break time="1.5s" /> We are ready for the Veto lesson.`,
@@ -17,146 +17,164 @@
     ];
 
     let currentIdx = 0;
-    const audioObj = new Audio();
-    // المسار الأساسي بناءً على هيكل الـ GitHub الخاص بك (المستوى 1، المحاضرة 1)
+    const audioPlayer = new Audio();
+    // المسار الخام للمفات الصوتية على GitHub
     const audioBaseUrl = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/Listening/1/1/";
 
-    // --- UI Construction ---
+    // --- Interface Setup ---
     container.innerHTML = `
         <style>
-            .listening-engine {
+            .listening-theater {
                 height: 100%; width: 100%; 
-                background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+                background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 color: #fff; font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;
             }
-            .convo-header {
-                position: absolute; top: 40px; font-size: 1.5rem;
-                color: #c5a059; letter-spacing: 5px; text-transform: uppercase;
-                border-bottom: 2px solid #c5a059; padding-bottom: 5px;
+            .top-nav-info {
+                position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+                font-size: 1.4rem; color: #c5a059; letter-spacing: 3px; font-weight: bold;
+                text-shadow: 0 0 10px rgba(197, 160, 89, 0.5);
             }
-            .audio-btn {
-                position: absolute; top: 40px; right: 40px;
-                width: 70px; height: 70px; border-radius: 50%;
-                background: #c5a059; border: none; cursor: pointer;
-                display: flex; align-items: center; justify-content: center;
-                font-size: 2rem; box-shadow: 0 0 20px rgba(197, 160, 89, 0.4);
-                transition: 0.3s; z-index: 9000;
+            .audio-control-hub {
+                position: absolute; top: 30px; right: 50px; z-index: 100;
             }
-            .audio-btn:hover { transform: scale(1.1); background: #e2be7a; }
-            .audio-btn.playing { animation: pulse 1.5s infinite; background: #ff4757; }
-            @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
+            .play-trigger {
+                width: 80px; height: 80px; border-radius: 50%;
+                background: #c5a059; border: 4px solid rgba(255,255,255,0.2); 
+                cursor: pointer; font-size: 2.2rem; display: flex; align-items: center; justify-content: center;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            }
+            .play-trigger:hover { transform: scale(1.15); background: #dbc08a; }
+            .play-trigger.active { background: #ff4757; animation: pulseGlow 1.2s infinite; }
 
-            .dialogue-box {
-                width: 85%; max-width: 1200px; padding: 40px;
-                background: rgba(255,255,255,0.03); border-radius: 20px;
-                border-left: 8px solid #c5a059; transition: all 0.5s ease;
+            @keyframes pulseGlow {
+                0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+                70% { box-shadow: 0 0 0 25px rgba(255, 71, 87, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
             }
-            .line-item { margin-bottom: 30px; animation: slideIn 0.5s forwards; opacity: 0; }
-            @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
-            
-            .speaker-name { 
-                display: inline-block; font-weight: 900; font-size: 2.2vw; 
-                color: #c5a059; margin-bottom: 10px; text-transform: uppercase;
+
+            .main-dialogue-area {
+                width: 80%; max-width: 1300px; 
+                padding: 50px; background: rgba(255,255,255,0.02);
+                border-radius: 30px; border: 1px solid rgba(197, 160, 89, 0.1);
+                box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
             }
-            .speaker-text { 
-                display: block; font-size: 3.8vw; line-height: 1.3; font-weight: 500;
-                color: #e0e0e0; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+
+            .chat-line { margin-bottom: 40px; transform: translateY(20px); opacity: 0; animation: reveal 0.6s forwards; }
+            @keyframes reveal { to { transform: translateY(0); opacity: 1; } }
+
+            .name-tag { 
+                font-size: 2vw; font-weight: 800; color: #c5a059; 
+                display: block; margin-bottom: 5px; text-transform: uppercase;
             }
-            .controls-hint {
-                position: absolute; bottom: 30px; color: rgba(197, 160, 89, 0.4);
-                font-size: 1.2rem;
+            .speech-text { 
+                font-size: 3.8vw; font-weight: 500; color: #f0f0f0; 
+                line-height: 1.2; letter-spacing: 0.5px;
+            }
+
+            .footer-nav {
+                position: absolute; bottom: 30px; font-size: 1.1rem; color: rgba(255,255,255,0.3);
             }
         </style>
-        <div class="listening-engine" id="engine-main">
-            <div class="convo-header" id="convo-num">Conversation 1 / 4</div>
-            <button class="audio-btn" id="play-btn" onclick="playCurrentAudio()">▶️</button>
-            <div class="dialogue-box" id="dialogue-display"></div>
-            <div class="controls-hint">ENTER: Next | SPACE: Play Audio</div>
+
+        <div class="listening-theater">
+            <div class="top-nav-info" id="convo-title">CONVERSATION 1</div>
+            
+            <div class="audio-control-hub">
+                <button class="play-trigger" id="master-play" onclick="toggleAudio()">▶</button>
+            </div>
+
+            <div class="main-dialogue-area" id="convo-container"></div>
+
+            <div class="footer-nav">Use ENTER for Next • SPACE for Audio</div>
         </div>
     `;
 
-    const display = document.getElementById('dialogue-display');
-    const header = document.getElementById('convo-num');
-    const playBtn = document.getElementById('play-btn');
+    const convoContainer = document.getElementById('convo-container');
+    const playBtn = document.getElementById('master-play');
+    const titleTag = document.getElementById('convo-title');
 
-    // --- Audio Logic ---
-    function playCurrentAudio() {
-        const audioPath = `${audioBaseUrl}${currentIdx + 1}.mp3`;
-        if (audioObj.src !== audioPath) {
-            audioObj.src = audioPath;
-        }
+    // --- Audio Functions ---
+    window.toggleAudio = function() {
+        const targetSrc = `${audioBaseUrl}${currentIdx + 1}.mp3`;
         
-        if (audioObj.paused) {
-            audioObj.play().catch(e => console.log("Audio play blocked or missing file"));
-            playBtn.innerText = "⏸️";
-            playBtn.classList.add('playing');
-        } else {
-            audioObj.pause();
-            playBtn.innerText = "▶️";
-            playBtn.classList.remove('playing');
+        if (audioPlayer.src !== targetSrc) {
+            audioPlayer.src = targetSrc;
         }
-    }
 
-    audioObj.onended = () => {
-        playBtn.innerText = "▶️";
-        playBtn.classList.remove('playing');
+        if (audioPlayer.paused) {
+            audioPlayer.play().catch(e => console.error("Audio Load Error:", e));
+            playBtn.innerText = "⏸";
+            playBtn.classList.add('active');
+        } else {
+            audioPlayer.pause();
+            playBtn.innerText = "▶";
+            playBtn.classList.remove('active');
+        }
     };
 
-    // --- Rendering Logic ---
-    function parseAndRender(idx) {
-        audioObj.pause(); // Stop previous audio
-        playBtn.innerText = "▶️";
-        playBtn.classList.remove('playing');
+    audioPlayer.onended = () => {
+        playBtn.innerText = "▶";
+        playBtn.classList.remove('active');
+    };
 
-        const rawText = conversations[idx];
-        header.innerText = `Conversation ${idx + 1} / ${conversations.length}`;
-        display.innerHTML = '';
+    // --- Display Functions ---
+    function renderConversation(index) {
+        // Reset state
+        audioPlayer.pause();
+        playBtn.innerText = "▶";
+        playBtn.classList.remove('active');
+        
+        titleTag.innerText = `CONVERSATION ${index + 1} / ${conversations.length}`;
+        convoContainer.innerHTML = '';
 
-        const cleaned = rawText.replace(/<break[^>]*>/g, '');
-        const parts = cleaned.split(/(?=\[.*?\])/);
+        const rawData = conversations[index];
+        // Remove voice codes and split
+        const cleanText = rawData.replace(/<break[^>]*>/g, '');
+        const lines = cleanText.split(/(?=\[.*?\])/);
 
-        parts.forEach((part, i) => {
-            const match = part.match(/\[(.*?)\s-\s(.*?)\]:\s(.*)/);
+        lines.forEach((line, i) => {
+            const match = line.match(/\[(.*?)\s-\s(.*?)\]:\s(.*)/);
             if (match) {
                 const [_, name, mood, text] = match;
-                const div = document.createElement('div');
-                div.className = 'line-item';
-                div.style.animationDelay = `${i * 0.3}s`;
-                div.innerHTML = `
-                    <span class="speaker-name">${name} <small style="font-size:1rem; color:#888; font-weight:normal;">(${mood})</small></span>
-                    <span class="speaker-text">${text.trim()}</span>
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'chat-line';
+                lineDiv.style.animationDelay = `${i * 0.4}s`;
+                lineDiv.innerHTML = `
+                    <span class="name-tag">${name} <small style="font-size:0.9rem; opacity:0.6;">(${mood})</small></span>
+                    <span class="speech-text">${text.trim()}</span>
                 `;
-                display.appendChild(div);
+                convoContainer.appendChild(lineDiv);
             }
         });
     }
 
-    // --- Navigation ---
+    // --- Navigation Logic ---
     window.nextSlide = function() {
         if (currentIdx < conversations.length - 1) {
             currentIdx++;
-            parseAndRender(currentIdx);
+            renderConversation(currentIdx);
         }
     };
 
     window.prevSlide = function() {
         if (currentIdx > 0) {
             currentIdx--;
-            parseAndRender(currentIdx);
+            renderConversation(currentIdx);
         }
     };
 
-    // Keyboard Integration
+    // Keyboard Shortcuts
     document.onkeydown = (e) => {
         if (e.key === "Enter" || e.key === "ArrowRight") nextSlide();
         if (e.key === "ArrowLeft") prevSlide();
         if (e.key === " ") { 
             e.preventDefault(); 
-            playCurrentAudio(); 
+            toggleAudio(); 
         }
     };
 
-    // Initialize
-    parseAndRender(currentIdx);
+    // Initialize the show
+    renderConversation(currentIdx);
 })();

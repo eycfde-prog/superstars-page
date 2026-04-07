@@ -7,6 +7,7 @@
     <style>
         :root {
             --primary-gold: #c5a059;
+            --gold-glow: rgba(197, 160, 89, 0.6);
             --bg-dark: #050505;
             --banner-height: 140px;
         }
@@ -30,7 +31,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 40px;
-            background: rgba(0, 0, 0, 0.8);
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(5,5,5,0.8) 100%);
+            backdrop-filter: blur(10px);
             border-bottom: 3px solid var(--primary-gold);
             position: sticky;
             top: 0;
@@ -38,7 +40,7 @@
         }
 
         .logo-img { height: 80px; width: auto; }
-        .mr-ezz-img { height: 110px; width: auto; border-radius: 10px; }
+        .mr-ezz-img { height: 110px; width: auto; border-radius: 10px; border: 1px solid var(--primary-gold); }
         
         .top-banner h1 {
             font-size: 2.8rem;
@@ -48,15 +50,37 @@
             flex-grow: 1;
         }
 
-        /* Levels Grid - Fixed Spacing */
+        /* Mobile specific banner overrides */
+        @media (max-width: 767px) {
+            .top-banner {
+                padding: 0 15px;
+                height: 100px;
+            }
+            .top-banner h1 {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+            .logo-img { height: 50px; }
+            .mr-ezz-img { height: 70px; }
+        }
+
+        /* Levels Grid */
         .levels-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 120px 40px; /* زيادة المسافة الرأسية لمنع التداخل */
-            padding: 80px 40px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 80px 20px;
+            padding: 40px 20px;
             max-width: 1600px;
             margin: 0 auto;
             justify-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .levels-container { 
+                grid-template-columns: repeat(4, 1fr); 
+                gap: 120px 40px; 
+                padding: 80px 40px;
+            }
         }
 
         .level-wrapper {
@@ -87,6 +111,12 @@
         .level-circle .num { font-size: 2.5rem; color: var(--primary-gold); font-weight: 900; }
         .level-circle span { font-size: 0.9rem; letter-spacing: 2px; opacity: 0.8; }
 
+        /* Pulse effect for active level */
+        .level-wrapper.active .level-circle {
+            box-shadow: 0 0 25px var(--gold-glow);
+            border-color: var(--primary-gold);
+        }
+
         /* Slow Rotating Border */
         .rotating-border {
             position: absolute;
@@ -94,7 +124,7 @@
             height: 150px;
             border-radius: 50%;
             background: conic-gradient(from 0deg, transparent, var(--primary-gold), transparent 40%);
-            animation: rotate 12s linear infinite; /* أبطأ بناءً على طلبك */
+            animation: rotate 12s linear infinite;
             z-index: 5;
         }
 
@@ -117,19 +147,21 @@
 
         .session-node {
             position: absolute;
-            width: 55px;
-            height: 55px;
-            background: var(--primary-gold);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, #8e6d31 100%);
             color: black;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: 900;
+            font-size: 1.1rem;
             cursor: pointer;
             pointer-events: auto;
             transition: 0.3s;
             box-shadow: 0 0 20px rgba(197, 160, 89, 0.4);
+            border: 2px solid white;
         }
 
         .session-node:hover { background: #fff; transform: scale(1.2); box-shadow: 0 0 30px #fff; }
@@ -153,7 +185,7 @@
     </header>
 
     <main class="levels-container" id="grid">
-        </main>
+    </main>
 
     <script>
         const grid = document.getElementById('grid');
@@ -181,19 +213,19 @@
         }
 
         function toggleLevel(levelNum) {
-            // Logic: Cumulative open
-            for (let i = 1; i <= 12; i++) {
-                const el = document.getElementById(`lvl-${i}`);
-                if (i <= levelNum) {
-                    el.classList.add('active');
+            const allWrappers = document.querySelectorAll('.level-wrapper');
+            
+            allWrappers.forEach((el, index) => {
+                const i = index + 1;
+                if (i === levelNum) {
+                    el.classList.toggle('active');
                 } else {
                     el.classList.remove('active');
                 }
-            }
+            });
         }
 
         function navigateToContent(sessionId) {
-            // الانتقال لصفحة vetoofif.html مع إرسال المعرف
             window.location.href = `vetoofif.html?session=${sessionId}`;
         }
     </script>

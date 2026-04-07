@@ -1,7 +1,7 @@
 /**
- * VETO PROGRAM - Listening Activity Module (Touch & Layer Fix)
+ * VETO PROGRAM - Listening Activity Module (Final Fix)
  * Designed by: Veto Architect
- * Fix: High Z-Index for Audio Button to bypass Smart Board overlays
+ * Target: Level 1 - Session 2
  */
 
 (function() {
@@ -18,6 +18,8 @@
 
     let currentIdx = 0;
     const audioPlayer = new Audio();
+    
+    // تصحيح المسار ليكون Raw Link لضمان عمله في المتصفح
     const audioBaseUrl = "https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/Listening/1/1/";
 
     // --- Layout with Layer Fix ---
@@ -30,27 +32,26 @@
                 color: #fff; font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;
             }
             
-            /* حلا لمشكلة الطبقات: جعل زر الصوت فوق الـ hotspots والـ canvas */
             .audio-control-hub {
-                position: absolute; top: 20px; right: 20px; 
-                z-index: 11000; /* أعلى من الـ z-index الخاص بالـ laser والـ nav-hotspot */
+                position: absolute; top: 30px; right: 30px; 
+                z-index: 20000; /* أعلى طبقة ممكنة لتجاوز الـ Canvas والـ Hotspots */
                 pointer-events: auto;
             }
 
             .play-trigger {
-                width: 90px; height: 90px; border-radius: 50%;
-                background: #c5a059; border: 5px solid rgba(255,255,255,0.3); 
-                cursor: pointer; font-size: 2.5rem; display: flex; align-items: center; justify-content: center;
-                box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 15px rgba(197, 160, 89, 0.4);
-                transition: all 0.2s ease;
+                width: 100px; height: 100px; border-radius: 50%;
+                background: #c5a059; border: 6px solid rgba(255,255,255,0.4); 
+                cursor: pointer; font-size: 3rem; display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 0 40px rgba(0,0,0,0.9);
+                transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 -webkit-tap-highlight-color: transparent;
             }
             .play-trigger:active { transform: scale(0.9); }
-            .play-trigger.active { background: #ff4757; animation: v-pulse 1.2s infinite; }
+            .play-trigger.active { background: #ff4757; animation: audio-pulse 1.2s infinite; }
 
-            @keyframes v-pulse {
-                0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
-                70% { box-shadow: 0 0 0 30px rgba(255, 71, 87, 0); }
+            @keyframes audio-pulse {
+                0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.8); }
+                70% { box-shadow: 0 0 0 35px rgba(255, 71, 87, 0); }
                 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
             }
 
@@ -58,7 +59,6 @@
                 width: 85%; max-width: 1400px; 
                 padding: 60px; background: rgba(255,255,255,0.03);
                 border-radius: 40px; border: 2px solid rgba(197, 160, 89, 0.15);
-                box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
             }
 
             .chat-line { margin-bottom: 45px; opacity: 0; transform: translateY(30px); animation: v-reveal 0.6s forwards; }
@@ -67,14 +67,14 @@
             .name-tag { font-size: 2.2vw; font-weight: 800; color: #c5a059; text-transform: uppercase; margin-bottom: 8px; display: block; }
             .speech-text { font-size: 4vw; font-weight: 600; color: #ffffff; line-height: 1.1; text-shadow: 3px 3px 6px rgba(0,0,0,0.8); }
 
-            .top-nav-info { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); color: #c5a059; font-size: 1.5rem; letter-spacing: 4px; font-weight: bold; }
+            .top-nav-info { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); color: #c5a059; font-size: 1.6rem; font-weight: bold; }
         </style>
 
-        <div class="listening-theater">
+        <div class="listening-theater" id="theater-bg">
             <div class="top-nav-info" id="convo-title">CONVERSATION 1</div>
             
             <div class="audio-control-hub">
-                <button class="play-trigger" id="master-play" onclick="event.stopPropagation(); toggleAudio();">▶</button>
+                <button class="play-trigger" id="master-play">▶</button>
             </div>
 
             <div class="main-dialogue-area" id="convo-container"></div>
@@ -87,22 +87,37 @@
 
     // --- Audio System ---
     window.toggleAudio = function() {
-        const targetSrc = `${audioBaseUrl}${currentIdx + 1}.wav`;
+        const targetSrc = `${audioBaseUrl}${currentIdx + 1}.mp3`;
         
+        // إذا تغير المسار أو لم يتم التحميل بعد
         if (audioPlayer.src !== targetSrc) {
             audioPlayer.src = targetSrc;
+            audioPlayer.load(); 
         }
 
         if (audioPlayer.paused) {
-            audioPlayer.play();
-            playBtn.innerText = "⏸";
-            playBtn.classList.add('active');
+            const playPromise = audioPlayer.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    playBtn.innerText = "⏸";
+                    playBtn.classList.add('active');
+                }).catch(error => {
+                    console.error("Playback failed:", error);
+                    alert("Click again or check your internet.");
+                });
+            }
         } else {
             audioPlayer.pause();
             playBtn.innerText = "▶";
             playBtn.classList.remove('active');
         }
     };
+
+    // ربط الزر برمجياً لضمان العمل مع الـ Z-index العالي
+    playBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleAudio();
+    });
 
     audioPlayer.onended = () => {
         playBtn.innerText = "▶";
@@ -137,8 +152,7 @@
         });
     }
 
-    // --- Navigation Logic ---
-    // ربط الدوال بالـ window لتتمكن الـ nav-hotspots في الصفحة الرئيسية من الوصول إليها
+    // --- Navigation Integration ---
     window.nextSlide = function() {
         if (currentIdx < conversations.length - 1) {
             currentIdx++;
@@ -153,6 +167,13 @@
         }
     };
 
-    // Initialize
+    // Keyboard Shortcuts
+    document.onkeydown = (e) => {
+        if (e.key === "Enter" || e.key === "ArrowRight") nextSlide();
+        if (e.key === "ArrowLeft") prevSlide();
+        if (e.key === " ") { e.preventDefault(); toggleAudio(); }
+    };
+
+    // Start
     renderConversation(currentIdx);
 })();

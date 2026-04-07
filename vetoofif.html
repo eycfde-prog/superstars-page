@@ -4,96 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VETO PROGRAM | Smart Board</title>
-   <style>
-    :root {
-        --primary-gold: #c5a059;
-        --gold-glow: rgba(197, 160, 89, 0.4);
-        --bg-dark: #050505;
-        --card-bg: rgba(255, 255, 255, 0.03);
-        --banner-height: 80px; /* صغرنا الارتفاع شوية عشان المساحة */
-        --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
+    <style>
+        :root {
+            --primary-gold: #c5a059;
+            --bg-dark: #050505;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --banner-height: 100px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    /* تحسين البانر العلوي */
-    .top-banner {
-        height: var(--banner-height);
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(10px);
-        padding: 0 20px;
-        border-bottom: 2px solid var(--primary-gold);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    }
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            touch-action: none; 
+            -webkit-user-select: none; user-select: none;
+        }
 
-    .logo-img { height: 40px; filter: drop-shadow(0 0 5px var(--gold-glow)); }
-    .mr-ezz-img { 
-        height: 55px; 
-        border: 2px solid var(--primary-gold); 
-        box-shadow: 0 0 10px var(--gold-glow);
-    }
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: var(--font-main);
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    /* "Content Cards" بتصميم حيوي */
-    .content-grid {
-        gap: 20px;
-        padding: 25px;
-        perspective: 1000px;
-    }
+        .top-banner {
+            height: var(--banner-height);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 30px; background: #000; border-bottom: 3px solid var(--primary-gold);
+        }
 
-    .content-card {
-        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-        border: 1px solid rgba(197, 160, 89, 0.15);
-        border-radius: 20px;
-        backdrop-filter: blur(5px);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+        .logo-img { height: 50px; }
+        .mr-ezz-img { height: 70px; border-radius: 8px; border: 1px solid var(--primary-gold); }
+        .session-info h1 { font-size: 1.8rem; color: var(--primary-gold); }
 
-    .content-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        border-color: var(--primary-gold);
-        background: rgba(197, 160, 89, 0.08);
-        box-shadow: 0 15px 35px rgba(197, 160, 89, 0.2);
-    }
+        .content-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px; 
+            padding: 20px; 
+            overflow-y: auto;
+            height: calc(100vh - var(--banner-height));
+            touch-action: pan-y;
+        }
 
-    .content-card h2 {
-        font-size: 1rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: #efefef;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    }
+        .content-card {
+            background: var(--card-bg); 
+            border: 1px solid rgba(197,160,89,0.2);
+            padding: 20px; 
+            border-radius: 12px; 
+            text-align: center; 
+            transition: 0.3s; 
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+        }
 
-    /* الملاحظات الذكية */
-    #smart-note-input {
-        background: rgba(15, 15, 15, 0.9);
-        backdrop-filter: blur(15px);
-        border: 2px solid var(--primary-gold);
-        box-shadow: 0 0 30px rgba(197,160,89,0.3);
-        border-radius: 25px;
-        font-size: 1.8rem; /* أنسب للموبايل */
-    }
+        .content-card:hover { border-color: var(--primary-gold); background: rgba(197,160,89,0.05); }
+        .content-card h2 { font-size: 1.1rem; word-break: break-word; }
 
-    /* الـ Toolbox الروشة */
-    .toolbox-wrapper .tool-btn {
-        width: 55px;
-        height: 55px;
-        border-radius: 50%; /* شكل دائري ألطف */
-        background: rgba(30, 30, 30, 0.9);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        border: 1px solid rgba(197, 160, 89, 0.3);
-    }
+        #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
 
-    .tool-btn.active {
-        background: var(--primary-gold) !important;
-        color: #000 !important;
-        box-shadow: 0 0 20px var(--primary-gold);
-    }
+        #laser-pointer {
+            position: fixed; width: 25px; height: 25px; background: rgba(255, 0, 0, 0.9); 
+            border-radius: 50%; pointer-events: none; z-index: 10000; display: none;
+            box-shadow: 0 0 15px red, 0 0 30px red; transform: translate(-50%, -50%);
+        }
+        #drawing-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
 
-    /* لمسة جمالية للـ Scrollbar */
-    .content-grid::-webkit-scrollbar { width: 5px; }
-    .content-grid::-webkit-scrollbar-thumb { background: var(--primary-gold); border-radius: 10px; }
+        .exit-btn {
+            position: absolute; top: 15px; left: 15px; z-index: 8500;
+            background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 8px;
+            cursor: pointer;
+        }
 
-</style>
+        .toolbox-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 9500; display: flex; flex-direction: column-reverse; gap: 10px; }
+        .tool-btn { 
+            width: 48px; height: 48px; border-radius: 12px; 
+            background: #1a1a1a; border: 1px solid var(--primary-gold); 
+            color: var(--primary-gold); font-size: 1.2rem; display: none; 
+            align-items: center; justify-content: center; transition: 0.2s;
+            cursor: pointer;
+        }
+        .toolbox-wrapper.open .tool-btn { display: flex; }
+        .tool-btn.active { background: #ff4757; border-color: #ff4757; color: white; }
+
+        #quick-note-container {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 80%; z-index: 9600; display: none;
+        }
+        #smart-note-input {
+            width: 100%; background: rgba(0, 0, 0, 0.85); 
+            border: 2px solid var(--primary-gold); border-radius: 15px;
+            color: #fff; padding: 15px 25px; text-align: center;
+            font-size: 2.5rem; font-weight: bold;
+        }
+
+        .nav-hotspot { position: absolute; top: 0; height: 100%; width: 15%; z-index: 8400; }
+        .nav-next { right: 0; } .nav-prev { left: 0; }
+    </style>
 </head>
 <body>
 

@@ -170,41 +170,39 @@
             let filePath = "";
             const nameUpper = activityName.toUpperCase();
 
-            // --- Logic for Routing Files (UPDATED WITH GP) ---
-            
-            // 1. GRADUATION PROJECT Logic (توضع في البداية لمنع التداخل)
-            if (nameUpper.includes("GP")) {
+            console.log("Activity Triggered:", nameUpper);
+
+            if (nameUpper.includes("LISTENING")) {
+                if (nameUpper.includes("INTRO")) {
+                    filePath = `data/L-${lvl}-S-${sess}-Lin.js`;
+                } else {
+                    filePath = `data/L-${lvl}-S-${sess}-Lis.js`;
+                }
+            }
+            else if (nameUpper.includes("GP")) {
                 filePath = `data/L-${lvl}-${sess}-GP.js`;
             }
-            // 2. PROJECT Logic
             else if (nameUpper.includes("PROJECT")) {
                 if (nameUpper.includes("TEST")) {
-                    console.log("Project Test is disabled.");
-                    alert("This Project Test is not available yet.");
-                    return; 
+                    alert("This Project Test is not available yet."); return;
                 } else {
                     filePath = `data/L-${lvl}-S-${sess}-Pro.js`;
                 }
             }
-            // 3. WISH Logic
             else if (nameUpper.includes("WISH")) {
                 if (nameUpper.includes("TEST")) {
-                    alert("This Wish Test is not available yet.");
-                    return; 
+                    alert("This Wish Test is not available yet."); return;
                 } else {
                     filePath = `data/L-${lvl}-S-${sess}-Wis.js`;
                 }
             }
-            // 4. SQUEEZER Logic
             else if (nameUpper.includes("SQUEEZER")) {
                 const suffix = nameUpper.includes("TEST") ? "Squt" : "Squr";
                 filePath = `data/L-${lvl}-S-${sess}-${suffix}.js`;
             }
-            // 5. DMT Logic
             else if (nameUpper.includes("DMT")) {
                 filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-${lvl}-S-${sess}-DMT.js`;
             }
-            // 6. Other Handlers (Grammar, Vocab, etc.)
             else if (nameUpper.includes("GRAMMAR")) {
                 filePath = `data/L-1-${lvl}-S-${sess}-Gra.js`;
             } 
@@ -220,7 +218,7 @@
                 filePath = `data/L-1-${lvl}-S-${sess}-${prefix}.js`;
             }
 
-            console.log("Opening Path:", filePath); 
+            console.log("Final Loading Path:", filePath); 
 
             const stage = document.getElementById('activity-stage');
             stage.style.display = 'block';
@@ -235,7 +233,6 @@
             document.head.appendChild(script);
         }
 
-        // --- UI & Interaction Tools ---
         function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
 
         function handleToolClick(btnId, action) {

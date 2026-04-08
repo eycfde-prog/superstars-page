@@ -69,11 +69,11 @@ const sessionData = {
     "11-1": ["GP Intro", "Reading 38 Review", "Wish 3 Rev", "Project 2 Test", "Tongue Twister 34 Review", "Listening 40 Review"],
     "11-2": ["DMT 5 Review", "Reading 39 Review", "Tongue Twister 35 Review", "Wish 3 Test", "DMT 5 Rev", "One Shot 19 Test", "Listening 41 Review"],
     "11-3": ["Reading 40 Review", "Tongue Twister 36 Review", "Squeezer 6 Rev", "DMT 5 test", "Listening 42 Review"],
-    "11-4": ["Reading 40 Review", "Tongue Twister 36 Review", "Squeezer 6 Test", "GP Review", "One Shot 20 Test", "Listening 43 Review"],
+    "11-4": ["Reading 41 Review", "Tongue Twister 36 Review", "Squeezer 6 Test", "GP Review", "One Shot 20 Test", "Listening 43 Review"],
 
     // LEVEL 12
-    "12-1": ["GP Review", "Reading 41 Review", "Listening 44 Review"],
-    "12-2": ["GP Review", "Reading 42 Review", "Listening 45 Review"],
+    "12-1": ["GP Review", "Reading 42 Review", "Listening 44 Review"],
+    "12-2": ["GP Review", "Reading 43 Review", "Listening 45 Review"],
     "12-3": ["GP Review", "Listening 46 Review"],
     "12-4": ["GP Viewing"]
 };

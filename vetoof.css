@@ -1,311 +1,181 @@
-/* Veto Architect - Official Style Sheet
-    Project: Veto Learning System (Smart Board Edition)
-    Focus: Large Displays, High Contrast, 4-Meter Rule.
-*/
-
 :root {
-    --bg-sky: #87CEEB;
-    --cloud-white: rgba(255, 255, 255, 0.9);
-    --primary-tech-blue: #00a2ff; /* أزرق أكثر حدة وسطوعاً للشاشات */
-    --veto-gold: #f1c40f;
-    --text-dark: #1e293b;
-    --text-light: #ffffff;
-    --font-huge: 3.5rem;   /* ضخم جداً للعنوان الرئيسي */
-    --font-medium: 2.2rem; /* واضح من مسافة بعيدة */
-    --primary-red: #e74c3c;
-    --glass-overlay: rgba(15, 23, 42, 0.95);
+    --primary-gold: #d4af37; 
+    --gold-glow: rgba(212, 175, 55, 0.4);
+    --bg-dark: #080808;
+    --tech-blue: #00f2ff;
+    --glass-bg: rgba(255, 255, 255, 0.02);
+    --glass-border: rgba(212, 175, 55, 0.2);
+    --transition-speed: 0.4s;
 }
 
-/* --- Optimized Animated Background --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-    margin: 0;
-    font-family: 'Cairo', 'Poppins', sans-serif;
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 80%),
+        linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)),
+        url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+    color: #ffffff;
+    font-family: 'Rajdhani', sans-serif;
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
-body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 200%;
-    background: url('https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/4940b6bbd5ca38042de66f63a8619a4dc684c91b/vetoofb.webp');
-    background-repeat: repeat-y;
-    background-size: cover;
-    z-index: -1;
-    animation: cloudsRise 80s linear infinite;
-    opacity: 0.8;
-}
-
-@keyframes cloudsRise {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-50%); }
-}
-
-/* --- Header Section (The Master Identity) --- */
-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 20px 50px;
-    height: 140px; /* زيادة الارتفاع ليتنفس التصميم */
-    gap: 35px;
-}
-
-.sun-halo {
-    filter: drop-shadow(0 0 20px rgba(241, 196, 15, 0.8));
-    border: 3px solid var(--veto-gold);
-}
-
-.logo, .profile-img { 
-    width: 90px; /* تكبير الصور لتناسب الشاشات الكبيرة */
-    height: 90px;
-    border-radius: 50%; 
-    object-fit: cover;
-}
-
-.teacher-name {
-    font-size: 3rem; /* حجم ضخم لاسم المستر */
-    font-weight: 900;
-    color: var(--text-dark);
-    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.8), 0 0 20px var(--veto-gold);
-}
-
-/* --- Navigation Buttons --- */
-.main-btn {
-    margin: 30px auto;
-    display: block;
-    background: linear-gradient(135deg, var(--primary-tech-blue), #2980b9);
-    color: white;
-    padding: 15px 50px;
-    border-radius: 50px;
-    font-weight: bold;
-    cursor: pointer;
-    border: none;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    font-size: 1.8rem; /* تكبير الخط */
-    box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
-}
-
-.main-btn:hover {
-    transform: scale(1.1) translateY(-5px);
-    box-shadow: 0 15px 35px rgba(52, 152, 219, 0.6);
-}
-
-/* --- Levels Orbital System (The Core) --- */
-.levels-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 100px;
-    width: 90%;
-    margin: 80px auto;
-    justify-items: center;
-}
-
-.level-wrapper {
-    position: relative;
-    width: 180px;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.level-btn {
-    width: 140px; height: 140px;
-    background: radial-gradient(circle at 30% 30%, #5dade2, var(--primary-tech-blue));
-    color: white;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 1.8rem;
-    z-index: 10;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-    cursor: pointer;
-}
-
-.level-wrapper::before {
-    content: "";
-    position: absolute;
-    width: 170px; height: 170px;
-    border: 6px dashed var(--veto-gold);
-    border-radius: 50%;
-    animation: rotateSlow 20s linear infinite;
-}
-
-.sub-btn {
-    position: absolute;
-    width: 60px; height: 60px; /* تكبير الأزرار الفرعية */
-    background: #fff;
-    color: var(--primary-tech-blue);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: bold; font-size: 1.8rem;
-    z-index: 15; opacity: 0; transform: scale(0);
-    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.sub-btn::after {
-    content: "";
-    position: absolute;
-    top: -8px; left: -8px; right: -8px; bottom: -8px;
-    border: 3px dashed var(--primary-tech-blue);
-    border-radius: 50%;
-    animation: rotateFast 4s linear infinite;
-}
-
-@keyframes rotateSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes rotateFast { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-.level-wrapper.active .sub-btn { opacity: 1; transform: scale(1); }
-.level-wrapper.active .sub-btn:nth-child(2) { top: -30px; left: 60px; }
-.level-wrapper.active .sub-btn:nth-child(3) { bottom: -30px; left: 60px; }
-.level-wrapper.active .sub-btn:nth-child(4) { left: -30px; top: 60px; }
-.level-wrapper.active .sub-btn:nth-child(5) { right: -30px; top: 60px; }
-
-/* --- Overlays (The Whiteboard Mode) --- */
-.overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--glass-overlay);
-    display: none; z-index: 2000;
-    overflow-y: auto;
-    backdrop-filter: blur(15px);
-}
-
-/* Activity Grid (Large Cards) */
-.activity-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 40px;
-    padding: 60px;
-}
-
-/* --- Activity Header Enhanced (Identity Sync) --- */
-.activity-header {
+/* --- Stylish Header --- */
+.top-banner {
+    height: 100px;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 120px; /* زيادة الارتفاع ليتناسب مع الصور */
-    background: linear-gradient(to bottom, #1e293b, #0f172a);
-    border-bottom: 4px solid var(--primary-tech-blue);
-    padding: 0 40px;
-    box-sizing: border-box;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    padding: 0 5%;
+    background: rgba(10, 10, 10, 0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 2px solid var(--primary-gold);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
 }
 
-/* شياكة الكروت الجديدة */
-.activity-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(0, 162, 255, 0.3);
-    min-height: 220px;
-    font-size: var(--font-medium);
-    border-radius: 40px; /* حواف أكثر نعومة */
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    color: var(--text-light); /* نص أبيض ليليق بالثيم الغامق */
-    cursor: pointer;
-    font-weight: 900;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    position: relative;
-    overflow: hidden;
+.logo-img { height: 50px; filter: drop-shadow(0 0 10px var(--gold-glow)); }
+.mr-ezz-img { 
+    height: 75px; 
+    border-radius: 15% 0 15% 0; 
+    border: 2px solid var(--primary-gold); 
+    box-shadow: 0 0 15px var(--gold-glow);
 }
 
-.activity-card::before {
-    content: "";
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    transition: 0.5s;
+.main-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 6px;
+    background: linear-gradient(90deg, #fff, var(--primary-gold), #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
 }
 
-.activity-card:hover {
-    background: var(--primary-tech-blue);
-    color: white;
-    transform: scale(1.05) translateY(-10px);
-    border-color: var(--veto-gold);
-    box-shadow: 0 20px 50px rgba(0, 162, 255, 0.5);
-}
-
-.activity-card:hover::before {
-    left: 100%;
-}
-
-/* --- Final Activity View (The IFrame Container) --- */
-#activityOverlay {
-    display: none;
-    flex-direction: column;
-    background: #000; /* خلفية سوداء لتركيز الطلاب على المحتوى فقط */
-}
-
-#activityFinalContent {
-    flex-grow: 1;
-    width: 98vw;
-    margin: 10px auto !important;
-    border-radius: 20px;
-    background: #ffffff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-}
-
-#activity-view-footer {
-    height: 70px;
-    font-size: 1.8rem;
-    background: #0f172a;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    width: 100%;
-    letter-spacing: 2px;
-}
-
-/* --- Navigation In Header --- */
-.nav-link-btn {
-    font-size: 2.2rem !important;
-    color: var(--primary-tech-blue) !important;
-    font-weight: 900;
-    background: none; border: none; cursor: pointer;
-}
-
-.nav-active-act {
-    font-size: 2.5rem !important;
-    color: var(--veto-gold) !important;
-    font-weight: 900;
-    text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
-}
-
-/* --- Tokens Portal --- */
-.tokens-grid {
+/* --- Levels Grid --- */
+.levels-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 25px;
-    padding: 40px;
+    padding: 50px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-.tokens-grid div {
-    background: #1e1e1e !important;
-    border: 2px solid var(--primary-tech-blue) !important;
-    height: 150px !important;
-    border-radius: 20px !important;
+/* --- Level Block (The Robotic Shell) --- */
+.level-block {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    position: relative;
+    clip-path: polygon(0 0, 95% 0, 100% 15%, 100% 100%, 5% 100%, 0 85%);
+    transition: all var(--transition-speed);
 }
 
-/* --- Loader Animation --- */
-.loader {
-    border: 10px solid #f3f3f3;
-    border-top: 10px solid var(--primary-tech-blue);
-    border-radius: 50%;
-    width: 100px; height: 100px;
-    animation: spin 1s linear infinite;
+.level-block::before {
+    content: "ID-0"+attr(id);
+    position: absolute;
+    top: 5px;
+    right: 20px;
+    font-size: 10px;
+    color: var(--primary-gold);
+    opacity: 0.5;
+    font-family: 'Orbitron';
 }
 
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.level-block:hover {
+    border-color: var(--primary-gold);
+    background: rgba(212, 175, 55, 0.05);
+    transform: translateY(-5px);
+}
+
+.level-card {
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.level-info .level-label {
+    font-size: 0.6rem;
+    color: var(--primary-gold);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.level-info .level-number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-shadow: 0 0 10px var(--gold-glow);
+}
+
+/* --- Lectures Drawer --- */
+.lectures-drawer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.level-block.active { border-color: var(--primary-gold); border-width: 2px; }
+.level-block.active .lectures-drawer {
+    max-height: 400px;
+    padding: 20px;
+    border-top: 1px dashed var(--primary-gold);
+}
+
+/* --- Robotic Lecture Buttons --- */
+.lectures-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.lecture-item {
+    background: transparent;
+    border: 1px solid var(--primary-gold);
+    padding: 15px 5px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    clip-path: polygon(15% 0%, 100% 0%, 100% 85%, 85% 100%, 0% 100%, 0% 15%);
+    transition: 0.3s;
+}
+
+.lecture-item::after {
+    content: '';
+    position: absolute;
+    bottom: 2px; right: 2px;
+    width: 5px; height: 5px;
+    background: var(--primary-gold);
+}
+
+.lecture-item:hover {
+    background: var(--primary-gold);
+    color: #000;
+    box-shadow: 0 0 15px var(--primary-gold);
+    transform: scale(1.05);
+}
+
+.lecture-item span { font-size: 0.6rem; display: block; font-weight: bold; }
+.lecture-item b { font-family: 'Orbitron', sans-serif; font-size: 1rem; }
+
+.arrow-icon {
+    transition: 0.4s;
+    color: var(--primary-gold);
+    font-family: 'Orbitron';
+}
+.level-block.active .arrow-icon { transform: rotate(180deg); text-shadow: 0 0 10px var(--primary-gold); }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .lectures-grid { grid-template-columns: repeat(2, 1fr); }
+    .main-title { font-size: 1.1rem; letter-spacing: 2px; }
+    .levels-container { padding: 20px; }
+}

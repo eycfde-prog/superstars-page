@@ -2,14 +2,162 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VETO PROGRAM | Robotic Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="vetoof.css">
-</head>
-<body>
+    
+    <style>
+        :root {
+            --primary-gold: #d4af37; 
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(212, 175, 55, 0.2);
+            --transition-speed: 0.3s;
+        }
 
-    <header class="top-banner">
+        /* حماية المحتوى */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            -webkit-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none; /* منع تحديد النصوص */
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- Header Enhancements --- */
+        .top-banner {
+            height: 90px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 3px solid var(--primary-gold);
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .logo-img { height: 55px; filter: drop-shadow(0 0 10px var(--gold-glow)); }
+        .mr-ezz-img { 
+            height: 70px; border-radius: 10px;
+            border: 2px solid var(--primary-gold); 
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.2rem, 4vw, 2.2rem);
+            letter-spacing: 4px;
+            background: linear-gradient(180deg, #fff 30%, var(--primary-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        /* --- Levels Grid --- */
+        .levels-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 40px 5%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .level-block {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            clip-path: polygon(0 0, 92% 0, 100% 15%, 100% 100%, 8% 100%, 0 85%);
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .level-block:hover {
+            border-color: var(--primary-gold);
+            background: rgba(212, 175, 55, 0.08);
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .level-card {
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .level-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        /* --- Lectures Drawer --- */
+        .lectures-drawer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, padding 0.3s ease;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .level-block.active { border: 2px solid var(--primary-gold); z-index: 10; }
+        .level-block.active .lectures-drawer {
+            max-height: 500px;
+            padding: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .lectures-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* أفضل للموبايل والتابلت */
+            gap: 15px;
+        }
+
+        @media (min-width: 1024px) { .lectures-grid { grid-template-columns: repeat(4, 1fr); } }
+
+        .lecture-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--primary-gold);
+            padding: 15px 5px;
+            text-align: center;
+            cursor: pointer;
+            clip-path: polygon(10% 0%, 100% 0%, 100% 90%, 90% 100%, 0% 100%, 0% 10%);
+            transition: 0.3s;
+        }
+
+        .lecture-item:hover {
+            background: var(--primary-gold);
+            color: #000;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--primary-gold);
+        }
+
+        .lecture-item b { font-family: 'Orbitron'; font-size: 1.1rem; }
+        
+        /* أيقونة السهم */
+        .arrow-icon { transition: 0.3s; color: var(--primary-gold); font-size: 0.8rem; }
+        .level-block.active .arrow-icon { transform: rotate(180deg); }
+
+    </style>
+</head>
+<body oncontextmenu="return false;"> <header class="top-banner">
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" alt="VETO" class="logo-img">
         <div class="title-container">
             <h1 class="main-title">VETO SYSTEM v2.0</h1>
@@ -17,15 +165,17 @@
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" alt="Mr Ezz" class="mr-ezz-img">
     </header>
 
-    <main class="levels-container" id="mainContainer">
-    </main>
+    <main class="levels-container" id="mainContainer"></main>
 
     <script>
         const container = document.getElementById('mainContainer');
         const levelsCount = 12;
         const sessionsPerLevel = 4;
 
+        // تحسين الأداء: استخدام DocumentFragment
         function initApp() {
+            const fragment = document.createDocumentFragment();
+            
             for (let i = 1; i <= levelsCount; i++) {
                 const block = document.createElement('div');
                 block.className = 'level-block';
@@ -35,50 +185,54 @@
                 for (let s = 1; s <= sessionsPerLevel; s++) {
                     sessionsHTML += `
                         <div class="lecture-item" onclick="event.stopPropagation(); navigate('${i}-${s}')">
-                            <span>UNIT-MOD</span>
+                            <span>SESSION</span>
                             <b>${s < 10 ? '0' + s : s}</b>
-                        </div>
-                    `;
+                        </div>`;
                 }
 
                 block.innerHTML = `
                     <div class="level-card" onclick="toggleDrawer(${i})">
                         <div class="level-info">
-                            <span class="level-label">SYSTEM SECTOR</span>
+                            <span style="font-size:0.7rem; color:var(--primary-gold); letter-spacing:2px;">SECTOR</span>
                             <div class="level-number">LEVEL ${i < 10 ? '0' + i : i}</div>
                         </div>
                         <div class="arrow-icon">▼</div>
                     </div>
                     <div class="lectures-drawer">
-                        <div class="lectures-grid">
-                            ${sessionsHTML}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(block);
+                        <div class="lectures-grid">${sessionsHTML}</div>
+                    </div>`;
+                fragment.appendChild(block);
             }
+            container.appendChild(fragment);
         }
 
         function toggleDrawer(id) {
-            const allBlocks = document.querySelectorAll('.level-block');
             const target = document.getElementById(`level-${id}`);
             const isActive = target.classList.contains('active');
             
-            allBlocks.forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.level-block').forEach(b => b.classList.remove('active'));
             
             if (!isActive) {
                 target.classList.add('active');
                 setTimeout(() => {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 300);
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 400);
             }
         }
 
         function navigate(sid) {
-            const items = document.querySelectorAll('.lecture-item');
-            items.forEach(item => item.style.pointerEvents = 'none');
+            // حماية من الضغط المتكرر
+            document.querySelectorAll('.lecture-item').forEach(el => el.style.pointerEvents = 'none');
             window.location.href = `vetoofif.html?session=${sid}`;
         }
+
+        // إضافات الحماية المتقدمة
+        document.onkeydown = function(e) {
+            if (e.ctrlKey && 
+                (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 73)) {
+                return false; // منع Ctrl+C, Ctrl+V, Ctrl+U (عرض الكود), Ctrl+I
+            }
+        };
 
         document.addEventListener('DOMContentLoaded', initApp);
     </script>

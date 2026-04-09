@@ -40,7 +40,7 @@
             type: 'big-rule',
             title: 'LET\'S WRITE!',
             examples: [
-                { type: 'DIGITAL (AFTER)', text: '07:10 ➞ It’s 10 after 7' },
+               { type: 'DIGITAL (AFTER)', text: '07:10 ➞ It’s 10 after 7' },
                 { type: 'DIGITAL (TO)', text: '07:50 ➞ It’s 10 to 8' },
                 { type: 'ANALOG (AFTER)', text: 'Quarter after 2 ➞ 02:15' },
                 { type: 'ANALOG (TO)', text: 'Quarter to 3 ➞ 02:45' }

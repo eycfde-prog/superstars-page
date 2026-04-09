@@ -10,8 +10,9 @@
             --bg-sky: #87CEEB;
             --bubble-gradient: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.3));
             --pink-accent: #ff477e;
-            --cyan-accent: #00f2fe;
         }
+
+        * { -webkit-tap-highlight-color: transparent; outline: none; }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -27,28 +28,18 @@
             background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);
         }
 
-        /* زر الفول سكرين */
-        #fullscreen-btn {
-            position: absolute; top: 15px; left: 15px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid white; border-radius: 12px;
-            color: white; padding: 8px; cursor: pointer;
-            z-index: 100; backdrop-filter: blur(5px);
-            display: flex; align-items: center; justify-content: center;
-        }
-
         #teacher-sign {
             position: absolute; bottom: 15px; right: 20px;
-            font-size: 1rem; color: rgba(255,255,255,0.8); z-index: 10;
+            font-size: 0.9rem; color: rgba(255,255,255,0.8); z-index: 10;
         }
 
         #stats {
-            position: absolute; top: 20px; width: 100%;
+            position: absolute; top: env(safe-area-inset-top, 20px); 
+            width: 100%;
             display: flex; justify-content: space-around;
             font-size: 1.8rem; color: white; 
             text-shadow: 0 4px 8px rgba(0,0,0,0.2);
             z-index: 20;
-            pointer-events: none;
         }
 
         #danger-line {
@@ -56,22 +47,22 @@
             width: 100%; height: 8px;
             background: repeating-linear-gradient(90deg, #ff4d4d, #ff4d4d 20px, transparent 20px, transparent 40px);
             z-index: 5;
-            box-shadow: 0 0 15px rgba(255, 77, 77, 0.5);
+            box-shadow: 0 0 15px rgba(255,77,77,0.5);
         }
 
         #word-wrapper {
             position: absolute; top: -120px;
             display: flex; flex-direction: row;
-            gap: 10px; width: 100%; justify-content: center;
+            gap: 8px; width: 100%; justify-content: center;
         }
 
         .bubble-char {
-            width: 60px; height: 60px;
+            width: 55px; height: 55px;
             background: var(--bubble-gradient);
             border: 3px solid white;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; color: #005f73;
+            font-size: 1.8rem; color: #005f73;
             box-shadow: 0 6px 15px rgba(0,0,0,0.1);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
@@ -80,27 +71,28 @@
         .popped { animation: pop-effect 0.3s ease-out forwards; }
         @keyframes pop-effect {
             0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.8); opacity: 0; filter: brightness(1.5); }
+            100% { transform: scale(2); opacity: 0; filter: brightness(2); }
         }
 
         .overlay {
-            position: fixed; inset: 0; background: rgba(10, 25, 47, 0.9);
+            position: fixed; inset: 0; background: rgba(10, 25, 47, 0.95);
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; z-index: 1000; color: white; text-align: center;
             padding: 20px;
         }
 
         button {
-            padding: 18px 45px; font-size: 1.8rem; font-family: 'Fredoka One';
+            padding: 15px 40px; font-size: 1.8rem; font-family: 'Fredoka One';
             background: var(--pink-accent); color: white; border: none; border-radius: 50px;
-            box-shadow: 0 6px #c9184a; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 6px #c9184a; cursor: pointer; transform: scale(1);
+            transition: 0.1s;
         }
-        
-        button:active { transform: translateY(3px); box-shadow: 0 3px #c9184a; }
+
+        button:active { transform: scale(0.95); box-shadow: 0 2px #c9184a; }
 
         #hidden-input {
             position: absolute; bottom: 0; left: 0;
-            width: 100%; height: 100%;
+            width: 1px; height: 1px;
             opacity: 0; z-index: -1;
             font-size: 16px;
         }
@@ -109,10 +101,6 @@
 <body>
 
 <div id="game-container">
-    <button id="fullscreen-btn" onclick="toggleFullScreen()">
-        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"></path></svg>
-    </button>
-
     <div id="teacher-sign">Miss Dina ✨</div>
     <div id="stats">
         <div>⏳ <span id="timer">30</span>s</div>
@@ -120,18 +108,17 @@
     </div>
     <div id="word-wrapper"></div>
     <div id="danger-line"></div>
-    
     <input type="text" id="hidden-input" inputmode="text" autocomplete="off">
 
     <div id="start-screen" class="overlay">
-        <h1 style="color: var(--cyan-accent); font-size: 3.5rem; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0,242,254,0.5);">VETO BUBBLES</h1>
-        <p style="margin-bottom: 30px; font-size: 1.2rem; opacity: 0.8;">Ready for the mission?</p>
-        <button id="start-btn">START GAME 🚀</button>
+        <h1 style="color: #00f2fe; font-size: 2.8rem; margin-bottom: 10px;">VETO BUBBLES</h1>
+        <p style="margin-bottom: 30px; opacity: 0.8;">Pop the bubbles to win! 🎈</p>
+        <button id="start-btn">START! 🚀</button>
     </div>
 
     <div id="end-screen" class="overlay" style="display: none;">
-        <h1 style="font-size: 3.5rem; color: var(--pink-accent);">WOW! 🌈</h1>
-        <p style="font-size: 2.2rem;">Score: <span id="final-score" style="color: var(--cyan-accent);">0</span></p>
+        <h1 style="font-size: 3rem; color: #ff477e;">TIME UP! ⏰</h1>
+        <p style="font-size: 2rem;">Total Score: <span id="final-score" style="color: #00f2fe;">0</span></p>
         <button onclick="location.reload()">PLAY AGAIN 🔄</button>
     </div>
 </div>
@@ -149,7 +136,7 @@
     let score = 0;
     let timeLeft = 30;
     let isActive = false;
-    let baseSpeed = 0.7;
+    let baseSpeed = 0.8;
 
     const wrapper = document.getElementById('word-wrapper');
     const input = document.getElementById('hidden-input');
@@ -160,29 +147,22 @@
         finish: document.getElementById('snd-finish')
     };
 
-    // وظيفة الفول سكرين
-    function toggleFullScreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
-                console.log("Error enabling full-screen");
-            });
-        } else {
-            document.exitFullscreen();
-        }
+    function requestFullScreen() {
+        const doc = window.document;
+        const docEl = doc.documentElement;
+        const request = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        if (request) request.call(docEl);
     }
 
     document.getElementById('start-btn').addEventListener('click', () => {
-        document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('fullscreen-btn').style.display = 'none'; // إخفاء الزرار وقت اللعب
-        isActive = true;
+        // فك حظر الصوت في الموبايل
+        Object.values(sounds).forEach(s => { s.play(); s.pause(); s.currentTime = 0; });
         
-        // أهم خطوة لضمان عمل الأصوات في الموبايل
-        Object.values(sounds).forEach(s => {
-            s.play();
-            s.pause();
-            s.currentTime = 0;
-        });
+        // محاولة دخول وضع ملء الشاشة
+        requestFullScreen();
 
+        document.getElementById('start-screen').style.display = 'none';
+        isActive = true;
         input.focus();
         spawnWord();
         tick();
@@ -194,8 +174,7 @@
             wordIndex = 0;
             baseSpeed += 0.2;
         }
-        currentWord = originalWords[wordIndex];
-        wordIndex++;
+        currentWord = originalWords[wordIndex++];
         charIdx = 0;
         wrapper.innerHTML = "";
         wrapper.style.top = "-100px";
@@ -213,8 +192,7 @@
         let top = parseFloat(wrapper.style.top) || -100;
         wrapper.style.top = (top + baseSpeed) + "px";
 
-        const lineY = document.getElementById('danger-line').offsetTop;
-        if (top + 60 > lineY) {
+        if (top + 60 > document.getElementById('danger-line').offsetTop) {
             spawnWord(); 
         }
         requestAnimationFrame(tick);
@@ -243,8 +221,7 @@
 
         if (pressed === target) {
             const bubbles = document.querySelectorAll('.bubble-char');
-            if (bubbles[charIdx]) bubbles[charIdx].classList.add('popped');
-            
+            if(bubbles[charIdx]) bubbles[charIdx].classList.add('popped');
             sounds.right.currentTime = 0;
             sounds.right.play();
             charIdx++;
@@ -254,7 +231,7 @@
                 document.getElementById('score').innerText = score;
                 sounds.complete.currentTime = 0;
                 sounds.complete.play();
-                spawnWord();
+                spawnWord(); // انتقال فوري
             }
         } else {
             sounds.wrong.currentTime = 0;
@@ -263,7 +240,7 @@
         e.target.value = ""; 
     });
 
-    // إبقاء التركيز على الإدخال لضمان بقاء الكيبورد
+    // إبقاء الكيبورد نشط عند أي لمسة للشاشة
     document.addEventListener('touchstart', (e) => {
         if(isActive && e.target.tagName !== 'BUTTON') {
             input.focus();

@@ -47,27 +47,65 @@
 
         if (currentAudio) {
             currentAudio.pause();
-            currentAudio.currentTime = 0;
+            currentAudio.src = ""; // تنظيف المسار القديم فوراً
         }
 
+        // المسار الأساسي (Local)
         const audioPath = `data/vocab/v1/${index + 1}.wav`;
+        
         currentAudio = new Audio(audioPath);
-        currentAudio.play().catch(e => console.error("Audio Error:", e.message));
+        currentAudio.load(); // إجبار المتصفح على بدء التحميل
+
+        const playPromise = currentAudio.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.warn("Veto Audio: Local play failed, trying Direct Raw Link...");
+                
+                // الحل الاحتياطي: استخدام الرابط المباشر من GitHub Raw لضمان التشغيل
+                const rawPath = `https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/f64cee2482723458576fc9b9dc87c43d8e89fb5c/data/vocab/v1/${index + 1}.wav`;
+                currentAudio.src = rawPath;
+                currentAudio.play().catch(e => console.error("Veto Fatal Error: Audio not found anywhere."));
+            });
+        }
     }
 
     function renderWord() {
-        let fontSize = words[currentIndex].length > 8 ? '15vw' : '20vw';
+        const word = words[currentIndex];
+        let fontSize;
+        
+        // تطبيق منطق Veto للخطوط الأربعة لضمان الوضوح من 4 أمتار
+        if (word.length <= 4) {
+            fontSize = '22vw';
+        } else if (word.length <= 7) {
+            fontSize = '18vw';
+        } else if (word.length <= 9) {
+            fontSize = '14vw';
+        } else {
+            fontSize = '11vw';
+        }
         
         container.innerHTML = `
             <div style="position:absolute; top:0; left:0; height:12px; background:linear-gradient(90deg, #c5a059, #ffd700); width:${((currentIndex + 1) / words.length) * 100}%; transition:0.6s ease-out;"></div>
             
-            <div style="text-align:center; width:90%;">
+            <div style="text-align:center; width:95%; max-width: 95vw;">
                 <div style="font-size:3vw; color:rgba(255,255,255,0.15); margin-bottom:1vh; font-weight:900;">
                     ${(currentIndex + 1).toString().padStart(2, '0')} <span style="color:#c5a059;">/</span> ${words.length}
                 </div>
                 
-                <div id="vocabWord" style="font-size:${fontSize}; font-weight:900; color:#ffffff; text-transform:uppercase; letter-spacing:-2px; cursor:pointer; animation: vetoSharpIn 0.3s ease-out;">
-                    ${words[currentIndex]}
+                <div id="vocabWord" style="
+                    font-size:${fontSize}; 
+                    font-weight:900; 
+                    color:#ffffff; 
+                    text-transform:uppercase; 
+                    letter-spacing:-2px; 
+                    cursor:pointer; 
+                    animation: vetoSharpIn 0.3s ease-out;
+                    white-space: nowrap;
+                    display: inline-block;
+                    width: 100%;
+                ">
+                    ${word}
                 </div>
                 
                 <div style="margin-top:10vh; color:#c5a059; font-size:1.8vw; letter-spacing:12px; font-weight:900; opacity:0.4;">VETO</div>
@@ -75,8 +113,8 @@
 
             <style>
                 @keyframes vetoSharpIn { 
-                    from { opacity: 0; transform: translateY(30px); } 
-                    to { opacity: 1; transform: translateY(0); } 
+                    from { opacity: 0; transform: scale(0.95); } 
+                    to { opacity: 1; transform: scale(1); } 
                 }
             </style>
         `;
@@ -101,11 +139,9 @@
         }
     };
 
-    // نظام التحكم المطور لمنع القفز المزدوج
+    // نظام التحكم المطور
     document.onkeydown = (e) => {
-        // منع انتشار الحدث للصفحة الأم (Prevent Bubbling)
         e.stopPropagation();
-
         const key = e.keyCode;
 
         if (key === 13 || key === 39) { // Enter or Right

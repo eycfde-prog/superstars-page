@@ -34,17 +34,7 @@
         /* 4: Irregular Verbs (Requested) */
 
 
-        /* 5: The 3 Modes Comparison (Requested) */
-        {
-            type: 'reveal-list',
-            title: 'ONE SENTENCE - 3 MODES',
-            items: [
-                "✅ <span style='color:#fff'>I <span style='color:#f1c40f'>went</span> to work yesterday.</span>",
-                "❌ <span style='color:#fff'>I <span style='color:#e74c3c'>didn't go</span> to work yesterday.</span>",
-                "❓ <span style='color:#fff'><span style='color:#3498db'>Did</span> I <span style='color:#3498db'>go</span> to work yesterday?</span>"
-            ]
-        },
-
+     
         /* 6: 7 Examples for 7 Pronouns */
         { 
             type: 'reveal-list', 
@@ -89,6 +79,17 @@
                 { v1: "SEE", v2: "SAW" }
             ]
         },
+           /* 5: The 3 Modes Comparison (Requested) */
+        {
+            type: 'reveal-list',
+            title: 'ONE SENTENCE - 3 MODES',
+            items: [
+                "✅ <span style='color:#fff'>I <span style='color:#f1c40f'>went</span> to work yesterday.</span>",
+                "❌ <span style='color:#fff'>I <span style='color:#e74c3c'>didn't go</span> to work yesterday.</span>",
+                "❓ <span style='color:#fff'><span style='color:#3498db'>Did</span> I <span style='color:#3498db'>go</span> to work yesterday?</span>"
+            ]
+        },
+
         /* 9: Spelling (Including doubling rule) */
         { 
             type: 'spelling-grid', 

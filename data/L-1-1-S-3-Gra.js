@@ -54,8 +54,8 @@
             type: 'u-case',
             title: 'SPECIAL CASE: THE LETTER ( U )',
             cases: [
-                { word: "An <span style='color:#e74c3c;'>Um</span>brella", sound: "Sound: /ʌ/ (Vowel)" },
-                { word: "A <span style='color:#3498db;'>Un</span>iversity", sound: "Sound: /ju:/ (Consonant)" }
+                { word: "An U<span style='color:#e74c3c;'>mb</span>rella", sound: "Sound: /ʌ/ (Vowel)" },
+                { word: "A U<span style='color:#3498db;'>ni</span>versity", sound: "Sound: /ju:/ (Consonant)" }
             ]
         },
 

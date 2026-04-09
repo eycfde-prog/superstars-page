@@ -2,10 +2,11 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // الإعداد الأساسي للخلفية (مرة واحدة فقط)
     container.innerHTML = ''; 
     container.style.cssText = `height:100%; width:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#050505; font-family:'Segoe UI', sans-serif; direction:ltr; color:white;`;
 
-    let currentSlide = 0;
+    let currentSlide = -1; 
     let subStep = 0;
 
     const slides = [
@@ -99,10 +100,32 @@
         }
     ];
 
-    function render() {
+    function updateSubSteps() {
+        const s = slides[currentSlide];
+        if (!s) return;
+
+        // تحديث العناصر التدريجية (Items & Cases)
+        const items = container.querySelectorAll('.step-item');
+        items.forEach((item, i) => {
+            if (i <= subStep) {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            } else {
+                item.style.opacity = '0.05';
+                item.style.transform = 'translateY(10px)';
+            }
+        });
+    }
+
+    function renderSlide(index) {
+        if (index === currentSlide) return;
+        currentSlide = index;
+        subStep = 0;
         container.innerHTML = '';
+        
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
+        wrapper.className = 'slide-wrapper';
         wrapper.style.cssText = `width:95%; max-width:1400px; text-align:center; animation: vetoQuickFade 0.3s ease;`;
 
         if (s.type === 'title') {
@@ -119,7 +142,7 @@
                 </div>
                 <div style="font-size:4vh; color:#888;">${s.note}</div>
                 ${s.items ? `<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; margin-top:5vh;">
-                    ${s.items.map((item, i) => `<div style="opacity:${i <= subStep ? 1 : 0.05}; background:#222; padding:2vh; border-radius:15px; font-size:4vh; font-weight:bold; transition:0.2s;">${item}</div>`).join('')}
+                    ${s.items.map((item, i) => `<div class="step-item" style="background:#222; padding:2vh; border-radius:15px; font-size:4vh; font-weight:bold; transition:0.3s; opacity:0.05;">${item}</div>`).join('')}
                 </div>` : ''}
             `;
         }
@@ -128,7 +151,7 @@
                 <h2 style="font-size:6vh; color:#c5a059; margin-bottom:5vh;">${s.title}</h2>
                 <div style="display:flex; justify-content:center; gap:5vw;">
                     ${s.cases.map((c, i) => `
-                        <div style="background:#111; padding:6vh; border-radius:30px; border-bottom:10px solid ${i===0?'#e74c3c':'#3498db'}; opacity:${i <= subStep ? 1 : 0.05}; transition:0.3s;">
+                        <div class="step-item" style="background:#111; padding:6vh; border-radius:30px; border-bottom:10px solid ${i===0?'#e74c3c':'#3498db'}; transition:0.3s; opacity:0.05;">
                             <div style="font-size:8vh; font-weight:900; margin-bottom:2vh;">${c.word}</div>
                             <div style="font-size:3vh; color:#666;">${c.sound}</div>
                         </div>
@@ -155,43 +178,53 @@
                 <h2 style="font-size:4rem; color:#c5a059; margin-bottom:10px; font-weight:900;">${s.title}</h2>
                 <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:25px; margin-top:40px;">
                     ${s.items.map((item, i) => `
-                        <div style="opacity:${i <= subStep ? 1 : 0.05}; font-size:3.5rem; background:#111; padding:40px; border-radius:25px; font-weight:900; border-bottom: 8px solid ${i <= subStep ? '#c5a059' : '#222'}; transition:0.2s;">
+                        <div class="step-item" style="font-size:3.5rem; background:#111; padding:40px; border-radius:25px; font-weight:900; border-bottom: 8px solid #222; transition:0.3s; opacity:0.05;">
                             ${item.base}<span style="color:#c5a059;">${item.add}</span>
                         </div>
                     `).join('')}
                 </div>`;
         }
         else if (s.type === 'mcq') {
-            let q = s.questions[subStep];
-            wrapper.innerHTML = `
-                <h2 style="font-size:4vh; color:#c5a059; margin-bottom:3vh;">Practice (${subStep + 1}/10)</h2>
-                <div style="background:#111; padding:6vh; border-radius:40px; border:4px solid #c5a059; width:100%;">
-                    <div id="q-text" style="font-size:7vh; margin-bottom:5vh; font-weight:900;">${q.q}</div>
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
-                        ${q.opts.map(opt => `
-                            <button onclick="window.checkArtAns('${opt}', '${q.ans}', this)" 
-                                style="padding:3vh; background:#222; border:3px solid #444; color:#fff; border-radius:20px; font-size:4vh; font-weight:900; cursor:pointer; transition:0.2s;">
-                                ${opt}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>`;
+            renderMCQContent(wrapper, s);
         }
 
         container.appendChild(wrapper);
+        updateSubSteps();
+    }
+
+    function renderMCQContent(parent, s) {
+        let q = s.questions[subStep];
+        parent.innerHTML = `
+            <h2 style="font-size:4vh; color:#c5a059; margin-bottom:3vh;">Practice (${subStep + 1}/10)</h2>
+            <div style="background:#111; padding:6vh; border-radius:40px; border:4px solid #c5a059; width:100%;">
+                <div id="q-text" style="font-size:7vh; margin-bottom:5vh; font-weight:900;">${q.q}</div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
+                    ${q.opts.map(opt => `
+                        <button onclick="window.checkArtAns('${opt}', '${q.ans}', this)" 
+                            style="padding:3vh; background:#222; border:3px solid #444; color:#fff; border-radius:20px; font-size:4vh; font-weight:900; cursor:pointer; transition:0.2s;">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>`;
     }
 
     window.checkArtAns = function(sel, ans, btn) {
         if (sel === ans) {
             btn.style.background = "#2ecc71";
+            btn.style.borderColor = "#2ecc71";
             setTimeout(() => {
-                if (subStep < 9) { subStep++; render(); }
-                else { currentSlide++; subStep = 0; render(); }
+                const s = slides[currentSlide];
+                if (subStep < 9) { 
+                    subStep++; 
+                    renderMCQContent(container.querySelector('.slide-wrapper'), s); 
+                }
+                else { renderSlide(currentSlide + 1); }
             }, 800);
         } else {
             btn.style.background = "#e74c3c";
-            btn.classList.add('shake');
-            setTimeout(() => btn.classList.remove('shake'), 400);
+            btn.classList.add('veto-shake');
+            setTimeout(() => btn.classList.remove('veto-shake'), 400);
         }
     };
 
@@ -203,24 +236,22 @@
             else if (s.cases) maxSteps = s.cases.length - 1;
             else if (s.type === 'mcq') return;
 
-            if (subStep < maxSteps) subStep++;
-            else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
+            if (subStep < maxSteps) { subStep++; updateSubSteps(); }
+            else if (currentSlide < slides.length - 1) { renderSlide(currentSlide + 1); }
             else { if (window.triggerVetoDone) window.triggerVetoDone(); }
-            render();
         } else if (e.keyCode === 37) {
-            if (subStep > 0) subStep--;
-            else if (currentSlide > 0) { currentSlide--; subStep = 0; }
-            render();
+            if (subStep > 0) { subStep--; updateSubSteps(); }
+            else if (currentSlide > 0) { renderSlide(currentSlide - 1); }
         }
     };
 
     const style = document.createElement('style');
     style.innerHTML = `
-        @keyframes vetoQuickFade { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
-        .shake { animation: shake 0.3s ease-in-out; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        @keyframes vetoQuickFade { from { opacity:0; transform: scale(0.95); } to { opacity:1; transform: scale(1); } }
+        .veto-shake { animation: vetoShakeAnim 0.3s ease-in-out; }
+        @keyframes vetoShakeAnim { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
     `;
     document.head.appendChild(style);
 
-    render();
+    renderSlide(0);
 })();

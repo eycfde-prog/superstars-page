@@ -10,6 +10,7 @@
             --bg-sky: #87CEEB;
             --bubble-gradient: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.3));
             --pink-accent: #ff477e;
+            --cyan-accent: #00f2fe;
         }
 
         body, html {
@@ -26,6 +27,16 @@
             background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);
         }
 
+        /* زر الفول سكرين */
+        #fullscreen-btn {
+            position: absolute; top: 15px; left: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid white; border-radius: 12px;
+            color: white; padding: 8px; cursor: pointer;
+            z-index: 100; backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+        }
+
         #teacher-sign {
             position: absolute; bottom: 15px; right: 20px;
             font-size: 1rem; color: rgba(255,255,255,0.8); z-index: 10;
@@ -37,6 +48,7 @@
             font-size: 1.8rem; color: white; 
             text-shadow: 0 4px 8px rgba(0,0,0,0.2);
             z-index: 20;
+            pointer-events: none;
         }
 
         #danger-line {
@@ -44,6 +56,7 @@
             width: 100%; height: 8px;
             background: repeating-linear-gradient(90deg, #ff4d4d, #ff4d4d 20px, transparent 20px, transparent 40px);
             z-index: 5;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.5);
         }
 
         #word-wrapper {
@@ -67,7 +80,7 @@
         .popped { animation: pop-effect 0.3s ease-out forwards; }
         @keyframes pop-effect {
             0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.8); opacity: 0; }
+            100% { transform: scale(1.8); opacity: 0; filter: brightness(1.5); }
         }
 
         .overlay {
@@ -80,8 +93,10 @@
         button {
             padding: 18px 45px; font-size: 1.8rem; font-family: 'Fredoka One';
             background: var(--pink-accent); color: white; border: none; border-radius: 50px;
-            box-shadow: 0 6px #c9184a; cursor: pointer;
+            box-shadow: 0 6px #c9184a; cursor: pointer; transition: 0.2s;
         }
+        
+        button:active { transform: translateY(3px); box-shadow: 0 3px #c9184a; }
 
         #hidden-input {
             position: absolute; bottom: 0; left: 0;
@@ -94,6 +109,10 @@
 <body>
 
 <div id="game-container">
+    <button id="fullscreen-btn" onclick="toggleFullScreen()">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"></path></svg>
+    </button>
+
     <div id="teacher-sign">Miss Dina ✨</div>
     <div id="stats">
         <div>⏳ <span id="timer">30</span>s</div>
@@ -101,27 +120,28 @@
     </div>
     <div id="word-wrapper"></div>
     <div id="danger-line"></div>
+    
     <input type="text" id="hidden-input" inputmode="text" autocomplete="off">
 
     <div id="start-screen" class="overlay">
-        <h1 style="color: #00f2fe; font-size: 3rem;">VETO BUBBLES</h1>
-        <button id="start-btn">START MISSION 🚀</button>
+        <h1 style="color: var(--cyan-accent); font-size: 3.5rem; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0,242,254,0.5);">VETO BUBBLES</h1>
+        <p style="margin-bottom: 30px; font-size: 1.2rem; opacity: 0.8;">Ready for the mission?</p>
+        <button id="start-btn">START GAME 🚀</button>
     </div>
 
     <div id="end-screen" class="overlay" style="display: none;">
-        <h1 style="font-size: 3rem; color: #ff477e;">GREAT JOB! 🌈</h1>
-        <p style="font-size: 2rem;">Score: <span id="final-score">0</span></p>
-        <button onclick="location.reload()">REPLAY 🔄</button>
+        <h1 style="font-size: 3.5rem; color: var(--pink-accent);">WOW! 🌈</h1>
+        <p style="font-size: 2.2rem;">Score: <span id="final-score" style="color: var(--cyan-accent);">0</span></p>
+        <button onclick="location.reload()">PLAY AGAIN 🔄</button>
     </div>
 </div>
 
-<audio id="snd-right" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/rlitter.wav"></audio>
-<audio id="snd-wrong" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/wlitter.wav"></audio>
-<audio id="snd-complete" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/completeworf.wav"></audio>
-<audio id="snd-finish" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/fimishgame.wav"></audio>
+<audio id="snd-right" preload="auto" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/rlitter.wav"></audio>
+<audio id="snd-wrong" preload="auto" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/wlitter.wav"></audio>
+<audio id="snd-complete" preload="auto" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/completeworf.wav"></audio>
+<audio id="snd-finish" preload="auto" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/fimishgame.wav"></audio>
 
 <script>
-    // ترتيب الكلمات من الأسهل (الأقصر) إلى الأصعب (الأطول)
     const originalWords = ["old", "live", "kind", "years", "mother", "father", "family", "sister", "brother", "together"];
     let wordIndex = 0;
     let currentWord = "";
@@ -140,9 +160,29 @@
         finish: document.getElementById('snd-finish')
     };
 
+    // وظيفة الفول سكرين
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log("Error enabling full-screen");
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
     document.getElementById('start-btn').addEventListener('click', () => {
         document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('fullscreen-btn').style.display = 'none'; // إخفاء الزرار وقت اللعب
         isActive = true;
+        
+        // أهم خطوة لضمان عمل الأصوات في الموبايل
+        Object.values(sounds).forEach(s => {
+            s.play();
+            s.pause();
+            s.currentTime = 0;
+        });
+
         input.focus();
         spawnWord();
         tick();
@@ -150,15 +190,12 @@
     });
 
     function spawnWord() {
-        // لو خلص الكلمات يبدأ من الأول تاني بس بسرعة أكبر شوية كنوع من التحدي
         if (wordIndex >= originalWords.length) {
             wordIndex = 0;
             baseSpeed += 0.2;
         }
-        
         currentWord = originalWords[wordIndex];
         wordIndex++;
-        
         charIdx = 0;
         wrapper.innerHTML = "";
         wrapper.style.top = "-100px";
@@ -178,7 +215,7 @@
 
         const lineY = document.getElementById('danger-line').offsetTop;
         if (top + 60 > lineY) {
-            spawnWord(); // لو لمست الخط تروح وتظهر كلمة تانية
+            spawnWord(); 
         }
         requestAnimationFrame(tick);
     }
@@ -198,7 +235,6 @@
 
     input.addEventListener('input', (e) => {
         if (!isActive) return;
-        
         const val = e.target.value.toLowerCase();
         if (val.length === 0) return;
         
@@ -207,7 +243,8 @@
 
         if (pressed === target) {
             const bubbles = document.querySelectorAll('.bubble-char');
-            bubbles[charIdx].classList.add('popped');
+            if (bubbles[charIdx]) bubbles[charIdx].classList.add('popped');
+            
             sounds.right.currentTime = 0;
             sounds.right.play();
             charIdx++;
@@ -217,18 +254,20 @@
                 document.getElementById('score').innerText = score;
                 sounds.complete.currentTime = 0;
                 sounds.complete.play();
-                // الانتقال الفوري للكلمة التالية
                 spawnWord();
             }
         } else {
             sounds.wrong.currentTime = 0;
             sounds.wrong.play();
         }
-        e.target.value = ""; // مسح فوري عشان الموبايل يفضل مستعد
+        e.target.value = ""; 
     });
 
-    document.addEventListener('touchstart', () => {
-        if(isActive) input.focus();
+    // إبقاء التركيز على الإدخال لضمان بقاء الكيبورد
+    document.addEventListener('touchstart', (e) => {
+        if(isActive && e.target.tagName !== 'BUTTON') {
+            input.focus();
+        }
     });
 
     function showEnd() {

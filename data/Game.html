@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Veto Bubble Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #a2d2ff;
+            --bubble-color: rgba(255, 255, 255, 0.3);
+            --text-color: #ffffff;
+            --accent-color: #ffafcc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle, #bde0fe 20%, transparent 20%), 
+                              radial-gradient(circle, #ffafcc 20%, transparent 20%);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            font-family: 'Fredoka One', cursive;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* حاوية اللعبة */
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* العداد والسكور */
+        #stats {
+            position: absolute;
+            top: 20px;
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            z-index: 100;
+            font-size: 2rem;
+            color: #333;
+            text-shadow: 2px 2px #fff;
+        }
+
+        /* الكلمة والفقاعات */
+        #word-wrapper {
+            position: absolute;
+            top: -150px; /* البداية من خارج الشاشة */
+            display: flex;
+            gap: 15px;
+            transition: top 0.1s linear;
+        }
+
+        .bubble-char {
+            width: 100px;
+            height: 100px;
+            background: var(--bubble-color);
+            border: 4px solid #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--text-color);
+            text-shadow: 3px 3px 0px #00000022;
+            box-shadow: inset -10px -10px 15px rgba(255,255,255,0.5), 
+                        0 10px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+            animation: float 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        /* فرقعة الفقاعة */
+        .pop {
+            animation: pop-anim 0.3s forwards;
+        }
+
+        @keyframes pop-anim {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* شاشة البداية والنهاية */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: white;
+            text-align: center;
+        }
+
+        button {
+            padding: 20px 50px;
+            font-size: 2.5rem;
+            font-family: 'Fredoka One';
+            background: #ffc8dd;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 0 #ffafcc;
+            transition: 0.1s;
+        }
+
+        button:active {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #ffafcc;
+        }
+
+        /* Input مخفي لفتح الكيبورد */
+        #hidden-input {
+            position: absolute;
+            top: -100px;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="stats">
+        <div>Time: <span id="timer">30</span>s</div>
+        <div>Words: <span id="score">0</span></div>
+    </div>
+
+    <div id="word-wrapper"></div>
+
+    <input type="text" id="hidden-input" autocomplete="off" autofocus>
+
+    <div id="start-screen" class="overlay">
+        <h1 style="font-size: 4rem; color: #ffafcc;">VETO BUBBLES</h1>
+        <button onclick="startGame()">START GAME</button>
+        <p style="margin-top: 20px;">Type the letters to pop the bubbles!</p>
+    </div>
+
+    <div id="end-screen" class="overlay" style="display: none;">
+        <h1 style="font-size: 3rem;">GAME OVER!</h1>
+        <p style="font-size: 2rem;">You finished <span id="final-score">0</span> words</p>
+        <button onclick="location.reload()">PLAY AGAIN</button>
+    </div>
+</div>
+
+<script>
+    const wordList = ["dog", "cat", "mat", "bug", "box", "car", "not", "are", "is", "am", "i", "he", "she", "it", "we", "they", "you"];
+    let currentWord = "";
+    let charIndex = 0;
+    let score = 0;
+    let timeLeft = 30;
+    let gameActive = false;
+    let fallSpeed = 2; // سرعة النزول
+
+    const wordWrapper = document.getElementById('word-wrapper');
+    const timerDisplay = document.getElementById('timer');
+    const scoreDisplay = document.getElementById('score');
+    const hiddenInput = document.getElementById('hidden-input');
+
+    function startGame() {
+        document.getElementById('start-screen').style.display = 'none';
+        gameActive = true;
+        score = 0;
+        timeLeft = 30;
+        
+        // فتح الكيبورد
+        hiddenInput.focus();
+        
+        nextWord();
+        gameLoop();
+        startTimer();
+    }
+
+    function nextWord() {
+        wordWrapper.innerHTML = "";
+        charIndex = 0;
+        currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+        
+        // إنشاء الفقاعات
+        currentWord.split('').forEach(char => {
+            const div = document.createElement('div');
+            div.className = 'bubble-char';
+            div.innerText = char.toUpperCase();
+            wordWrapper.appendChild(div);
+        });
+
+        // إعادة وضع الكلمة فوق
+        wordWrapper.style.top = "-150px";
+        wordWrapper.style.left = Math.random() * (window.innerWidth - 300) + 50 + "px";
+    }
+
+    function gameLoop() {
+        if (!gameActive) return;
+
+        let currentTop = parseInt(wordWrapper.style.top);
+        wordWrapper.style.top = (currentTop + fallSpeed) + "px";
+
+        // لو الكلمة وصلت للأرض ولم تكتمل
+        if (currentTop > window.innerHeight) {
+            nextWord();
+        }
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    function startTimer() {
+        const interval = setInterval(() => {
+            timeLeft--;
+            timerDisplay.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                endGame();
+            }
+        }, 1000);
+    }
+
+    // منطق الضغط على الكيبورد
+    window.addEventListener('keydown', (e) => {
+        if (!gameActive) return;
+        
+        // الحرف المتوقع (Case Insensitive)
+        let expectedChar = currentWord[charIndex].toLowerCase();
+        let pressedChar = e.key.toLowerCase();
+
+        if (pressedChar === expectedChar) {
+            // فرقعة الحرف الحالي
+            const bubbles = document.querySelectorAll('.bubble-char');
+            bubbles[charIndex].classList.add('pop');
+            bubbles[charIndex].style.visibility = "hidden"; // إخفاء الحرف
+            
+            charIndex++;
+
+            // لو خلص الكلمة كلها
+            if (charIndex === currentWord.length) {
+                score++;
+                scoreDisplay.innerText = score;
+                setTimeout(nextWord, 200); // تأخير بسيط قبل الكلمة التالية
+            }
+        }
+        
+        // ضمان بقاء الـ Focus على الإدخال لفتح الكيبورد
+        hiddenInput.focus();
+    });
+
+    function endGame() {
+        gameActive = false;
+        document.getElementById('end-screen').style.display = 'flex';
+        document.getElementById('final-score').innerText = score;
+    }
+
+    // للحفاظ على الكيبورد مفتوحاً عند اللمس في أي مكان
+    document.addEventListener('click', () => {
+        if(gameActive) hiddenInput.focus();
+    });
+
+</script>
+
+</body>
+</html>

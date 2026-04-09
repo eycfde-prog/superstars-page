@@ -2,7 +2,6 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // --- 1. الإعدادات البصرية (The Veto Cinematic Layout) ---
     container.innerHTML = ''; 
     container.style.cssText = `
         height:100%; width:100%; overflow:hidden; position:relative; 
@@ -12,10 +11,9 @@
         direction:ltr; color:white;
     `;
 
-    let currentSlide = 0;
+    let currentSlide = -1; 
     let subStep = 0;
 
-    // --- 2. قاعدة البيانات الشاملة (Integrated Content) ---
     const slides = [
         { type: 'big-title', content: 'PRONOUNS', subtitle: 'MASTER CLASS WITH MR. EZZ', color: '#c5a059' },
         { 
@@ -26,7 +24,6 @@
                 { p: "We / They / You", d: "Plural Subjects" }
             ] 
         },
-        // المجموعة الأولى: تمارين ضمائر الفاعل (إجابات موزعة)
         { 
             type: 'mcq-interactive', 
             title: 'Level 1: Subject Pronouns Check',
@@ -64,7 +61,6 @@
                 </div>
             `
         },
-        // المجموعة الثانية: تمارين ضمائر المفعول به (إجابات موزعة)
         { 
             type: 'mcq-interactive', 
             title: 'Level 2: Object Pronouns Check',
@@ -84,9 +80,38 @@
         { type: 'big-title', content: 'FANTASTIC!', subtitle: 'You Are A Pronouns Pro', color: '#00ff88' }
     ];
 
-    // --- 3. محرك العرض (Render Engine) ---
-    function render() {
+    function updateSubSteps() {
+        const s = slides[currentSlide];
+        if (!s) return;
+
+        // تحديث العناصر التدريجية (Definitions & Tables)
+        const items = container.querySelectorAll('.step-reveal');
+        items.forEach((item, i) => {
+            if (i <= subStep) {
+                item.style.opacity = '1';
+                item.style.borderColor = '#c5a059';
+                item.style.background = 'rgba(197,160,89,0.1)';
+            } else {
+                item.style.opacity = '0.1';
+                item.style.borderColor = 'transparent';
+                item.style.background = '#111';
+            }
+        });
+        
+        // تحديث الـ Progress Bar
+        const prog = container.querySelector('.progress-bar-inner');
+        if (prog) {
+            const total = slides.length;
+            prog.style.width = `${((currentSlide + 1) / total) * 100}%`;
+        }
+    }
+
+    function renderSlide(index) {
+        if (index === currentSlide) return;
+        currentSlide = index;
+        subStep = 0;
         container.innerHTML = '';
+        
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
         wrapper.style.cssText = `width:90vw; max-width:1400px; text-align:center; animation: vetoFadeIn 0.5s ease-out;`;
@@ -99,31 +124,20 @@
             wrapper.innerHTML = `<h2 style="font-size:7vh; color:#c5a059; margin-bottom:6vh;">${s.title}</h2>
                 <div style="display:flex; flex-direction:column; gap:4vh; align-items:center;">
                     ${s.items.map((item, i) => `
-                        <div style="background:rgba(255,255,255,0.03); width:80%; padding:5vh; border-radius:30px; border: 1px solid ${i <= subStep ? '#c5a059' : '#333'}; opacity:${i <= subStep ? 1 : 0.1}; transition:0.5s;">
+                        <div class="step-reveal" style="background:#111; width:80%; padding:5vh; border-radius:30px; border: 1px solid transparent; transition:0.5s;">
                             <span style="font-size:9vh; font-weight:900;">${item.p}</span>
                             <div style="font-size:4vh; color:#c5a059;">${item.d}</div>
                         </div>`).join('')}
                 </div>`;
         }
         else if (s.type === 'mcq-interactive') {
-            let qData = s.questions[subStep];
-            wrapper.innerHTML = `<h2 style="font-size:5vh; color:#c5a059; margin-bottom:5vh;">${s.title} (${subStep + 1}/${s.questions.length})</h2>
-                <div style="background:rgba(255,255,255,0.02); padding:8vh; border-radius:60px; border:1px solid #222;">
-                    <div id="question-text" style="font-size:8vh; margin-bottom:8vh; font-weight:900; line-height:1.2;">${qData.q}</div>
-                    <div style="display:flex; gap:2vw; justify-content:center;">
-                        ${qData.opts.map(opt => `
-                            <button onclick="window.checkVetoAns('${opt}', '${qData.ans}', this)" 
-                                style="min-width:18vw; padding:4vh; background:#111; color:white; border:2px solid #333; border-radius:25px; font-size:5vh; font-weight:900; cursor:pointer; transition:0.2s;">
-                                ${opt}
-                            </button>`).join('')}
-                    </div>
-                </div>`;
+            renderMCQ(wrapper, s);
         }
         else if (s.type === 'transform-table') {
             wrapper.innerHTML = `<h2 style="font-size:7vh; color:#c5a059; margin-bottom:4vh;">${s.title}</h2>
                 <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:2.5vh;">
                     ${s.pairs.map((p, i) => `
-                        <div style="display:flex; justify-content:space-around; align-items:center; background:${i <= subStep ? 'rgba(197,160,89,0.1)' : '#111'}; padding:2.5vh; border-radius:20px; border:2px solid ${i <= subStep ? '#c5a059' : 'transparent'}; opacity:${i <= subStep ? 1 : 0.1}; transition:0.3s;">
+                        <div class="step-reveal" style="display:flex; justify-content:space-around; align-items:center; background:#111; padding:2.5vh; border-radius:20px; border:2px solid transparent; transition:0.3s;">
                             <span style="font-size:6vh; font-weight:900;">${p.s}</span>
                             <span style="color:#c5a059; font-size:4vh;">➔</span>
                             <span style="font-size:6vh; font-weight:900; color:#c5a059;">${p.o}</span>
@@ -136,42 +150,52 @@
         }
 
         container.appendChild(wrapper);
-        renderProgress();
-    }
-
-    function renderProgress() {
+        
+        // Add Progress Bar
         const bar = document.createElement('div');
-        const progress = ((currentSlide + 1) / slides.length) * 100;
-        bar.style.cssText = `position:absolute; bottom:0; left:0; height:10px; background:#c5a059; width:${progress}%; transition:0.4s; box-shadow: 0 0 15px #c5a059;`;
+        bar.style.cssText = `position:absolute; bottom:0; left:0; height:10px; background:#333; width:100%;`;
+        const innerBar = document.createElement('div');
+        innerBar.className = 'progress-bar-inner';
+        innerBar.style.cssText = `height:100%; background:#c5a059; width:0%; transition:0.4s; box-shadow: 0 0 15px #c5a059;`;
+        bar.appendChild(innerBar);
         container.appendChild(bar);
+
+        updateSubSteps();
     }
 
-    // --- 4. وظائف التحكم ---
-    window.nextSlide = function() {
-        const s = slides[currentSlide];
-        if (s.type === 'definitions' && subStep < s.items.length - 1) subStep++;
-        else if (s.type === 'transform-table' && subStep < s.pairs.length - 1) subStep++;
-        else if (s.type === 'mcq-interactive') return; // الانتظار حتى الإجابة
-        else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
-        else { if (window.triggerVetoDone) window.triggerVetoDone(); }
-        render();
-    };
-
-    window.prevSlide = function() {
-        if (subStep > 0) subStep--;
-        else if (currentSlide > 0) { currentSlide--; subStep = 0; }
-        render();
-    };
+    function renderMCQ(parent, s) {
+        let qData = s.questions[subStep];
+        parent.innerHTML = `
+            <h2 style="font-size:5vh; color:#c5a059; margin-bottom:5vh;">${s.title} (<span id="q-idx">${subStep + 1}</span>/${s.questions.length})</h2>
+            <div style="background:rgba(255,255,255,0.02); padding:8vh; border-radius:60px; border:1px solid #222;">
+                <div id="question-text" style="font-size:8vh; margin-bottom:8vh; font-weight:900; line-height:1.2;">${qData.q}</div>
+                <div id="options-box" style="display:flex; gap:2vw; justify-content:center;">
+                    ${qData.opts.map(opt => `
+                        <button onclick="window.checkVetoAns('${opt}', '${qData.ans}', this)" 
+                            style="min-width:18vw; padding:4vh; background:#111; color:white; border:2px solid #333; border-radius:25px; font-size:5vh; font-weight:900; cursor:pointer; transition:0.2s;">
+                            ${opt}
+                        </button>`).join('')}
+                </div>
+            </div>`;
+    }
 
     window.checkVetoAns = function(selected, correct, btn) {
         const qText = document.getElementById('question-text');
         if (selected === correct) {
             btn.style.background = "#00ff88"; btn.style.borderColor = "#00ff88"; btn.style.color = "#000";
             qText.innerHTML = qText.innerHTML.replace("____", `<span style="color:#00ff88; text-decoration:underline;">${correct}</span>`);
+            
             setTimeout(() => {
                 const s = slides[currentSlide];
-                if (subStep < s.questions.length - 1) { subStep++; render(); }
-                else { currentSlide++; subStep = 0; render(); }
+                if (subStep < s.questions.length - 1) {
+                    subStep++;
+                    // تحديث محتوى الـ MCQ فقط بدون مسح الشاشة
+                    const wrapper = container.querySelector('div');
+                    renderMCQ(wrapper, s);
+                    updateSubSteps();
+                } else {
+                    renderSlide(currentSlide + 1);
+                }
             }, 800);
         } else {
             btn.style.background = "#ff4d4d"; btn.style.animation = "vetoShake 0.4s";
@@ -180,8 +204,18 @@
     };
 
     document.onkeydown = (e) => {
-        if ([13, 32, 39].includes(e.keyCode)) window.nextSlide();
-        if ([37, 8].includes(e.keyCode)) window.prevSlide();
+        const s = slides[currentSlide];
+        if ([13, 32, 39].includes(e.keyCode)) { // Next
+            if (s.type === 'definitions' && subStep < s.items.length - 1) { subStep++; updateSubSteps(); }
+            else if (s.type === 'transform-table' && subStep < s.pairs.length - 1) { subStep++; updateSubSteps(); }
+            else if (s.type === 'mcq-interactive') return;
+            else if (currentSlide < slides.length - 1) { renderSlide(currentSlide + 1); }
+            else { if (window.triggerVetoDone) window.triggerVetoDone(); }
+        }
+        if ([37, 8].includes(e.keyCode)) { // Back
+            if (subStep > 0) { subStep--; updateSubSteps(); }
+            else if (currentSlide > 0) { renderSlide(currentSlide - 1); }
+        }
     };
 
     const style = document.createElement('style');
@@ -191,5 +225,5 @@
     `;
     document.head.appendChild(style);
 
-    render();
+    renderSlide(0);
 })();

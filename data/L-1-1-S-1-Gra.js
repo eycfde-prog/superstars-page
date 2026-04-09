@@ -26,21 +26,21 @@
                 { p: "We / They / You", d: "Plural Subjects" }
             ] 
         },
-        // المجموعة الأولى: تمارين ضمائر الفاعل
+        // المجموعة الأولى: تمارين ضمائر الفاعل (إجابات موزعة)
         { 
             type: 'mcq-interactive', 
             title: 'Level 1: Subject Pronouns Check',
             questions: [
                 { q: "____ is reading a book.", opts: ["Him", "He", "Me"], ans: "He" },
-                { q: "____ are playing football.", opts: ["They", "Them", "Us"], ans: "They" },
-                { q: "My sister is tall, ____ is a doctor.", opts: ["She", "Her", "It"], ans: "She" },
+                { q: "____ are playing football.", opts: ["Them", "Us", "They"], ans: "They" },
+                { q: "My sister is tall, ____ is a doctor.", opts: ["Her", "She", "It"], ans: "She" },
                 { q: "The dog is hungry, ____ wants food.", opts: ["He", "It", "They"], ans: "It" },
-                { q: "____ go to school every day.", opts: ["We", "Us", "Me"], ans: "We" },
-                { q: "Are ____ coming to the party?", opts: ["you", "your", "them"], ans: "you" },
+                { q: "____ go to school every day.", opts: ["Us", "Me", "We"], ans: "We" },
+                { q: "Are ____ coming to the party?", opts: ["your", "them", "you"], ans: "you" },
                 { q: "My friend and I are happy, ____ won.", opts: ["We", "They", "Us"], ans: "We" },
-                { q: "____ am very tired today.", opts: ["I", "Me", "My"], ans: "I" },
-                { q: "Ahmed is smart, ____ studies hard.", opts: ["He", "Him", "His"], ans: "He" },
-                { q: "The flowers are beautiful, ____ smell good.", opts: ["They", "It", "Them"], ans: "They" }
+                { q: "____ am very tired today.", opts: ["Me", "I", "My"], ans: "I" },
+                { q: "Ahmed is smart, ____ studies hard.", opts: ["Him", "He", "His"], ans: "He" },
+                { q: "The flowers are beautiful, ____ smell good.", opts: ["It", "Them", "They"], ans: "They" }
             ]
         },
         {
@@ -64,21 +64,21 @@
                 </div>
             `
         },
-        // المجموعة الثانية: تمارين ضمائر المفعول به
+        // المجموعة الثانية: تمارين ضمائر المفعول به (إجابات موزعة)
         { 
             type: 'mcq-interactive', 
             title: 'Level 2: Object Pronouns Check',
             questions: [
-                { q: "I saw Ali and talked to ____.", opts: ["him", "he", "his"], ans: "him" },
+                { q: "I saw Ali and talked to ____.", opts: ["he", "him", "his"], ans: "him" },
                 { q: "Can you help ____ with this bag?", opts: ["me", "I", "my"], ans: "me" },
-                { q: "Our teacher gave ____ homework.", opts: ["us", "we", "our"], ans: "us" },
-                { q: "I like these shoes, I will buy ____.", opts: ["them", "they", "it"], ans: "them" },
+                { q: "Our teacher gave ____ homework.", opts: ["we", "our", "us"], ans: "us" },
+                { q: "I like these shoes, I will buy ____.", opts: ["they", "them", "it"], ans: "them" },
                 { q: "Where is Sara? I need to call ____.", opts: ["her", "she", "hers"], ans: "her" },
                 { q: "The cake is delicious, taste ____?", opts: ["it", "its", "them"], ans: "it" },
-                { q: "Please listen to ____, I am talking.", opts: ["me", "I", "my"], ans: "me" },
+                { q: "Please listen to ____, I am talking.", opts: ["I", "my", "me"], ans: "me" },
                 { q: "We invited the neighbors, we like ____.", opts: ["them", "they", "their"], ans: "them" },
-                { q: "My father told ____ a funny story.", opts: ["us", "we", "our"], ans: "us" },
-                { q: "Don't worry about ____, I can do it.", opts: ["me", "I", "my"], ans: "me" }
+                { q: "My father told ____ a funny story.", opts: ["we", "us", "our"], ans: "us" },
+                { q: "Don't worry about ____, I can do it.", opts: ["I", "my", "me"], ans: "me" }
             ]
         },
         { type: 'big-title', content: 'FANTASTIC!', subtitle: 'You Are A Pronouns Pro', color: '#00ff88' }
@@ -151,7 +151,7 @@
         const s = slides[currentSlide];
         if (s.type === 'definitions' && subStep < s.items.length - 1) subStep++;
         else if (s.type === 'transform-table' && subStep < s.pairs.length - 1) subStep++;
-        else if (s.type === 'mcq-interactive') return; // Must answer to proceed
+        else if (s.type === 'mcq-interactive') return; // الانتظار حتى الإجابة
         else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
         else { if (window.triggerVetoDone) window.triggerVetoDone(); }
         render();

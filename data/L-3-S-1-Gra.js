@@ -2,7 +2,6 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // الإعداد الأساسي للخلفية
     container.innerHTML = ''; 
     container.style.cssText = `height:100%; width:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#050505; font-family:'Segoe UI', sans-serif; direction:ltr; color:white;`;
 
@@ -25,18 +24,18 @@
             type: 'writing', 
             title: 'The Formula', 
             content: `
-                <div style="display:flex; justify-content:center; align-items:center; gap:20px; font-size:4.5rem; font-weight:900;">
+                <div style="display:flex; justify-content:center; align-items:center; gap:2vw; font-size:4vw; font-weight:900;">
                     <span style="color:#fff;">Sub.</span>
                     <span style="color:#3498db;">+</span>
-                    <span style="color:#f1c40f; background:#111; padding:10px 30px; border-radius:15px; border:2px solid #333;">am / is / are</span>
+                    <span style="color:#f1c40f; background:#111; padding:1vh 2vw; border-radius:15px; border:2px solid #333;">am / is / are</span>
                     <span style="color:#3498db;">+</span>
-                    <span style="color:#e74c3c; border-bottom:8px solid #e74c3c;">V - ing</span>
+                    <span style="color:#e74c3c; border-bottom:0.8vh solid #e74c3c;">V - ing</span>
                 </div>
-                <p style="font-size:2.5rem; color:#666; margin-top:50px; font-weight:bold;">Example: I <span style="color:#f1c40f;">am</span> speak<span style="color:#e74c3c;">ing</span> to you.</p>
+                <p style="font-size:2.2vw; color:#666; margin-top:5vh; font-weight:bold;">Example: I <span style="color:#f1c40f;">am</span> speak<span style="color:#e74c3c;">ing</span> to you.</p>
             ` 
         },
 
-        /* 4: Reveal List (7 Examples for 7 Pronouns) */
+        /* 4: Reveal List (7 Examples) - تم تصغير الخط ليبقى داخل الإطار */
         { 
             type: 'reveal-list', 
             title: 'Live Actions',
@@ -86,11 +85,11 @@
         /* 7: Spelling Rules Matrix */
         { 
             type: 'spelling-grid', 
-            title: 'Spelling Secrets',
+            title: 'Spelling Rules',
             rules: [
                 { end: "Ends in -e", add: "Drop -e + ing", examples: "Write ➔ Writ<span style='color:#e74c3c;'>ing</span>" },
                 { end: "Ends in -ie", add: "ie ➔ Y + ing", examples: "Die ➔ D<span style='color:#e74c3c;'>ying</span>" },
-                { end: "CVC (One Syllable)", add: "Double + ing", examples: "Run ➔ Run<span style='color:#e74c3c;'>ning</span>" }
+                { end: "CVC Style", add: "Double + ing", examples: "Run ➔ Run<span style='color:#e74c3c;'>ning</span>" }
             ]
         },
 
@@ -126,26 +125,18 @@
             ]
         },
         
-        { type: 'title', content: 'YOU ARE UNSTOPPABLE!', subtitle: 'CONTINUOUS MASTERED', color: '#f1c40f', usage: 'Excellent Job, Master!' }
+        { type: 'title', content: 'EXCELLENT!', subtitle: 'CONTINUOUS MASTERED', color: '#f1c40f', usage: 'You are a Hero!' }
     ];
 
     function updateSubSteps() {
         const s = slides[currentSlide];
         if (!s) return;
-
         if (s.type === 'reveal-list') {
             const items = container.querySelectorAll('.list-item');
             items.forEach((item, i) => {
                 item.style.opacity = (i <= subStep) ? '1' : '0.05';
-                item.style.transform = (i <= subStep) ? 'translateX(0)' : 'translateX(-30px)';
+                item.style.transform = (i <= subStep) ? 'translateX(0)' : 'translateX(-20px)';
             });
-        }
-        
-        if (s.type === 'timeline') {
-            const dot = container.querySelector('.timeline-dot');
-            const text = container.querySelector('.timeline-text');
-            if (dot) dot.style.opacity = (subStep >= 1) ? '1' : '0';
-            if (text) text.style.opacity = (subStep >= 1) ? '1' : '0';
         }
     }
 
@@ -158,39 +149,34 @@
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
         wrapper.className = 'slide-wrapper';
-        wrapper.style.cssText = `width:95%; max-width:1400px; text-align:center; animation: vetoSlideUp 0.4s ease;`;
+        wrapper.style.cssText = `width:90%; height:90%; display:flex; flex-direction:column; justify-content:center; align-items:center; animation: vetoSlideUp 0.4s ease;`;
 
         if (s.type === 'title') {
             wrapper.innerHTML = `
-                <div style="font-size:2.5vw; color:#444; letter-spacing:15px; margin-bottom:20px; text-transform:uppercase; font-weight:bold;">${s.subtitle}</div>
-                <h1 style="font-size:8vw; font-weight:900; color:${s.color}; margin:0; line-height:1; text-shadow: 0 10px 40px rgba(52,152,219,0.3);">${s.content}</h1>
-                <div style="font-size:3.2vw; color:#fff; font-weight:bold; margin-top:50px; border-top:6px solid ${s.color}; display:inline-block; padding-top:20px;">${s.usage}</div>
+                <div style="font-size:2vw; color:#444; letter-spacing:10px; margin-bottom:2vh; text-transform:uppercase; font-weight:bold;">${s.subtitle}</div>
+                <h1 style="font-size:7vw; font-weight:900; color:${s.color}; margin:0; line-height:1;">${s.content}</h1>
+                <div style="font-size:2.5vw; color:#fff; font-weight:bold; margin-top:5vh; border-top:5px solid ${s.color}; display:inline-block; padding-top:2vh;">${s.usage}</div>
             `;
         } 
         else if (s.type === 'timeline') {
             wrapper.innerHTML = `
-                <h2 style="font-size:5rem; color:#3498db; margin-bottom:50px; font-weight:900;">THE TIMELINE</h2>
-                <p style="font-size:3.5rem; margin-bottom:100px; color:#ddd;">${s.content}</p>
-                <div style="position:relative; width:85%; margin:100px auto; height:12px; background:#222; border-radius:10px;">
-                    <div style="position:absolute; left:50%; top:-25px; height:60px; width:6px; background:#fff;">
-                        <span style="position:absolute; top:75px; left:-50px; color:#fff; font-size:2rem; font-weight:bold; width:120px;">PRESENT</span>
+                <h2 style="font-size:3.5vw; color:#3498db; margin-bottom:4vh; font-weight:900;">THE TIMELINE</h2>
+                <p style="font-size:2.5vw; margin-bottom:8vh; color:#ddd;">${s.content}</p>
+                <div style="position:relative; width:80%; height:1vh; background:#222; border-radius:10px;">
+                    <div style="position:absolute; left:50%; top:-2vh; height:5vh; width:4px; background:#fff;">
+                        <span style="position:absolute; top:6vh; left:-4vw; color:#fff; font-size:1.5vw; font-weight:bold; width:8vw;">PRESENT</span>
                     </div>
-                    <div class="timeline-dot" style="position:absolute; left:50%; top:-10px; width:30px; height:30px; border-radius:50%; background:#e74c3c; box-shadow:0 0 20px #e74c3c; opacity:0; transition:0.5s; transform:translateX(-50%); animation: pulse 1.5s infinite;"></div>
-                    <div class="timeline-text" style="position:absolute; width:100%; top:120px; text-align:center; color:#e74c3c; font-size:2.5rem; font-weight:900; opacity:0; transition:0.5s;">ACTION IS HAPPENING NOW!</div>
+                    <div class="timeline-dot" style="position:absolute; left:50%; top:-1.5vh; width:3vh; height:3vh; border-radius:50%; background:#e74c3c; box-shadow:0 0 15px #e74c3c; opacity:0; transition:0.5s; transform:translateX(-50%); animation: pulse 1.5s infinite;"></div>
                 </div>`;
         }
         else if (s.type === 'writing') {
-            wrapper.innerHTML = `<h2 style="font-size:5.5rem; color:#3498db; margin-bottom:50px; font-weight:900;">${s.title}</h2><div style="line-height:1.2;">${s.content}</div>`;
+            wrapper.innerHTML = `<h2 style="font-size:4vw; color:#3498db; margin-bottom:5vh; font-weight:900;">${s.title}</h2><div>${s.content}</div>`;
         }
         else if (s.type === 'reveal-list') {
             wrapper.innerHTML = `
-                <h2 style="font-size:5rem; color:#3498db; margin-bottom:40px; font-weight:900;">${s.title}</h2>
-                <div style="display:grid; grid-template-columns: 1fr; gap:12px; max-width:1000px; margin: 0 auto;">
-                    ${s.items.map(item => `
-                        <div class="list-item" style="opacity:0.05; transition:0.3s; background:#111; padding:20px; border-radius:15px; font-size:2.5rem; font-weight:bold; border-left:15px solid #3498db; text-align:left;">
-                            ${item}
-                        </div>
-                    `).join('')}
+                <h2 style="font-size:3.5vw; color:#3498db; margin-bottom:3vh; font-weight:900;">${s.title}</h2>
+                <div style="display:flex; flex-direction:column; gap:1.5vh; width:80%;">
+                    ${s.items.map(item => `<div class="list-item" style="opacity:0.05; transition:0.3s; background:#111; padding:1.5vh 2vw; border-radius:12px; font-size:1.8vw; font-weight:bold; border-left:10px solid #3498db; text-align:left;">${item}</div>`).join('')}
                 </div>`;
         }
         else if (s.type === 'transform') {
@@ -198,15 +184,15 @@
         }
         else if (s.type === 'spelling-grid') {
             wrapper.innerHTML = `
-                <h2 style="font-size:5.5rem; color:#3498db; margin-bottom:50px; font-weight:900;">SPELLING RULES</h2>
-                <div style="display:grid; grid-template-columns: 1fr; gap:25px;">
+                <h2 style="font-size:3.5vw; color:#3498db; margin-bottom:4vh; font-weight:900;">SPELLING RULES</h2>
+                <div style="display:grid; grid-template-columns: 1fr; gap:2vh; width:80%;">
                     ${s.rules.map(r => `
-                        <div style="background:#111; padding:35px; border-radius:30px; border:2px solid #222; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="background:#111; padding:2vh 3vw; border-radius:20px; border:2px solid #222; display:flex; justify-content:space-between; align-items:center;">
                             <div style="text-align:left;">
-                                <div style="color:#3498db; font-size:1.8rem; font-weight:bold;">${r.end}</div>
-                                <div style="font-size:3.5rem; font-weight:900; color:#fff;">${r.add}</div>
+                                <div style="color:#3498db; font-size:1.2vw; font-weight:bold;">${r.end}</div>
+                                <div style="font-size:2.2vw; font-weight:900; color:#fff;">${r.add}</div>
                             </div>
-                            <div style="font-size:4rem; color:#f1c40f; font-weight:900; background:#050505; padding:10px 40px; border-radius:20px; border:2px solid #333;">${r.examples}</div>
+                            <div style="font-size:2.5vw; color:#f1c40f; font-weight:900; background:#050505; padding:1vh 2vw; border-radius:15px; border:2px solid #333;">${r.examples}</div>
                         </div>
                     `).join('')}
                 </div>`;
@@ -224,9 +210,9 @@
         let pair = s.pairs[pairIdx] || s.pairs[0];
         let isChanged = subStep % 2 !== 0;
         wrapper.innerHTML = `
-            <h2 style="font-size:5rem; color:#3498db; margin:0; font-weight:900;">${s.title}</h2>
-            <p style="font-size:2rem; color:#555; margin-bottom:40px; font-weight:bold;">${s.desc} (${pairIdx + 1}/${s.pairs.length})</p>
-            <div style="background:#111; padding:80px; border-radius:50px; font-size:5rem; border:4px solid #333; color:${isChanged ? '#f1c40f' : '#fff'}; transition: 0.3s; font-weight:bold;">
+            <h2 style="font-size:3.5vw; color:#3498db; margin-bottom:2vh; font-weight:900;">${s.title}</h2>
+            <p style="font-size:1.5vw; color:#555; margin-bottom:4vh; font-weight:bold;">${s.desc} (${pairIdx + 1}/${s.pairs.length})</p>
+            <div style="background:#111; padding:6vh 4vw; border-radius:30px; font-size:3.5vw; border:3px solid #333; color:${isChanged ? '#f1c40f' : '#fff'}; transition: 0.3s; font-weight:bold;">
                 ${isChanged ? pair.neg : pair.pos}
             </div>`;
     }
@@ -235,17 +221,14 @@
         let qIdx = Math.floor(subStep / 2);
         let q = s.questions[qIdx] || s.questions[0];
         let showAns = subStep % 2 !== 0;
-
         wrapper.innerHTML = `
-            <div style="text-align:left; background:#111; padding:60px; border-radius:40px; border:3px solid #222;">
-                <div style="color:#3498db; font-weight:bold; font-size:1.5rem; margin-bottom:20px;">PRACTICE ${qIdx + 1}/10</div>
-                <div style="font-size:3.5rem; font-weight:900; margin-bottom:40px; color:#fff;">${q.q}</div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+            <div style="text-align:left; background:#111; padding:4vh 4vw; border-radius:30px; border:2px solid #222; width:85%;">
+                <div style="color:#3498db; font-weight:bold; font-size:1.2vw; margin-bottom:2vh;">PRACTICE ${qIdx + 1}/10</div>
+                <div style="font-size:2.2vw; font-weight:900; margin-bottom:3vh; color:#fff;">${q.q}</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5vw;">
                     ${q.opts.map((opt, i) => {
                         let isCorrect = showAns && i === q.ans;
-                        let border = isCorrect ? '6px solid #2ecc71' : '2px solid #333';
-                        let color = isCorrect ? '#2ecc71' : (showAns ? '#444' : '#fff');
-                        return `<div style="border:${border}; padding:25px; border-radius:20px; font-size:2.5rem; font-weight:bold; color:${color}; transition:0.3s;">${opt}</div>`;
+                        return `<div style="border:${isCorrect ? '4px solid #2ecc71' : '2px solid #333'}; padding:1.5vh; border-radius:15px; font-size:1.6vw; font-weight:bold; color:${isCorrect ? '#2ecc71' : (showAns ? '#444' : '#fff')}; transition:0.3s;">${opt}</div>`;
                     }).join('')}
                 </div>
             </div>`;
@@ -253,7 +236,7 @@
 
     document.onkeydown = (e) => {
         const s = slides[currentSlide];
-        if ([13, 32, 39].includes(e.keyCode)) { // Next
+        if ([13, 32, 39].includes(e.keyCode)) {
             let max = 0;
             if (s.type === 'reveal-list') max = s.items.length - 1;
             else if (s.type === 'timeline') max = 1;
@@ -267,27 +250,22 @@
                 else updateSubSteps();
             } else if (currentSlide < slides.length - 1) {
                 renderSlide(currentSlide + 1);
-            } else {
-                if (window.triggerVetoDone) window.triggerVetoDone();
-            }
-        } else if (e.keyCode === 37) { // Back
+            } else if (window.triggerVetoDone) window.triggerVetoDone();
+        } else if (e.keyCode === 37) {
             if (subStep > 0) {
                 subStep--;
                 if (s.type === 'transform') renderTransform(container.querySelector('.slide-wrapper'), s);
                 else if (s.type === 'quiz-session') renderQuiz(container.querySelector('.slide-wrapper'), s);
                 else updateSubSteps();
-            } else if (currentSlide > 0) {
-                renderSlide(currentSlide - 1);
-            }
+            } else if (currentSlide > 0) renderSlide(currentSlide - 1);
         }
     };
 
     const style = document.createElement('style');
     style.innerHTML = `
-        @keyframes vetoSlideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes pulse { 0% { transform: translateX(-50%) scale(1); opacity: 1; } 50% { transform: translateX(-50%) scale(1.3); opacity: 0.7; } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
+        @keyframes vetoSlideUp { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes pulse { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.3); } 100% { transform: translateX(-50%) scale(1); } }
     `;
     document.head.appendChild(style);
-
     renderSlide(0);
 })();

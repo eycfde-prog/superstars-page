@@ -9,12 +9,17 @@
     let subStep = 0;
 
     const slides = [
+        /* 1: Title */
         { type: 'title', content: 'TELLING THE TIME', subtitle: 'MASTER THE CLOCK', color: '#c5a059' },
+        
+        /* 2: Clock Types */
         { 
             type: 'clock-types', 
             left: { name: 'Analog Clock', desc: 'Uses Hands' },
             right: { name: 'Digital Clock', desc: 'Uses Numbers' } 
         },
+
+        /* 3-14: Interactive Learning */
         ...[
             { h: 4, m: 0,  ways: ["It’s 4 o’clock"] },
             { h: 4, m: 5,  ways: ["It’s 5 after 4", "It’s 4 : 05"] },
@@ -29,6 +34,8 @@
             { h: 4, m: 50, ways: ["It’s 10 to 5", "It’s 4 : 50"] },
             { h: 4, m: 55, ways: ["It’s 5 to 5", "It’s 4 : 55"] }
         ].map(t => ({ type: 'interactive-clock', hour: t.h, min: t.m, text: t.ways })),
+
+        /* 15: Writing Slide */
         {
             type: 'big-rule',
             title: 'LET\'S WRITE!',
@@ -39,6 +46,8 @@
                 { type: 'ANALOG (TO)', text: 'Quarter to 3 ➞ 02:45' }
             ]
         },
+
+        /* 16-25: 10 Quiz Questions */
         { type: 'quiz', title: 'PRACTICE 01', hour: 8, min: 15, ans: ["It’s Quarter after 8", "It’s 8 : 15"] },
         { type: 'quiz', title: 'PRACTICE 02', hour: 2, min: 45, ans: ["It’s Quarter to 3", "It’s 2 : 45"] },
         { type: 'quiz', title: 'PRACTICE 03', hour: 10, min: 30, ans: ["It’s 10 : 30", "It’s Ten Thirty"] },
@@ -49,6 +58,8 @@
         { type: 'quiz', title: 'PRACTICE 08', hour: 6, min: 40,  ans: ["It’s 20 to 7", "It’s 6 : 40"] },
         { type: 'quiz', title: 'PRACTICE 09', hour: 12, min: 30, ans: ["It’s 12 : 30", "It’s Twelve Thirty"] },
         { type: 'quiz', title: 'PRACTICE 10', hour: 9, min: 55,  ans: ["It’s 5 to 10", "It’s 9 : 55"] },
+
+        /* 26: Conclusion */
         { type: 'title', content: 'TIME MASTERED!', subtitle: 'Great Job, Master!', color: '#2ecc71' }
     ];
 
@@ -56,18 +67,27 @@
         const s = slides[currentSlide];
         if (!s) return;
 
-        // تحديث ظهور العناصر بناءً على الـ subStep بدون إعادة رندر السلايد
+        // التحقق من وجود منطقة الإجابة (الجانب الأيمن)
+        const answerArea = container.querySelector('.answer-area');
+        if (answerArea && s.type === 'quiz') {
+            answerArea.style.opacity = (subStep > 0) ? '1' : '0';
+            answerArea.style.transform = (subStep > 0) ? 'translateX(0)' : 'translateX(50px)';
+        }
+
+        // تحديث ظهور النصوص التدريجية
         const stepElements = container.querySelectorAll('.step-reveal');
         stepElements.forEach((el, i) => {
-            el.style.opacity = (i <= subStep) ? '1' : '0';
-            el.style.transform = (i <= subStep) ? 'translateY(0)' : 'translateY(20px)';
+            // في الكويز، أول خطوة هي ظهور الساعة الرقمية، لذا النصوص تبدأ من subStep 2
+            const threshold = (s.type === 'quiz') ? 1 : 0;
+            el.style.opacity = (subStep > i + threshold) ? '1' : '0';
+            el.style.transform = (subStep > i + threshold) ? 'translateY(0)' : 'translateY(15px)';
         });
 
-        // حالة خاصة للـ Quiz و الـ Interactive (إظهار الساعة الرقمية)
+        // إظهار الساعة الرقمية (Digital Box)
         const digitalBox = container.querySelector('.digital-box');
         if (digitalBox) {
             if (s.type === 'quiz') {
-                digitalBox.style.opacity = (subStep > 0) ? '1' : '0';
+                digitalBox.style.opacity = (subStep >= 1) ? '1' : '0';
             } else {
                 digitalBox.style.opacity = '1';
             }
@@ -75,7 +95,7 @@
     }
 
     function renderSlide(index) {
-        if (index === currentSlide) return; // منع إعادة الرندر لو إحنا في نفس السلايد
+        if (index === currentSlide) return;
         currentSlide = index;
         subStep = 0;
         
@@ -123,7 +143,7 @@
             
             wrapper.innerHTML = `
                 <div style="display:flex; align-items:center; justify-content:center; width:100%; gap:5vw;">
-                    <div style="width:35vw; height:35vw; max-width:550px; max-height:550px; border:15px solid #fff; border-radius:50%; position:relative; background:#000;">
+                    <div style="width:35vw; height:35vw; max-width:550px; max-height:550px; border:15px solid #fff; border-radius:50%; position:relative; background:#000; flex-shrink:0;">
                         ${[12,1,2,3,4,5,6,7,8,9,10,11].map(n => {
                             const ang = n * 30;
                             return `<div style="position:absolute; top:50%; left:50%; height:92%; transform: translate(-50%, -50%) rotate(${ang}deg); font-size:4vh; font-weight:900; color:${n%3===0 ? '#c5a059':'#444'}">
@@ -135,10 +155,10 @@
                         <div style="position:absolute; top:50%; left:50%; width:25px; height:25px; background:#fff; border-radius:50%; transform:translate(-50%,-50%); z-index:4; border:4px solid #000;"></div>
                     </div>
 
-                    <div style="width:40vw; text-align:left; background:#111; padding:5vh; border-radius:40px; border-left:15px solid #c5a059; min-height:45vh; display:flex; flex-direction:column; justify-content:center;">
+                    <div class="answer-area" style="width:40vw; text-align:left; background:#111; padding:5vh; border-radius:40px; border-left:15px solid #c5a059; min-height:45vh; display:flex; flex-direction:column; justify-content:center; transition: 0.5s ease; opacity: ${s.type==='quiz' ? 0 : 1};">
                         ${s.type === 'quiz' ? `<div style="background:#c5a059; color:#000; display:inline-block; align-self:flex-start; padding:1vh 3vh; border-radius:10px; font-weight:900; font-size:3vh; margin-bottom:3vh;">${s.title}</div>` : ''}
                         
-                        <div class="digital-box" style="transition:0.4s; opacity:0;">
+                        <div class="digital-box" style="transition:0.4s; opacity:${s.type==='quiz' ? 0 : 1};">
                             <div style="font-size:2.5vh; color:#444; text-transform:uppercase; letter-spacing:4px; font-weight:900;">Digital Readout</div>
                             <div style="font-size:12vh; font-family:monospace; color:#fff; line-height:1; margin-bottom:4vh;">
                                 ${s.hour.toString().padStart(2,'0')}<span style="color:#c5a059; animation: blink 1s infinite;">:</span>${s.min.toString().padStart(2, '0')}
@@ -147,7 +167,7 @@
 
                         <div style="display:flex; flex-direction:column; gap:2vh;">
                             ${items.map((text, i) => `
-                                <div class="step-reveal" style="font-size:4.5vh; font-weight:900; color:${i===0 ? '#c5a059':'#fff'}; opacity:0; transition:0.4s; transform: translateY(20px);">
+                                <div class="step-reveal" style="font-size:4.5vh; font-weight:900; color:${i===0 ? '#c5a059':'#fff'}; opacity:0; transition:0.4s; transform: translateY(15px);">
                                     ➞ ${text}
                                 </div>
                             `).join('')}
@@ -157,7 +177,7 @@
         }
 
         container.appendChild(wrapper);
-        updateSubSteps(); // تأكيد الحالة الأولى
+        updateSubSteps();
     }
 
     document.onkeydown = (e) => {
@@ -166,7 +186,7 @@
             let maxSteps = 0;
             if (s.type === 'big-rule') maxSteps = s.examples.length - 1;
             else if (s.type === 'interactive-clock') maxSteps = s.text.length - 1;
-            else if (s.type === 'quiz') maxSteps = s.ans.length; // Quiz needs +1 for digital box
+            else if (s.type === 'quiz') maxSteps = s.ans.length + 1; // +1 for digital box first
 
             if (subStep < maxSteps) {
                 subStep++;
@@ -182,11 +202,11 @@
                 updateSubSteps();
             } else if (currentSlide > 0) {
                 renderSlide(currentSlide - 1);
-                // لما نرجع لورا، نخلي السلايد الأخير في أقصى حالاته
+                // عند العودة، نظهر السلايد السابق كاملاً
                 const prevS = slides[currentSlide];
                 if (prevS.type === 'big-rule') subStep = prevS.examples.length - 1;
                 else if (prevS.type === 'interactive-clock') subStep = prevS.text.length - 1;
-                else if (prevS.type === 'quiz') subStep = prevS.ans.length;
+                else if (prevS.type === 'quiz') subStep = prevS.ans.length + 1;
                 updateSubSteps();
             }
         }

@@ -1,258 +1,398 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VETO PROGRAM | Smart Board</title>
+إليك الكود المحدث للجزء الخاص بالـ style والـ toolbox:
+
+HTML
+
     <style>
-        :root {
-            --primary-gold: #c5a059;
-            --bg-dark: #050505;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --banner-height: 110px;
-            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        /* ... (باقي الـ CSS كما هو) ... */
+
+        /* تطوير شريط الأدوات ليصبح احترافياً */
+        .toolbox-wrapper { 
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            z-index: 9500; 
+            display: flex; 
+            flex-direction: column-reverse; /* تظهر الأدوات فوق الزر الرئيسي */
+            gap: 15px; 
+            align-items: center;
         }
 
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
-            touch-action: none; 
-            -webkit-user-select: none; user-select: none;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: white;
-            font-family: var(--font-main);
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .top-banner {
-            height: var(--banner-height);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 40px; 
-            background: linear-gradient(180deg, #111 0%, #000 100%);
-            border-bottom: 4px solid var(--primary-gold);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-        }
-
-        .logo-img { height: 65px; filter: drop-shadow(0 0 5px rgba(197,160,89,0.3)); }
-        .mr-ezz-img { height: 85px; border-radius: 12px; border: 2px solid var(--primary-gold); }
-
-        .session-info { text-align: center; flex-grow: 1; }
-        .session-info h1 { 
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #fff;
-            margin: 0;
-        }
-        .session-info span { 
+        .tool-btn { 
+            width: 65px; 
+            height: 65px; 
+            border-radius: 50%; 
+            background: #1a1a1a; 
+            border: 3px solid var(--primary-gold); 
             color: var(--primary-gold); 
-            font-weight: 800;
-        }
-
-        .content-grid {
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px; 
-            padding: 40px; 
-            overflow-y: auto;
-            height: calc(100vh - var(--banner-height));
-        }
-
-        .content-card {
-            background: var(--card-bg); 
-            border: 2px solid rgba(197,160,89,0.15);
-            padding: 30px; 
-            border-radius: 20px; 
-            text-align: center; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            font-size: 1.6rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 160px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+            transform: translateY(20px) scale(0);
+            pointer-events: none;
         }
 
-        .content-card:hover { 
-            border-color: var(--primary-gold); 
-            background: rgba(197,160,89,0.1);
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(197,160,89,0.2);
+        /* الزر الرئيسي دائماً ظاهر */
+        .tool-btn.main-toggle {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+            background: var(--primary-gold);
+            color: #000;
+            z-index: 9501;
         }
 
-        .content-card h2 { 
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #efefef;
+        /* عند فتح الصندوق */
+        .toolbox-wrapper.open .tool-btn {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
         }
 
-        .tool-btn { 
-            width: 60px; height: 60px; border-radius: 50%; 
-            background: #111; border: 2px solid var(--primary-gold); 
-            color: var(--primary-gold); font-size: 1.5rem;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        .exit-btn {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            left: auto;
-            z-index: 9999;
-            padding: 8px 15px; 
-            font-size: 0.9rem;
-            font-weight: bold;
-            background: rgba(214, 48, 49, 0.8);
+        /* تأثيرات الدوران والتمويه */
+        .toolbox-wrapper.open .main-toggle {
+            transform: rotate(135deg); /* حركة دوران فنية عند الفتح */
+            background: #d63031;
             color: white;
-            border: 2px solid #ff4757;
-            border-radius: 8px;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            border-color: #ff4757;
         }
 
-        .exit-btn:hover {
-            background: rgba(214, 48, 49, 1);
-            transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(214, 48, 49, 0.4);
+        .tool-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--primary-gold);
         }
 
-        #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
-        #stage-content { width: 100%; height: 100%; overflow: hidden; }
+        .tool-btn.active {
+            background: #ff4757;
+            border-color: #fff;
+            color: white;
+        }
 
-        #quick-note-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9000; display: none; }
-        #smart-note-input { padding: 10px; border-radius: 5px; border: 1px solid var(--primary-gold); background: #222; color: #fff; width: 300px; }
-        .toolbox-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 9000; display: flex; flex-direction: column; }
-        .toolbox-wrapper:not(.open) .tool-btn:not(:first-child) { display: none; }
+        /* تحسين صندوق الملاحظات ليكون طائراً أيضاً */
+        #quick-note-container { 
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            z-index: 9600; 
+            display: none;
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-gold);
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+        }
+
+        #smart-note-input { 
+            padding: 20px; 
+            border-radius: 10px; 
+            border: 1px solid var(--primary-gold); 
+            background: #111; 
+            color: #fff; 
+            width: 500px; 
+            font-size: 2rem; 
+            text-align: center;
+        }
     </style>
+
+    <div class="toolbox-wrapper" id="toolBox">
+        <button class="tool-btn main-toggle" onclick="toggleToolBox()">🛠️</button>
+        <button class="tool-btn" id="laserBtn" title="Laser Pointer" onclick="handleToolClick('laserBtn', toggleLaser)">🔦</button>
+        <button class="tool-btn" id="reloadBtn" title="Reload Page" onclick="handleToolClick('reloadBtn', () => location.reload())">🔄</button>
+        <button class="tool-btn" id="noteBtn" title="Quick Note" onclick="toggleNote()">📝</button>
+    </div>
+
+    <script>
+        // تحديث وظيفة الـ Toggle لتكون أكثر سلاسة
+        function toggleToolBox() {
+            document.getElementById('toolBox').classList.toggle('open');
+        }
+
+        function handleToolClick(btnId, action) {
+            const btn = document.getElementById(btnId);
+            action();
+            // وميض بسيط لتأكيد الضغط
+            btn.style.transform = "scale(0.8)";
+            setTimeout(() => { btn.style.transform = "scale(1.1)"; }, 100);
+        }
+
+        // تحسين فتح الملاحظات
+        function toggleNote() {
+            const container = document.getElementById('quick-note-container');
+            const input = document.getElementById('smart-note-input');
+            const isOpen = container.style.display === 'block';
+            
+            container.style.display = isOpen ? 'none' : 'block';
+            if(!isOpen) {
+                input.value = "";
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+    </script>
+التغييرات اللي عملناها:
+Main Toggle: الزر الرئيسي بقى لونه ذهبي، وعند الضغط عليه بيتحول لعلامة (X) حمراء وبيدور بزاوية 135 درجة (شكل احترافي جداً).
+Animations: باقي الأزرار بتطلع من تحت الزر الرئيسي بحركة "Spring" (ارتدادية) مريحة للعين.
+Floating Note: صندوق الملاحظات بقا يظهر في نص الشاشة بحجم كبير (2rem) عشان لو حبيت تكتب ملحوظة للطلاب تكون واضحة جداً.
+Z-Index: رفعنا قيم الـ Z-index عشان نضمن إن الأدوات دي دايماً فوق أي محتوى شغال في الـ Stage.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VETO PROGRAM | Smart Board</title>
+    <style>
+        :root {
+            --primary-gold: #c5a059;
+            --bg-dark: #050505;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --banner-height: 110px;
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            touch-action: none; 
+            -webkit-user-select: none; user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: var(--font-main);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .top-banner {
+            height: var(--banner-height);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 40px; 
+            background: linear-gradient(180deg, #111 0%, #000 100%);
+            border-bottom: 4px solid var(--primary-gold);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        .logo-img { height: 65px; filter: drop-shadow(0 0 5px rgba(197,160,89,0.3)); }
+        .mr-ezz-img { height: 85px; border-radius: 12px; border: 2px solid var(--primary-gold); }
+
+        .session-info { text-align: center; flex-grow: 1; }
+        .session-info h1 { 
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #fff;
+            margin: 0;
+        }
+        .session-info span { 
+            color: var(--primary-gold); 
+            font-weight: 800;
+        }
+
+        .content-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; 
+            padding: 40px; 
+            overflow-y: auto;
+            height: calc(100vh - var(--banner-height));
+        }
+
+        .content-card {
+            background: var(--card-bg); 
+            border: 2px solid rgba(197,160,89,0.15);
+            padding: 30px; 
+            border-radius: 20px; 
+            text-align: center; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 160px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .content-card:hover { 
+            border-color: var(--primary-gold); 
+            background: rgba(197,160,89,0.1);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(197,160,89,0.2);
+        }
+
+        .content-card h2 { 
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #efefef;
+        }
+
+        .tool-btn { 
+            width: 60px; height: 60px; border-radius: 50%; 
+            background: #111; border: 2px solid var(--primary-gold); 
+            color: var(--primary-gold); font-size: 1.5rem;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .exit-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            left: auto;
+            z-index: 9999;
+            padding: 8px 15px; 
+            font-size: 0.9rem;
+            font-weight: bold;
+            background: rgba(214, 48, 49, 0.8);
+            color: white;
+            border: 2px solid #ff4757;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .exit-btn:hover {
+            background: rgba(214, 48, 49, 1);
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(214, 48, 49, 0.4);
+        }
+
+        #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
+        #stage-content { width: 100%; height: 100%; overflow: hidden; }
+
+        #quick-note-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9000; display: none; }
+        #smart-note-input { padding: 10px; border-radius: 5px; border: 1px solid var(--primary-gold); background: #222; color: #fff; width: 300px; }
+        .toolbox-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 9000; display: flex; flex-direction: column; }
+        .toolbox-wrapper:not(.open) .tool-btn:not(:first-child) { display: none; }
+    </style>
 </head>
 <body>
 
-    <header class="top-banner">
-        <button onclick="window.location.href='vetoof.html'" style="background:var(--primary-gold); border:none; color:#000; padding:12px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">← BACK</button>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
-        <div class="session-info">
-            <h1 id="display-title">VETO <span>BOARD</span></h1>
-        </div>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="mr-ezz-img">
-    </header>
+    <header class="top-banner">
+        <button onclick="window.location.href='vetoof.html'" style="background:var(--primary-gold); border:none; color:#000; padding:12px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">← BACK</button>
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
+        <div class="session-info">
+            <h1 id="display-title">VETO <span>BOARD</span></h1>
+        </div>
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="mr-ezz-img">
+    </header>
 
-    <main class="content-grid" id="content-container"></main>
+    <main class="content-grid" id="content-container"></main>
 
-    <div id="activity-stage">
-        <button class="exit-btn" onclick="closeStage()">
-            <span>✖</span> 
-            <span>EXIT</span>
-        </button>
-        <div class="nav-hotspot nav-prev" onclick="if(typeof prevSlide === 'function') prevSlide()"></div>
-        <div class="nav-hotspot nav-next" onclick="if(typeof nextSlide === 'function') nextSlide()"></div>
-        <div id="stage-content"></div>
-    </div>
+    <div id="activity-stage">
+        <button class="exit-btn" onclick="closeStage()">
+            <span>✖</span> 
+            <span>EXIT</span>
+        </button>
+        <div class="nav-hotspot nav-prev" onclick="if(typeof prevSlide === 'function') prevSlide()"></div>
+        <div class="nav-hotspot nav-next" onclick="if(typeof nextSlide === 'function') nextSlide()"></div>
+        <div id="stage-content"></div>
+    </div>
 
-    <div id="quick-note-container"><input type="text" id="smart-note-input" placeholder="اكتب ملاحظتك هنا..."></div>
-    <div id="laser-pointer"></div>
-    <canvas id="drawing-canvas"></canvas>
-    <div class="toolbox-wrapper" id="toolBox">
-        <button class="tool-btn" style="display:flex; background:#222;" onclick="toggleToolBox()">🛠️</button>
-        <button class="tool-btn" id="laserBtn" onclick="handleToolClick('laserBtn', toggleLaser)">🔦</button>
-        <button class="tool-btn" id="reloadBtn" onclick="handleToolClick('reloadBtn', () => location.reload())">🔄</button>
-        <button class="tool-btn" id="noteBtn" onclick="toggleNote()">📝</button>
-    </div>
+    <div id="quick-note-container"><input type="text" id="smart-note-input" placeholder="اكتب ملاحظتك هنا..."></div>
+    <div id="laser-pointer"></div>
+    <canvas id="drawing-canvas"></canvas>
+    <div class="toolbox-wrapper" id="toolBox">
+        <button class="tool-btn" style="display:flex; background:#222;" onclick="toggleToolBox()">🛠️</button>
+        <button class="tool-btn" id="laserBtn" onclick="handleToolClick('laserBtn', toggleLaser)">🔦</button>
+        <button class="tool-btn" id="reloadBtn" onclick="handleToolClick('reloadBtn', () => location.reload())">🔄</button>
+        <button class="tool-btn" id="noteBtn" onclick="toggleNote()">📝</button>
+    </div>
 
-    <script src="data/levels.js"></script>
+    <script src="data/levels.js"></script>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentSessionId = urlParams.get('session');
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSessionId = urlParams.get('session');
 
-        function updateDynamicTitle() {
-            if (currentSessionId) {
-                const parts = currentSessionId.split('-');
-                if (parts.length === 2) {
-                    const level = parts[0];
-                    const session = parts[1];
-                    document.getElementById('display-title').innerHTML = `LEVEL <span>${level}</span> | SESSION <span>${session}</span>`;
-                }
-            }
-        }
+        function updateDynamicTitle() {
+            if (currentSessionId) {
+                const parts = currentSessionId.split('-');
+                if (parts.length === 2) {
+                    const level = parts[0];
+                    const session = parts[1];
+                    document.getElementById('display-title').innerHTML = `LEVEL <span>${level}</span> | SESSION <span>${session}</span>`;
+                }
+            }
+        }
 
-        function initSession() {
-            updateDynamicTitle();
-            if (!currentSessionId || !sessionData[currentSessionId]) return;
-            const container = document.getElementById('content-container');
-            sessionData[currentSessionId].forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'content-card';
-                card.onclick = () => openActivity(item);
-                card.innerHTML = `<h2>${item}</h2>`;
-                container.appendChild(card);
-            });
-        }
+        function initSession() {
+            updateDynamicTitle();
+            if (!currentSessionId || !sessionData[currentSessionId]) return;
+            const container = document.getElementById('content-container');
+            sessionData[currentSessionId].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'content-card';
+                card.onclick = () => openActivity(item);
+                card.innerHTML = `<h2>${item}</h2>`;
+                container.appendChild(card);
+            });
+        }
 
-        async function openActivity(activityName) {
-            const [lvl, sess] = currentSessionId.split('-');
-            let filePath = "";
-            const nameUpper = activityName.toUpperCase();
-            
-            if (nameUpper.includes("ONE SHOT")) {
-                filePath = `data/L-${lvl}-S-${sess}-One.js`;
-            } else if (nameUpper.includes("GP")) {
-                filePath = `data/L-${lvl}-${sess}-GP.js`;
-            } else if (nameUpper.includes("PROJECT")) {
-                filePath = `data/L-${lvl}-S-${sess}-Pro.js`;
-            } else if (nameUpper.includes("WISH")) {
-                filePath = `data/L-${lvl}-S-${sess}-Wis.js`;
-            } else if (nameUpper.includes("SQUEEZER")) {
-                const suffix = nameUpper.includes("TEST") ? "Squt" : "Squr";
-                filePath = `data/L-${lvl}-S-${sess}-${suffix}.js`;
-            } else if (nameUpper.includes("DMT")) {
-                filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-${lvl}-S-${sess}-DMT.js`;
-            } else if (nameUpper.includes("LISTENING")) {
-                filePath = nameUpper.includes("INTRO") ? `data/L-${lvl}-S-${sess}-Lin.js` : `data/L-${lvl}-S-${sess}-Lis.js`;
-            } else if (nameUpper.includes("GRAMMAR")) {
-                filePath = `data/L-1-${lvl}-S-${sess}-Gra.js`;
-            } else if (nameUpper.includes("VOCAB")) {
-                const type = nameUpper.includes("TEST") ? "2" : "1";
-                filePath = `data/L-${type}-${lvl}-S-${sess}-Voc.js`;
-            } else if (nameUpper.includes("READING")) {
-                filePath = `data/L-${lvl}-S-${sess}-Rea.js`;
-            } else {
-                const prefix = activityName.split(' ')[0].substring(0, 3);
-                filePath = `data/L-1-${lvl}-S-${sess}-${prefix}.js`;
-            }
+        async function openActivity(activityName) {
+            const [lvl, sess] = currentSessionId.split('-');
+            let filePath = "";
+            const nameUpper = activityName.toUpperCase();
+            
+            if (nameUpper.includes("ONE SHOT")) {
+                filePath = `data/L-${lvl}-S-${sess}-One.js`;
+            } else if (nameUpper.includes("GP")) {
+                filePath = `data/L-${lvl}-${sess}-GP.js`;
+            } else if (nameUpper.includes("PROJECT")) {
+                filePath = `data/L-${lvl}-S-${sess}-Pro.js`;
+            } else if (nameUpper.includes("WISH")) {
+                filePath = `data/L-${lvl}-S-${sess}-Wis.js`;
+            } else if (nameUpper.includes("SQUEEZER")) {
+                const suffix = nameUpper.includes("TEST") ? "Squt" : "Squr";
+                filePath = `data/L-${lvl}-S-${sess}-${suffix}.js`;
+            } else if (nameUpper.includes("DMT")) {
+                filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-${lvl}-S-${sess}-DMT.js`;
+            } else if (nameUpper.includes("LISTENING")) {
+                filePath = nameUpper.includes("INTRO") ? `data/L-${lvl}-S-${sess}-Lin.js` : `data/L-${lvl}-S-${sess}-Lis.js`;
+            } else if (nameUpper.includes("GRAMMAR")) {
+                filePath = `data/L-1-${lvl}-S-${sess}-Gra.js`;
+            } else if (nameUpper.includes("VOCAB")) {
+                const type = nameUpper.includes("TEST") ? "2" : "1";
+                filePath = `data/L-${type}-${lvl}-S-${sess}-Voc.js`;
+            } else if (nameUpper.includes("READING")) {
+                filePath = `data/L-${lvl}-S-${sess}-Rea.js`;
+            } else {
+                const prefix = activityName.split(' ')[0].substring(0, 3);
+                filePath = `data/L-1-${lvl}-S-${sess}-${prefix}.js`;
+            }
 
-            const stage = document.getElementById('activity-stage');
-            stage.style.display = 'block';
-            document.getElementById('stage-content').innerHTML = "";
-            const script = document.createElement('script');
-            script.src = filePath;
-            document.head.appendChild(script);
-        }
+            const stage = document.getElementById('activity-stage');
+            stage.style.display = 'block';
+            document.getElementById('stage-content').innerHTML = "";
+            const script = document.createElement('script');
+            script.src = filePath;
+            document.head.appendChild(script);
+        }
 
-        function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
-        function handleToolClick(btnId, action) { action(); }
-        
-        let closeStage = function() {
-            document.getElementById('activity-stage').style.display = 'none';
-            document.getElementById('stage-content').innerHTML = "";
-            if (document.fullscreenElement) document.exitFullscreen();
-        };
+        function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
+        function handleToolClick(btnId, action) { action(); }
+        
+        let closeStage = function() {
+            document.getElementById('activity-stage').style.display = 'none';
+            document.getElementById('stage-content').innerHTML = "";
+            if (document.fullscreenElement) document.exitFullscreen();
+        };
 
-        function toggleLaser() { /* Logic implementation */ }
-        function toggleNote() {
-            const container = document.getElementById('quick-note-container');
-            container.style.display = container.style.display === 'none' ? 'block' : 'none';
-        }
+        function toggleLaser() { /* Logic implementation */ }
+        function toggleNote() {
+            const container = document.getElementById('quick-note-container');
+            container.style.display = container.style.display === 'none' ? 'block' : 'none';
+        }
 
-        window.onload = initSession;
-    </script>
+        window.onload = initSession;
+    </script>
 </body>
-</html>
+</html> 

@@ -303,45 +303,56 @@
             handlePointer();
         }
 
-        async function openActivity(activityName) {
-            const [lvl, sess] = currentSessionId.split('-');
-            let filePath = "";
-            const nameUpper = activityName.toUpperCase();
-            
-            if (nameUpper.includes("ONE SHOT")) {
-                filePath = `data/L-${lvl}-S-${sess}-One.js`;
-            } else if (nameUpper.includes("GRAMMAR")) {
-                filePath = `data/L-${lvl}-S-${sess}-Gra.js`;
-            } else if (nameUpper.includes("GP")) {
-                filePath = `data/L-${lvl}-${sess}-GP.js`;
-            } else if (nameUpper.includes("PROJECT")) {
-                filePath = `data/L-${lvl}-S-${sess}-Pro.js`;
-            } else if (nameUpper.includes("WISH")) {
-                filePath = `data/L-${lvl}-S-${sess}-Wis.js`;
-            } else if (nameUpper.includes("SQUEEZER")) {
-                const suffix = nameUpper.includes("TEST") ? "Squt" : "Squr";
-                filePath = `data/L-${lvl}-S-${sess}-${suffix}.js`;
-            } else if (nameUpper.includes("DMT")) {
-                filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-${lvl}-S-${sess}-DMT.js`;
-            } else if (nameUpper.includes("LISTENING")) {
-                filePath = nameUpper.includes("INTRO") ? `data/L-${lvl}-S-${sess}-Lin.js` : `data/L-${lvl}-S-${sess}-Lis.js`;
-            } else if (nameUpper.includes("VOCAB")) {
-                const type = nameUpper.includes("TEST") ? "2" : "1";
-                filePath = `data/L-${type}-${lvl}-S-${sess}-Voc.js`;
-            } else if (nameUpper.includes("READING")) {
-                filePath = `data/L-${lvl}-S-${sess}-Rea.js`;
-            } else {
-                const prefix = activityName.split(' ')[0].substring(0, 3);
-                filePath = `data/L-1-${lvl}-S-${sess}-${prefix}.js`;
-            }
+async function openActivity(activityName) {
+    if (!currentSessionId) return;
+    const [lvl, sess] = currentSessionId.split('-');
+    let filePath = "";
+    const nameUpper = activityName.toUpperCase();
 
-            const stage = document.getElementById('activity-stage');
-            stage.style.display = 'block';
-            document.getElementById('stage-content').innerHTML = "";
-            const script = document.createElement('script');
-            script.src = filePath;
-            document.head.appendChild(script);
-        }
+    // Mapping Logic
+    if (nameUpper.includes("TONGUE") || nameUpper.includes("TWISTER")) {
+        filePath = `data/L-${lvl}-S-${sess}-Ton.js`;
+    } else if (nameUpper.includes("ONE SHOT")) {
+        filePath = `data/L-${lvl}-S-${sess}-One.js`;
+    } else if (nameUpper.includes("GRAMMAR")) {
+        filePath = `data/L-${lvl}-S-${sess}-Gra.js`;
+    } else if (nameUpper.includes("GP")) {
+        filePath = `data/L-${lvl}-${sess}-GP.js`;
+    } else if (nameUpper.includes("PROJECT")) {
+        filePath = `data/L-${lvl}-S-${sess}-Pro.js`;
+    } else if (nameUpper.includes("WISH")) {
+        filePath = `data/L-${lvl}-S-${sess}-Wis.js`;
+    } else if (nameUpper.includes("SQUEEZER")) {
+        const suffix = nameUpper.includes("TEST") ? "Squt" : "Squr";
+        filePath = `data/L-${lvl}-S-${sess}-${suffix}.js`;
+    } else if (nameUpper.includes("DMT")) {
+        filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-${lvl}-S-${sess}-DMT.js`;
+    } else if (nameUpper.includes("LISTENING")) {
+        filePath = nameUpper.includes("INTRO") ? `data/L-${lvl}-S-${sess}-Lin.js` : `data/L-${lvl}-S-${sess}-Lis.js`;
+    } else if (nameUpper.includes("VOCAB")) {
+        const type = nameUpper.includes("TEST") ? "2" : "1";
+        filePath = `data/L-${type}-${lvl}-S-${sess}-Voc.js`;
+    } else if (nameUpper.includes("READING")) {
+        filePath = `data/L-${lvl}-S-${sess}-Rea.js`;
+    } else {
+        const prefix = activityName.split(' ')[0].substring(0, 3);
+        filePath = `data/L-1-${lvl}-S-${sess}-${prefix}.js`;
+    }
+
+    // Execution
+    const stage = document.getElementById('activity-stage');
+    stage.style.display = 'block';
+    document.getElementById('stage-content').innerHTML = "";
+    
+    const script = document.createElement('script');
+    script.src = filePath;
+    script.onerror = () => {
+        console.error("WOLF Error: File not found -> " + filePath);
+        alert("الملف غير موجود: " + filePath);
+        closeStage();
+    };
+    document.head.appendChild(script);
+}
 
         function toggleToolBox() {
             document.getElementById('toolBox').classList.toggle('open');

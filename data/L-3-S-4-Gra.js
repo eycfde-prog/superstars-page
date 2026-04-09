@@ -3,12 +3,7 @@
     if (!container) return;
 
     container.innerHTML = ''; 
-    container.style.cssText = `
-        height:100%; width:100%; overflow:hidden; position:relative; 
-        display:flex; align-items:center; justify-content:center; 
-        background:#050505; font-family:'Segoe UI', sans-serif; 
-        direction:ltr; color:white;
-    `;
+    container.style.cssText = `height:100%; width:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#050505; font-family:'Segoe UI', sans-serif; direction:ltr; color:white;`;
 
     let currentSlide = 0;
     let subStep = 0;
@@ -36,54 +31,68 @@
             ]
         },
 
-        /* 4: Reveal List - 7 Examples */
+        /* 4: Reveal List (7 Examples for 7 Pronouns) */
         { 
             type: 'reveal-list', 
-            title: '7 Pronouns, 7 Examples',
+            title: '7 Pronouns - 7 Examples',
             items: [
-                "1. I <span style='color:#3498db'>drink</span> coffee every morning.",
-                "2. He <span style='color:#f1c40f'>plays</span> football on Fridays.",
-                "3. She <span style='color:#f1c40f'>speaks</span> English fluently.",
-                "4. It <span style='color:#f1c40f'>rains</span> a lot in winter.",
-                "5. We <span style='color:#3498db'>watch</span> movies at night.",
-                "6. You <span style='color:#3498db'>study</span> hard for exams.",
-                "7. They <span style='color:#3498db'>live</span> in a big house."
+                "1. <span style='color:#3498db'>I</span> sleep early every day.",
+                "2. <span style='color:#f1c40f'>He</span> plays football on Fridays.",
+                "3. <span style='color:#f1c40f'>She</span> cooks delicious food.",
+                "4. <span style='color:#f1c40f'>It</span> rains a lot in winter.",
+                "5. <span style='color:#3498db'>We</span> study English together.",
+                "6. <span style='color:#3498db'>You</span> speak very fast.",
+                "7. <span style='color:#3498db'>They</span> walk to school."
             ] 
         },
 
-        /* 5: Negative Transform + Rules */
-        { 
-            type: 'transform', 
-            title: 'The Negative',
-            desc: "Rule: Don't / Doesn't + Base Form",
-            ruleBox: [
-                { subjects: "I - We - You - They", helper: "DON'T" },
-                { subjects: "He - She - It", helper: "DOESN'T" }
-            ],
-            pairs: [
-                { pos: "I sleep well.", neg: "I <span style='color:#e74c3c;'>DON'T</span> sleep well." },
-                { pos: "He works hard.", neg: "He <span style='color:#e74c3c;'>DOESN'T WORK</span> hard." },
-                { pos: "They play tennis.", neg: "They <span style='color:#e74c3c;'>DON'T PLAY</span> tennis." }
+        /* 5: Negative Rule (Requested Slide) */
+        {
+            type: 'rule-box',
+            title: 'NEGATIVE RULE',
+            color: '#e74c3c',
+            rules: [
+                { subjects: "I / WE / THEY / YOU", tool: "DON'T", extra: "+ Base Verb" },
+                { subjects: "HE / SHE / IT", tool: "DOESN'T", extra: "+ Base Verb" }
             ]
         },
 
-        /* 6: Question Transform + Rules */
+        /* 6: Negative Transform */
         { 
             type: 'transform', 
-            title: 'The Question',
-            desc: 'Rule: Do / Does at the beginning',
-            ruleBox: [
-                { subjects: "DO + (I - We - You - They)", helper: "?" },
-                { subjects: "DOES + (He - She - It)", helper: "?" }
-            ],
+            title: 'Practice Negative',
+            desc: "Add Don't / Doesn't",
             pairs: [
-                { pos: "You practice English.", neg: "<span style='color:#f1c40f;'>DO</span> you practice English?" },
-                { pos: "She cooks lunch.", neg: "<span style='color:#f1c40f;'>DOES</span> she cook lunch?" },
-                { pos: "It works fine.", neg: "<span style='color:#f1c40f;'>DOES</span> it work fine?" }
+                { pos: "I play.", neg: "I <span style='color:#e74c3c;'>DON'T</span> play." },
+                { pos: "He plays.", neg: "He <span style='color:#e74c3c;'>DOESN'T</span> play." },
+                { pos: "They study.", neg: "They <span style='color:#e74c3c;'>DON'T</span> study." }
             ]
         },
 
-        /* 7: Spelling Rules */
+        /* 7: Question Rule (Requested Slide) */
+        {
+            type: 'rule-box',
+            title: 'QUESTION RULE',
+            color: '#f1c40f',
+            rules: [
+                { subjects: "I / WE / THEY / YOU", tool: "DO", extra: "➔ Start with DO" },
+                { subjects: "HE / SHE / IT", tool: "DOES", extra: "➔ Start with DOES" }
+            ]
+        },
+
+        /* 8: Question Transform */
+        { 
+            type: 'transform', 
+            title: 'Practice Question',
+            desc: 'Start with Do or Does',
+            pairs: [
+                { pos: "You work.", neg: "<span style='color:#f1c40f;'>DO</span> you work?" },
+                { pos: "She works.", neg: "<span style='color:#f1c40f;'>DOES</span> she work?" },
+                { pos: "They work.", neg: "<span style='color:#f1c40f;'>DO</span> they work?" }
+            ]
+        },
+
+        /* 9: Spelling Rules */
         { 
             type: 'spelling-grid', 
             title: 'Spelling Mastery',
@@ -93,19 +102,37 @@
             ]
         },
 
-        /* 8-17: MCQ Quiz (10 Questions) */
-        { question: "1. My father _________ in a big office.", options: ["A) work", "B) works", "C) working", "D) worked"], answer: 1 },
-        { question: "2. We _________ (not) go to school on Fridays.", options: ["A) doesn't", "B) isn't", "C) don't", "D) aren't"], answer: 2 },
-        { question: "3. _________ you like pizza?", options: ["A) Does", "B) Do", "C) Is", "D) Are"], answer: 1 },
-        { question: "4. She _________ her teeth twice a day.", options: ["A) brush", "B) brushes", "C) brushing", "D) brushed"], answer: 1 },
-        { question: "5. Cats _________ mice.", options: ["A) catches", "B) catch", "C) catching", "D) caught"], answer: 1 },
-        { question: "6. _________ he play the piano?", options: ["A) Do", "B) Does", "C) Is", "D) Has"], answer: 1 },
-        { question: "7. I _________ (not) understand the question.", options: ["A) doesn't", "B) don't", "C) am not", "D) not"], answer: 1 },
-        { question: "8. The sun _________ in the east.", options: ["A) rise", "B) rises", "C) rising", "D) rose"], answer: 1 },
-        { question: "9. _________ they live in Cairo?", options: ["A) Does", "B) Is", "C) Do", "D) Are"], answer: 2 },
-        { question: "10. My sister _________ very fast.", options: ["A) run", "B) runs", "C) running", "D) runner"], answer: 1 },
+        /* 10: Keywords */
+        { 
+            type: 'reveal-list', 
+            title: 'Frequency Keywords',
+            items: [
+                "✦ Always / Usually",
+                "✦ Often / Sometimes",
+                "✦ Hardly ever / Never",
+                "✦ Every day / Every week",
+                "✦ Once a month / Twice a year"
+            ] 
+        },
+
+        /* 11: Quiz Section (10 Questions) */
+        { 
+            type: 'quiz-session',
+            questions: [
+                { q: "1. Ali _________ English every day.", opts: ["study", "studies", "studying", "is study"], ans: 1 },
+                { q: "2. We _________ (not) like fish.", opts: ["doesn't", "don't", "not", "isn't"], ans: 1 },
+                { q: "3. _________ you live in Cairo?", opts: ["Does", "Is", "Do", "Are"], ans: 2 },
+                { q: "4. The sun _________ in the east.", opts: ["rise", "rises", "rising", "is rise"], ans: 1 },
+                { q: "5. She _________ go to school on Fridays.", opts: ["don't", "not", "doesn't", "isn't"], ans: 2 },
+                { q: "6. _________ Sara speak French?", opts: ["Do", "Does", "Is", "Has"], ans: 1 },
+                { q: "7. They always _________ their homework.", opts: ["do", "does", "doing", "did"], ans: 0 },
+                { q: "8. I _________ coffee at night.", opts: ["don't drink", "doesn't drink", "not drink", "no drink"], ans: 0 },
+                { q: "9. My cats _________ milk.", opts: ["likes", "like", "liking", "is like"], ans: 1 },
+                { q: "10. Where _________ he work?", opts: ["do", "is", "does", "has"], ans: 2 }
+            ]
+        },
         
-        { type: 'title', content: 'EXCELLENT!', subtitle: 'MISSION ACCOMPLISHED', color: '#2ecc71', usage: 'YOU ARE A MASTER!' }
+        { type: 'title', content: 'FANTASTIC!', subtitle: 'PRESENT PERFECTED', color: '#3498db', usage: 'READY FOR THE CHALLENGE!' }
     ];
 
     function render() {
@@ -115,68 +142,20 @@
             container.innerHTML = '';
             const wrapper = document.createElement('div');
             wrapper.id = 'slide-wrapper';
-            wrapper.style.cssText = `
-                width:95%; max-width:1300px; height: 90vh; 
-                display:flex; flex-direction:column; justify-content:center; align-items:center;
-                text-align:center; animation: vetoFadeIn 0.4s ease-out;
-            `;
+            wrapper.style.cssText = `width:95%; max-width:1300px; height: 90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; animation: vetoFadeIn 0.4s ease-out;`;
             container.appendChild(wrapper);
             lastRenderedSlide = currentSlide;
         }
 
         const wrapper = document.getElementById('slide-wrapper');
 
-        // Logic for MCQ vs Normal Slides
-        if (!s.type) { // This is an MCQ slide
-            const showAns = subStep >= 1;
-            wrapper.innerHTML = `
-                <h2 style="font-size:3vw; color:#e74c3c; margin-bottom:20px;">QUIZ TIME</h2>
-                <div style="text-align:left; background:#111; padding:4vh 4vw; border-radius:40px; border:3px solid #222; width:90%;">
-                    <div style="font-size:3vw; font-weight:900; margin-bottom:40px; color:#fff; line-height:1.2;">${s.question}</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                        ${s.options.map((opt, i) => {
-                            let isCorrect = showAns && i === s.answer;
-                            let color = isCorrect ? '#2ecc71' : (showAns ? '#333' : '#fff');
-                            let borderColor = isCorrect ? '#2ecc71' : '#333';
-                            return `<div style="border:3px solid ${borderColor}; padding:20px; border-radius:15px; font-size:2.2vw; font-weight:bold; color:${color}; transition:0.3s;">${opt}</div>`;
-                        }).join('')}
-                    </div>
-                </div>`;
-        }
-        else if (s.type === 'title') {
+        if (s.type === 'title') {
             wrapper.innerHTML = `
                 <div style="font-size:2.5vw; color:#444; letter-spacing:15px; margin-bottom:20px; text-transform:uppercase; font-weight:bold;">${s.subtitle}</div>
-                <h1 style="font-size:8vw; font-weight:900; color:${s.color}; margin:0; line-height:1;">${s.content}</h1>
+                <h1 style="font-size:8.5vw; font-weight:900; color:${s.color}; margin:0; line-height:1;">${s.content}</h1>
                 <div style="font-size:3vw; color:#fff; font-weight:bold; margin-top:50px; border-top:6px solid ${s.color}; display:inline-block; padding-top:20px;">${s.usage}</div>
             `;
         } 
-        else if (s.type === 'reveal-list') {
-            wrapper.innerHTML = `
-                <h2 style="font-size:4vw; color:#e74c3c; margin-bottom:30px; font-weight:900;">${s.title}</h2>
-                <div style="display:grid; grid-template-columns: 1fr; gap:10px; width:85%; text-align:left;">
-                    ${s.items.map((item, i) => `
-                        <div style="opacity:${i <= subStep ? 1 : 0.05}; transform:translateX(${i <= subStep ? 0 : -30}px); transition:0.4s; background:#111; padding:1.5vh 2vw; border-radius:12px; font-size:2vw; font-weight:bold; border-left:10px solid #e74c3c;">
-                            ${item}
-                        </div>
-                    `).join('')}
-                </div>`;
-        }
-        else if (s.type === 'transform') {
-            let pair = s.pairs[Math.floor(subStep/2)] || s.pairs[0];
-            let isChanged = subStep % 2 !== 0;
-            wrapper.innerHTML = `
-                <h2 style="font-size:4vw; color:#e74c3c; margin-bottom:10px; font-weight:900;">${s.title}</h2>
-                <div style="display:flex; gap:20px; margin-bottom:30px;">
-                    ${s.ruleBox.map(r => `
-                        <div style="background:#222; padding:15px 25px; border-radius:15px; border:2px solid #444;">
-                            <span style="color:#3498db; font-weight:bold;">${r.subjects}</span> = <span style="color:#e74c3c; font-weight:bold;">${r.helper}</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div style="background:#111; width:90%; padding:8vh 4vw; border-radius:40px; font-size:4.5vw; border:4px solid #333; color:${isChanged ? '#f1c40f' : '#fff'}; transition: 0.3s; font-weight:bold;">
-                    ${isChanged ? pair.neg : pair.pos}
-                </div>`;
-        }
         else if (s.type === 'timeline') {
             wrapper.innerHTML = `
                 <h2 style="font-size:4.5vw; color:#e74c3c; margin-bottom:30px; font-weight:900;">${s.title}</h2>
@@ -187,6 +166,21 @@
                     <div style="position:absolute; width:100%; top:50px; display:flex; justify-content:space-between; color:#444; font-size:1.8vw; font-weight:bold; letter-spacing:3px;">
                         ${s.labels.map(l => `<span>${l}</span>`).join('')}
                     </div>
+                </div>`;
+        }
+        else if (s.type === 'rule-box') {
+            wrapper.innerHTML = `
+                <h2 style="font-size:4vw; color:${s.color}; margin-bottom:40px; font-weight:900;">${s.title}</h2>
+                <div style="display:flex; flex-direction:column; gap:30px; width:100%; align-items:center;">
+                    ${s.rules.map(r => `
+                        <div style="background:#111; padding:4vh 4vw; border-radius:30px; width:90%; border:4px solid ${s.color}; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
+                            <div style="text-align:left;">
+                                <div style="font-size:3.5vw; color:#fff; font-weight:900;">${r.subjects}</div>
+                                <div style="font-size:2vw; color:#666; font-weight:bold;">${r.extra}</div>
+                            </div>
+                            <div style="font-size:6vw; color:${s.color}; font-weight:900; letter-spacing:5px;">➔ ${r.tool}</div>
+                        </div>
+                    `).join('')}
                 </div>`;
         }
         else if (s.type === 'formulation') {
@@ -204,6 +198,27 @@
                     `).join('')}
                 </div>`;
         }
+        else if (s.type === 'reveal-list') {
+            wrapper.innerHTML = `
+                <h2 style="font-size:4.5vw; color:#e74c3c; margin-bottom:30px; font-weight:900;">${s.title}</h2>
+                <div style="display:flex; flex-direction:column; gap:12px; text-align:left; width:85%; margin: 0 auto;">
+                    ${s.items.map((item, i) => `
+                        <div style="opacity:${i <= subStep ? 1 : 0.05}; transform:translateX(${i <= subStep ? 0 : -30}px); transition:0.4s; background:#111; padding:15px 25px; border-radius:15px; font-size:2.2vw; font-weight:bold; border-left:12px solid #e74c3c;">
+                            ${item}
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
+        else if (s.type === 'transform') {
+            let pair = s.pairs[Math.floor(subStep/2)] || s.pairs[0];
+            let isChanged = subStep % 2 !== 0;
+            wrapper.innerHTML = `
+                <h2 style="font-size:4.5vw; color:#e74c3c; margin-bottom:10px; font-weight:900;">${s.title}</h2>
+                <p style="font-size:2vw; color:#555; margin-bottom:30px; font-weight:bold;">${s.desc}</p>
+                <div style="background:#111; width:90%; padding:8vh 4vw; border-radius:40px; font-size:5vw; border:4px solid #333; color:${isChanged ? '#f1c40f' : '#fff'}; transition: 0.3s; font-weight:bold;">
+                    ${isChanged ? pair.neg : pair.pos}
+                </div>`;
+        }
         else if (s.type === 'spelling-grid') {
             wrapper.innerHTML = `
                 <h2 style="font-size:4.5vw; color:#e74c3c; margin-bottom:40px; font-weight:900;">SPELLING RULES</h2>
@@ -217,6 +232,24 @@
                     `).join('')}
                 </div>`;
         }
+        else if (s.type === 'quiz-session') {
+            let qIdx = Math.floor(subStep / 2);
+            let q = s.questions[qIdx] || s.questions[0];
+            let showAns = subStep % 2 !== 0;
+            wrapper.innerHTML = `
+                <div style="text-align:left; background:#111; padding:4vh 4vw; border-radius:40px; border:3px solid #222; width:90%;">
+                    <div style="color:#3498db; font-weight:bold; font-size:1.2vw; margin-bottom:10px;">PRACTICE ${qIdx + 1}/10</div>
+                    <div style="font-size:2.8vw; font-weight:900; margin-bottom:30px; color:#fff; line-height:1.2;">${q.q}</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        ${q.opts.map((opt, i) => {
+                            let isCorrect = showAns && i === q.ans;
+                            let color = isCorrect ? '#2ecc71' : (showAns ? '#333' : '#fff');
+                            let borderColor = isCorrect ? '#2ecc71' : '#333';
+                            return `<div style="border:3px solid ${borderColor}; padding:15px; border-radius:15px; font-size:2vw; font-weight:bold; color:${color}; transition:0.3s;">${opt}</div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+        }
     }
 
     document.onkeydown = (e) => {
@@ -225,7 +258,8 @@
             let maxSub = 0;
             if (s.type === 'reveal-list') maxSub = s.items.length - 1;
             else if (s.type === 'transform') maxSub = (s.pairs.length * 2) - 1;
-            else if (s.type === 'timeline' || !s.type) maxSub = 1; // !s.type refers to MCQ
+            else if (s.type === 'quiz-session') maxSub = (s.questions.length * 2) - 1;
+            else if (s.type === 'mcq' || s.type === 'timeline') maxSub = 1;
 
             if (subStep < maxSub) subStep++;
             else if (currentSlide < slides.length - 1) { 

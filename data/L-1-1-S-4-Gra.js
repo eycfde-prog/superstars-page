@@ -2,10 +2,11 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // الإعداد الأساسي للخلفية (مرة واحدة فقط)
     container.innerHTML = ''; 
     container.style.cssText = `height:100%; width:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#050505; font-family:'Segoe UI', sans-serif; direction:ltr; color:white;`;
 
-    let currentSlide = 0;
+    let currentSlide = -1; 
     let subStep = 0;
 
     const slides = [
@@ -83,10 +84,41 @@
         }
     ];
 
-    function render() {
+    function updateSubSteps() {
+        const s = slides[currentSlide];
+        if (!s) return;
+
+        // تحديث العناصر التدريجية
+        const items = container.querySelectorAll('.step-item');
+        items.forEach((item, i) => {
+            if (i <= subStep) {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+                if (item.classList.contains('grid-box')) item.style.borderColor = '#c5a059';
+            } else {
+                item.style.opacity = '0.05';
+                item.style.transform = 'translateY(10px)';
+                if (item.classList.contains('grid-box')) item.style.borderColor = '#222';
+            }
+        });
+
+        // تحديث ظهور شريط القاعدة (Rule Bar)
+        const ruleBar = container.querySelector('.rule-bar');
+        if (ruleBar) {
+            ruleBar.style.opacity = (subStep >= (s.items ? s.items.length - 1 : 0)) ? '1' : '0';
+            ruleBar.style.transform = (subStep >= (s.items ? s.items.length - 1 : 0)) ? 'translateY(0)' : 'translateY(20px)';
+        }
+    }
+
+    function renderSlide(index) {
+        if (index === currentSlide) return;
+        currentSlide = index;
+        subStep = 0;
         container.innerHTML = '';
+        
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
+        wrapper.className = 'slide-wrapper';
         wrapper.style.cssText = `width:90%; max-width:1200px; height:85vh; display:flex; flex-direction:column; justify-content:center; align-items:center; animation: vetoQuickFade 0.3s ease;`;
 
         if (s.type === 'title') {
@@ -108,7 +140,7 @@
                 <p style="font-size:3.5vh; color:#555; margin-bottom:4vh; font-weight:bold;">${s.desc}</p>
                 <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5vw; width:100%;">
                     ${s.items.map((item, i) => `
-                        <div style="opacity:${i <= subStep ? 1 : 0.05}; background:#111; padding:3vh; border-radius:20px; font-size:4vh; font-weight:bold; border: 3px solid ${i === subStep ? '#c5a059' : '#222'}; transition: 0.2s; white-space:nowrap;">
+                        <div class="step-item grid-box" style="opacity:0.05; background:#111; padding:3vh; border-radius:20px; font-size:4vh; font-weight:bold; border: 3px solid #222; transition: 0.3s; white-space:nowrap;">
                             ${item}
                         </div>
                     `).join('')}
@@ -120,7 +152,7 @@
                 <p style="font-size:3.5vh; color:#555; margin-bottom:4vh; font-weight:bold;">${s.desc}</p>
                 <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:2vw; width:100%;">
                     ${s.items.map((item, i) => `
-                        <div style="opacity:${i <= subStep ? 1 : 0.05}; font-size:6vh; background:#111; padding:4vh; border-radius:25px; font-weight:900; border-bottom: 8px solid ${i <= subStep ? '#c5a059' : '#222'}; transition:0.2s;">
+                        <div class="step-item" style="opacity:0.05; font-size:6vh; background:#111; padding:4vh; border-radius:25px; font-weight:900; border-bottom: 8px solid #222; transition:0.3s;">
                             ${item.base}<span style="color:#c5a059;">${item.add}</span>
                         </div>
                     `).join('')}
@@ -131,35 +163,37 @@
                 <h2 style="font-size:7vh; color:#c5a059; margin-bottom:4vh; font-weight:900;">${s.title}</h2>
                 <div style="display:flex; flex-direction:column; gap:2vh; align-items:center; width:100%;">
                     ${s.items.map((item, i) => `
-                        <div style="opacity:${i <= subStep ? 1 : 0.05}; font-size:5.5vh; font-weight:900; background:#111; padding:2vh 10vh; border-radius:100px; border:3px solid #333; transition:0.2s;">${item}</div>
+                        <div class="step-item" style="opacity:0.05; font-size:5.5vh; font-weight:900; background:#111; padding:2vh 10vh; border-radius:100px; border:3px solid #333; transition:0.3s;">${item}</div>
                     `).join('')}
-                    <div style="opacity:${subStep >= s.items.length - 1 ? 1 : 0}; background:#c5a059; color:black; padding:4vh 6vh; border-radius:30px; font-size:4vh; font-weight:900; margin-top:3vh; box-shadow: 0 15px 40px rgba(197,160,89,0.4); width:100%;">
+                    <div class="rule-bar" style="opacity:0; background:#c5a059; color:black; padding:4vh 6vh; border-radius:30px; font-size:4vh; font-weight:900; margin-top:3vh; box-shadow: 0 15px 40px rgba(197,160,89,0.4); width:100%; transition: 0.5s ease-out;">
                         RULE: ${s.rule}
                     </div>
                 </div>`;
         }
 
         container.appendChild(wrapper);
+        updateSubSteps();
     }
 
     document.onkeydown = (e) => {
         const s = slides[currentSlide];
-        if ([13, 32, 39].includes(e.keyCode)) { 
+        if ([13, 32, 39].includes(e.keyCode)) { // Next
             let maxSteps = s.items ? s.items.length - 1 : 0;
-            if (subStep < maxSteps) subStep++;
-            else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
+            if (subStep < maxSteps) { subStep++; updateSubSteps(); }
+            else if (currentSlide < slides.length - 1) { renderSlide(currentSlide + 1); }
             else { if (window.triggerVetoDone) window.triggerVetoDone(); }
-            render();
-        } else if (e.keyCode === 37) { 
-            if (subStep > 0) subStep--;
-            else if (currentSlide > 0) { currentSlide--; subStep = 0; }
-            render();
+        } else if (e.keyCode === 37) { // Back
+            if (subStep > 0) { subStep--; updateSubSteps(); }
+            else if (currentSlide > 0) { renderSlide(currentSlide - 1); }
         }
     };
 
     const style = document.createElement('style');
-    style.innerHTML = `@keyframes vetoQuickFade { from { opacity:0; transform: scale(0.95); } to { opacity:1; transform: scale(1); } }`;
+    style.innerHTML = `
+        @keyframes vetoQuickFade { from { opacity:0; transform: scale(0.98); } to { opacity:1; transform: scale(1); } }
+        .step-item { transform: translateY(10px); }
+    `;
     document.head.appendChild(style);
 
-    render();
+    renderSlide(0);
 })();

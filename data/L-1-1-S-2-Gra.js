@@ -2,6 +2,7 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // الإعداد الأساسي للخلفية (مرة واحدة فقط)
     container.innerHTML = ''; 
     container.style.cssText = `
         height:100%; width:100%; overflow:hidden; position:relative; 
@@ -11,7 +12,7 @@
         direction:ltr; color:white;
     `;
 
-    let currentSlide = 0;
+    let currentSlide = -1; 
     let subStep = 0;
 
     const slides = [
@@ -59,7 +60,6 @@
         /* SECTION 2: VERB TO BE */
         { type: 'big-title', content: 'STEP 2', subtitle: 'VERB TO BE (AM - IS - ARE)', color: '#c5a059' },
         
-        // RULE 1: Affirmative
         {
             type: 'rule-slide',
             title: 'Positive Structure',
@@ -83,7 +83,6 @@
             ]
         },
 
-        // RULE 2: Negative
         {
             type: 'rule-slide',
             title: 'Negative Structure',
@@ -102,7 +101,6 @@
             {sub: "They are", rest: "busy now."}
         ].map(item => ({ type: 'neg-transform', sub: item.sub, rest: item.rest })),
 
-        // RULE 3: Questions
         {
             type: 'rule-slide',
             title: 'Question Structure',
@@ -135,10 +133,40 @@
         { type: 'big-title', content: 'PERFECT!', subtitle: 'GRAMMAR FOUNDATION COMPLETED', color: '#2ecc71' }
     ];
 
-    function render() {
+    function updateSubSteps() {
+        const s = slides[currentSlide];
+        if (!s) return;
+
+        // تحديث العناصر التدريجية (Grids & Tables)
+        const revealItems = container.querySelectorAll('.step-item');
+        revealItems.forEach((item, i) => {
+            if (i <= subStep) {
+                item.style.opacity = '1';
+                if (item.tagName === 'DIV') item.style.borderColor = '#3498db';
+                if (item.tagName === 'TR') item.style.background = 'rgba(255,255,255,0.08)';
+            } else {
+                item.style.opacity = '0.05';
+                if (item.tagName === 'DIV') item.style.borderColor = '#222';
+                if (item.tagName === 'TR') item.style.background = 'transparent';
+            }
+        });
+
+        // تحديث النفي (Negative Transform)
+        const notTag = container.querySelector('.not-badge');
+        if (notTag) {
+            notTag.style.opacity = (subStep >= 1) ? '1' : '0.1';
+        }
+    }
+
+    function renderSlide(index) {
+        if (index === currentSlide) return;
+        currentSlide = index;
+        subStep = 0;
         container.innerHTML = '';
+        
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
+        wrapper.className = 'slide-wrapper';
         wrapper.style.cssText = `width:90%; max-width:1300px; text-align:center; animation: vetoFade 0.4s ease;`;
 
         if (s.type === 'big-title') {
@@ -155,7 +183,7 @@
                 </div>
                 <div style="display:flex; flex-direction:column; gap:2vh;">
                     ${s.examples.map((ex, i) => `
-                        <div style="font-size:4.5vh; display:flex; justify-content:center; gap:40px; opacity:${i <= subStep ? 1 : 0}; transition:0.3s;">
+                        <div class="step-item" style="font-size:4.5vh; display:flex; justify-content:center; gap:40px; transition:0.3s; opacity:0;">
                             <span style="color:#888;">${ex.full}</span>
                             <span style="color:${s.color}; font-weight:900;">➔</span>
                             <span style="color:#fff; font-weight:900;">${ex.short}</span>
@@ -166,19 +194,19 @@
         else if (s.type === 'reveal-grid') {
             wrapper.innerHTML = `
                 <h2 style="font-size:6vh; color:#3498db; margin-bottom:10px;">${s.title}</h2>
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; margin-top:40px;">
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; margin-top:40px;">
                     ${s.items.map((item, i) => `
-                        <div style="opacity:${i <= subStep ? 1 : 0.05}; background:#111; padding:3vh; border-radius:20px; font-size:4vh; font-weight:900; border: 2px solid ${i === subStep ? '#3498db' : '#222'}; transition:0.3s;">
+                        <div class="step-item" style="background:#111; padding:3vh; border-radius:20px; font-size:3.5vh; font-weight:900; border: 2px solid #222; transition:0.3s; opacity:0.05;">
                             ${item}
                         </div>
                     `).join('')}
                 </div>`;
         }
-else if (s.type === 'compare-table') {
+        else if (s.type === 'compare-table') {
             wrapper.innerHTML = `
                 <h2 style="font-size:6vh; color:#c5a059; margin-bottom:3vh;">${s.title}</h2>
-                <div style="width:100%; overflow:hidden;">
-                    <table style="width:100%; font-size:4vh; border-collapse:separate; border-spacing:0 1.5vh; table-layout: fixed;">
+                <div style="width:100%;">
+                    <table style="width:100%; font-size:4vh; border-collapse:separate; border-spacing:0 1vh; table-layout: fixed;">
                         <thead>
                             <tr style="color:#666; font-size:3vh;">
                                 ${s.headers.map(h => `<th style="padding:1vh; text-align:center;">${h}</th>`).join('')}
@@ -186,7 +214,7 @@ else if (s.type === 'compare-table') {
                         </thead>
                         <tbody>
                             ${s.rows.map((r, i) => `
-                                <tr style="opacity:${i <= subStep ? 1 : 0.05}; background:rgba(255,255,255,0.03); transition:0.2s;">
+                                <tr class="step-item" style="transition:0.2s; opacity:0.05;">
                                     <td style="padding:2vh; border-radius:20px 0 0 20px; font-weight:900; color:#fff; text-align:center;">${r.s}</td>
                                     <td style="color:#c5a059; font-weight:900; font-size:5vh; text-align:center;">${r.v}</td>
                                     <td style="color:#fff; border-radius:0 20px 20px 0; font-weight:900; opacity:0.9; text-align:center;">${r.e}</td>
@@ -199,36 +227,34 @@ else if (s.type === 'compare-table') {
         else if (s.type === 'neg-transform') {
             wrapper.innerHTML = `
                 <div style="font-size:8vh; font-weight:900;">
-                    <span>${s.sub}</span> <span style="color:#e74c3c; border:6px solid #e74c3c; padding:0 25px; border-radius:20px; margin:0 15px; opacity:${subStep >= 1 ? 1 : 0.1}; transition:0.4s;">NOT</span> <span>${s.rest}</span>
-                </div>`;
-        }
-        else if (s.type === 'q-transform') {
-            let swapped = subStep >= 1;
-            wrapper.innerHTML = `
-                <div style="font-size:9vh; font-weight:900; display:flex; justify-content:center; align-items:center; position:relative; height:20vh;">
-                    <span style="position:absolute; color:${swapped ? '#f1c40f' : '#fff'}; transform:translateX(${swapped ? '130px' : '-130px'}); transition:all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);">${swapped ? s.s : s.v}</span>
-                    <span style="position:absolute; color:${swapped ? '#fff' : '#f1c40f'}; transform:translateX(${swapped ? '-130px' : '130px'}); transition:all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);">${swapped ? s.v : s.s}</span>
-                    <span style="margin-left:550px;">${s.rest}</span>
+                    <span>${s.sub}</span> 
+                    <span class="not-badge" style="color:#e74c3c; border:6px solid #e74c3c; padding:0 25px; border-radius:20px; margin:0 15px; transition:0.4s; opacity:0.1;">NOT</span> 
+                    <span>${s.rest}</span>
                 </div>`;
         }
         else if (s.type === 'mcq') {
-            let q = s.questions[subStep] || s.questions[0];
-            wrapper.innerHTML = `
-                <h2 style="font-size:4vh; color:#c5a059; margin-bottom:3vh;">${s.title} (${subStep + 1}/10)</h2>
-                <div style="background:#111; padding:5vh; border-radius:40px; border:4px solid #c5a059;">
-                    <div id="q-text" style="font-size:7vh; margin-bottom:5vh; font-weight:900;">${q.q}</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px;">
-                        ${q.opts.map(opt => `
-                            <button onclick="window.checkAnsVeto('${opt}', '${q.ans}', this)" 
-                                style="padding:3vh; background:#222; border:3px solid #444; color:#fff; border-radius:20px; font-size:4.5vh; font-weight:900; cursor:pointer; transition:0.2s;">
-                                ${opt}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>`;
+            renderMCQContent(wrapper, s);
         }
 
         container.appendChild(wrapper);
+        updateSubSteps();
+    }
+
+    function renderMCQContent(parent, s) {
+        let q = s.questions[subStep];
+        parent.innerHTML = `
+            <h2 style="font-size:4vh; color:#c5a059; margin-bottom:3vh;">${s.title} (${subStep + 1}/10)</h2>
+            <div style="background:#111; padding:5vh; border-radius:40px; border:4px solid #c5a059;">
+                <div id="q-text" style="font-size:7vh; margin-bottom:5vh; font-weight:900;">${q.q}</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px;">
+                    ${q.opts.map(opt => `
+                        <button onclick="window.checkAnsVeto('${opt}', '${q.ans}', this)" 
+                            style="padding:3vh; background:#222; border:3px solid #444; color:#fff; border-radius:20px; font-size:4.5vh; font-weight:900; cursor:pointer; transition:0.2s;">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>`;
     }
 
     window.checkAnsVeto = function(sel, ans, btn) {
@@ -238,43 +264,45 @@ else if (s.type === 'compare-table') {
             btn.style.borderColor = "#2ecc71";
             qText.innerHTML = qText.innerHTML.replace("________", `<span style="color:#2ecc71; text-decoration:underline;">${ans}</span>`);
             setTimeout(() => {
-                if (subStep < 9) { subStep++; render(); }
-                else { currentSlide++; subStep = 0; render(); }
+                const s = slides[currentSlide];
+                if (subStep < 9) { 
+                    subStep++; 
+                    renderMCQContent(container.querySelector('.slide-wrapper'), s); 
+                }
+                else { renderSlide(currentSlide + 1); }
             }, 1000);
         } else {
             btn.style.background = "#e74c3c";
-            btn.style.animation = "shake 0.3s";
+            btn.style.animation = "vetoShake 0.3s";
             setTimeout(() => { btn.style.animation = ""; }, 300);
         }
     };
 
     document.onkeydown = (e) => {
         const s = slides[currentSlide];
-        if ([13, 32, 39].includes(e.keyCode)) { 
+        if ([13, 32, 39].includes(e.keyCode)) { // Next
             let max = 0;
             if (s.type === 'reveal-grid') max = s.items.length - 1;
             else if (s.type === 'compare-table') max = s.rows.length - 1;
             else if (s.type === 'rule-slide') max = s.examples.length - 1;
-            else if (s.type === 'neg-transform' || s.type === 'q-transform') max = 1;
+            else if (s.type === 'neg-transform') max = 1;
             else if (s.type === 'mcq') return;
 
-            if (subStep < max) subStep++;
-            else if (currentSlide < slides.length - 1) { currentSlide++; subStep = 0; }
+            if (subStep < max) { subStep++; updateSubSteps(); }
+            else if (currentSlide < slides.length - 1) { renderSlide(currentSlide + 1); }
             else { if (window.triggerVetoDone) window.triggerVetoDone(); }
-            render();
-        } else if (e.keyCode === 37) { 
-            if (subStep > 0) subStep--;
-            else if (currentSlide > 0) { currentSlide--; subStep = 0; }
-            render();
+        } else if (e.keyCode === 37) { // Back
+            if (subStep > 0) { subStep--; updateSubSteps(); }
+            else if (currentSlide > 0) { renderSlide(currentSlide - 1); }
         }
     };
 
     const style = document.createElement('style');
     style.innerHTML = `
-        @keyframes vetoFade { from { opacity:0; } to { opacity:1; } }
-        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
+        @keyframes vetoFade { from { opacity:0; transform:scale(0.98); } to { opacity:1; transform:scale(1); } }
+        @keyframes vetoShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
     `;
     document.head.appendChild(style);
 
-    render();
+    renderSlide(0);
 })();

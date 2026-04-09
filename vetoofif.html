@@ -183,7 +183,6 @@
             color: white;
         }
 
-        /* Full Screen Flash Note */
         #quick-note-container { 
             position: fixed; 
             inset: 0; 
@@ -201,11 +200,16 @@
             border-bottom: 3px solid var(--primary-gold); 
             background: transparent; 
             color: var(--primary-gold); 
-            width: 80%; 
+            width: 90%; 
+            height: auto;
+            min-height: 200px; 
             font-size: 5rem; 
             text-align: center;
             outline: none;
             font-weight: bold;
+            resize: none; 
+            font-family: inherit;
+            overflow: hidden; 
         }
 
         #laser-pointer { 
@@ -246,8 +250,8 @@
     </div>
 
     <div id="quick-note-container">
-        <input type="text" id="smart-note-input" placeholder="Type your note here...">
-        <p style="color:rgba(255,255,255,0.3); margin-top:20px; font-size:1.2rem;">Press ESC or click Tool again to close</p>
+        <textarea id="smart-note-input" placeholder="Type your note here..." rows="1"></textarea>
+        <p style="color:rgba(255,255,255,0.3); margin-top:20px; font-size:1.2rem;">Press ESC to Close | ENTER for New Line</p>
     </div>
 
     <div id="laser-pointer"></div>
@@ -391,6 +395,27 @@
                 window.addEventListener('mouseup', stop);
             });
         }
+
+        function closeNote() {
+            document.getElementById('quick-note-container').style.display = 'none';
+        }
+
+        document.getElementById('smart-note-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeNote();
+            }
+        });
+
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (document.getElementById('quick-note-container').style.display === 'flex') {
+                    closeNote();
+                }
+                if (document.getElementById('activity-stage').style.display === 'block') {
+                    closeStage();
+                }
+            }
+        });
 
         function toggleNote() {
             const container = document.getElementById('quick-note-container');

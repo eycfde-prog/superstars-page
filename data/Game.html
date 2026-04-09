@@ -12,7 +12,7 @@
             --pink-accent: #ff477e;
         }
 
-        * { -webkit-tap-highlight-color: transparent; outline: none; }
+        * { -webkit-tap-highlight-color: transparent; }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -30,12 +30,11 @@
 
         #teacher-sign {
             position: absolute; bottom: 15px; right: 20px;
-            font-size: 0.9rem; color: rgba(255,255,255,0.8); z-index: 10;
+            font-size: 1rem; color: rgba(255,255,255,0.8); z-index: 10;
         }
 
         #stats {
-            position: absolute; top: env(safe-area-inset-top, 20px); 
-            width: 100%;
+            position: absolute; top: env(safe-area-inset-top, 20px); width: 100%;
             display: flex; justify-content: space-around;
             font-size: 1.8rem; color: white; 
             text-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -47,22 +46,21 @@
             width: 100%; height: 8px;
             background: repeating-linear-gradient(90deg, #ff4d4d, #ff4d4d 20px, transparent 20px, transparent 40px);
             z-index: 5;
-            box-shadow: 0 0 15px rgba(255,77,77,0.5);
         }
 
         #word-wrapper {
             position: absolute; top: -120px;
             display: flex; flex-direction: row;
-            gap: 8px; width: 100%; justify-content: center;
+            gap: 10px; width: 100%; justify-content: center;
         }
 
         .bubble-char {
-            width: 55px; height: 55px;
+            width: 60px; height: 60px;
             background: var(--bubble-gradient);
             border: 3px solid white;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; color: #005f73;
+            font-size: 2rem; color: #005f73;
             box-shadow: 0 6px 15px rgba(0,0,0,0.1);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
@@ -71,28 +69,27 @@
         .popped { animation: pop-effect 0.3s ease-out forwards; }
         @keyframes pop-effect {
             0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; filter: brightness(2); }
+            100% { transform: scale(1.8); opacity: 0; }
         }
 
         .overlay {
-            position: fixed; inset: 0; background: rgba(10, 25, 47, 0.95);
+            position: fixed; inset: 0; background: rgba(10, 25, 47, 0.9);
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; z-index: 1000; color: white; text-align: center;
             padding: 20px;
         }
 
         button {
-            padding: 15px 40px; font-size: 1.8rem; font-family: 'Fredoka One';
+            padding: 18px 45px; font-size: 1.8rem; font-family: 'Fredoka One';
             background: var(--pink-accent); color: white; border: none; border-radius: 50px;
-            box-shadow: 0 6px #c9184a; cursor: pointer; transform: scale(1);
-            transition: 0.1s;
+            box-shadow: 0 6px #c9184a; cursor: pointer; transition: 0.1s;
         }
 
-        button:active { transform: scale(0.95); box-shadow: 0 2px #c9184a; }
+        button:active { transform: translateY(4px); box-shadow: 0 2px #c9184a; }
 
         #hidden-input {
             position: absolute; bottom: 0; left: 0;
-            width: 1px; height: 1px;
+            width: 100%; height: 100%;
             opacity: 0; z-index: -1;
             font-size: 16px;
         }
@@ -111,14 +108,14 @@
     <input type="text" id="hidden-input" inputmode="text" autocomplete="off">
 
     <div id="start-screen" class="overlay">
-        <h1 style="color: #00f2fe; font-size: 2.8rem; margin-bottom: 10px;">VETO BUBBLES</h1>
-        <p style="margin-bottom: 30px; opacity: 0.8;">Pop the bubbles to win! 🎈</p>
-        <button id="start-btn">START! 🚀</button>
+        <h1 style="color: #00f2fe; font-size: 3rem; margin-bottom: 10px;">VETO BUBBLES</h1>
+        <p style="margin-bottom: 20px; opacity: 0.8;">Ready for the challenge?</p>
+        <button id="start-btn">START MISSION 🚀</button>
     </div>
 
     <div id="end-screen" class="overlay" style="display: none;">
-        <h1 style="font-size: 3rem; color: #ff477e;">TIME UP! ⏰</h1>
-        <p style="font-size: 2rem;">Total Score: <span id="final-score" style="color: #00f2fe;">0</span></p>
+        <h1 style="font-size: 3.5rem; color: #ff477e;">BRAVO! 🌈</h1>
+        <p style="font-size: 2.2rem;">Score: <span id="final-score" style="color: #00f2fe">0</span></p>
         <button onclick="location.reload()">PLAY AGAIN 🔄</button>
     </div>
 </div>
@@ -136,10 +133,12 @@
     let score = 0;
     let timeLeft = 30;
     let isActive = false;
-    let baseSpeed = 0.8;
+    let baseSpeed = 0.7;
 
     const wrapper = document.getElementById('word-wrapper');
     const input = document.getElementById('hidden-input');
+    const container = document.documentElement;
+
     const sounds = {
         right: document.getElementById('snd-right'),
         wrong: document.getElementById('snd-wrong'),
@@ -147,26 +146,38 @@
         finish: document.getElementById('snd-finish')
     };
 
-    function requestFullScreen() {
-        const doc = window.document;
-        const docEl = doc.documentElement;
-        const request = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-        if (request) request.call(docEl);
+    // وظيفة ملء الشاشة
+    function openFullscreen() {
+        if (container.requestFullscreen) {
+            container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) { /* Safari */
+            container.webkitRequestFullscreen();
+        } else if (container.msRequestFullscreen) { /* IE11 */
+            container.msRequestFullscreen();
+        }
     }
 
     document.getElementById('start-btn').addEventListener('click', () => {
-        // فك حظر الصوت في الموبايل
-        Object.values(sounds).forEach(s => { s.play(); s.pause(); s.currentTime = 0; });
+        // تشغيل ملء الشاشة
+        openFullscreen();
         
-        // محاولة دخول وضع ملء الشاشة
-        requestFullScreen();
-
         document.getElementById('start-screen').style.display = 'none';
         isActive = true;
-        input.focus();
-        spawnWord();
-        tick();
-        runTimer();
+        
+        // تفعيل الصوت (Unlock)
+        Object.values(sounds).forEach(s => {
+            s.play().then(() => {
+                s.pause();
+                s.currentTime = 0;
+            }).catch(e => console.log("Audio unlock wait..."));
+        });
+
+        setTimeout(() => {
+            input.focus();
+            spawnWord();
+            tick();
+            runTimer();
+        }, 300);
     });
 
     function spawnWord() {
@@ -174,7 +185,10 @@
             wordIndex = 0;
             baseSpeed += 0.2;
         }
-        currentWord = originalWords[wordIndex++];
+        
+        currentWord = originalWords[wordIndex];
+        wordIndex++;
+        
         charIdx = 0;
         wrapper.innerHTML = "";
         wrapper.style.top = "-100px";
@@ -192,7 +206,8 @@
         let top = parseFloat(wrapper.style.top) || -100;
         wrapper.style.top = (top + baseSpeed) + "px";
 
-        if (top + 60 > document.getElementById('danger-line').offsetTop) {
+        const lineY = document.getElementById('danger-line').offsetTop;
+        if (top + 60 > lineY) {
             spawnWord(); 
         }
         requestAnimationFrame(tick);
@@ -213,6 +228,7 @@
 
     input.addEventListener('input', (e) => {
         if (!isActive) return;
+        
         const val = e.target.value.toLowerCase();
         if (val.length === 0) return;
         
@@ -221,17 +237,19 @@
 
         if (pressed === target) {
             const bubbles = document.querySelectorAll('.bubble-char');
-            if(bubbles[charIdx]) bubbles[charIdx].classList.add('popped');
-            sounds.right.currentTime = 0;
-            sounds.right.play();
-            charIdx++;
+            if (bubbles[charIdx]) {
+                bubbles[charIdx].classList.add('popped');
+                sounds.right.currentTime = 0;
+                sounds.right.play();
+                charIdx++;
 
-            if (charIdx === currentWord.length) {
-                score++;
-                document.getElementById('score').innerText = score;
-                sounds.complete.currentTime = 0;
-                sounds.complete.play();
-                spawnWord(); // انتقال فوري
+                if (charIdx === currentWord.length) {
+                    score++;
+                    document.getElementById('score').innerText = score;
+                    sounds.complete.currentTime = 0;
+                    sounds.complete.play();
+                    spawnWord();
+                }
             }
         } else {
             sounds.wrong.currentTime = 0;
@@ -240,17 +258,17 @@
         e.target.value = ""; 
     });
 
-    // إبقاء الكيبورد نشط عند أي لمسة للشاشة
-    document.addEventListener('touchstart', (e) => {
-        if(isActive && e.target.tagName !== 'BUTTON') {
-            input.focus();
-        }
+    // لضمان استمرار التركيز على الـ Input
+    document.addEventListener('click', () => {
+        if(isActive) input.focus();
     });
 
     function showEnd() {
         document.getElementById('end-screen').style.display = 'flex';
         document.getElementById('final-score').innerText = score;
-        input.blur();
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+        }
     }
 </script>
 

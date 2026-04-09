@@ -15,15 +15,13 @@
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; background: var(--bg-sky);
             font-family: 'Fredoka One', cursive;
-            touch-action: none; /* منع الزووم والحركات العشوائية */
+            touch-action: none;
         }
 
-        /* توقيع Miss Dina */
         #teacher-sign {
-            position: absolute;
-            bottom: 5px; right: 10px;
-            font-size: 1rem; color: #fff;
-            z-index: 10; text-shadow: 1px 1px 2px #000;
+            position: absolute; bottom: 10px; right: 20px;
+            font-size: 1.2rem; color: #fff; z-index: 10;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         #game-container {
@@ -33,62 +31,62 @@
         }
 
         #stats {
-            position: absolute; top: 10px; width: 100%;
+            position: absolute; top: 15px; width: 100%;
             display: flex; justify-content: space-around;
-            font-size: 1.8rem; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 2rem; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             z-index: 20;
         }
 
-        /* الخط الأحمر - مرتفع قليلاً ليتناسب مع الكيبورد */
         #danger-line {
-            position: absolute; bottom: 40%; /* مرفوع لترك مساحة للكيبورد */
-            width: 100%; height: 4px;
-            background: repeating-linear-gradient(90deg, red, red 10px, transparent 10px, transparent 20px);
+            position: absolute; bottom: 42%; 
+            width: 100%; height: 6px;
+            background: repeating-linear-gradient(90deg, red, red 15px, transparent 15px, transparent 30px);
             z-index: 5;
+            box-shadow: 0 0 10px rgba(255,0,0,0.5);
         }
 
-        /* تنسيق الكلمة بالطول للموبايل */
         #word-wrapper {
-            position: absolute;
-            top: -100px;
-            display: flex;
-            flex-direction: row; /* الحروف بجانب بعضها */
-            gap: 8px;
-            width: 100%;
-            justify-content: center;
+            position: absolute; top: -120px;
+            display: flex; flex-direction: row;
+            gap: 12px; width: 100%; justify-content: center;
         }
 
         .bubble-char {
-            width: 60px; height: 60px;
+            width: 75px; height: 75px;
             background: rgba(255,255,255,0.4);
-            border: 3px solid white;
+            border: 4px solid white;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 2.2rem; color: #004488;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            backdrop-filter: blur(2px);
+            font-size: 2.8rem; color: #004488;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            backdrop-filter: blur(4px);
+            transition: transform 0.1s;
         }
 
-        .popped { animation: pop-effect 0.3s forwards; visibility: hidden; }
+        .popped { animation: pop-effect 0.4s forwards; }
         @keyframes pop-effect {
             0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); background: #fff; }
             100% { transform: scale(2); opacity: 0; }
         }
 
         .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; z-index: 1000; color: white; text-align: center;
         }
 
         button {
-            padding: 15px 40px; font-size: 1.8rem; font-family: 'Fredoka One';
-            background: #ff477e; color: white; border: none; border-radius: 30px;
-            box-shadow: 0 6px #c9184a; cursor: pointer;
+            padding: 20px 50px; font-size: 2.2rem; font-family: 'Fredoka One';
+            background: #ff477e; color: white; border: none; border-radius: 40px;
+            box-shadow: 0 8px #c9184a; cursor: pointer; transition: 0.1s;
         }
 
+        button:active { transform: translateY(4px); box-shadow: 0 4px #c9184a; }
+
         #hidden-input {
-            position: absolute; opacity: 0; pointer-events: none;
+            position: absolute; top: -500px; left: -500px;
+            width: 1px; height: 1px; opacity: 0;
         }
     </style>
 </head>
@@ -105,23 +103,25 @@
     <div id="word-wrapper"></div>
     <div id="danger-line"></div>
 
-    <input type="text" id="hidden-input" inputmode="text">
+    <input type="text" id="hidden-input" inputmode="text" autocomplete="off">
 
     <div id="start-screen" class="overlay">
-        <h1 style="color: #00b4d8;">VETO BUBBLES</h1>
-        <p style="font-size: 1.2rem;">With Miss Dina</p>
-        <button id="start-btn">START GAME</button>
+        <h1 style="color: #00b4d8; font-size: 3.5rem; margin-bottom: 0;">VETO BUBBLES</h1>
+        <p style="font-size: 1.5rem; margin-bottom: 30px;">With Miss Dina</p>
+        <button id="start-btn">START MISSION</button>
     </div>
 
     <div id="end-screen" class="overlay" style="display: none;">
-        <h1>FINISH!</h1>
-        <p style="font-size: 2rem;">Score: <span id="final-score">0</span></p>
+        <h1 style="font-size: 3rem; color: #ff477e;">TIME OVER!</h1>
+        <p style="font-size: 2.5rem;">Words: <span id="final-score">0</span></p>
         <button onclick="location.reload()">PLAY AGAIN</button>
     </div>
 </div>
 
-<audio id="pop-sound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-<audio id="success-sound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<audio id="snd-right" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/rlitter.wav"></audio>
+<audio id="snd-wrong" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/wlitter.wav"></audio>
+<audio id="snd-complete" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/completeworf.wav"></audio>
+<audio id="snd-finish" src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/049c78119aea7374931dfc64f1864034f1b0cb7a/data/gamewav/fimishgame.wav"></audio>
 
 <script>
     const originalWords = ["live", "kind", "old", "together", "mother", "brother", "sister", "father", "years", "family"];
@@ -131,20 +131,27 @@
     let score = 0;
     let timeLeft = 30;
     let isActive = false;
-    let baseSpeed = 0.4; // سرعة بطيئة جداً لنطق الحروف
+    let baseSpeed = 0.5; // سرعة هادئة للأطفال
 
     const wrapper = document.getElementById('word-wrapper');
     const input = document.getElementById('hidden-input');
-    const popSnd = document.getElementById('pop-sound');
-    const winSnd = document.getElementById('success-sound');
+    
+    // تعريف مراجع الأصوات
+    const sounds = {
+        right: document.getElementById('snd-right'),
+        wrong: document.getElementById('snd-wrong'),
+        complete: document.getElementById('snd-complete'),
+        finish: document.getElementById('snd-finish')
+    };
 
     document.getElementById('start-btn').addEventListener('click', () => {
         document.getElementById('start-screen').style.display = 'none';
         isActive = true;
-        // تفعيل الكيبورد فوراً
+
+        // فك قفل الصوت والكيبورد في الموبايل
         input.focus();
-        input.click();
-        
+        Object.values(sounds).forEach(s => { s.play(); s.pause(); s.currentTime = 0; });
+
         spawnWord();
         tick();
         runTimer();
@@ -157,7 +164,7 @@
         
         charIdx = 0;
         wrapper.innerHTML = "";
-        wrapper.style.top = "-80px";
+        wrapper.style.top = "-100px";
         
         currentWord.split('').forEach(char => {
             const div = document.createElement('div');
@@ -169,16 +176,16 @@
 
     function tick() {
         if (!isActive) return;
-        let top = parseFloat(wrapper.style.top) || -80;
+        let top = parseFloat(wrapper.style.top) || -100;
         
-        // سرعة متغيرة (أبطأ للكلمات الطويلة)
-        let speed = baseSpeed / (currentWord.length > 5 ? 1.5 : 1);
+        // سرعة بطيئة متغيرة
+        let speed = baseSpeed / (currentWord.length > 6 ? 1.4 : 1);
         wrapper.style.top = (top + speed) + "px";
 
-        // إذا لمست الخط الأحمر (40% من الشاشة لترك مساحة للكيبورد)
+        // خط الخطر
         const lineY = document.getElementById('danger-line').offsetTop;
-        if (top + 60 > lineY) {
-            spawnWord(); // تضيع الكلمة وتظهر غيرها
+        if (top + 70 > lineY) {
+            spawnWord(); 
         }
 
         requestAnimationFrame(tick);
@@ -191,37 +198,51 @@
             document.getElementById('timer').innerText = timeLeft;
             if (timeLeft <= 0) {
                 isActive = false;
+                sounds.finish.play();
                 showEnd();
             }
         }, 1000);
     }
 
-    // استجابة الكيبورد
+    // منطق الكيبورد والأصوات
     window.addEventListener('keydown', (e) => {
         if (!isActive) return;
+        
         const pressed = e.key.toLowerCase();
         const target = currentWord[charIdx].toLowerCase();
 
+        // تجنب تفعيل الأزرار الوظيفية مثل Shift
+        if (e.key.length > 1) return;
+
         if (pressed === target) {
+            // صح
             const bubbles = document.querySelectorAll('.bubble-char');
             bubbles[charIdx].classList.add('popped');
-            popSnd.currentTime = 0;
-            popSnd.play(); // صوت الفرقعة
+            sounds.right.currentTime = 0;
+            sounds.right.play();
             charIdx++;
 
             if (charIdx === currentWord.length) {
                 score++;
                 document.getElementById('score').innerText = score;
-                winSnd.play(); // صوت النجاح
-                setTimeout(spawnWord, 300);
+                sounds.complete.currentTime = 0;
+                sounds.complete.play();
+                setTimeout(spawnWord, 500);
             }
+        } else {
+            // غلط
+            sounds.wrong.currentTime = 0;
+            sounds.wrong.play();
         }
-        input.focus(); // التأكد من بقاء الكيبورد مفتوحاً
+        
+        input.focus(); // إبقاء الكيبورد مفتوحاً
     });
 
-    // بقاء الكيبورد مفتوحاً عند لمس الشاشة
-    document.addEventListener('touchstart', () => {
-        if(isActive) input.focus();
+    // إبقاء الكيبورد نشطاً عند لمس الشاشة
+    document.addEventListener('touchstart', (e) => {
+        if(isActive && e.target.tagName !== 'BUTTON') {
+            input.focus();
+        }
     });
 
     function showEnd() {

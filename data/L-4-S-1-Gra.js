@@ -32,16 +32,7 @@
         },
 
         /* 4: Irregular Verbs (Requested) */
-        {
-            type: 'irregular-grid',
-            title: 'IRREGULAR REBELS (V2)',
-            verbs: [
-                { v1: "DO", v2: "DID" },
-                { v1: "EAT", v2: "ATE" },
-                { v1: "GO", v2: "WENT" },
-                { v1: "SEE", v2: "SAW" }
-            ]
-        },
+
 
         /* 5: The 3 Modes Comparison (Requested) */
         {
@@ -88,7 +79,16 @@
                 { subjects: "ALL PRONOUNS", tool: "DID...?", extra: "➔ Start with DID + Subject + BASE" }
             ]
         },
-
+        {
+            type: 'irregular-grid',
+            title: 'IRREGULAR REBELS (V2)',
+            verbs: [
+                { v1: "DO", v2: "DID" },
+                { v1: "EAT", v2: "ATE" },
+                { v1: "GO", v2: "WENT" },
+                { v1: "SEE", v2: "SAW" }
+            ]
+        },
         /* 9: Spelling (Including doubling rule) */
         { 
             type: 'spelling-grid', 

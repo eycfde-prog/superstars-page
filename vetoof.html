@@ -16,12 +16,11 @@
             --transition-speed: 0.3s;
         }
 
-        /* حماية المحتوى */
         * { 
             margin: 0; padding: 0; box-sizing: border-box; 
             -webkit-user-select: none; 
             -ms-user-select: none; 
-            user-select: none; /* منع تحديد النصوص */
+            user-select: none;
             -webkit-touch-callout: none;
         }
 
@@ -36,7 +35,7 @@
             min-height: 100vh;
         }
 
-        /* --- Header Enhancements --- */
+        /* --- Header --- */
         .top-banner {
             height: 90px;
             width: 100%;
@@ -109,24 +108,24 @@
             text-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* --- Lectures Drawer --- */
+        /* --- FIX 1: Dynamic height drawer using JS-calculated height --- */
         .lectures-drawer {
-            max-height: 0;
+            height: 0;
             overflow: hidden;
-            transition: max-height 0.4s ease-in-out, padding 0.3s ease;
+            transition: height 0.4s ease-in-out;
             background: rgba(0, 0, 0, 0.4);
         }
 
-        .level-block.active { border: 2px solid var(--primary-gold); z-index: 10; }
-        .level-block.active .lectures-drawer {
-            max-height: 500px;
+        .drawer-inner {
             padding: 20px;
             border-top: 1px solid var(--glass-border);
         }
 
+        .level-block.active { border: 2px solid var(--primary-gold); z-index: 10; }
+
         .lectures-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* أفضل للموبايل والتابلت */
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
 
@@ -151,13 +150,78 @@
 
         .lecture-item b { font-family: 'Orbitron'; font-size: 1.1rem; }
         
-        /* أيقونة السهم */
         .arrow-icon { transition: 0.3s; color: var(--primary-gold); font-size: 0.8rem; }
         .level-block.active .arrow-icon { transform: rotate(180deg); }
 
+        /* --- FIX 2: Loading overlay --- */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 5, 0.92);
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading-overlay.visible {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(212, 175, 55, 0.2);
+            border-top-color: var(--primary-gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 4px;
+            color: var(--primary-gold);
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* --- FIX 3: Enhanced content protection notice --- */
+        .protected-badge {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid var(--glass-border);
+            padding: 6px 12px;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: var(--primary-gold);
+            font-family: 'Orbitron', sans-serif;
+            opacity: 0.5;
+            pointer-events: none;
+        }
     </style>
 </head>
-<body oncontextmenu="return false;"> <header class="top-banner">
+<body oncontextmenu="return false;">
+
+    <!-- FIX 2: Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">LOADING SESSION...</div>
+    </div>
+
+    <header class="top-banner">
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" alt="VETO" class="logo-img">
         <div class="title-container">
             <h1 class="main-title">VETO SYSTEM v2.0</h1>
@@ -167,12 +231,15 @@
 
     <main class="levels-container" id="mainContainer"></main>
 
+    <!-- FIX 3: Protection badge -->
+    <div class="protected-badge">⚡ PROTECTED CONTENT</div>
+
     <script>
         const container = document.getElementById('mainContainer');
         const levelsCount = 12;
         const sessionsPerLevel = 4;
+        let isNavigating = false;
 
-        // تحسين الأداء: استخدام DocumentFragment
         function initApp() {
             const fragment = document.createDocumentFragment();
             
@@ -198,41 +265,73 @@
                         </div>
                         <div class="arrow-icon">▼</div>
                     </div>
-                    <div class="lectures-drawer">
-                        <div class="lectures-grid">${sessionsHTML}</div>
+                    <div class="lectures-drawer" id="drawer-${i}">
+                        <div class="drawer-inner">
+                            <div class="lectures-grid">${sessionsHTML}</div>
+                        </div>
                     </div>`;
                 fragment.appendChild(block);
             }
             container.appendChild(fragment);
         }
 
+        // FIX 1: Dynamic height using scrollHeight instead of fixed max-height
         function toggleDrawer(id) {
             const target = document.getElementById(`level-${id}`);
+            const drawer = document.getElementById(`drawer-${id}`);
             const isActive = target.classList.contains('active');
-            
-            document.querySelectorAll('.level-block').forEach(b => b.classList.remove('active'));
-            
+
+            // Close all open drawers
+            document.querySelectorAll('.level-block').forEach(b => {
+                if (b.classList.contains('active')) {
+                    b.classList.remove('active');
+                    const d = b.querySelector('.lectures-drawer');
+                    d.style.height = '0';
+                }
+            });
+
             if (!isActive) {
                 target.classList.add('active');
+                // Use scrollHeight for real content height
+                const fullHeight = drawer.querySelector('.drawer-inner').scrollHeight;
+                drawer.style.height = fullHeight + 'px';
+
                 setTimeout(() => {
                     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 400);
             }
         }
 
+        // FIX 2: Show loading overlay before navigating
         function navigate(sid) {
-            // حماية من الضغط المتكرر
-            document.querySelectorAll('.lecture-item').forEach(el => el.style.pointerEvents = 'none');
-            window.location.href = `vetoofif.html?session=${sid}`;
+            if (isNavigating) return; // prevent double clicks
+            isNavigating = true;
+
+            document.getElementById('loadingOverlay').classList.add('visible');
+
+            setTimeout(() => {
+                window.location.href = `vetoofif.html?session=${sid}`;
+            }, 600); // small delay so spinner is visible
         }
 
-        // إضافات الحماية المتقدمة
+        // FIX 3: Enhanced keyboard protection (more complete than original)
         document.onkeydown = function(e) {
-            if (e.ctrlKey && 
-                (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 73)) {
-                return false; // منع Ctrl+C, Ctrl+V, Ctrl+U (عرض الكود), Ctrl+I
-            }
+            // Block dev tools shortcuts
+            if (e.key === 'F12') return false;
+            if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) return false;
+            if (e.ctrlKey && ['C','V','U','S','A','P'].includes(e.key.toUpperCase())) return false;
+            if (e.metaKey && ['C','V','U','S','A','P'].includes(e.key.toUpperCase())) return false; // Mac support
         };
+
+        // Block drag
+        document.addEventListener('dragstart', e => e.preventDefault());
+
+        // Block print screen (best effort)
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard?.writeText('').catch(() => {});
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', initApp);
     </script>

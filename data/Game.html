@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Veto Bubble Game</title>
+    <title>Veto Bubble Game - Miss Dina</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #a2d2ff;
-            --bubble-color: rgba(255, 255, 255, 0.3);
-            --text-color: #ffffff;
-            --accent-color: #ffafcc;
+            --bg-color: #f0f9ff;
+            --bubble-color: rgba(255, 255, 255, 0.4);
+            --danger-color: #ff4d4d;
         }
 
         body {
@@ -18,85 +17,83 @@
             padding: 0;
             overflow: hidden;
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle, #bde0fe 20%, transparent 20%), 
-                              radial-gradient(circle, #ffafcc 20%, transparent 20%);
-            background-size: 50px 50px;
-            background-position: 0 0, 25px 25px;
+            background-image: linear-gradient(to bottom, #a2d2ff, #f0f9ff);
             font-family: 'Fredoka One', cursive;
             user-select: none;
             touch-action: manipulation;
         }
 
-        /* حاوية اللعبة */
+        /* توقيع Miss Dina */
+        #teacher-name {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: #555;
+            opacity: 0.7;
+            z-index: 5;
+        }
+
         #game-container {
             width: 100vw;
             height: 100vh;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
-        /* العداد والسكور */
         #stats {
             position: absolute;
             top: 20px;
-            width: 90%;
+            width: 100%;
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             z-index: 100;
-            font-size: 2rem;
-            color: #333;
-            text-shadow: 2px 2px #fff;
+            font-size: 2.5rem;
+            color: #2c3e50;
         }
 
-        /* الكلمة والفقاعات */
+        /* خط الخطر الأحمر */
+        #danger-line {
+            position: absolute;
+            bottom: 100px;
+            width: 100%;
+            height: 5px;
+            background: repeating-linear-gradient(90deg, var(--danger-color), var(--danger-color) 20px, transparent 20px, transparent 40px);
+            box-shadow: 0 0 10px var(--danger-color);
+        }
+
         #word-wrapper {
             position: absolute;
-            top: -150px; /* البداية من خارج الشاشة */
+            top: -150px;
             display: flex;
-            gap: 15px;
-            transition: top 0.1s linear;
+            gap: 12px;
+            transition: top 0.05s linear;
         }
 
         .bubble-char {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             background: var(--bubble-color);
-            border: 4px solid #fff;
+            border: 3px solid #fff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
-            color: var(--text-color);
-            text-shadow: 3px 3px 0px #00000022;
-            box-shadow: inset -10px -10px 15px rgba(255,255,255,0.5), 
-                        0 10px 20px rgba(0,0,0,0.1);
-            backdrop-filter: blur(5px);
-            animation: float 2s ease-in-out infinite alternate;
+            font-size: 3.5rem;
+            color: #444;
+            box-shadow: inset -5px -5px 10px rgba(255,255,255,0.7), 0 5px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(3px);
         }
 
-        @keyframes float {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
-        }
-
-        /* فرقعة الفقاعة */
-        .pop {
-            animation: pop-anim 0.3s forwards;
-        }
-
+        .pop { animation: pop-anim 0.3s forwards; }
         @keyframes pop-anim {
             0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0; }
+            100% { transform: scale(1.8); opacity: 0; }
         }
 
-        /* شاشة البداية والنهاية */
         .overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -107,89 +104,89 @@
         }
 
         button {
-            padding: 20px 50px;
-            font-size: 2.5rem;
+            padding: 15px 40px;
+            font-size: 2rem;
             font-family: 'Fredoka One';
-            background: #ffc8dd;
+            background: #4cc9f0;
+            color: white;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 10px 0 #ffafcc;
-            transition: 0.1s;
+            box-shadow: 0 8px 0 #4361ee;
         }
 
-        button:active {
-            transform: translateY(5px);
-            box-shadow: 0 5px 0 #ffafcc;
-        }
-
-        /* Input مخفي لفتح الكيبورد */
-        #hidden-input {
-            position: absolute;
-            top: -100px;
-            opacity: 0;
-        }
+        #hidden-input { position: absolute; top: -100px; opacity: 0; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
+    <div id="teacher-name">Prepared by: Miss Dina ✨</div>
+    
     <div id="stats">
-        <div>Time: <span id="timer">30</span>s</div>
-        <div>Words: <span id="score">0</span></div>
+        <div>⏱️ <span id="timer">30</span>s</div>
+        <div>⭐ <span id="score">0</span></div>
     </div>
 
     <div id="word-wrapper"></div>
+    <div id="danger-line"></div>
 
-    <input type="text" id="hidden-input" autocomplete="off" autofocus>
+    <input type="text" id="hidden-input" autocomplete="off">
 
     <div id="start-screen" class="overlay">
-        <h1 style="font-size: 4rem; color: #ffafcc;">VETO BUBBLES</h1>
-        <button onclick="startGame()">START GAME</button>
-        <p style="margin-top: 20px;">Type the letters to pop the bubbles!</p>
+        <h1 style="font-size: 3.5rem; color: #4cc9f0;">VETO BUBBLES</h1>
+        <h2 style="margin-bottom: 30px;">With Miss Dina</h2>
+        <button onclick="startGame()">START MISSION</button>
     </div>
 
     <div id="end-screen" class="overlay" style="display: none;">
-        <h1 style="font-size: 3rem;">GAME OVER!</h1>
-        <p style="font-size: 2rem;">You finished <span id="final-score">0</span> words</p>
-        <button onclick="location.reload()">PLAY AGAIN</button>
+        <h1 id="end-title" style="font-size: 3rem;">TIME'S UP!</h1>
+        <p style="font-size: 2rem;">Words Popped: <span id="final-score">0</span></p>
+        <button onclick="location.reload()">RETRY</button>
     </div>
 </div>
 
 <script>
-    const wordList = ["dog", "cat", "mat", "bug", "box", "car", "not", "are", "is", "am", "i", "he", "she", "it", "we", "they", "you"];
+    const originalList = ["live", "kind", "old", "together", "mother", "brother", "sister", "father", "years", "family"];
+    let wordList = [...originalList]; // نسخة للعمل عليها لضمان عدم التكرار
     let currentWord = "";
     let charIndex = 0;
     let score = 0;
     let timeLeft = 30;
     let gameActive = false;
-    let fallSpeed = 2; // سرعة النزول
+    let currentSpeed = 1;
 
     const wordWrapper = document.getElementById('word-wrapper');
     const timerDisplay = document.getElementById('timer');
     const scoreDisplay = document.getElementById('score');
     const hiddenInput = document.getElementById('hidden-input');
+    const dangerLine = document.getElementById('danger-line');
 
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
         gameActive = true;
-        score = 0;
-        timeLeft = 30;
-        
-        // فتح الكيبورد
         hiddenInput.focus();
-        
         nextWord();
         gameLoop();
         startTimer();
     }
 
     function nextWord() {
-        wordWrapper.innerHTML = "";
-        charIndex = 0;
-        currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+        if (wordList.length === 0) {
+            wordList = [...originalList]; // إعادة ملء القائمة إذا انتهت الكلمات
+        }
+
+        // اختيار كلمة عشوائية وحذفها من القائمة لمنع التكرار
+        const randomIndex = Math.floor(Math.random() * wordList.length);
+        currentWord = wordList.splice(randomIndex, 1)[0];
         
-        // إنشاء الفقاعات
+        charIndex = 0;
+        wordWrapper.innerHTML = "";
+        
+        // حساب السرعة بشكل عكسي (الكلمة الطويلة أبطأ)
+        // القاعدة: الكلمة من 8 حروف سرعتها 0.8، الكلمة من 3 حروف سرعتها 1.8
+        currentSpeed = Math.max(0.7, 2.5 - (currentWord.length * 0.2));
+
         currentWord.split('').forEach(char => {
             const div = document.createElement('div');
             div.className = 'bubble-char';
@@ -197,20 +194,22 @@
             wordWrapper.appendChild(div);
         });
 
-        // إعادة وضع الكلمة فوق
-        wordWrapper.style.top = "-150px";
-        wordWrapper.style.left = Math.random() * (window.innerWidth - 300) + 50 + "px";
+        wordWrapper.style.top = "-100px";
+        wordWrapper.style.left = Math.random() * (window.innerWidth - (currentWord.length * 100)) + 20 + "px";
     }
 
     function gameLoop() {
         if (!gameActive) return;
 
-        let currentTop = parseInt(wordWrapper.style.top);
-        wordWrapper.style.top = (currentTop + fallSpeed) + "px";
+        let currentTop = parseFloat(wordWrapper.style.top) || -100;
+        let newTop = currentTop + currentSpeed;
+        wordWrapper.style.top = newTop + "px";
 
-        // لو الكلمة وصلت للأرض ولم تكتمل
-        if (currentTop > window.innerHeight) {
-            nextWord();
+        // فحص الاصطدام بخط الخطر
+        const lineY = dangerLine.offsetTop;
+        if (newTop + 90 > lineY) {
+            // اللاعب خسر هذه الكلمة لأنها لمست الخط الأحمر
+            nextWord(); 
         }
 
         requestAnimationFrame(gameLoop);
@@ -218,54 +217,45 @@
 
     function startTimer() {
         const interval = setInterval(() => {
+            if (!gameActive) { clearInterval(interval); return; }
             timeLeft--;
             timerDisplay.innerText = timeLeft;
             if (timeLeft <= 0) {
-                clearInterval(interval);
+                gameActive = false;
                 endGame();
             }
         }, 1000);
     }
 
-    // منطق الضغط على الكيبورد
     window.addEventListener('keydown', (e) => {
         if (!gameActive) return;
         
-        // الحرف المتوقع (Case Insensitive)
         let expectedChar = currentWord[charIndex].toLowerCase();
         let pressedChar = e.key.toLowerCase();
 
         if (pressedChar === expectedChar) {
-            // فرقعة الحرف الحالي
             const bubbles = document.querySelectorAll('.bubble-char');
             bubbles[charIndex].classList.add('pop');
-            bubbles[charIndex].style.visibility = "hidden"; // إخفاء الحرف
-            
             charIndex++;
 
-            // لو خلص الكلمة كلها
             if (charIndex === currentWord.length) {
                 score++;
                 scoreDisplay.innerText = score;
-                setTimeout(nextWord, 200); // تأخير بسيط قبل الكلمة التالية
+                setTimeout(nextWord, 150);
             }
         }
-        
-        // ضمان بقاء الـ Focus على الإدخال لفتح الكيبورد
         hiddenInput.focus();
     });
 
-    function endGame() {
-        gameActive = false;
-        document.getElementById('end-screen').style.display = 'flex';
-        document.getElementById('final-score').innerText = score;
-    }
-
-    // للحفاظ على الكيبورد مفتوحاً عند اللمس في أي مكان
-    document.addEventListener('click', () => {
+    // للموبايل: فتح الكيبورد عند الضغط في أي مكان
+    document.addEventListener('touchstart', () => {
         if(gameActive) hiddenInput.focus();
     });
 
+    function endGame() {
+        document.getElementById('end-screen').style.display = 'flex';
+        document.getElementById('final-score').innerText = score;
+    }
 </script>
 
 </body>

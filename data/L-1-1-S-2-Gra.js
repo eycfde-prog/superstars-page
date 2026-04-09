@@ -115,8 +115,6 @@
             color: '#f1c40f'
         },
 
-        { type: 'q-transform', v: "Is", s: "She", rest: "a talented artist?" },
-
         { 
             type: 'mcq', 
             title: 'Verb to Be Practice',
@@ -176,19 +174,27 @@
                     `).join('')}
                 </div>`;
         }
-        else if (s.type === 'compare-table') {
+else if (s.type === 'compare-table') {
             wrapper.innerHTML = `
-                <h2 style="font-size:6vh; color:#c5a059; margin-bottom:30px;">${s.title}</h2>
-                <table style="width:100%; font-size:4.5vh; border-collapse:separate; border-spacing:0 10px;">
-                    <tr style="color:#666;">${s.headers.map(h => `<th style="padding:10px;">${h}</th>`).join('')}</tr>
-                    ${s.rows.map((r, i) => `
-                        <tr style="opacity:${i <= subStep ? 1 : 0.05}; background:rgba(255,255,255,0.03); transition:0.2s;">
-                            <td style="padding:2.5vh; border-radius:15px 0 0 15px; font-weight:900; color:#fff;">${r.s}</td>
-                            <td style="color:#c5a059; font-weight:900; font-size:6vh;">${r.v}</td>
-                            <td style="color:#fff; border-radius:0 15px 15px 0; font-weight:900; opacity:0.8;">${r.e}</td>
-                        </tr>
-                    `).join('')}
-                </table>`;
+                <h2 style="font-size:6vh; color:#c5a059; margin-bottom:3vh;">${s.title}</h2>
+                <div style="width:100%; overflow:hidden;">
+                    <table style="width:100%; font-size:4vh; border-collapse:separate; border-spacing:0 1.5vh; table-layout: fixed;">
+                        <thead>
+                            <tr style="color:#666; font-size:3vh;">
+                                ${s.headers.map(h => `<th style="padding:1vh; text-align:center;">${h}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${s.rows.map((r, i) => `
+                                <tr style="opacity:${i <= subStep ? 1 : 0.05}; background:rgba(255,255,255,0.03); transition:0.2s;">
+                                    <td style="padding:2vh; border-radius:20px 0 0 20px; font-weight:900; color:#fff; text-align:center;">${r.s}</td>
+                                    <td style="color:#c5a059; font-weight:900; font-size:5vh; text-align:center;">${r.v}</td>
+                                    <td style="color:#fff; border-radius:0 20px 20px 0; font-weight:900; opacity:0.9; text-align:center;">${r.e}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
         }
         else if (s.type === 'neg-transform') {
             wrapper.innerHTML = `

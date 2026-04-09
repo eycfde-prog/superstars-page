@@ -2,6 +2,7 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
+    // الإعداد الأساسي للخلفية
     container.innerHTML = ''; 
     container.style.cssText = `height:100%; width:100%; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; background:#050505; font-family:'Segoe UI', sans-serif; direction:ltr; color:white;`;
 
@@ -27,7 +28,7 @@
                 <div style="display:flex; justify-content:center; align-items:center; gap:20px; font-size:4.5rem; font-weight:900;">
                     <span style="color:#fff;">Sub.</span>
                     <span style="color:#3498db;">+</span>
-                    <span style="color:#f1c40f; background:#111; padding:10px 30px; border-radius:15px; border:1px solid #333;">am / is / are</span>
+                    <span style="color:#f1c40f; background:#111; padding:10px 30px; border-radius:15px; border:2px solid #333;">am / is / are</span>
                     <span style="color:#3498db;">+</span>
                     <span style="color:#e74c3c; border-bottom:8px solid #e74c3c;">V - ing</span>
                 </div>
@@ -35,18 +36,18 @@
             ` 
         },
 
-        /* 4: Reveal List (7 Pronouns) */
+        /* 4: Reveal List (7 Examples for 7 Pronouns) */
         { 
             type: 'reveal-list', 
-            title: 'Affirmative: I, He, She, It, We, You, They',
+            title: 'Live Actions',
             items: [
-                "1. I am reading a book now.",
-                "2. He is playing football.",
-                "3. She is cooking dinner.",
-                "4. It is raining at the moment.",
-                "5. We are learning English.",
-                "6. You are watching a video.",
-                "7. They are running in the park."
+                "1. <span style='color:#f1c40f'>I am</span> talking to you now.",
+                "2. <span style='color:#f1c40f'>He is</span> explaining the lesson.",
+                "3. <span style='color:#f1c40f'>She is</span> writing on the board.",
+                "4. <span style='color:#f1c40f'>It is</span> raining outside.",
+                "5. <span style='color:#f1c40f'>We are</span> listening to Mr. Ezz.",
+                "6. <span style='color:#f1c40f'>You are</span> doing a great job.",
+                "7. <span style='color:#f1c40f'>They are</span> playing football."
             ] 
         },
 
@@ -54,15 +55,15 @@
         { 
             type: 'transform', 
             title: 'The Negative',
-            desc: 'Add "NOT" after am/is/are',
+            desc: 'Just add "NOT" after am/is/are',
             pairs: [
-                { pos: "I am reading.", neg: "I am <span style='color:#e74c3c;'>NOT</span> reading." },
-                { pos: "He is playing.", neg: "He is <span style='color:#e74c3c;'>NOT</span> playing." },
-                { pos: "She is cooking.", neg: "She is <span style='color:#e74c3c;'>NOT</span> cooking." },
+                { pos: "I am talking.", neg: "I am <span style='color:#e74c3c;'>NOT</span> talking." },
+                { pos: "He is explaining.", neg: "He is <span style='color:#e74c3c;'>NOT</span> explaining." },
+                { pos: "She is writing.", neg: "She is <span style='color:#e74c3c;'>NOT</span> writing." },
                 { pos: "It is raining.", neg: "It is <span style='color:#e74c3c;'>NOT</span> raining." },
-                { pos: "We are learning.", neg: "We are <span style='color:#e74c3c;'>NOT</span> learning." },
-                { pos: "You are watching.", neg: "You are <span style='color:#e74c3c;'>NOT</span> watching." },
-                { pos: "They are running.", neg: "They are <span style='color:#e74c3c;'>NOT</span> running." }
+                { pos: "We are listening.", neg: "We are <span style='color:#e74c3c;'>NOT</span> listening." },
+                { pos: "You are doing.", neg: "You are <span style='color:#e74c3c;'>NOT</span> doing." },
+                { pos: "They are playing.", neg: "They are <span style='color:#e74c3c;'>NOT</span> playing." }
             ]
         },
 
@@ -70,49 +71,62 @@
         { 
             type: 'transform', 
             title: 'The Question',
-            desc: 'Start with Am / Is / Are',
+            desc: 'Switch Am/Is/Are with the Subject',
             pairs: [
-                { pos: "I am reading.", neg: "<span style='color:#f1c40f;'>AM</span> I reading?" },
-                { pos: "He is playing.", neg: "<span style='color:#f1c40f;'>IS</span> he playing?" },
-                { pos: "She is cooking.", neg: "<span style='color:#f1c40f;'>IS</span> she cooking?" },
-                { pos: "It is raining.", neg: "<span style='color:#f1c40f;'>IS</span> it raining?" },
-                { pos: "We are learning.", neg: "<span style='color:#f1c40f;'>ARE</span> we learning?" },
-                { pos: "You are watching.", neg: "<span style='color:#f1c40f;'>ARE</span> you watching?" },
-                { pos: "They are running.", neg: "<span style='color:#f1c40f;'>ARE</span> they running?" }
+                { pos: "I am late.", neg: "<span style='color:#f1c40f;'>AM</span> I late?" },
+                { pos: "He is sleeping.", neg: "<span style='color:#f1c40f;'>IS</span> he sleep<span style='color:#3498db;'>ing</span>?" },
+                { pos: "She is cooking.", neg: "<span style='color:#f1c40f;'>IS</span> she cook<span style='color:#3498db;'>ing</span>?" },
+                { pos: "It is working.", neg: "<span style='color:#f1c40f;'>IS</span> it work<span style='color:#3498db;'>ing</span>?" },
+                { pos: "We are winning.", neg: "<span style='color:#f1c40f;'>ARE</span> we winn<span style='color:#3498db;'>ing</span>?" },
+                { pos: "You are studying.", neg: "<span style='color:#f1c40f;'>ARE</span> you study<span style='color:#3498db;'>ing</span>?" },
+                { pos: "They are coming.", neg: "<span style='color:#f1c40f;'>ARE</span> they com<span style='color:#3498db;'>ing</span>?" }
             ]
         },
 
-        /* 7: Spelling Rules */
+        /* 7: Spelling Rules Matrix */
         { 
             type: 'spelling-grid', 
-            title: 'Spelling Rules',
+            title: 'Spelling Secrets',
             rules: [
-                { end: "Normal Verbs", add: "Add + ing", examples: "Cook ➔ Cook<span style='color:#e74c3c;'>ing</span>" },
                 { end: "Ends in -e", add: "Drop -e + ing", examples: "Write ➔ Writ<span style='color:#e74c3c;'>ing</span>" },
-                { end: "Ends in -ie", add: "ie ➔ Y + ing", examples: "Lie ➔ Ly<span style='color:#e74c3c;'>ing</span>" },
-                { end: "CVC Rule", add: "Double letter + ing", examples: "Swim ➔ Swim<span style='color:#e74c3c;'>ming</span>" }
+                { end: "Ends in -ie", add: "ie ➔ Y + ing", examples: "Die ➔ D<span style='color:#e74c3c;'>ying</span>" },
+                { end: "CVC (One Syllable)", add: "Double + ing", examples: "Run ➔ Run<span style='color:#e74c3c;'>ning</span>" }
             ]
         },
 
-        /* 8: 10 MCQ Quiz */
+        /* 8: Keywords */
         { 
-            type: 'mcq-session', 
-            title: 'Practice Time',
+            type: 'reveal-list', 
+            title: 'Action Clues',
+            items: [
+                "🚀 Now / Right now",
+                "🚀 At the moment",
+                "🚀 Look! / Listen!",
+                "🚀 At present",
+                "🚀 Watch out!",
+                "🚀 Tonight",
+                "🚀 These days"
+            ] 
+        },
+
+        /* 9: 10 MCQ Questions */
+        { 
+            type: 'quiz-session',
             questions: [
-                { q: "1. Look! The cat _________ on the sofa.", opts: ["A) sleeps", "B) is sleeping", "C) are sleeping", "D) sleep"], ans: 1 },
-                { q: "2. I _________ (not/work) today.", opts: ["A) am not working", "B) don't working", "C) not working", "D) am not work"], ans: 0 },
-                { q: "3. _________ you listening to me?", opts: ["A) Is", "B) Do", "C) Are", "D) Have"], ans: 2 },
-                { q: "4. Listen! Sarah _________ the piano.", opts: ["A) plays", "B) play", "C) are playing", "D) is playing"], ans: 3 },
-                { q: "5. They _________ their homework right now.", opts: ["A) are doing", "B) is doing", "C) doing", "D) does"], ans: 0 },
-                { q: "6. We _________ (not/go) to the party tonight.", opts: ["A) isn't going", "B) aren't going", "C) don't going", "D) not go"], ans: 1 },
-                { q: "7. What _________ he doing at the moment?", opts: ["A) are", "B) am", "C) is", "D) does"], ans: 2 },
-                { q: "8. Be quiet! The baby _________.", opts: ["A) sleeps", "B) is sleeping", "C) is sleep", "D) sleeping"], ans: 1 },
-                { q: "9. Why _________ they running so fast?", opts: ["A) is", "B) do", "C) are", "D) am"], ans: 2 },
-                { q: "10. I am _________ (write) an essay now.", opts: ["A) writeing", "B) writing", "C) writting", "D) writes"], ans: 1 }
+                { q: "1. Look! The man is _________ very fast.", opts: ["Run", "Runing", "Running", "Ran"], ans: 2 },
+                { q: "2. Listen! Someone _________ at the door.", opts: ["is knocking", "knocks", "are knocking", "is knock"], ans: 0 },
+                { q: "3. I _________ (not/study) at the moment.", opts: ["am not study", "not studying", "am not studying", "don't studying"], ans: 2 },
+                { q: "4. _________ they playing football now?", opts: ["Do", "Is", "Are", "Have"], ans: 2 },
+                { q: "5. She is _________ (write) an email right now.", opts: ["writeing", "writting", "writing", "writes"], ans: 2 },
+                { q: "6. We _________ English together these days.", opts: ["learn", "is learning", "are learning", "learned"], ans: 2 },
+                { q: "7. Watch out! A car _________.", opts: ["come", "is coming", "are coming", "comes"], ans: 1 },
+                { q: "8. Why _________ you crying?", opts: ["am", "is", "are", "do"], ans: 2 },
+                { q: "9. My cats _________ (sleep) on the sofa.", opts: ["is sleeping", "are sleeping", "sleeping", "sleeps"], ans: 1 },
+                { q: "10. Sarah _________ (not/cook) dinner today.", opts: ["isn't cooking", "aren't cooking", "don't cook", "not cooking"], ans: 0 }
             ]
         },
         
-        { type: 'title', content: 'EXCELLENT!', subtitle: 'You Mastered the Present Continuous', color: '#2ecc71', usage: 'Keep Going, Master!' }
+        { type: 'title', content: 'YOU ARE UNSTOPPABLE!', subtitle: 'CONTINUOUS MASTERED', color: '#f1c40f', usage: 'Excellent Job, Master!' }
     ];
 
     function updateSubSteps() {
@@ -123,8 +137,7 @@
             const items = container.querySelectorAll('.list-item');
             items.forEach((item, i) => {
                 item.style.opacity = (i <= subStep) ? '1' : '0.05';
-                item.style.transform = (i <= subStep) ? 'translateX(0)' : 'translateX(-20px)';
-                item.style.borderColor = (i === subStep) ? '#3498db' : '#222';
+                item.style.transform = (i <= subStep) ? 'translateX(0)' : 'translateX(-30px)';
             });
         }
         
@@ -145,12 +158,12 @@
         const s = slides[currentSlide];
         const wrapper = document.createElement('div');
         wrapper.className = 'slide-wrapper';
-        wrapper.style.cssText = `width:95%; max-width:1400px; text-align:center; animation: vetoFade 0.3s ease;`;
+        wrapper.style.cssText = `width:95%; max-width:1400px; text-align:center; animation: vetoSlideUp 0.4s ease;`;
 
         if (s.type === 'title') {
             wrapper.innerHTML = `
                 <div style="font-size:2.5vw; color:#444; letter-spacing:15px; margin-bottom:20px; text-transform:uppercase; font-weight:bold;">${s.subtitle}</div>
-                <h1 style="font-size:8vw; font-weight:900; color:${s.color}; margin:0; line-height:1;">${s.content}</h1>
+                <h1 style="font-size:8vw; font-weight:900; color:${s.color}; margin:0; line-height:1; text-shadow: 0 10px 40px rgba(52,152,219,0.3);">${s.content}</h1>
                 <div style="font-size:3.2vw; color:#fff; font-weight:bold; margin-top:50px; border-top:6px solid ${s.color}; display:inline-block; padding-top:20px;">${s.usage}</div>
             `;
         } 
@@ -167,16 +180,14 @@
                 </div>`;
         }
         else if (s.type === 'writing') {
-            wrapper.innerHTML = `
-                <h2 style="font-size:5.5rem; color:#3498db; margin-bottom:50px; font-weight:900;">${s.title}</h2>
-                <div style="line-height:1.2;">${s.content}</div>`;
+            wrapper.innerHTML = `<h2 style="font-size:5.5rem; color:#3498db; margin-bottom:50px; font-weight:900;">${s.title}</h2><div style="line-height:1.2;">${s.content}</div>`;
         }
         else if (s.type === 'reveal-list') {
             wrapper.innerHTML = `
-                <h2 style="font-size:4rem; color:#3498db; margin-bottom:40px; font-weight:900;">${s.title}</h2>
-                <div style="display:flex; flex-direction:column; gap:10px; text-align:left; max-width:900px; margin: 0 auto;">
-                    ${s.items.map((item) => `
-                        <div class="list-item" style="opacity:0.05; transition:0.3s; background:#111; padding:20px; border-radius:15px; font-size:2.2rem; font-weight:bold; border-left:10px solid #222;">
+                <h2 style="font-size:5rem; color:#3498db; margin-bottom:40px; font-weight:900;">${s.title}</h2>
+                <div style="display:grid; grid-template-columns: 1fr; gap:12px; max-width:1000px; margin: 0 auto;">
+                    ${s.items.map(item => `
+                        <div class="list-item" style="opacity:0.05; transition:0.3s; background:#111; padding:20px; border-radius:15px; font-size:2.5rem; font-weight:bold; border-left:15px solid #3498db; text-align:left;">
                             ${item}
                         </div>
                     `).join('')}
@@ -188,54 +199,53 @@
         else if (s.type === 'spelling-grid') {
             wrapper.innerHTML = `
                 <h2 style="font-size:5.5rem; color:#3498db; margin-bottom:50px; font-weight:900;">SPELLING RULES</h2>
-                <div style="display:grid; grid-template-columns: 1fr; gap:20px;">
+                <div style="display:grid; grid-template-columns: 1fr; gap:25px;">
                     ${s.rules.map(r => `
-                        <div style="background:#111; padding:30px; border-radius:25px; border:2px solid #222; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="background:#111; padding:35px; border-radius:30px; border:2px solid #222; display:flex; justify-content:space-between; align-items:center;">
                             <div style="text-align:left;">
-                                <div style="color:#3498db; font-size:1.5rem; font-weight:bold;">${r.end}</div>
-                                <div style="font-size:3rem; font-weight:900; color:#fff;">${r.add}</div>
+                                <div style="color:#3498db; font-size:1.8rem; font-weight:bold;">${r.end}</div>
+                                <div style="font-size:3.5rem; font-weight:900; color:#fff;">${r.add}</div>
                             </div>
-                            <div style="font-size:3.5rem; color:#f1c40f; font-weight:900; background:#050505; padding:10px 40px; border-radius:20px; border:2px solid #333;">${r.examples}</div>
+                            <div style="font-size:4rem; color:#f1c40f; font-weight:900; background:#050505; padding:10px 40px; border-radius:20px; border:2px solid #333;">${r.examples}</div>
                         </div>
                     `).join('')}
                 </div>`;
         }
-        else if (s.type === 'mcq-session') {
-            renderMCQ(wrapper, s);
+        else if (s.type === 'quiz-session') {
+            renderQuiz(wrapper, s);
         }
 
         container.appendChild(wrapper);
         updateSubSteps();
     }
 
-    function renderTransform(parent, s) {
+    function renderTransform(wrapper, s) {
         let pairIdx = Math.floor(subStep / 2);
-        let isChanged = subStep % 2 !== 0;
         let pair = s.pairs[pairIdx] || s.pairs[0];
-        
-        parent.innerHTML = `
+        let isChanged = subStep % 2 !== 0;
+        wrapper.innerHTML = `
             <h2 style="font-size:5rem; color:#3498db; margin:0; font-weight:900;">${s.title}</h2>
-            <p style="font-size:2rem; color:#555; margin-bottom:40px; font-weight:bold;">${s.desc} (${pairIdx + 1}/7)</p>
-            <div style="background:#111; padding:70px; border-radius:40px; font-size:5rem; border:4px solid #222; color:${isChanged ? '#f1c40f' : '#fff'}; transition: 0.3s; font-weight:bold; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+            <p style="font-size:2rem; color:#555; margin-bottom:40px; font-weight:bold;">${s.desc} (${pairIdx + 1}/${s.pairs.length})</p>
+            <div style="background:#111; padding:80px; border-radius:50px; font-size:5rem; border:4px solid #333; color:${isChanged ? '#f1c40f' : '#fff'}; transition: 0.3s; font-weight:bold;">
                 ${isChanged ? pair.neg : pair.pos}
             </div>`;
     }
 
-    function renderMCQ(parent, s) {
+    function renderQuiz(wrapper, s) {
         let qIdx = Math.floor(subStep / 2);
+        let q = s.questions[qIdx] || s.questions[0];
         let showAns = subStep % 2 !== 0;
-        let q = s.questions[qIdx];
 
-        parent.innerHTML = `
-            <div style="text-align:left; background:#111; padding:50px; border-radius:40px; border:3px solid #222;">
-                <div style="font-size:1.5rem; color:#3498db; margin-bottom:10px; font-weight:bold;">QUESTION ${qIdx + 1}/10</div>
+        wrapper.innerHTML = `
+            <div style="text-align:left; background:#111; padding:60px; border-radius:40px; border:3px solid #222;">
+                <div style="color:#3498db; font-weight:bold; font-size:1.5rem; margin-bottom:20px;">PRACTICE ${qIdx + 1}/10</div>
                 <div style="font-size:3.5rem; font-weight:900; margin-bottom:40px; color:#fff;">${q.q}</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
                     ${q.opts.map((opt, i) => {
                         let isCorrect = showAns && i === q.ans;
+                        let border = isCorrect ? '6px solid #2ecc71' : '2px solid #333';
                         let color = isCorrect ? '#2ecc71' : (showAns ? '#444' : '#fff');
-                        let bColor = isCorrect ? '#2ecc71' : '#333';
-                        return `<div style="border:3px solid ${bColor}; padding:25px; border-radius:20px; font-size:2.5rem; font-weight:bold; color:${color}; transition:0.3s;">${opt}</div>`;
+                        return `<div style="border:${border}; padding:25px; border-radius:20px; font-size:2.5rem; font-weight:bold; color:${color}; transition:0.3s;">${opt}</div>`;
                     }).join('')}
                 </div>
             </div>`;
@@ -245,15 +255,15 @@
         const s = slides[currentSlide];
         if ([13, 32, 39].includes(e.keyCode)) { // Next
             let max = 0;
-            if (s.type === 'timeline') max = 1;
-            else if (s.type === 'reveal-list') max = s.items.length - 1;
+            if (s.type === 'reveal-list') max = s.items.length - 1;
+            else if (s.type === 'timeline') max = 1;
             else if (s.type === 'transform') max = (s.pairs.length * 2) - 1;
-            else if (s.type === 'mcq-session') max = (s.questions.length * 2) - 1;
+            else if (s.type === 'quiz-session') max = (s.questions.length * 2) - 1;
 
             if (subStep < max) {
                 subStep++;
                 if (s.type === 'transform') renderTransform(container.querySelector('.slide-wrapper'), s);
-                else if (s.type === 'mcq-session') renderMCQ(container.querySelector('.slide-wrapper'), s);
+                else if (s.type === 'quiz-session') renderQuiz(container.querySelector('.slide-wrapper'), s);
                 else updateSubSteps();
             } else if (currentSlide < slides.length - 1) {
                 renderSlide(currentSlide + 1);
@@ -264,7 +274,7 @@
             if (subStep > 0) {
                 subStep--;
                 if (s.type === 'transform') renderTransform(container.querySelector('.slide-wrapper'), s);
-                else if (s.type === 'mcq-session') renderMCQ(container.querySelector('.slide-wrapper'), s);
+                else if (s.type === 'quiz-session') renderQuiz(container.querySelector('.slide-wrapper'), s);
                 else updateSubSteps();
             } else if (currentSlide > 0) {
                 renderSlide(currentSlide - 1);
@@ -274,8 +284,8 @@
 
     const style = document.createElement('style');
     style.innerHTML = `
-        @keyframes vetoFade { from { opacity:0; transform: scale(0.98); } to { opacity:1; transform: scale(1); } }
-        @keyframes pulse { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.3); } 100% { transform: translateX(-50%) scale(1); } }
+        @keyframes vetoSlideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes pulse { 0% { transform: translateX(-50%) scale(1); opacity: 1; } 50% { transform: translateX(-50%) scale(1.3); opacity: 0.7; } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
     `;
     document.head.appendChild(style);
 

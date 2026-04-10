@@ -17,8 +17,8 @@
         { 
             type: 'timeline', 
             title: 'When to use it?', 
-            content: 'To describe an action that <span style="color:#3498db">WILL BE IN PROGRESS</span> at a specific time in the future.',
-            labels: ["PAST", "NOW", "FUTURE (Action in progress)"]
+            content: 'An action that <span style="color:#3498db">WILL BE IN PROGRESS</span> at a specific time.',
+            labels: ["PAST", "NOW", "FUTURE"]
         },
 
         /* 3: Formulation */
@@ -32,16 +32,16 @@
             ]
         },
 
-        /* 4: 7 Examples */
+        /* 4: 7 Examples - Optimized Font Size */
         { 
             type: 'reveal-list', 
-            title: '7 Future Scenarios',
+            title: 'Examples',
             items: [
                 "1. <span style='color:#3498db'>I</span> will be waiting for you at 5:00.",
                 "2. <span style='color:#3498db'>He</span> will be flying over the Atlantic tomorrow.",
                 "3. <span style='color:#3498db'>She</span> will be cooking when you arrive.",
-                "4. <span style='color:#3498db'>It</span> will be raining all morning.",
-                "5. <span style='color:#3498db'>We</span> will be sleeping at midnight.",
+                "4. <span style='color:#3498db'>It</span> will be raining all morning tomorrow.",
+                "5. <span style='color:#3498db'>We</span> will be sleeping at midnight tonight.",
                 "6. <span style='color:#3498db'>You</span> will be studying during the weekend.",
                 "7. <span style='color:#3498db'>They</span> will be playing football at 4 PM."
             ] 
@@ -58,7 +58,7 @@
             ]
         },
 
-        /* 6: Time Detectives (Keywords) */
+        /* 6: Keywords */
         {
             type: 'keywords-grid',
             title: 'TIME DETECTIVES',
@@ -82,7 +82,7 @@
             ]
         },
         
-        { type: 'title', content: 'STUNNING!', subtitle: 'STAGE CLEAR', color: '#f1c40f', usage: 'YOU ARE A MASTER OF FUTURE!' }
+        { type: 'title', content: 'FANTASTIC!', subtitle: 'STAGE CLEAR', color: '#f1c40f', usage: 'YOU ARE A MASTER OF FUTURE!' }
     ];
 
     function render() {
@@ -92,7 +92,7 @@
             container.innerHTML = '';
             const wrapper = document.createElement('div');
             wrapper.id = 'slide-wrapper';
-            wrapper.style.cssText = `width:95%; max-width:1300px; height: 90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; animation: vetoFadeIn 0.4s ease-out;`;
+            wrapper.style.cssText = `width:90%; max-width:1200px; height: 85vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; animation: vetoFadeIn 0.4s ease-out;`;
             container.appendChild(wrapper);
             lastRenderedSlide = currentSlide;
         }
@@ -101,44 +101,44 @@
 
         if (s.type === 'title') {
             wrapper.innerHTML = `
-                <div style="font-size:2.5vw; color:#444; letter-spacing:15px; margin-bottom:20px; text-transform:uppercase; font-weight:bold;">${s.subtitle}</div>
-                <h1 style="font-size:8.5vw; font-weight:900; color:${s.color}; margin:0; line-height:1; text-shadow:0 10px 30px rgba(52,152,219,0.3);">${s.content}</h1>
-                <div style="font-size:3vw; color:#fff; font-weight:bold; margin-top:50px; border-top:6px solid ${s.color}; display:inline-block; padding-top:20px;">${s.usage}</div>
+                <div style="font-size:2vw; color:#444; letter-spacing:10px; margin-bottom:15px; text-transform:uppercase; font-weight:bold;">${s.subtitle}</div>
+                <h1 style="font-size:7.5vw; font-weight:900; color:${s.color}; margin:0; line-height:1; text-shadow:0 10px 30px rgba(52,152,219,0.2);">${s.content}</h1>
+                <div style="font-size:2.8vw; color:#fff; font-weight:bold; margin-top:40px; border-top:5px solid ${s.color}; display:inline-block; padding-top:15px;">${s.usage}</div>
             `;
         } 
         else if (s.type === 'timeline') {
             wrapper.innerHTML = `
-                <h2 style="font-size:4.5vw; color:#3498db; margin-bottom:30px; font-weight:900;">${s.title}</h2>
-                <p style="font-size:3vw; margin-bottom:60px; color:#ddd;">${s.content}</p>
-                <div style="position:relative; width:85%; margin:60px auto; height:12px; background:#222; border-radius:10px;">
-                    <div style="position:absolute; left:48%; top:-25px; height:60px; width:6px; background:#fff;"></div>
-                    <div style="position:absolute; left:60%; width:30%; height:30px; background:linear-gradient(90deg, #3498db, transparent); opacity:${subStep >= 1 ? 1 : 0}; transition:1s; border-radius:20px; top:-9px; border-left:5px solid #fff;"></div>
-                    <div style="position:absolute; width:100%; top:50px; display:flex; justify-content:space-between; color:#444; font-size:1.8vw; font-weight:bold;">
+                <h2 style="font-size:4vw; color:#3498db; margin-bottom:25px; font-weight:900;">${s.title}</h2>
+                <p style="font-size:2.5vw; margin-bottom:50px; color:#ddd;">${s.content}</p>
+                <div style="position:relative; width:80%; margin:50px auto; height:8px; background:#222; border-radius:10px;">
+                    <div style="position:absolute; left:48%; top:-20px; height:45px; width:4px; background:#fff;"></div>
+                    <div style="position:absolute; left:60%; width:25%; height:20px; background:linear-gradient(90deg, #3498db, transparent); opacity:${subStep >= 1 ? 1 : 0}; transition:1s; border-radius:10px; top:-6px; border-left:4px solid #fff;"></div>
+                    <div style="position:absolute; width:100%; top:40px; display:flex; justify-content:space-between; color:#444; font-size:1.5vw; font-weight:bold;">
                         ${s.labels.map(l => `<span>${l}</span>`).join('')}
                     </div>
                 </div>`;
         }
         else if (s.type === 'rule-box') {
             wrapper.innerHTML = `
-                <h2 style="font-size:4vw; color:${s.color}; margin-bottom:40px; font-weight:900;">${s.title}</h2>
-                <div style="display:flex; flex-direction:column; gap:30px; width:100%; align-items:center;">
+                <h2 style="font-size:3.5vw; color:${s.color}; margin-bottom:30px; font-weight:900;">${s.title}</h2>
+                <div style="display:flex; flex-direction:column; gap:20px; width:100%; align-items:center;">
                     ${s.rules.map(r => `
-                        <div style="background:#111; padding:4vh 4vw; border-radius:30px; width:90%; border:4px dashed ${s.color}; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="background:#0a0a0a; padding:3vh 3vw; border-radius:20px; width:95%; border:3px dashed ${s.color}; display:flex; justify-content:space-between; align-items:center; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
                             <div style="text-align:left;">
-                                <div style="font-size:3vw; color:#fff; font-weight:900;">${r.subjects}</div>
-                                <div style="font-size:2vw; color:#666; font-weight:bold;">${r.extra}</div>
+                                <div style="font-size:2.5vw; color:#fff; font-weight:900;">${r.subjects}</div>
+                                <div style="font-size:1.6vw; color:#666; font-weight:bold;">${r.extra}</div>
                             </div>
-                            <div style="font-size:5vw; color:${s.color}; font-weight:900;">➔ ${r.tool}</div>
+                            <div style="font-size:4vw; color:${s.color}; font-weight:900;">➔ ${r.tool}</div>
                         </div>
                     `).join('')}
                 </div>`;
         }
         else if (s.type === 'reveal-list') {
             wrapper.innerHTML = `
-                <h2 style="font-size:4.5vw; color:#3498db; margin-bottom:30px; font-weight:900;">EXAMPLES</h2>
-                <div style="display:flex; flex-direction:column; gap:12px; text-align:left; width:85%;">
+                <h2 style="font-size:3.5vw; color:#3498db; margin-bottom:20px; font-weight:900;">EXAMPLES</h2>
+                <div style="display:flex; flex-direction:column; gap:8px; text-align:left; width:95%;">
                     ${s.items.map((item, i) => `
-                        <div style="opacity:${i <= subStep ? 1 : 0.05}; transform:translateX(${i <= subStep ? 0 : 30}px); transition:0.4s; background:#111; padding:15px 25px; border-radius:15px; font-size:2.2vw; font-weight:bold; border-left:12px solid #3498db;">
+                        <div style="opacity:${i <= subStep ? 1 : 0.05}; transform:translateX(${i <= subStep ? 0 : 20}px); transition:0.3s; background:#111; padding:12px 20px; border-radius:12px; font-size:1.9vw; font-weight:bold; border-left:10px solid #3498db; line-height:1.2;">
                             ${item}
                         </div>
                     `).join('')}
@@ -146,10 +146,10 @@
         }
         else if (s.type === 'keywords-grid') {
             wrapper.innerHTML = `
-                <h2 style="font-size:4.5vw; color:#f1c40f; margin-bottom:40px; font-weight:900;">${s.title}</h2>
-                <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:20px; width:90%;">
+                <h2 style="font-size:4vw; color:#f1c40f; margin-bottom:30px; font-weight:900;">${s.title}</h2>
+                <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px; width:95%;">
                     ${s.words.map(w => `
-                        <div style="background:#111; padding:20px 40px; border-radius:50px; border:3px solid #3498db; font-size:2.5vw; font-weight:900; color:#fff;">
+                        <div style="background:#111; padding:15px 30px; border-radius:40px; border:2px solid #3498db; font-size:2.2vw; font-weight:900; color:#fff;">
                             ${w}
                         </div>
                     `).join('')}
@@ -160,15 +160,15 @@
             let q = s.questions[qIdx] || s.questions[0];
             let showAns = subStep % 2 !== 0;
             wrapper.innerHTML = `
-                <div style="text-align:left; background:#111; padding:4vh 4vw; border-radius:40px; border:3px solid #222; width:90%;">
-                    <div style="color:#3498db; font-weight:bold; font-size:1.2vw; margin-bottom:10px;">FUTURE CONT. QUIZ ${qIdx + 1}/10</div>
-                    <div style="font-size:2.8vw; font-weight:900; margin-bottom:30px; color:#fff; line-height:1.2;">${q.q}</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div style="text-align:left; background:#111; padding:3vh 3vw; border-radius:30px; border:2px solid #222; width:95%;">
+                    <div style="color:#3498db; font-weight:bold; font-size:1.1vw; margin-bottom:8px;">TEST ${qIdx + 1}/10</div>
+                    <div style="font-size:2.4vw; font-weight:900; margin-bottom:25px; color:#fff; line-height:1.2;">${q.q}</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
                         ${q.opts.map((opt, i) => {
                             let isCorrect = showAns && i === q.ans;
                             let color = isCorrect ? '#2ecc71' : (showAns ? '#333' : '#fff');
                             let borderColor = isCorrect ? '#2ecc71' : '#333';
-                            return `<div style="border:3px solid ${borderColor}; padding:15px; border-radius:15px; font-size:2vw; font-weight:bold; color:${color}; transition:0.3s;">${opt}</div>`;
+                            return `<div style="border:2px solid ${borderColor}; padding:12px; border-radius:12px; font-size:1.7vw; font-weight:bold; color:${color}; transition:0.2s;">${opt}</div>`;
                         }).join('')}
                     </div>
                 </div>`;
@@ -188,7 +188,6 @@
                 currentSlide++; 
                 subStep = 0; 
             }
-            else if (window.triggerVetoDone) window.triggerVetoDone();
         } 
         else if (e.keyCode === 37) { 
             if (subStep > 0) subStep--;
@@ -201,7 +200,7 @@
     };
 
     const style = document.createElement('style');
-    style.innerHTML = `@keyframes vetoFadeIn { from { opacity:0; transform:scale(0.98); } to { opacity:1; transform:scale(1); } }`;
+    style.innerHTML = `@keyframes vetoFadeIn { from { opacity:0; transform:scale(0.99); } to { opacity:1; transform:scale(1); } }`;
     document.head.appendChild(style);
 
     render();

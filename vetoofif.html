@@ -111,12 +111,6 @@
             gap: 5px;
         }
 
-        .exit-btn:hover {
-            background: rgba(214, 48, 49, 1);
-            transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(214, 48, 49, 0.4);
-        }
-
         #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
         #stage-content { width: 100%; height: 100%; overflow: hidden; }
 
@@ -224,6 +218,35 @@
         }
 
         #drawing-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 8500; }
+
+        /* --- FREEZE TOOL STYLES --- */
+        #freeze-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 11000;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            cursor: grab;
+            overflow: hidden;
+        }
+        #freeze-layer:active { cursor: grabbing; }
+        #freeze-content {
+            position: absolute;
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        @media (max-width: 768px) {
+            .top-banner { padding: 0 15px; height: 80px; }
+            .logo-img { height: 40px; }
+            .mr-ezz-img { height: 55px; }
+            .session-info h1 { font-size: 1.2rem; }
+            .content-grid { padding: 15px; }
+            #smart-note-input { font-size: 2rem; }
+            .toolbox-wrapper { bottom: 20px; right: 20px; }
+            .tool-btn { width: 50px; height: 50px; font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
@@ -244,8 +267,6 @@
             <span>✖</span> 
             <span>EXIT</span>
         </button>
-        <div class="nav-hotspot nav-prev" onclick="if(typeof prevSlide === 'function') prevSlide()"></div>
-        <div class="nav-hotspot nav-next" onclick="if(typeof nextSlide === 'function') nextSlide()"></div>
         <div id="stage-content"></div>
     </div>
 
@@ -254,26 +275,39 @@
         <p style="color:rgba(255,255,255,0.3); margin-top:20px; font-size:1.2rem;">Press ESC to Close | ENTER for New Line</p>
     </div>
 
+    <div id="freeze-layer">
+        <div id="freeze-content"></div>
+        <div style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); padding:10px 20px; border-radius:20px; border:1px solid var(--primary-gold); pointer-events:none;">
+            Zoom: Scroll | Move: Drag | Exit: ESC
+        </div>
+    </div>
+
     <div id="laser-pointer"></div>
     <canvas id="drawing-canvas"></canvas>
 
     <div class="toolbox-wrapper" id="toolBox">
         <button class="tool-btn main-toggle" onclick="toggleToolBox()">🛠️</button>
         <button class="tool-btn" id="laserBtn" title="Laser Pointer" onclick="handleToolClick('laserBtn', toggleLaserMode)">🔦</button>
+        <button class="tool-btn" id="freezeBtn" title="Freeze & Zoom" onclick="handleToolClick('freezeBtn', toggleFreezeMode)">❄️</button>
         <button class="tool-btn" id="reloadBtn" title="Reload Page" onclick="handleToolClick('reloadBtn', () => location.reload())">🔄</button>
         <button class="tool-btn" id="noteBtn" title="Flash Note" onclick="toggleNote()">📝</button>
     </div>
 
     <script src="data/levels.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const currentSessionId = urlParams.get('session');
 
         let isLaserMode = false;
+        let isFreezeMode = false;
         const canvas = document.getElementById('drawing-canvas');
         const laser = document.getElementById('laser-pointer');
         const ctx = canvas.getContext('2d');
+
+        // Zoom & Pan Variables
+        let scale = 1, posX = 0, posY = 0, startX = 0, startY = 0, isDragging = false;
 
         function updateDynamicTitle() {
             if (currentSessionId) {
@@ -301,58 +335,56 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             handlePointer();
+            setupFreezeControls();
         }
 
-async function openActivity(activityName) {
-    if (!currentSessionId) return;
-    const [lvl, sess] = currentSessionId.split('-');
-    let filePath = "";
-    const nameUpper = activityName.toUpperCase();
+        async function openActivity(activityName) {
+            if (!currentSessionId) return;
+            const [lvl, sess] = currentSessionId.split('-');
+            let filePath = "";
+            const nameUpper = activityName.toUpperCase();
 
-    // Mapping Logic
-    if (nameUpper.includes("TONGUE") || nameUpper.includes("TWISTER")) {
-        filePath = `data/L-${lvl}-S-${sess}-Ton.js`;
-    } else if (nameUpper.includes("ONE SHOT")) {
-        filePath = `data/L-${lvl}-S-${sess}-One.js`;
-    } else if (nameUpper.includes("GRAMMAR")) {
-        filePath = `data/L-${lvl}-S-${sess}-Gra.js`;
-    } else if (nameUpper.includes("GP")) {
-        filePath = `data/L-${lvl}-${sess}-GP.js`;
-    } else if (nameUpper.includes("PROJECT")) {
-        filePath = `data/L-${lvl}-S-${sess}-Pro.js`;
-    } else if (nameUpper.includes("WISH")) {
-        filePath = `data/L-${lvl}-S-${sess}-Wis.js`;
-    } else if (nameUpper.includes("SQUEEZER")) {
-        const suffix = nameUpper.includes("TEST") ? "Squt" : "Squr";
-        filePath = `data/L-${lvl}-S-${sess}-${suffix}.js`;
-    } else if (nameUpper.includes("DMT")) {
-        filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-${lvl}-S-${sess}-DMT.js`;
-    } else if (nameUpper.includes("LISTENING")) {
-        filePath = nameUpper.includes("INTRO") ? `data/L-${lvl}-S-${sess}-Lin.js` : `data/L-${lvl}-S-${sess}-Lis.js`;
-    } else if (nameUpper.includes("VOCAB")) {
-        const type = nameUpper.includes("TEST") ? "2" : "1";
-        filePath = `data/L-${type}-${lvl}-S-${sess}-Voc.js`;
-    } else if (nameUpper.includes("READING")) {
-        filePath = `data/L-${lvl}-S-${sess}-Rea.js`;
-    } else {
-        const prefix = activityName.split(' ')[0].substring(0, 3);
-        filePath = `data/L-1-${lvl}-S-${sess}-${prefix}.js`;
-    }
+            if (nameUpper.includes("TONGUE") || nameUpper.includes("TWISTER")) {
+                filePath = `data/L-${lvl}-S-${sess}-Ton.js`;
+            } else if (nameUpper.includes("ONE SHOT")) {
+                filePath = `data/L-${lvl}-S-${sess}-One.js`;
+            } else if (nameUpper.includes("GRAMMAR")) {
+                filePath = `data/L-${lvl}-S-${sess}-Gra.js`;
+            } else if (nameUpper.includes("GP")) {
+                filePath = `data/L-${lvl}-${sess}-GP.js`;
+            } else if (nameUpper.includes("PROJECT")) {
+                filePath = `data/L-${lvl}-S-${sess}-Pro.js`;
+            } else if (nameUpper.includes("WISH")) {
+                filePath = `data/L-${lvl}-S-${sess}-Wis.js`;
+            } else if (nameUpper.includes("SQUEEZER")) {
+                const suffix = nameUpper.includes("TEST") ? "Squt" : "Squr";
+                filePath = `data/L-${lvl}-S-${sess}-${suffix}.js`;
+            } else if (nameUpper.includes("DMT")) {
+                filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-${lvl}-S-${sess}-DMT.js`;
+            } else if (nameUpper.includes("LISTENING")) {
+                filePath = nameUpper.includes("INTRO") ? `data/L-${lvl}-S-${sess}-Lin.js` : `data/L-${lvl}-S-${sess}-Lis.js`;
+            } else if (nameUpper.includes("VOCAB")) {
+                const type = nameUpper.includes("TEST") ? "2" : "1";
+                filePath = `data/L-${type}-${lvl}-S-${sess}-Voc.js`;
+            } else if (nameUpper.includes("READING")) {
+                filePath = `data/L-${lvl}-S-${sess}-Rea.js`;
+            } else {
+                const prefix = activityName.split(' ')[0].substring(0, 3);
+                filePath = `data/L-1-${lvl}-S-${sess}-${prefix}.js`;
+            }
 
-    // Execution
-    const stage = document.getElementById('activity-stage');
-    stage.style.display = 'block';
-    document.getElementById('stage-content').innerHTML = "";
-    
-    const script = document.createElement('script');
-    script.src = filePath;
-    script.onerror = () => {
-        console.error("WOLF Error: File not found -> " + filePath);
-        alert("الملف غير موجود: " + filePath);
-        closeStage();
-    };
-    document.head.appendChild(script);
-}
+            const stage = document.getElementById('activity-stage');
+            stage.style.display = 'block';
+            document.getElementById('stage-content').innerHTML = "";
+            
+            const script = document.createElement('script');
+            script.src = filePath;
+            script.onerror = () => {
+                alert("الملف غير موجود: " + filePath);
+                closeStage();
+            };
+            document.head.appendChild(script);
+        }
 
         function toggleToolBox() {
             document.getElementById('toolBox').classList.toggle('open');
@@ -368,13 +400,80 @@ async function openActivity(activityName) {
         let closeStage = function() {
             document.getElementById('activity-stage').style.display = 'none';
             document.getElementById('stage-content').innerHTML = "";
-            if (document.fullscreenElement) document.exitFullscreen();
         };
 
         function toggleLaserMode() {
             isLaserMode = !isLaserMode;
             document.getElementById('laserBtn').classList.toggle('active');
             canvas.style.pointerEvents = isLaserMode ? 'auto' : 'none';
+        }
+
+        // --- FREEZE LOGIC ---
+        async function toggleFreezeMode() {
+            const layer = document.getElementById('freeze-layer');
+            const content = document.getElementById('freeze-content');
+            
+            if (!isFreezeMode) {
+                // Capture current view
+                const target = document.getElementById('activity-stage').style.display === 'block' ? 
+                               document.getElementById('activity-stage') : document.body;
+                
+                html2canvas(target).then(canvasImg => {
+                    content.innerHTML = '';
+                    content.appendChild(canvasImg);
+                    layer.style.display = 'block';
+                    isFreezeMode = true;
+                    scale = 1; posX = 0; posY = 0;
+                    updateTransform();
+                });
+            } else {
+                closeFreeze();
+            }
+        }
+
+        function closeFreeze() {
+            document.getElementById('freeze-layer').style.display = 'none';
+            isFreezeMode = false;
+        }
+
+        function updateTransform() {
+            const content = document.getElementById('freeze-content');
+            content.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+        }
+
+        function setupFreezeControls() {
+            const layer = document.getElementById('freeze-layer');
+
+            layer.onwheel = (e) => {
+                if (!isFreezeMode) return;
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                scale *= delta;
+                scale = Math.min(Math.max(0.5, scale), 5);
+                updateTransform();
+            };
+
+            const startAction = (e) => {
+                isDragging = true;
+                const touch = e.touches ? e.touches[0] : e;
+                startX = touch.clientX - posX;
+                startY = touch.clientY - posY;
+            };
+
+            const moveAction = (e) => {
+                if (!isDragging) return;
+                const touch = e.touches ? e.touches[0] : e;
+                posX = touch.clientX - startX;
+                posY = touch.clientY - startY;
+                updateTransform();
+            };
+
+            layer.onmousedown = startAction;
+            layer.ontouchstart = startAction;
+            window.onmousemove = moveAction;
+            window.ontouchmove = moveAction;
+            window.onmouseup = () => isDragging = false;
+            window.ontouchend = () => isDragging = false;
         }
 
         function handlePointer() {
@@ -407,38 +506,28 @@ async function openActivity(activityName) {
             });
         }
 
-        function closeNote() {
-            document.getElementById('quick-note-container').style.display = 'none';
-        }
-
-        document.getElementById('smart-note-input').addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeNote();
-            }
-        });
-
-        window.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                if (document.getElementById('quick-note-container').style.display === 'flex') {
-                    closeNote();
-                }
-                if (document.getElementById('activity-stage').style.display === 'block') {
-                    closeStage();
-                }
-            }
-        });
-
         function toggleNote() {
             const container = document.getElementById('quick-note-container');
             const input = document.getElementById('smart-note-input');
             const isOpen = container.style.display === 'flex';
-            
             container.style.display = isOpen ? 'none' : 'flex';
             if(!isOpen) {
                 input.value = "";
                 setTimeout(() => input.focus(), 100);
             }
         }
+
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (isFreezeMode) closeFreeze();
+                if (document.getElementById('quick-note-container').style.display === 'flex') {
+                    document.getElementById('quick-note-container').style.display = 'none';
+                }
+                if (document.getElementById('activity-stage').style.display === 'block') {
+                    closeStage();
+                }
+            }
+        });
 
         window.onload = initSession;
     </script>

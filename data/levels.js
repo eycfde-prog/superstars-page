@@ -22,16 +22,22 @@ const sessionData = {
     "2-4": ["Grammar Study: Date", "Reading 4 Review", "Reading 5 Intro", "Vocab Part 4 Test", "Tongue Twister 1 Intro", "One Shot 2 Test", "Listening Review"],
 
     // LEVEL 3
+    "3-1": ["Grammar Study: Present Continuous", "Reading 5 Review", "Reading 6 Intro", "Tongue Twister 1 Review", "Tongue Twister 2 Intro", "Listening Review"],
+    "3-2": ["Reading 6 Review", "Reading 7 Intro", "Vocab Part 5 Intro", "Tongue Twister 2 Review", "Tongue Twister 3 Intro", "One Shot 3 Test", "Listening Review"],
+    "3-3": ["Reading 7 Review", "Reading 8 Intro", "Vocab Part 5 Test", "Vocab Part 6 Intro", "Tongue Twister 3 Review", "Tongue Twister 4 Intro", "Listening Review"],
     "3-4": ["Grammar Study: Present Simple", "Reading 8 Review", "Reading 9 Intro", "Vocab Part 6 Test", "One Shot 4 Test", "Squeezer Intro", "Listening Review"],
 
     // LEVEL 4
     "4-1": ["Grammar Study: Past Simple", "Reading 9 Review", "Reading 10 Intro", "Squeezer 1 Test", "Listening Review"],
+    "4-2": ["Reading 10 Review", "Reading 11 Intro", "Vocab Part 7 Intro", "Tongue Twister 6 Review", "Tongue Twister 7 Intro", "One Shot 5 Test", "Listening Review"],
+    "4-3": ["Reading 11 Review", "Reading 12 Intro", "Vocab Part 7 Test", "Vocab Part 8 Intro", "Tongue Twister 7 Review", "Tongue Twister 8 Intro", "Listening Review"],
     "4-4": ["Grammar Study: Past Continuous", "Reading 12 Review", "Reading 13 Intro", "Vocab Part 8 Test", "DMT Intro", "Listening Review"],
 
     // LEVEL 5
     "5-1": ["Grammar Study: Future Simple", "Squeezer 2 Review", "DMT 1 Test", "Listening Review"],
     "5-2": ["Reading 14 Review", "Reading 15 Intro", "Vocab Part 9 Intro", "Squeezer 2 Test", "DMT 1 Review", "Listening Review"],
     "5-3": ["Reading 15 Review", "Reading 16 Intro", "Vocab Part 9 Test", "Vocab Part 10 Intro", "DMT 2 Test", "Listening Review"],
+    "5-4": ["Grammar Study: Future Continuous", "Reading 16 Review", "Reading 17 Intro", "Vocab Part 10 Test", "Tongue Twister 12 Review", "Tongue Twister 13 Intro", "One Shot 8 Test", "Listening Review"],
 
     // LEVEL 6
     "6-1": ["Grammar Study: Present Perfect Simple", "ORAL EXAM", "Squeezer 3 Review", "Listening Review"],

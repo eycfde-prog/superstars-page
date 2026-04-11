@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VETO PROGRAM | Smart Board</title>
+    <title>VETO PROGRAM | Smart Board Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-gold: #c5a059;
+            --gold-glow: rgba(197, 160, 89, 0.4);
             --bg-dark: #050505;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --banner-height: 110px;
-            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --banner-height: 120px;
+            --font-main: 'Inter', 'Segoe UI', sans-serif;
+            --transition-speed: 0.3s;
         }
 
         * { 
@@ -25,230 +28,140 @@
             font-family: var(--font-main);
             height: 100vh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* --- Header Section (Enhanced Visibility) --- */
         .top-banner {
             height: var(--banner-height);
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 40px; 
+            padding: 0 50px; 
             background: linear-gradient(180deg, #111 0%, #000 100%);
-            border-bottom: 4px solid var(--primary-gold);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            border-bottom: 5px solid var(--primary-gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            z-index: 100;
         }
 
-        .logo-img { height: 65px; filter: drop-shadow(0 0 5px rgba(197,160,89,0.3)); }
-        .mr-ezz-img { height: 85px; border-radius: 12px; border: 2px solid var(--primary-gold); }
+        .back-btn {
+            background: var(--primary-gold);
+            border: none;
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+        .back-btn:hover { transform: scale(1.05); background: #fff; }
+
+        .logo-img { height: 75px; filter: drop-shadow(0 0 10px var(--gold-glow)); }
+        .mr-ezz-img { height: 95px; border-radius: 15px; border: 3px solid var(--primary-gold); box-shadow: 0 0 20px var(--gold-glow); }
 
         .session-info { text-align: center; flex-grow: 1; }
         .session-info h1 { 
-            font-size: 2.5rem;
-            letter-spacing: 2px;
+            font-size: 3rem; /* Larger for the 4-meter rule */
+            letter-spacing: -1px;
             text-transform: uppercase;
             color: #fff;
-            margin: 0;
         }
-        .session-info span { 
-            color: var(--primary-gold); 
-            font-weight: 800;
-        }
+        .session-info span { color: var(--primary-gold); font-weight: 900; }
 
+        /* --- Content Grid (Interactive & Focused) --- */
         .content-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px; 
-            padding: 40px; 
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 35px; 
+            padding: 50px; 
             overflow-y: auto;
-            height: calc(100vh - var(--banner-height));
+            flex-grow: 1;
         }
 
         .content-card {
             background: var(--card-bg); 
-            border: 2px solid rgba(197,160,89,0.15);
-            padding: 30px; 
-            border-radius: 20px; 
+            border: 2px solid rgba(255,255,255,0.1);
+            padding: 40px; 
+            border-radius: 25px; 
             text-align: center; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1); 
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 160px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-height: 200px;
+            backdrop-filter: blur(10px);
+            outline: none;
         }
 
-        .content-card:hover { 
+        /* Keyboard Focus & Hover */
+        .content-card:hover, .content-card:focus { 
             border-color: var(--primary-gold); 
-            background: rgba(197,160,89,0.1);
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(197,160,89,0.2);
+            background: rgba(197,160,89,0.15);
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px var(--gold-glow);
         }
 
         .content-card h2 { 
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #efefef;
+            font-size: 2.5rem; /* Massive font for readability */
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.2;
         }
+
+        /* --- Full Screen Stage --- */
+        #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
+        #stage-content { width: 100%; height: 100%; }
 
         .exit-btn {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            z-index: 9999;
-            padding: 8px 15px; 
-            font-size: 0.9rem;
-            font-weight: bold;
-            background: rgba(214, 48, 49, 0.8);
-            color: white;
-            border: 2px solid #ff4757;
-            border-radius: 8px;
-            cursor: pointer;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            position: fixed; top: 25px; right: 25px; z-index: 9999;
+            padding: 15px 35px; font-size: 1.5rem; font-weight: 900;
+            background: #d63031; color: white; border: none;
+            border-radius: 50px; cursor: pointer;
+            box-shadow: 0 5px 20px rgba(214, 48, 49, 0.5);
         }
 
-        #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
-        #stage-content { width: 100%; height: 100%; overflow: hidden; }
-
-        .toolbox-wrapper { 
-            position: fixed; 
-            bottom: 30px; 
-            right: 30px; 
-            z-index: 12000; 
-            display: flex; 
-            flex-direction: column-reverse; 
-            gap: 15px; 
-            align-items: center;
-        }
-
+        /* --- Toolbox (Advanced) --- */
+        .toolbox-wrapper { position: fixed; bottom: 40px; right: 40px; z-index: 12000; display: flex; flex-direction: column-reverse; gap: 20px; }
         .tool-btn { 
-            width: 65px; 
-            height: 65px; 
-            border-radius: 50%; 
-            background: #1a1a1a; 
-            border: 3px solid var(--primary-gold); 
-            color: var(--primary-gold); 
-            font-size: 1.6rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            opacity: 0;
-            transform: translateY(20px) scale(0);
-            pointer-events: none;
+            width: 80px; height: 80px; border-radius: 50%; 
+            background: #1a1a1a; border: 4px solid var(--primary-gold); 
+            color: var(--primary-gold); font-size: 2rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0; transform: translateY(30px) scale(0);
         }
+        .tool-btn.main-toggle { opacity: 1; transform: scale(1); background: var(--primary-gold); color: #000; }
+        .toolbox-wrapper.open .tool-btn { opacity: 1; transform: translateY(0) scale(1); }
+        .tool-btn.active { background: #ff4757; color: white; border-color: #fff; transform: scale(1.2); }
 
-        .tool-btn.main-toggle {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-            background: var(--primary-gold);
-            color: #000;
-            z-index: 12001;
-        }
-
-        .toolbox-wrapper.open .tool-btn {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
-
-        .toolbox-wrapper.open .main-toggle {
-            transform: rotate(135deg); 
-            background: #d63031;
-            color: white;
-            border-color: #ff4757;
-        }
-
-        .tool-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px var(--primary-gold);
-        }
-
-        .tool-btn.active {
-            background: #ff4757;
-            border-color: #fff;
-            color: white;
-            opacity: 1 !important;
-            transform: scale(1) !important;
-        }
-
+        /* --- Floating Tools Elements --- */
         #quick-note-container { 
-            position: fixed; 
-            inset: 0; 
-            z-index: 13000; 
-            display: none;
-            background: rgba(0,0,0,0.95); 
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            position: fixed; inset: 0; z-index: 13000; display: none;
+            background: rgba(0,0,0,0.97); flex-direction: column; justify-content: center; align-items: center;
         }
-
         #smart-note-input { 
-            padding: 20px; 
-            border: none;
-            border-bottom: 3px solid var(--primary-gold); 
-            background: transparent; 
-            color: var(--primary-gold); 
-            width: 90%; 
-            min-height: 200px; 
-            font-size: 5rem; 
-            text-align: center;
-            outline: none;
-            font-weight: bold;
-            resize: none; 
-            font-family: inherit;
+            background: transparent; border: none; border-bottom: 5px solid var(--primary-gold);
+            color: var(--primary-gold); width: 85%; font-size: 6rem; text-align: center;
+            outline: none; font-weight: 900; resize: none;
         }
-
         #laser-pointer { 
-            position: fixed; 
-            width: 20px; height: 20px; 
-            background: radial-gradient(circle, #ff0000 0%, rgba(255,0,0,0) 70%);
-            border-radius: 50%;
-            box-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000;
-            pointer-events: none; 
-            z-index: 14000; 
-            display: none;
+            position: fixed; width: 30px; height: 30px; 
+            background: radial-gradient(circle, #ff0000 0%, rgba(255,0,0,0) 80%);
+            border-radius: 50%; box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+            pointer-events: none; z-index: 14000; display: none;
         }
-
         #drawing-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 8500; }
+        #freeze-layer { position: fixed; inset: 0; z-index: 11000; background: rgba(0,0,0,0.9); display: none; cursor: grab; overflow: hidden; }
+        #freeze-content { position: absolute; transform-origin: 0 0; }
 
-        /* --- FREEZE TOOL STYLES --- */
-        #freeze-layer {
-            position: fixed;
-            inset: 0;
-            z-index: 11000;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            cursor: grab;
-            overflow: hidden;
-        }
-        #freeze-layer:active { cursor: grabbing; }
-        #freeze-content {
-            position: absolute;
-            transform-origin: 0 0;
-            will-change: transform;
-        }
-
-        @media (max-width: 768px) {
-            .top-banner { padding: 0 15px; height: 80px; }
-            .logo-img { height: 40px; }
-            .mr-ezz-img { height: 55px; }
-            .session-info h1 { font-size: 1.1rem; }
-            .content-grid { padding: 15px; }
-            #smart-note-input { font-size: 2.5rem; }
-            .toolbox-wrapper { bottom: 20px; right: 20px; }
-            .tool-btn { width: 55px; height: 55px; font-size: 1.3rem; }
-        }
     </style>
 </head>
 <body>
 
     <header class="top-banner">
-        <button onclick="window.location.href='vetoof.html'" style="background:var(--primary-gold); border:none; color:#000; padding:12px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">← BACK</button>
+        <button class="back-btn" onclick="window.location.href='vetoof.html'">← BACK</button>
         <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
         <div class="session-info">
             <h1 id="display-title">VETO <span>BOARD</span></h1>
@@ -259,21 +172,16 @@
     <main class="content-grid" id="content-container"></main>
 
     <div id="activity-stage">
-        <button class="exit-btn" onclick="closeStage()">
-            <span>✖</span> <span>EXIT</span>
-        </button>
+        <button class="exit-btn" onclick="closeStage()">✖ CLOSE ACTIVITY</button>
         <div id="stage-content"></div>
     </div>
 
     <div id="quick-note-container">
-        <textarea id="smart-note-input" placeholder="Type your note here..." rows="1"></textarea>
-        <p style="color:rgba(255,255,255,0.3); margin-top:20px; font-size:1.2rem;">Press ESC to Close</p>
+        <textarea id="smart-note-input" placeholder="WRITE HERE..." rows="1"></textarea>
+        <p style="color:white; opacity:0.5; margin-top:30px; font-size:1.5rem;">PRESS [ESC] TO DISMISS</p>
     </div>
 
-    <div id="freeze-layer">
-        <div id="freeze-content"></div>
-    </div>
-
+    <div id="freeze-layer"><div id="freeze-content"></div></div>
     <div id="laser-pointer"></div>
     <canvas id="drawing-canvas"></canvas>
 
@@ -281,7 +189,7 @@
         <button class="tool-btn main-toggle" onclick="toggleToolBox()">🛠️</button>
         <button class="tool-btn" id="laserBtn" title="Laser Pointer" onclick="toggleLaserMode()">🔦</button>
         <button class="tool-btn" id="freezeBtn" title="Freeze & Zoom" onclick="toggleFreezeMode()">❄️</button>
-        <button class="tool-btn" id="reloadBtn" title="Reload Page" onclick="location.reload()">🔄</button>
+        <button class="tool-btn" id="reloadBtn" title="Reload" onclick="location.reload()">🔄</button>
         <button class="tool-btn" id="noteBtn" title="Flash Note" onclick="toggleNote()">📝</button>
     </div>
 
@@ -291,14 +199,13 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const currentSessionId = urlParams.get('session');
-
         let isLaserMode = false;
         let isFreezeMode = false;
         const canvas = document.getElementById('drawing-canvas');
         const laser = document.getElementById('laser-pointer');
         const ctx = canvas.getContext('2d');
 
-        // Zoom & Pan Logic
+        // Zoom & Pan State
         let scale = 1, posX = 0, posY = 0, startX = 0, startY = 0, isDragging = false;
 
         function updateDynamicTitle() {
@@ -313,27 +220,36 @@
         function initSession() {
             updateDynamicTitle();
             if (!currentSessionId || !sessionData[currentSessionId]) return;
+            
             const container = document.getElementById('content-container');
-            sessionData[currentSessionId].forEach(item => {
+            sessionData[currentSessionId].forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
+                card.tabIndex = "0"; // Make focusable for keyboard
                 card.onclick = () => openActivity(item);
                 card.innerHTML = `<h2>${item}</h2>`;
+                
+                // Keyboard Enter Support
+                card.addEventListener('keydown', (e) => {
+                    if(e.key === 'Enter') openActivity(item);
+                });
+
                 container.appendChild(card);
             });
+
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             setupFreezeControls();
-            handlePointer();
+            handleLaserDrawing();
         }
 
+        // Mapping & File Loading Logic (Your Original Logic Preserved)
         async function openActivity(activityName) {
             if (!currentSessionId) return;
             const [lvl, sess] = currentSessionId.split('-');
             let filePath = "";
             const nameUpper = activityName.toUpperCase();
 
-            // Mapping Logic
             if (nameUpper.includes("TONGUE")) filePath = `data/L-${lvl}-S-${sess}-Ton.js`;
             else if (nameUpper.includes("ONE SHOT")) filePath = `data/L-${lvl}-S-${sess}-One.js`;
             else if (nameUpper.includes("GRAMMAR")) filePath = `data/L-${lvl}-S-${sess}-Gra.js`;
@@ -348,28 +264,56 @@
             else filePath = `data/L-1-${lvl}-S-${sess}-${activityName.split(' ')[0].substring(0, 3)}.js`;
 
             document.getElementById('activity-stage').style.display = 'block';
-            document.getElementById('stage-content').innerHTML = "";
+            const stage = document.getElementById('stage-content');
+            stage.innerHTML = "";
+            
             const script = document.createElement('script');
             script.src = filePath;
-            script.onerror = () => { alert("Error loading file"); closeStage(); };
+            script.onerror = () => { alert("File not found: " + filePath); closeStage(); };
             document.head.appendChild(script);
         }
-
-        function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
 
         function closeStage() {
             document.getElementById('activity-stage').style.display = 'none';
             document.getElementById('stage-content').innerHTML = "";
         }
 
-        // --- LASER MODE ---
+        function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
+
+        // --- LASER SYSTEM ---
         function toggleLaserMode() {
             isLaserMode = !isLaserMode;
             document.getElementById('laserBtn').classList.toggle('active');
             canvas.style.pointerEvents = isLaserMode ? 'auto' : 'none';
         }
 
-        // --- FREEZE MODE (TOGGLE STYLE) ---
+        function handleLaserDrawing() {
+            window.addEventListener('mousedown', (e) => {
+                if(!isLaserMode) return;
+                laser.style.display = 'block';
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                ctx.beginPath();
+                ctx.strokeStyle = '#ff0000';
+                ctx.lineWidth = 6;
+                ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+                ctx.moveTo(e.clientX, e.clientY);
+
+                const draw = (m) => {
+                    ctx.lineTo(m.clientX, m.clientY); ctx.stroke();
+                    laser.style.left = m.clientX - 15 + 'px'; laser.style.top = m.clientY - 15 + 'px';
+                };
+                const stop = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                    laser.style.display = 'none';
+                    window.removeEventListener('mousemove', draw);
+                    window.removeEventListener('mouseup', stop);
+                };
+                window.addEventListener('mousemove', draw);
+                window.addEventListener('mouseup', stop);
+            });
+        }
+
+        // --- FREEZE & ZOOM SYSTEM ---
         async function toggleFreezeMode() {
             const layer = document.getElementById('freeze-layer');
             const content = document.getElementById('freeze-content');
@@ -379,7 +323,7 @@
                 const target = document.getElementById('activity-stage').style.display === 'block' ? 
                                document.getElementById('activity-stage') : document.body;
                 
-                html2canvas(target, { useCORS: true }).then(canvasImg => {
+                html2canvas(target, { useCORS: true, backgroundColor: "#000" }).then(canvasImg => {
                     content.innerHTML = '';
                     content.appendChild(canvasImg);
                     layer.style.display = 'block';
@@ -405,7 +349,7 @@
                 if (!isFreezeMode) return;
                 e.preventDefault();
                 const delta = e.deltaY > 0 ? 0.9 : 1.1;
-                scale = Math.min(Math.max(0.5, scale * delta), 5);
+                scale = Math.min(Math.max(0.5, scale * delta), 6);
                 updateTransform();
             };
 
@@ -413,63 +357,46 @@
                 if(!isFreezeMode) return;
                 isDragging = true;
                 const t = e.touches ? e.touches[0] : e;
-                startX = t.clientX - posX;
-                startY = t.clientY - posY;
+                startX = t.clientX - posX; startY = t.clientY - posY;
             };
             const move = (e) => {
                 if (!isDragging || !isFreezeMode) return;
                 const t = e.touches ? e.touches[0] : e;
-                posX = t.clientX - startX;
-                posY = t.clientY - startY;
+                posX = t.clientX - startX; posY = t.clientY - startY;
                 updateTransform();
             };
 
-            layer.onmousedown = start;
-            layer.ontouchstart = start;
-            window.onmousemove = move;
-            window.ontouchmove = move;
+            layer.onmousedown = start; layer.ontouchstart = start;
+            window.onmousemove = move; window.ontouchmove = move;
             window.onmouseup = window.ontouchend = () => isDragging = false;
         }
 
-        function handlePointer() {
-            window.addEventListener('mousedown', (e) => {
-                if(!isLaserMode) return;
-                laser.style.display = 'block';
-                ctx.clearRect(0, 0, canvas.width, canvas.height); 
-                ctx.beginPath();
-                ctx.strokeStyle = '#ff0000';
-                ctx.lineWidth = 4;
-                ctx.moveTo(e.clientX, e.clientY);
-                const draw = (m) => {
-                    ctx.lineTo(m.clientX, m.clientY); ctx.stroke();
-                    laser.style.left = m.clientX - 10 + 'px'; laser.style.top = m.clientY - 10 + 'px';
-                };
-                const stop = () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); 
-                    laser.style.display = 'none';
-                    window.removeEventListener('mousemove', draw);
-                    window.removeEventListener('mouseup', stop);
-                };
-                window.addEventListener('mousemove', draw);
-                window.addEventListener('mouseup', stop);
-            });
-        }
-
+        // --- QUICK NOTES ---
         function toggleNote() {
             const container = document.getElementById('quick-note-container');
             const isOpen = container.style.display === 'flex';
             container.style.display = isOpen ? 'none' : 'flex';
-            if(!isOpen) setTimeout(() => document.getElementById('smart-note-input').focus(), 100);
+            if(!isOpen) {
+                const input = document.getElementById('smart-note-input');
+                input.value = "";
+                setTimeout(() => input.focus(), 100);
+            }
         }
 
+        // Global Keyboard Shortcuts
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (document.getElementById('quick-note-container').style.display === 'flex') {
-                    document.getElementById('quick-note-container').style.display = 'none';
+                    toggleNote();
+                } else if (isFreezeMode) {
+                    toggleFreezeMode();
                 } else if (document.getElementById('activity-stage').style.display === 'block') {
                     closeStage();
                 }
             }
+            if (e.key === 'n' || e.key === 'N') toggleNote();
+            if (e.key === 'l' || e.key === 'L') toggleLaserMode();
+            if (e.key === 'f' || e.key === 'F') toggleFreezeMode();
         });
 
         window.onload = initSession;

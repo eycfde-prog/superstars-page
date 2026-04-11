@@ -12,12 +12,12 @@
 const sessionData = {
     // LEVEL 1
     "1-1": ["Grammar Study: Subject & Object", "Listening Intro"],
-    "1-2": ["Grammar Study: Possessive Adj & Pronouns", "Vocab Part 1 Intro", "Listening Review"],
+    "1-2": ["Listening Review", "Grammar Study: Possessive Adj & Pronouns", "Grammar Study: Verb be", "Vocab Part 1 Intro"],
     "1-3": ["Grammar Study: Indefinite Articles", "Vocab Part 1 Test", "Listening Review"],
-    "1-4": ["Grammar Study: Plural", "Listening Review"],
+    "1-4": ["Grammar Study: Plural", "Listening Review", "Reading Story Intro & Review"],
 
     // LEVEL 2
-    "2-1": ["Grammar Study: Plural (cont.)", "Reading Story Part 1 Intro & Review", "One Shot Intro", "Listening Review"],
+    "2-1": ["Grammar Study: Present (cont.)", "Reading Story Part Review", "One Shot Intro", "Listening Review"],
     "2-2": ["Reading Story Part Review", "Vocab Part 2 Intro", "One Shot Test", "Listening Review"],
     "2-3": ["Reading Story Part Review", "Vocab Part 2 Test", "Listening Review"],
     "2-4": ["Grammar Study: Present Simple", "Reading Story Part Review", "One Shot Test", "Listening Review"],

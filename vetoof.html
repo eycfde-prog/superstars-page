@@ -35,7 +35,6 @@
             min-height: 100vh;
         }
 
-        /* --- Header --- */
         .top-banner {
             height: 90px;
             width: 100%;
@@ -67,7 +66,6 @@
             text-align: center;
         }
 
-        /* --- Levels Grid --- */
         .levels-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -108,7 +106,6 @@
             text-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* --- FIX 1: Dynamic height drawer using JS-calculated height --- */
         .lectures-drawer {
             height: 0;
             overflow: hidden;
@@ -153,7 +150,6 @@
         .arrow-icon { transition: 0.3s; color: var(--primary-gold); font-size: 0.8rem; }
         .level-block.active .arrow-icon { transform: rotate(180deg); }
 
-        /* --- FIX 2: Loading overlay --- */
         .loading-overlay {
             display: none;
             position: fixed;
@@ -165,14 +161,10 @@
             align-items: center;
             gap: 20px;
         }
-
-        .loading-overlay.visible {
-            display: flex;
-        }
+        .loading-overlay.visible { display: flex; }
 
         .loading-spinner {
-            width: 60px;
-            height: 60px;
+            width: 60px; height: 60px;
             border: 3px solid rgba(212, 175, 55, 0.2);
             border-top-color: var(--primary-gold);
             border-radius: 50%;
@@ -187,35 +179,23 @@
             animation: pulse 1.2s ease-in-out infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin  { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        /* --- FIX 3: Enhanced content protection notice --- */
         .protected-badge {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
+            position: fixed; bottom: 15px; right: 15px;
             background: rgba(0,0,0,0.7);
             border: 1px solid var(--glass-border);
             padding: 6px 12px;
-            font-size: 0.65rem;
-            letter-spacing: 2px;
+            font-size: 0.65rem; letter-spacing: 2px;
             color: var(--primary-gold);
             font-family: 'Orbitron', sans-serif;
-            opacity: 0.5;
-            pointer-events: none;
+            opacity: 0.5; pointer-events: none;
         }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- FIX 2: Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">LOADING SESSION...</div>
@@ -231,7 +211,6 @@
 
     <main class="levels-container" id="mainContainer"></main>
 
-    <!-- FIX 3: Protection badge -->
     <div class="protected-badge">⚡ PROTECTED CONTENT</div>
 
     <script>
@@ -275,62 +254,47 @@
             container.appendChild(fragment);
         }
 
-        // FIX 1: Dynamic height using scrollHeight instead of fixed max-height
         function toggleDrawer(id) {
             const target = document.getElementById(`level-${id}`);
             const drawer = document.getElementById(`drawer-${id}`);
             const isActive = target.classList.contains('active');
 
-            // Close all open drawers
             document.querySelectorAll('.level-block').forEach(b => {
                 if (b.classList.contains('active')) {
                     b.classList.remove('active');
-                    const d = b.querySelector('.lectures-drawer');
-                    d.style.height = '0';
+                    b.querySelector('.lectures-drawer').style.height = '0';
                 }
             });
 
             if (!isActive) {
                 target.classList.add('active');
-                // Use scrollHeight for real content height
                 const fullHeight = drawer.querySelector('.drawer-inner').scrollHeight;
                 drawer.style.height = fullHeight + 'px';
-
                 setTimeout(() => {
                     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 400);
             }
         }
 
-        // FIX 2: Show loading overlay before navigating
         function navigate(sid) {
-            if (isNavigating) return; // prevent double clicks
+            if (isNavigating) return;
             isNavigating = true;
-
             document.getElementById('loadingOverlay').classList.add('visible');
-
             setTimeout(() => {
-                window.location.href = `vetoofif.html?session=${sid}`;
-            }, 600); // small delay so spinner is visible
+                window.location.href = `smartboard.html?session=${sid}`;
+            }, 600);
         }
 
-        // FIX 3: Enhanced keyboard protection (more complete than original)
         document.onkeydown = function(e) {
-            // Block dev tools shortcuts
             if (e.key === 'F12') return false;
             if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) return false;
             if (e.ctrlKey && ['C','V','U','S','A','P'].includes(e.key.toUpperCase())) return false;
-            if (e.metaKey && ['C','V','U','S','A','P'].includes(e.key.toUpperCase())) return false; // Mac support
+            if (e.metaKey && ['C','V','U','S','A','P'].includes(e.key.toUpperCase())) return false;
         };
 
-        // Block drag
         document.addEventListener('dragstart', e => e.preventDefault());
-
-        // Block print screen (best effort)
         document.addEventListener('keyup', function(e) {
-            if (e.key === 'PrintScreen') {
-                navigator.clipboard?.writeText('').catch(() => {});
-            }
+            if (e.key === 'PrintScreen') navigator.clipboard?.writeText('').catch(() => {});
         });
 
         document.addEventListener('DOMContentLoaded', initApp);

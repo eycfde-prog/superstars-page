@@ -437,49 +437,60 @@ const sessionData = {
 };
 
 // ─────────────────────────────────────────────
-// IMAGE MAP
+// // IMAGE MAP (Updated for Actirobo Assets)
 // ─────────────────────────────────────────────
 const IMG_MAP = [
-    { match: /grammar/i,          img: 'grammar',    emoji: '📚' },
-    { match: /listening.*intro/i, img: 'listening',  emoji: '🎧' },
-    { match: /listening/i,        img: 'listening',  emoji: '🎧' },
-    { match: /reading/i,          img: 'reading',    emoji: '📖' },
-    { match: /vocab/i,            img: 'vocab',      emoji: '💬' },
-    { match: /tongue/i,           img: 'tongue',     emoji: '🗣️' },
-    { match: /one.?shot/i,        img: 'oneshot',    emoji: '🎯' },
-    { match: /squeezer/i,         img: 'squeezer',   emoji: '🧠' },
-    { match: /dmt/i,              img: 'dmt',        emoji: '⚡' },
-    { match: /wish/i,             img: 'wish',       emoji: '✨' },
-    { match: /project/i,          img: 'project',    emoji: '🏗️' },
-    { match: /graduation/i,       img: 'graduation', emoji: '🎓' },
-    { match: /oral.*exam/i,       img: 'oralexam',   emoji: '🎤' },
-    { match: /presentation/i,     img: 'graduation', emoji: '🎓' },
+    { match: /grammar/i,           img: 'Grammar.png' },
+    { match: /listening/i,         img: 'Listening.png' },
+    { match: /reading/i,           img: 'Reading.png' },
+    { match: /vocab/i,             img: 'Vocabulary.png' },
+    { match: /tongue/i,            img: 'Tongue-twister.png' },
+    { match: /one.?shot/i,         img: 'Squeezer.png' }, // أو أي صورة بديلة إذا لم تتوفر OneShot
+    { match: /squeezer/i,          img: 'Squeezer.png' },
+    { match: /dmt/i,               img: 'DMT.png' },
+    { match: /wish/i,              img: 'Wish.png' },
+    { match: /project/i,           img: 'Project.png' },
+    { match: /graduation/i,        img: 'Graduation-project.png' },
+    { match: /interview/i,         img: 'Interview.png' },
+    { match: /oral.*exam/i,        img: 'Interview.png' }, // ربط الاورال بالإنترفيو
+    { match: /presentation/i,      img: 'Graduation-project.png' },
 ];
 
 const BADGE_MAP = [
-    { match: /grammar/i,      label: 'Grammar'        },
-    { match: /listening/i,    label: 'Listening'      },
-    { match: /reading/i,      label: 'Reading'        },
-    { match: /vocab/i,        label: 'Vocabulary'     },
-    { match: /tongue/i,       label: 'Tongue Twister' },
-    { match: /one.?shot/i,    label: 'One Shot'       },
-    { match: /squeezer/i,     label: 'Squeezer'       },
-    { match: /dmt/i,          label: 'DMT'            },
-    { match: /wish/i,         label: 'Wish'           },
-    { match: /project/i,      label: 'Project'        },
-    { match: /graduation/i,   label: 'Graduation'     },
-    { match: /oral/i,         label: 'Oral Exam'      },
+    { match: /grammar/i,        label: 'Grammar' },
+    { match: /listening/i,      label: 'Listening' },
+    { match: /reading/i,        label: 'Reading' },
+    { match: /vocab/i,          label: 'Vocabulary' },
+    { match: /tongue/i,         label: 'Tongue Twister' },
+    { match: /one.?shot/i,      label: 'One Shot' },
+    { match: /squeezer/i,       label: 'Squeezer' },
+    { match: /dmt/i,            label: 'DMT' },
+    { match: /wish/i,           label: 'Wish' },
+    { match: /project/i,        label: 'Project' },
+    { match: /graduation/i,     label: 'Graduation' },
+    { match: /interview/i,      label: 'Interview' },
+    { match: /oral/i,           label: 'Oral Exam' },
 ];
 
+/**
+ * دالة جلب مسار الصورة
+ * تعيد المسار الكامل من مجلد Actirobo
+ */
 function getImgInfo(name) {
-    for (const m of IMG_MAP) if (m.match.test(name)) return m;
-    return { img: 'activity', emoji: '📌' };
+    const basePath = 'data/Actirobo/';
+    for (const m of IMG_MAP) {
+        if (m.match.test(name)) {
+            return { img: basePath + m.img };
+        }
+    }
+    // صورة افتراضية في حال لم يتم العثور على تطابق
+    return { img: basePath + 'Grammar.png' }; 
 }
+
 function getBadge(name) {
     for (const m of BADGE_MAP) if (m.match.test(name)) return m.label;
     return 'Activity';
 }
-
 // ─────────────────────────────────────────────
 // FILE PATH RESOLVER
 // القاعدة العامة: L-{lvl}-S-{sess}-{Xxx}.js

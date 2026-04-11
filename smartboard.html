@@ -96,19 +96,17 @@
         .card {
             position: relative;
             width: 100%;
-            aspect-ratio: 3 / 4;   /* portrait card — image fills top 70%, label bottom 30% */
+            aspect-ratio: 3 / 4;
             transform-style: preserve-3d;
             transition: transform 0.55s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s;
             border-radius: 18px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.55), 0 0 0 1.5px var(--border);
         }
 
-        /* Tilt on hover — JS overrides inline, CSS provides lift */
         .card-scene:hover .card {
             box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 2px var(--gold), 0 0 30px var(--gold-dim);
         }
 
-        /* ── CARD FACE ── */
         .card-face {
             position: absolute;
             inset: 0;
@@ -120,7 +118,6 @@
             backface-visibility: hidden;
         }
 
-        /* Image area — top 68% */
         .card-img-wrap {
             flex: 0 0 68%;
             position: relative;
@@ -137,36 +134,25 @@
             transform: scale(1.06);
         }
 
-        /* Gradient overlay on image */
         .card-img-wrap::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(
-                to bottom,
-                transparent 40%,
-                rgba(0,0,0,0.65) 100%
-            );
+            background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.65) 100%);
         }
 
-        /* Shine layer — moves with tilt */
         .card-shine {
             position: absolute;
             inset: 0;
             border-radius: 18px;
             pointer-events: none;
-            background: radial-gradient(
-                circle at 30% 30%,
-                rgba(255,255,255,0.12) 0%,
-                transparent 60%
-            );
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12) 0%, transparent 60%);
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 5;
         }
         .card-scene:hover .card-shine { opacity: 1; }
 
-        /* Label area — bottom 32% */
         .card-label {
             flex: 1;
             display: flex;
@@ -198,7 +184,6 @@
             line-height: 1.3;
         }
 
-        /* Edge glow strip at bottom of card */
         .card-edge {
             position: absolute;
             bottom: 0; left: 10%; right: 10%;
@@ -318,6 +303,17 @@
         .tool-btn:hover:not(.main) { transform: scale(1.12) translateY(0) !important; box-shadow: 0 0 18px var(--gold-glow); }
         .tool-btn.on { background: #ff4757; border-color: #fff; color: white; }
 
+        /* ── FALLBACK IMAGE ── */
+        .card-img-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+        }
+
         /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
             .banner { padding: 0 14px; height: 72px; }
@@ -336,12 +332,16 @@
 <!-- BANNER -->
 <header class="banner">
     <button class="banner-back" onclick="window.location.href='vetoof.html'">← Back</button>
-    <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="banner-logo" alt="VETO">
+    <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png"
+         class="banner-logo" alt="VETO"
+         onerror="this.style.display='none'">
     <div class="banner-title">
         <h1 id="title-text">VETO <span>BOARD</span></h1>
         <p id="title-sub">Select an activity to begin</p>
     </div>
-    <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="banner-avatar" alt="Mr. Ezz">
+    <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png"
+         class="banner-avatar" alt="Mr. Ezz"
+         onerror="this.style.display='none'">
 </header>
 
 <!-- CARD GRID -->
@@ -379,49 +379,101 @@
     <button class="tool-btn" id="btn-note"   onclick="toggleNote()"   title="Flash Note">📝</button>
 </div>
 
-<script src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/levels.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
 // ─────────────────────────────────────────────
-// IMAGE MAP  →  data/<name>.png
-// key = substring matched against activity name (lowercase)
+// SESSION DATA — EMBEDDED DIRECTLY
+// ─────────────────────────────────────────────
+const sessionData = {
+    "1-1": ["Grammar Study: Subject & Object", "Listening Intro"],
+    "1-2": ["Grammar Study: Poss. Adj & Poss. Pro + Verb Be", "Vocab Part 1 Intro", "Listening Review"],
+    "1-3": ["Grammar Study: Indefinite Articles", "Vocab Part 1 Test", "Vocab Part 2 Intro", "Listening Review"],
+    "1-4": ["Grammar Study: Plural", "Vocab Part 2 Test", "Reading 1 Intro", "Listening Review"],
+    "2-1": ["Grammar Study: Time", "Reading 1 Review", "Reading 2 Intro", "One Shot Intro", "Listening Review"],
+    "2-2": ["Reading 2 Review", "Reading 3 Intro", "Vocab Part 3 Intro", "One Shot 1 Test", "Listening Review"],
+    "2-3": ["Reading 3 Review", "Reading 4 Intro", "Vocab Part 3 Test", "Vocab Part 4 Intro", "Listening Review"],
+    "2-4": ["Grammar Study: Date", "Reading 4 Review", "Reading 5 Intro", "Vocab Part 4 Test", "Tongue Twister 1 Intro", "One Shot 2 Test", "Listening Review"],
+    "3-1": ["Grammar Study: Present Continuous", "Reading 5 Review", "Reading 6 Intro", "Tongue Twister 1 Review", "Tongue Twister 2 Intro", "Listening Review"],
+    "3-2": ["Reading 6 Review", "Reading 7 Intro", "Vocab Part 5 Intro", "Tongue Twister 2 Review", "Tongue Twister 3 Intro", "One Shot 3 Test", "Listening Review"],
+    "3-3": ["Reading 7 Review", "Reading 8 Intro", "Vocab Part 5 Test", "Vocab Part 6 Intro", "Tongue Twister 3 Review", "Tongue Twister 4 Intro", "Listening Review"],
+    "3-4": ["Grammar Study: Present Simple", "Reading 8 Review", "Reading 9 Intro", "Vocab Part 6 Test", "One Shot 4 Test", "Squeezer Intro", "Listening Review"],
+    "4-1": ["Grammar Study: Past Simple", "Reading 9 Review", "Reading 10 Intro", "Squeezer 1 Test", "Listening Review"],
+    "4-2": ["Reading 10 Review", "Reading 11 Intro", "Vocab Part 7 Intro", "Tongue Twister 6 Review", "Tongue Twister 7 Intro", "One Shot 5 Test", "Listening Review"],
+    "4-3": ["Reading 11 Review", "Reading 12 Intro", "Vocab Part 7 Test", "Vocab Part 8 Intro", "Tongue Twister 7 Review", "Tongue Twister 8 Intro", "Listening Review"],
+    "4-4": ["Grammar Study: Past Continuous", "Reading 12 Review", "Reading 13 Intro", "Vocab Part 8 Test", "DMT Intro", "Listening Review"],
+    "5-1": ["Grammar Study: Future Simple", "Squeezer 2 Review", "DMT 1 Test", "Listening Review"],
+    "5-2": ["Reading 14 Review", "Reading 15 Intro", "Vocab Part 9 Intro", "Squeezer 2 Test", "DMT 1 Review", "Listening Review"],
+    "5-3": ["Reading 15 Review", "Reading 16 Intro", "Vocab Part 9 Test", "Vocab Part 10 Intro", "DMT 2 Test", "Listening Review"],
+    "5-4": ["Grammar Study: Future Continuous", "Reading 16 Review", "Reading 17 Intro", "Vocab Part 10 Test", "Tongue Twister 12 Review", "Tongue Twister 13 Intro", "One Shot 8 Test", "Listening Review"],
+    "6-1": ["Grammar Study: Present Perfect Simple", "ORAL EXAM", "Squeezer 3 Review", "Listening Review"],
+    "6-2": ["Reading 18 Review", "Reading 19 Intro", "Vocab Part 11 Intro", "Squeezer 3 Test", "Listening Review"],
+    "6-3": ["Reading 19 Review", "Reading 20 Intro", "Vocab Part 11 Test", "Vocab Part 12 Intro", "DMT 2 Review", "Listening Review"],
+    "6-4": ["Grammar Study: Present Perfect Continuous", "Reading 20 Review", "Reading 21 Intro", "Vocab Part 12 Test", "DMT 3 Test", "Listening Review"],
+    "7-1": ["Grammar Study: Past Perfect Simple", "Squeezer 4 Review", "Listening Review"],
+    "7-2": ["Reading 22 Review", "Reading 23 Intro", "Vocab Part 13 Intro", "Squeezer 4 Test", "DMT 3 Review", "Listening Review"],
+    "7-3": ["Reading 23 Review", "Reading 24 Intro", "Vocab Part 13 Test", "Vocab Part 14 Intro", "DMT 4 Test", "Listening Review"],
+    "7-4": ["Grammar Study: If Conditions", "Reading 24 Review", "Reading 25 Intro", "Vocab Part 14 Test", "Wish 1 Intro (Review)", "Listening Review"],
+    "8-1": ["Grammar Study: Passives", "Wish 1 Test", "Squeezer 5 Review", "Listening Review"],
+    "8-2": ["Reading 26 Review", "Reading 27 Intro", "Vocab Part 15 Intro", "Squeezer 5 Test", "Listening Review"],
+    "8-3": ["Reading 27 Review", "Reading 28 Intro", "Vocab Part 15 Test", "Vocab Part 16 Intro", "DMT 4 Review", "Listening Review"],
+    "8-4": ["Reading 28 Review", "Reading 29 Intro", "Vocab Part 16 Test", "Project 1 Intro", "DMT 5 Test", "Listening Review"],
+    "9-1": ["Reading 29 Review", "Reading 30 Intro", "Project 1 Test", "Wish 2 Review", "Listening Review"],
+    "9-2": ["Reading 30 Review", "Reading 31 Intro", "Vocab Part 17 Intro", "Wish 2 Test", "DMT 5 Review", "Listening Review"],
+    "9-3": ["Reading 31 Review", "Reading 32 Intro", "Vocab Part 17 Test", "Vocab Part 18 Intro", "DMT 6 Test", "Listening Review"],
+    "9-4": ["Reading 32 Review", "Reading 33 Intro", "Vocab Part 18 Test", "Squeezer 6 Review", "Listening Review"],
+    "10-1": ["Reading 33 Review", "Reading 34 Intro", "Squeezer 6 Test", "Wish 3 Review", "Listening Review"],
+    "10-2": ["Reading 34 Review", "Reading 35 Intro", "Vocab Part 19 Intro", "Wish 3 Test", "Listening Review"],
+    "10-3": ["Reading 35 Review", "Reading 36 Intro", "Vocab Part 19 Test", "Vocab Part 20 Intro", "DMT 6 Review", "Listening Review"],
+    "10-4": ["Reading 36 Review", "Reading 37 Intro", "Vocab Part 20 Test", "Project 2 Intro", "DMT 7 Test", "Listening Review"],
+    "11-1": ["Reading 37 Review", "Reading 38 Intro", "Graduation Project Intro", "Project 2 Test", "Listening Review"],
+    "11-2": ["Reading 38 Review", "Reading 39 Intro", "DMT 7 Review", "Graduation Project Review", "Listening Review"],
+    "11-3": ["Reading 39 Review", "Reading 40 Intro", "DMT 8 Test", "Wish 4 Test", "Graduation Project Review", "Listening Review"],
+    "11-4": ["Reading 40 Review", "Reading 41 Intro", "Graduation Project Review", "Listening Review"],
+    "12-1": ["Reading 41 Review", "Reading 42 Intro", "Graduation Project Review", "Listening Review"],
+    "12-2": ["Reading 42 Review", "Reading 43 Intro", "Graduation Project Review", "Listening Review"],
+    "12-3": ["Reading 43 Review", "Graduation Project Review", "Listening Review"],
+    "12-4": ["GRADUATION PROJECT PRESENTATION"]
+};
+
+// ─────────────────────────────────────────────
+// IMAGE MAP
 // ─────────────────────────────────────────────
 const IMG_MAP = [
-    { match: /grammar/i,              img: 'grammar'       },
-    { match: /listening.*intro/i,     img: 'listening'     },
-    { match: /listening/i,            img: 'listening'     },
-    { match: /reading/i,              img: 'reading'       },
-    { match: /vocab/i,                img: 'vocab'         },
-    { match: /tongue/i,               img: 'tongue'        },
-    { match: /one.?shot/i,            img: 'oneshot'       },
-    { match: /squeezer/i,             img: 'squeezer'      },
-    { match: /dmt/i,                  img: 'dmt'           },
-    { match: /wish/i,                 img: 'wish'          },
-    { match: /project/i,              img: 'project'       },
-    { match: /graduation/i,           img: 'graduation'    },
-    { match: /oral.*exam/i,           img: 'oralexam'      },
-    { match: /presentation/i,         img: 'graduation'    },
+    { match: /grammar/i,          img: 'grammar',    emoji: '📚' },
+    { match: /listening.*intro/i, img: 'listening',  emoji: '🎧' },
+    { match: /listening/i,        img: 'listening',  emoji: '🎧' },
+    { match: /reading/i,          img: 'reading',    emoji: '📖' },
+    { match: /vocab/i,            img: 'vocab',      emoji: '💬' },
+    { match: /tongue/i,           img: 'tongue',     emoji: '🗣️' },
+    { match: /one.?shot/i,        img: 'oneshot',    emoji: '🎯' },
+    { match: /squeezer/i,         img: 'squeezer',   emoji: '🧠' },
+    { match: /dmt/i,              img: 'dmt',        emoji: '⚡' },
+    { match: /wish/i,             img: 'wish',       emoji: '✨' },
+    { match: /project/i,          img: 'project',    emoji: '🏗️' },
+    { match: /graduation/i,       img: 'graduation', emoji: '🎓' },
+    { match: /oral.*exam/i,       img: 'oralexam',   emoji: '🎤' },
+    { match: /presentation/i,     img: 'graduation', emoji: '🎓' },
 ];
 
 const BADGE_MAP = [
-    { match: /grammar/i,        label: 'Grammar'        },
-    { match: /listening/i,      label: 'Listening'      },
-    { match: /reading/i,        label: 'Reading'        },
-    { match: /vocab/i,          label: 'Vocabulary'     },
-    { match: /tongue/i,         label: 'Tongue Twister' },
-    { match: /one.?shot/i,      label: 'One Shot'       },
-    { match: /squeezer/i,       label: 'Squeezer'       },
-    { match: /dmt/i,            label: 'DMT'            },
-    { match: /wish/i,           label: 'Wish'           },
-    { match: /project/i,        label: 'Project'        },
-    { match: /graduation/i,     label: 'Graduation'     },
-    { match: /oral/i,           label: 'Oral Exam'      },
+    { match: /grammar/i,      label: 'Grammar'        },
+    { match: /listening/i,    label: 'Listening'      },
+    { match: /reading/i,      label: 'Reading'        },
+    { match: /vocab/i,        label: 'Vocabulary'     },
+    { match: /tongue/i,       label: 'Tongue Twister' },
+    { match: /one.?shot/i,    label: 'One Shot'       },
+    { match: /squeezer/i,     label: 'Squeezer'       },
+    { match: /dmt/i,          label: 'DMT'            },
+    { match: /wish/i,         label: 'Wish'           },
+    { match: /project/i,      label: 'Project'        },
+    { match: /graduation/i,   label: 'Graduation'     },
+    { match: /oral/i,         label: 'Oral Exam'      },
 ];
 
-function getImg(name) {
-    for (const m of IMG_MAP) if (m.match.test(name)) return `data/${m.img}.png`;
-    return 'data/activity.png';
+function getImgInfo(name) {
+    for (const m of IMG_MAP) if (m.match.test(name)) return m;
+    return { img: 'activity', emoji: '📌' };
 }
 function getBadge(name) {
     for (const m of BADGE_MAP) if (m.match.test(name)) return m.label;
@@ -436,30 +488,30 @@ function resolveFilePath(activityName, lvl, sess) {
     const numMatch = activityName.match(/\d+/);
     const num = numMatch ? numMatch[0] : '1';
 
-    if (n.includes('GRAMMAR'))              return `data/L-${lvl}-S-${sess}-Gra.js`;
+    if (n.includes('GRAMMAR'))                          return `data/L-${lvl}-S-${sess}-Gra.js`;
     if (n.includes('LISTENING') && n.includes('INTRO')) return `data/L-${lvl}-S-${sess}-Lin.js`;
-    if (n.includes('LISTENING'))            return `data/L-${lvl}-S-${sess}-Lis.js`;
-    if (n.includes('READING'))              return `data/R-${num}-${n.includes('INTRO') ? 'Intro' : 'Rev'}.js`;
-    if (n.includes('VOCAB') && n.includes('TEST'))  return `data/Voc-${num}-Test.js`;
-    if (n.includes('VOCAB'))                return `data/Voc-${num}-Intro.js`;
-    if (n.includes('TONGUE'))               return `data/TT-${num}-${n.includes('INTRO') ? 'Intro' : 'Rev'}.js`;
-    if (n.includes('ONE SHOT') && n.includes('INTRO')) return `data/OneShot-Intro.js`;
-    if (n.includes('ONE SHOT'))             return `data/OneShot-${num}-Test.js`;
-    if (n.includes('SQUEEZER') && n.includes('INTRO')) return `data/Squeezer-Intro.js`;
-    if (n.includes('SQUEEZER') && n.includes('TEST'))  return `data/Squeezer-${num}-Test.js`;
-    if (n.includes('SQUEEZER'))             return `data/Squeezer-${num}-Rev.js`;
-    if (n.includes('DMT') && n.includes('INTRO'))  return `data/DMT-Intro.js`;
-    if (n.includes('DMT') && n.includes('TEST'))   return `data/DMT-${num}-Test.js`;
-    if (n.includes('DMT'))                  return `data/DMT-${num}-Rev.js`;
-    if (n.includes('WISH') && n.includes('INTRO')) return `data/Wish-${num}-Intro.js`;
-    if (n.includes('WISH') && n.includes('TEST'))  return `data/Wish-${num}-Test.js`;
-    if (n.includes('WISH'))                 return `data/Wish-${num}-Rev.js`;
-    if (n.includes('PROJECT') && n.includes('INTRO')) return `data/Project-${num}-Intro.js`;
-    if (n.includes('PROJECT') && n.includes('TEST'))  return `data/Project-${num}-Test.js`;
-    if (n.includes('GRADUATION') && n.includes('INTRO')) return `data/GP-Intro.js`;
-    if (n.includes('GRADUATION'))           return `data/GP-Rev.js`;
-    if (n.includes('ORAL'))                 return `data/OralExam.js`;
-    if (n.includes('PRESENTATION'))         return `data/GP-Final.js`;
+    if (n.includes('LISTENING'))                        return `data/L-${lvl}-S-${sess}-Lis.js`;
+    if (n.includes('READING'))                          return `data/R-${num}-${n.includes('INTRO') ? 'Intro' : 'Rev'}.js`;
+    if (n.includes('VOCAB') && n.includes('TEST'))      return `data/Voc-${num}-Test.js`;
+    if (n.includes('VOCAB'))                            return `data/Voc-${num}-Intro.js`;
+    if (n.includes('TONGUE'))                           return `data/TT-${num}-${n.includes('INTRO') ? 'Intro' : 'Rev'}.js`;
+    if (n.includes('ONE SHOT') && n.includes('INTRO'))  return `data/OneShot-Intro.js`;
+    if (n.includes('ONE SHOT'))                         return `data/OneShot-${num}-Test.js`;
+    if (n.includes('SQUEEZER') && n.includes('INTRO'))  return `data/Squeezer-Intro.js`;
+    if (n.includes('SQUEEZER') && n.includes('TEST'))   return `data/Squeezer-${num}-Test.js`;
+    if (n.includes('SQUEEZER'))                         return `data/Squeezer-${num}-Rev.js`;
+    if (n.includes('DMT') && n.includes('INTRO'))       return `data/DMT-Intro.js`;
+    if (n.includes('DMT') && n.includes('TEST'))        return `data/DMT-${num}-Test.js`;
+    if (n.includes('DMT'))                              return `data/DMT-${num}-Rev.js`;
+    if (n.includes('WISH') && n.includes('INTRO'))      return `data/Wish-${num}-Intro.js`;
+    if (n.includes('WISH') && n.includes('TEST'))       return `data/Wish-${num}-Test.js`;
+    if (n.includes('WISH'))                             return `data/Wish-${num}-Rev.js`;
+    if (n.includes('PROJECT') && n.includes('INTRO'))   return `data/Project-${num}-Intro.js`;
+    if (n.includes('PROJECT') && n.includes('TEST'))    return `data/Project-${num}-Test.js`;
+    if (n.includes('GRADUATION') && n.includes('INTRO'))return `data/GP-Intro.js`;
+    if (n.includes('GRADUATION'))                       return `data/GP-Rev.js`;
+    if (n.includes('ORAL'))                             return `data/OralExam.js`;
+    if (n.includes('PRESENTATION'))                     return `data/GP-Final.js`;
     return `data/L-${lvl}-S-${sess}-${activityName.split(' ')[0].substring(0,3)}.js`;
 }
 
@@ -468,19 +520,17 @@ function resolveFilePath(activityName, lvl, sess) {
 // ─────────────────────────────────────────────
 function setupTilt(scene) {
     const card = scene.querySelector('.card');
-    const MAX  = 18; // max tilt degrees
+    const MAX  = 18;
 
     const apply = (rx, ry) => {
         card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px)`;
     };
 
     scene.addEventListener('mousemove', e => {
-        const r   = scene.getBoundingClientRect();
-        const x   = (e.clientX - r.left) / r.width  - 0.5;  // -0.5 … 0.5
-        const y   = (e.clientY - r.top)  / r.height - 0.5;
+        const r = scene.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width  - 0.5;
+        const y = (e.clientY - r.top)  / r.height - 0.5;
         apply(-y * MAX, x * MAX);
-
-        // Move shine highlight
         const shine = card.querySelector('.card-shine');
         shine.style.background = `radial-gradient(circle at ${(x+0.5)*100}% ${(y+0.5)*100}%,
             rgba(255,255,255,0.14) 0%, transparent 60%)`;
@@ -495,12 +545,11 @@ function setupTilt(scene) {
         card.style.transition = 'transform 0.12s ease-out';
     });
 
-    // Touch tilt
     scene.addEventListener('touchmove', e => {
-        const t   = e.touches[0];
-        const r   = scene.getBoundingClientRect();
-        const x   = (t.clientX - r.left) / r.width  - 0.5;
-        const y   = (t.clientY - r.top)  / r.height - 0.5;
+        const t = e.touches[0];
+        const r = scene.getBoundingClientRect();
+        const x = (t.clientX - r.left) / r.width  - 0.5;
+        const y = (t.clientY - r.top)  / r.height - 0.5;
         apply(-y * MAX * 0.6, x * MAX * 0.6);
     }, { passive: true });
 
@@ -522,13 +571,6 @@ function init() {
             `LEVEL <span>${lvl}</span> &nbsp;·&nbsp; CLASS <span>${sess}</span>`;
     }
 
-    if (typeof sessionData === 'undefined') {
-        document.getElementById('grid').innerHTML =
-            `<p style="color:var(--gold);padding:40px;grid-column:1/-1;text-align:center;font-size:1.2rem;">
-             ⚠️ Could not load session data. Check connection or data/levels.js path.</p>`;
-        return;
-    }
-
     if (!SESSION || !sessionData[SESSION]) {
         document.getElementById('grid').innerHTML =
             `<p style="color:var(--text-dim);padding:40px;grid-column:1/-1;text-align:center;font-size:1.1rem;">
@@ -540,10 +582,10 @@ function init() {
     const grid = document.getElementById('grid');
 
     sessionData[SESSION].forEach((item, i) => {
-        const imgSrc = getImg(item);
-        const badge  = getBadge(item);
+        const info  = getImgInfo(item);
+        const badge = getBadge(item);
+        const imgSrc = `data/${info.img}.png`;
 
-        // Wrapper for perspective
         const scene = document.createElement('div');
         scene.className = 'card-scene';
         scene.style.animationDelay = `${i * 55}ms`;
@@ -552,9 +594,9 @@ function init() {
         scene.innerHTML = `
             <div class="card">
                 <div class="card-face">
-                    <div class="card-img-wrap">
+                    <div class="card-img-wrap" id="img-wrap-${i}">
                         <img src="${imgSrc}" alt="${badge}"
-                             onerror="this.style.background='#1a1a1a';this.style.objectFit='none';this.src='';">
+                             onerror="this.parentElement.innerHTML='<div class=\\'card-img-fallback\\'>${info.emoji}</div>'">
                     </div>
                     <div class="card-label">
                         <span class="card-type">${badge}</span>
@@ -569,7 +611,7 @@ function init() {
         setupTilt(scene);
     });
 
-    // Canvas
+    // Canvas resize
     const canvas = document.getElementById('draw-canvas');
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -748,12 +790,7 @@ window.addEventListener('keydown', e => {
 // ─────────────────────────────────────────────
 // BOOT
 // ─────────────────────────────────────────────
-function waitForData(retries = 20) {
-    if (typeof sessionData !== 'undefined') { init(); return; }
-    if (retries <= 0) { init(); return; }
-    setTimeout(() => waitForData(retries - 1), 150);
-}
-window.addEventListener('load', () => waitForData());
+window.addEventListener('load', () => init());
 </script>
 </body>
 </html>

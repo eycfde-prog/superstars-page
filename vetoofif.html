@@ -4,19 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VETO PROGRAM | Smart Board</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #c5a059;
-            --gold-dim: rgba(197,160,89,0.15);
-            --gold-glow: rgba(197,160,89,0.35);
+            --gold-dim: rgba(197,160,89,0.18);
+            --gold-glow: rgba(197,160,89,0.4);
             --bg: #080808;
-            --surface: rgba(255,255,255,0.04);
-            --surface-hover: rgba(197,160,89,0.08);
-            --text: #f0f0f0;
-            --text-dim: rgba(255,255,255,0.4);
-            --red: #e63946;
-            --banner-h: 90px;
+            --border: rgba(197,160,89,0.22);
+            --text: #efefef;
+            --text-dim: rgba(255,255,255,0.45);
+            --banner: 100px;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
@@ -24,284 +23,311 @@
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Barlow', sans-serif;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* ── Noise texture overlay ── */
-        body::before {
-            content: '';
-            position: fixed; inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: 1;
-        }
-
-        /* ══════════════════════════════
-           TOP BANNER
-        ══════════════════════════════ */
+        /* ── BANNER ── */
         .banner {
-            position: relative; z-index: 100;
-            height: var(--banner-h);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 28px;
-            background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+            height: var(--banner);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
             border-bottom: 2px solid var(--gold);
-            box-shadow: 0 4px 40px rgba(0,0,0,0.6), 0 1px 0 rgba(197,160,89,0.1);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.7);
+            position: relative;
+            z-index: 10;
         }
-
-        .banner-left, .banner-right { display:flex; align-items:center; gap:14px; flex: 1; }
-        .banner-right { justify-content: flex-end; }
-
-        .back-btn {
+        .banner-back {
             background: transparent;
-            border: 1.5px solid rgba(197,160,89,0.4);
+            border: 2px solid var(--gold);
             color: var(--gold);
-            padding: 8px 16px;
+            padding: 9px 18px;
             border-radius: 8px;
             cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.8rem;
+            font-family: 'Barlow', sans-serif;
             font-weight: 700;
+            font-size: 0.85rem;
             letter-spacing: 1px;
             text-transform: uppercase;
-            transition: all 0.25s;
+            transition: background 0.2s, color 0.2s;
+            flex-shrink: 0;
         }
-        .back-btn:hover { background: var(--gold-dim); border-color: var(--gold); }
-
-        .logo-img { height: 52px; filter: drop-shadow(0 0 8px rgba(197,160,89,0.25)); }
-        .ezz-img  { height: 72px; border-radius: 10px; border: 2px solid var(--gold); box-shadow: 0 0 20px rgba(197,160,89,0.2); }
-
-        .session-title {
+        .banner-back:hover { background: var(--gold); color: #000; }
+        .banner-logo   { height: 58px; filter: drop-shadow(0 0 8px var(--gold-glow)); flex-shrink: 0; }
+        .banner-avatar { height: 78px; border-radius: 10px; border: 2px solid var(--gold); flex-shrink: 0; }
+        .banner-title  { text-align: center; flex: 1; padding: 0 20px; }
+        .banner-title h1 {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 2.4rem;
             letter-spacing: 4px;
-            color: var(--text);
-            text-align: center;
-            flex: 2;
-            white-space: nowrap;
+            color: #fff;
+            line-height: 1;
         }
-        .session-title span { color: var(--gold); }
+        .banner-title h1 span { color: var(--gold); }
+        .banner-title p {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
 
-        /* ══════════════════════════════
-           CONTENT GRID
-        ══════════════════════════════ */
+        /* ── GRID ── */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
-            padding: 32px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 28px;
+            padding: 32px 36px;
             overflow-y: auto;
-            height: calc(100vh - var(--banner-h));
+            height: calc(100vh - var(--banner));
+            align-content: start;
+        }
+
+        /* ── 3D CARD WRAPPER ── */
+        .card-scene {
+            perspective: 900px;
+            cursor: pointer;
         }
 
         .card {
-            background: var(--surface);
-            border: 1.5px solid var(--gold-dim);
-            border-radius: 16px;
-            padding: 28px 22px;
-            cursor: pointer;
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3 / 4;   /* portrait card — image fills top 70%, label bottom 30% */
+            transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s;
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.55), 0 0 0 1.5px var(--border);
+        }
+
+        /* Tilt on hover — JS overrides inline, CSS provides lift */
+        .card-scene:hover .card {
+            box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 2px var(--gold), 0 0 30px var(--gold-dim);
+        }
+
+        /* ── CARD FACE ── */
+        .card-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: #111;
+            backface-visibility: hidden;
+        }
+
+        /* Image area — top 68% */
+        .card-img-wrap {
+            flex: 0 0 68%;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        .card-scene:hover .card-img-wrap img {
+            transform: scale(1.06);
+        }
+
+        /* Gradient overlay on image */
+        .card-img-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                transparent 40%,
+                rgba(0,0,0,0.65) 100%
+            );
+        }
+
+        /* Shine layer — moves with tilt */
+        .card-shine {
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            pointer-events: none;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(255,255,255,0.12) 0%,
+                transparent 60%
+            );
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 5;
+        }
+        .card-scene:hover .card-shine { opacity: 1; }
+
+        /* Label area — bottom 32% */
+        .card-label {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            min-height: 150px;
-            transition: border-color 0.3s, background 0.3s, transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
+            padding: 12px 14px;
+            background: linear-gradient(180deg, #161616 0%, #0e0e0e 100%);
+            border-top: 1.5px solid var(--border);
+            gap: 6px;
         }
-
-        .card::after {
-            content: '';
-            position: absolute; inset: 0;
-            background: radial-gradient(ellipse at 50% 0%, rgba(197,160,89,0.08) 0%, transparent 70%);
-            opacity: 0; transition: opacity 0.3s;
-        }
-        .card:hover::after { opacity: 1; }
-
-        .card:hover {
-            border-color: var(--gold);
-            background: var(--surface-hover);
-            transform: translateY(-6px);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(197,160,89,0.1);
-        }
-
-        .card-icon {
-            font-size: 2rem;
-            line-height: 1;
-            filter: grayscale(0.2);
-        }
-
         .card-type {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 700;
             letter-spacing: 2.5px;
             text-transform: uppercase;
             color: var(--gold);
-            opacity: 0.7;
+            background: var(--gold-dim);
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
         }
-
-        .card-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.6rem;
-            letter-spacing: 1.5px;
-            color: var(--text);
+        .card-name {
+            font-family: 'Barlow', sans-serif;
+            font-size: clamp(0.85rem, 1.1vw, 1.1rem);
+            font-weight: 700;
+            color: #fff;
             text-align: center;
-            line-height: 1.15;
+            line-height: 1.3;
         }
 
-        /* ══════════════════════════════
-           ACTIVITY STAGE
-        ══════════════════════════════ */
+        /* Edge glow strip at bottom of card */
+        .card-edge {
+            position: absolute;
+            bottom: 0; left: 10%; right: 10%;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 2px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            filter: blur(1px);
+        }
+        .card-scene:hover .card-edge { opacity: 0.8; }
+
+        /* ── STAGE ── */
         #stage {
-            position: fixed; inset: 0;
-            background: #000; z-index: 8000;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 8000;
             display: none;
         }
-        #stage-content { width:100%; height:100%; overflow:hidden; }
-
-        .exit-btn {
-            position: fixed; top: 16px; right: 16px; z-index: 9999;
-            padding: 9px 18px;
-            font-size: 0.78rem; font-weight: 800; letter-spacing: 1.5px;
-            font-family: 'DM Sans', sans-serif;
-            text-transform: uppercase;
-            background: rgba(230,57,70,0.85);
-            color: white;
-            border: 1.5px solid var(--red);
-            border-radius: 8px;
-            cursor: pointer;
-            backdrop-filter: blur(8px);
-            transition: background 0.2s, transform 0.15s;
-        }
-        .exit-btn:hover { background: var(--red); transform: scale(1.04); }
-
-        /* Loading overlay */
-        #loading-overlay {
-            position: fixed; inset: 0; z-index: 8100;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            align-items: center; justify-content: center;
-            flex-direction: column; gap: 18px;
+        #stage-content { width: 100%; height: 100%; overflow: hidden; }
+        #stage-loader {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: var(--gold);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 3px;
         }
         .spinner {
             width: 48px; height: 48px;
-            border: 3px solid var(--gold-dim);
+            border: 3px solid var(--border);
             border-top-color: var(--gold);
             border-radius: 50%;
-            animation: spin 0.7s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #loading-overlay p { color: var(--gold); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* ══════════════════════════════
-           TOOLBOX
-        ══════════════════════════════ */
-        .toolbox {
-            position: fixed; bottom: 28px; right: 28px;
-            z-index: 12000;
-            display: flex; flex-direction: column-reverse; align-items: center; gap: 12px;
-        }
-
-        .tool-btn {
-            width: 58px; height: 58px;
-            border-radius: 50%;
-            background: #151515;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            font-size: 1.5rem;
+        .exit-btn {
+            position: fixed;
+            top: 14px; right: 14px;
+            z-index: 9999;
+            padding: 8px 16px;
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: rgba(214,48,49,0.85);
+            color: white;
+            border: 2px solid #ff4757;
+            border-radius: 8px;
             cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-            transition: opacity 0.3s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.25s, box-shadow 0.25s;
-            opacity: 0;
-            transform: translateY(16px) scale(0.7);
-            pointer-events: none;
+            transition: background 0.2s;
         }
+        .exit-btn:hover { background: #d63031; }
 
-        .tool-btn.main {
-            opacity: 1; transform: none; pointer-events: auto;
-            background: var(--gold); color: #000;
-            font-size: 1.35rem;
-            z-index: 1;
-        }
-
-        .toolbox.open .tool-btn {
-            opacity: 1; transform: none; pointer-events: auto;
-        }
-        .toolbox.open .main {
-            transform: rotate(45deg);
-            background: var(--red); color: #fff; border-color: var(--red);
-        }
-
-        .tool-btn:hover { box-shadow: 0 0 18px var(--gold-glow); }
-        .tool-btn.active { background: var(--red) !important; border-color: var(--red) !important; color: #fff !important; }
-
-        /* ══════════════════════════════
-           FLASH NOTE
-        ══════════════════════════════ */
-        #note-panel {
-            position: fixed; inset: 0; z-index: 13000;
-            display: none;
+        /* ── NOTE ── */
+        #note-overlay {
+            position: fixed; inset: 0; z-index: 13000; display: none;
             background: rgba(0,0,0,0.96);
-            align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+            flex-direction: column; align-items: center; justify-content: center; gap: 20px;
         }
-        #note-input {
-            width: 88%; max-width: 900px;
-            background: transparent;
-            border: none; border-bottom: 3px solid var(--gold);
+        #note-textarea {
+            width: 88%; min-height: 180px;
+            background: transparent; border: none;
+            border-bottom: 3px solid var(--gold);
             color: var(--gold);
-            font-size: clamp(2.5rem, 6vw, 5rem);
             font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 3px;
-            text-align: center;
-            outline: none;
-            padding: 12px 0;
-            resize: none;
-            min-height: 120px;
+            font-size: clamp(3rem, 8vw, 6rem);
+            text-align: center; outline: none; resize: none;
         }
-        #note-input::placeholder { color: rgba(197,160,89,0.25); }
-        #note-hint { color: var(--text-dim); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
+        #note-overlay p { color: var(--text-dim); font-size: 0.9rem; letter-spacing: 2px; }
 
-        /* ══════════════════════════════
-           FREEZE LAYER
-        ══════════════════════════════ */
-        #freeze-layer {
-            position: fixed; inset: 0; z-index: 11000;
-            background: #000;
-            display: none; overflow: hidden; cursor: grab;
-        }
-        #freeze-layer:active { cursor: grabbing; }
-        #freeze-content { position: absolute; transform-origin: 0 0; will-change: transform; }
-
-        /* ══════════════════════════════
-           LASER + CANVAS
-        ══════════════════════════════ */
+        /* ── LASER ── */
         #laser {
-            position: fixed; width: 18px; height: 18px;
-            background: radial-gradient(circle, #ff2222 0%, rgba(255,0,0,0) 70%);
-            border-radius: 50%;
-            box-shadow: 0 0 12px #ff0000, 0 0 28px #ff0000;
+            position: fixed; width: 18px; height: 18px; border-radius: 50%;
+            background: radial-gradient(circle, #ff2020 0%, rgba(255,0,0,0) 70%);
+            box-shadow: 0 0 12px #ff0000, 0 0 24px #ff0000;
             pointer-events: none; z-index: 14000; display: none;
         }
         #draw-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 8500; }
 
-        /* ══════════════════════════════
-           RESPONSIVE
-        ══════════════════════════════ */
+        /* ── FREEZE ── */
+        #freeze-layer {
+            position: fixed; inset: 0; z-index: 11000; background: #000;
+            display: none; cursor: grab; overflow: hidden;
+        }
+        #freeze-layer:active { cursor: grabbing; }
+        #freeze-content { position: absolute; transform-origin: 0 0; will-change: transform; }
+
+        /* ── TOOLBOX ── */
+        .toolbox {
+            position: fixed; bottom: 28px; right: 28px; z-index: 12000;
+            display: flex; flex-direction: column-reverse; align-items: center; gap: 12px;
+        }
+        .tool-btn {
+            width: 58px; height: 58px; border-radius: 50%;
+            background: #1a1a1a; border: 2.5px solid var(--gold);
+            color: var(--gold); font-size: 1.4rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            transition: opacity 0.3s, transform 0.35s cubic-bezier(0.68,-0.55,0.27,1.55), box-shadow 0.2s;
+            opacity: 0; transform: translateY(20px) scale(0); pointer-events: none;
+        }
+        .tool-btn.main {
+            opacity: 1; transform: none; pointer-events: auto;
+            background: var(--gold); color: #000; font-size: 1.5rem;
+        }
+        .toolbox.open .tool-btn { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .toolbox.open .main { transform: rotate(135deg); background: #d63031; border-color: #ff4757; color: white; }
+        .tool-btn:hover:not(.main) { transform: scale(1.12) translateY(0) !important; box-shadow: 0 0 18px var(--gold-glow); }
+        .tool-btn.on { background: #ff4757; border-color: #fff; color: white; }
+
+        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
-            :root { --banner-h: 72px; }
-            .banner { padding: 0 14px; }
-            .logo-img { height: 38px; }
-            .ezz-img  { height: 52px; }
-            .session-title { font-size: 1.4rem; letter-spacing: 2px; }
-            .grid { padding: 14px; gap: 12px; }
-            .card { min-height: 120px; padding: 20px 16px; }
-            .card-title { font-size: 1.25rem; }
-            .toolbox { bottom: 18px; right: 18px; }
+            .banner { padding: 0 14px; height: 72px; }
+            .banner-logo { height: 38px; }
+            .banner-avatar { height: 52px; }
+            .banner-title h1 { font-size: 1.5rem; letter-spacing: 2px; }
+            .banner-back { padding: 7px 12px; font-size: 0.75rem; }
+            .grid { padding: 14px; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            .toolbox { bottom: 16px; right: 16px; }
             .tool-btn { width: 50px; height: 50px; font-size: 1.2rem; }
-            #note-input { font-size: 2rem; }
         }
     </style>
 </head>
@@ -309,374 +335,425 @@
 
 <!-- BANNER -->
 <header class="banner">
-    <div class="banner-left">
-        <button class="back-btn" onclick="window.location.href='vetoof.html'">← Back</button>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img" onerror="this.style.display='none'">
+    <button class="banner-back" onclick="window.location.href='vetoof.html'">← Back</button>
+    <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="banner-logo" alt="VETO">
+    <div class="banner-title">
+        <h1 id="title-text">VETO <span>BOARD</span></h1>
+        <p id="title-sub">Select an activity to begin</p>
     </div>
-
-    <h1 class="session-title" id="session-title">VETO <span>BOARD</span></h1>
-
-    <div class="banner-right">
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="ezz-img" onerror="this.style.display='none'">
-    </div>
+    <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="banner-avatar" alt="Mr. Ezz">
 </header>
 
-<!-- MAIN GRID -->
+<!-- CARD GRID -->
 <main class="grid" id="grid"></main>
 
 <!-- ACTIVITY STAGE -->
 <div id="stage">
     <button class="exit-btn" onclick="closeStage()">✖ Exit</button>
+    <div id="stage-loader">
+        <div class="spinner"></div>
+        <span>LOADING...</span>
+    </div>
     <div id="stage-content"></div>
 </div>
 
-<!-- LOADING -->
-<div id="loading-overlay">
-    <div class="spinner"></div>
-    <p>Loading Activity…</p>
-</div>
-
-<!-- FLASH NOTE -->
-<div id="note-panel">
-    <textarea id="note-input" placeholder="Write here…" rows="3"></textarea>
-    <p id="note-hint">ESC to close</p>
+<!-- NOTE OVERLAY -->
+<div id="note-overlay">
+    <textarea id="note-textarea" placeholder="Type here..."></textarea>
+    <p>ESC to close</p>
 </div>
 
 <!-- FREEZE LAYER -->
-<div id="freeze-layer">
-    <div id="freeze-content"></div>
-</div>
+<div id="freeze-layer"><div id="freeze-content"></div></div>
 
-<!-- LASER -->
+<!-- LASER + CANVAS -->
 <div id="laser"></div>
 <canvas id="draw-canvas"></canvas>
 
 <!-- TOOLBOX -->
 <div class="toolbox" id="toolbox">
     <button class="tool-btn main" onclick="toggleToolbox()" title="Tools">🛠️</button>
-    <button class="tool-btn" id="laserBtn"  onclick="toggleLaser()"  title="Laser Pointer">🔦</button>
-    <button class="tool-btn" id="freezeBtn" onclick="toggleFreeze()" title="Freeze & Zoom">❄️</button>
-    <button class="tool-btn" id="reloadBtn" onclick="location.reload()" title="Reload">🔄</button>
-    <button class="tool-btn" id="noteBtn"   onclick="toggleNote()"   title="Flash Note">📝</button>
+    <button class="tool-btn" id="btn-laser"  onclick="toggleLaser()"  title="Laser">🔦</button>
+    <button class="tool-btn" id="btn-freeze" onclick="toggleFreeze()" title="Freeze & Zoom">❄️</button>
+    <button class="tool-btn" id="btn-reload" onclick="location.reload()" title="Reload">🔄</button>
+    <button class="tool-btn" id="btn-note"   onclick="toggleNote()"   title="Flash Note">📝</button>
 </div>
 
-<!-- SESSION DATA -->
-<script src="data/sessionData.js"></script>
+<script src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/data/levels.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-// ─── Activity type metadata ─────────────────────────────────────────────────
-const ACTIVITY_META = {
-    grammar:     { icon: '📚', label: 'Grammar',       color: '#7b9fff' },
-    listening:   { icon: '🎧', label: 'Listening',     color: '#5ec4a8' },
-    vocab:       { icon: '📖', label: 'Vocabulary',    color: '#f4a261' },
-    reading:     { icon: '📰', label: 'Reading',       color: '#a8dadc' },
-    tongue:      { icon: '🗣️', label: 'Tongue Twister',color: '#e9c46a' },
-    oneshot:     { icon: '⚡', label: 'One Shot',      color: '#ff6b9d' },
-    squeezer:    { icon: '💪', label: 'Squeezer',      color: '#c77dff' },
-    dmt:         { icon: '🗣️', label: 'DMT',           color: '#f77f00' },
-    wish:        { icon: '✨', label: 'Wish',           color: '#90e0ef' },
-    project:     { icon: '🎯', label: 'Project',       color: '#80b918' },
-    gp:          { icon: '🎓', label: 'Grad. Project', color: '#ffd166' },
-    default:     { icon: '▶️', label: 'Activity',      color: '#c5a059' },
-};
+// ─────────────────────────────────────────────
+// IMAGE MAP  →  data/<name>.png
+// key = substring matched against activity name (lowercase)
+// ─────────────────────────────────────────────
+const IMG_MAP = [
+    { match: /grammar/i,              img: 'grammar'       },
+    { match: /listening.*intro/i,     img: 'listening'     },
+    { match: /listening/i,            img: 'listening'     },
+    { match: /reading/i,              img: 'reading'       },
+    { match: /vocab/i,                img: 'vocab'         },
+    { match: /tongue/i,               img: 'tongue'        },
+    { match: /one.?shot/i,            img: 'oneshot'       },
+    { match: /squeezer/i,             img: 'squeezer'      },
+    { match: /dmt/i,                  img: 'dmt'           },
+    { match: /wish/i,                 img: 'wish'          },
+    { match: /project/i,              img: 'project'       },
+    { match: /graduation/i,           img: 'graduation'    },
+    { match: /oral.*exam/i,           img: 'oralexam'      },
+    { match: /presentation/i,         img: 'graduation'    },
+];
 
-function getMeta(name) {
-    const u = name.toUpperCase();
-    if (u.includes('GRAMMAR'))       return ACTIVITY_META.grammar;
-    if (u.includes('LISTENING'))     return ACTIVITY_META.listening;
-    if (u.includes('VOCAB'))         return ACTIVITY_META.vocab;
-    if (u.includes('READING'))       return ACTIVITY_META.reading;
-    if (u.includes('TONGUE'))        return ACTIVITY_META.tongue;
-    if (u.includes('ONE SHOT'))      return ACTIVITY_META.oneshot;
-    if (u.includes('SQUEEZER'))      return ACTIVITY_META.squeezer;
-    if (u.includes('DMT'))           return ACTIVITY_META.dmt;
-    if (u.includes('WISH'))          return ACTIVITY_META.wish;
-    if (u.includes('GRADUATION') || u.includes('GP')) return ACTIVITY_META.gp;
-    if (u.includes('PROJECT'))       return ACTIVITY_META.project;
-    return ACTIVITY_META.default;
+const BADGE_MAP = [
+    { match: /grammar/i,        label: 'Grammar'        },
+    { match: /listening/i,      label: 'Listening'      },
+    { match: /reading/i,        label: 'Reading'        },
+    { match: /vocab/i,          label: 'Vocabulary'     },
+    { match: /tongue/i,         label: 'Tongue Twister' },
+    { match: /one.?shot/i,      label: 'One Shot'       },
+    { match: /squeezer/i,       label: 'Squeezer'       },
+    { match: /dmt/i,            label: 'DMT'            },
+    { match: /wish/i,           label: 'Wish'           },
+    { match: /project/i,        label: 'Project'        },
+    { match: /graduation/i,     label: 'Graduation'     },
+    { match: /oral/i,           label: 'Oral Exam'      },
+];
+
+function getImg(name) {
+    for (const m of IMG_MAP) if (m.match.test(name)) return `data/${m.img}.png`;
+    return 'data/activity.png';
+}
+function getBadge(name) {
+    for (const m of BADGE_MAP) if (m.match.test(name)) return m.label;
+    return 'Activity';
 }
 
-// ─── File path resolver ──────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// FILE PATH RESOLVER
+// ─────────────────────────────────────────────
 function resolveFilePath(activityName, lvl, sess) {
-    const u = activityName.toUpperCase();
-
-    // Extract number from activity name (e.g. "Reading 5 Review" → "5")
+    const n = activityName.toUpperCase();
     const numMatch = activityName.match(/\d+/);
-    const num = numMatch ? numMatch[0] : '';
+    const num = numMatch ? numMatch[0] : '1';
 
-    if (u.includes('GRAMMAR'))
-        return `data/Grammar/L${lvl}-S${sess}-Grammar.js`;
-
-    if (u.includes('LISTENING')) {
-        const type = u.includes('INTRO') ? 'Intro' : 'Review';
-        return `data/Listening/L${lvl}-S${sess}-Listening-${type}.js`;
-    }
-
-    if (u.includes('VOCAB')) {
-        const type = u.includes('INTRO') ? 'Intro' : 'Test';
-        return `data/Vocab/Vocab-Part${num}-${type}.js`;
-    }
-
-    if (u.includes('READING')) {
-        const type = u.includes('INTRO') ? 'Intro' : 'Review';
-        return `data/Reading/Reading-${num}-${type}.js`;
-    }
-
-    if (u.includes('TONGUE TWISTER')) {
-        const type = u.includes('INTRO') ? 'Intro' : 'Review';
-        return `data/TongueTwister/TT-${num}-${type}.js`;
-    }
-
-    if (u.includes('ONE SHOT')) {
-        if (u.includes('INTRO')) return `data/OneShot/OneShot-Intro.js`;
-        return `data/OneShot/OneShot-${num}-Test.js`;
-    }
-
-    if (u.includes('SQUEEZER')) {
-        const type = u.includes('TEST') ? 'Test' : (u.includes('REVIEW') ? 'Review' : 'Intro');
-        return `data/Squeezer/Squeezer-${num}-${type}.js`;
-    }
-
-    if (u.includes('DMT')) {
-        if (u.includes('INTRO')) return `data/DMT/DMT-Intro.js`;
-        const type = u.includes('TEST') ? 'Test' : 'Review';
-        return `data/DMT/DMT-${num}-${type}.js`;
-    }
-
-    if (u.includes('WISH')) {
-        if (u.includes('INTRO')) return `data/Wish/Wish-Intro.js`;
-        const type = u.includes('TEST') ? 'Test' : 'Review';
-        return `data/Wish/Wish-${num}-${type}.js`;
-    }
-
-    if (u.includes('PROJECT') && !u.includes('GRADUATION')) {
-        if (u.includes('INTRO')) return `data/Project/Project-Intro.js`;
-        const type = u.includes('TEST') ? 'Test' : 'Review';
-        return `data/Project/Project-${type}.js`;
-    }
-
-    if (u.includes('GRADUATION') || u.includes('GP')) {
-        if (u.includes('PRESENTATION')) return `data/GP/GP-Presentation.js`;
-        if (u.includes('INTRO'))  return `data/GP/GP-Intro.js`;
-        return `data/GP/GP-Review.js`;
-    }
-
-    if (u.includes('ORAL EXAM')) return `data/Special/OralExam.js`;
-
-    // Fallback
-    return `data/L${lvl}-S${sess}-${activityName.replace(/\s+/g,'-')}.js`;
+    if (n.includes('GRAMMAR'))              return `data/L-${lvl}-S-${sess}-Gra.js`;
+    if (n.includes('LISTENING') && n.includes('INTRO')) return `data/L-${lvl}-S-${sess}-Lin.js`;
+    if (n.includes('LISTENING'))            return `data/L-${lvl}-S-${sess}-Lis.js`;
+    if (n.includes('READING'))              return `data/R-${num}-${n.includes('INTRO') ? 'Intro' : 'Rev'}.js`;
+    if (n.includes('VOCAB') && n.includes('TEST'))  return `data/Voc-${num}-Test.js`;
+    if (n.includes('VOCAB'))                return `data/Voc-${num}-Intro.js`;
+    if (n.includes('TONGUE'))               return `data/TT-${num}-${n.includes('INTRO') ? 'Intro' : 'Rev'}.js`;
+    if (n.includes('ONE SHOT') && n.includes('INTRO')) return `data/OneShot-Intro.js`;
+    if (n.includes('ONE SHOT'))             return `data/OneShot-${num}-Test.js`;
+    if (n.includes('SQUEEZER') && n.includes('INTRO')) return `data/Squeezer-Intro.js`;
+    if (n.includes('SQUEEZER') && n.includes('TEST'))  return `data/Squeezer-${num}-Test.js`;
+    if (n.includes('SQUEEZER'))             return `data/Squeezer-${num}-Rev.js`;
+    if (n.includes('DMT') && n.includes('INTRO'))  return `data/DMT-Intro.js`;
+    if (n.includes('DMT') && n.includes('TEST'))   return `data/DMT-${num}-Test.js`;
+    if (n.includes('DMT'))                  return `data/DMT-${num}-Rev.js`;
+    if (n.includes('WISH') && n.includes('INTRO')) return `data/Wish-${num}-Intro.js`;
+    if (n.includes('WISH') && n.includes('TEST'))  return `data/Wish-${num}-Test.js`;
+    if (n.includes('WISH'))                 return `data/Wish-${num}-Rev.js`;
+    if (n.includes('PROJECT') && n.includes('INTRO')) return `data/Project-${num}-Intro.js`;
+    if (n.includes('PROJECT') && n.includes('TEST'))  return `data/Project-${num}-Test.js`;
+    if (n.includes('GRADUATION') && n.includes('INTRO')) return `data/GP-Intro.js`;
+    if (n.includes('GRADUATION'))           return `data/GP-Rev.js`;
+    if (n.includes('ORAL'))                 return `data/OralExam.js`;
+    if (n.includes('PRESENTATION'))         return `data/GP-Final.js`;
+    return `data/L-${lvl}-S-${sess}-${activityName.split(' ')[0].substring(0,3)}.js`;
 }
 
-// ─── Init ────────────────────────────────────────────────────────────────────
-const params = new URLSearchParams(window.location.search);
-const sessionId = params.get('session');
+// ─────────────────────────────────────────────
+// 3D TILT
+// ─────────────────────────────────────────────
+function setupTilt(scene) {
+    const card = scene.querySelector('.card');
+    const MAX  = 18; // max tilt degrees
 
-function init() {
-    // Title
-    if (sessionId) {
-        const [lvl, sess] = sessionId.split('-');
-        document.getElementById('session-title').innerHTML =
-            `LEVEL <span>${lvl}</span> &nbsp;|&nbsp; SESSION <span>${sess}</span>`;
-    }
+    const apply = (rx, ry) => {
+        card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px)`;
+    };
 
-    // Cards
-    if (!sessionId || !sessionData?.[sessionId]) return;
-    const grid = document.getElementById('grid');
+    scene.addEventListener('mousemove', e => {
+        const r   = scene.getBoundingClientRect();
+        const x   = (e.clientX - r.left) / r.width  - 0.5;  // -0.5 … 0.5
+        const y   = (e.clientY - r.top)  / r.height - 0.5;
+        apply(-y * MAX, x * MAX);
 
-    sessionData[sessionId].forEach((item, i) => {
-        const meta = getMeta(item);
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.animationDelay = `${i * 60}ms`;
-        card.style.setProperty('--card-accent', meta.color);
-        card.innerHTML = `
-            <div class="card-icon">${meta.icon}</div>
-            <div class="card-type">${meta.label}</div>
-            <div class="card-title">${item}</div>
-        `;
-        card.onclick = () => openActivity(item);
-        grid.appendChild(card);
+        // Move shine highlight
+        const shine = card.querySelector('.card-shine');
+        shine.style.background = `radial-gradient(circle at ${(x+0.5)*100}% ${(y+0.5)*100}%,
+            rgba(255,255,255,0.14) 0%, transparent 60%)`;
     });
 
-    // Canvas resize
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    setupFreezeControls();
+    scene.addEventListener('mouseleave', () => {
+        card.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0)';
+        card.style.transition = 'transform 0.6s cubic-bezier(0.23,1,0.32,1)';
+    });
+
+    scene.addEventListener('mouseenter', () => {
+        card.style.transition = 'transform 0.12s ease-out';
+    });
+
+    // Touch tilt
+    scene.addEventListener('touchmove', e => {
+        const t   = e.touches[0];
+        const r   = scene.getBoundingClientRect();
+        const x   = (t.clientX - r.left) / r.width  - 0.5;
+        const y   = (t.clientY - r.top)  / r.height - 0.5;
+        apply(-y * MAX * 0.6, x * MAX * 0.6);
+    }, { passive: true });
+
+    scene.addEventListener('touchend', () => {
+        card.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0)';
+    });
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+const params  = new URLSearchParams(window.location.search);
+const SESSION = params.get('session') || '';
+
+function init() {
+    if (SESSION) {
+        const [lvl, sess] = SESSION.split('-');
+        document.getElementById('title-text').innerHTML =
+            `LEVEL <span>${lvl}</span> &nbsp;·&nbsp; CLASS <span>${sess}</span>`;
+    }
+
+    if (typeof sessionData === 'undefined') {
+        document.getElementById('grid').innerHTML =
+            `<p style="color:var(--gold);padding:40px;grid-column:1/-1;text-align:center;font-size:1.2rem;">
+             ⚠️ Could not load session data. Check connection or data/levels.js path.</p>`;
+        return;
+    }
+
+    if (!SESSION || !sessionData[SESSION]) {
+        document.getElementById('grid').innerHTML =
+            `<p style="color:var(--text-dim);padding:40px;grid-column:1/-1;text-align:center;font-size:1.1rem;">
+             No session found for <strong style="color:var(--gold)">${SESSION || '?'}</strong>.
+             Go back and select a valid session.</p>`;
+        return;
+    }
+
+    const grid = document.getElementById('grid');
+
+    sessionData[SESSION].forEach((item, i) => {
+        const imgSrc = getImg(item);
+        const badge  = getBadge(item);
+
+        // Wrapper for perspective
+        const scene = document.createElement('div');
+        scene.className = 'card-scene';
+        scene.style.animationDelay = `${i * 55}ms`;
+        scene.onclick = () => openActivity(item);
+
+        scene.innerHTML = `
+            <div class="card">
+                <div class="card-face">
+                    <div class="card-img-wrap">
+                        <img src="${imgSrc}" alt="${badge}"
+                             onerror="this.style.background='#1a1a1a';this.style.objectFit='none';this.src='';">
+                    </div>
+                    <div class="card-label">
+                        <span class="card-type">${badge}</span>
+                        <span class="card-name">${item}</span>
+                    </div>
+                </div>
+                <div class="card-shine"></div>
+                <div class="card-edge"></div>
+            </div>`;
+
+        grid.appendChild(scene);
+        setupTilt(scene);
+    });
+
+    // Canvas
+    const canvas = document.getElementById('draw-canvas');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    setupFreeze();
     setupLaser();
 }
 
-// ─── Open Activity ────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// OPEN ACTIVITY
+// ─────────────────────────────────────────────
 function openActivity(name) {
-    if (!sessionId) return;
-    const [lvl, sess] = sessionId.split('-');
+    if (!SESSION) return;
+    const [lvl, sess] = SESSION.split('-');
     const path = resolveFilePath(name, lvl, sess);
 
-    const loading = document.getElementById('loading-overlay');
-    loading.style.display = 'flex';
+    const stage   = document.getElementById('stage');
+    const loader  = document.getElementById('stage-loader');
+    const content = document.getElementById('stage-content');
 
-    // Remove any previous injected script with same src
+    stage.style.display  = 'block';
+    loader.style.display = 'flex';
+    content.innerHTML    = '';
+
     document.querySelectorAll('script[data-activity]').forEach(s => s.remove());
 
     const script = document.createElement('script');
     script.setAttribute('data-activity', 'true');
-    script.src = path + '?t=' + Date.now(); // cache-bust
-    script.onload = () => {
-        loading.style.display = 'none';
-        document.getElementById('stage').style.display = 'block';
-    };
+    script.src = path;
+    script.onload  = () => { loader.style.display = 'none'; };
     script.onerror = () => {
-        loading.style.display = 'none';
-        showError(`Could not load:\n${path}`);
+        loader.style.display = 'none';
+        content.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+                        height:100%;gap:16px;color:var(--gold);font-family:'Bebas Neue',sans-serif;">
+                <span style="font-size:3rem;">⚠️</span>
+                <span style="font-size:1.8rem;letter-spacing:3px;">FILE NOT FOUND</span>
+                <span style="font-size:1rem;color:var(--text-dim);font-family:'Barlow',sans-serif;">${path}</span>
+            </div>`;
     };
     document.head.appendChild(script);
-}
-
-function showError(msg) {
-    const stage = document.getElementById('stage');
-    stage.style.display = 'block';
-    document.getElementById('stage-content').innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:16px;color:#c5a059;font-family:'DM Sans',sans-serif;">
-            <div style="font-size:3rem;">⚠️</div>
-            <div style="font-size:1.1rem;opacity:0.7;white-space:pre-line;text-align:center;max-width:500px;">${msg}</div>
-        </div>`;
 }
 
 function closeStage() {
     document.getElementById('stage').style.display = 'none';
     document.getElementById('stage-content').innerHTML = '';
+    document.getElementById('stage-loader').style.display = 'none';
 }
 
-// ─── Toolbox ─────────────────────────────────────────────────────────────────
-function toggleToolbox() {
-    document.getElementById('toolbox').classList.toggle('open');
-}
+// ─────────────────────────────────────────────
+// TOOLBOX
+// ─────────────────────────────────────────────
+function toggleToolbox() { document.getElementById('toolbox').classList.toggle('open'); }
 
-// ─── Canvas ──────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// LASER
+// ─────────────────────────────────────────────
+let laserOn = false;
+const laser  = document.getElementById('laser');
 const canvas = document.getElementById('draw-canvas');
 const ctx    = canvas.getContext('2d');
-function resizeCanvas() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-
-// ─── Laser ───────────────────────────────────────────────────────────────────
-let laserOn = false;
-const laser = document.getElementById('laser');
 
 function toggleLaser() {
     laserOn = !laserOn;
-    document.getElementById('laserBtn').classList.toggle('active', laserOn);
+    document.getElementById('btn-laser').classList.toggle('on', laserOn);
     canvas.style.pointerEvents = laserOn ? 'auto' : 'none';
+    if (!laserOn) { laser.style.display = 'none'; ctx.clearRect(0,0,canvas.width,canvas.height); }
 }
 
 function setupLaser() {
     canvas.addEventListener('mousedown', e => {
         if (!laserOn) return;
         laser.style.display = 'block';
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.beginPath();
-        ctx.strokeStyle = '#ff2222';
+        ctx.strokeStyle = '#ff2020';
         ctx.lineWidth   = 3;
-        ctx.lineJoin    = 'round';
         ctx.lineCap     = 'round';
         ctx.moveTo(e.clientX, e.clientY);
-
         const draw = m => {
-            ctx.lineTo(m.clientX, m.clientY);
-            ctx.stroke();
+            ctx.lineTo(m.clientX, m.clientY); ctx.stroke();
             laser.style.left = (m.clientX - 9) + 'px';
             laser.style.top  = (m.clientY - 9) + 'px';
         };
         const stop = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
             laser.style.display = 'none';
+            ctx.clearRect(0,0,canvas.width,canvas.height);
             canvas.removeEventListener('mousemove', draw);
-            canvas.removeEventListener('mouseup',   stop);
+            canvas.removeEventListener('mouseup',  stop);
         };
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup',   stop);
     });
 }
 
-// ─── Freeze & Zoom ───────────────────────────────────────────────────────────
-let freezeOn = false, fScale = 1, fX = 0, fY = 0;
+// ─────────────────────────────────────────────
+// FREEZE + ZOOM/PAN
+// ─────────────────────────────────────────────
+let freezeOn = false, fscale = 1, fpx = 0, fpy = 0, dragging = false, fsx = 0, fsy = 0;
 
 function toggleFreeze() {
     const layer   = document.getElementById('freeze-layer');
     const content = document.getElementById('freeze-content');
-    const btn     = document.getElementById('freezeBtn');
-
+    const btn     = document.getElementById('btn-freeze');
     if (!freezeOn) {
         const target = document.getElementById('stage').style.display === 'block'
-            ? document.getElementById('stage')
-            : document.body;
-        html2canvas(target, { useCORS: true, allowTaint: true, scale: 1 }).then(snap => {
-            content.innerHTML = '';
-            content.appendChild(snap);
-            fScale = 1; fX = 0; fY = 0;
-            updateFreeze();
-            layer.style.display = 'block';
-            freezeOn = true;
-            btn.classList.add('active');
+            ? document.getElementById('stage') : document.body;
+        html2canvas(target, { useCORS: true, allowTaint: true }).then(snap => {
+            content.innerHTML = ''; content.appendChild(snap);
+            fscale = 1; fpx = 0; fpy = 0; applyTransform();
+            layer.style.display = 'block'; freezeOn = true; btn.classList.add('on');
         });
     } else {
-        layer.style.display = 'none';
-        freezeOn = false;
-        btn.classList.remove('active');
+        layer.style.display = 'none'; freezeOn = false; btn.classList.remove('on');
     }
 }
 
-function updateFreeze() {
+function applyTransform() {
     document.getElementById('freeze-content').style.transform =
-        `translate(${fX}px,${fY}px) scale(${fScale})`;
+        `translate(${fpx}px,${fpy}px) scale(${fscale})`;
 }
 
-function setupFreezeControls() {
+function setupFreeze() {
     const layer = document.getElementById('freeze-layer');
-    let drag = false, sx = 0, sy = 0;
-
     layer.addEventListener('wheel', e => {
-        if (!freezeOn) return;
-        e.preventDefault();
-        fScale = Math.min(5, Math.max(0.5, fScale * (e.deltaY > 0 ? 0.9 : 1.1)));
-        updateFreeze();
+        if (!freezeOn) return; e.preventDefault();
+        fscale = Math.min(5, Math.max(0.4, fscale * (e.deltaY > 0 ? 0.9 : 1.1)));
+        applyTransform();
     }, { passive: false });
-
-    const start = e => { if (!freezeOn) return; drag = true; const t = e.touches?.[0] ?? e; sx = t.clientX - fX; sy = t.clientY - fY; };
-    const move  = e => { if (!drag || !freezeOn) return; const t = e.touches?.[0] ?? e; fX = t.clientX - sx; fY = t.clientY - sy; updateFreeze(); };
-    const end   = () => { drag = false; };
-
-    layer.addEventListener('mousedown',  start);
-    layer.addEventListener('touchstart', start, { passive: true });
-    window.addEventListener('mousemove', move);
-    window.addEventListener('touchmove', move, { passive: true });
-    window.addEventListener('mouseup',   end);
-    window.addEventListener('touchend',  end);
+    const startDrag = e => {
+        if (!freezeOn) return; dragging = true;
+        const t = e.touches ? e.touches[0] : e;
+        fsx = t.clientX - fpx; fsy = t.clientY - fpy;
+    };
+    const moveDrag = e => {
+        if (!dragging || !freezeOn) return;
+        const t = e.touches ? e.touches[0] : e;
+        fpx = t.clientX - fsx; fpy = t.clientY - fsy; applyTransform();
+    };
+    layer.addEventListener('mousedown',  startDrag);
+    layer.addEventListener('touchstart', startDrag, { passive: true });
+    window.addEventListener('mousemove', moveDrag);
+    window.addEventListener('touchmove', moveDrag, { passive: true });
+    window.addEventListener('mouseup',   () => { dragging = false; });
+    window.addEventListener('touchend',  () => { dragging = false; });
 }
 
-// ─── Flash Note ──────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// NOTE
+// ─────────────────────────────────────────────
 function toggleNote() {
-    const panel = document.getElementById('note-panel');
-    const open  = panel.style.display === 'flex';
-    panel.style.display = open ? 'none' : 'flex';
-    if (!open) setTimeout(() => document.getElementById('note-input').focus(), 80);
+    const ov   = document.getElementById('note-overlay');
+    const open = ov.style.display === 'flex';
+    ov.style.display = open ? 'none' : 'flex';
+    if (!open) setTimeout(() => document.getElementById('note-textarea').focus(), 80);
 }
 
-// ─── Keyboard shortcuts ───────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// KEYBOARD
+// ─────────────────────────────────────────────
 window.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        if (document.getElementById('note-panel').style.display === 'flex') {
-            toggleNote();
-        } else if (document.getElementById('stage').style.display === 'block') {
-            closeStage();
-        } else if (freezeOn) {
-            toggleFreeze();
-        }
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('note-overlay').style.display === 'flex') {
+        document.getElementById('note-overlay').style.display = 'none';
+    } else if (freezeOn) {
+        toggleFreeze();
+    } else if (document.getElementById('stage').style.display === 'block') {
+        closeStage();
     }
 });
 
-window.onload = init;
+// ─────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────
+function waitForData(retries = 20) {
+    if (typeof sessionData !== 'undefined') { init(); return; }
+    if (retries <= 0) { init(); return; }
+    setTimeout(() => waitForData(retries - 1), 150);
+}
+window.addEventListener('load', () => waitForData());
 </script>
 </body>
 </html>

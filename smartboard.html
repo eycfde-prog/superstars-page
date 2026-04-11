@@ -437,40 +437,41 @@ const sessionData = {
 };
 
 // ─────────────────────────────────────────────
-// // IMAGE MAP (Updated for Actirobo Assets)
+// IMAGE MAP (Clean Fix)
 // ─────────────────────────────────────────────
 const IMG_MAP = [
-    { match: /grammar/i,           img: 'Grammar.png' },
-    { match: /listening/i,         img: 'Listening.png' },
-    { match: /reading/i,           img: 'Reading.png' },
-    { match: /vocab/i,             img: 'Vocabulary.png' },
-    { match: /tongue/i,            img: 'Tongue-twister.png' },
-    { match: /one.?shot/i,         img: 'Squeezer.png' }, // أو أي صورة بديلة إذا لم تتوفر OneShot
-    { match: /squeezer/i,          img: 'Squeezer.png' },
-    { match: /dmt/i,               img: 'DMT.png' },
-    { match: /wish/i,              img: 'Wish.png' },
-    { match: /project/i,           img: 'Project.png' },
-    { match: /graduation/i,        img: 'Graduation-project.png' },
-    { match: /interview/i,         img: 'Interview.png' },
-    { match: /oral.*exam/i,        img: 'Interview.png' }, // ربط الاورال بالإنترفيو
-    { match: /presentation/i,      img: 'Graduation-project.png' },
+    { match: /grammar/i,           file: 'Grammar' },
+    { match: /listening/i,         file: 'Listening' },
+    { match: /reading/i,           file: 'Reading' },
+    { match: /vocab/i,             file: 'Vocabulary' },
+    { match: /tongue/i,            file: 'Tongue-twister' },
+    { match: /one.?shot/i,         file: 'Squeezer' }, 
+    { match: /squeezer/i,          file: 'Squeezer' },
+    { match: /dmt/i,               file: 'DMT' },
+    { match: /wish/i,              file: 'Wish' },
+    { match: /project/i,           file: 'Project' },
+    { match: /graduation/i,        file: 'Graduation-project' },
+    { match: /interview/i,         file: 'Interview' },
+    { match: /oral.*exam/i,        file: 'Interview' },
+    { match: /presentation/i,      file: 'Graduation-project' },
 ];
 
-const BADGE_MAP = [
-    { match: /grammar/i,        label: 'Grammar' },
-    { match: /listening/i,      label: 'Listening' },
-    { match: /reading/i,        label: 'Reading' },
-    { match: /vocab/i,          label: 'Vocabulary' },
-    { match: /tongue/i,         label: 'Tongue Twister' },
-    { match: /one.?shot/i,      label: 'One Shot' },
-    { match: /squeezer/i,       label: 'Squeezer' },
-    { match: /dmt/i,            label: 'DMT' },
-    { match: /wish/i,           label: 'Wish' },
-    { match: /project/i,        label: 'Project' },
-    { match: /graduation/i,     label: 'Graduation' },
-    { match: /interview/i,      label: 'Interview' },
-    { match: /oral/i,           label: 'Oral Exam' },
-];
+/**
+ * دالة جلب مسار الصورة - تم معالجة تكرار الامتداد
+ */
+function getImgInfo(name) {
+    // التأكد من المسار الصحيح (ابدأ بـ / لو الصور مش بتظهر في الـ iFrame)
+    const folderPath = 'data/Actirobo/'; 
+    
+    for (const m of IMG_MAP) {
+        if (m.match.test(name)) {
+            // ندمج المسار + اسم الملف + امتداد واحد فقط
+            return { img: `${folderPath}${m.file}.png` };
+        }
+    }
+    // صورة افتراضية
+    return { img: `${folderPath}Grammar.png` }; 
+}
 
 /**
  * دالة جلب مسار الصورة

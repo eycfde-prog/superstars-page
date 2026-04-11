@@ -437,61 +437,50 @@ const sessionData = {
 };
 
 // ─────────────────────────────────────────────
-// IMAGE MAP (Clean Fix)
+// IMAGE MAP — مجلد data/Actirobo/
+// كل نشاط بياخد الصورة الخاصة باسمه
+// بغض النظر كان Review أو Test أو Intro
 // ─────────────────────────────────────────────
 const IMG_MAP = [
-    { match: /grammar/i,           file: 'Grammar' },
-    { match: /listening/i,         file: 'Listening' },
-    { match: /reading/i,           file: 'Reading' },
-    { match: /vocab/i,             file: 'Vocabulary' },
-    { match: /tongue/i,            file: 'Tongue-twister' },
-    { match: /one.?shot/i,         file: 'Squeezer' }, 
-    { match: /squeezer/i,          file: 'Squeezer' },
-    { match: /dmt/i,               file: 'DMT' },
-    { match: /wish/i,              file: 'Wish' },
-    { match: /project/i,           file: 'Project' },
-    { match: /graduation/i,        file: 'Graduation-project' },
-    { match: /interview/i,         file: 'Interview' },
-    { match: /oral.*exam/i,        file: 'Interview' },
-    { match: /presentation/i,      file: 'Graduation-project' },
+    { match: /grammar/i,                      img: 'Grammar'           },
+    { match: /listening/i,                     img: 'Listening'         },
+    { match: /reading/i,                       img: 'Reading'           },
+    { match: /vocab/i,                         img: 'Vocabulary'        },
+    { match: /tongue/i,                        img: 'Tongue-twister'    },
+    { match: /one.?shot/i,                     img: 'One-shot'          },
+    { match: /squeezer/i,                      img: 'Squeezer'          },
+    { match: /dmt/i,                           img: 'DMT'               },
+    { match: /wish/i,                          img: 'Wish'              },
+    { match: /graduation/i,                    img: 'Graduation-project'},
+    { match: /project/i,                       img: 'Project'           },
+    { match: /oral/i,                          img: 'Interview'         },
+    { match: /presentation/i,                  img: 'Graduation-project'},
 ];
 
-/**
- * دالة جلب مسار الصورة - تم معالجة تكرار الامتداد
- */
-function getImgInfo(name) {
-    // التأكد من المسار الصحيح (ابدأ بـ / لو الصور مش بتظهر في الـ iFrame)
-    const folderPath = 'data/Actirobo/'; 
-    
-    for (const m of IMG_MAP) {
-        if (m.match.test(name)) {
-            // ندمج المسار + اسم الملف + امتداد واحد فقط
-            return { img: `${folderPath}${m.file}.png` };
-        }
-    }
-    // صورة افتراضية
-    return { img: `${folderPath}Grammar.png` }; 
-}
+const BADGE_MAP = [
+    { match: /grammar/i,      label: 'Grammar'        },
+    { match: /listening/i,    label: 'Listening'      },
+    { match: /reading/i,      label: 'Reading'        },
+    { match: /vocab/i,        label: 'Vocabulary'     },
+    { match: /tongue/i,       label: 'Tongue Twister' },
+    { match: /one.?shot/i,    label: 'One Shot'       },
+    { match: /squeezer/i,     label: 'Squeezer'       },
+    { match: /dmt/i,          label: 'DMT'            },
+    { match: /wish/i,         label: 'Wish'           },
+    { match: /project/i,      label: 'Project'        },
+    { match: /graduation/i,   label: 'Graduation'     },
+    { match: /oral/i,         label: 'Oral Exam'      },
+];
 
-/**
- * دالة جلب مسار الصورة
- * تعيد المسار الكامل من مجلد Actirobo
- */
-function getImgInfo(name) {
-    const basePath = 'data/Actirobo/';
-    for (const m of IMG_MAP) {
-        if (m.match.test(name)) {
-            return { img: basePath + m.img };
-        }
-    }
-    // صورة افتراضية في حال لم يتم العثور على تطابق
-    return { img: basePath + 'Grammar.png' }; 
+function getImgSrc(name) {
+    for (const m of IMG_MAP) if (m.match.test(name)) return `data/Actirobo/${m.img}.png`;
+    return `data/Actirobo/Grammar.png`; // fallback
 }
-
 function getBadge(name) {
     for (const m of BADGE_MAP) if (m.match.test(name)) return m.label;
     return 'Activity';
 }
+
 // ─────────────────────────────────────────────
 // FILE PATH RESOLVER
 // القاعدة العامة: L-{lvl}-S-{sess}-{Xxx}.js
@@ -630,9 +619,8 @@ function init() {
     const grid = document.getElementById('grid');
 
     sessionData[SESSION].forEach((item, i) => {
-        const info  = getImgInfo(item);
-        const badge = getBadge(item);
-        const imgSrc = `data/${info.img}.png`;
+        const imgSrc = getImgSrc(item);
+        const badge  = getBadge(item);
 
         const scene = document.createElement('div');
         scene.className = 'card-scene';
@@ -642,9 +630,9 @@ function init() {
         scene.innerHTML = `
             <div class="card">
                 <div class="card-face">
-                    <div class="card-img-wrap" id="img-wrap-${i}">
+                    <div class="card-img-wrap">
                         <img src="${imgSrc}" alt="${badge}"
-                             onerror="this.parentElement.innerHTML='<div class=\\'card-img-fallback\\'>${info.emoji}</div>'">
+                             onerror="this.style.opacity='0'">
                     </div>
                     <div class="card-label">
                         <span class="card-type">${badge}</span>

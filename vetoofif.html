@@ -3,403 +3,680 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VETO PROGRAM | Smart Board Elite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap" rel="stylesheet">
+    <title>VETO PROGRAM | Smart Board</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-gold: #c5a059;
-            --gold-glow: rgba(197, 160, 89, 0.4);
-            --bg-dark: #050505;
-            --card-bg: rgba(255, 255, 255, 0.07);
-            --banner-height: 120px;
-            --font-main: 'Inter', 'Segoe UI', sans-serif;
-            --transition-speed: 0.3s;
+            --gold: #c5a059;
+            --gold-dim: rgba(197,160,89,0.15);
+            --gold-glow: rgba(197,160,89,0.35);
+            --bg: #080808;
+            --surface: rgba(255,255,255,0.04);
+            --surface-hover: rgba(197,160,89,0.08);
+            --text: #f0f0f0;
+            --text-dim: rgba(255,255,255,0.4);
+            --red: #e63946;
+            --banner-h: 90px;
         }
 
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
-            touch-action: none; 
-            -webkit-user-select: none; user-select: none;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
 
         body {
-            background-color: var(--bg-dark);
-            color: white;
-            font-family: var(--font-main);
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
             height: 100vh;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* --- Header Section (Enhanced Visibility) --- */
-        .top-banner {
-            height: var(--banner-height);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 50px; 
-            background: linear-gradient(180deg, #111 0%, #000 100%);
-            border-bottom: 5px solid var(--primary-gold);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            z-index: 100;
+        /* ── Noise texture overlay ── */
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 1;
         }
+
+        /* ══════════════════════════════
+           TOP BANNER
+        ══════════════════════════════ */
+        .banner {
+            position: relative; z-index: 100;
+            height: var(--banner-h);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 28px;
+            background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+            border-bottom: 2px solid var(--gold);
+            box-shadow: 0 4px 40px rgba(0,0,0,0.6), 0 1px 0 rgba(197,160,89,0.1);
+        }
+
+        .banner-left, .banner-right { display:flex; align-items:center; gap:14px; flex: 1; }
+        .banner-right { justify-content: flex-end; }
 
         .back-btn {
-            background: var(--primary-gold);
-            border: none;
-            color: #000;
-            padding: 15px 30px;
-            border-radius: 12px;
+            background: transparent;
+            border: 1.5px solid rgba(197,160,89,0.4);
+            color: var(--gold);
+            padding: 8px 16px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 900;
-            font-size: 1.2rem;
-            transition: transform 0.2s;
-        }
-        .back-btn:hover { transform: scale(1.05); background: #fff; }
-
-        .logo-img { height: 75px; filter: drop-shadow(0 0 10px var(--gold-glow)); }
-        .mr-ezz-img { height: 95px; border-radius: 15px; border: 3px solid var(--primary-gold); box-shadow: 0 0 20px var(--gold-glow); }
-
-        .session-info { text-align: center; flex-grow: 1; }
-        .session-info h1 { 
-            font-size: 3rem; /* Larger for the 4-meter rule */
-            letter-spacing: -1px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            color: #fff;
+            transition: all 0.25s;
         }
-        .session-info span { color: var(--primary-gold); font-weight: 900; }
+        .back-btn:hover { background: var(--gold-dim); border-color: var(--gold); }
 
-        /* --- Content Grid (Interactive & Focused) --- */
-        .content-grid {
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 35px; 
-            padding: 50px; 
+        .logo-img { height: 52px; filter: drop-shadow(0 0 8px rgba(197,160,89,0.25)); }
+        .ezz-img  { height: 72px; border-radius: 10px; border: 2px solid var(--gold); box-shadow: 0 0 20px rgba(197,160,89,0.2); }
+
+        .session-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.4rem;
+            letter-spacing: 4px;
+            color: var(--text);
+            text-align: center;
+            flex: 2;
+            white-space: nowrap;
+        }
+        .session-title span { color: var(--gold); }
+
+        /* ══════════════════════════════
+           CONTENT GRID
+        ══════════════════════════════ */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            padding: 32px;
             overflow-y: auto;
-            flex-grow: 1;
+            height: calc(100vh - var(--banner-h));
         }
 
-        .content-card {
-            background: var(--card-bg); 
-            border: 2px solid rgba(255,255,255,0.1);
-            padding: 40px; 
-            border-radius: 25px; 
-            text-align: center; 
-            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1); 
+        .card {
+            background: var(--surface);
+            border: 1.5px solid var(--gold-dim);
+            border-radius: 16px;
+            padding: 28px 22px;
             cursor: pointer;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 200px;
-            backdrop-filter: blur(10px);
-            outline: none;
+            gap: 10px;
+            min-height: 150px;
+            transition: border-color 0.3s, background 0.3s, transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Keyboard Focus & Hover */
-        .content-card:hover, .content-card:focus { 
-            border-color: var(--primary-gold); 
-            background: rgba(197,160,89,0.15);
-            transform: translateY(-15px) scale(1.03);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px var(--gold-glow);
+        .card::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(197,160,89,0.08) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .card:hover::after { opacity: 1; }
+
+        .card:hover {
+            border-color: var(--gold);
+            background: var(--surface-hover);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(197,160,89,0.1);
         }
 
-        .content-card h2 { 
-            font-size: 2.5rem; /* Massive font for readability */
-            font-weight: 900;
-            color: #fff;
-            line-height: 1.2;
+        .card-icon {
+            font-size: 2rem;
+            line-height: 1;
+            filter: grayscale(0.2);
         }
 
-        /* --- Full Screen Stage --- */
-        #activity-stage { position: fixed; inset: 0; background:#000; z-index: 8000; display: none; }
-        #stage-content { width: 100%; height: 100%; }
+        .card-type {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--gold);
+            opacity: 0.7;
+        }
+
+        .card-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 1.5px;
+            color: var(--text);
+            text-align: center;
+            line-height: 1.15;
+        }
+
+        /* ══════════════════════════════
+           ACTIVITY STAGE
+        ══════════════════════════════ */
+        #stage {
+            position: fixed; inset: 0;
+            background: #000; z-index: 8000;
+            display: none;
+        }
+        #stage-content { width:100%; height:100%; overflow:hidden; }
 
         .exit-btn {
-            position: fixed; top: 25px; right: 25px; z-index: 9999;
-            padding: 15px 35px; font-size: 1.5rem; font-weight: 900;
-            background: #d63031; color: white; border: none;
-            border-radius: 50px; cursor: pointer;
-            box-shadow: 0 5px 20px rgba(214, 48, 49, 0.5);
+            position: fixed; top: 16px; right: 16px; z-index: 9999;
+            padding: 9px 18px;
+            font-size: 0.78rem; font-weight: 800; letter-spacing: 1.5px;
+            font-family: 'DM Sans', sans-serif;
+            text-transform: uppercase;
+            background: rgba(230,57,70,0.85);
+            color: white;
+            border: 1.5px solid var(--red);
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s, transform 0.15s;
+        }
+        .exit-btn:hover { background: var(--red); transform: scale(1.04); }
+
+        /* Loading overlay */
+        #loading-overlay {
+            position: fixed; inset: 0; z-index: 8100;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center; justify-content: center;
+            flex-direction: column; gap: 18px;
+        }
+        .spinner {
+            width: 48px; height: 48px;
+            border: 3px solid var(--gold-dim);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loading-overlay p { color: var(--gold); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* ══════════════════════════════
+           TOOLBOX
+        ══════════════════════════════ */
+        .toolbox {
+            position: fixed; bottom: 28px; right: 28px;
+            z-index: 12000;
+            display: flex; flex-direction: column-reverse; align-items: center; gap: 12px;
         }
 
-        /* --- Toolbox (Advanced) --- */
-        .toolbox-wrapper { position: fixed; bottom: 40px; right: 40px; z-index: 12000; display: flex; flex-direction: column-reverse; gap: 20px; }
-        .tool-btn { 
-            width: 80px; height: 80px; border-radius: 50%; 
-            background: #1a1a1a; border: 4px solid var(--primary-gold); 
-            color: var(--primary-gold); font-size: 2rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0; transform: translateY(30px) scale(0);
+        .tool-btn {
+            width: 58px; height: 58px;
+            border-radius: 50%;
+            background: #151515;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            transition: opacity 0.3s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.25s, box-shadow 0.25s;
+            opacity: 0;
+            transform: translateY(16px) scale(0.7);
+            pointer-events: none;
         }
-        .tool-btn.main-toggle { opacity: 1; transform: scale(1); background: var(--primary-gold); color: #000; }
-        .toolbox-wrapper.open .tool-btn { opacity: 1; transform: translateY(0) scale(1); }
-        .tool-btn.active { background: #ff4757; color: white; border-color: #fff; transform: scale(1.2); }
 
-        /* --- Floating Tools Elements --- */
-        #quick-note-container { 
-            position: fixed; inset: 0; z-index: 13000; display: none;
-            background: rgba(0,0,0,0.97); flex-direction: column; justify-content: center; align-items: center;
+        .tool-btn.main {
+            opacity: 1; transform: none; pointer-events: auto;
+            background: var(--gold); color: #000;
+            font-size: 1.35rem;
+            z-index: 1;
         }
-        #smart-note-input { 
-            background: transparent; border: none; border-bottom: 5px solid var(--primary-gold);
-            color: var(--primary-gold); width: 85%; font-size: 6rem; text-align: center;
-            outline: none; font-weight: 900; resize: none;
+
+        .toolbox.open .tool-btn {
+            opacity: 1; transform: none; pointer-events: auto;
         }
-        #laser-pointer { 
-            position: fixed; width: 30px; height: 30px; 
-            background: radial-gradient(circle, #ff0000 0%, rgba(255,0,0,0) 80%);
-            border-radius: 50%; box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+        .toolbox.open .main {
+            transform: rotate(45deg);
+            background: var(--red); color: #fff; border-color: var(--red);
+        }
+
+        .tool-btn:hover { box-shadow: 0 0 18px var(--gold-glow); }
+        .tool-btn.active { background: var(--red) !important; border-color: var(--red) !important; color: #fff !important; }
+
+        /* ══════════════════════════════
+           FLASH NOTE
+        ══════════════════════════════ */
+        #note-panel {
+            position: fixed; inset: 0; z-index: 13000;
+            display: none;
+            background: rgba(0,0,0,0.96);
+            align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+        }
+        #note-input {
+            width: 88%; max-width: 900px;
+            background: transparent;
+            border: none; border-bottom: 3px solid var(--gold);
+            color: var(--gold);
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 3px;
+            text-align: center;
+            outline: none;
+            padding: 12px 0;
+            resize: none;
+            min-height: 120px;
+        }
+        #note-input::placeholder { color: rgba(197,160,89,0.25); }
+        #note-hint { color: var(--text-dim); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* ══════════════════════════════
+           FREEZE LAYER
+        ══════════════════════════════ */
+        #freeze-layer {
+            position: fixed; inset: 0; z-index: 11000;
+            background: #000;
+            display: none; overflow: hidden; cursor: grab;
+        }
+        #freeze-layer:active { cursor: grabbing; }
+        #freeze-content { position: absolute; transform-origin: 0 0; will-change: transform; }
+
+        /* ══════════════════════════════
+           LASER + CANVAS
+        ══════════════════════════════ */
+        #laser {
+            position: fixed; width: 18px; height: 18px;
+            background: radial-gradient(circle, #ff2222 0%, rgba(255,0,0,0) 70%);
+            border-radius: 50%;
+            box-shadow: 0 0 12px #ff0000, 0 0 28px #ff0000;
             pointer-events: none; z-index: 14000; display: none;
         }
-        #drawing-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 8500; }
-        #freeze-layer { position: fixed; inset: 0; z-index: 11000; background: rgba(0,0,0,0.9); display: none; cursor: grab; overflow: hidden; }
-        #freeze-content { position: absolute; transform-origin: 0 0; }
+        #draw-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 8500; }
 
+        /* ══════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════ */
+        @media (max-width: 768px) {
+            :root { --banner-h: 72px; }
+            .banner { padding: 0 14px; }
+            .logo-img { height: 38px; }
+            .ezz-img  { height: 52px; }
+            .session-title { font-size: 1.4rem; letter-spacing: 2px; }
+            .grid { padding: 14px; gap: 12px; }
+            .card { min-height: 120px; padding: 20px 16px; }
+            .card-title { font-size: 1.25rem; }
+            .toolbox { bottom: 18px; right: 18px; }
+            .tool-btn { width: 50px; height: 50px; font-size: 1.2rem; }
+            #note-input { font-size: 2rem; }
+        }
     </style>
 </head>
 <body>
 
-    <header class="top-banner">
-        <button class="back-btn" onclick="window.location.href='vetoof.html'">← BACK</button>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img">
-        <div class="session-info">
-            <h1 id="display-title">VETO <span>BOARD</span></h1>
-        </div>
-        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="mr-ezz-img">
-    </header>
-
-    <main class="content-grid" id="content-container"></main>
-
-    <div id="activity-stage">
-        <button class="exit-btn" onclick="closeStage()">✖ CLOSE ACTIVITY</button>
-        <div id="stage-content"></div>
+<!-- BANNER -->
+<header class="banner">
+    <div class="banner-left">
+        <button class="back-btn" onclick="window.location.href='vetoof.html'">← Back</button>
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png" class="logo-img" onerror="this.style.display='none'">
     </div>
 
-    <div id="quick-note-container">
-        <textarea id="smart-note-input" placeholder="WRITE HERE..." rows="1"></textarea>
-        <p style="color:white; opacity:0.5; margin-top:30px; font-size:1.5rem;">PRESS [ESC] TO DISMISS</p>
+    <h1 class="session-title" id="session-title">VETO <span>BOARD</span></h1>
+
+    <div class="banner-right">
+        <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png" class="ezz-img" onerror="this.style.display='none'">
     </div>
+</header>
 
-    <div id="freeze-layer"><div id="freeze-content"></div></div>
-    <div id="laser-pointer"></div>
-    <canvas id="drawing-canvas"></canvas>
+<!-- MAIN GRID -->
+<main class="grid" id="grid"></main>
 
-    <div class="toolbox-wrapper" id="toolBox">
-        <button class="tool-btn main-toggle" onclick="toggleToolBox()">🛠️</button>
-        <button class="tool-btn" id="laserBtn" title="Laser Pointer" onclick="toggleLaserMode()">🔦</button>
-        <button class="tool-btn" id="freezeBtn" title="Freeze & Zoom" onclick="toggleFreezeMode()">❄️</button>
-        <button class="tool-btn" id="reloadBtn" title="Reload" onclick="location.reload()">🔄</button>
-        <button class="tool-btn" id="noteBtn" title="Flash Note" onclick="toggleNote()">📝</button>
-    </div>
+<!-- ACTIVITY STAGE -->
+<div id="stage">
+    <button class="exit-btn" onclick="closeStage()">✖ Exit</button>
+    <div id="stage-content"></div>
+</div>
 
-    <script src="data/levels.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- LOADING -->
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading Activity…</p>
+</div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentSessionId = urlParams.get('session');
-        let isLaserMode = false;
-        let isFreezeMode = false;
-        const canvas = document.getElementById('drawing-canvas');
-        const laser = document.getElementById('laser-pointer');
-        const ctx = canvas.getContext('2d');
+<!-- FLASH NOTE -->
+<div id="note-panel">
+    <textarea id="note-input" placeholder="Write here…" rows="3"></textarea>
+    <p id="note-hint">ESC to close</p>
+</div>
 
-        // Zoom & Pan State
-        let scale = 1, posX = 0, posY = 0, startX = 0, startY = 0, isDragging = false;
+<!-- FREEZE LAYER -->
+<div id="freeze-layer">
+    <div id="freeze-content"></div>
+</div>
 
-        function updateDynamicTitle() {
-            if (currentSessionId) {
-                const parts = currentSessionId.split('-');
-                if (parts.length === 2) {
-                    document.getElementById('display-title').innerHTML = `LEVEL <span>${parts[0]}</span> | SESSION <span>${parts[1]}</span>`;
-                }
-            }
-        }
+<!-- LASER -->
+<div id="laser"></div>
+<canvas id="draw-canvas"></canvas>
 
-        function initSession() {
-            updateDynamicTitle();
-            if (!currentSessionId || !sessionData[currentSessionId]) return;
-            
-            const container = document.getElementById('content-container');
-            sessionData[currentSessionId].forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'content-card';
-                card.tabIndex = "0"; // Make focusable for keyboard
-                card.onclick = () => openActivity(item);
-                card.innerHTML = `<h2>${item}</h2>`;
-                
-                // Keyboard Enter Support
-                card.addEventListener('keydown', (e) => {
-                    if(e.key === 'Enter') openActivity(item);
-                });
+<!-- TOOLBOX -->
+<div class="toolbox" id="toolbox">
+    <button class="tool-btn main" onclick="toggleToolbox()" title="Tools">🛠️</button>
+    <button class="tool-btn" id="laserBtn"  onclick="toggleLaser()"  title="Laser Pointer">🔦</button>
+    <button class="tool-btn" id="freezeBtn" onclick="toggleFreeze()" title="Freeze & Zoom">❄️</button>
+    <button class="tool-btn" id="reloadBtn" onclick="location.reload()" title="Reload">🔄</button>
+    <button class="tool-btn" id="noteBtn"   onclick="toggleNote()"   title="Flash Note">📝</button>
+</div>
 
-                container.appendChild(card);
-            });
+<!-- SESSION DATA -->
+<script src="data/sessionData.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            setupFreezeControls();
-            handleLaserDrawing();
-        }
+<script>
+// ─── Activity type metadata ─────────────────────────────────────────────────
+const ACTIVITY_META = {
+    grammar:     { icon: '📚', label: 'Grammar',       color: '#7b9fff' },
+    listening:   { icon: '🎧', label: 'Listening',     color: '#5ec4a8' },
+    vocab:       { icon: '📖', label: 'Vocabulary',    color: '#f4a261' },
+    reading:     { icon: '📰', label: 'Reading',       color: '#a8dadc' },
+    tongue:      { icon: '🗣️', label: 'Tongue Twister',color: '#e9c46a' },
+    oneshot:     { icon: '⚡', label: 'One Shot',      color: '#ff6b9d' },
+    squeezer:    { icon: '💪', label: 'Squeezer',      color: '#c77dff' },
+    dmt:         { icon: '🗣️', label: 'DMT',           color: '#f77f00' },
+    wish:        { icon: '✨', label: 'Wish',           color: '#90e0ef' },
+    project:     { icon: '🎯', label: 'Project',       color: '#80b918' },
+    gp:          { icon: '🎓', label: 'Grad. Project', color: '#ffd166' },
+    default:     { icon: '▶️', label: 'Activity',      color: '#c5a059' },
+};
 
-        // Mapping & File Loading Logic (Your Original Logic Preserved)
-        async function openActivity(activityName) {
-            if (!currentSessionId) return;
-            const [lvl, sess] = currentSessionId.split('-');
-            let filePath = "";
-            const nameUpper = activityName.toUpperCase();
+function getMeta(name) {
+    const u = name.toUpperCase();
+    if (u.includes('GRAMMAR'))       return ACTIVITY_META.grammar;
+    if (u.includes('LISTENING'))     return ACTIVITY_META.listening;
+    if (u.includes('VOCAB'))         return ACTIVITY_META.vocab;
+    if (u.includes('READING'))       return ACTIVITY_META.reading;
+    if (u.includes('TONGUE'))        return ACTIVITY_META.tongue;
+    if (u.includes('ONE SHOT'))      return ACTIVITY_META.oneshot;
+    if (u.includes('SQUEEZER'))      return ACTIVITY_META.squeezer;
+    if (u.includes('DMT'))           return ACTIVITY_META.dmt;
+    if (u.includes('WISH'))          return ACTIVITY_META.wish;
+    if (u.includes('GRADUATION') || u.includes('GP')) return ACTIVITY_META.gp;
+    if (u.includes('PROJECT'))       return ACTIVITY_META.project;
+    return ACTIVITY_META.default;
+}
 
-            if (nameUpper.includes("TONGUE")) filePath = `data/L-${lvl}-S-${sess}-Ton.js`;
-            else if (nameUpper.includes("ONE SHOT")) filePath = `data/L-${lvl}-S-${sess}-One.js`;
-            else if (nameUpper.includes("GRAMMAR")) filePath = `data/L-${lvl}-S-${sess}-Gra.js`;
-            else if (nameUpper.includes("GP")) filePath = `data/L-${lvl}-${sess}-GP.js`;
-            else if (nameUpper.includes("PROJECT")) filePath = `data/L-${lvl}-S-${sess}-Pro.js`;
-            else if (nameUpper.includes("WISH")) filePath = `data/L-${lvl}-S-${sess}-Wis.js`;
-            else if (nameUpper.includes("SQUEEZER")) filePath = `data/L-${lvl}-S-${sess}-${nameUpper.includes("TEST") ? "Squt" : "Squr"}.js`;
-            else if (nameUpper.includes("DMT")) filePath = nameUpper.includes("TEST") ? `data/Timer.js` : `data/L-${lvl}-S-${sess}-DMT.js`;
-            else if (nameUpper.includes("LISTENING")) filePath = nameUpper.includes("INTRO") ? `data/L-${lvl}-S-${sess}-Lin.js` : `data/L-${lvl}-S-${sess}-Lis.js`;
-            else if (nameUpper.includes("VOCAB")) filePath = `data/L-${nameUpper.includes("TEST") ? "2" : "1"}-${lvl}-S-${sess}-Voc.js`;
-            else if (nameUpper.includes("READING")) filePath = `data/L-${lvl}-S-${sess}-Rea.js`;
-            else filePath = `data/L-1-${lvl}-S-${sess}-${activityName.split(' ')[0].substring(0, 3)}.js`;
+// ─── File path resolver ──────────────────────────────────────────────────────
+function resolveFilePath(activityName, lvl, sess) {
+    const u = activityName.toUpperCase();
 
-            document.getElementById('activity-stage').style.display = 'block';
-            const stage = document.getElementById('stage-content');
-            stage.innerHTML = "";
-            
-            const script = document.createElement('script');
-            script.src = filePath;
-            script.onerror = () => { alert("File not found: " + filePath); closeStage(); };
-            document.head.appendChild(script);
-        }
+    // Extract number from activity name (e.g. "Reading 5 Review" → "5")
+    const numMatch = activityName.match(/\d+/);
+    const num = numMatch ? numMatch[0] : '';
 
-        function closeStage() {
-            document.getElementById('activity-stage').style.display = 'none';
-            document.getElementById('stage-content').innerHTML = "";
-        }
+    if (u.includes('GRAMMAR'))
+        return `data/Grammar/L${lvl}-S${sess}-Grammar.js`;
 
-        function toggleToolBox() { document.getElementById('toolBox').classList.toggle('open'); }
+    if (u.includes('LISTENING')) {
+        const type = u.includes('INTRO') ? 'Intro' : 'Review';
+        return `data/Listening/L${lvl}-S${sess}-Listening-${type}.js`;
+    }
 
-        // --- LASER SYSTEM ---
-        function toggleLaserMode() {
-            isLaserMode = !isLaserMode;
-            document.getElementById('laserBtn').classList.toggle('active');
-            canvas.style.pointerEvents = isLaserMode ? 'auto' : 'none';
-        }
+    if (u.includes('VOCAB')) {
+        const type = u.includes('INTRO') ? 'Intro' : 'Test';
+        return `data/Vocab/Vocab-Part${num}-${type}.js`;
+    }
 
-        function handleLaserDrawing() {
-            window.addEventListener('mousedown', (e) => {
-                if(!isLaserMode) return;
-                laser.style.display = 'block';
-                ctx.clearRect(0, 0, canvas.width, canvas.height); 
-                ctx.beginPath();
-                ctx.strokeStyle = '#ff0000';
-                ctx.lineWidth = 6;
-                ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-                ctx.moveTo(e.clientX, e.clientY);
+    if (u.includes('READING')) {
+        const type = u.includes('INTRO') ? 'Intro' : 'Review';
+        return `data/Reading/Reading-${num}-${type}.js`;
+    }
 
-                const draw = (m) => {
-                    ctx.lineTo(m.clientX, m.clientY); ctx.stroke();
-                    laser.style.left = m.clientX - 15 + 'px'; laser.style.top = m.clientY - 15 + 'px';
-                };
-                const stop = () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); 
-                    laser.style.display = 'none';
-                    window.removeEventListener('mousemove', draw);
-                    window.removeEventListener('mouseup', stop);
-                };
-                window.addEventListener('mousemove', draw);
-                window.addEventListener('mouseup', stop);
-            });
-        }
+    if (u.includes('TONGUE TWISTER')) {
+        const type = u.includes('INTRO') ? 'Intro' : 'Review';
+        return `data/TongueTwister/TT-${num}-${type}.js`;
+    }
 
-        // --- FREEZE & ZOOM SYSTEM ---
-        async function toggleFreezeMode() {
-            const layer = document.getElementById('freeze-layer');
-            const content = document.getElementById('freeze-content');
-            const btn = document.getElementById('freezeBtn');
-            
-            if (!isFreezeMode) {
-                const target = document.getElementById('activity-stage').style.display === 'block' ? 
-                               document.getElementById('activity-stage') : document.body;
-                
-                html2canvas(target, { useCORS: true, backgroundColor: "#000" }).then(canvasImg => {
-                    content.innerHTML = '';
-                    content.appendChild(canvasImg);
-                    layer.style.display = 'block';
-                    isFreezeMode = true;
-                    btn.classList.add('active');
-                    scale = 1; posX = 0; posY = 0;
-                    updateTransform();
-                });
-            } else {
-                layer.style.display = 'none';
-                isFreezeMode = false;
-                btn.classList.remove('active');
-            }
-        }
+    if (u.includes('ONE SHOT')) {
+        if (u.includes('INTRO')) return `data/OneShot/OneShot-Intro.js`;
+        return `data/OneShot/OneShot-${num}-Test.js`;
+    }
 
-        function updateTransform() {
-            document.getElementById('freeze-content').style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-        }
+    if (u.includes('SQUEEZER')) {
+        const type = u.includes('TEST') ? 'Test' : (u.includes('REVIEW') ? 'Review' : 'Intro');
+        return `data/Squeezer/Squeezer-${num}-${type}.js`;
+    }
 
-        function setupFreezeControls() {
-            const layer = document.getElementById('freeze-layer');
-            layer.onwheel = (e) => {
-                if (!isFreezeMode) return;
-                e.preventDefault();
-                const delta = e.deltaY > 0 ? 0.9 : 1.1;
-                scale = Math.min(Math.max(0.5, scale * delta), 6);
-                updateTransform();
-            };
+    if (u.includes('DMT')) {
+        if (u.includes('INTRO')) return `data/DMT/DMT-Intro.js`;
+        const type = u.includes('TEST') ? 'Test' : 'Review';
+        return `data/DMT/DMT-${num}-${type}.js`;
+    }
 
-            const start = (e) => {
-                if(!isFreezeMode) return;
-                isDragging = true;
-                const t = e.touches ? e.touches[0] : e;
-                startX = t.clientX - posX; startY = t.clientY - posY;
-            };
-            const move = (e) => {
-                if (!isDragging || !isFreezeMode) return;
-                const t = e.touches ? e.touches[0] : e;
-                posX = t.clientX - startX; posY = t.clientY - startY;
-                updateTransform();
-            };
+    if (u.includes('WISH')) {
+        if (u.includes('INTRO')) return `data/Wish/Wish-Intro.js`;
+        const type = u.includes('TEST') ? 'Test' : 'Review';
+        return `data/Wish/Wish-${num}-${type}.js`;
+    }
 
-            layer.onmousedown = start; layer.ontouchstart = start;
-            window.onmousemove = move; window.ontouchmove = move;
-            window.onmouseup = window.ontouchend = () => isDragging = false;
-        }
+    if (u.includes('PROJECT') && !u.includes('GRADUATION')) {
+        if (u.includes('INTRO')) return `data/Project/Project-Intro.js`;
+        const type = u.includes('TEST') ? 'Test' : 'Review';
+        return `data/Project/Project-${type}.js`;
+    }
 
-        // --- QUICK NOTES ---
-        function toggleNote() {
-            const container = document.getElementById('quick-note-container');
-            const isOpen = container.style.display === 'flex';
-            container.style.display = isOpen ? 'none' : 'flex';
-            if(!isOpen) {
-                const input = document.getElementById('smart-note-input');
-                input.value = "";
-                setTimeout(() => input.focus(), 100);
-            }
-        }
+    if (u.includes('GRADUATION') || u.includes('GP')) {
+        if (u.includes('PRESENTATION')) return `data/GP/GP-Presentation.js`;
+        if (u.includes('INTRO'))  return `data/GP/GP-Intro.js`;
+        return `data/GP/GP-Review.js`;
+    }
 
-        // Global Keyboard Shortcuts
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (document.getElementById('quick-note-container').style.display === 'flex') {
-                    toggleNote();
-                } else if (isFreezeMode) {
-                    toggleFreezeMode();
-                } else if (document.getElementById('activity-stage').style.display === 'block') {
-                    closeStage();
-                }
-            }
-            if (e.key === 'n' || e.key === 'N') toggleNote();
-            if (e.key === 'l' || e.key === 'L') toggleLaserMode();
-            if (e.key === 'f' || e.key === 'F') toggleFreezeMode();
+    if (u.includes('ORAL EXAM')) return `data/Special/OralExam.js`;
+
+    // Fallback
+    return `data/L${lvl}-S${sess}-${activityName.replace(/\s+/g,'-')}.js`;
+}
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+const params = new URLSearchParams(window.location.search);
+const sessionId = params.get('session');
+
+function init() {
+    // Title
+    if (sessionId) {
+        const [lvl, sess] = sessionId.split('-');
+        document.getElementById('session-title').innerHTML =
+            `LEVEL <span>${lvl}</span> &nbsp;|&nbsp; SESSION <span>${sess}</span>`;
+    }
+
+    // Cards
+    if (!sessionId || !sessionData?.[sessionId]) return;
+    const grid = document.getElementById('grid');
+
+    sessionData[sessionId].forEach((item, i) => {
+        const meta = getMeta(item);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.animationDelay = `${i * 60}ms`;
+        card.style.setProperty('--card-accent', meta.color);
+        card.innerHTML = `
+            <div class="card-icon">${meta.icon}</div>
+            <div class="card-type">${meta.label}</div>
+            <div class="card-title">${item}</div>
+        `;
+        card.onclick = () => openActivity(item);
+        grid.appendChild(card);
+    });
+
+    // Canvas resize
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    setupFreezeControls();
+    setupLaser();
+}
+
+// ─── Open Activity ────────────────────────────────────────────────────────────
+function openActivity(name) {
+    if (!sessionId) return;
+    const [lvl, sess] = sessionId.split('-');
+    const path = resolveFilePath(name, lvl, sess);
+
+    const loading = document.getElementById('loading-overlay');
+    loading.style.display = 'flex';
+
+    // Remove any previous injected script with same src
+    document.querySelectorAll('script[data-activity]').forEach(s => s.remove());
+
+    const script = document.createElement('script');
+    script.setAttribute('data-activity', 'true');
+    script.src = path + '?t=' + Date.now(); // cache-bust
+    script.onload = () => {
+        loading.style.display = 'none';
+        document.getElementById('stage').style.display = 'block';
+    };
+    script.onerror = () => {
+        loading.style.display = 'none';
+        showError(`Could not load:\n${path}`);
+    };
+    document.head.appendChild(script);
+}
+
+function showError(msg) {
+    const stage = document.getElementById('stage');
+    stage.style.display = 'block';
+    document.getElementById('stage-content').innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:16px;color:#c5a059;font-family:'DM Sans',sans-serif;">
+            <div style="font-size:3rem;">⚠️</div>
+            <div style="font-size:1.1rem;opacity:0.7;white-space:pre-line;text-align:center;max-width:500px;">${msg}</div>
+        </div>`;
+}
+
+function closeStage() {
+    document.getElementById('stage').style.display = 'none';
+    document.getElementById('stage-content').innerHTML = '';
+}
+
+// ─── Toolbox ─────────────────────────────────────────────────────────────────
+function toggleToolbox() {
+    document.getElementById('toolbox').classList.toggle('open');
+}
+
+// ─── Canvas ──────────────────────────────────────────────────────────────────
+const canvas = document.getElementById('draw-canvas');
+const ctx    = canvas.getContext('2d');
+function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+// ─── Laser ───────────────────────────────────────────────────────────────────
+let laserOn = false;
+const laser = document.getElementById('laser');
+
+function toggleLaser() {
+    laserOn = !laserOn;
+    document.getElementById('laserBtn').classList.toggle('active', laserOn);
+    canvas.style.pointerEvents = laserOn ? 'auto' : 'none';
+}
+
+function setupLaser() {
+    canvas.addEventListener('mousedown', e => {
+        if (!laserOn) return;
+        laser.style.display = 'block';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.strokeStyle = '#ff2222';
+        ctx.lineWidth   = 3;
+        ctx.lineJoin    = 'round';
+        ctx.lineCap     = 'round';
+        ctx.moveTo(e.clientX, e.clientY);
+
+        const draw = m => {
+            ctx.lineTo(m.clientX, m.clientY);
+            ctx.stroke();
+            laser.style.left = (m.clientX - 9) + 'px';
+            laser.style.top  = (m.clientY - 9) + 'px';
+        };
+        const stop = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            laser.style.display = 'none';
+            canvas.removeEventListener('mousemove', draw);
+            canvas.removeEventListener('mouseup',   stop);
+        };
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup',   stop);
+    });
+}
+
+// ─── Freeze & Zoom ───────────────────────────────────────────────────────────
+let freezeOn = false, fScale = 1, fX = 0, fY = 0;
+
+function toggleFreeze() {
+    const layer   = document.getElementById('freeze-layer');
+    const content = document.getElementById('freeze-content');
+    const btn     = document.getElementById('freezeBtn');
+
+    if (!freezeOn) {
+        const target = document.getElementById('stage').style.display === 'block'
+            ? document.getElementById('stage')
+            : document.body;
+        html2canvas(target, { useCORS: true, allowTaint: true, scale: 1 }).then(snap => {
+            content.innerHTML = '';
+            content.appendChild(snap);
+            fScale = 1; fX = 0; fY = 0;
+            updateFreeze();
+            layer.style.display = 'block';
+            freezeOn = true;
+            btn.classList.add('active');
         });
+    } else {
+        layer.style.display = 'none';
+        freezeOn = false;
+        btn.classList.remove('active');
+    }
+}
 
-        window.onload = initSession;
-    </script>
+function updateFreeze() {
+    document.getElementById('freeze-content').style.transform =
+        `translate(${fX}px,${fY}px) scale(${fScale})`;
+}
+
+function setupFreezeControls() {
+    const layer = document.getElementById('freeze-layer');
+    let drag = false, sx = 0, sy = 0;
+
+    layer.addEventListener('wheel', e => {
+        if (!freezeOn) return;
+        e.preventDefault();
+        fScale = Math.min(5, Math.max(0.5, fScale * (e.deltaY > 0 ? 0.9 : 1.1)));
+        updateFreeze();
+    }, { passive: false });
+
+    const start = e => { if (!freezeOn) return; drag = true; const t = e.touches?.[0] ?? e; sx = t.clientX - fX; sy = t.clientY - fY; };
+    const move  = e => { if (!drag || !freezeOn) return; const t = e.touches?.[0] ?? e; fX = t.clientX - sx; fY = t.clientY - sy; updateFreeze(); };
+    const end   = () => { drag = false; };
+
+    layer.addEventListener('mousedown',  start);
+    layer.addEventListener('touchstart', start, { passive: true });
+    window.addEventListener('mousemove', move);
+    window.addEventListener('touchmove', move, { passive: true });
+    window.addEventListener('mouseup',   end);
+    window.addEventListener('touchend',  end);
+}
+
+// ─── Flash Note ──────────────────────────────────────────────────────────────
+function toggleNote() {
+    const panel = document.getElementById('note-panel');
+    const open  = panel.style.display === 'flex';
+    panel.style.display = open ? 'none' : 'flex';
+    if (!open) setTimeout(() => document.getElementById('note-input').focus(), 80);
+}
+
+// ─── Keyboard shortcuts ───────────────────────────────────────────────────────
+window.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        if (document.getElementById('note-panel').style.display === 'flex') {
+            toggleNote();
+        } else if (document.getElementById('stage').style.display === 'block') {
+            closeStage();
+        } else if (freezeOn) {
+            toggleFreeze();
+        }
+    }
+});
+
+window.onload = init;
+</script>
 </body>
 </html>

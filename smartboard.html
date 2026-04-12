@@ -5,243 +5,173 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VETO PROGRAM | Smart Board</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #c5a059;
             --gold-dim: rgba(197,160,89,0.18);
             --gold-glow: rgba(197,160,89,0.4);
-            --bg: #080808;
+            --bg: #060810;
             --border: rgba(197,160,89,0.22);
             --text: #efefef;
             --text-dim: rgba(255,255,255,0.45);
             --banner: 100px;
+            --cyan: #00d4ff;
+            --cyan-dim: rgba(0,212,255,0.12);
+            --cyan-glow: rgba(0,212,255,0.4);
         }
-
         * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; }
-
         body {
             background: var(--bg);
             color: var(--text);
             font-family: 'Barlow', sans-serif;
             height: 100vh;
             overflow: hidden;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(0,40,70,0.35) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 20%, rgba(70,35,0,0.25) 0%, transparent 50%);
         }
 
         /* ── BANNER ── */
         .banner {
             height: var(--banner);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
             padding: 0 32px;
-            background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
-            border-bottom: 2px solid var(--gold);
-            box-shadow: 0 4px 30px rgba(0,0,0,0.7);
-            position: relative;
-            z-index: 10;
+            background: linear-gradient(180deg, #0c0f1e 0%, #080a14 100%);
+            border-bottom: 1.5px solid var(--gold);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.8);
+            position: relative; z-index: 10;
+        }
+        .banner::after {
+            content: '';
+            position: absolute; bottom: -2px; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan), var(--gold), var(--cyan), transparent);
+            opacity: 0.35;
         }
         .banner-back {
             background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            padding: 9px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Barlow', sans-serif;
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: background 0.2s, color 0.2s;
-            flex-shrink: 0;
+            border: 1.5px solid var(--cyan); color: var(--cyan);
+            padding: 8px 16px; border-radius: 6px; cursor: pointer;
+            font-family: 'Orbitron', sans-serif; font-weight: 700;
+            font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s; flex-shrink: 0;
         }
-        .banner-back:hover { background: var(--gold); color: #000; }
-        .banner-logo   { height: 58px; filter: drop-shadow(0 0 8px var(--gold-glow)); flex-shrink: 0; }
-        .banner-avatar { height: 78px; border-radius: 10px; border: 2px solid var(--gold); flex-shrink: 0; }
+        .banner-back:hover { background: var(--cyan); color: #000; box-shadow: 0 0 18px var(--cyan-glow); }
+        .banner-logo   { height: 56px; filter: drop-shadow(0 0 8px var(--gold-glow)); flex-shrink: 0; }
+        .banner-avatar { height: 76px; border-radius: 10px; border: 2px solid var(--gold); flex-shrink: 0; box-shadow: 0 0 14px var(--gold-glow); }
         .banner-title  { text-align: center; flex: 1; padding: 0 20px; }
         .banner-title h1 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.4rem;
-            letter-spacing: 4px;
-            color: #fff;
-            line-height: 1;
+            font-family: 'Orbitron', sans-serif; font-size: 1.9rem; font-weight: 900;
+            letter-spacing: 6px; color: #fff; line-height: 1;
+            text-shadow: 0 0 25px rgba(0,212,255,0.3);
         }
-        .banner-title h1 span { color: var(--gold); }
+        .banner-title h1 span { color: var(--gold); text-shadow: 0 0 18px var(--gold-glow); }
         .banner-title p {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-top: 3px;
+            font-size: 0.6rem; color: var(--cyan); letter-spacing: 3px;
+            text-transform: uppercase; margin-top: 5px; opacity: 0.65;
+            font-family: 'Orbitron', sans-serif;
         }
 
         /* ── GRID ── */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 28px;
-            padding: 32px 36px;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 22px; padding: 26px 30px;
             overflow-y: auto;
             height: calc(100vh - var(--banner));
             align-content: start;
         }
+        .grid::-webkit-scrollbar { width: 3px; }
+        .grid::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
 
-        /* ── 3D CARD WRAPPER ── */
-        .card-scene {
-            perspective: 900px;
-            cursor: pointer;
-        }
-
+        /* ── CARD ── */
+        .card-scene { perspective: 900px; cursor: pointer; }
         .card {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 3 / 4;
+            position: relative; width: 100%; aspect-ratio: 3/4;
             transform-style: preserve-3d;
-            transition: transform 0.55s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s;
-            border-radius: 18px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.55), 0 0 0 1.5px var(--border);
+            transition: transform 0.55s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,212,255,0.08);
         }
-
         .card-scene:hover .card {
-            box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 2px var(--gold), 0 0 30px var(--gold-dim);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 0 1.5px var(--cyan), 0 0 35px var(--cyan-dim);
         }
-
         .card-face {
-            position: absolute;
-            inset: 0;
-            border-radius: 18px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            background: #111;
-            backface-visibility: hidden;
+            position: absolute; inset: 0; border-radius: 16px; overflow: hidden;
+            display: flex; flex-direction: column; background: #0b0e1c; backface-visibility: hidden;
         }
-
-        .card-img-wrap {
-            flex: 0 0 68%;
-            position: relative;
-            overflow: hidden;
+        .card-face::before {
+            content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 3;
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,212,255,0.018) 3px, rgba(0,212,255,0.018) 4px);
         }
+        .card-img-wrap { flex: 0 0 68%; position: relative; overflow: hidden; }
         .card-img-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.5s ease;
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            transition: transform 0.5s ease, filter 0.3s;
+            filter: saturate(0.88) contrast(1.05);
         }
-        .card-scene:hover .card-img-wrap img {
-            transform: scale(1.06);
-        }
-
+        .card-scene:hover .card-img-wrap img { transform: scale(1.06); filter: saturate(1.1) contrast(1.1); }
         .card-img-wrap::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.65) 100%);
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent 30%, rgba(6,8,16,0.82) 100%);
         }
-
         .card-shine {
-            position: absolute;
-            inset: 0;
-            border-radius: 18px;
-            pointer-events: none;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 5;
+            position: absolute; inset: 0; border-radius: 16px; pointer-events: none;
+            background: radial-gradient(circle at 30% 30%, rgba(0,212,255,0.07) 0%, transparent 60%);
+            opacity: 0; transition: opacity 0.3s; z-index: 5;
         }
         .card-scene:hover .card-shine { opacity: 1; }
-
         .card-label {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 14px;
-            background: linear-gradient(180deg, #161616 0%, #0e0e0e 100%);
-            border-top: 1.5px solid var(--border);
-            gap: 6px;
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 10px 12px;
+            background: linear-gradient(180deg, #0e1224 0%, #090c18 100%);
+            border-top: 1px solid rgba(0,212,255,0.18); gap: 5px;
         }
         .card-type {
-            font-size: 0.6rem;
-            font-weight: 700;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            color: var(--gold);
-            background: var(--gold-dim);
-            padding: 3px 10px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
+            font-size: 0.5rem; font-weight: 700; font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px; text-transform: uppercase;
+            color: var(--cyan); background: var(--cyan-dim);
+            padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(0,212,255,0.25);
         }
         .card-name {
-            font-family: 'Barlow', sans-serif;
-            font-size: clamp(0.85rem, 1.1vw, 1.1rem);
-            font-weight: 700;
-            color: #fff;
-            text-align: center;
-            line-height: 1.3;
+            font-size: clamp(0.78rem, 1vw, 0.98rem); font-weight: 700;
+            color: #fff; text-align: center; line-height: 1.25;
         }
-
         .card-edge {
-            position: absolute;
-            bottom: 0; left: 10%; right: 10%;
-            height: 2px;
-            background: var(--gold);
-            border-radius: 2px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            filter: blur(1px);
+            position: absolute; bottom: 0; left: 5%; right: 5%; height: 1.5px;
+            background: linear-gradient(90deg, transparent, var(--cyan), var(--gold), var(--cyan), transparent);
+            opacity: 0; transition: opacity 0.3s;
         }
-        .card-scene:hover .card-edge { opacity: 0.8; }
+        .card-scene:hover .card-edge { opacity: 1; }
+        /* Corner brackets */
+        .cc { position: absolute; width: 12px; height: 12px; z-index: 4; }
+        .cc.tl { top:5px; left:5px;  border-top:1.5px solid var(--cyan); border-left:1.5px solid var(--cyan); }
+        .cc.tr { top:5px; right:5px; border-top:1.5px solid var(--cyan); border-right:1.5px solid var(--cyan); }
+        .cc.bl { bottom:5px; left:5px;  border-bottom:1.5px solid var(--gold); border-left:1.5px solid var(--gold); }
+        .cc.br { bottom:5px; right:5px; border-bottom:1.5px solid var(--gold); border-right:1.5px solid var(--gold); }
 
         /* ── STAGE ── */
-        #stage {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 8000;
-            display: none;
-        }
+        #stage { position: fixed; inset: 0; background: #000; z-index: 8000; display: none; }
         #stage-content { width: 100%; height: 100%; overflow: hidden; }
         #stage-loader {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            color: var(--gold);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.4rem;
-            letter-spacing: 3px;
+            position: absolute; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 16px;
+            color: var(--cyan); font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem; letter-spacing: 4px;
         }
         .spinner {
-            width: 48px; height: 48px;
-            border: 3px solid var(--border);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            width: 46px; height: 46px;
+            border: 2px solid rgba(0,212,255,0.2); border-top-color: var(--cyan);
+            border-radius: 50%; animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .exit-btn {
-            position: fixed;
-            top: 14px; right: 14px;
-            z-index: 9999;
-            padding: 8px 16px;
-            font-family: 'Barlow', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            background: rgba(214,48,49,0.85);
-            color: white;
-            border: 2px solid #ff4757;
-            border-radius: 8px;
-            cursor: pointer;
+            position: fixed; top: 14px; right: 14px; z-index: 9999;
+            padding: 8px 16px; font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            background: rgba(214,48,49,0.85); color: white;
+            border: 1.5px solid #ff4757; border-radius: 6px; cursor: pointer;
             transition: background 0.2s;
         }
         .exit-btn:hover { background: #d63031; }
@@ -249,25 +179,24 @@
         /* ── NOTE ── */
         #note-overlay {
             position: fixed; inset: 0; z-index: 13000; display: none;
-            background: rgba(0,0,0,0.96);
+            background: rgba(6,8,16,0.97);
             flex-direction: column; align-items: center; justify-content: center; gap: 20px;
         }
         #note-textarea {
-            width: 88%; min-height: 180px;
-            background: transparent; border: none;
-            border-bottom: 3px solid var(--gold);
-            color: var(--gold);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(3rem, 8vw, 6rem);
+            width: 88%; min-height: 180px; background: transparent; border: none;
+            border-bottom: 2px solid var(--cyan); color: var(--cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem,7vw,5rem);
             text-align: center; outline: none; resize: none;
+            -webkit-user-select: text; user-select: text;
         }
-        #note-overlay p { color: var(--text-dim); font-size: 0.9rem; letter-spacing: 2px; }
+        #note-overlay p { color: var(--text-dim); font-size: 0.7rem; letter-spacing: 3px; font-family: 'Orbitron', sans-serif; }
 
         /* ── LASER ── */
         #laser {
             position: fixed; width: 18px; height: 18px; border-radius: 50%;
             background: radial-gradient(circle, #ff2020 0%, rgba(255,0,0,0) 70%);
-            box-shadow: 0 0 12px #ff0000, 0 0 24px #ff0000;
+            box-shadow: 0 0 12px #f00, 0 0 24px #f00;
             pointer-events: none; z-index: 14000; display: none;
         }
         #draw-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 8500; }
@@ -282,551 +211,647 @@
 
         /* ── TOOLBOX ── */
         .toolbox {
-            position: fixed; bottom: 28px; right: 28px; z-index: 12000;
-            display: flex; flex-direction: column-reverse; align-items: center; gap: 12px;
+            position: fixed; bottom: 26px; right: 26px; z-index: 12000;
+            display: flex; flex-direction: column-reverse; align-items: center; gap: 11px;
         }
         .tool-btn {
-            width: 58px; height: 58px; border-radius: 50%;
-            background: #1a1a1a; border: 2.5px solid var(--gold);
-            color: var(--gold); font-size: 1.4rem; cursor: pointer;
+            width: 52px; height: 52px; border-radius: 50%;
+            background: #0c0f1e; border: 1.5px solid var(--gold);
+            color: var(--gold); font-size: 1.25rem; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.6);
             transition: opacity 0.3s, transform 0.35s cubic-bezier(0.68,-0.55,0.27,1.55), box-shadow 0.2s;
             opacity: 0; transform: translateY(20px) scale(0); pointer-events: none;
         }
         .tool-btn.main {
             opacity: 1; transform: none; pointer-events: auto;
-            background: var(--gold); color: #000; font-size: 1.5rem;
+            background: var(--gold); color: #000; font-size: 1.35rem;
+            box-shadow: 0 0 18px var(--gold-glow);
         }
         .toolbox.open .tool-btn { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-        .toolbox.open .main { transform: rotate(135deg); background: #d63031; border-color: #ff4757; color: white; }
-        .tool-btn:hover:not(.main) { transform: scale(1.12) translateY(0) !important; box-shadow: 0 0 18px var(--gold-glow); }
+        .toolbox.open .main { transform: rotate(135deg); background: #d63031; border-color: #ff4757; color: white; box-shadow: 0 0 18px rgba(255,71,87,0.5); }
+        .tool-btn:hover:not(.main) { transform: scale(1.12) translateY(0) !important; box-shadow: 0 0 16px var(--cyan-glow); border-color: var(--cyan); color: var(--cyan); }
         .tool-btn.on { background: #ff4757; border-color: #fff; color: white; }
 
-        /* ── FALLBACK IMAGE ── */
-        .card-img-fallback {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+        /* ── VETO PORTAL ── */
+        #portal-overlay {
+            position: fixed; inset: 0; z-index: 15000;
+            display: none; flex-direction: column;
+            align-items: center; justify-content: flex-start;
+            padding: 20px; overflow-y: auto;
+            background: rgba(4,6,12,0.98);
         }
+        #portal-overlay.active { display: flex; }
+        #portal-overlay::before {
+            content: ''; position: fixed; inset: 0; pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,212,255,0.012) 3px, rgba(0,212,255,0.012) 4px);
+        }
+
+        .portal-wrap { position: relative; z-index: 1; width: 100%; max-width: 880px; display: flex; flex-direction: column; gap: 18px; }
+
+        .portal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(0,212,255,0.25); padding-bottom: 14px;
+        }
+        .portal-title {
+            font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900;
+            letter-spacing: 6px; color: var(--cyan);
+            text-shadow: 0 0 20px var(--cyan-glow);
+        }
+        .portal-title span { color: var(--gold); }
+        .portal-close {
+            background: transparent; border: 1.5px solid #ff4757; color: #ff4757;
+            padding: 8px 16px; border-radius: 6px; cursor: pointer;
+            font-family: 'Orbitron', sans-serif; font-size: 0.6rem; letter-spacing: 2px;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .portal-close:hover { background: rgba(255,71,87,0.15); box-shadow: 0 0 14px rgba(255,71,87,0.35); }
+
+        .portal-code-label {
+            font-family: 'Orbitron', sans-serif; font-size: 0.58rem;
+            letter-spacing: 3px; color: var(--cyan); opacity: 0.7; margin-bottom: 7px;
+        }
+        .portal-code-row { display: flex; gap: 12px; align-items: stretch; }
+
+        #portal-code-input {
+            flex: 1; background: rgba(0,212,255,0.05);
+            border: 1.5px solid rgba(0,212,255,0.28); border-radius: 8px;
+            color: var(--cyan); font-family: 'Orbitron', sans-serif;
+            font-size: 1.35rem; font-weight: 700; letter-spacing: 4px;
+            padding: 13px 18px; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            -webkit-user-select: text; user-select: text;
+        }
+        #portal-code-input:focus { border-color: var(--cyan); box-shadow: 0 0 18px var(--cyan-dim); }
+
+        #portal-fetch-btn {
+            background: var(--cyan); border: none; color: #000;
+            font-family: 'Orbitron', sans-serif; font-size: 0.68rem; font-weight: 700;
+            letter-spacing: 2px; padding: 13px 22px; border-radius: 8px; cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.1s; white-space: nowrap;
+        }
+        #portal-fetch-btn:hover { box-shadow: 0 0 22px var(--cyan-glow); transform: translateY(-1px); }
+        #portal-fetch-btn:active { transform: translateY(0); }
+
+        /* Student card */
+        #portal-student-card {
+            display: none;
+            background: linear-gradient(135deg, #090d1e 0%, #070a16 100%);
+            border: 1px solid rgba(0,212,255,0.2); border-radius: 12px;
+            padding: 18px 22px; position: relative; overflow: hidden;
+        }
+        #portal-student-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--gold), var(--cyan));
+        }
+        .student-info-row { display: flex; align-items: center; gap: 18px; }
+        #portal-avatar {
+            width: 76px; height: 76px; border-radius: 10px;
+            border: 2px solid var(--gold); object-fit: cover;
+            box-shadow: 0 0 18px var(--gold-glow); flex-shrink: 0;
+        }
+        #portal-name {
+            font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700;
+            color: #fff; letter-spacing: 2px; margin-bottom: 8px;
+        }
+        .student-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+        .stat-chip {
+            display: flex; align-items: center; gap: 5px;
+            background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.18);
+            border-radius: 20px; padding: 3px 10px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.58rem; color: var(--text-dim);
+        }
+        .stat-chip .val { color: var(--gold); font-weight: 700; font-size: 0.68rem; }
+        .star-icon { color: var(--gold); font-size: 0.85rem; }
+        .star-icon.empty { color: rgba(197,160,89,0.2); }
+
+        /* Grades */
+        .portal-grades-title {
+            font-family: 'Orbitron', sans-serif; font-size: 0.62rem; letter-spacing: 4px;
+            color: var(--gold); text-transform: uppercase;
+            margin: 18px 0 12px; padding-bottom: 7px;
+            border-bottom: 1px solid rgba(197,160,89,0.18);
+        }
+        .grades-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px,1fr)); gap: 10px; }
+
+        .grade-cell {
+            background: rgba(0,212,255,0.04); border: 1px solid rgba(0,212,255,0.13);
+            border-radius: 8px; padding: 11px 13px;
+            display: flex; flex-direction: column; gap: 7px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .grade-cell:focus-within { border-color: var(--cyan); box-shadow: 0 0 10px var(--cyan-dim); }
+        .grade-cell.bonus-cell { border-color: rgba(197,160,89,0.25); background: rgba(197,160,89,0.05); }
+        .grade-cell.bonus-cell:focus-within { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+
+        .grade-label {
+            font-family: 'Orbitron', sans-serif; font-size: 0.5rem;
+            letter-spacing: 1.5px; color: var(--text-dim); text-transform: uppercase;
+        }
+        .grade-label.bonus-lbl { color: var(--gold); }
+
+        .grade-input {
+            background: transparent; border: none;
+            border-bottom: 1.5px solid rgba(0,212,255,0.18);
+            color: var(--cyan); font-family: 'Orbitron', sans-serif;
+            font-size: 1.05rem; font-weight: 700;
+            width: 100%; outline: none; padding: 2px 0;
+            transition: border-color 0.2s; text-align: center;
+            -webkit-user-select: text; user-select: text;
+        }
+        .grade-input:focus { border-color: var(--cyan); }
+        .grade-input.bonus-inp { color: var(--gold); border-bottom-color: rgba(197,160,89,0.25); }
+        .grade-input.bonus-inp:focus { border-color: var(--gold); }
+
+        #portal-submit-btn {
+            width: 100%; margin-top: 14px;
+            background: linear-gradient(135deg, #091e12 0%, #051008 100%);
+            border: 1.5px solid #00cc70; color: #00ff88;
+            font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700;
+            letter-spacing: 4px; padding: 16px; border-radius: 10px;
+            cursor: pointer; text-transform: uppercase;
+            transition: box-shadow 0.2s, transform 0.1s;
+        }
+        #portal-submit-btn:hover { box-shadow: 0 0 28px rgba(0,255,136,0.28); transform: translateY(-1px); }
+        #portal-submit-btn:active { transform: translateY(0); }
+        #portal-submit-btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none; }
+
+        #portal-status {
+            text-align: center; font-family: 'Orbitron', sans-serif;
+            font-size: 0.68rem; letter-spacing: 2px;
+            padding: 10px; border-radius: 8px; display: none;
+        }
+        #portal-status.success { background: rgba(0,255,136,0.08); color: #00ff88; border: 1px solid rgba(0,255,136,0.25); }
+        #portal-status.error   { background: rgba(255,71,87,0.08);  color: #ff4757; border: 1px solid rgba(255,71,87,0.25); }
+        #portal-status.loading { background: rgba(0,212,255,0.08);  color: var(--cyan); border: 1px solid rgba(0,212,255,0.25); }
 
         /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
-            .banner { padding: 0 14px; height: 72px; }
-            .banner-logo { height: 38px; }
-            .banner-avatar { height: 52px; }
-            .banner-title h1 { font-size: 1.5rem; letter-spacing: 2px; }
-            .banner-back { padding: 7px 12px; font-size: 0.75rem; }
-            .grid { padding: 14px; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-            .toolbox { bottom: 16px; right: 16px; }
-            .tool-btn { width: 50px; height: 50px; font-size: 1.2rem; }
+            .banner { padding: 0 12px; height: 70px; }
+            .banner-logo { height: 34px; } .banner-avatar { height: 48px; }
+            .banner-title h1 { font-size: 1rem; letter-spacing: 3px; }
+            .banner-back { padding: 6px 10px; font-size: 0.58rem; }
+            .grid { padding: 10px; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(145px,1fr)); }
+            .toolbox { bottom: 14px; right: 14px; }
+            .tool-btn { width: 46px; height: 46px; font-size: 1.1rem; }
+            .grades-grid { grid-template-columns: repeat(auto-fill, minmax(125px,1fr)); }
+            .portal-title { font-size: 1rem; letter-spacing: 3px; }
         }
     </style>
 </head>
 <body>
 
-<!-- BANNER -->
 <header class="banner">
     <button class="banner-back" onclick="window.location.href='vetoof.html'">← Back</button>
     <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/logo.png"
-         class="banner-logo" alt="VETO"
-         onerror="this.style.display='none'">
+         class="banner-logo" alt="VETO" onerror="this.style.display='none'">
     <div class="banner-title">
         <h1 id="title-text">VETO <span>BOARD</span></h1>
         <p id="title-sub">Select an activity to begin</p>
     </div>
     <img src="https://raw.githubusercontent.com/eycfde-prog/EYCVetoProgram/main/MrEzz.png"
-         class="banner-avatar" alt="Mr. Ezz"
-         onerror="this.style.display='none'">
+         class="banner-avatar" alt="Mr. Ezz" onerror="this.style.display='none'">
 </header>
 
-<!-- CARD GRID -->
 <main class="grid" id="grid"></main>
 
-<!-- ACTIVITY STAGE -->
 <div id="stage">
     <button class="exit-btn" onclick="closeStage()">✖ Exit</button>
-    <div id="stage-loader">
-        <div class="spinner"></div>
-        <span>LOADING...</span>
-    </div>
+    <div id="stage-loader"><div class="spinner"></div><span>INITIALIZING...</span></div>
     <div id="stage-content"></div>
 </div>
 
-<!-- NOTE OVERLAY -->
 <div id="note-overlay">
-    <textarea id="note-textarea" placeholder="Type here..."></textarea>
-    <p>ESC to close</p>
+    <textarea id="note-textarea" placeholder="TYPE HERE..."></textarea>
+    <p>ESC TO CLOSE</p>
 </div>
 
-<!-- FREEZE LAYER -->
 <div id="freeze-layer"><div id="freeze-content"></div></div>
-
-<!-- LASER + CANVAS -->
 <div id="laser"></div>
 <canvas id="draw-canvas"></canvas>
 
+<!-- VETO PORTAL -->
+<div id="portal-overlay">
+    <div class="portal-wrap">
+        <div class="portal-header">
+            <div class="portal-title">VETO <span>PORTAL</span></div>
+            <button class="portal-close" onclick="closePortal()">✖ CLOSE</button>
+        </div>
+
+        <div>
+            <div class="portal-code-label">AGENT OFFLINE CODE</div>
+            <div class="portal-code-row">
+                <input type="text" id="portal-code-input" placeholder="V-0000"
+                       maxlength="12" autocomplete="off"
+                       onkeydown="if(event.key==='Enter')fetchStudent()">
+                <button id="portal-fetch-btn" onclick="fetchStudent()">SCAN AGENT</button>
+            </div>
+        </div>
+
+        <div id="portal-status"></div>
+
+        <div id="portal-student-card">
+            <div class="student-info-row">
+                <img id="portal-avatar" src="" alt="Agent">
+                <div>
+                    <div id="portal-name">—</div>
+                    <div class="student-stats">
+                        <div class="stat-chip">TOKENS <span class="val" id="portal-tokens">0</span></div>
+                        <div class="stat-chip">STARS <span class="val" id="portal-stars-display"></span></div>
+                        <div class="stat-chip">RANK <span class="val" id="portal-rank">—</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="portal-grades-title">MISSION SCORES</div>
+            <div class="grades-grid" id="portal-grades-grid"></div>
+            <button id="portal-submit-btn" onclick="submitGrades()">▶ UPLOAD SCORES TO SYSTEM</button>
+        </div>
+    </div>
+</div>
+
 <!-- TOOLBOX -->
 <div class="toolbox" id="toolbox">
-    <button class="tool-btn main" onclick="toggleToolbox()" title="Tools">🛠️</button>
+    <button class="tool-btn main" onclick="toggleToolbox()" title="Tools">⚙</button>
+    <button class="tool-btn" id="btn-portal" onclick="openPortal()" title="Veto Portal">🎯</button>
     <button class="tool-btn" id="btn-laser"  onclick="toggleLaser()"  title="Laser">🔦</button>
-    <button class="tool-btn" id="btn-freeze" onclick="toggleFreeze()" title="Freeze & Zoom">❄️</button>
+    <button class="tool-btn" id="btn-freeze" onclick="toggleFreeze()" title="Freeze">❄️</button>
     <button class="tool-btn" id="btn-reload" onclick="location.reload()" title="Reload">🔄</button>
-    <button class="tool-btn" id="btn-note"   onclick="toggleNote()"   title="Flash Note">📝</button>
+    <button class="tool-btn" id="btn-note"   onclick="toggleNote()"   title="Note">📝</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
 <script>
-// ─────────────────────────────────────────────
-// SESSION DATA — EMBEDDED DIRECTLY
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
+// SESSION DATA — Reading Review & TT Review removed
+// ════════════════════════════════════════════
 const sessionData = {
-    "1-1": ["Grammar Study: Subject & Object", "Listening Intro"],
-    "1-2": ["Listening Review", "Grammar Study: Poss. Adj & Poss. Pro + Verb Be", "Vocab Part 1 Intro"],
-    "1-3": ["Listening Review", "Vocab Part 1 Test", "Grammar Study: Indefinite Articles", "Vocab Part 2 Intro"],
-    "1-4": ["Listening Review", "Vocab Part 2 Test", "Grammar Study: Plural", "Reading 1 Intro"],
-    "2-1": ["Listening Review", "Reading 1 Review", "Grammar Study: Time", "Reading 2 Intro", "One Shot Intro"],
-    "2-2": ["Listening Review", "Reading 2 Review", "One Shot 1 Test", "Reading 3 Intro", "Vocab Part 3 Intro"],
-    "2-3": ["Listening Review", "Reading 3 Review", "Vocab Part 3 Test", "Reading 4 Intro", "Vocab Part 4 Intro"],
-    "2-4": ["Listening Review", "Reading 4 Review", "Vocab Part 4 Test", "One Shot 2 Test", "Grammar Study: Date", "Reading 5 Intro", "Tongue Twister 1 Intro"],
-    "3-1": ["Listening Review", "Reading 5 Review", "Tongue Twister 1 Review", "Grammar Study: Present Continuous", "Reading 6 Intro", "Tongue Twister 2 Intro"],
-    "3-2": ["Listening Review", "Reading 6 Review", "Tongue Twister 2 Review", "One Shot 3 Test", "Reading 7 Intro", "Vocab Part 5 Intro", "Tongue Twister 3 Intro"],
-    "3-3": ["Listening Review", "Reading 7 Review", "Tongue Twister 3 Review", "Vocab Part 5 Test", "Reading 8 Intro", "Vocab Part 6 Intro", "Tongue Twister 4 Intro"],
-    "3-4": ["Listening Review", "Reading 8 Review", "Vocab Part 6 Test", "One Shot 4 Test", "Grammar Study: Present Simple", "Reading 9 Intro", "Squeezer Intro"],
-    "4-1": ["Listening Review", "Reading 9 Review", "Squeezer 1 Test", "Grammar Study: Past Simple", "Reading 10 Intro"],
-    "4-2": ["Listening Review", "Reading 10 Review", "Tongue Twister 6 Review", "One Shot 5 Test", "Reading 11 Intro", "Vocab Part 7 Intro", "Tongue Twister 7 Intro"],
-    "4-3": ["Listening Review", "Reading 11 Review", "Tongue Twister 7 Review", "Vocab Part 7 Test", "Reading 12 Intro", "Vocab Part 8 Intro", "Tongue Twister 8 Intro"],
-    "4-4": ["Listening Review", "Reading 12 Review", "Vocab Part 8 Test", "Grammar Study: Past Continuous", "Reading 13 Intro", "DMT Intro"],
-    "5-1": ["Listening Review", "Squeezer 2 Review", "DMT 1 Test", "Grammar Study: Future Simple"],
-    "5-2": ["Listening Review", "Reading 14 Review", "DMT 1 Review", "Squeezer 2 Test", "Reading 15 Intro", "Vocab Part 9 Intro"],
-    "5-3": ["Listening Review", "Reading 15 Review", "Vocab Part 9 Test", "DMT 2 Test", "Reading 16 Intro", "Vocab Part 10 Intro"],
-    "5-4": ["Listening Review", "Reading 16 Review", "Tongue Twister 12 Review", "Vocab Part 10 Test", "One Shot 8 Test", "Grammar Study: Future Continuous", "Reading 17 Intro", "Tongue Twister 13 Intro"],
-    "6-1": ["Listening Review", "ORAL EXAM", "Squeezer 3 Review", "Grammar Study: Present Perfect Simple"],
-    "6-2": ["Listening Review", "Reading 18 Review", "Squeezer 3 Test", "Reading 19 Intro", "Vocab Part 11 Intro"],
-    "6-3": ["Listening Review", "Reading 19 Review", "DMT 2 Review", "Vocab Part 11 Test", "Reading 20 Intro", "Vocab Part 12 Intro"],
-    "6-4": ["Listening Review", "Reading 20 Review", "Vocab Part 12 Test", "DMT 3 Test", "Grammar Study: Present Perfect Continuous", "Reading 21 Intro"],
-    "7-1": ["Listening Review", "Squeezer 4 Review", "Grammar Study: Past Perfect Simple"],
-    "7-2": ["Listening Review", "Reading 22 Review", "Squeezer 4 Test", "Reading 23 Intro", "Vocab Part 13 Intro"],
-    "7-3": ["Listening Review", "Reading 23 Review", "Vocab Part 13 Test", "DMT 4 Test", "Reading 24 Intro", "Vocab Part 14 Intro"],
-    "7-4": ["Listening Review", "Reading 24 Review", "Vocab Part 14 Test", "Grammar Study: If Conditions", "Reading 25 Intro", "Wish 1 Intro (Review)"],
-    "8-1": ["Listening Review", "Squeezer 5 Review", "Wish 1 Test", "Grammar Study: Passives"],
-    "8-2": ["Listening Review", "Reading 26 Review", "Squeezer 5 Test", "Reading 27 Intro", "Vocab Part 15 Intro"],
-    "8-3": ["Listening Review", "Reading 27 Review", "DMT 4 Review", "Vocab Part 15 Test", "Reading 28 Intro", "Vocab Part 16 Intro"],
-    "8-4": ["Listening Review", "Reading 28 Review", "Vocab Part 16 Test", "DMT 5 Test", "Reading 29 Intro", "Project 1 Intro"],
-    "9-1": ["Listening Review", "Reading 29 Review", "Wish 2 Review", "Project 1 Test", "Reading 30 Intro"],
-    "9-2": ["Listening Review", "Reading 30 Review", "DMT 5 Review", "Wish 2 Test", "Reading 31 Intro", "Vocab Part 17 Intro"],
-    "9-3": ["Listening Review", "Reading 31 Review", "Vocab Part 17 Test", "DMT 6 Test", "Reading 32 Intro", "Vocab Part 18 Intro"],
-    "9-4": ["Listening Review", "Reading 32 Review", "Squeezer 6 Review", "Vocab Part 18 Test", "Reading 33 Intro"],
-    "10-1": ["Listening Review", "Reading 33 Review", "Wish 3 Review", "Squeezer 6 Test", "Reading 34 Intro"],
-    "10-2": ["Listening Review", "Reading 34 Review", "Wish 3 Test", "Reading 35 Intro", "Vocab Part 19 Intro"],
-    "10-3": ["Listening Review", "Reading 35 Review", "DMT 6 Review", "Vocab Part 19 Test", "Reading 36 Intro", "Vocab Part 20 Intro"],
-    "10-4": ["Listening Review", "Reading 36 Review", "Vocab Part 20 Test", "DMT 7 Test", "Reading 37 Intro", "Project 2 Intro"],
-    "11-1": ["Listening Review", "Reading 37 Review", "Project 2 Test", "Reading 38 Intro", "Graduation Project Intro"],
-    "11-2": ["Listening Review", "Reading 38 Review", "DMT 7 Review", "Graduation Project Review", "Reading 39 Intro"],
-    "11-3": ["Listening Review", "Reading 39 Review", "Wish 4 Test", "DMT 8 Test", "Graduation Project Review", "Reading 40 Intro"],
-    "11-4": ["Listening Review", "Reading 40 Review", "Graduation Project Review", "Reading 41 Intro"],
-    "12-1": ["Listening Review", "Reading 41 Review", "Graduation Project Review", "Reading 42 Intro"],
-    "12-2": ["Listening Review", "Reading 42 Review", "Graduation Project Review", "Reading 43 Intro"],
-    "12-3": ["Listening Review", "Reading 43 Review", "Graduation Project Review"],
+    "1-1": ["Grammar Study: Subject & Object","Listening Intro"],
+    "1-2": ["Listening Review","Grammar Study: Poss. Adj & Poss. Pro + Verb Be","Vocab Part 1 Intro"],
+    "1-3": ["Listening Review","Vocab Part 1 Test","Grammar Study: Indefinite Articles","Vocab Part 2 Intro"],
+    "1-4": ["Listening Review","Vocab Part 2 Test","Grammar Study: Plural","Reading 1 Intro"],
+    "2-1": ["Listening Review","Grammar Study: Time","Reading 2 Intro","One Shot Intro"],
+    "2-2": ["Listening Review","One Shot 1 Test","Reading 3 Intro","Vocab Part 3 Intro"],
+    "2-3": ["Listening Review","Vocab Part 3 Test","Reading 4 Intro","Vocab Part 4 Intro"],
+    "2-4": ["Listening Review","Vocab Part 4 Test","One Shot 2 Test","Grammar Study: Date","Reading 5 Intro","Tongue Twister 1 Intro"],
+    "3-1": ["Listening Review","Grammar Study: Present Continuous","Reading 6 Intro","Tongue Twister 2 Intro"],
+    "3-2": ["Listening Review","One Shot 3 Test","Reading 7 Intro","Vocab Part 5 Intro","Tongue Twister 3 Intro"],
+    "3-3": ["Listening Review","Vocab Part 5 Test","Reading 8 Intro","Vocab Part 6 Intro","Tongue Twister 4 Intro"],
+    "3-4": ["Listening Review","Vocab Part 6 Test","One Shot 4 Test","Grammar Study: Present Simple","Reading 9 Intro","Squeezer Intro"],
+    "4-1": ["Listening Review","Squeezer 1 Test","Grammar Study: Past Simple","Reading 10 Intro"],
+    "4-2": ["Listening Review","One Shot 5 Test","Reading 11 Intro","Vocab Part 7 Intro","Tongue Twister 7 Intro"],
+    "4-3": ["Listening Review","Vocab Part 7 Test","Reading 12 Intro","Vocab Part 8 Intro","Tongue Twister 8 Intro"],
+    "4-4": ["Listening Review","Vocab Part 8 Test","Grammar Study: Past Continuous","Reading 13 Intro","DMT Intro"],
+    "5-1": ["Listening Review","Squeezer 2 Review","DMT 1 Test","Grammar Study: Future Simple"],
+    "5-2": ["Listening Review","DMT 1 Review","Squeezer 2 Test","Reading 15 Intro","Vocab Part 9 Intro"],
+    "5-3": ["Listening Review","Vocab Part 9 Test","DMT 2 Test","Reading 16 Intro","Vocab Part 10 Intro"],
+    "5-4": ["Listening Review","Vocab Part 10 Test","One Shot 8 Test","Grammar Study: Future Continuous","Reading 17 Intro","Tongue Twister 13 Intro"],
+    "6-1": ["Listening Review","ORAL EXAM","Squeezer 3 Review","Grammar Study: Present Perfect Simple"],
+    "6-2": ["Listening Review","Squeezer 3 Test","Reading 19 Intro","Vocab Part 11 Intro"],
+    "6-3": ["Listening Review","DMT 2 Review","Vocab Part 11 Test","Reading 20 Intro","Vocab Part 12 Intro"],
+    "6-4": ["Listening Review","Vocab Part 12 Test","DMT 3 Test","Grammar Study: Present Perfect Continuous","Reading 21 Intro"],
+    "7-1": ["Listening Review","Squeezer 4 Review","Grammar Study: Past Perfect Simple"],
+    "7-2": ["Listening Review","Squeezer 4 Test","Reading 23 Intro","Vocab Part 13 Intro"],
+    "7-3": ["Listening Review","Vocab Part 13 Test","DMT 4 Test","Reading 24 Intro","Vocab Part 14 Intro"],
+    "7-4": ["Listening Review","Vocab Part 14 Test","Grammar Study: If Conditions","Reading 25 Intro","Wish 1 Intro (Review)"],
+    "8-1": ["Listening Review","Squeezer 5 Review","Wish 1 Test","Grammar Study: Passives"],
+    "8-2": ["Listening Review","Squeezer 5 Test","Reading 27 Intro","Vocab Part 15 Intro"],
+    "8-3": ["Listening Review","DMT 4 Review","Vocab Part 15 Test","Reading 28 Intro","Vocab Part 16 Intro"],
+    "8-4": ["Listening Review","Vocab Part 16 Test","DMT 5 Test","Reading 29 Intro","Project 1 Intro"],
+    "9-1": ["Listening Review","Wish 2 Review","Project 1 Test","Reading 30 Intro"],
+    "9-2": ["Listening Review","DMT 5 Review","Wish 2 Test","Reading 31 Intro","Vocab Part 17 Intro"],
+    "9-3": ["Listening Review","Vocab Part 17 Test","DMT 6 Test","Reading 32 Intro","Vocab Part 18 Intro"],
+    "9-4": ["Listening Review","Squeezer 6 Review","Vocab Part 18 Test","Reading 33 Intro"],
+    "10-1": ["Listening Review","Wish 3 Review","Squeezer 6 Test","Reading 34 Intro"],
+    "10-2": ["Listening Review","Wish 3 Test","Reading 35 Intro","Vocab Part 19 Intro"],
+    "10-3": ["Listening Review","DMT 6 Review","Vocab Part 19 Test","Reading 36 Intro","Vocab Part 20 Intro"],
+    "10-4": ["Listening Review","Vocab Part 20 Test","DMT 7 Test","Reading 37 Intro","Project 2 Intro"],
+    "11-1": ["Listening Review","Project 2 Test","Reading 38 Intro","Graduation Project Intro"],
+    "11-2": ["Listening Review","DMT 7 Review","Graduation Project Review","Reading 39 Intro"],
+    "11-3": ["Listening Review","Wish 4 Test","DMT 8 Test","Graduation Project Review","Reading 40 Intro"],
+    "11-4": ["Listening Review","Graduation Project Review","Reading 41 Intro"],
+    "12-1": ["Listening Review","Graduation Project Review","Reading 42 Intro"],
+    "12-2": ["Listening Review","Graduation Project Review","Reading 43 Intro"],
+    "12-3": ["Listening Review","Graduation Project Review"],
     "12-4": ["GRADUATION PROJECT PRESENTATION"]
 };
 
-// ─────────────────────────────────────────────
-// IMAGE MAP — مجلد data/Actirobo/
-// كل نشاط بياخد الصورة الخاصة باسمه
-// بغض النظر كان Review أو Test أو Intro
-// ─────────────────────────────────────────────
 const IMG_MAP = [
-    { match: /grammar/i,                      img: 'Grammar'           },
-    { match: /listening/i,                     img: 'Listening'         },
-    { match: /reading/i,                       img: 'Reading'           },
-    { match: /vocab/i,                         img: 'Vocabulary'        },
-    { match: /tongue/i,                        img: 'Tongue-twister'    },
-    { match: /one.?shot/i,                     img: 'One-shot'          },
-    { match: /squeezer/i,                      img: 'Squeezer'          },
-    { match: /dmt/i,                           img: 'DMT'               },
-    { match: /wish/i,                          img: 'Wish'              },
-    { match: /graduation/i,                    img: 'Graduation-project'},
-    { match: /project/i,                       img: 'Project'           },
-    { match: /oral/i,                          img: 'Interview'         },
-    { match: /presentation/i,                  img: 'Graduation-project'},
+    { match:/grammar/i,      img:'Grammar'            },
+    { match:/listening/i,    img:'Listening'          },
+    { match:/reading/i,      img:'Reading'            },
+    { match:/vocab/i,        img:'Vocabulary'         },
+    { match:/tongue/i,       img:'Tongue-twister'     },
+    { match:/one.?shot/i,    img:'One-shot'           },
+    { match:/squeezer/i,     img:'Squeezer'           },
+    { match:/dmt/i,          img:'DMT'                },
+    { match:/wish/i,         img:'Wish'               },
+    { match:/graduation/i,   img:'Graduation-project' },
+    { match:/project/i,      img:'Project'            },
+    { match:/oral/i,         img:'Interview'          },
+    { match:/presentation/i, img:'Graduation-project' },
 ];
-
 const BADGE_MAP = [
-    { match: /grammar/i,      label: 'Grammar'        },
-    { match: /listening/i,    label: 'Listening'      },
-    { match: /reading/i,      label: 'Reading'        },
-    { match: /vocab/i,        label: 'Vocabulary'     },
-    { match: /tongue/i,       label: 'Tongue Twister' },
-    { match: /one.?shot/i,    label: 'One Shot'       },
-    { match: /squeezer/i,     label: 'Squeezer'       },
-    { match: /dmt/i,          label: 'DMT'            },
-    { match: /wish/i,         label: 'Wish'           },
-    { match: /project/i,      label: 'Project'        },
-    { match: /graduation/i,   label: 'Graduation'     },
-    { match: /oral/i,         label: 'Oral Exam'      },
+    { match:/grammar/i,      label:'Grammar'        },
+    { match:/listening/i,    label:'Listening'      },
+    { match:/reading/i,      label:'Reading'        },
+    { match:/vocab/i,        label:'Vocabulary'     },
+    { match:/tongue/i,       label:'Tongue Twister' },
+    { match:/one.?shot/i,    label:'One Shot'       },
+    { match:/squeezer/i,     label:'Squeezer'       },
+    { match:/dmt/i,          label:'DMT'            },
+    { match:/wish/i,         label:'Wish'           },
+    { match:/project/i,      label:'Project'        },
+    { match:/graduation/i,   label:'Graduation'     },
+    { match:/oral/i,         label:'Oral Exam'      },
 ];
 
-function getImgSrc(name) {
-    for (const m of IMG_MAP) if (m.match.test(name)) return `data/Actirobo/${m.img}.png`;
-    return `data/Actirobo/Grammar.png`; // fallback
+// Portal: all Scard activities + Bonus
+const PORTAL_ACTIVITIES = [
+    { label:'Attendance',         col:'Attendence'       },
+    { label:'ICA',                col:'ICA'              },
+    { label:'Listening',          col:'Listening'        },
+    { label:'Grammar',            col:'Grammar'          },
+    { label:'Reading',            col:'Reading'          },
+    { label:'Tongue Twister',     col:'Tongue Twister'   },
+    { label:'One Shot',           col:'One Shot'         },
+    { label:'Games',              col:'Games'            },
+    { label:'Squeezer',           col:'Squeezer'         },
+    { label:'DMT',                col:'DMT'              },
+    { label:'Wish',               col:'Wish'             },
+    { label:'Project',            col:'Project'          },
+    { label:'Graduation Project', col:'Graduation Project'},
+];
+
+function getImgSrc(n) {
+    for (const m of IMG_MAP) if (m.match.test(n)) return `data/Actirobo/${m.img}.png`;
+    return 'data/Actirobo/Grammar.png';
 }
-function getBadge(name) {
-    for (const m of BADGE_MAP) if (m.match.test(name)) return m.label;
+function getBadge(n) {
+    for (const m of BADGE_MAP) if (m.match.test(n)) return m.label;
     return 'Activity';
 }
 
-// ─────────────────────────────────────────────
-// FILE PATH RESOLVER
-// القاعدة العامة: L-{lvl}-S-{sess}-{Xxx}.js
-// الاستثناء: لو النشاط عنده Review وTest،
-//   Review → L-{lvl}-S-{sess}-{Xxx}.js
-//   Test   → L-{lvl}-S-{sess}-{Xxx}t.js
-// Intro يتعامل كـ Review (نفس الاسم بدون t)
-// ─────────────────────────────────────────────
-
-// أنشطة عندها كلتين (Review/Intro + Test) → Test بياخد 't'
-// كل الأنشطة تقريباً ممكن يكون فيها Test، فبنطبق القاعدة على الكل
-
-function resolveFilePath(activityName, lvl, sess) {
-    const n = activityName.toUpperCase();
-    const isTest  = n.includes('TEST');
-    const suffix  = isTest ? 't' : '';   // t تضاف للـ Test فقط
-
-    // استخرج أول 3 حروف من اسم النشاط (بعد إزالة الأرقام والكلمات الزيادة)
-    // نحدد الكلمة الأساسية لكل نشاط
-    function base3(keyword) {
-        // أول حرف Capital والباقي lowercase
-        const k = keyword.charAt(0).toUpperCase() + keyword.slice(1).toLowerCase();
-        return k.substring(0, 3);
-    }
-
-    // ORAL EXAM — استثناء كامل
+// File resolver
+function resolveFilePath(name, lvl, sess) {
+    const n = name.toUpperCase(), s = n.includes('TEST') ? 't' : '';
     if (n.includes('ORAL'))         return `data/L-${lvl}-S-${sess}-Ora.js`;
-
-    // GRADUATION PRESENTATION — استثناء
     if (n.includes('PRESENTATION')) return `data/L-${lvl}-S-${sess}-Grp.js`;
-
-    // GRAMMAR STUDY
     if (n.includes('GRAMMAR'))      return `data/L-${lvl}-S-${sess}-Gra.js`;
-
-    // LISTENING
-    if (n.includes('LISTENING'))    return `data/L-${lvl}-S-${sess}-Lis${suffix}.js`;
-
-    // READING
-    if (n.includes('READING'))      return `data/L-${lvl}-S-${sess}-Rea${suffix}.js`;
-
-    // VOCABULARY
-    if (n.includes('VOCAB'))        return `data/L-${lvl}-S-${sess}-Voc${suffix}.js`;
-
-    // TONGUE TWISTER
-    if (n.includes('TONGUE'))       return `data/L-${lvl}-S-${sess}-Ton${suffix}.js`;
-
-    // ONE SHOT
-    if (n.includes('ONE') && n.includes('SHOT'))
-                                    return `data/L-${lvl}-S-${sess}-One${suffix}.js`;
-
-    // SQUEEZER
-    if (n.includes('SQUEEZER'))     return `data/L-${lvl}-S-${sess}-Squ${suffix}.js`;
-
-    // DMT
-    if (n.includes('DMT'))          return `data/L-${lvl}-S-${sess}-Dmt${suffix}.js`;
-
-    // WISH
-    if (n.includes('WISH'))         return `data/L-${lvl}-S-${sess}-Wis${suffix}.js`;
-
-    // GRADUATION (لازم يجي قبل PROJECT عشان Graduation Project)
-    if (n.includes('GRADUATION'))   return `data/L-${lvl}-S-${sess}-Gra${suffix}.js`;
-
-    // PROJECT
-    if (n.includes('PROJECT'))      return `data/L-${lvl}-S-${sess}-Pro${suffix}.js`;
-
-    // Fallback: أول 3 حروف من الكلمة الأولى
-    const firstWord = activityName.trim().split(/\s+/)[0];
-    const fb3 = firstWord.charAt(0).toUpperCase() + firstWord.slice(1,3).toLowerCase();
-    return `data/L-${lvl}-S-${sess}-${fb3}${suffix}.js`;
+    if (n.includes('LISTENING'))    return `data/L-${lvl}-S-${sess}-Lis${s}.js`;
+    if (n.includes('READING'))      return `data/L-${lvl}-S-${sess}-Rea${s}.js`;
+    if (n.includes('VOCAB'))        return `data/L-${lvl}-S-${sess}-Voc${s}.js`;
+    if (n.includes('TONGUE'))       return `data/L-${lvl}-S-${sess}-Ton${s}.js`;
+    if (n.includes('ONE')&&n.includes('SHOT')) return `data/L-${lvl}-S-${sess}-One${s}.js`;
+    if (n.includes('SQUEEZER'))     return `data/L-${lvl}-S-${sess}-Squ${s}.js`;
+    if (n.includes('DMT'))          return `data/L-${lvl}-S-${sess}-Dmt${s}.js`;
+    if (n.includes('WISH'))         return `data/L-${lvl}-S-${sess}-Wis${s}.js`;
+    if (n.includes('GRADUATION'))   return `data/L-${lvl}-S-${sess}-Gra${s}.js`;
+    if (n.includes('PROJECT'))      return `data/L-${lvl}-S-${sess}-Pro${s}.js`;
+    const fw = name.trim().split(/\s+/)[0];
+    return `data/L-${lvl}-S-${sess}-${fw[0].toUpperCase()+fw.slice(1,3).toLowerCase()}${s}.js`;
 }
 
-// ─────────────────────────────────────────────
-// 3D TILT
-// ─────────────────────────────────────────────
+// 3D Tilt
 function setupTilt(scene) {
-    const card = scene.querySelector('.card');
-    const MAX  = 18;
-
-    const apply = (rx, ry) => {
-        card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px)`;
-    };
-
-    scene.addEventListener('mousemove', e => {
-        const r = scene.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width  - 0.5;
-        const y = (e.clientY - r.top)  / r.height - 0.5;
-        apply(-y * MAX, x * MAX);
-        const shine = card.querySelector('.card-shine');
-        shine.style.background = `radial-gradient(circle at ${(x+0.5)*100}% ${(y+0.5)*100}%,
-            rgba(255,255,255,0.14) 0%, transparent 60%)`;
+    const card = scene.querySelector('.card'), MAX = 15;
+    const apply = (rx,ry) => { card.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px)`; };
+    scene.addEventListener('mousemove', e=>{
+        const r=scene.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+        apply(-y*MAX,x*MAX);
+        scene.querySelector('.card-shine').style.background=`radial-gradient(circle at ${(x+.5)*100}% ${(y+.5)*100}%,rgba(0,212,255,0.08) 0%,transparent 60%)`;
     });
-
-    scene.addEventListener('mouseleave', () => {
-        card.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0)';
-        card.style.transition = 'transform 0.6s cubic-bezier(0.23,1,0.32,1)';
-    });
-
-    scene.addEventListener('mouseenter', () => {
-        card.style.transition = 'transform 0.12s ease-out';
-    });
-
-    scene.addEventListener('touchmove', e => {
-        const t = e.touches[0];
-        const r = scene.getBoundingClientRect();
-        const x = (t.clientX - r.left) / r.width  - 0.5;
-        const y = (t.clientY - r.top)  / r.height - 0.5;
-        apply(-y * MAX * 0.6, x * MAX * 0.6);
-    }, { passive: true });
-
-    scene.addEventListener('touchend', () => {
-        card.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0)';
-    });
+    scene.addEventListener('mouseleave',()=>{ card.style.transform='rotateX(0)rotateY(0)translateZ(0)'; card.style.transition='transform .6s cubic-bezier(.23,1,.32,1)'; });
+    scene.addEventListener('mouseenter',()=>{ card.style.transition='transform .12s ease-out'; });
+    scene.addEventListener('touchmove',e=>{
+        const t=e.touches[0],r=scene.getBoundingClientRect();
+        apply(-((t.clientY-r.top)/r.height-.5)*MAX*.6,((t.clientX-r.left)/r.width-.5)*MAX*.6);
+    },{passive:true});
+    scene.addEventListener('touchend',()=>{ card.style.transform='rotateX(0)rotateY(0)translateZ(0)'; });
 }
 
-// ─────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────
-const params  = new URLSearchParams(window.location.search);
-const SESSION = params.get('session') || '';
-
-function init() {
-    if (SESSION) {
-        const [lvl, sess] = SESSION.split('-');
-        document.getElementById('title-text').innerHTML =
-            `LEVEL <span>${lvl}</span> &nbsp;·&nbsp; CLASS <span>${sess}</span>`;
+// Init
+const params=new URLSearchParams(window.location.search), SESSION=params.get('session')||'';
+function init(){
+    if(SESSION){
+        const[lvl,sess]=SESSION.split('-');
+        document.getElementById('title-text').innerHTML=`LEVEL <span>${lvl}</span> &nbsp;·&nbsp; CLASS <span>${sess}</span>`;
     }
-
-    if (!SESSION || !sessionData[SESSION]) {
-        document.getElementById('grid').innerHTML =
-            `<p style="color:var(--text-dim);padding:40px;grid-column:1/-1;text-align:center;font-size:1.1rem;">
-             No session found for <strong style="color:var(--gold)">${SESSION || '?'}</strong>.
-             Go back and select a valid session.</p>`;
+    if(!SESSION||!sessionData[SESSION]){
+        document.getElementById('grid').innerHTML=`<p style="color:var(--text-dim);padding:40px;grid-column:1/-1;text-align:center;font-size:.9rem;font-family:'Orbitron',sans-serif;letter-spacing:3px;">SESSION NOT FOUND: <strong style="color:var(--cyan)">${SESSION||'?'}</strong></p>`;
         return;
     }
-
-    const grid = document.getElementById('grid');
-
-    sessionData[SESSION].forEach((item, i) => {
-        const imgSrc = getImgSrc(item);
-        const badge  = getBadge(item);
-
-        const scene = document.createElement('div');
-        scene.className = 'card-scene';
-        scene.style.animationDelay = `${i * 55}ms`;
-        scene.onclick = () => openActivity(item);
-
-        scene.innerHTML = `
-            <div class="card">
-                <div class="card-face">
-                    <div class="card-img-wrap">
-                        <img src="${imgSrc}" alt="${badge}"
-                             onerror="this.style.opacity='0'">
-                    </div>
-                    <div class="card-label">
-                        <span class="card-type">${badge}</span>
-                        <span class="card-name">${item}</span>
-                    </div>
-                </div>
-                <div class="card-shine"></div>
-                <div class="card-edge"></div>
-            </div>`;
-
-        grid.appendChild(scene);
-        setupTilt(scene);
+    const grid=document.getElementById('grid');
+    sessionData[SESSION].forEach(item=>{
+        const imgSrc=getImgSrc(item),badge=getBadge(item),scene=document.createElement('div');
+        scene.className='card-scene'; scene.onclick=()=>openActivity(item);
+        scene.innerHTML=`<div class="card"><div class="card-face"><div class="card-img-wrap"><img src="${imgSrc}" alt="${badge}" onerror="this.style.opacity='0'"></div><div class="card-label"><span class="card-type">${badge}</span><span class="card-name">${item}</span></div></div><div class="card-shine"></div><div class="card-edge"></div><div class="cc tl"></div><div class="cc tr"></div><div class="cc bl"></div><div class="cc br"></div></div>`;
+        grid.appendChild(scene); setupTilt(scene);
     });
-
-    // Canvas resize
-    const canvas = document.getElementById('draw-canvas');
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    window.addEventListener('resize', () => {
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
-
-    setupFreeze();
-    setupLaser();
+    const cv=document.getElementById('draw-canvas');
+    cv.width=window.innerWidth; cv.height=window.innerHeight;
+    window.addEventListener('resize',()=>{cv.width=window.innerWidth;cv.height=window.innerHeight;});
+    setupFreeze(); setupLaser();
 }
 
-// ─────────────────────────────────────────────
-// OPEN ACTIVITY
-// ─────────────────────────────────────────────
-function openActivity(name) {
-    if (!SESSION) return;
-    const [lvl, sess] = SESSION.split('-');
-    const path = resolveFilePath(name, lvl, sess);
-
-    const stage   = document.getElementById('stage');
-    const loader  = document.getElementById('stage-loader');
-    const content = document.getElementById('stage-content');
-
-    stage.style.display  = 'block';
-    loader.style.display = 'flex';
-    content.innerHTML    = '';
-
-    document.querySelectorAll('script[data-activity]').forEach(s => s.remove());
-
-    const script = document.createElement('script');
-    script.setAttribute('data-activity', 'true');
-    script.src = path;
-    script.onload  = () => { loader.style.display = 'none'; };
-    script.onerror = () => {
-        loader.style.display = 'none';
-        content.innerHTML = `
-            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-                        height:100%;gap:16px;color:var(--gold);font-family:'Bebas Neue',sans-serif;">
-                <span style="font-size:3rem;">⚠️</span>
-                <span style="font-size:1.8rem;letter-spacing:3px;">FILE NOT FOUND</span>
-                <span style="font-size:1rem;color:var(--text-dim);font-family:'Barlow',sans-serif;">${path}</span>
-            </div>`;
+function openActivity(name){
+    if(!SESSION)return;
+    const[lvl,sess]=SESSION.split('-'),path=resolveFilePath(name,lvl,sess);
+    const stage=document.getElementById('stage'),loader=document.getElementById('stage-loader'),content=document.getElementById('stage-content');
+    stage.style.display='block'; loader.style.display='flex'; content.innerHTML='';
+    document.querySelectorAll('script[data-activity]').forEach(s=>s.remove());
+    const scr=document.createElement('script'); scr.setAttribute('data-activity','true'); scr.src=path;
+    scr.onload=()=>{loader.style.display='none';};
+    scr.onerror=()=>{
+        loader.style.display='none';
+        content.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--cyan);font-family:'Orbitron',sans-serif;"><span style="font-size:2.5rem;">⚠</span><span style="font-size:1.2rem;letter-spacing:4px;">FILE NOT FOUND</span><span style="font-size:.75rem;color:var(--text-dim);letter-spacing:2px;">${path}</span></div>`;
     };
-    document.head.appendChild(script);
+    document.head.appendChild(scr);
+}
+function closeStage(){
+    document.getElementById('stage').style.display='none';
+    document.getElementById('stage-content').innerHTML='';
+    document.getElementById('stage-loader').style.display='none';
 }
 
-function closeStage() {
-    document.getElementById('stage').style.display = 'none';
-    document.getElementById('stage-content').innerHTML = '';
-    document.getElementById('stage-loader').style.display = 'none';
+// Toolbox
+function toggleToolbox(){document.getElementById('toolbox').classList.toggle('open');}
+
+// Laser
+let laserOn=false;
+const laser=document.getElementById('laser'),canvas=document.getElementById('draw-canvas'),ctx=canvas.getContext('2d');
+function toggleLaser(){
+    laserOn=!laserOn; document.getElementById('btn-laser').classList.toggle('on',laserOn);
+    canvas.style.pointerEvents=laserOn?'auto':'none';
+    if(!laserOn){laser.style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height);}
 }
-
-// ─────────────────────────────────────────────
-// TOOLBOX
-// ─────────────────────────────────────────────
-function toggleToolbox() { document.getElementById('toolbox').classList.toggle('open'); }
-
-// ─────────────────────────────────────────────
-// LASER
-// ─────────────────────────────────────────────
-let laserOn = false;
-const laser  = document.getElementById('laser');
-const canvas = document.getElementById('draw-canvas');
-const ctx    = canvas.getContext('2d');
-
-function toggleLaser() {
-    laserOn = !laserOn;
-    document.getElementById('btn-laser').classList.toggle('on', laserOn);
-    canvas.style.pointerEvents = laserOn ? 'auto' : 'none';
-    if (!laserOn) { laser.style.display = 'none'; ctx.clearRect(0,0,canvas.width,canvas.height); }
-}
-
-function setupLaser() {
-    canvas.addEventListener('mousedown', e => {
-        if (!laserOn) return;
-        laser.style.display = 'block';
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.beginPath();
-        ctx.strokeStyle = '#ff2020';
-        ctx.lineWidth   = 3;
-        ctx.lineCap     = 'round';
-        ctx.moveTo(e.clientX, e.clientY);
-        const draw = m => {
-            ctx.lineTo(m.clientX, m.clientY); ctx.stroke();
-            laser.style.left = (m.clientX - 9) + 'px';
-            laser.style.top  = (m.clientY - 9) + 'px';
-        };
-        const stop = () => {
-            laser.style.display = 'none';
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            canvas.removeEventListener('mousemove', draw);
-            canvas.removeEventListener('mouseup',  stop);
-        };
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup',   stop);
+function setupLaser(){
+    canvas.addEventListener('mousedown',e=>{
+        if(!laserOn)return; laser.style.display='block';
+        ctx.clearRect(0,0,canvas.width,canvas.height); ctx.beginPath();
+        ctx.strokeStyle='#ff2020'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.moveTo(e.clientX,e.clientY);
+        const draw=m=>{ctx.lineTo(m.clientX,m.clientY);ctx.stroke();laser.style.left=(m.clientX-9)+'px';laser.style.top=(m.clientY-9)+'px';};
+        const stop=()=>{laser.style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height);canvas.removeEventListener('mousemove',draw);canvas.removeEventListener('mouseup',stop);};
+        canvas.addEventListener('mousemove',draw); canvas.addEventListener('mouseup',stop);
     });
 }
 
-// ─────────────────────────────────────────────
-// FREEZE + ZOOM/PAN
-// ─────────────────────────────────────────────
-let freezeOn = false, fscale = 1, fpx = 0, fpy = 0, dragging = false, fsx = 0, fsy = 0;
-
-function toggleFreeze() {
-    const layer   = document.getElementById('freeze-layer');
-    const content = document.getElementById('freeze-content');
-    const btn     = document.getElementById('btn-freeze');
-    if (!freezeOn) {
-        const target = document.getElementById('stage').style.display === 'block'
-            ? document.getElementById('stage') : document.body;
-        html2canvas(target, { useCORS: true, allowTaint: true }).then(snap => {
-            content.innerHTML = ''; content.appendChild(snap);
-            fscale = 1; fpx = 0; fpy = 0; applyTransform();
-            layer.style.display = 'block'; freezeOn = true; btn.classList.add('on');
+// Freeze
+let freezeOn=false,fscale=1,fpx=0,fpy=0,fdrag=false,fsx=0,fsy=0;
+function toggleFreeze(){
+    const ly=document.getElementById('freeze-layer'),fc=document.getElementById('freeze-content'),btn=document.getElementById('btn-freeze');
+    if(!freezeOn){
+        const tgt=document.getElementById('stage').style.display==='block'?document.getElementById('stage'):document.body;
+        html2canvas(tgt,{useCORS:true,allowTaint:true}).then(snap=>{
+            fc.innerHTML='';fc.appendChild(snap);fscale=1;fpx=0;fpy=0;applyFT();
+            ly.style.display='block';freezeOn=true;btn.classList.add('on');
         });
-    } else {
-        layer.style.display = 'none'; freezeOn = false; btn.classList.remove('on');
-    }
+    }else{ly.style.display='none';freezeOn=false;btn.classList.remove('on');}
+}
+function applyFT(){document.getElementById('freeze-content').style.transform=`translate(${fpx}px,${fpy}px)scale(${fscale})`;}
+function setupFreeze(){
+    const ly=document.getElementById('freeze-layer');
+    ly.addEventListener('wheel',e=>{if(!freezeOn)return;e.preventDefault();fscale=Math.min(5,Math.max(.4,fscale*(e.deltaY>0?.9:1.1)));applyFT();},{passive:false});
+    const sd=e=>{if(!freezeOn)return;fdrag=true;const t=e.touches?e.touches[0]:e;fsx=t.clientX-fpx;fsy=t.clientY-fpy;};
+    const md=e=>{if(!fdrag||!freezeOn)return;const t=e.touches?e.touches[0]:e;fpx=t.clientX-fsx;fpy=t.clientY-fsy;applyFT();};
+    ly.addEventListener('mousedown',sd); ly.addEventListener('touchstart',sd,{passive:true});
+    window.addEventListener('mousemove',md); window.addEventListener('touchmove',md,{passive:true});
+    window.addEventListener('mouseup',()=>{fdrag=false;}); window.addEventListener('touchend',()=>{fdrag=false;});
 }
 
-function applyTransform() {
-    document.getElementById('freeze-content').style.transform =
-        `translate(${fpx}px,${fpy}px) scale(${fscale})`;
+// Note
+function toggleNote(){
+    const ov=document.getElementById('note-overlay'),open=ov.style.display==='flex';
+    ov.style.display=open?'none':'flex';
+    if(!open)setTimeout(()=>document.getElementById('note-textarea').focus(),80);
 }
 
-function setupFreeze() {
-    const layer = document.getElementById('freeze-layer');
-    layer.addEventListener('wheel', e => {
-        if (!freezeOn) return; e.preventDefault();
-        fscale = Math.min(5, Math.max(0.4, fscale * (e.deltaY > 0 ? 0.9 : 1.1)));
-        applyTransform();
-    }, { passive: false });
-    const startDrag = e => {
-        if (!freezeOn) return; dragging = true;
-        const t = e.touches ? e.touches[0] : e;
-        fsx = t.clientX - fpx; fsy = t.clientY - fpy;
-    };
-    const moveDrag = e => {
-        if (!dragging || !freezeOn) return;
-        const t = e.touches ? e.touches[0] : e;
-        fpx = t.clientX - fsx; fpy = t.clientY - fsy; applyTransform();
-    };
-    layer.addEventListener('mousedown',  startDrag);
-    layer.addEventListener('touchstart', startDrag, { passive: true });
-    window.addEventListener('mousemove', moveDrag);
-    window.addEventListener('touchmove', moveDrag, { passive: true });
-    window.addEventListener('mouseup',   () => { dragging = false; });
-    window.addEventListener('touchend',  () => { dragging = false; });
+// ════════════════════════════════════════════
+// VETO PORTAL
+// ════════════════════════════════════════════
+const API='https://script.google.com/macros/s/AKfycbx_M2XqwXlBSWKARJYuSXlfgzTJZq1ujzokFwriOdx0OjPo3UfU60KsfhPFjgx0D9t4BA/exec';
+let currentEmail=null;
+
+function openPortal(){
+    document.getElementById('portal-overlay').classList.add('active');
+    document.getElementById('toolbox').classList.remove('open');
+    buildGradesGrid();
+    setTimeout(()=>document.getElementById('portal-code-input').focus(),200);
+}
+function closePortal(){
+    document.getElementById('portal-overlay').classList.remove('active');
+    resetPortal();
+}
+function resetPortal(){
+    currentEmail=null;
+    document.getElementById('portal-code-input').value='';
+    document.getElementById('portal-student-card').style.display='none';
+    setStatus('','');
+    document.querySelectorAll('.grade-input').forEach(i=>i.value='');
 }
 
-// ─────────────────────────────────────────────
-// NOTE
-// ─────────────────────────────────────────────
-function toggleNote() {
-    const ov   = document.getElementById('note-overlay');
-    const open = ov.style.display === 'flex';
-    ov.style.display = open ? 'none' : 'flex';
-    if (!open) setTimeout(() => document.getElementById('note-textarea').focus(), 80);
+function buildGradesGrid(){
+    const grid=document.getElementById('portal-grades-grid');
+    grid.innerHTML='';
+    PORTAL_ACTIVITIES.forEach(act=>{
+        const cell=document.createElement('div');
+        cell.className='grade-cell';
+        cell.innerHTML=`<div class="grade-label">${act.label.toUpperCase()}</div><input class="grade-input" type="number" min="0" max="100" step="0.5" placeholder="—" data-col="${act.col}">`;
+        grid.appendChild(cell);
+    });
+    // Bonus
+    const bc=document.createElement('div');
+    bc.className='grade-cell bonus-cell';
+    bc.innerHTML=`<div class="grade-label bonus-lbl">BONUS</div><input class="grade-input bonus-inp" type="number" min="0" max="9999" step="1" placeholder="—" data-col="Bonus">`;
+    grid.appendChild(bc);
 }
 
-// ─────────────────────────────────────────────
-// KEYBOARD
-// ─────────────────────────────────────────────
-window.addEventListener('keydown', e => {
-    if (e.key !== 'Escape') return;
-    if (document.getElementById('note-overlay').style.display === 'flex') {
-        document.getElementById('note-overlay').style.display = 'none';
-    } else if (freezeOn) {
-        toggleFreeze();
-    } else if (document.getElementById('stage').style.display === 'block') {
-        closeStage();
-    }
+function setStatus(msg,type){
+    const el=document.getElementById('portal-status');
+    if(!msg){el.style.display='none';return;}
+    el.textContent=msg; el.className=type; el.style.display='block';
+}
+
+function renderStars(n){
+    let h=''; for(let i=0;i<10;i++) h+=`<span class="star-icon ${i<n?'':'empty'}">★</span>`; return h;
+}
+
+async function fetchStudent(){
+    const code=document.getElementById('portal-code-input').value.trim().toUpperCase();
+    if(!code){setStatus('ENTER AGENT CODE','error');return;}
+    setStatus('SCANNING AGENT...','loading');
+    document.getElementById('portal-student-card').style.display='none';
+    currentEmail=null;
+    try{
+        const res=await fetch(`${API}?action=getStudentByOfflineCode&offlineCode=${encodeURIComponent(code)}`);
+        const data=await res.json();
+        if(data.status!=='success'){setStatus('AGENT NOT FOUND — CHECK CODE','error');return;}
+        const s=data.data;
+        currentEmail=s.email;
+        document.getElementById('portal-name').textContent=s.name||'—';
+        document.getElementById('portal-tokens').textContent=(s.tokens||0).toLocaleString();
+        document.getElementById('portal-stars-display').innerHTML=renderStars(s.stars||0);
+        document.getElementById('portal-rank').textContent='#'+(s.globalRank||'—');
+        const av=document.getElementById('portal-avatar');
+        av.src=s.avatar||''; av.onerror=()=>{av.style.display='none';};
+        document.getElementById('portal-student-card').style.display='block';
+        setStatus('','');
+        document.querySelectorAll('.grade-input').forEach(i=>i.value='');
+        const first=document.querySelector('.grade-input');
+        if(first)first.focus();
+    }catch(err){setStatus('CONNECTION ERROR','error');}
+}
+
+async function submitGrades(){
+    if(!currentEmail){setStatus('SCAN AGENT FIRST','error');return;}
+    const btn=document.getElementById('portal-submit-btn');
+    btn.disabled=true; setStatus('UPLOADING SCORES...','loading');
+
+    const inputs=document.querySelectorAll('.grade-input');
+    const promises=[];
+    inputs.forEach(inp=>{
+        const val=inp.value.trim();
+        if(val===''||isNaN(parseFloat(val)))return;
+        const col=inp.getAttribute('data-col');
+        const grade=parseFloat(val);
+        const activity=col==='Bonus'?'Bonus':col;
+        promises.push(
+            fetch(`${API}?action=updateGrades&email=${encodeURIComponent(currentEmail)}&activity=${encodeURIComponent(activity)}&grade=${grade}`)
+            .then(r=>r.json())
+        );
+    });
+
+    if(promises.length===0){setStatus('NO SCORES ENTERED','error');btn.disabled=false;return;}
+
+    try{
+        const results=await Promise.all(promises);
+        const allOk=results.every(r=>r.status==='success');
+        if(allOk){
+            const last=results[results.length-1];
+            if(last.data){
+                document.getElementById('portal-tokens').textContent=(last.data.tokens||0).toLocaleString();
+                document.getElementById('portal-stars-display').innerHTML=renderStars(last.data.stars||0);
+                document.getElementById('portal-rank').textContent='#'+(last.data.globalRank||'—');
+            }
+            setStatus('✓ SCORES UPLOADED SUCCESSFULLY','success');
+            document.querySelectorAll('.grade-input').forEach(i=>i.value='');
+        }else{
+            setStatus('PARTIAL ERROR — CHECK SHEET','error');
+        }
+    }catch(err){setStatus('UPLOAD FAILED','error');}
+    btn.disabled=false;
+}
+
+// Keyboard
+window.addEventListener('keydown',e=>{
+    if(e.key!=='Escape')return;
+    if(document.getElementById('portal-overlay').classList.contains('active')){closePortal();return;}
+    if(document.getElementById('note-overlay').style.display==='flex'){document.getElementById('note-overlay').style.display='none';return;}
+    if(freezeOn){toggleFreeze();return;}
+    if(document.getElementById('stage').style.display==='block'){closeStage();}
 });
 
-// ─────────────────────────────────────────────
-// BOOT
-// ─────────────────────────────────────────────
-window.addEventListener('load', () => init());
+window.addEventListener('load',()=>init());
 </script>
 </body>
 </html>

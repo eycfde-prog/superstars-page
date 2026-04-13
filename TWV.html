@@ -848,18 +848,50 @@ function changeFontSize(delta) {
   applyFontSize();
 }
 
+/**
+ * يقوم بتبديل القوالب (Themes) بشكل دائري.
+ * يتم التحقق من صحة الفئة (Class) قبل الإضافة أو الحذف لتجنب أخطاء DOMTokenList.
+ */
 function cycleTheme() {
-  document.body.classList.remove(themes[themeIndex]);
+  const themeBtn = document.getElementById('themeBtn');
+  
+  // 1. التحقق من وجود القالب الحالي وإزالته بأمان
+  const currentTheme = themes[themeIndex];
+  if (currentTheme && currentTheme.trim() !== "") {
+    document.body.classList.remove(currentTheme);
+  }
+
+  // 2. تحديث المؤشر للانتقال للقالب التالي
   themeIndex = (themeIndex + 1) % themes.length;
-  if (themes[themeIndex]) document.body.classList.add(themes[themeIndex]);
-  document.getElementById('themeBtn').textContent = themeIcons[themeIndex];
+
+  // 3. إضافة القالب الجديد وتحديث أيقونة الزر
+  const nextTheme = themes[themeIndex];
+  
+  if (nextTheme && nextTheme.trim() !== "") {
+    document.body.classList.add(nextTheme);
+  }
+
+  // تحديث نص أو أيقونة الزر إذا كان العنصر موجوداً
+  if (themeBtn && themeIcons[themeIndex]) {
+    themeBtn.textContent = themeIcons[themeIndex];
+  }
 }
 
+/**
+ * تحديث شريط التقدم العلوي بناءً على نسبة التمرير في الصفحة.
+ */
 function updateProgress() {
   const scrollTop = window.scrollY;
+  // docHeight يمثل المسافة الإجمالية القابلة للتمرير
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  
+  // حساب النسبة المئوية وضمان عدم القسمة على صفر
   const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  document.getElementById('progressFill').style.width = progress + '%';
+  
+  const progressFill = document.getElementById('progressFill');
+  if (progressFill) {
+    progressFill.style.width = `${progress}%`;
+  }
 }
 </script>
 </body>

@@ -6,7 +6,7 @@
 
 // ─── CONFIG ─────────────────────────────────────────────────
 const CONFIG = {
-  GAS_URL: "https://script.google.com/macros/s/AKfycbzTJS-DLIKrhtXCAn5JcxVDOPXtMo2OZOke7knVd11dcygbennTVKY2lUDk6KO7Lo5MLw/exec",
+  GAS_URL: "https://script.google.com/macros/s/AKfycbz2RO713Lq-vq-eMBRCV7cIzHR9GGWyKD6idr4nGK2BC33GYie57ljJM6o_h-LpgA2aBQ/exec",
   DATA_PATH: "data/VetoOnline/",
   LOGO: "Logo.png",
   ACADEMY: "EYC Academy",

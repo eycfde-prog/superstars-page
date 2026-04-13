@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veto Online — EYC Academy</title>
+  <link rel="stylesheet" href="VetoOstyle.css" />
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║               LOGIN OVERLAY                             ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div id="loginOverlay" class="hidden">
+  <div class="login-box">
+
+    <div class="login-logo">
+      <img src="Logo.png" class="logo-img" alt="EYC Logo" />
+      <h2>EYC&nbsp;ACADEMY</h2>
+    </div>
+
+    <!-- Tabs -->
+    <div class="login-tabs">
+      <button class="login-tab active" id="tabLogin">Login</button>
+      <button class="login-tab" id="tabNew">New Student</button>
+    </div>
+
+    <!-- ── LOGIN FORM ── -->
+    <div class="login-form" id="formLogin">
+      <div class="input-group">
+        <label>Google Email</label>
+        <input type="email" id="loginEmail" placeholder="student@gmail.com" autocomplete="email" />
+      </div>
+      <div class="input-group">
+        <label>Passcode</label>
+        <input type="text" id="loginCode" placeholder="V-XXXX" autocomplete="off" />
+      </div>
+      <div class="forgot-link" id="forgotLink">Forgot passcode?</div>
+      <button class="btn-primary" id="btnLogin">LOG IN</button>
+    </div>
+
+    <!-- ── NEW STUDENT FORM ── -->
+    <div class="login-form hidden" id="formNewStudent">
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="newName" placeholder="Your full name" />
+      </div>
+      <div class="input-group">
+        <label>Google Email</label>
+        <input type="email" id="newEmail" placeholder="student@gmail.com" />
+      </div>
+      <div class="input-group">
+        <label>Profile Picture URL <span style="color:var(--text-muted)">(optional)</span></label>
+        <input type="url" id="newAvatar" placeholder="https://..." />
+      </div>
+      <button class="btn-primary" id="btnSignup">CREATE ACCOUNT</button>
+    </div>
+
+    <div class="login-msg" id="loginMsg" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║               MAIN APP SHELL                            ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div id="app">
+
+  <!-- ── TOP BAR ── -->
+  <header id="topBar">
+    <div class="topbar-brand">
+      <img src="Logo.png" class="logo-img" alt="EYC" />
+      <span>VETO&nbsp;ONLINE</span>
+    </div>
+    <div class="topbar-right">
+      <button id="btnLoginTopbar" onclick="showLogin('nav')" style="background:transparent;border:1px solid var(--border);color:var(--accent);border-radius:8px;padding:7px 16px;font-family:var(--font-body);font-size:.82rem;font-weight:600;letter-spacing:1px;cursor:pointer;">LOGIN</button>
+      <button id="logoutBtn">LOG OUT</button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════
+       COLUMN 1 — STUDENT PROFILE
+       ══════════════════════════════════════════════════════════ -->
+  <aside id="sideLeft">
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <img class="profile-avatar" id="profileAvatar" src="assets/default-avatar.png" alt="Avatar" />
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-program" id="profileProgram">Veto Online</div>
+
+      <div class="profile-codes">
+        <div class="code-badge">
+          <span class="label">ONLINE CODE</span>
+          <span class="value" id="profileCodeOnline">—</span>
+        </div>
+        <div class="code-badge">
+          <span class="label">OFFLINE CODE</span>
+          <span class="value" id="profileCodeOffline">—</span>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="stat-box">
+          <div class="stat-val" id="profileTokens">0</div>
+          <div class="stat-label">Tokens</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val gold" id="profileStars">0</div>
+          <div class="stat-label">Stars</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val orange" id="profileRank">—</div>
+          <div class="stat-label">Rank</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Class Schedule -->
+    <div class="schedule-card">
+      <h4>📅 CLASS SCHEDULE</h4>
+      <div class="schedule-row"><span class="schedule-icon">📆</span> Saturday</div>
+      <div class="schedule-row"><span class="schedule-icon">⏰</span> 10:00 AM – 12:00 PM</div>
+      <div class="schedule-row"><span class="schedule-icon">⏱️</span> 2 Hours / Session</div>
+    </div>
+
+    <!-- Academy Info -->
+    <div class="academy-card">
+      <img src="Logo.png" class="logo-img" alt="EYC Logo" />
+      <div class="academy-name">EYC Academy</div>
+      <div class="teacher-name">Teacher: <span>Mr. Ezz</span></div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;letter-spacing:1px;">VETO ONLINE PROGRAM</div>
+    </div>
+
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════════════
+       COLUMN 2 — LEVELS & SESSIONS
+       ══════════════════════════════════════════════════════════ -->
+  <main id="mainContent">
+
+    <div class="content-header">
+      <h2>📚 YOUR LEVELS</h2>
+      <div class="week-badge" id="weekBadge">Week Loading...</div>
+    </div>
+
+    <!-- Levels built by JS -->
+    <div id="levelsContainer"></div>
+
+    <!-- Activity Frame (shown when session clicked) -->
+    <div id="activityFrame">
+      <div class="frame-header">
+        <span class="frame-title" id="frameTitle">SESSION CONTENT</span>
+        <button class="frame-close" onclick="closeFrame()">✕</button>
+      </div>
+      <div class="activity-list" id="activityList">
+        <!-- Activities injected by JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════════
+       COLUMN 3 — SERVICES
+       ══════════════════════════════════════════════════════════ -->
+  <aside id="sideRight">
+
+    <div class="side-section-title">⚡ Services</div>
+
+    <button class="service-btn" id="btnGamePortal">
+      <div class="service-icon">🎮</div>
+      <div>
+        <div class="service-label">Game Portal</div>
+        <div class="service-sub">Play & earn tokens</div>
+      </div>
+    </button>
+
+    <button class="service-btn orange-service" id="btnCV">
+      <div class="service-icon" style="background:rgba(255,107,53,0.1)">📄</div>
+      <div>
+        <div class="service-label">Create HTML CV</div>
+        <div class="service-sub">Build your resume</div>
+      </div>
+    </button>
+
+    <div class="side-section-title" style="margin-top:8px;">📊 My Stats</div>
+
+    <div class="quick-rank">
+      <div class="rank-row">
+        <span class="r-label">Global Rank</span>
+        <span class="r-val" id="sideRank">—</span>
+      </div>
+      <div class="rank-row">
+        <span class="r-label">Stars</span>
+        <span class="r-val" id="sideStars">—</span>
+      </div>
+      <div class="rank-row">
+        <span class="r-label">Tokens</span>
+        <span class="r-val" id="sideTokens">—</span>
+      </div>
+      <div class="rank-row">
+        <span class="r-label">Program</span>
+        <span class="r-val" style="color:var(--accent)">Veto Online</span>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- Toast notification -->
+<div id="toast"></div>
+
+<!-- ── Scripts ── -->
+<script src="data/VetoOnline/OnlineLevels.js"></script>
+<script src="VetoOjava.js"></script>
+
+<script>
+  // Sync sidebar stats with profile after render
+  function syncSideStats() {
+    const setS = (id, srcId) => {
+      const el = document.getElementById(id);
+      const src = document.getElementById(srcId);
+      if (el && src) el.textContent = src.textContent;
+    };
+    setS("sideRank",   "profileRank");
+    setS("sideStars",  "profileStars");
+    setS("sideTokens", "profileTokens");
+  }
+  // Poll sync since profile updates async
+  setInterval(syncSideStats, 1000);
+
+  // Show current week
+  const weekEl = document.getElementById("weekBadge");
+  if (weekEl) {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
+    weekEl.textContent = `Week ${week} · ${now.toLocaleDateString("en-GB", {month:"short", year:"numeric"})}`;
+  }
+</script>
+
+</body>
+</html>

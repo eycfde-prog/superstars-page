@@ -3,80 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وجه متحرك SVG</title>
+    <title>وجه SVG بعمق وتفاعل</title>
     <style>
-        /* CSS Styling - الجزء المسؤول عن الشكل والألوان */
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f0f0f0; /* لون خلفية الصفحة */
+            background-color: #e0e0e0; /* خلفية أغمق قليلاً لإبراز الظلال */
             margin: 0;
-            font-family: sans-serif;
-            overflow: hidden; /* لمنع التمرير أثناء اللمس على الموبايل */
+            overflow: hidden;
         }
 
         #face {
-            width: 300px;
-            height: 300px;
+            width: 350px; /* أكبر قليلاً */
+            height: 350px;
+            /* إضافة ظل خارجي ناعم خلف الوجه كله */
+            filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.2));
         }
 
-        /* تنسيق الجلد */
+        /* تنسيق الجلد - باستخدام التدرج */
         .skin {
-            fill: #ffdbac; /* لون البشرة */
-            stroke: #333; /* لون الحدود */
-            stroke-width: 2;
+            fill: url(#skinGradient); /* ربط التدرج */
+            stroke: #dcae8a; /* حدود أغمق قليلاً من الجلد */
+            stroke-width: 1;
         }
 
-        /* تنسيق العيون (اللون الأبيض) */
+        /* العيون - عمق وتأثير تجويف */
         .eye-white {
-            fill: white;
-            stroke: #333;
-            stroke-width: 2;
+            fill: #fff;
+            stroke: #ccc;
+            stroke-width: 0.5;
+            /* إضافة ظل داخلي لجعل العين تبدو محفورة */
+            filter: url(#innerShadow);
         }
 
-        /* تنسيق بؤبؤ العين (الجزء المتحرك) */
         .pupil {
-            fill: #333; /* لون البؤبؤ */
+            fill: url(#pupilGradient); /* تدرج للبؤبؤ */
         }
 
-        /* تنسيق الأنف والفم والأذنين */
+        /* تفاصيل الوجه (الأنف، الفم، الأذن) */
         .feature {
             fill: none;
-            stroke: #333;
-            stroke-width: 3;
-            stroke-linecap: round; /* أطراف الخطوط مستديرة */
+            stroke: #8d6e63; /* لون بني دافئ للحدود */
+            stroke-width: 2.5;
+            stroke-linecap: round;
         }
 
-        /* تنسيق الشعر */
+        /* الأنف - إضافة تدرج ناعم لإعطاء مجسم */
+        .nose {
+            fill: url(#noseGradient);
+            stroke: none;
+        }
+
+        /* الشعر - تدرج ليعطي لمعان */
         .hair {
-            fill: #5d4037; /* لون الشعر */
+            fill: url(#hairGradient);
+            stroke: #3e2723;
+            stroke-width: 1;
         }
         
     </style>
 </head>
 <body>
 
-    <svg id="face" viewBox="0 0 100 100">
-        <circle class="skin feature" cx="15" cy="50" r="10" />
-        <circle class="skin feature" cx="85" cy="50" r="10" />
+    <svg id="face" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        
+        <defs>
+            <radialGradient id="skinGradient" cx="50%" cy="40%" r="60%" fx="50%" fy="40%">
+                <stop offset="0%" style="stop-color:#ffeb3b; stop-opacity:0.2" /> <stop offset="30%" style="stop-color:#ffdbac; stop-opacity:1" /> <stop offset="100%" style="stop-color:#f1c27d; stop-opacity:1" /> </radialGradient>
+
+            <linearGradient id="hairGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#5d4037; stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#3e2723; stop-opacity:1" />
+            </linearGradient>
+
+            <linearGradient id="noseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#f1c27d; stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#ffdbac; stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#f1c27d; stop-opacity:1" />
+            </linearGradient>
+
+            <radialGradient id="pupilGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:#111; stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#333; stop-opacity:1" />
+            </radialGradient>
+
+            <filter id="innerShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianblur in="SourceAlpha" stdDeviation="1" result="blur"/>
+                <feOffset dx="1" dy="2"/>
+                <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadow"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0 0.3 0" result="shadowColor"/>
+                <feMerge>
+                    <feMergeNode in="SourceGraphic"/>
+                    <feMergeNode in="shadowColor"/>
+                </feMerge>
+            </filter>
+        </defs>
+
+        <circle class="skin feature" cx="12" cy="55" r="9" />
+        <circle class="skin feature" cx="88" cy="55" r="9" />
 
         <circle class="skin" cx="50" cy="50" r="45" />
         
-        <path class="hair" d="M 15 30 Q 50 5 85 30 Q 50 20 15 30 Z" />
+        <path class="hair" d="M 10 35 Q 50 0 90 35 L 85 25 Q 50 10 15 25 Z" />
 
         <g class="eye" id="left-eye">
-            <circle class="eye-white" cx="35" cy="40" r="7" />
-            <circle class="pupil" cx="35" cy="40" r="3" />
+            <circle class="eye-white" cx="35" cy="45" r="7" />
+            <circle class="pupil" cx="35" cy="45" r="3.5" />
+            <circle fill="white" cx="33.5" cy="43.5" r="1" opacity="0.8"/>
         </g>
 
         <g class="eye" id="right-eye">
-            <circle class="eye-white" cx="65" cy="40" r="7" />
-            <circle class="pupil" cx="65" cy="40" r="3" />
+            <circle class="eye-white" cx="65" cy="45" r="7" />
+            <circle class="pupil" cx="65" cy="45" r="3.5" />
+            <circle fill="white" cx="63.5" cy="43.5" r="1" opacity="0.8"/>
         </g>
 
-        <path class="feature" d="M 50 45 L 50 60 L 45 60" />
+        <path class="nose" d="M 50 48 C 45 48, 45 65, 50 65 C 55 65, 55 48, 50 48 Z" stroke="#dcae8a" stroke-width="0.5"/>
 
         <path class="feature" d="M 35 75 Q 50 85 65 75" />
     </svg>
@@ -85,56 +129,41 @@
         const face = document.getElementById('face');
         const pupils = document.querySelectorAll('.pupil');
 
-        // دالة للتعامل مع حركة المؤشر أو اللمس
         function moveEyes(e) {
             let mouseX, mouseY;
 
-            // التحقق مما إذا كان الحدث لمسًا (موبايل) أو حركة ماوس (كمبيوتر)
             if (e.touches) {
-                // حدث لمس
                 mouseX = e.touches[0].clientX;
                 mouseY = e.touches[0].clientY;
             } else {
-                // حدث ماوس
                 mouseX = e.clientX;
                 mouseY = e.clientY;
             }
 
-            // الحصول على موقع ومركز الوجه على الشاشة
             const rect = face.getBoundingClientRect();
             const faceCenterX = rect.left + rect.width / 2;
             const faceCenterY = rect.top + rect.height / 2;
 
-            // حساب المسافة بين مركز الوجه ومكان المؤشر
             const deltaX = mouseX - faceCenterX;
             const deltaY = mouseY - faceCenterY;
 
-            // تحريك كل بؤبؤ
             pupils.forEach(pupil => {
-                // تحديد أقصى مسافة يمكن للبؤبؤ التحرك فيها داخل العين (مثلاً 3 وحدات SVG)
+                // زيادة مسافة الحركة قليلاً لتناسب الحجم الجديد
                 const maxOffset = 3;
 
-                // حساب الإزاحة الجديدة (offset) بناءً على اتجاه الفأرة
-                // نستخدم Math.atan2 لحساب الزاوية، و Math.min/max لضمان بقاء البؤبؤ داخل العين
                 const angle = Math.atan2(deltaY, deltaX);
                 const offsetX = Math.cos(angle) * maxOffset;
                 const offsetY = Math.sin(angle) * maxOffset;
 
-                // تطبيق الإزاحة باستخدام CSS Transform
-                // نستخدم `translate` لتحريك البؤبؤ من موقعه الأصلي
+                // تطبيق التحريك
                 pupil.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
             });
         }
 
-        // إضافة مستمعي الأحداث:
-        // 1. حركة الماوس على الكمبيوتر
         window.addEventListener('mousemove', moveEyes);
-
-        // 2. اللمس على الموبايل
         window.addEventListener('touchstart', moveEyes);
-        window.addEventListener('touchmove', moveEyes); // لتحريك العينين أثناء سحب الإصبع
+        window.addEventListener('touchmove', moveEyes);
 
-        // منع السلوك الافتراضي للموبايل (مثل التمرير) عند لمس الوجه
         window.addEventListener('touchmove', function(e) {
             if (e.target.closest('#face')) {
                 e.preventDefault();

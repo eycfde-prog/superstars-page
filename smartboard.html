@@ -233,33 +233,32 @@
         .tool-btn.on { background: #ff4757; border-color: #fff; color: white; }
 
         /* ══════════════════════════════════════════
-           VETO PORTAL — FULLSCREEN
+           VETO PORTAL — REDESIGNED
         ══════════════════════════════════════════ */
         #portal-overlay {
             position: fixed; inset: 0; z-index: 15000;
             display: none; flex-direction: column;
-            background: #060810;
+            background: rgba(4,5,12,0.97);
             overflow: hidden;
         }
         #portal-overlay.active { display: flex; }
         #portal-overlay::before {
             content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,212,255,0.012) 3px, rgba(0,212,255,0.012) 4px);
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,212,255,0.010) 3px, rgba(0,212,255,0.010) 4px);
         }
 
         /* TOPBAR */
         .portal-topbar {
             position: relative; z-index: 2;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 28px; height: 60px;
+            padding: 0 28px; height: 56px;
             background: #080a14;
             border-bottom: 1.5px solid var(--gold);
             flex-shrink: 0;
         }
         .portal-title {
-            font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900;
+            font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 900;
             letter-spacing: 6px; color: var(--cyan);
-            text-shadow: 0 0 20px var(--cyan-glow);
         }
         .portal-title span { color: var(--gold); }
         .portal-close {
@@ -270,179 +269,201 @@
         }
         .portal-close:hover { background: rgba(255,71,87,0.18); }
 
-        /* BODY: two columns */
+        /* ── PORTAL SCROLL BODY ── */
         .portal-body {
             position: relative; z-index: 1;
-            flex: 1; display: grid;
-            grid-template-columns: 340px 1fr;
-            overflow: hidden;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 28px 24px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
         }
+        .portal-body::-webkit-scrollbar { width: 3px; }
+        .portal-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
 
-        /* LEFT PANEL */
-        .portal-left {
-            display: flex; flex-direction: column; gap: 0;
-            border-right: 1px solid rgba(0,212,255,0.15);
-            overflow-y: auto; padding: 22px 20px;
-            background: #080b18;
+        /* ── SEARCH ROW ── */
+        .portal-search-row {
+            width: 100%; max-width: 600px;
+            display: flex; flex-direction: column; gap: 10px;
         }
-        .portal-left::-webkit-scrollbar { width: 2px; }
-        .portal-left::-webkit-scrollbar-thumb { background: var(--gold); }
-
         .p-search-label {
-            font-family: 'Orbitron', sans-serif; font-size: 0.5rem;
-            letter-spacing: 3px; color: var(--cyan); opacity: 0.65; margin-bottom: 7px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.48rem;
+            letter-spacing: 3px; color: var(--cyan); opacity: 0.65;
         }
-        .p-search-row { display: flex; gap: 10px; margin-bottom: 14px; }
+        .p-search-input-row { display: flex; gap: 10px; }
         #portal-code-input {
             flex: 1; background: rgba(0,212,255,0.05);
-            border: 1.5px solid rgba(0,212,255,0.25); border-radius: 8px;
+            border: 1.5px solid rgba(0,212,255,0.25); border-radius: 10px;
             color: var(--cyan); font-family: 'Orbitron', sans-serif;
-            font-size: 1.15rem; font-weight: 700; letter-spacing: 4px;
-            padding: 11px 14px; outline: none; text-transform: uppercase;
+            font-size: 1.3rem; font-weight: 700; letter-spacing: 4px;
+            padding: 13px 18px; outline: none; text-transform: uppercase;
             -webkit-user-select: text; user-select: text;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        #portal-code-input:focus { border-color: var(--cyan); box-shadow: 0 0 14px var(--cyan-dim); }
+        #portal-code-input:focus { border-color: var(--cyan); box-shadow: 0 0 18px var(--cyan-dim); }
         #portal-fetch-btn {
             background: var(--cyan); border: none; color: #000;
-            font-family: 'Orbitron', sans-serif; font-size: 0.6rem; font-weight: 700;
-            letter-spacing: 2px; padding: 11px 14px; border-radius: 8px; cursor: pointer;
-            transition: box-shadow 0.2s;
+            font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 900;
+            letter-spacing: 3px; padding: 13px 22px; border-radius: 10px; cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.1s;
+            white-space: nowrap;
         }
-        #portal-fetch-btn:hover { box-shadow: 0 0 20px var(--cyan-glow); }
+        #portal-fetch-btn:hover { box-shadow: 0 0 24px var(--cyan-glow); transform: translateY(-1px); }
 
         #portal-status {
             text-align: center; font-family: 'Orbitron', sans-serif;
             font-size: 0.62rem; letter-spacing: 2px;
-            padding: 9px 12px; border-radius: 8px; margin-bottom: 14px; display: none;
+            padding: 9px 12px; border-radius: 8px; display: none;
         }
         #portal-status.success { background: rgba(0,255,136,0.08); color: #00ff88; border: 1px solid rgba(0,255,136,0.25); }
         #portal-status.error   { background: rgba(255,71,87,0.08);  color: #ff4757; border: 1px solid rgba(255,71,87,0.25); }
         #portal-status.loading { background: rgba(0,212,255,0.08);  color: var(--cyan); border: 1px solid rgba(0,212,255,0.25); }
 
-        /* STUDENT SHOWCASE CARD */
+        /* ── BIG STUDENT CARD ── */
         #portal-student-card {
             display: none;
-            background: linear-gradient(160deg, #0c1128 0%, #070b18 100%);
-            border: 1px solid rgba(0,212,255,0.22);
-            border-radius: 14px; overflow: hidden; position: relative;
+            width: 100%; max-width: 900px;
+            background: linear-gradient(145deg, #0a0d1e 0%, #060810 100%);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 20px; overflow: hidden; position: relative;
         }
         #portal-student-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2.5px;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
             background: linear-gradient(90deg, var(--cyan), var(--gold), var(--cyan));
         }
+        #portal-student-card.locked { pointer-events: none; }
 
+        /* CARD HERO SECTION */
         .psc-hero {
-            display: flex; flex-direction: column; align-items: center;
-            padding: 26px 20px 18px; gap: 12px;
-            background: linear-gradient(180deg, rgba(0,212,255,0.06) 0%, transparent 100%);
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 28px;
+            padding: 32px 32px 24px;
+            background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, transparent 60%);
             border-bottom: 1px solid rgba(0,212,255,0.12);
+            position: relative;
+        }
+
+        /* Avatar */
+        .psc-avatar-wrap {
+            position: relative; width: 130px; height: 130px; flex-shrink: 0;
         }
         #portal-avatar {
-            width: 96px; height: 96px; border-radius: 14px;
+            width: 130px; height: 130px; border-radius: 16px;
             border: 2.5px solid var(--gold); object-fit: cover;
-            box-shadow: 0 0 30px var(--gold-glow), 0 0 60px rgba(197,160,89,0.12);
+            box-shadow: 0 0 40px var(--gold-glow), 0 0 80px rgba(197,160,89,0.1);
+            display: block;
+        }
+        .psc-avatar-ring {
+            position: absolute; inset: -6px; border-radius: 20px;
+            border: 1px solid rgba(197,160,89,0.2);
+            pointer-events: none;
+        }
+
+        /* Hero info */
+        .psc-info {
+            display: flex; flex-direction: column; justify-content: center; gap: 10px;
         }
         #portal-name {
-            font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 700;
-            color: #fff; letter-spacing: 2px; text-align: center;
+            font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900;
+            color: #fff; letter-spacing: 2px; line-height: 1.1;
         }
-        .psc-group {
-            font-family: 'Orbitron', sans-serif; font-size: 0.48rem; letter-spacing: 3px;
-            color: var(--cyan); opacity: 0.6;
+        .psc-group-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 6px; padding: 4px 12px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.5rem;
+            letter-spacing: 3px; color: var(--cyan);
+            width: fit-content;
         }
 
-        /* BIG STATS */
-        .psc-stats {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 1px; background: rgba(0,212,255,0.1);
+        /* STATS ROW inside hero */
+        .psc-stats-row {
+            display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px;
         }
-        .psc-stat {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 18px 10px; gap: 6px;
-            background: #080b18;
+        .psc-stat-pill {
+            display: flex; flex-direction: column; align-items: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px; padding: 12px 20px; gap: 4px;
+            min-width: 90px;
         }
         .psc-stat-label {
-            font-family: 'Orbitron', sans-serif; font-size: 0.45rem;
-            letter-spacing: 3px; color: var(--text-dim); text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif; font-size: 0.42rem;
+            letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase;
         }
         .psc-stat-value {
-            font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900;
+            font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900;
             line-height: 1; color: var(--gold);
-            text-shadow: 0 0 20px var(--gold-glow);
         }
-        .psc-stat-value.cyan-val { color: var(--cyan); text-shadow: 0 0 20px var(--cyan-glow); }
+        .psc-stat-value.cyan-val { color: var(--cyan); }
 
-        /* Stars */
-        .psc-stars {
-            padding: 14px 16px; display: flex; align-items: center; justify-content: center;
-            gap: 4px; flex-wrap: wrap;
-            border-top: 1px solid rgba(197,160,89,0.1);
-            background: rgba(197,160,89,0.03);
+        /* Stars row */
+        .psc-stars-strip {
+            display: flex; align-items: center; gap: 3px; margin-top: 2px;
         }
-        .psc-star {
-            font-size: 1.3rem; transition: transform 0.2s;
-            filter: drop-shadow(0 0 4px var(--gold-glow));
-        }
+        .psc-star { font-size: 1rem; filter: drop-shadow(0 0 4px var(--gold-glow)); }
         .psc-star.empty { opacity: 0.15; filter: none; }
 
-        /* Rank */
-        .psc-rank {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 11px; border-top: 1px solid rgba(0,212,255,0.1);
-            background: rgba(0,212,255,0.03);
+        /* Rank badge top-right */
+        .psc-rank-badge {
+            position: absolute; top: 20px; right: 24px;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--gold);
+            border-radius: 10px; padding: 8px 16px; text-align: center;
         }
-        .psc-rank-label {
-            font-family: 'Orbitron', sans-serif; font-size: 0.5rem;
-            letter-spacing: 3px; color: var(--text-dim);
-        }
-        .psc-rank-value {
-            font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700;
-            color: #fff;
-        }
+        .psc-rank-label { font-family: 'Orbitron', sans-serif; font-size: 0.38rem; letter-spacing: 2px; color: var(--text-dim); display: block; }
+        .psc-rank-value { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 900; color: var(--gold); }
 
-        /* RIGHT PANEL */
-        .portal-right {
-            display: flex; flex-direction: column;
-            overflow-y: auto; padding: 22px 24px;
-            gap: 16px;
+        /* ── GRADES SECTION ── */
+        .psc-grades {
+            padding: 24px 32px 28px;
         }
-        .portal-right::-webkit-scrollbar { width: 2px; }
-        .portal-right::-webkit-scrollbar-thumb { background: var(--gold); }
-
-        .p-grades-title {
-            font-family: 'Orbitron', sans-serif; font-size: 0.58rem;
+        .psc-grades-title {
+            font-family: 'Orbitron', sans-serif; font-size: 0.52rem;
             letter-spacing: 4px; color: var(--gold);
-            padding-bottom: 10px; border-bottom: 1px solid rgba(197,160,89,0.18);
-            flex-shrink: 0;
+            margin-bottom: 18px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .psc-grades-title::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, rgba(197,160,89,0.3), transparent);
         }
 
+        /* Grades grid */
         .grades-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-            gap: 11px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
         }
         .grade-cell {
-            background: rgba(0,212,255,0.04); border: 1px solid rgba(0,212,255,0.13);
-            border-radius: 8px; padding: 12px 14px;
+            background: rgba(0,212,255,0.04); border: 1px solid rgba(0,212,255,0.12);
+            border-radius: 10px; padding: 12px 14px;
             display: flex; flex-direction: column; gap: 7px;
             transition: border-color 0.2s, box-shadow 0.2s;
+            position: relative;
         }
-        .grade-cell:focus-within { border-color: var(--cyan); box-shadow: 0 0 10px var(--cyan-dim); }
-        .grade-cell.bonus-cell { border-color: rgba(197,160,89,0.25); background: rgba(197,160,89,0.05); }
-        .grade-cell.bonus-cell:focus-within { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+        .grade-cell.locked-cell {
+            opacity: 0.35; pointer-events: none;
+        }
+        .grade-cell:focus-within { border-color: rgba(0,212,255,0.5); box-shadow: 0 0 12px var(--cyan-dim); }
+        .grade-cell.bonus-cell { border-color: rgba(197,160,89,0.22); background: rgba(197,160,89,0.04); }
+        .grade-cell.bonus-cell:focus-within { border-color: var(--gold); box-shadow: 0 0 12px var(--gold-glow); }
 
         .grade-label {
-            font-family: 'Orbitron', sans-serif; font-size: 0.48rem;
+            font-family: 'Orbitron', sans-serif; font-size: 0.44rem;
             letter-spacing: 1.5px; color: var(--text-dim); text-transform: uppercase;
         }
         .grade-label.bonus-lbl { color: var(--gold); }
 
         .grade-input {
             background: transparent; border: none;
-            border-bottom: 1.5px solid rgba(0,212,255,0.18);
+            border-bottom: 1.5px solid rgba(0,212,255,0.2);
             color: var(--cyan); font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem; font-weight: 700;
+            font-size: 1.15rem; font-weight: 700;
             width: 100%; outline: none; padding: 3px 0;
             transition: border-color 0.2s; text-align: center;
             -webkit-user-select: text; user-select: text;
@@ -450,20 +471,35 @@
         .grade-input:focus { border-color: var(--cyan); }
         .grade-input.bonus-inp { color: var(--gold); border-bottom-color: rgba(197,160,89,0.25); }
         .grade-input.bonus-inp:focus { border-color: var(--gold); }
+        .grade-input:disabled { opacity: 0.4; cursor: not-allowed; }
 
+        /* SUBMIT BTN */
         #portal-submit-btn {
-            width: 100%; margin-top: 6px;
-            background: linear-gradient(135deg, #091e12 0%, #051008 100%);
+            width: 100%;
+            background: linear-gradient(135deg, #071a0f 0%, #04100a 100%);
             border: 1.5px solid #00cc70; color: #00ff88;
             font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700;
-            letter-spacing: 4px; padding: 18px; border-radius: 10px;
+            letter-spacing: 4px; padding: 18px; border-radius: 12px;
             cursor: pointer; text-transform: uppercase;
             transition: box-shadow 0.2s, transform 0.1s;
-            flex-shrink: 0;
         }
-        #portal-submit-btn:hover { box-shadow: 0 0 28px rgba(0,255,136,0.28); transform: translateY(-1px); }
+        #portal-submit-btn:hover { box-shadow: 0 0 32px rgba(0,255,136,0.25); transform: translateY(-1px); }
         #portal-submit-btn:active { transform: translateY(0); }
-        #portal-submit-btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none; }
+        #portal-submit-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* ── LOCKED OVERLAY MSG ── */
+        #portal-lock-msg {
+            display: none;
+            width: 100%; max-width: 900px;
+            text-align: center;
+            padding: 28px;
+            background: rgba(0,212,255,0.04);
+            border: 1px dashed rgba(0,212,255,0.2);
+            border-radius: 14px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.65rem;
+            letter-spacing: 3px; color: var(--text-dim);
+        }
+        #portal-lock-msg.visible { display: block; }
 
         /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
@@ -474,12 +510,16 @@
             .grid { padding: 10px; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(145px,1fr)); }
             .toolbox { bottom: 14px; right: 14px; }
             .tool-btn { width: 46px; height: 46px; font-size: 1.1rem; }
-            /* Portal mobile */
-            .portal-body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-            .portal-left { border-right: none; border-bottom: 1px solid rgba(0,212,255,0.15); padding: 14px; }
-            #portal-avatar { width: 72px; height: 72px; }
-            .psc-stat-value { font-size: 1.5rem; }
-            .portal-topbar { padding: 0 14px; height: 52px; }
+            .psc-hero { grid-template-columns: 1fr; gap: 16px; padding: 20px; }
+            .psc-avatar-wrap { width: 90px; height: 90px; margin: 0 auto; }
+            #portal-avatar { width: 90px; height: 90px; }
+            .psc-rank-badge { position: static; align-self: flex-start; }
+            .psc-info { align-items: center; text-align: center; }
+            .psc-stats-row { justify-content: center; }
+            .psc-grades { padding: 16px 16px 24px; }
+            .grades-grid { grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 8px; }
+            .portal-body { padding: 16px 12px 32px; }
+            #portal-name { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -515,7 +555,7 @@
 <canvas id="draw-canvas"></canvas>
 
 <!-- ════════════════════════════════════════
-     VETO PORTAL — FULLSCREEN
+     VETO PORTAL — REDESIGNED
 ════════════════════════════════════════ -->
 <div id="portal-overlay">
 
@@ -526,50 +566,68 @@
 
     <div class="portal-body">
 
-        <!-- LEFT: search + student card -->
-        <div class="portal-left">
+        <!-- SEARCH ROW -->
+        <div class="portal-search-row">
             <div class="p-search-label">AGENT OFFLINE CODE</div>
-            <div class="p-search-row">
+            <div class="p-search-input-row">
                 <input type="text" id="portal-code-input" placeholder="V-0000"
                        maxlength="12" autocomplete="off"
                        onkeydown="if(event.key==='Enter')fetchStudent()">
-                <button id="portal-fetch-btn" onclick="fetchStudent()">SCAN</button>
+                <button id="portal-fetch-btn" onclick="fetchStudent()">⟳ SCAN</button>
             </div>
-
             <div id="portal-status"></div>
+        </div>
 
-            <div id="portal-student-card">
-                <div class="psc-hero">
-                    <img id="portal-avatar" src="" alt="Agent">
+        <!-- LOCK MSG (shown when no student loaded) -->
+        <div id="portal-lock-msg" class="visible">
+            SCAN AN AGENT CODE FIRST — SCORES ARE LOCKED UNTIL A STUDENT IS LOADED
+        </div>
+
+        <!-- BIG STUDENT CARD -->
+        <div id="portal-student-card">
+
+            <!-- HERO -->
+            <div class="psc-hero">
+                <div class="psc-avatar-wrap">
+                    <img id="portal-avatar" src="" alt="Agent" onerror="this.style.opacity='0'">
+                    <div class="psc-avatar-ring"></div>
+                </div>
+
+                <div class="psc-info">
                     <div id="portal-name">—</div>
-                    <div class="psc-group" id="portal-group">—</div>
+                    <div class="psc-group-badge">
+                        <span>●</span>
+                        <span id="portal-group">GROUP —</span>
+                    </div>
+                    <div class="psc-stats-row">
+                        <div class="psc-stat-pill">
+                            <div class="psc-stat-label">TOKENS</div>
+                            <div class="psc-stat-value" id="portal-tokens">0</div>
+                        </div>
+                        <div class="psc-stat-pill">
+                            <div class="psc-stat-label">STARS</div>
+                            <div class="psc-stat-value cyan-val" id="portal-stars-count">0</div>
+                        </div>
+                        <div class="psc-stat-pill" style="gap:6px;">
+                            <div class="psc-stat-label">STAR RANK</div>
+                            <div class="psc-stars-strip" id="portal-stars-row"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="psc-stats">
-                    <div class="psc-stat">
-                        <div class="psc-stat-label">TOKENS</div>
-                        <div class="psc-stat-value" id="portal-tokens">0</div>
-                    </div>
-                    <div class="psc-stat">
-                        <div class="psc-stat-label">STARS</div>
-                        <div class="psc-stat-value cyan-val" id="portal-stars-count">0</div>
-                    </div>
-                </div>
-
-                <div class="psc-stars" id="portal-stars-row"></div>
-
-                <div class="psc-rank">
-                    <div class="psc-rank-label">GLOBAL RANK</div>
+                <div class="psc-rank-badge">
+                    <span class="psc-rank-label">GLOBAL RANK</span>
                     <div class="psc-rank-value" id="portal-rank-full">—</div>
                 </div>
             </div>
-        </div>
 
-        <!-- RIGHT: grades -->
-        <div class="portal-right">
-            <div class="p-grades-title">MISSION SCORES — UPLOAD GRADES</div>
-            <div class="grades-grid" id="portal-grades-grid"></div>
-            <button id="portal-submit-btn" onclick="submitGrades()">▶ UPLOAD SCORES TO SYSTEM</button>
+            <!-- GRADES -->
+            <div class="psc-grades">
+                <div class="psc-grades-title">MISSION SCORES</div>
+                <div class="grades-grid" id="portal-grades-grid"></div>
+                <button id="portal-submit-btn" onclick="submitGrades()">▶ UPLOAD SCORES TO SYSTEM</button>
+            </div>
+
         </div>
 
     </div>
@@ -591,73 +649,50 @@
 // SESSION DATA
 // ════════════════════════════════════════════
 const sessionData = {
-  // --- LEVEL 1 ---
   "1-1": ["Grammar"],
   "1-2": ["Listening", "Grammar"],
   "1-3": ["Listening", "Vocab", "Grammar"],
   "1-4": ["Listening", "Vocab", "Grammar"],
-
-  // --- LEVEL 2 ---
   "2-1": ["Listening", "Grammar"],
   "2-2": ["Listening", "Reading", "One Shot"],
   "2-3": ["Listening", "Vocab", "Reading"],
   "2-4": ["Listening", "Vocab", "Grammar", "Reading", "Tonge Twister", "One Shot"],
-
-  // --- LEVEL 3 ---
   "3-1": ["Listening", "Grammar", "Reading", "Tonge Twister"],
   "3-2": ["Listening", "Reading", "Tonge Twister", "One Shot"],
   "3-3": ["Listening", "Vocab", "Reading", "Tonge Twister"],
   "3-4": ["Listening", "Vocab", "Grammar", "Reading", "Tonge Twister", "One Shot"],
-
-  // --- LEVEL 4 ---
   "4-1": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
   "4-2": ["Listening", "Reading", "Tonge Twister", "One Shot"],
   "4-3": ["Listening", "Vocab", "Reading", "Tonge Twister"],
   "4-4": ["Listening", "Vocab", "Grammar", "Reading", "Tonge Twister", "One Shot"],
-
-  // --- LEVEL 5 ---
   "5-1": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
   "5-2": ["Listening", "Reading", "Tonge Twister", "One Shot"],
   "5-3": ["Listening", "Vocab", "Reading", "Tonge Twister", "DMT"],
   "5-4": ["Listening", "Vocab", "Grammar", "Reading", "Tonge Twister", "One Shot"],
-
-  // --- LEVEL 6 ---
   "6-1": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
   "6-2": ["Listening", "Reading", "Tonge Twister", "One Shot"],
   "6-3": ["Listening", "Vocab", "Reading", "Tonge Twister", "Wish"],
   "6-4": ["Listening", "Vocab", "Grammar", "Reading", "Tonge Twister", "One Shot"],
-
-  // --- LEVEL 7 ---
   "7-1": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
   "7-2": ["Listening", "Reading", "Tonge Twister", "One Shot"],
   "7-3": ["Listening", "Vocab", "Reading", "Tonge Twister", "DMT"],
   "7-4": ["Listening", "Vocab", "Grammar", "Reading", "Tonge Twister", "One Shot"],
-
-  // --- LEVEL 8 ---
   "8-1": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
   "8-2": ["Listening", "Reading", "Tonge Twister", "One Shot"],
   "8-3": ["Listening", "Vocab", "Reading", "Tonge Twister", "Project"],
   "8-4": ["Listening", "Vocab", "Grammar", "Reading", "Tonge Twister", "One Shot"],
-
-  // --- LEVEL 9 ---
   "9-1": ["Listening", "Reading", "Tonge Twister", "Squeezer"],
   "9-2": ["Listening", "Reading", "Tonge Twister", "One Shot"],
   "9-3": ["Listening", "Vocab", "Reading", "Tonge Twister", "Wish"],
   "9-4": ["Listening", "Vocab", "Grammar", "Reading", "Tonge Twister", "One Shot"],
-
-  // --- LEVEL 10 ---
   "10-1": ["Listening", "Reading", "Tonge Twister", "Squeezer"],
   "10-2": ["Listening", "Reading", "Tonge Twister", "One Shot"],
   "10-3": ["Listening", "Vocab", "Reading", "Tonge Twister", "DMT"],
   "10-4": ["Listening", "Vocab", "Reading", "Tonge Twister", "One Shot"],
-
-  // --- LEVEL 11 ---
   "11-1": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
   "11-2": ["Listening", "Reading", "Tonge Twister", "One Shot", "Graduation Project"],
   "11-3": ["Listening", "Reading", "Tonge Twister", "DMT", "Graduation Project"],
   "11-4": ["Listening", "Reading", "Tonge Twister", "One Shot", "Graduation Project"],
-
-  // --- LEVEL 12 ---
   "12-1": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
   "12-2": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
   "12-3": ["Listening", "Reading", "Tonge Twister", "DMT", "Graduation Project"],
@@ -858,22 +893,41 @@ const PORTAL_ACTIVITIES = [
     { label: 'Graduation Project', col: 'Graduation Project'},
 ];
 
+function setGradesLocked(locked) {
+    const inputs = document.querySelectorAll('.grade-input');
+    const submitBtn = document.getElementById('portal-submit-btn');
+    const cells = document.querySelectorAll('.grade-cell');
+    inputs.forEach(inp => { inp.disabled = locked; });
+    submitBtn.disabled = locked;
+    cells.forEach(c => {
+        if (locked) c.classList.add('locked-cell');
+        else c.classList.remove('locked-cell');
+    });
+}
+
 function openPortal(){
     document.getElementById('portal-overlay').classList.add('active');
     document.getElementById('toolbox').classList.remove('open');
     buildGradesGrid();
+    setGradesLocked(true); // lock until student loaded
+    document.getElementById('portal-lock-msg').classList.add('visible');
+    document.getElementById('portal-student-card').style.display = 'none';
     setTimeout(()=>document.getElementById('portal-code-input').focus(),200);
 }
+
 function closePortal(){
     document.getElementById('portal-overlay').classList.remove('active');
     resetPortal();
 }
+
 function resetPortal(){
     currentEmail=null;
     document.getElementById('portal-code-input').value='';
     document.getElementById('portal-student-card').style.display='none';
+    document.getElementById('portal-lock-msg').classList.add('visible');
     setStatus('','');
-    document.querySelectorAll('.grade-input').forEach(i=>i.value='');
+    buildGradesGrid();
+    setGradesLocked(true);
 }
 
 function buildGradesGrid(){
@@ -884,14 +938,14 @@ function buildGradesGrid(){
         cell.className='grade-cell';
         cell.innerHTML=`<div class="grade-label">${act.label.toUpperCase()}</div>
             <input class="grade-input" type="number" min="0" max="100" step="0.5"
-                   placeholder="—" data-col="${act.col}">`;
+                   placeholder="—" data-col="${act.col}" disabled>`;
         grid.appendChild(cell);
     });
     const bc=document.createElement('div');
     bc.className='grade-cell bonus-cell';
     bc.innerHTML=`<div class="grade-label bonus-lbl">BONUS</div>
         <input class="grade-input bonus-inp" type="number" min="0" max="9999" step="1"
-               placeholder="—" data-col="Bonus">`;
+               placeholder="—" data-col="Bonus" disabled>`;
     grid.appendChild(bc);
 }
 
@@ -912,10 +966,13 @@ async function fetchStudent(){
     if(!code){setStatus('ENTER AGENT CODE','error');return;}
     setStatus('SCANNING AGENT...','loading');
     document.getElementById('portal-student-card').style.display='none';
+    document.getElementById('portal-lock-msg').classList.add('visible');
     currentEmail=null;
+    setGradesLocked(true);
     try{
-const cleanCode = code.replace(/^V-/i, '');
-const res = await fetch(`${API}?action=getStudentByOfflineCode&offlineCode=${encodeURIComponent(cleanCode)}`);        const data=await res.json();
+        const cleanCode = code.replace(/^V-/i, '');
+        const res = await fetch(`${API}?action=getStudentByOfflineCode&offlineCode=${encodeURIComponent(cleanCode)}`);
+        const data=await res.json();
         if(data.status!=='success'){setStatus('AGENT NOT FOUND — CHECK CODE','error');return;}
         const s=data.data;
         currentEmail=s.email;
@@ -926,12 +983,16 @@ const res = await fetch(`${API}?action=getStudentByOfflineCode&offlineCode=${enc
         document.getElementById('portal-stars-row').innerHTML=renderStars(s.stars||0);
         document.getElementById('portal-rank-full').textContent='#'+(s.globalRank||'—');
         const av=document.getElementById('portal-avatar');
-        av.src=s.avatar||''; av.onerror=()=>{av.style.display='none';};
+        av.src=s.avatar||''; av.style.opacity='1';
+        av.onerror=()=>{av.style.opacity='0';};
+        // Show card, hide lock msg, unlock grades
         document.getElementById('portal-student-card').style.display='block';
+        document.getElementById('portal-lock-msg').classList.remove('visible');
         setStatus('','');
-        document.querySelectorAll('.grade-input').forEach(i=>i.value='');
+        buildGradesGrid();
+        setGradesLocked(false); // UNLOCK after student loaded
         const first=document.querySelector('.grade-input');
-        if(first)first.focus();
+        if(first)setTimeout(()=>first.focus(),100);
     }catch(err){setStatus('CONNECTION ERROR','error');}
 }
 
@@ -950,15 +1011,14 @@ async function submitGrades() {
     setStatus('SENDING...', 'loading');
 
     try {
-        // ✅ request واحد بكل الدرجات
         const res = await fetch(`${API}?action=updateGrades&email=${encodeURIComponent(currentEmail)}&grades=${encodeURIComponent(JSON.stringify(payload))}`);
         const data = await res.json();
-        setStatus('✓ SENT — READY FOR NEXT AGENT', 'success');
+        setStatus('✓ SCORES UPLOADED — READY FOR NEXT AGENT', 'success');
         btn.disabled = false;
         setTimeout(() => {
             resetPortal();
             document.getElementById('portal-code-input').focus();
-        }, 2000);
+        }, 2200);
     } catch (err) {
         setStatus('CONNECTION ERROR', 'error');
         btn.disabled = false;

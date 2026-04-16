@@ -14,65 +14,65 @@ const sessionData = {
   "2-1": ["One Shot", "Listening", "Grammar", "Reading"],
   "2-2": ["Listening", "Vocabulary", "Reading"],
   "2-3": ["One Shot", "Listening", "Vocabulary", "Reading"],
-  "2-4": ["Listening", "Grammar", "Reading", "Tonge Twister"],
+  "2-4": ["Listening", "Grammar", "Reading", "Tongue Twister"],
 
 // --- LEVEL 3 ---
-  "3-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
-  "3-2": ["Listening", "Vocabulary", "Reading", "Tonge Twister"],
-  "3-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tonge Twister"],
-  "3-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
+  "3-1": ["One Shot", "Listening", "Grammar", "Reading", "Tongue Twister"],
+  "3-2": ["Listening", "Vocabulary", "Reading", "Tongue Twister"],
+  "3-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tongue Twister"],
+  "3-4": ["Listening", "Grammar", "Reading", "Tongue Twister", "Squeezer"],
 
 // --- LEVEL 4 ---
-  "4-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
-  "4-2": ["Listening", "Vocabulary", "Reading", "Tonge Twister"],
-  "4-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tonge Twister"],
-  "4-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
+  "4-1": ["One Shot", "Listening", "Grammar", "Reading", "Tongue Twister"],
+  "4-2": ["Listening", "Vocabulary", "Reading", "Tongue Twister"],
+  "4-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tongue Twister"],
+  "4-4": ["Listening", "Grammar", "Reading", "Tongue Twister", "Squeezer"],
 
 // --- LEVEL 5 ---
-  "5-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
-  "5-2": ["Listening", "Vocabulary", "Reading", "Tonge Twister", "DMT"],
-  "5-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tonge Twister"],
-  "5-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
+  "5-1": ["One Shot", "Listening", "Grammar", "Reading", "Tongue Twister"],
+  "5-2": ["Listening", "Vocabulary", "Reading", "Tongue Twister", "DMT"],
+  "5-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tongue Twister"],
+  "5-4": ["Listening", "Grammar", "Reading", "Tongue Twister", "Squeezer"],
 
 // --- LEVEL 6 ---
-  "6-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
-  "6-2": ["Listening", "Vocabulary", "Reading", "Tonge Twister", "Wish"],
-  "6-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tonge Twister"],
-  "6-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
+  "6-1": ["One Shot", "Listening", "Grammar", "Reading", "Tongue Twister"],
+  "6-2": ["Listening", "Vocabulary", "Reading", "Tongue Twister", "Wish"],
+  "6-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tongue Twister"],
+  "6-4": ["Listening", "Grammar", "Reading", "Tongue Twister", "Squeezer"],
 
 // --- LEVEL 7 ---
-  "7-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
-  "7-2": ["Listening", "Vocabulary", "Reading", "Tonge Twister", "DMT"],
-  "7-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tonge Twister"],
-  "7-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
+  "7-1": ["One Shot", "Listening", "Grammar", "Reading", "Tongue Twister"],
+  "7-2": ["Listening", "Vocabulary", "Reading", "Tongue Twister", "DMT"],
+  "7-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tongue Twister"],
+  "7-4": ["Listening", "Grammar", "Reading", "Tongue Twister", "Squeezer"],
 
 // --- LEVEL 8 ---
-  "8-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
-  "8-2": ["Listening", "Vocabulary", "Reading", "Tonge Twister", "Project"],
-  "8-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tonge Twister"],
-  "8-4": ["Listening", "Reading", "Tonge Twister", "Squeezer"],
+  "8-1": ["One Shot", "Listening", "Grammar", "Reading", "Tongue Twister"],
+  "8-2": ["Listening", "Vocabulary", "Reading", "Tongue Twister", "Project"],
+  "8-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tongue Twister"],
+  "8-4": ["Listening", "Reading", "Tongue Twister", "Squeezer"],
 
 // --- LEVEL 9 ---
-  "9-1": ["One Shot", "Listening", "Reading", "Tonge Twister"],
-  "9-2": ["Listening", "Vocabulary", "Reading", "Tonge Twister", "Wish"],
-  "9-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tonge Twister"],
-  "9-4": ["Listening", "Reading", "Tonge Twister"],
+  "9-1": ["One Shot", "Listening", "Reading", "Tongue Twister"],
+  "9-2": ["Listening", "Vocabulary", "Reading", "Tongue Twister", "Wish"],
+  "9-3": ["One Shot", "Listening", "Vocabulary", "Reading", "Tongue Twister"],
+  "9-4": ["Listening", "Reading", "Tongue Twister"],
 
 // --- LEVEL 10 ---
-  "10-1": ["One Shot", "Listening", "Reading", "Tonge Twister"],
-  "10-2": ["Listening", "Reading", "Tonge Twister", "DMT"],
-  "10-3": ["One Shot", "Listening", "Reading", "Tonge Twister"],
-  "10-4": ["Listening", "Reading", "Tonge Twister"],
+  "10-1": ["One Shot", "Listening", "Reading", "Tongue Twister"],
+  "10-2": ["Listening", "Reading", "Tongue Twister", "DMT"],
+  "10-3": ["One Shot", "Listening", "Reading", "Tongue Twister"],
+  "10-4": ["Listening", "Reading", "Tongue Twister"],
 
 // --- LEVEL 11 ---
-  "11-1": ["One Shot", "Listening", "Reading", "Tonge Twister", "Graduation Project"],
-  "11-2": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
-  "11-3": ["One Shot", "Listening", "Reading", "Tonge Twister", "Graduation Project"],
-  "11-4": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
+  "11-1": ["One Shot", "Listening", "Reading", "Tongue Twister", "Graduation Project"],
+  "11-2": ["Listening", "Reading", "Tongue Twister", "Graduation Project"],
+  "11-3": ["One Shot", "Listening", "Reading", "Tongue Twister", "Graduation Project"],
+  "11-4": ["Listening", "Reading", "Tongue Twister", "Graduation Project"],
 
 // --- LEVEL 12 ---
-  "12-1": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
-  "12-2": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
+  "12-1": ["Listening", "Reading", "Tongue Twister", "Graduation Project"],
+  "12-2": ["Listening", "Reading", "Tongue Twister", "Graduation Project"],
   "12-3": ["Listening", "Graduation Project"],
   "12-4": ["Graduation Project"],
 };

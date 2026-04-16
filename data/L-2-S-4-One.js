@@ -2,220 +2,194 @@
     const container = document.getElementById('stage-content');
     if (!container) return;
 
-    // قائمة الكلمات المستهدفة للنشاط التاني
+    // قائمة الكلمات المستهدفة - قصة الشيف
     const words = [
-        "armor", "terrified", "blanket", "monster", "spoon", 
-        "tremble", "donkey", "fingers", "scream", "bray", 
-        "rotten", "breath", "panicked", "stuck", "wrestle", 
-        "beast", "shield", "jewelry", "embarrassed", "imagination", 
-        "cheese", "medal", "pajamas"
+        "special", "market", "apron", "perfectly", "shelf", 
+        "distracted", "smell", "table", "hungry", "smile", 
+        "bite", "mint", "embarrassed", "laughing", "order", 
+        "valuable", "taste", "trust", "holding", "spices"
     ];
 
     let remainingWords = [...words];
     let currentTargetId = null;
 
-    const storyTitle = "The Knight Who Was Scared of Shadows";
+    const storyTitle = "The Chef’s Great Mistake";
     
-    // محتوى القصة مع الفراغات التفاعلية
+    // بناء نص القصة مع الفراغات
     let storyContent = `
-        In a kingdom far, far away, there lived Sir Pumpernickel. He was a knight with the shiniest <span class="word-gap" data-word="armor">?</span> and the longest sword. 
-        However, Sir Pumpernickel had a tiny secret: he was <span class="word-gap" data-word="terrified">?</span> of the dark. 
-        While other knights fought dragons, he spent his evenings hiding under his <span class="word-gap" data-word="blanket">?</span> with a small candle.
+        Barnaby was not a natural cook, but he loved watching cooking shows. One Saturday, he decided to invite his friends for a <span class="word-gap" data-word="special">?</span> dinner. 
+        He wanted to make a classic pasta dish with a rich tomato sauce. He went to the <span class="word-gap" data-word="market">?</span> and bought the freshest tomatoes, garlic, and onions.
         <br><br>
-        One afternoon, the King summoned him. "Sir Pumpernickel," the King said, "a giant <span class="word-gap" data-word="monster">?</span> has stolen my favorite golden <span class="word-gap" data-word="spoon">?</span>. 
-        You must go to the Cave of Echoes and get it back!" Sir Pumpernickel’s knees started to <span class="word-gap" data-word="tremble">?</span>. 
-        He couldn't refuse the King, so he mounted his horse, who was actually a very slow <span class="word-gap" data-word="donkey">?</span> named Barnaby.
+        When he got home, he put on his favorite <span class="word-gap" data-word="apron">?</span> and started chopping. Everything was going <span class="word-gap" data-word="perfectly">?</span> until he looked at the recipe. 
+        It said he needed a "pinch of salt" and some "dried herbs." Barnaby found two small jars on the <span class="word-gap" data-word="shelf">?</span>. 
+        One contained salt, and the other contained what he thought was dried parsley. 
+        He was <span class="word-gap" data-word="distracted">?</span> by a funny cat video on his phone and accidentally poured half the jar into the pot.
         <br><br>
-        As they entered the forest, the trees looked like long, skinny <span class="word-gap" data-word="fingers">?</span>. 
-        Every time a leaf fell, Sir Pumpernickel would <span class="word-gap" data-word="scream">?</span> like a little bird. 
-        "Don't worry," Barnaby the donkey seemed to say with a loud <span class="word-gap" data-word="bray">?</span>. 
-        They finally reached the cave. It was pitch black inside and smelled like <span class="word-gap" data-word="rotten">?</span> cheese.
+        When his friends arrived, the <span class="word-gap" data-word="smell">?</span> in the kitchen was wonderful. They sat at the <span class="word-gap" data-word="table">?</span>, feeling very <span class="word-gap" data-word="hungry">?</span>. 
+        Barnaby served the pasta with a proud <span class="word-gap" data-word="smile">?</span>. His friend Sarah took the first big <span class="word-gap" data-word="bite">?</span>. 
+        Suddenly, her face turned bright red, and she started coughing.
         <br><br>
-        Sir Pumpernickel took a deep <span class="word-gap" data-word="breath">?</span> and stepped inside. Suddenly, he saw two glowing red eyes! 
-        He was so <span class="word-gap" data-word="panicked">?</span> that he tried to run away, but his heavy boots got <span class="word-gap" data-word="stuck">?</span> in the mud. 
-        He began to <span class="word-gap" data-word="wrestle">?</span> with his own shadow, thinking it was a ghost. 
-        "Leave me alone, you dark <span class="word-gap" data-word="beast">?</span>!" he yelled, while accidentally hitting himself with his own <span class="word-gap" data-word="shield">?</span>.
-        <br><br>
-        The glowing eyes came closer. It wasn't a monster at all! It was a tiny hamster holding a flashlight. 
-        The hamster was sitting on a pile of stolen things, including the King's golden spoon. 
-        "I just wanted some <span class="word-gap" data-word="jewelry">?</span> for my house," the hamster squeaked.
-        <br><br>
-        Sir Pumpernickel felt very <span class="word-gap" data-word="embarrassed">?</span>. He realized that his <span class="word-gap" data-word="imagination">?</span> was much scarier than reality. 
-        He took the spoon, gave the hamster a piece of <span class="word-gap" data-word="cheese">?</span> as a bribe, and returned to the castle.
-        <br><br>
-        The King was so happy that he gave the knight a <span class="word-gap" data-word="medal">?</span>. 
-        Sir Pumpernickel learned that being brave doesn't mean you aren't scared; it means you go into the cave anyway—even if you're wearing your <span class="word-gap" data-word="pajamas">?</span> under your armor.
+        "Barnaby," she gasped, "why does this pasta taste like <span class="word-gap" data-word="mint">?</span> toothpaste?"
+        Barnaby looked at the jar on the counter. It wasn’t parsley; it was dried peppermint leaves he used for tea! 
+        He felt very <span class="word-gap" data-word="embarrassed">?</span>, but his friends started <span class="word-gap" data-word="laughing">?</span>. 
+        They decided to <span class="word-gap" data-word="order">?</span> a large pizza instead. 
+        Barnaby learned a <span class="word-gap" data-word="valuable">?</span> lesson that night: always <span class="word-gap" data-word="taste">?</span> your food before you serve it, and never <span class="word-gap" data-word="trust">?</span> a cat video when you are <span class="word-gap" data-word="holding">?</span> a jar of <span class="word-gap" data-word="spices">?</span>. 
+        It was the most expensive tea-flavored pasta in history.
     `;
 
     container.innerHTML = ''; 
-    container.style.cssText = `height:100%; width:100%; display:block; background:#1a0a2e; color:#e0d0ff; overflow-y:auto; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; scroll-behavior: smooth;`;
+    container.style.cssText = `height:100%; width:100%; display:block; background:#0f172a; color:#f8fafc; overflow-y:auto; padding:0; font-family: 'Segoe UI', sans-serif; scroll-behavior: smooth;`;
 
     container.innerHTML = `
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Quicksand:wght@500;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@700;900&family=Outfit:wght@400;700&display=swap');
             
-            #stage-content::-webkit-scrollbar { width: 12px; }
-            #stage-content::-webkit-scrollbar-track { background: #0f051a; }
-            #stage-content::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; border: 3px solid #0f051a; }
+            #stage-content::-webkit-scrollbar { width: 10px; }
+            #stage-content::-webkit-scrollbar-track { background: #0f172a; }
+            #stage-content::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 5px; }
 
             .story-wrapper {
-                max-width: 92%;
-                margin: 50px auto;
-                background: linear-gradient(145deg, #2a1b3d, #1a0a2e);
-                padding: 70px 50px;
-                border-radius: 40px;
-                box-shadow: 0 40px 100px rgba(0,0,0,0.9);
-                border: 4px solid #ffd700;
-                position: relative;
+                max-width: 90%;
+                margin: 60px auto;
+                background: #1e293b;
+                padding: 60px;
+                border-radius: 30px;
+                box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+                border: 2px solid #334155;
             }
 
             .story-title {
-                color: #ffd700;
+                color: #38bdf8;
                 text-align: center;
-                font-size: 4.5rem;
+                font-size: 4rem;
                 font-weight: 900;
-                margin-bottom: 70px;
-                text-shadow: 4px 4px 15px rgba(255, 215, 0, 0.4);
-                font-family: 'Cinzel', serif;
+                margin-bottom: 50px;
+                font-family: 'Unbounded', sans-serif;
                 text-transform: uppercase;
+                letter-spacing: -1px;
             }
 
             .story-body {
-                line-height: 2.2;
-                font-size: 2.8rem;
-                color: #f3efff;
-                text-align: left;
-                font-family: 'Quicksand', sans-serif;
+                line-height: 1.8;
+                font-size: 2.6rem;
+                color: #e2e8f0;
+                font-family: 'Outfit', sans-serif;
             }
 
             .word-gap {
                 display: inline-block;
-                min-width: 160px;
-                border-bottom: 6px dotted #ffd700;
+                min-width: 140px;
+                border-bottom: 4px solid #38bdf8;
                 text-align: center;
-                color: #ffd700;
+                color: #38bdf8;
                 cursor: pointer;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                background: rgba(255, 215, 0, 0.05);
-                border-radius: 15px;
-                padding: 0 20px;
-                margin: 0 8px;
+                transition: 0.2s;
+                background: rgba(56, 189, 248, 0.1);
+                border-radius: 8px;
+                padding: 0 15px;
+                margin: 0 5px;
             }
 
-            .word-gap:hover {
-                background: rgba(255, 215, 0, 0.2);
-                transform: scale(1.1) rotate(-1deg);
+            .word-gap:hover { background: rgba(56, 189, 248, 0.2); }
+
+            .word-gap.active-target {
+                animation: pulseGlow 1.5s infinite;
+                border-bottom-style: dashed;
+            }
+
+            @keyframes pulseGlow {
+                0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+                70% { box-shadow: 0 0 0 20px rgba(56, 189, 248, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
             }
 
             .word-gap.filled {
                 border-bottom: none;
-                color: #00ffcc;
-                font-weight: 800;
+                color: #fbbf24;
+                font-weight: 700;
                 background: transparent;
-                animation: crownPop 0.6s ease-out;
+                animation: correctPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             }
 
-            @keyframes crownPop {
-                0% { transform: scale(0.5); opacity: 0; }
-                50% { transform: scale(1.2); }
-                100% { transform: scale(1); opacity: 1; }
+            @keyframes correctPop {
+                0% { transform: scale(0.5); }
+                100% { transform: scale(1); }
             }
 
-            /* Flash Screen - Overlay */
             #word-overlay {
                 position: fixed;
                 top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(15, 5, 26, 0.98);
+                background: rgba(15, 23, 42, 0.95);
                 display: none;
                 flex-wrap: wrap;
                 justify-content: center;
                 align-content: center;
-                gap: 25px;
-                padding: 50px;
-                z-index: 99999;
-                backdrop-filter: blur(15px);
+                gap: 20px;
+                padding: 40px;
+                z-index: 9999;
+                backdrop-filter: blur(10px);
             }
 
             .choice-btn {
-                background: #ffd700;
-                color: #1a0a2e;
-                padding: 25px 45px;
-                font-size: 2.8rem;
-                font-weight: 800;
-                border-radius: 20px;
+                background: #f8fafc;
+                color: #0f172a;
+                padding: 20px 40px;
+                font-size: 2.4rem;
+                font-weight: 700;
+                border-radius: 15px;
                 cursor: pointer;
-                transition: 0.3s;
-                border: 4px solid transparent;
-                font-family: 'Cinzel', serif;
-                box-shadow: 0 8px 0 #b8860b;
+                border: none;
+                font-family: 'Outfit', sans-serif;
+                transition: 0.2s;
             }
 
-            .choice-btn:hover {
-                transform: translateY(-5px);
-                background: #fff;
-                box-shadow: 0 12px 25px rgba(255, 215, 0, 0.5);
-            }
+            .choice-btn:hover { transform: scale(1.05); background: #38bdf8; color: white; }
 
-            .choice-btn:active {
-                transform: translateY(2px);
-                box-shadow: 0 4px 0 #b8860b;
-            }
+            .choice-btn.wrong { background: #ef4444 !important; color: white; animation: shake 0.4s; }
 
-            .choice-btn.wrong {
-                animation: magicFail 0.5s;
-                background: #ff4d4d !important;
-                color: white;
-                box-shadow: 0 8px 0 #990000;
-            }
-
-            @keyframes magicFail {
+            @keyframes shake {
                 0%, 100% { transform: translateX(0); }
-                20%, 60% { transform: translateX(-15px); }
-                40%, 80% { transform: translateX(15px); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
             }
 
-            .one-shot-badge {
-                position: absolute;
-                top: -40px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: linear-gradient(to right, #ffd700, #ffec8b);
-                color: #1a0a2e;
-                padding: 15px 60px;
-                border-radius: 20px;
+            .one-shot-label {
+                display: inline-block;
+                background: #38bdf8;
+                color: #0f172a;
+                padding: 5px 25px;
+                border-radius: 50px;
+                font-size: 1.2rem;
                 font-weight: 900;
-                font-size: 2.2rem;
-                letter-spacing: 8px;
-                border: 4px solid #fff;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            }
-
-            @media (max-width: 1024px) {
-                .story-title { font-size: 3rem; }
-                .story-body { font-size: 2rem; }
-                .choice-btn { font-size: 1.8rem; }
+                margin-bottom: 20px;
             }
         </style>
 
         <div id="word-overlay"></div>
 
         <div class="story-wrapper">
-            <div class="one-shot-badge">ONE SHOT</div>
+            <center><div class="one-shot-label">VETO ONE-SHOT ACTIVITY</div></center>
             <h1 class="story-title">${storyTitle}</h1>
             <div class="story-body">
                 ${storyContent}
             </div>
         </div>
-        <div style="height: 120px;"></div>
+        <div style="height: 100px;"></div>
     `;
 
     const overlay = document.getElementById('word-overlay');
+    const allGaps = document.querySelectorAll('.word-gap');
+
+    const updateActiveGap = () => {
+        allGaps.forEach(g => g.classList.remove('active-target'));
+        const nextGap = Array.from(allGaps).find(g => !g.classList.contains('filled'));
+        if (nextGap) nextGap.classList.add('active-target');
+    };
 
     const openOverlay = (target) => {
         currentTargetId = target;
         overlay.innerHTML = '';
         
-        // خلط الكلمات المتبقية
         const shuffled = [...remainingWords].sort(() => Math.random() - 0.5);
         
         shuffled.forEach(word => {
@@ -237,19 +211,29 @@
             currentTargetId.classList.add('filled');
             overlay.style.display = 'none';
             remainingWords = remainingWords.filter(w => w !== selectedWord);
+            updateActiveGap();
         } else {
             btnElement.classList.add('wrong');
-            setTimeout(() => btnElement.classList.remove('wrong'), 500);
+            setTimeout(() => btnElement.classList.remove('wrong'), 400);
         }
     };
 
-    document.querySelectorAll('.word-gap').forEach(gap => {
+    allGaps.forEach(gap => {
         gap.onclick = () => openOverlay(gap);
     });
 
+    // اختصارات الكيبورد (Enter لفتح الفراغ التالي)
     document.onkeydown = (e) => {
-        if (e.keyCode === 32) {
-            if (window.triggerVetoDone) window.triggerVetoDone();
+        if (e.key === "Enter") {
+            const nextGap = Array.from(allGaps).find(g => !g.classList.contains('filled'));
+            if (nextGap && overlay.style.display !== 'flex') {
+                openOverlay(nextGap);
+            }
+        }
+        if (e.key === "Escape") {
+            overlay.style.display = 'none';
         }
     };
+
+    updateActiveGap();
 })();

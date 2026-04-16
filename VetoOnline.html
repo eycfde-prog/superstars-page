@@ -19,13 +19,7 @@
       <h2>EYC&nbsp;ACADEMY</h2>
     </div>
 
-    <!-- Tabs -->
-    <div class="login-tabs">
-      <button class="login-tab active" id="tabLogin">Login</button>
-      <button class="login-tab" id="tabNew">New Student</button>
-    </div>
-
-    <!-- ── LOGIN FORM ── -->
+    <!-- ── LOGIN FORM ONLY (signup moved to separate page) ── -->
     <div class="login-form" id="formLogin">
       <div class="input-group">
         <label>Google Email</label>
@@ -37,23 +31,6 @@
       </div>
       <div class="forgot-link" id="forgotLink">Forgot passcode?</div>
       <button class="btn-primary" id="btnLogin">LOG IN</button>
-    </div>
-
-    <!-- ── NEW STUDENT FORM ── -->
-    <div class="login-form hidden" id="formNewStudent">
-      <div class="input-group">
-        <label>Full Name</label>
-        <input type="text" id="newName" placeholder="Your full name" />
-      </div>
-      <div class="input-group">
-        <label>Google Email</label>
-        <input type="email" id="newEmail" placeholder="student@gmail.com" />
-      </div>
-      <div class="input-group">
-        <label>Profile Picture URL <span style="color:var(--text-muted)">(optional)</span></label>
-        <input type="url" id="newAvatar" placeholder="https://..." />
-      </div>
-      <button class="btn-primary" id="btnSignup">CREATE ACCOUNT</button>
     </div>
 
     <div class="login-msg" id="loginMsg" style="display:none;"></div>
@@ -134,27 +111,41 @@
   </aside>
 
   <!-- ══════════════════════════════════════════════════════════
-       COLUMN 2 — LEVELS & SESSIONS
+       COLUMN 2 — LEVELS & SESSIONS  /  SESSION CONTENT
        ══════════════════════════════════════════════════════════ -->
   <main id="mainContent">
 
-    <div class="content-header">
-      <h2>📚 YOUR LEVELS</h2>
-      <div class="week-badge" id="weekBadge">Week Loading...</div>
+    <!-- ── VIEW A: LEVELS LIST ── -->
+    <div id="levelsView" style="display:flex; flex-direction:column; gap:20px;">
+
+      <div class="content-header">
+        <h2>📚 YOUR LEVELS</h2>
+        <div class="week-badge" id="weekBadge">Week Loading...</div>
+      </div>
+
+      <!-- Levels built by JS -->
+      <div id="levelsContainer"></div>
+
     </div>
 
-    <!-- Levels built by JS -->
-    <div id="levelsContainer"></div>
+    <!-- ── VIEW B: SESSION CONTENT (hidden by default) ── -->
+    <div id="sessionView" style="display:none;">
 
-    <!-- Activity Frame (shown when session clicked) -->
-    <div id="activityFrame">
-      <div class="frame-header">
-        <span class="frame-title" id="frameTitle">SESSION CONTENT</span>
-        <button class="frame-close" onclick="closeFrame()">✕</button>
+      <div class="session-view-header">
+        <button class="back-btn" onclick="showView('levels')">
+          ← BACK
+        </button>
+        <div class="session-view-titles">
+          <div class="session-view-title" id="sessionTitle">SESSION CONTENT</div>
+          <div class="session-view-sub" id="sessionSubtitle"></div>
+        </div>
+        <div class="week-badge" id="weekBadge2"></div>
       </div>
-      <div class="activity-list" id="activityList">
-        <!-- Activities injected by JS -->
+
+      <div class="session-activity-grid" id="sessionActivityList">
+        <!-- Activity cards injected by JS -->
       </div>
+
     </div>
 
   </main>
@@ -226,17 +217,19 @@
     setS("sideStars",  "profileStars");
     setS("sideTokens", "profileTokens");
   }
-  // Poll sync since profile updates async
   setInterval(syncSideStats, 1000);
 
-  // Show current week
-  const weekEl = document.getElementById("weekBadge");
-  if (weekEl) {
+  // Show current week in both badges
+  function setWeekBadge(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 1);
     const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
-    weekEl.textContent = `Week ${week} · ${now.toLocaleDateString("en-GB", {month:"short", year:"numeric"})}`;
+    el.textContent = `Week ${week} · ${now.toLocaleDateString("en-GB", {month:"short", year:"numeric"})}`;
   }
+  setWeekBadge("weekBadge");
+  setWeekBadge("weekBadge2");
 </script>
 
 </body>

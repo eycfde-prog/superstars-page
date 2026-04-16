@@ -8,11 +8,12 @@
 const CONFIG = {
   GAS_URL: "https://script.google.com/macros/s/AKfycbz2RO713Lq-vq-eMBRCV7cIzHR9GGWyKD6idr4nGK2BC33GYie57ljJM6o_h-LpgA2aBQ/exec",
   DATA_PATH: "data/VetoOnline/",
+  ACTIROBO_PATH: "data/Actirobo/",
   LOGO: "logo.png",
   ACADEMY: "EYC Academy",
   PROGRAM: "Veto Online",
   TEACHER: "Mr. Ezz",
-  GAME_URL: "game-portal/index.html",     // adjust as needed
+  GAME_URL: "game-portal/index.html",
   CLASS_DAY: "Saturday",
   CLASS_TIME: "10:00 AM – 12:00 PM",
   STORAGE_KEY: "vetoOnlineUser"
@@ -20,15 +21,13 @@ const CONFIG = {
 
 // ─── STATE ──────────────────────────────────────────────────
 let currentUser = null;
-let pendingAction = null; // what triggered the login prompt
+let pendingAction = null;
 
 // ─── DOM REFS ────────────────────────────────────────────────
 const loginOverlay  = document.getElementById("loginOverlay");
 const loginMsg      = document.getElementById("loginMsg");
 const loginTabLogin = document.getElementById("tabLogin");
-const loginTabNew   = document.getElementById("tabNew");
 const formLogin     = document.getElementById("formLogin");
-const formNew       = document.getElementById("formNewStudent");
 const toast         = document.getElementById("toast");
 
 // ─── INIT ────────────────────────────────────────────────────
@@ -69,22 +68,6 @@ function hideLogin() {
   loginOverlay.classList.add("hidden");
 }
 
-// Tab switching
-loginTabLogin.addEventListener("click", () => {
-  loginTabLogin.classList.add("active");
-  loginTabNew.classList.remove("active");
-  formLogin.classList.remove("hidden");
-  formNew.classList.add("hidden");
-  clearMsg();
-});
-loginTabNew.addEventListener("click", () => {
-  loginTabNew.classList.add("active");
-  loginTabLogin.classList.remove("active");
-  formNew.classList.remove("hidden");
-  formLogin.classList.add("hidden");
-  clearMsg();
-});
-
 // Login submit
 document.getElementById("btnLogin").addEventListener("click", async () => {
   const email    = document.getElementById("loginEmail").value.trim().toLowerCase();
@@ -110,30 +93,6 @@ document.getElementById("btnLogin").addEventListener("click", async () => {
   }
 });
 
-// New student signup
-document.getElementById("btnSignup").addEventListener("click", async () => {
-  const name   = document.getElementById("newName").value.trim();
-  const email  = document.getElementById("newEmail").value.trim().toLowerCase();
-  const avatar = document.getElementById("newAvatar").value.trim();
-  if (!name || !email) return showMsg("Name and Email are required.", "error");
-
-  showMsg("Creating your account...", "");
-  try {
-    const res = await fetch(CONFIG.GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "signup", name, email, avatar, group: "Veto Online", age: "" })
-    });
-    const data = await res.json();
-    if (data.status === "success") {
-      showMsg(`Account created! Your code: ${data.code} — save it!`, "success");
-    } else {
-      showMsg(data.message || "Signup failed.", "error");
-    }
-  } catch(e) {
-    showMsg("Connection error.", "error");
-  }
-});
-
 // Forgot passcode
 document.getElementById("forgotLink").addEventListener("click", () => {
   showMsg("Contact Mr. Ezz or your academy admin to reset your passcode.", "success");
@@ -144,6 +103,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   currentUser = null;
   localStorage.removeItem(CONFIG.STORAGE_KEY);
   clearProfile();
+  showView("levels");
   showToast("Logged out successfully.");
 });
 
@@ -183,6 +143,22 @@ function clearProfile() {
 function setEl(id, val) {
   const el = document.getElementById(id);
   if (el) el.textContent = val;
+}
+
+// ─── VIEW SWITCHER ───────────────────────────────────────────
+// Shows either the levels list OR the session content panel
+function showView(view) {
+  const levelsView  = document.getElementById("levelsView");
+  const sessionView = document.getElementById("sessionView");
+  if (view === "levels") {
+    levelsView.style.display  = "flex";
+    sessionView.style.display = "none";
+    // clear active session button
+    document.querySelectorAll(".session-btn.active").forEach(b => b.classList.remove("active"));
+  } else {
+    levelsView.style.display  = "none";
+    sessionView.style.display = "block";
+  }
 }
 
 // ─── BUILD LEVELS ────────────────────────────────────────────
@@ -260,7 +236,7 @@ function executePendingAction() {
   pendingAction = null;
 }
 
-// ─── OPEN SESSION → SHOW ACTIVITIES ──────────────────────────
+// ─── OPEN SESSION → REPLACE LEVELS VIEW WITH SESSION CONTENT ──
 function openSession(lvl, sess, btn) {
   // Highlight active btn
   document.querySelectorAll(".session-btn.active").forEach(b => b.classList.remove("active"));
@@ -269,35 +245,41 @@ function openSession(lvl, sess, btn) {
   const key        = `${lvl}-${sess}`;
   const activities = (typeof sessionData !== "undefined" && sessionData[key]) || [];
 
-  const frame = document.getElementById("activityFrame");
-  const title = document.getElementById("frameTitle");
-  const list  = document.getElementById("activityList");
+  // Update session view header
+  const sessTitle = document.getElementById("sessionTitle");
+  const sessSubtitle = document.getElementById("sessionSubtitle");
+  if (sessTitle) sessTitle.textContent = `LEVEL ${lvl}  ·  SESSION ${sess}`;
+  if (sessSubtitle) sessSubtitle.textContent = LEVEL_NAMES[lvl] || "";
 
-  if (title) title.textContent = `LEVEL ${lvl}  ·  SESSION ${sess}`;
-
+  const list = document.getElementById("sessionActivityList");
   list.innerHTML = "";
 
   if (activities.length === 0) {
-    list.innerHTML = `<div style="color:var(--text-muted);padding:20px;text-align:center;font-size:.9rem;">No content found for this session.</div>`;
+    list.innerHTML = `<div class="no-content">No content found for this session.</div>`;
   } else {
     activities.forEach(name => {
       const isTest    = name.toLowerCase().includes("test");
-      const isIntro   = name.toLowerCase().includes("intro");
-      const isReview  = name.toLowerCase().includes("review");
-      const isGradu   = name.toLowerCase().includes("graduation");
       const filename  = getActivityFilename(lvl, sess, name);
-
       const { icon, iconClass } = getActivityIcon(name);
-      const badge = isTest ? "test" : isIntro ? "intro" : isReview ? "review" : "special";
-      const badgeLabel = isTest ? "TEST" : isIntro ? "INTRO" : isReview ? "REVIEW" : "★";
+      const badge = isTest ? "test" : name.toLowerCase().includes("intro") ? "intro" :
+                    name.toLowerCase().includes("review") ? "review" : "special";
+      const badgeLabel = isTest ? "TEST" : name.toLowerCase().includes("intro") ? "INTRO" :
+                         name.toLowerCase().includes("review") ? "REVIEW" : "★";
+
+      // Activity image from Actirobo folder — use first word of activity name
+      const imgName = name.split(/[\s:]/)[0].replace(/[^a-zA-Z]/g, "");
+      const imgPath = `${CONFIG.ACTIROBO_PATH}${imgName}.png`;
 
       const item = document.createElement("div");
-      item.className = `activity-item ${isTest ? "test-item" : ""}`;
+      item.className = `activity-card ${isTest ? "test-card" : ""}`;
       item.innerHTML = `
-        <div class="activity-icon ${iconClass}">${icon}</div>
-        <div class="activity-info">
-          <div class="activity-name">${name}</div>
-          <div class="activity-file">${filename}</div>
+        <div class="activity-card-img">
+          <img src="${imgPath}" alt="${name}"
+               onerror="this.parentElement.innerHTML='<div class=\\'act-icon-fallback ${iconClass}\\'>${icon}</div>'" />
+        </div>
+        <div class="activity-card-body">
+          <div class="activity-card-name">${name}</div>
+          <div class="activity-card-file">${filename}</div>
         </div>
         <span class="activity-badge ${badge}">${badgeLabel}</span>
       `;
@@ -306,8 +288,12 @@ function openSession(lvl, sess, btn) {
     });
   }
 
-  frame.classList.add("visible");
-  frame.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  // Switch view: hide levels, show session content
+  showView("session");
+
+  // Scroll main content to top
+  const main = document.getElementById("mainContent");
+  if (main) main.scrollTop = 0;
 }
 
 function getActivityIcon(name) {
@@ -316,7 +302,7 @@ function getActivityIcon(name) {
   if (n.includes("vocab"))     return { icon: "🔤", iconClass: "vocab" };
   if (n.includes("reading"))   return { icon: "📄", iconClass: "reading" };
   if (n.includes("listening")) return { icon: "🎧", iconClass: "listening" };
-  if (n.includes("tongue"))    return { icon: "🗣️", iconClass: "vocab" };
+  if (n.includes("tongue") || n.includes("tonge")) return { icon: "🗣️", iconClass: "vocab" };
   if (n.includes("one shot"))  return { icon: "⚡", iconClass: "test-icon" };
   if (n.includes("squeezer"))  return { icon: "💪", iconClass: "study" };
   if (n.includes("dmt"))       return { icon: "🎯", iconClass: "test-icon" };
@@ -330,7 +316,6 @@ function getActivityIcon(name) {
 // ─── LOAD ACTIVITY FILE ──────────────────────────────────────
 function loadActivityFile(lvl, sess, filename, actName) {
   const path = `${CONFIG.DATA_PATH}${filename}`;
-  // Dynamic script injection — the JS file may define/render its own UI
   const existing = document.getElementById("activityScript");
   if (existing) existing.remove();
 
@@ -342,13 +327,6 @@ function loadActivityFile(lvl, sess, filename, actName) {
   };
   document.body.appendChild(script);
   showToast(`Loading: ${actName}...`);
-}
-
-// ─── CLOSE FRAME ────────────────────────────────────────────
-function closeFrame() {
-  const frame = document.getElementById("activityFrame");
-  frame.classList.remove("visible");
-  document.querySelectorAll(".session-btn.active").forEach(b => b.classList.remove("active"));
 }
 
 // ─── SERVICES ────────────────────────────────────────────────
@@ -370,11 +348,10 @@ function openGamePortal() {
 }
 
 function openCVBuilder() {
-  // Placeholder — load CV builder module
   showToast("CV Builder coming soon! 🚀");
 }
 
-// ─── FILENAME GENERATOR (mirrors OnlineLevels.js) ────────────
+// ─── FILENAME GENERATOR ────────────────────────────────────
 function getActivityFilename(level, session, activityName) {
   const isTest  = activityName.toLowerCase().includes("test");
   const firstWord = activityName.split(/[\s:]/)[0].replace(/[^a-zA-Z]/g, "");

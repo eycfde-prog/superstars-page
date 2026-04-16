@@ -127,7 +127,7 @@
 <footer class="footer-bar" id="footer-list"></footer>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzSv_F0n8rgBANPyQepJ5srUZn7UpoqhlFUXaD2q0Suh-6TulVFRtqWbImmUCVe7rDr/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwcWheF14m6sMbLrIp-5pSdc9QaCIJem-HxgLU2DzcvAgHeLYqhvYiQHnqddyhBLHjj/exec";
 
     const Assets = {
         eyes: ['<g transform="translate(0,-2)"><circle cx="35" cy="48" r="4" fill="#111"/><circle cx="65" cy="48" r="4" fill="#111"/></g>','<path d="M30 48 Q35 42 40 48" stroke="#111" fill="none" stroke-width="3"/><path d="M60 48 Q65 42 70 48" stroke="#111" fill="none" stroke-width="3"/>','<rect x="28" y="46" width="12" height="4" fill="#111"/><rect x="60" y="46" width="12" height="4" fill="#111"/>','<circle cx="35" cy="48" r="5" fill="#3C3489"/><circle cx="65" cy="48" r="5" fill="#3C3489"/>','<path d="M30 50 L40 44 M60 44 L70 50" stroke="#111" stroke-width="4"/>'],
@@ -136,6 +136,7 @@
     };
     const SkinTones = [{light:'#FFDBAC',dark:'#F1C27D'},{light:'#F1C27D',dark:'#E0AC69'},{light:'#E0AC69',dark:'#C68642'},{light:'#8D5524',dark:'#5E3A1A'},{light:'#C68642',dark:'#8D5524'}];
 
+    let dbCache = []; 
     let session = { students: [], currentS: 0, currentQ: 0, answered: false, timer: null, startTime: Date.now(), avatarStep: 0, pendingNames: [] };
     let qBank = [];
     const steps = [
@@ -145,58 +146,69 @@
         {title: "Mouth", key: "mouth", options: [1,2,3,4,5]}
     ];
 
-    // دالة الاتصال المصلحة
-async function callBackend(action, data = {}) {
-    // إذا كان الطلب جلب بيانات نستخدم GET لتجنب CORS
-    if (action === "getQuestions" || action === "getOrCreateStudent") {
-        let url = `${API_URL}?action=${action}`;
-        if (data.name) url += `&name=${encodeURIComponent(data.name)}`;
-        
-        const response = await fetch(url);
-        return await response.json();
-    } 
-    
-    // إذا كان الطلب حفظ بيانات نستخدم POST
-    else {
-        const url = `${API_URL}?action=${action}`;
-        // نستخدم طريقة الـ "الطلبات الصامتة" مع POST في جوجل شيت
-        await fetch(url, {
-            method: "POST",
-            mode: "no-cors", // هذا سيمنع الخطأ لكن لن نستلم رد (وهذا كافٍ للحفظ)
-            body: JSON.stringify(data)
-        });
-        return { status: 'sent' };
+    async function callBackend(action, data = {}) {
+        if (action === "getQuestions" || action === "getOrCreateStudent" || action === "getInitialData") {
+            let url = `${API_URL}?action=${action}`;
+            if (data.name) url += `&name=${encodeURIComponent(data.name)}`;
+            const response = await fetch(url);
+            return await response.json();
+        } else {
+            const url = `${API_URL}?action=${action}`;
+            await fetch(url, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify(data)
+            });
+            return { status: 'sent' };
+        }
     }
-}
 
     async function initSession() {
-        const input = document.getElementById('studentInput').value.split('\n').filter(n => n.trim());
-        if(!input.length) return;
+        const inputNames = document.getElementById('studentInput').value.split('\n').filter(n => n.trim());
+        if(!inputNames.length) return;
         
-        document.getElementById('setupScreen').innerHTML = "<h1>Connecting to Veto Cloud...</h1>";
+        document.getElementById('setupScreen').innerHTML = "<h1>🚀 VETO is Syncing...</h1>";
 
         try {
-            // 1. جلب الأسئلة من الشيت
-            qBank = await callBackend("getQuestions");
-            
-            // 2. التحقق من الطلاب
-            for (let name of input) {
-                const res = await callBackend("getOrCreateStudent", { name: name });
-                if (res.status === 'exists') {
-                    session.students.push({ name: res.name, score: res.score, avatar: res.avatar });
+            const masterData = await callBackend("getInitialData");
+            qBank = masterData.questions;
+            dbCache = masterData.dbStudents;
+
+            inputNames.forEach(name => {
+                const found = dbCache.find(s => s.name.toLowerCase() === name.toLowerCase());
+                if (found) {
+                    session.students.push({ name: found.name, score: found.score, avatar: found.avatar });
                 } else {
                     session.pendingNames.push(name);
                 }
+            });
+
+            if (session.pendingNames.length > 0) {
+                startAvatarWizard();
+            } else {
+                finalizeSetup();
             }
-            
-            if (session.pendingNames.length > 0) startAvatarWizard();
-            else finalizeSetup();
-            
             setInterval(updateLecTimer, 1000);
         } catch(e) {
-            alert("Connection Error. Check your API URL and Sheet.");
+            alert("Connection Speed Error. Try again.");
             console.error(e);
         }
+    }
+
+    function saveStudentToCloud(name, avatar) {
+        fetch(`${API_URL}?action=saveNewStudent`, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify({ name: name, avatar: avatar })
+        });
+    }
+
+    function updateScoreCloud(name, pts) {
+        fetch(`${API_URL}?action=updateScore`, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify({ name: name, points: pts })
+        });
     }
 
     function startAvatarWizard() {
@@ -209,7 +221,6 @@ async function callBackend(action, data = {}) {
         session.avatarStep = 0;
         document.getElementById('studioStudentName').innerText = session.currentTempName.toUpperCase();
         document.getElementById('avatarStudio').style.display = 'flex';
-        // Reset Preview
         document.getElementById('layer-eyes').innerHTML = '';
         document.getElementById('layer-nose').innerHTML = '';
         document.getElementById('layer-mouth').innerHTML = '';
@@ -237,9 +248,9 @@ async function callBackend(action, data = {}) {
         session.avatarStep++;
         if(session.avatarStep >= steps.length) {
             const svgContent = document.getElementById('studioPreviewSVG').innerHTML;
-            const newStu = { name: session.currentTempName, avatar: svgContent };
-            await callBackend("saveNewStudent", newStu);
-            session.students.push({ ...newStu, score: 0 });
+            const name = session.currentTempName;
+            session.students.push({ name: name, avatar: svgContent, score: 0 });
+            saveStudentToCloud(name, svgContent);
             startAvatarWizard();
         } else {
             renderAvatarStep();
@@ -288,7 +299,7 @@ async function callBackend(action, data = {}) {
         if(idx === q.a) {
             document.getElementById(`c-${idx}`).classList.add('correct');
             currentStudent.score += 10;
-            callBackend("updateScore", { name: currentStudent.name, points: 10 });
+            updateScoreCloud(currentStudent.name, 10);
             setTimeout(nextQuestion, 1500);
         } else {
             if(idx !== -1) document.getElementById(`c-${idx}`).classList.add('wrong');

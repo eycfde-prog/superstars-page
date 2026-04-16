@@ -127,7 +127,7 @@
 <footer class="footer-bar" id="footer-list"></footer>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxGD5yrULOGgiRXgdjZ_9JHpHsEvLMR-Yrn2ngBiLJBd7K-mGl-x1PoZ9jdxQLZJTz8/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzSv_F0n8rgBANPyQepJ5srUZn7UpoqhlFUXaD2q0Suh-6TulVFRtqWbImmUCVe7rDr/exec";
 
     const Assets = {
         eyes: ['<g transform="translate(0,-2)"><circle cx="35" cy="48" r="4" fill="#111"/><circle cx="65" cy="48" r="4" fill="#111"/></g>','<path d="M30 48 Q35 42 40 48" stroke="#111" fill="none" stroke-width="3"/><path d="M60 48 Q65 42 70 48" stroke="#111" fill="none" stroke-width="3"/>','<rect x="28" y="46" width="12" height="4" fill="#111"/><rect x="60" y="46" width="12" height="4" fill="#111"/>','<circle cx="35" cy="48" r="5" fill="#3C3489"/><circle cx="65" cy="48" r="5" fill="#3C3489"/>','<path d="M30 50 L40 44 M60 44 L70 50" stroke="#111" stroke-width="4"/>'],
@@ -146,15 +146,28 @@
     ];
 
     // دالة الاتصال المصلحة
-    async function callBackend(action, data = {}) {
+async function callBackend(action, data = {}) {
+    // إذا كان الطلب جلب بيانات نستخدم GET لتجنب CORS
+    if (action === "getQuestions" || action === "getOrCreateStudent") {
+        let url = `${API_URL}?action=${action}`;
+        if (data.name) url += `&name=${encodeURIComponent(data.name)}`;
+        
+        const response = await fetch(url);
+        return await response.json();
+    } 
+    
+    // إذا كان الطلب حفظ بيانات نستخدم POST
+    else {
         const url = `${API_URL}?action=${action}`;
-        // ملاحظة: لا تستخدم no-cors مع GAS إذا كنت تريد استقبال بيانات (JSON)
-        const response = await fetch(url, {
+        // نستخدم طريقة الـ "الطلبات الصامتة" مع POST في جوجل شيت
+        await fetch(url, {
             method: "POST",
+            mode: "no-cors", // هذا سيمنع الخطأ لكن لن نستلم رد (وهذا كافٍ للحفظ)
             body: JSON.stringify(data)
         });
-        return await response.json();
+        return { status: 'sent' };
     }
+}
 
     async function initSession() {
         const input = document.getElementById('studentInput').value.split('\n').filter(n => n.trim());

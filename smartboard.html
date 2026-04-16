@@ -816,7 +816,7 @@ function toggleNote(){
 // ════════════════════════════════════════════
 // VETO PORTAL
 // ════════════════════════════════════════════
-const API = 'https://script.google.com/macros/s/AKfycbxTdjO-WMbZewtHnS6Jw2OZrkGWsgSGsh_0_Ox9npENahAUK1yuWSrL40JBJyAmltg7SQ/exec';
+const API = 'https://script.google.com/macros/s/AKfycbxIa467ABF5c-aTHzEfX26n7POGDQ7AOXAoMlFWg6tJrOEpGWCJymNLr9ojx_mkeMdb2A/exec';
 let currentEmail = null;
 
 const PORTAL_ACTIVITIES = [
@@ -912,36 +912,34 @@ const res = await fetch(`${API}?action=getStudentByOfflineCode&offlineCode=${enc
     }catch(err){setStatus('CONNECTION ERROR','error');}
 }
 
-async function submitGrades(){
-    if(!currentEmail){setStatus('SCAN AGENT FIRST','error');return;}
-    const inputs=[...document.querySelectorAll('.grade-input')];
-    const payload=inputs
-        .filter(inp=>inp.value.trim()!==''&&!isNaN(parseFloat(inp.value)))
-        .map(inp=>({col:inp.getAttribute('data-col'),grade:parseFloat(inp.value)}));
-    if(payload.length===0){setStatus('NO SCORES ENTERED','error');return;}
+async function submitGrades() {
+    if (!currentEmail) { setStatus('SCAN AGENT FIRST', 'error'); return; }
+    
+    const inputs = [...document.querySelectorAll('.grade-input')];
+    const payload = inputs
+        .filter(inp => inp.value.trim() !== '' && !isNaN(parseFloat(inp.value)))
+        .map(inp => ({ col: inp.getAttribute('data-col'), grade: parseFloat(inp.value) }));
+    
+    if (payload.length === 0) { setStatus('NO SCORES ENTERED', 'error'); return; }
 
-    const btn=document.getElementById('portal-submit-btn');
-    btn.disabled=true;
-    setStatus('SENDING...','loading');
+    const btn = document.getElementById('portal-submit-btn');
+    btn.disabled = true;
+    setStatus('SENDING...', 'loading');
 
-    const emailSnap=currentEmail;
-    const promises=payload.map(({col,grade})=>
-        fetch(`${API}?action=updateGrades&email=${encodeURIComponent(emailSnap)}&activity=${encodeURIComponent(col)}&grade=${grade}`)
-            .then(r=>r.json())
-            .catch(()=>({status:'error'}))
-    );
-
-    // نقول Done بمجرد أول رد يرجع
-    Promise.race(promises).then(()=>{
-        setStatus('✓ SENT — READY FOR NEXT AGENT','success');
-        btn.disabled=false;
-        setTimeout(()=>{
+    try {
+        // ✅ request واحد بكل الدرجات
+        const res = await fetch(`${API}?action=updateGrades&email=${encodeURIComponent(currentEmail)}&grades=${encodeURIComponent(JSON.stringify(payload))}`);
+        const data = await res.json();
+        setStatus('✓ SENT — READY FOR NEXT AGENT', 'success');
+        btn.disabled = false;
+        setTimeout(() => {
             resetPortal();
             document.getElementById('portal-code-input').focus();
-        },2000);
-    });
-
-    Promise.all(promises).catch(()=>{});
+        }, 2000);
+    } catch (err) {
+        setStatus('CONNECTION ERROR', 'error');
+        btn.disabled = false;
+    }
 }
 
 // Keyboard

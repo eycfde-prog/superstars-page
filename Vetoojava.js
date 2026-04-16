@@ -302,14 +302,14 @@ function getActivityIcon(name) {
   if (n.includes("vocab"))     return { icon: "🔤", iconClass: "vocab" };
   if (n.includes("reading"))   return { icon: "📄", iconClass: "reading" };
   if (n.includes("listening")) return { icon: "🎧", iconClass: "listening" };
-  if (n.includes("tongue") || n.includes("tonge")) return { icon: "🗣️", iconClass: "vocab" };
-  if (n.includes("one shot"))  return { icon: "⚡", iconClass: "test-icon" };
-  if (n.includes("squeezer"))  return { icon: "💪", iconClass: "study" };
-  if (n.includes("dmt"))       return { icon: "🎯", iconClass: "test-icon" };
-  if (n.includes("wish"))      return { icon: "⭐", iconClass: "special" };
-  if (n.includes("project"))   return { icon: "🏗️", iconClass: "special" };
-  if (n.includes("graduation"))return { icon: "🎓", iconClass: "special" };
-  if (n.includes("oral"))      return { icon: "🎤", iconClass: "test-icon" };
+  if (n.includes("tongue"))    return { icon: "🗣️", iconClass: "tongue-twister" };
+  if (n.includes("one shot"))  return { icon: "⚡", iconClass: "one-shot" };
+  if (n.includes("squeezer"))  return { icon: "💪", iconClass: "squeezer" };
+  if (n.includes("dmt"))       return { icon: "🎯", iconClass: "dmt" };
+  if (n.includes("wish"))      return { icon: "⭐", iconClass: "wish" };
+  if (n.includes("project"))   return { icon: "🏗️", iconClass: "project" };
+  if (n.includes("graduation"))return { icon: "🎓", iconClass: "graduation" };
+  if (n.includes("oral"))      return { icon: "🎤", iconClass: "Interview" };
   return { icon: "📌", iconClass: "study" };
 }
 

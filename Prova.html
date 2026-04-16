@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة Verb to Be</title>
+    <title>Verb to Be Quiz</title>
     <style>
         :root {
             --primary-color: #6c5ce7;
@@ -11,6 +11,7 @@
             --bg-color: #f0f3f7;
             --text-color: #2d3436;
             --correct-color: #00b894;
+            --error-color: #d63031;
         }
 
         body {
@@ -36,8 +37,14 @@
 
         h1 {
             color: var(--primary-color);
-            font-size: 1.5rem;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        p.instruction {
+            color: #636e72;
             margin-bottom: 20px;
+            font-weight: 500;
         }
 
         #question-box {
@@ -45,18 +52,17 @@
             padding: 40px 20px;
             border-radius: 20px;
             margin-bottom: 25px;
-            min-height: 100px;
+            min-height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         #sentence {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
-            color: #d63031; /* لون الخطأ */
+            color: var(--error-color);
             margin: 0;
-            direction: ltr; /* لجعل الجملة الإنجليزية تظهر بشكل صحيح */
         }
 
         .btn-container {
@@ -66,13 +72,15 @@
         }
 
         button {
-            padding: 15px 25px;
+            padding: 18px 25px;
             font-size: 1.2rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             transition: transform 0.2s, background 0.3s;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         #answer-btn {
@@ -91,41 +99,44 @@
         }
 
         .progress {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #636e72;
+            margin-top: 25px;
+            font-size: 1rem;
+            color: #b2bec3;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1>ابحث عن الخطأ وصححه! 🌟</h1>
+    <h1>Find the Mistake! 🕵️‍♀️</h1>
+    <p class="instruction">Can you fix the "Verb to Be"?</p>
     
     <div id="question-box">
         <p id="sentence"></p>
     </div>
 
     <div class="btn-container">
-        <button id="answer-btn" onclick="showAnswer()">إظهار الإجابة الصحيحة ✅</button>
-        <button id="next-btn" onclick="nextQuestion()">السؤال التالي ➡️</button>
+        <button id="answer-btn" onclick="showAnswer()">Check Answer ✅</button>
+        <button id="next-btn" onclick="nextQuestion()">Next Question ➡️</button>
     </div>
 
-    <div class="progress">السؤال <span id="current">1</span> من 10</div>
+    <div class="progress">Question <span id="current">1</span> of 10</div>
 </div>
 
 <script>
+    // Mix of statements and questions
     const questions = [
-        { wrong: "I is a student", right: "I am a student" },
-        { wrong: "He are my friend", right: "He is my friend" },
-        { wrong: "They am happy", right: "They are happy" },
-        { wrong: "It are a big cat", right: "It is a big cat" },
-        { wrong: "We is playing", right: "We are playing" },
-        { wrong: "She am beautiful", right: "She is beautiful" },
-        { wrong: "You is a hero", right: "You are a hero" },
-        { wrong: "The birds is flying", right: "The birds are flying" },
-        { wrong: "My mom are kind", right: "My mom is kind" },
-        { wrong: "I are hungry", right: "I am hungry" }
+        { wrong: "I is a doctor.", right: "I am a doctor." },
+        { wrong: "Are he your brother?", right: "Is he your brother?" },
+        { wrong: "They am at school.", right: "They are at school." },
+        { wrong: "Is you ready?", right: "Are you ready?" },
+        { wrong: "It are very cold.", right: "It is very cold." },
+        { wrong: "Am she a teacher?", right: "Is she a teacher?" },
+        { wrong: "We is the champions.", right: "We are the champions." },
+        { wrong: "Are it a red apple?", right: "Is it a red apple?" },
+        { wrong: "You am very kind.", right: "You are very kind." },
+        { wrong: "Are I late?", right: "Am I late?" }
     ];
 
     let currentIndex = 0;
@@ -137,7 +148,7 @@
 
     function loadQuestion() {
         sentenceEl.textContent = questions[currentIndex].wrong;
-        sentenceEl.style.color = "#d63031"; // لون أحمر للخطأ
+        sentenceEl.style.color = "var(--error-color)";
         answerBtn.style.display = "block";
         nextBtn.style.display = "none";
         currentEl.textContent = currentIndex + 1;
@@ -145,7 +156,7 @@
 
     function showAnswer() {
         sentenceEl.textContent = questions[currentIndex].right;
-        sentenceEl.style.color = "#00b894"; // لون أخضر للإجابة الصحيحة
+        sentenceEl.style.color = "var(--correct-color)";
         answerBtn.style.display = "none";
         nextBtn.style.display = "block";
     }
@@ -155,13 +166,12 @@
         if (currentIndex < questions.length) {
             loadQuestion();
         } else {
-            alert("أحسنت يا بطل! أنهيت الـ 10 أسئلة بنجاح 🎉");
+            alert("Awesome Job! You finished all questions! 🎉");
             currentIndex = 0;
             loadQuestion();
         }
     }
 
-    // تشغيل أول سؤال عند الفتح
     loadQuestion();
 </script>
 

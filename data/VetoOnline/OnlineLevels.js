@@ -4,78 +4,77 @@
  */
 
 const sessionData = {
-  // --- LEVEL 1 ---
-  "1-1": ["Grammar Test: Subject & Object", "Listening"],
-  "1-2": ["Grammar Test: Possessives & Verb Be", "Vocabulary", "Listening"],
-  "1-3": ["Grammar Test: Indefinite Articles", "Vocabulary", "Listening"],
-  "1-4": ["Grammar Test: Plural", "Reading", "Listening"],
+// --- LEVEL 1 ---
+  "1-1": ["Listening 1", "Grammar 1"],
+  "1-2": ["Listening 2", "Grammar", "Vocabulary 1"],
+  "1-3": ["Listening 3", "Grammar", "Vocabulary 2"],
+  "1-4": ["Listening 4", "Grammar 4", "Reading 1"],
 
-  // --- LEVEL 2 ---
-  "2-1": ["Grammar Test: Time", "Reading", "One Shot", "Listening"],
-  "2-2": ["Reading", "Vocabulary", "Listening"],
-  "2-3": ["Reading", "Vocabulary", "Listening"],
-  "2-4": ["Grammar Test: Date", "Reading", "T.T", "One Shot", "Listening"],
+// --- LEVEL 2 ---
+  "2-1": ["One Shot", "Listening", "Grammar", "Reading"],
+  "2-2": ["Listening", "Vocabular", "Reading"],
+  "2-3": ["One Shot", "Listening", "Vocabular", "Reading"],
+  "2-4": ["Listening", "Grammar", "Reading", "Tonge Twister"],
 
-  // --- LEVEL 3 ---
-  "3-1": ["Grammar Test: Present Continuous", "Reading", "T.T", "Listening"],
-  "3-2": ["Reading", "Vocabulary", "T.T", "Listening"],
-  "3-3": ["Reading", "Vocabulary", "T.T", "Listening"],
-  "3-4": ["Grammar Test: Present Simple", "Reading", "One Shot", "Squeezer", "Listening"],
+// --- LEVEL 3 ---
+  "3-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
+  "3-2": ["Listening", "Vocabular", "Reading", "Tonge Twister"],
+  "3-3": ["One Shot", "Listening", "Vocabular", "Reading", "Tonge Twister"],
+  "3-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
 
-  // --- LEVEL 4 ---
-  "4-1": ["Grammar Test: Past Simple", "Reading", "One Shot", "Listening"],
-  "4-2": ["Reading", "Vocabulary", "T.T", "Listening"],
-  "4-3": ["Reading", "Vocabulary", "T.T", "Listening"],
-  "4-4": ["Grammar Test: Past Continuous", "Reading", "DMT", "Listening"],
+// --- LEVEL 4 ---
+  "4-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
+  "4-2": ["Listening", "Vocabular", "Reading", "Tonge Twister"],
+  "4-3": ["One Shot", "Listening", "Vocabular", "Reading", "Tonge Twister"],
+  "4-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
 
-  // --- LEVEL 5 ---
-  "5-1": ["Grammar Test: Future Simple", "Squeezer", "DMT", "Listening"],
-  "5-2": ["Reading", "Vocabulary", "Squeezer", "DMT", "Listening"],
-  "5-3": ["Reading", "Vocabulary", "DMT", "Listening"],
-  "5-4": ["Grammar Test: Future Continuous", "Reading", "T.T", "One Shot", "Listening"],
+// --- LEVEL 5 ---
+  "5-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
+  "5-2": ["Listening", "Vocabular", "Reading", "Tonge Twister", "DMT"],
+  "5-3": ["One Shot", "Listening", "Vocabular", "Reading", "Tonge Twister"],
+  "5-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
 
-  // --- LEVEL 6 ---
-  "6-1": ["Grammar Test: Present Perfect Simple", "Squeezer", "Listening"],
-  "6-2": ["Reading", "Vocabulary", "Squeezer", "Listening"],
-  "6-3": ["Reading", "Vocabulary", "DMT", "Listening"],
-  "6-4": ["Grammar Test: Present Perfect Continuous", "Reading", "DMT", "Listening"],
+// --- LEVEL 6 ---
+  "6-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
+  "6-2": ["Listening", "Vocabular", "Reading", "Tonge Twister", "Wish"],
+  "6-3": ["One Shot", "Listening", "Vocabular", "Reading", "Tonge Twister"],
+  "6-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
 
-  // --- LEVEL 7 ---
-  "7-1": ["Grammar Test: Past Perfect Simple", "Squeezer", "Listening"],
-  "7-2": ["Reading", "Vocabulary", "Squeezer", "DMT", "Listening"],
-  "7-3": ["Reading", "Vocabulary", "DMT", "Listening"],
-  "7-4": ["Grammar Test: If Conditions", "Reading", "Wish", "Listening"],
+// --- LEVEL 7 ---
+  "7-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
+  "7-2": ["Listening", "Vocabular", "Reading", "Tonge Twister", "DMT"],
+  "7-3": ["One Shot", "Listening", "Vocabular", "Reading", "Tonge Twister"],
+  "7-4": ["Listening", "Grammar", "Reading", "Tonge Twister", "Squeezer"],
 
-  // --- LEVEL 8 ---
-  "8-1": ["Grammar Test: Passives", "Squeezer", "Listening"],
-  "8-2": ["Reading", "Vocabulary", "Squeezer", "Listening"],
-  "8-3": ["Reading", "Vocabulary", "DMT", "Listening"],
-  "8-4": ["Reading", "Project", "DMT", "Listening"],
+// --- LEVEL 8 ---
+  "8-1": ["One Shot", "Listening", "Grammar", "Reading", "Tonge Twister"],
+  "8-2": ["Listening", "Vocabular", "Reading", "Tonge Twister", "Project"],
+  "8-3": ["One Shot", "Listening", "Vocabular", "Reading", "Tonge Twister"],
+  "8-4": ["Listening", "Reading", "Tonge Twister", "Squeezer"],
 
-  // --- LEVEL 9 ---
-  "9-1": ["Reading", "Project", "Wish", "Listening"],
-  "9-2": ["Reading", "Vocabulary", "DMT", "Listening"],
-  "9-3": ["Reading", "Vocabulary", "DMT", "Listening"],
-  "9-4": ["Reading", "Squeezer", "Listening"],
+// --- LEVEL 9 ---
+  "9-1": ["One Shot", "Listening", "Reading", "Tonge Twister"],
+  "9-2": ["Listening", "Vocabular", "Reading", "Tonge Twister", "Wish"],
+  "9-3": ["One Shot", "Listening", "Vocabular", "Reading", "Tonge Twister"],
+  "9-4": ["Listening", "Reading", "Tonge Twister"],
 
-  // --- LEVEL 10 ---
-  "10-1": ["Reading", "Squeezer", "Wish", "Listening"],
-  "10-2": ["Reading", "Vocabulary", "Listening"],
-  "10-3": ["Reading", "Vocabulary", "DMT", "Listening"],
-  "10-4": ["Reading", "Project", "DMT", "Listening"],
+// --- LEVEL 10 ---
+  "10-1": ["One Shot", "Listening", "Reading", "Tonge Twister"],
+  "10-2": ["Listening", "Reading", "Tonge Twister", "DMT"],
+  "10-3": ["One Shot", "Listening", "Reading", "Tonge Twister"],
+  "10-4": ["Listening", "Reading", "Tonge Twister"],
 
-  // --- LEVEL 11 ---
-  "11-1": ["Reading", "Graduation Project", "Listening"],
-  "11-2": ["Reading", "DMT", "Graduation Project", "Listening"],
-  "11-3": ["Reading", "DMT", "Graduation Project", "Listening"],
-  "11-4": ["Reading", "Graduation Project", "Listening"],
+// --- LEVEL 11 ---
+  "11-1": ["One Shot", "Listening", "Reading", "Tonge Twister", "Graduation Project"],
+  "11-2": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
+  "11-3": ["One Shot", "Listening", "Reading", "Tonge Twister", "Graduation Project"],
+  "11-4": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
 
-  // --- LEVEL 12 ---
-  "12-1": ["Reading", "Graduation Project", "Listening"],
-  "12-2": ["Reading", "Graduation Project", "Listening"],
-  "12-3": ["Graduation Project", "Listening"],
-  "12-4": ["GRADUATION PROJECT PRESENTATION"]
-};
+// --- LEVEL 12 ---
+  "12-1": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
+  "12-2": ["Listening", "Reading", "Tonge Twister", "Graduation Project"],
+  "12-3": ["Listening", "Graduation Project"],
+  "12-4": ["Graduation Project"],
 
 /**
  * دالة استخراج أسماء الملفات - مطابقة تماماً للملف الأصلي لضمان عمل الصفحة

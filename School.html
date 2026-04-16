@@ -4,349 +4,1110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veto Academy - Live Session</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --v-dark-bg: #0f172a;
-            --v-panel-bg: #1e293b;
+            --v-dark-bg: #07090f;
+            --v-panel-bg: #0f1520;
+            --v-card-bg: #151d2e;
             --v-primary: #6366f1;
+            --v-primary-glow: rgba(99,102,241,0.3);
             --v-accent: #f59e0b;
             --v-success: #10b981;
             --v-danger: #ef4444;
-            --v-text-main: #f8fafc;
-            --v-text-dim: #94a3b8;
-            --bar-height: 120px;
+            --v-text-main: #f0f4ff;
+            --v-text-dim: #64748b;
+            --bar-height: 110px;
             --skin-light: #FFDBAC;
             --skin-dark: #F1C27D;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--v-dark-bg);
+            color: var(--v-text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Cairo', sans-serif;
+        }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', 'Cairo', sans-serif; }
-        body { background: var(--v-dark-bg); color: var(--v-text-main); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        /* ===== HEADER ===== */
+        .main-bar {
+            height: var(--bar-height);
+            background: var(--v-panel-bg);
+            padding: 0 30px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            border-bottom: 1px solid rgba(99,102,241,0.2);
+            position: relative;
+            z-index: 10;
+        }
+        .main-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--v-primary), transparent);
+        }
 
-        .main-bar { height: var(--bar-height); background: var(--v-panel-bg); padding: 0 30px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-bottom: 2px solid #334155; z-index: 10; }
-        .footer-bar { height: var(--bar-height); background: var(--v-panel-bg); border-top: 2px solid #334155; display: flex; align-items: center; padding: 0 20px; gap: 15px; overflow-x: auto; }
+        /* ===== FOOTER ===== */
+        .footer-bar {
+            height: var(--bar-height);
+            background: var(--v-panel-bg);
+            border-top: 1px solid rgba(99,102,241,0.15);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 12px;
+            overflow-x: auto;
+        }
 
-        .avatar-frame { width: 75px; height: 75px; border-radius: 50%; background: #fff; overflow: hidden; border: 3px solid var(--v-primary); position: relative; }
+        /* ===== AVATAR ===== */
+        .avatar-frame {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--v-primary);
+            box-shadow: 0 0 15px var(--v-primary-glow);
+            position: relative;
+            flex-shrink: 0;
+        }
         .avatar-svg { width: 100%; height: 100%; display: block; }
 
-        .content-area { flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        /* ===== MAIN CONTENT ===== */
+        .content-area {
+            flex: 1;
+            padding: 30px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
         .question-box { max-width: 1100px; margin: 0 auto; width: 100%; }
-        .q-text { font-size: 38px; line-height: 1.4; margin-bottom: 40px; font-weight: 700; text-align: center; }
-        .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .choice-card { background: #1e293b; border: 2px solid #334155; padding: 25px; border-radius: 15px; font-size: 22px; cursor: pointer; transition: 0.2s; display: flex; gap: 15px; }
-        .choice-card:hover { border-color: var(--v-primary); transform: translateY(-3px); }
-        .choice-card.correct { background: var(--v-success) !important; border-color: #fff; color: white; }
-        .choice-card.wrong { background: var(--v-danger) !important; border-color: #fff; color: white; }
+        .q-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--v-primary);
+            margin-bottom: 16px;
+        }
+        .q-text {
+            font-size: 32px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--v-text-main);
+        }
+        .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .choice-card {
+            background: var(--v-card-bg);
+            border: 1px solid rgba(99,102,241,0.2);
+            padding: 20px 25px;
+            border-radius: 14px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .choice-card:hover { border-color: var(--v-primary); transform: translateY(-2px); background: rgba(99,102,241,0.1); }
+        .choice-card.correct { background: rgba(16,185,129,0.2) !important; border-color: var(--v-success) !important; }
+        .choice-card.wrong { background: rgba(239,68,68,0.2) !important; border-color: var(--v-danger) !important; animation: shake 0.4s; }
+        .choice-letter { font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--v-primary); font-weight: 700; min-width: 24px; }
 
-        .studio-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 200; display: none; align-items: center; justify-content: center; }
-        .studio-card { background: var(--v-panel-bg); padding: 40px; border-radius: 24px; width: 900px; display: flex; gap: 50px; border: 2px solid var(--v-primary); }
-        .preview-zone { flex: 1; display: flex; flex-direction: column; align-items: center; background: #070b14; border-radius: 20px; padding: 20px; }
+        @keyframes shake {
+            0%,100%{transform:translateX(0)}
+            20%{transform:translateX(-8px)}
+            40%{transform:translateX(8px)}
+            60%{transform:translateX(-6px)}
+            80%{transform:translateX(6px)}
+        }
+        @keyframes fadeInUp {
+            from{opacity:0;transform:translateY(20px)}
+            to{opacity:1;transform:translateY(0)}
+        }
+        @keyframes popIn {
+            0%{transform:scale(0.5);opacity:0}
+            70%{transform:scale(1.1)}
+            100%{transform:scale(1);opacity:1}
+        }
+        @keyframes pulse {
+            0%,100%{opacity:1}50%{opacity:0.5}
+        }
+
+        /* ===== TIMER BAR ===== */
+        .timer-bar-wrap { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+        .timer-bar-fill { height: 100%; background: var(--v-primary); border-radius: 2px; transition: width 1s linear, background 0.5s; }
+
+        /* ===== STATS ===== */
+        .stat-block { text-align: center; }
+        .stat-val { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 700; }
+        .stat-lbl { font-size: 10px; letter-spacing: 2px; color: var(--v-text-dim); margin-top: 2px; }
+
+        /* ===== LOGO ===== */
+        .veto-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            color: var(--v-primary);
+        }
+
+        /* ===== STUDENT PILL ===== */
+        .student-pill {
+            min-width: 110px;
+            text-align: center;
+            padding: 8px 10px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        .student-pill.active {
+            border-color: var(--v-primary);
+            background: rgba(99,102,241,0.15);
+            box-shadow: 0 0 12px var(--v-primary-glow);
+        }
+        .mini-avatar {
+            width: 42px; height: 42px;
+            margin: 0 auto 5px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--v-primary);
+        }
+
+        /* ===== SETUP SCREEN ===== */
+        #setupScreen {
+            position: fixed; inset: 0;
+            background: var(--v-dark-bg);
+            z-index: 100;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 20px;
+        }
+        .setup-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48px; font-weight: 900;
+            letter-spacing: 10px;
+            color: var(--v-primary);
+            text-shadow: 0 0 30px var(--v-primary-glow);
+        }
+        .input-dark {
+            background: var(--v-card-bg);
+            border: 1px solid rgba(99,102,241,0.3);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            width: 420px;
+            font-size: 16px;
+            text-align: center;
+            font-family: 'Cairo', sans-serif;
+            outline: none;
+        }
+        .input-dark:focus { border-color: var(--v-primary); }
+        .btn-primary {
+            background: var(--v-primary);
+            color: white;
+            padding: 14px 50px;
+            border: none; border-radius: 10px;
+            font-weight: 700; cursor: pointer;
+            font-size: 18px; font-family: 'Cairo', sans-serif;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: #4f52d8; transform: translateY(-2px); }
+
+        /* ===== AVATAR STUDIO ===== */
+        .studio-overlay {
+            position: fixed; inset: 0;
+            background: rgba(7,9,15,0.97);
+            z-index: 200;
+            display: none;
+            align-items: center; justify-content: center;
+        }
+        .studio-card {
+            background: var(--v-panel-bg);
+            padding: 40px;
+            border-radius: 24px;
+            width: 860px;
+            display: flex;
+            gap: 50px;
+            border: 1px solid rgba(99,102,241,0.3);
+            box-shadow: 0 0 60px rgba(99,102,241,0.1);
+            animation: fadeInUp 0.3s ease;
+        }
+        .preview-zone {
+            flex: 1;
+            display: flex; flex-direction: column;
+            align-items: center;
+            background: var(--v-dark-bg);
+            border-radius: 20px;
+            padding: 25px;
+        }
+        .studio-avatar-wrap {
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--v-primary);
+            box-shadow: 0 0 30px var(--v-primary-glow);
+        }
         .options-zone { flex: 1.5; }
-        .option-btn { background: #334155; border: none; color: white; padding: 20px; border-radius: 12px; cursor: pointer; text-align: center; font-weight: bold; }
-        .option-btn:hover { background: var(--v-primary); }
+        .step-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px; letter-spacing: 3px;
+            color: var(--v-accent); margin-bottom: 20px;
+        }
+        .options-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+        .option-btn {
+            background: var(--v-card-bg);
+            border: 1px solid rgba(99,102,241,0.2);
+            color: white; padding: 18px;
+            border-radius: 12px; cursor: pointer;
+            font-weight: 700; font-size: 14px;
+            transition: all 0.2s;
+            font-family: 'Cairo', sans-serif;
+        }
+        .option-btn:hover { background: var(--v-primary); border-color: var(--v-primary); transform: scale(1.05); }
 
-        .student-pill { min-width: 130px; text-align: center; padding: 10px; border-radius: 15px; background: rgba(255,255,255,0.05); border: 2px solid transparent; flex-shrink: 0; }
-        .student-pill.active { border-color: var(--v-primary); background: rgba(99, 102, 241, 0.2); }
-        .mini-avatar { width: 45px; height: 45px; margin: 0 auto 5px; border-radius: 50%; background: #fff; overflow: hidden; border: 2px solid var(--v-primary); }
+        /* ===== EXPLANATION ===== */
+        .explanation-overlay {
+            position: absolute; inset: 0;
+            background: var(--v-dark-bg);
+            z-index: 50; padding: 40px;
+            display: none; overflow-y: auto;
+            animation: fadeInUp 0.3s;
+        }
+        .exp-q { background: var(--v-card-bg); padding: 20px; border-radius: 14px; margin-bottom: 20px; font-size: 22px; border-left: 3px solid var(--v-accent); }
+        .exp-notes {
+            width: 100%; height: 140px;
+            background: var(--v-panel-bg);
+            border: 1px solid rgba(99,102,241,0.3);
+            color: white; padding: 20px;
+            font-size: 18px; border-radius: 14px;
+            font-family: 'Cairo', sans-serif;
+            outline: none; resize: none;
+        }
 
-        .explanation-overlay { position: absolute; inset: 0; background: var(--v-dark-bg); z-index: 50; padding: 40px; display: none; overflow-y: auto; }
-        #setupScreen { position: fixed; inset: 0; background: var(--v-dark-bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .input-dark { background: #1e293b; border: 1px solid #334155; color: white; padding: 15px; border-radius: 10px; width: 400px; margin: 10px; font-size: 18px; text-align: center; }
-        .btn-start { background: var(--v-primary); color: white; padding: 15px 50px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 20px; }
+        /* ===== AVATAR REWARD OVERLAY ===== */
+        .reward-overlay {
+            position: fixed; inset: 0;
+            background: rgba(7,9,15,0.92);
+            z-index: 150;
+            display: none;
+            align-items: center; justify-content: center;
+            flex-direction: column;
+        }
+        .reward-card {
+            background: var(--v-panel-bg);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid rgba(99,102,241,0.4);
+            box-shadow: 0 0 60px var(--v-primary-glow);
+            animation: popIn 0.4s ease;
+            max-width: 600px; width: 90%;
+        }
+        .reward-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px; letter-spacing: 3px;
+            color: var(--v-accent); margin-bottom: 20px;
+        }
+        .reward-avatar-wrap {
+            width: 160px; height: 160px;
+            border-radius: 50%; overflow: hidden;
+            margin: 0 auto 20px;
+            border: 3px solid var(--v-primary);
+            box-shadow: 0 0 25px var(--v-primary-glow);
+        }
+        .reward-options { display: flex; gap: 15px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+        .reward-btn {
+            background: var(--v-card-bg);
+            border: 1px solid rgba(99,102,241,0.3);
+            color: white; padding: 15px 22px;
+            border-radius: 14px; cursor: pointer;
+            transition: all 0.2s; font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+        }
+        .reward-btn:hover { background: var(--v-primary); border-color: var(--v-primary); transform: scale(1.05); }
+        .reward-timer {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px; color: var(--v-accent);
+            margin-bottom: 10px;
+            animation: pulse 1s infinite;
+        }
+
+        /* ===== LEADERBOARD ===== */
+        .leaderboard-overlay {
+            position: fixed; inset: 0;
+            background: rgba(7,9,15,0.96);
+            z-index: 140;
+            display: none;
+            align-items: center; justify-content: center;
+        }
+        .lb-card {
+            background: var(--v-panel-bg);
+            border-radius: 24px;
+            padding: 40px;
+            min-width: 480px;
+            border: 1px solid rgba(99,102,241,0.3);
+            animation: fadeInUp 0.3s;
+        }
+        .lb-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px; letter-spacing: 4px;
+            color: var(--v-accent); text-align: center;
+            margin-bottom: 25px;
+        }
+        .lb-row {
+            display: flex; align-items: center;
+            gap: 15px; padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: var(--v-card-bg);
+            transition: all 0.4s;
+        }
+        .lb-row.top1 { border: 1px solid var(--v-accent); background: rgba(245,158,11,0.1); }
+        .lb-rank { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 700; min-width: 30px; }
+        .lb-pts { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--v-accent); margin-left: auto; }
+
+        /* ===== CONFETTI ===== */
+        .confetti-piece {
+            position: fixed;
+            width: 8px; height: 8px;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 999;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+            100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+        }
+
+        /* ===== DAMAGE FLASH ===== */
+        .damage-flash {
+            position: fixed; inset: 0;
+            background: rgba(239,68,68,0.15);
+            pointer-events: none;
+            z-index: 998;
+            animation: flashOut 0.5s forwards;
+        }
+        @keyframes flashOut {
+            0%{opacity:1}100%{opacity:0}
+        }
     </style>
 </head>
 <body>
 
+<!-- SETUP -->
 <div id="setupScreen">
-    <h1 style="margin-bottom:30px; font-size: 40px; letter-spacing: 2px; color: var(--v-primary);">VETO ACADEMY</h1>
-    <textarea id="studentInput" class="input-dark" style="height:150px" placeholder="Enter students names (one per line)">Ahmed</textarea>
-    <button class="btn-start" onclick="initSession()">START SESSION</button>
+    <div class="setup-title">VETO</div>
+    <p style="color:var(--v-text-dim); letter-spacing:2px; font-size:13px;">ACADEMY · LIVE SESSION</p>
+    <textarea id="studentInput" class="input-dark" style="height:140px; resize:none;" placeholder="أدخل أسماء الطلاب (كل اسم في سطر)">Ahmed
+Sara</textarea>
+    <button class="btn-primary" onclick="initSession()">ابدأ الحصة</button>
 </div>
 
+<!-- AVATAR STUDIO -->
 <div id="avatarStudio" class="studio-overlay">
     <div class="studio-card">
         <div class="preview-zone">
-            <div class="avatar-frame" style="width: 200px; height: 200px;">
-                <svg id="studioPreviewSVG" class="avatar-svg" viewBox="0 0 100 100">
+            <div class="studio-avatar-wrap">
+                <svg id="studioPreviewSVG" class="avatar-svg" viewBox="0 0 100 120">
                     <defs>
-                        <radialGradient id="skinGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                            <stop offset="0%" style="stop-color:var(--skin-light);stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:var(--skin-dark);stop-opacity:1" />
+                        <radialGradient id="skinGrad" cx="50%" cy="40%" r="70%">
+                            <stop offset="0%" style="stop-color:var(--skin-light)"/>
+                            <stop offset="100%" style="stop-color:var(--skin-dark)"/>
                         </radialGradient>
-                        <filter id="shadow" x="0" y="0" width="200%" height="200%">
-                            <feDropShadow dx="1" dy="1" stdDeviation="1" flood-opacity="0.3"/>
-                        </filter>
+                        <linearGradient id="neckGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--skin-dark)"/>
+                            <stop offset="100%" style="stop-color:var(--skin-light)"/>
+                        </linearGradient>
                     </defs>
-                    <rect x="40" y="75" width="20" height="25" id="neck-part" fill="#d1a67d" />
-                    <circle cx="50" cy="50" r="40" id="main-skin-circle" fill="url(#skinGrad)" />
-                    <g id="layer-eyes" filter="url(#shadow)"></g>
-                    <g id="layer-nose" filter="url(#shadow)"></g>
-                    <g id="layer-mouth" filter="url(#shadow)"></g>
+                    <rect x="38" y="80" width="24" height="20" rx="4" fill="url(#neckGrad)" id="neck-part"/>
+                    <path fill="url(#skinGrad)" d="M 20 45 Q 20 95 50 108 Q 80 95 80 45 Q 80 12 50 12 Q 20 12 20 45"/>
+                    <path fill="url(#skinGrad)" d="M 18 48 Q 12 48 12 58 Q 12 68 20 68"/>
+                    <path fill="url(#skinGrad)" d="M 82 48 Q 88 48 88 58 Q 88 68 80 68"/>
+                    <g id="layer-hair"></g>
+                    <g id="layer-eyes"></g>
+                    <g id="layer-nose"></g>
+                    <g id="layer-mouth"></g>
+                    <g id="layer-accessories"></g>
                 </svg>
             </div>
-            <h2 id="studioStudentName" style="margin-top: 25px; color:white;">NAME</h2>
+            <h2 id="studioStudentName" style="margin-top:20px; font-size:18px; color:white; font-family:'Orbitron',sans-serif; letter-spacing:2px;">NAME</h2>
         </div>
         <div class="options-zone">
-            <h2 id="stepTitle" style="color:var(--v-accent); margin-bottom:20px;">Step</h2>
-            <div id="optionsGrid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;"></div>
+            <p id="stepSubtitle" style="color:var(--v-text-dim); font-size:13px; margin-bottom:8px;"></p>
+            <div class="step-title" id="stepTitle">STEP</div>
+            <div class="options-grid" id="optionsGrid"></div>
         </div>
     </div>
 </div>
 
-<header class="main-bar">
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <div id="h-avatar-box" class="avatar-frame"></div>
-        <div>
-            <div id="h-name" style="font-weight: 700; font-size: 22px;">---</div>
-            <div style="font-size: 12px; color: var(--v-text-dim);">ACTIVE STUDENT</div>
+<!-- AVATAR REWARD -->
+<div id="rewardOverlay" class="reward-overlay">
+    <div class="reward-card">
+        <div class="reward-title" id="rewardTitle">CHOOSE YOUR REWARD</div>
+        <div class="reward-timer" id="rewardTimer">5</div>
+        <div class="reward-avatar-wrap">
+            <svg id="rewardPreviewSVG" class="avatar-svg" viewBox="0 0 100 120"></svg>
+        </div>
+        <p id="rewardDesc" style="color:var(--v-text-dim); font-size:14px; margin-bottom:5px;"></p>
+        <div class="reward-options" id="rewardOptions"></div>
+    </div>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="leaderboardOverlay" class="leaderboard-overlay">
+    <div class="lb-card">
+        <div class="lb-title">LEADERBOARD</div>
+        <div id="lbRows"></div>
+        <div style="text-align:center; margin-top:20px;">
+            <button class="btn-primary" onclick="closeLeaderboard()" style="padding:10px 30px; font-size:14px;">متابعة ←</button>
         </div>
     </div>
-    <div class="academy-logo"><h2 style="color:var(--v-primary); letter-spacing: 5px;">VETO</h2></div>
-    <div style="display: flex; gap: 30px; text-align: center;">
-        <div><span class="val" id="lec-timer" style="font-size: 24px; font-weight: 700; color: var(--v-primary);">00:00</span><br><small>LEC</small></div>
-        <div><span class="val" id="h-score" style="font-size: 24px; font-weight: 700; color: var(--v-accent);">0</span><br><small>PTS</small></div>
-        <div><span class="val" id="q-timer" style="font-size: 24px; font-weight: 700; color: var(--v-danger);">30</span><br><small>TIME</small></div>
+</div>
+
+<!-- HEADER -->
+<header class="main-bar">
+    <div style="display:flex; align-items:center; gap:15px;">
+        <div id="h-avatar-box" class="avatar-frame"></div>
+        <div>
+            <div id="h-name" style="font-weight:700; font-size:20px; font-family:'Orbitron',sans-serif; letter-spacing:1px;">---</div>
+            <div style="font-size:11px; color:var(--v-text-dim); letter-spacing:2px;">ACTIVE STUDENT</div>
+        </div>
+    </div>
+    <div class="veto-logo">VETO</div>
+    <div style="display:flex; gap:25px; justify-content:flex-end;">
+        <div class="stat-block"><div class="stat-val" id="lec-timer" style="color:var(--v-primary);">00:00</div><div class="stat-lbl">LEC TIME</div></div>
+        <div class="stat-block"><div class="stat-val" id="h-score" style="color:var(--v-accent);">0</div><div class="stat-lbl">POINTS</div></div>
+        <div class="stat-block"><div class="stat-val" id="q-timer" style="color:var(--v-danger);">30</div><div class="stat-lbl">SECONDS</div></div>
     </div>
 </header>
 
+<!-- MAIN -->
 <main class="content-area">
-    <div class="question-box" id="q-container">
-        <span id="q-idx" style="color:var(--v-primary); font-weight:700; letter-spacing:2px;">QUESTION #1</span>
-        <h2 class="q-text" id="q-text">Loading Questions...</h2>
+    <div class="question-box" id="q-container" style="animation:fadeInUp 0.3s ease;">
+        <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timer-bar" style="width:100%"></div></div>
+        <p class="q-label" id="q-idx">QUESTION #1</p>
+        <h2 class="q-text" id="q-text">جارٍ تحميل الأسئلة...</h2>
         <div class="choices-grid" id="choices-grid"></div>
     </div>
 
     <div id="explanation-mode" class="explanation-overlay">
-        <h2 style="color:var(--v-accent); margin-bottom:20px;">Teacher's Explanation Zone</h2>
-        <div id="exp-q-preview" style="background:var(--v-panel-bg); padding:20px; border-radius:15px; margin-bottom:20px; font-size: 24px;"></div>
-        <textarea id="exp-notes" style="width:100%; height:150px; background:#0f172a; border:2px solid #334155; color:white; padding:20px; font-size:20px; border-radius:15px;" placeholder="Write key points here..."></textarea>
-        <button class="btn-start" style="margin-top:20px" onclick="nextQuestion()">NEXT QUESTION</button>
+        <h2 style="color:var(--v-accent); margin-bottom:20px; font-family:'Orbitron',sans-serif; font-size:14px; letter-spacing:3px;">EXPLANATION ZONE</h2>
+        <div class="exp-q" id="exp-q-preview"></div>
+        <textarea class="exp-notes" id="exp-notes" placeholder="اكتب النقاط المهمة هنا..."></textarea>
+        <button class="btn-primary" style="margin-top:20px;" onclick="afterExplanation()">السؤال التالي ←</button>
     </div>
 </main>
 
+<!-- FOOTER -->
 <footer class="footer-bar" id="footer-list"></footer>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwcWheF14m6sMbLrIp-5pSdc9QaCIJem-HxgLU2DzcvAgHeLYqhvYiQHnqddyhBLHjj/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwcWheF14m6sMbLrIp-5pSdc9QaCIJem-HxgLU2DzcvAgHeLYqhvYiQHnqddyhBLHjj/exec";
 
-    const Assets = {
-        eyes: ['<g transform="translate(0,-2)"><circle cx="35" cy="48" r="4" fill="#111"/><circle cx="65" cy="48" r="4" fill="#111"/></g>','<path d="M30 48 Q35 42 40 48" stroke="#111" fill="none" stroke-width="3"/><path d="M60 48 Q65 42 70 48" stroke="#111" fill="none" stroke-width="3"/>','<rect x="28" y="46" width="12" height="4" fill="#111"/><rect x="60" y="46" width="12" height="4" fill="#111"/>','<circle cx="35" cy="48" r="5" fill="#3C3489"/><circle cx="65" cy="48" r="5" fill="#3C3489"/>','<path d="M30 50 L40 44 M60 44 L70 50" stroke="#111" stroke-width="4"/>'],
-        nose: ['<path d="M48 50 Q50 56 52 50" stroke="rgba(0,0,0,0.5)" fill="none" stroke-width="2.5"/>','<path d="M50 44 V56" stroke="rgba(0,0,0,0.4)" stroke-width="3"/>','<path d="M46 54 H54" stroke="rgba(0,0,0,0.5)" stroke-width="3"/>','<path d="M47 48 L50 58 L53 48" stroke="rgba(0,0,0,0.6)" fill="none" stroke-width="2"/>','<circle cx="50" cy="54" r="3" fill="rgba(0,0,0,0.3)"/>'],
-        mouth: ['<path d="M35 68 Q50 82 65 68" stroke="#111" fill="none" stroke-width="3"/>','<path d="M40 72 H60" stroke="#111" stroke-width="4"/>','<path d="M38 72 Q50 68 62 72" stroke="#111" fill="none" stroke-width="3"/>','<circle cx="50" cy="72" r="6" fill="rgba(0,0,0,0.6)"/>','<path d="M35 70 Q50 78 65 70" stroke="#c0392b" fill="none" stroke-width="5"/>']
-    };
-    const SkinTones = [{light:'#FFDBAC',dark:'#F1C27D'},{light:'#F1C27D',dark:'#E0AC69'},{light:'#E0AC69',dark:'#C68642'},{light:'#8D5524',dark:'#5E3A1A'},{light:'#C68642',dark:'#8D5524'}];
+// ===================== AVATAR SYSTEM =====================
 
-    let dbCache = []; 
-    let session = { students: [], currentS: 0, currentQ: 0, answered: false, timer: null, startTime: Date.now(), avatarStep: 0, pendingNames: [] };
-    let qBank = [];
-    const steps = [
-        {title: "Skin Tone", key: "skin", options: [1,2,3,4,5]},
-        {title: "Eyes", key: "eyes", options: [1,2,3,4,5]},
-        {title: "Nose", key: "nose", options: [1,2,3,4,5]},
-        {title: "Mouth", key: "mouth", options: [1,2,3,4,5]}
-    ];
+const SkinTones = [
+    {light:'#FFDBAC',dark:'#F1C27D'},
+    {light:'#F1C27D',dark:'#E0AC69'},
+    {light:'#E0AC69',dark:'#C68642'},
+    {light:'#C68642',dark:'#8D5524'},
+    {light:'#8D5524',dark:'#5E3A1A'}
+];
 
-    async function callBackend(action, data = {}) {
-        if (action === "getQuestions" || action === "getOrCreateStudent" || action === "getInitialData") {
-            let url = `${API_URL}?action=${action}`;
-            if (data.name) url += `&name=${encodeURIComponent(data.name)}`;
-            const response = await fetch(url);
-            return await response.json();
-        } else {
-            const url = `${API_URL}?action=${action}`;
-            await fetch(url, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify(data)
-            });
-            return { status: 'sent' };
-        }
+const Assets = {
+    hair: [
+        '<path fill="#2c1b18" d="M 18 45 Q 18 5 50 5 Q 82 5 82 45 L 85 35 Q 85 0 50 0 Q 15 0 15 35 Z"/>',
+        '<path fill="#1a1a1a" d="M 15 43 L 20 12 L 32 28 L 50 5 L 68 28 L 80 12 L 85 43 Z"/>',
+        '<path fill="#4e342e" d="M 20 45 Q 18 10 50 8 Q 82 10 80 45 Q 82 5 50 3 Q 18 5 20 45 Z"/>',
+        '<path fill="#8B4513" d="M 15 45 Q 15 5 50 5 Q 85 5 85 45 Q 80 20 50 18 Q 20 20 15 45 Z"/>',
+        '<path fill="#FFD700" d="M 18 45 Q 18 5 50 5 Q 82 5 82 45 L 85 35 Q 85 0 50 0 Q 15 0 15 35 Z"/>'
+    ],
+    eyes: [
+        `<g>
+            <ellipse fill="white" cx="35" cy="48" rx="8" ry="5"/>
+            <circle class="pupil" fill="#1a1a1a" cx="35" cy="48" r="3.5"/>
+            <circle fill="white" cx="36.5" cy="46.5" r="1.2"/>
+            <ellipse fill="white" cx="65" cy="48" rx="8" ry="5"/>
+            <circle class="pupil" fill="#1a1a1a" cx="65" cy="48" r="3.5"/>
+            <circle fill="white" cx="66.5" cy="46.5" r="1.2"/>
+            <path d="M 27 40 Q 35 36 43 40" stroke="#2c1b18" fill="none" stroke-width="1.5"/>
+            <path d="M 57 40 Q 65 36 73 40" stroke="#2c1b18" fill="none" stroke-width="1.5"/>
+        </g>`,
+        `<g>
+            <ellipse fill="white" cx="35" cy="48" rx="8" ry="3.5"/>
+            <circle class="pupil" fill="#1a1a1a" cx="35" cy="48" r="2.8"/>
+            <ellipse fill="white" cx="65" cy="48" rx="8" ry="3.5"/>
+            <circle class="pupil" fill="#1a1a1a" cx="65" cy="48" r="2.8"/>
+            <path d="M 27 43 Q 35 40 43 43" stroke="#2c1b18" fill="none" stroke-width="2"/>
+            <path d="M 57 43 Q 65 40 73 43" stroke="#2c1b18" fill="none" stroke-width="2"/>
+        </g>`,
+        `<g>
+            <ellipse fill="white" cx="35" cy="48" rx="8" ry="5"/>
+            <circle class="pupil" fill="#1E4D92" cx="35" cy="48" r="3.5"/>
+            <circle fill="white" cx="36.5" cy="46.5" r="1.2"/>
+            <ellipse fill="white" cx="65" cy="48" rx="8" ry="5"/>
+            <circle class="pupil" fill="#1E4D92" cx="65" cy="48" r="3.5"/>
+            <circle fill="white" cx="66.5" cy="46.5" r="1.2"/>
+            <path d="M 27 40 Q 35 36 43 40" stroke="#2c1b18" fill="none" stroke-width="1.5"/>
+            <path d="M 57 40 Q 65 36 73 40" stroke="#2c1b18" fill="none" stroke-width="1.5"/>
+        </g>`
+    ],
+    nose: [
+        '<path stroke="#b07850" fill="none" stroke-width="1.2" d="M 47 52 Q 44 60 46 65 Q 50 67 54 65 Q 56 60 53 52"/>',
+        '<path stroke="#b07850" fill="none" stroke-width="1.2" d="M 50 50 L 50 65 M 45 65 Q 50 68 55 65"/>',
+        '<circle cx="47" cy="65" r="2.5" fill="rgba(0,0,0,0.2)"/><circle cx="53" cy="65" r="2.5" fill="rgba(0,0,0,0.2)"/>'
+    ],
+    mouth: [
+        '<path stroke="#8B4040" fill="none" stroke-width="1.8" d="M 37 80 Q 50 88 63 80"/>',
+        '<path stroke="#8B4040" fill="none" stroke-width="2" d="M 40 82 H 60"/>',
+        '<path fill="#c0392b" d="M 38 80 Q 50 92 62 80 Q 50 84 38 80 Z"/>'
+    ]
+};
+
+// Accessories awarded for correct answers
+const Accessories = {
+    beard: '<path fill="#2c1b18" d="M 35 85 Q 50 98 65 85 Q 60 95 50 98 Q 40 95 35 85 Z" opacity="0.8"/>',
+    mustache: '<path fill="#2c1b18" d="M 37 78 Q 43 72 50 75 Q 57 72 63 78 Q 57 75 50 77 Q 43 75 37 78 Z"/>',
+    necklace: '<ellipse cx="50" cy="105" rx="18" ry="3" fill="none" stroke="#FFD700" stroke-width="1.5"/><circle cx="50" cy="108" r="2" fill="#FFD700"/>',
+    earring_left: '<circle cx="16" cy="60" r="3" fill="#FFD700"/><line x1="16" y1="57" x2="16" y2="52" stroke="#FFD700" stroke-width="1.5"/>',
+    earring_right: '<circle cx="84" cy="60" r="3" fill="#FFD700"/><line x1="84" y1="57" x2="84" y2="52" stroke="#FFD700" stroke-width="1.5"/>',
+    glasses: '<rect x="26" y="44" width="18" height="10" rx="4" fill="none" stroke="#6366f1" stroke-width="1.5"/><rect x="56" y="44" width="18" height="10" rx="4" fill="none" stroke="#6366f1" stroke-width="1.5"/><line x1="44" y1="49" x2="56" y2="49" stroke="#6366f1" stroke-width="1.5"/>',
+    crown: '<polygon points="50,5 38,20 42,20 30,15 34,30 66,30 70,15 58,20 62,20" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>'
+};
+
+// Removable base features (for wrong answers)
+const RemovableFeatures = ['eyes', 'nose', 'mouth', 'hair'];
+
+// ===================== SESSION STATE =====================
+let session = {
+    students: [], currentS: 0, currentQ: 0,
+    answered: false, timer: null,
+    startTime: Date.now(),
+    avatarStep: 0, pendingNames: [],
+    currentTempName: '',
+    lossCount: 0 // per-session loss tracker
+};
+let qBank = [];
+
+const setupSteps = [
+    { title: 'SKIN TONE', key: 'skin', subtitle: 'اختار لون البشرة', options: ['☀️ فاتح جداً','🌤 فاتح','🌥 متوسط','🌦 داكن','🌑 داكن جداً'] },
+    { title: 'HAIR STYLE', key: 'hair', subtitle: 'اختار الشعر', options: ['Classic','Spiky','Curly','Long','Blonde'] },
+    { title: 'EYES', key: 'eyes', subtitle: 'اختار العيون', options: ['Wide','Narrow','Blue'] },
+    { title: 'NOSE', key: 'nose', subtitle: 'اختار الأنف', options: ['Curved','Straight','Button'] },
+    { title: 'MOUTH', key: 'mouth', subtitle: 'اختار الفم', options: ['Smile','Neutral','Open'] }
+];
+
+// ===================== SOUNDS =====================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function getAudio() { if(!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+
+function playTone(freq, dur, type='sine', vol=0.3) {
+    try {
+        const ctx = getAudio();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(vol, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        o.start(ctx.currentTime); o.stop(ctx.currentTime + dur);
+    } catch(e) {}
+}
+
+function playCorrect() {
+    playTone(523, 0.1); setTimeout(()=>playTone(659,0.1),100); setTimeout(()=>playTone(784,0.2),200);
+}
+function playWrong() {
+    playTone(200, 0.15, 'sawtooth', 0.2); setTimeout(()=>playTone(150,0.2,'sawtooth',0.2),150);
+}
+function playCountdownBeep(isLast) {
+    playTone(isLast ? 880 : 440, 0.08, 'square', 0.15);
+}
+function playCelebration() {
+    [523,659,784,1047].forEach((f,i) => setTimeout(()=>playTone(f,0.15),i*80));
+}
+
+// ===================== CONFETTI =====================
+function spawnConfetti() {
+    const colors = ['#6366f1','#f59e0b','#10b981','#ef4444','#ec4899'];
+    for(let i=0;i<40;i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.style.cssText = `
+            left:${Math.random()*100}vw;
+            top:-10px;
+            background:${colors[Math.floor(Math.random()*colors.length)]};
+            width:${6+Math.random()*8}px;
+            height:${6+Math.random()*8}px;
+            border-radius:${Math.random()>0.5?'50%':'2px'};
+            animation-duration:${1+Math.random()*2}s;
+            animation-delay:${Math.random()*0.5}s;
+        `;
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(), 3000);
     }
+}
 
-    async function initSession() {
-        const inputNames = document.getElementById('studentInput').value.split('\n').filter(n => n.trim());
-        if(!inputNames.length) return;
-        
-        document.getElementById('setupScreen').innerHTML = "<h1>🚀 VETO is Syncing...</h1>";
+// ===================== DAMAGE FLASH =====================
+function flashDamage() {
+    const el = document.createElement('div');
+    el.className = 'damage-flash';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 500);
+}
 
-        try {
-            const masterData = await callBackend("getInitialData");
-            qBank = masterData.questions;
-            dbCache = masterData.dbStudents;
-
-            inputNames.forEach(name => {
-                const found = dbCache.find(s => s.name.toLowerCase() === name.toLowerCase());
-                if (found) {
-                    session.students.push({ name: found.name, score: found.score, avatar: found.avatar });
-                } else {
-                    session.pendingNames.push(name);
-                }
-            });
-
-            if (session.pendingNames.length > 0) {
-                startAvatarWizard();
-            } else {
-                finalizeSetup();
-            }
-            setInterval(updateLecTimer, 1000);
-        } catch(e) {
-            alert("Connection Speed Error. Try again.");
-            console.error(e);
-        }
+// ===================== BACKEND =====================
+async function callBackend(action, data={}) {
+    if(['getInitialData','getQuestions','getOrCreateStudent'].includes(action)) {
+        let url = `${API_URL}?action=${action}`;
+        if(data.name) url += `&name=${encodeURIComponent(data.name)}`;
+        const r = await fetch(url); return await r.json();
+    } else {
+        await fetch(`${API_URL}?action=${action}`, {
+            method:'POST', mode:'no-cors',
+            body: JSON.stringify(data)
+        });
+        return {status:'sent'};
     }
+}
 
-    function saveStudentToCloud(name, avatar) {
+// ===================== INIT =====================
+async function initSession() {
+    const names = document.getElementById('studentInput').value.split('\n').filter(n=>n.trim());
+    if(!names.length) return;
+    document.getElementById('setupScreen').innerHTML = `<div class="setup-title">VETO</div><p style="color:var(--v-text-dim);letter-spacing:3px;font-size:13px;margin-top:15px;">SYNCING DATA...</p>`;
+    try {
+        const master = await callBackend('getInitialData');
+        qBank = master.questions;
+        const db = master.dbStudents || [];
+        names.forEach(name => {
+            const n = name.trim();
+            const found = db.find(s=>s.name.toLowerCase()===n.toLowerCase());
+            if(found) session.students.push({name:found.name, score:found.score, avatar:found.avatar, missingFeatures:found.missingFeatures||[], bonusItems:found.bonusItems||[], answers:[]});
+            else session.pendingNames.push(n);
+        });
+        if(session.pendingNames.length>0) startAvatarWizard();
+        else finalizeSetup();
+        setInterval(updateLecTimer, 1000);
+    } catch(e) { alert('خطأ في الاتصال، حاول تاني'); console.error(e); }
+}
+
+// ===================== AVATAR WIZARD =====================
+function startAvatarWizard() {
+    if(!session.pendingNames.length) { document.getElementById('avatarStudio').style.display='none'; finalizeSetup(); return; }
+    session.currentTempName = session.pendingNames.shift();
+    session.avatarStep = 0;
+    session.tempAvatarState = { skin: 0, hair: 0, eyes: 0, nose: 0, mouth: 0 };
+    document.getElementById('studioStudentName').innerText = session.currentTempName.toUpperCase();
+    document.getElementById('avatarStudio').style.display = 'flex';
+    ['hair','eyes','nose','mouth','accessories'].forEach(l => document.getElementById('layer-'+l).innerHTML='');
+    renderAvatarStep();
+}
+
+function renderAvatarStep() {
+    const s = setupSteps[session.avatarStep];
+    document.getElementById('stepTitle').innerText = s.title;
+    document.getElementById('stepSubtitle').innerText = s.subtitle;
+    document.getElementById('optionsGrid').innerHTML = s.options.map((o,i)=>`
+        <button class="option-btn" onclick="applyAvatarChoice('${s.key}',${i})">${o}</button>
+    `).join('');
+}
+
+function applyAvatarChoice(key, idx) {
+    if(key==='skin') {
+        const c = SkinTones[idx];
+        document.documentElement.style.setProperty('--skin-light', c.light);
+        document.documentElement.style.setProperty('--skin-dark', c.dark);
+        document.getElementById('neck-part').setAttribute('fill', c.dark);
+        session.tempAvatarState.skin = idx;
+    } else {
+        document.getElementById('layer-'+key).innerHTML = Assets[key][idx];
+        session.tempAvatarState[key] = idx;
+    }
+    session.avatarStep++;
+    if(session.avatarStep >= setupSteps.length) {
+        const svgEl = document.getElementById('studioPreviewSVG');
+        const skinTone = SkinTones[session.tempAvatarState.skin];
+        const svgContent = svgEl.innerHTML;
+        const name = session.currentTempName;
+        session.students.push({
+            name, avatar: svgContent,
+            skinTone: skinTone,
+            score: 0, missingFeatures: [], bonusItems: [], answers: [],
+            avatarState: {...session.tempAvatarState}
+        });
         fetch(`${API_URL}?action=saveNewStudent`, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify({ name: name, avatar: avatar })
+            method:'POST', mode:'no-cors',
+            body: JSON.stringify({name, avatar: svgContent, avatarState: session.tempAvatarState})
         });
-    }
-
-    function updateScoreCloud(name, pts) {
-        fetch(`${API_URL}?action=updateScore`, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify({ name: name, points: pts })
-        });
-    }
-
-    function startAvatarWizard() {
-        if(session.pendingNames.length === 0) {
-            document.getElementById('avatarStudio').style.display = 'none';
-            finalizeSetup();
-            return;
-        }
-        session.currentTempName = session.pendingNames.shift();
-        session.avatarStep = 0;
-        document.getElementById('studioStudentName').innerText = session.currentTempName.toUpperCase();
-        document.getElementById('avatarStudio').style.display = 'flex';
-        document.getElementById('layer-eyes').innerHTML = '';
-        document.getElementById('layer-nose').innerHTML = '';
-        document.getElementById('layer-mouth').innerHTML = '';
+        startAvatarWizard();
+    } else {
         renderAvatarStep();
     }
+}
 
-    function renderAvatarStep() {
-        const s = steps[session.avatarStep];
-        document.getElementById('stepTitle').innerText = s.title;
-        document.getElementById('optionsGrid').innerHTML = s.options.map((o, i) => `
-            <button class="option-btn" onclick="applyAvatarChoice('${s.key}', ${i})">${i+1}</button>
-        `).join('');
+function finalizeSetup() {
+    document.getElementById('setupScreen').style.display = 'none';
+    loadQuestion();
+}
+
+// ===================== QUESTION =====================
+function loadQuestion() {
+    if(!qBank.length) return;
+    session.answered = false;
+    session.lossCount = 0;
+    document.getElementById('explanation-mode').style.display = 'none';
+    const q = qBank[session.currentQ % qBank.length];
+    const s = session.students[session.currentS];
+
+    document.getElementById('h-name').innerText = s.name;
+    document.getElementById('h-score').innerText = s.score;
+    document.getElementById('h-avatar-box').innerHTML = buildAvatarSVG(s, '0 0 100 120');
+    document.getElementById('q-idx').innerText = `QUESTION #${session.currentQ+1}`;
+    document.getElementById('q-text').innerText = q.q;
+
+    const grid = document.getElementById('choices-grid');
+    grid.innerHTML = q.c.map((c,i)=>`
+        <div class="choice-card" onclick="handleAnswer(${i})" id="c-${i}">
+            <span class="choice-letter">${String.fromCharCode(65+i)}</span>${c}
+        </div>
+    `).join('');
+
+    document.getElementById('q-container').style.animation = 'none';
+    setTimeout(()=>document.getElementById('q-container').style.animation='fadeInUp 0.3s ease', 10);
+
+    renderFooter();
+    startQTimer();
+    initEyeTracking();
+}
+
+// ===================== ANSWER HANDLING =====================
+async function handleAnswer(idx) {
+    if(session.answered) return;
+    session.answered = true;
+    clearInterval(session.timer);
+    const q = qBank[session.currentQ % qBank.length];
+    const s = session.students[session.currentS];
+    const isCorrect = idx === q.a;
+    const answerText = idx === -1 ? 'TIME' : q.c[idx];
+    const label = isCorrect ? '✓' : '✗';
+    s.answers.push(`${label} ${q.q} → ${answerText}`);
+
+    if(isCorrect) {
+        document.getElementById(`c-${idx}`).classList.add('correct');
+        s.score += 10;
+        playCorrect();
+        spawnConfetti();
+        fetch(`${API_URL}?action=updateScore`, {method:'POST',mode:'no-cors',body:JSON.stringify({name:s.name,points:10})});
+        setTimeout(()=> showExplanation(q, true), 1200);
+    } else {
+        if(idx !== -1) document.getElementById(`c-${idx}`).classList.add('wrong');
+        document.getElementById(`c-${q.a}`).classList.add('correct');
+        playWrong();
+        flashDamage();
+        applyAvatarDamage(s);
+        setTimeout(()=> showExplanation(q, false), 1200);
     }
+    renderFooter();
+}
 
-    async function applyAvatarChoice(key, idx) {
-        if(key === 'skin') {
-            const c = SkinTones[idx];
-            document.documentElement.style.setProperty('--skin-light', c.light);
-            document.documentElement.style.setProperty('--skin-dark', c.dark);
-            document.getElementById('neck-part').setAttribute('fill', c.dark);
-        } else {
-            document.getElementById(`layer-${key}`).innerHTML = Assets[key][idx];
+// ===================== AVATAR DAMAGE =====================
+function applyAvatarDamage(student) {
+    if(session.lossCount >= 3) return;
+    // Find what to remove: accessories first (LIFO), then base features
+    if(student.bonusItems.length > 0) {
+        student.missingFeatures.push({ type:'bonus', key: student.bonusItems[student.bonusItems.length-1] });
+        student.bonusItems.pop();
+    } else {
+        // remove last base feature not already missing
+        const baseMissing = student.missingFeatures.filter(m=>m.type==='base').map(m=>m.key);
+        const available = RemovableFeatures.filter(f=>!baseMissing.includes(f));
+        if(available.length > 0) {
+            const toRemove = available[available.length-1]; // last added = reverse order
+            student.missingFeatures.push({ type:'base', key: toRemove });
         }
+    }
+    session.lossCount++;
+    saveAvatarToCloud(student);
+}
 
-        session.avatarStep++;
-        if(session.avatarStep >= steps.length) {
-            const svgContent = document.getElementById('studioPreviewSVG').innerHTML;
-            const name = session.currentTempName;
-            session.students.push({ name: name, avatar: svgContent, score: 0 });
-            saveStudentToCloud(name, svgContent);
-            startAvatarWizard();
-        } else {
-            renderAvatarStep();
+// ===================== REWARD SYSTEM =====================
+let rewardTimer = null;
+
+function showRewardScreen(student, isRecovery) {
+    const overlay = document.getElementById('rewardOverlay');
+    overlay.style.display = 'flex';
+
+    // Update preview
+    document.getElementById('rewardPreviewSVG').innerHTML = buildAvatarSVGInner(student);
+
+    let options, title, desc;
+    if(isRecovery) {
+        // Choose what to recover
+        const missing = student.missingFeatures;
+        options = missing.slice(-3).map(m => {
+            const label = m.type==='base' ? m.key : `Accessory: ${m.key}`;
+            return { label: '↩ استرجع ' + label, action: ()=>recoverFeature(student, m) };
+        });
+        title = '⚠ RECOVER A FEATURE';
+        desc = 'الطالب جاوب صح — اختار إيه اللي يرجع';
+    } else {
+        // Choose a new bonus
+        const bonusKeys = Object.keys(Accessories);
+        const available = bonusKeys.filter(k=>!student.bonusItems.includes(k));
+        const picks = available.sort(()=>Math.random()-0.5).slice(0,3);
+        options = picks.map(k=>({ label: getBonusLabel(k), action: ()=>addBonus(student, k) }));
+        title = '🏆 BONUS REWARD';
+        desc = 'اختار إضافة للأفاتار';
+    }
+
+    document.getElementById('rewardTitle').innerText = title;
+    document.getElementById('rewardDesc').innerText = desc;
+    document.getElementById('rewardOptions').innerHTML = options.map((o,i)=>`
+        <button class="reward-btn" onclick="pickReward(${i})">${o.label}</button>
+    `).join('');
+
+    let t = 5;
+    document.getElementById('rewardTimer').innerText = t;
+    clearInterval(rewardTimer);
+    rewardTimer = setInterval(()=>{
+        t--;
+        document.getElementById('rewardTimer').innerText = t;
+        playCountdownBeep(t<=1);
+        if(t<=0) {
+            clearInterval(rewardTimer);
+            // auto-pick first
+            options[0].action();
+            closeReward();
         }
+    }, 1000);
+
+    // store options for button clicks
+    overlay._options = options;
+}
+
+function pickReward(idx) {
+    clearInterval(rewardTimer);
+    if(document.getElementById('rewardOverlay')._options) {
+        document.getElementById('rewardOverlay')._options[idx].action();
     }
+    closeReward();
+}
 
-    function finalizeSetup() {
-        document.getElementById('setupScreen').style.display = 'none';
-        loadQuestion();
+function recoverFeature(student, featureObj) {
+    const idx = student.missingFeatures.indexOf(featureObj);
+    if(idx>-1) student.missingFeatures.splice(idx,1);
+    if(featureObj.type==='base') {
+        // feature comes back
+    } else {
+        student.bonusItems.push(featureObj.key);
     }
+    saveAvatarToCloud(student);
+}
 
-    function loadQuestion() {
-        if(!qBank.length) return;
-        session.answered = false;
-        document.getElementById('explanation-mode').style.display = 'none';
-        
-        const q = qBank[session.currentQ % qBank.length];
-        const s = session.students[session.currentS];
+function addBonus(student, key) {
+    if(!student.bonusItems.includes(key)) student.bonusItems.push(key);
+    saveAvatarToCloud(student);
+}
 
-        document.getElementById('h-name').innerText = s.name;
-        document.getElementById('h-score').innerText = s.score;
-        document.getElementById('h-avatar-box').innerHTML = `<svg class="avatar-svg" viewBox="0 0 100 100">${s.avatar}</svg>`;
-        document.getElementById('q-idx').innerText = `QUESTION #${session.currentQ + 1}`;
-        document.getElementById('q-text').innerText = q.q;
+function getBonusLabel(key) {
+    const map = { beard:'🧔 لحية', mustache:'👨 شنب', necklace:'📿 قلادة', earring_left:'💎 حلق يسار', earring_right:'💎 حلق يمين', glasses:'🕶 نظارة', crown:'👑 تاج' };
+    return map[key] || key;
+}
 
-        const grid = document.getElementById('choices-grid');
-        grid.innerHTML = q.c.map((choice, i) => `
-            <div class="choice-card" onclick="handleAnswer(${i})" id="c-${i}">
-                <span style="color:var(--v-primary); font-weight:700">${String.fromCharCode(65+i)}.</span>
-                ${choice}
+function closeReward() {
+    clearInterval(rewardTimer);
+    document.getElementById('rewardOverlay').style.display = 'none';
+    renderFooter();
+    document.getElementById('h-avatar-box').innerHTML = buildAvatarSVG(session.students[session.currentS], '0 0 100 120');
+}
+
+// ===================== AVATAR BUILD =====================
+function buildAvatarSVGInner(student) {
+    const state = student.avatarState || {};
+    const skin = student.skinTone || SkinTones[0];
+    const missing = (student.missingFeatures||[]).map(m=>m.key);
+
+    const skinLight = skin.light;
+    const skinDark = skin.dark;
+
+    let html = `
+        <defs>
+            <radialGradient id="sg_${student.name.replace(/\s/g,'')}" cx="50%" cy="40%" r="70%">
+                <stop offset="0%" style="stop-color:${skinLight}"/>
+                <stop offset="100%" style="stop-color:${skinDark}"/>
+            </radialGradient>
+        </defs>
+        <rect x="38" y="80" width="24" height="20" rx="4" fill="${skinDark}"/>
+        <path fill="url(#sg_${student.name.replace(/\s/g,'')})" d="M 20 45 Q 20 95 50 108 Q 80 95 80 45 Q 80 12 50 12 Q 20 12 20 45"/>
+        <path fill="url(#sg_${student.name.replace(/\s/g,'')})" d="M 18 48 Q 12 48 12 58 Q 12 68 20 68"/>
+        <path fill="url(#sg_${student.name.replace(/\s/g,'')})" d="M 82 48 Q 88 48 88 58 Q 88 68 80 68"/>
+    `;
+
+    if(!missing.includes('hair') && state.hair !== undefined) html += Assets.hair[state.hair]||Assets.hair[0];
+    if(!missing.includes('eyes') && state.eyes !== undefined) html += Assets.eyes[state.eyes]||Assets.eyes[0];
+    if(!missing.includes('nose') && state.nose !== undefined) html += Assets.nose[state.nose]||Assets.nose[0];
+    if(!missing.includes('mouth') && state.mouth !== undefined) html += Assets.mouth[state.mouth]||Assets.mouth[0];
+
+    // Bonus items
+    (student.bonusItems||[]).forEach(key => {
+        if(!missing.includes(key) && Accessories[key]) html += Accessories[key];
+    });
+
+    return html;
+}
+
+function buildAvatarSVG(student, viewBox='0 0 100 120') {
+    if(student.avatar && !student.avatarState) {
+        // Legacy: use stored SVG string
+        return `<svg class="avatar-svg" viewBox="${viewBox}">${student.avatar}</svg>`;
+    }
+    return `<svg class="avatar-svg" viewBox="${viewBox}">${buildAvatarSVGInner(student)}</svg>`;
+}
+
+function saveAvatarToCloud(student) {
+    const inner = buildAvatarSVGInner(student);
+    fetch(`${API_URL}?action=updateAvatar`, {
+        method:'POST', mode:'no-cors',
+        body: JSON.stringify({
+            name: student.name,
+            avatar: inner,
+            avatarState: student.avatarState,
+            missingFeatures: student.missingFeatures,
+            bonusItems: student.bonusItems
+        })
+    });
+}
+
+// ===================== EXPLANATION =====================
+function showExplanation(q, wasCorrect) {
+    document.getElementById('explanation-mode').style.display = 'block';
+    document.getElementById('exp-q-preview').innerText = q.q;
+    document.getElementById('exp-notes').value = '';
+    document.getElementById('exp-notes').focus();
+    // Store for afterExplanation
+    document.getElementById('explanation-mode')._wasCorrect = wasCorrect;
+}
+
+function afterExplanation() {
+    const wasCorrect = document.getElementById('explanation-mode')._wasCorrect;
+    const s = session.students[session.currentS];
+    const hasMissing = s.missingFeatures && s.missingFeatures.length > 0;
+
+    if(wasCorrect && hasMissing) {
+        showRewardScreen(s, true); // recovery
+    } else if(wasCorrect && !hasMissing) {
+        // Check bonus availability
+        const bonusKeys = Object.keys(Accessories);
+        const available = bonusKeys.filter(k=>!s.bonusItems.includes(k));
+        if(available.length > 0) showRewardScreen(s, false);
+        else nextQuestion();
+    } else {
+        nextQuestion();
+    }
+}
+
+function nextQuestion() {
+    // Save answers to cloud
+    const s = session.students[session.currentS];
+    if(s.answers.length > 0) {
+        fetch(`${API_URL}?action=saveReport`, {
+            method:'POST', mode:'no-cors',
+            body: JSON.stringify({
+                name: s.name,
+                avatar: buildAvatarSVGInner(s),
+                answers: s.answers.join(' | ')
+            })
+        });
+    }
+    session.currentQ++;
+    session.currentS = (session.currentS+1) % session.students.length;
+    showLeaderboard();
+}
+
+// ===================== LEADERBOARD =====================
+function showLeaderboard() {
+    const sorted = [...session.students].sort((a,b)=>b.score-a.score);
+    document.getElementById('lbRows').innerHTML = sorted.map((s,i)=>`
+        <div class="lb-row ${i===0?'top1':''}">
+            <span class="lb-rank" style="color:${i===0?'var(--v-accent)':i===1?'#94a3b8':'#64748b'}">${i===0?'🥇':i===1?'🥈':'🥉'}</span>
+            <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid var(--v-primary);">
+                ${buildAvatarSVG(s,'0 0 100 120')}
             </div>
-        `).join('');
+            <span style="font-size:15px;font-weight:600;">${s.name}</span>
+            <span class="lb-pts">${s.score} pts</span>
+        </div>
+    `).join('');
+    document.getElementById('leaderboardOverlay').style.display = 'flex';
+    playCelebration();
+}
 
-        renderFooter();
-        startQTimer();
-    }
+function closeLeaderboard() {
+    document.getElementById('leaderboardOverlay').style.display = 'none';
+    loadQuestion();
+}
 
-    async function handleAnswer(idx) {
-        if(session.answered) return;
-        session.answered = true;
-        clearInterval(session.timer);
-        
-        const q = qBank[session.currentQ % qBank.length];
-        const currentStudent = session.students[session.currentS];
+// ===================== FOOTER =====================
+function renderFooter() {
+    document.getElementById('footer-list').innerHTML = session.students.map((s,i)=>`
+        <div class="student-pill ${i===session.currentS?'active':''}">
+            <div class="mini-avatar">${buildAvatarSVG(s,'0 0 100 120')}</div>
+            <div style="font-size:12px;font-weight:700;">${s.name}</div>
+            <div style="font-size:11px;color:var(--v-accent);">${s.score} pts</div>
+            ${s.missingFeatures&&s.missingFeatures.length>0 ? `<div style="font-size:10px;color:var(--v-danger);">-${s.missingFeatures.length} ملمح</div>` : ''}
+        </div>
+    `).join('');
+}
 
-        if(idx === q.a) {
-            document.getElementById(`c-${idx}`).classList.add('correct');
-            currentStudent.score += 10;
-            updateScoreCloud(currentStudent.name, 10);
-            setTimeout(nextQuestion, 1500);
-        } else {
-            if(idx !== -1) document.getElementById(`c-${idx}`).classList.add('wrong');
-            document.getElementById(`c-${q.a}`).classList.add('correct');
-            showExplanation(q);
-        }
-    }
-
-    function showExplanation(q) {
-        document.getElementById('explanation-mode').style.display = 'block';
-        document.getElementById('exp-q-preview').innerText = q.q;
-        document.getElementById('exp-notes').value = "";
-        document.getElementById('exp-notes').focus();
-    }
-
-    function nextQuestion() {
-        session.currentQ++;
-        session.currentS = (session.currentS + 1) % session.students.length;
-        loadQuestion();
-    }
-
-    function renderFooter() {
-        document.getElementById('footer-list').innerHTML = session.students.map((s, i) => `
-            <div class="student-pill ${i === session.currentS ? 'active' : ''}">
-                <div class="mini-avatar"><svg viewBox="0 0 100 100">${s.avatar}</svg></div>
-                <div style="font-size:14px; font-weight:bold">${s.name}</div>
-                <div style="font-size:12px; color:var(--v-accent)">Pts: ${s.score}</div>
-            </div>
-        `).join('');
-    }
-
-    function startQTimer() {
-        let t = 30;
+// ===================== TIMERS =====================
+function startQTimer() {
+    let t = 30;
+    document.getElementById('q-timer').innerText = t;
+    document.getElementById('timer-bar').style.width = '100%';
+    document.getElementById('timer-bar').style.background = 'var(--v-primary)';
+    clearInterval(session.timer);
+    session.timer = setInterval(()=>{
+        t--;
         document.getElementById('q-timer').innerText = t;
-        clearInterval(session.timer);
-        session.timer = setInterval(() => {
-            t--;
-            document.getElementById('q-timer').innerText = t;
-            if(t <= 0) { clearInterval(session.timer); handleAnswer(-1); }
-        }, 1000);
-    }
+        const pct = (t/30)*100;
+        document.getElementById('timer-bar').style.width = pct+'%';
+        if(pct < 30) document.getElementById('timer-bar').style.background = 'var(--v-danger)';
+        else if(pct < 60) document.getElementById('timer-bar').style.background = 'var(--v-accent)';
+        if(t<=5) playCountdownBeep(t===1);
+        if(t<=0) { clearInterval(session.timer); handleAnswer(-1); }
+    }, 1000);
+}
 
-    function updateLecTimer() {
-        const diff = Math.floor((Date.now() - session.startTime) / 1000);
-        const m = Math.floor(diff / 60); const s = diff % 60;
-        document.getElementById('lec-timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-    }
+function updateLecTimer() {
+    const diff = Math.floor((Date.now()-session.startTime)/1000);
+    const m = Math.floor(diff/60), s = diff%60;
+    document.getElementById('lec-timer').innerText = `${m}:${s<10?'0'+s:s}`;
+}
+
+// ===================== EYE TRACKING =====================
+function initEyeTracking() {
+    document.addEventListener('mousemove', (e)=>{
+        document.querySelectorAll('.pupil').forEach(p=>{
+            const r = p.getBoundingClientRect();
+            const cx = r.left+r.width/2, cy = r.top+r.height/2;
+            const angle = Math.atan2(e.clientY-cy, e.clientX-cx);
+            const d = 1.5;
+            p.style.transform = `translate(${Math.cos(angle)*d}px,${Math.sin(angle)*d*0.6}px)`;
+        });
+    }, {passive:true});
+}
 </script>
 </body>
 </html>

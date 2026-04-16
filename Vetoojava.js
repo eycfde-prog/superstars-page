@@ -266,10 +266,27 @@ function openSession(lvl, sess, btn) {
       const badgeLabel = isTest ? "TEST" : name.toLowerCase().includes("intro") ? "INTRO" :
                          name.toLowerCase().includes("review") ? "REVIEW" : "★";
 
-      // Activity image from Actirobo folder — use first word of activity name
-      const imgName = name.split(/[\s:]/)[0].replace(/[^a-zA-Z]/g, "");
+// تحديد اسم الصورة بناءً على نوع النشاط بدقة
+      let imgName = "";
+      const n = name.toLowerCase();
+
+      if (n.includes("grammar"))          imgName = "Grammar";
+      else if (n.includes("vocab"))       imgName = "Vocabulary";
+      else if (n.includes("reading"))     imgName = "Reading";
+      else if (n.includes("listening"))   imgName = "Listening";
+      else if (n.includes("tongue twister")) imgName = "Tongue-twister";
+      else if (n.includes("one shot"))    imgName = "One-shot";
+      else if (n.includes("squeezer"))    imgName = "Squeezer";
+      else if (n.includes("dmt"))         imgName = "DMT";
+      else if (n.includes("wish"))        imgName = "Wish";
+      else if (n.includes("graduation"))  imgName = "Graduation-project"; // لازم تكون قبل Project عشان ميتلخبطش
+      else if (n.includes("project"))     imgName = "Project";
+      else if (n.includes("interview"))   imgName = "Interview";
+      else imgName = "default"; // اسم اختياري لو ملقاش تطابق
+
       const imgPath = `${CONFIG.ACTIROBO_PATH}${imgName}.png`;
 
+      // إنشاء الكارت
       const item = document.createElement("div");
       item.className = `activity-card ${isTest ? "test-card" : ""}`;
       item.innerHTML = `
@@ -283,6 +300,7 @@ function openSession(lvl, sess, btn) {
         </div>
         <span class="activity-badge ${badge}">${badgeLabel}</span>
       `;
+      
       item.addEventListener("click", () => loadActivityFile(lvl, sess, filename, name));
       list.appendChild(item);
     });
@@ -309,7 +327,7 @@ function getActivityIcon(name) {
   if (n.includes("wish"))      return { icon: "⭐", iconClass: "wish" };
   if (n.includes("project"))   return { icon: "🏗️", iconClass: "project" };
   if (n.includes("graduation"))return { icon: "🎓", iconClass: "graduation-project" };
-  if (n.includes("oral"))      return { icon: "🎤", iconClass: "Interview" };
+  if (n.includes("Interview"))      return { icon: "🎤", iconClass: "Interview" };
   return { icon: "📌", iconClass: "study" };
 }
 
